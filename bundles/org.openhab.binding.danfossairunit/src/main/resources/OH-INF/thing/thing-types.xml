@@ -17,9 +17,9 @@
 			<channel-group id="service" typeId="service"/>
 		</channel-groups>
 		<properties>
-			<property name="Unit Name">unknown</property>
-			<property name="Serial Number">unknown</property>
+			<property name="vendor">Danfoss</property>
 		</properties>
+		<representation-property>host</representation-property>
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
@@ -30,6 +30,7 @@
 				<default>10</default>
 				<label>Refresh Interval</label>
 				<unitLabel>Seconds</unitLabel>
+				<description>Seconds between fetching values from the air unit. Default is 10.</description>
 			</parameter>
 			<parameter name="updateUnchangedValuesEveryMillis" type="integer" min="0" unit="ms">
 				<label>Interval for Updating Unchanged Values</label>
@@ -49,7 +50,10 @@
 			<channel id="current_time" typeId="currentTime"/>
 			<channel id="mode" typeId="mode"/>
 			<channel id="manual_fan_step" typeId="manualFanStep"/>
-			<channel id="manual_fan_speed" typeId="manualFanSpeed"/>
+			<channel id="manual_fan_speed" typeId="manualFanStep">
+				<label>Manual Fan Speed</label>
+				<description>Deprecated, please use Manual Fan Step instead. This channel will be removed in a later version.</description>
+			</channel>
 			<channel id="supply_fan_speed" typeId="supplyFanSpeed"/>
 			<channel id="extract_fan_speed" typeId="extractFanSpeed"/>
 			<channel id="supply_fan_step" typeId="supplyFanStep"/>
@@ -76,7 +80,7 @@
 				<label>Calculated Room Temperature</label>
 				<description>Calculated Room Temperature</description>
 			</channel>
-			<channel id="outdoor_temp" typeId="temperature">
+			<channel id="outdoor_temp" typeId="system.outdoor-temperature">
 				<label>Outdoor Temperature</label>
 				<description>Temperature of the air outside</description>
 			</channel>
@@ -85,7 +89,8 @@
 	<channel-group-type id="humidity">
 		<label>Humidity</label>
 		<channels>
-			<channel id="humidity" typeId="humidity">
+			<channel id="humidity" typeId="system.atmospheric-humidity">
+				<label>Humidity</label>
 				<description>Current relative humidity measured by the air unit</description>
 			</channel>
 		</channels>
@@ -124,6 +129,7 @@
 				<label>Remaining Filter Life</label>
 				<description>Remaining life of filter until exchange is necessary</description>
 			</channel>
+			<channel id="filter_period" typeId="filterPeriod"/>
 		</channels>
 	</channel-group-type>
 
@@ -155,13 +161,6 @@
 		<category>Fan</category>
 		<state step="10" min="0" max="100"/>
 	</channel-type>
-	<channel-type id="manualFanSpeed" advanced="true">
-		<item-type>Dimmer</item-type>
-		<label>Manual Fan Speed</label>
-		<description>Deprecated, please use Manual Fan Step instead. This channel will be removed in a later version.</description>
-		<category>Fan</category>
-		<state step="10" min="0" max="100"/>
-	</channel-type>
 	<channel-type id="supplyFanSpeed">
 		<item-type>Number</item-type>
 		<label>Supply Fan Speed</label>
@@ -190,22 +189,17 @@
 		<category>Fan</category>
 		<state step="10" min="0" max="100" readOnly="true"/>
 	</channel-type>
+	<channel-type id="filterPeriod" advanced="true">
+		<item-type>Number</item-type>
+		<label>Filter Period</label>
+		<description>Number of months between filter replacements</description>
+		<state pattern="%d" min="3" max="12"/>
+	</channel-type>
 	<channel-type id="percentage">
 		<item-type>Number</item-type>
 		<label>Percentage</label>
 		<description>Read only percentage</description>
 		<state pattern="%.0f %%" readOnly="true" min="0" max="100"/>
-	</channel-type>
-	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Humidity</label>
-		<category>Humidity</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
-		<state pattern="%.0f %%" readOnly="true" min="0" max="100">
-		</state>
 	</channel-type>
 	<channel-type id="switch">
 		<item-type>Switch</item-type>

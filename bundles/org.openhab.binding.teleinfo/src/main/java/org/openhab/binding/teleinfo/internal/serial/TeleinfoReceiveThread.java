@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,20 +36,24 @@ public class TeleinfoReceiveThread extends Thread {
     private SerialPort serialPort;
     private @Nullable TeleinfoReceiveThreadListener listener;
     private boolean autoRepairInvalidADPSgroupLine;
+    private final TeleinfoTicMode ticMode;
+    private final boolean verifyChecksum;
 
     public TeleinfoReceiveThread(SerialPort serialPort, final TeleinfoSerialControllerHandler listener,
-            boolean autoRepairInvalidADPSgroupLine) {
+            boolean autoRepairInvalidADPSgroupLine, TeleinfoTicMode ticMode, boolean verifyChecksum) {
         super("OH-binding-TeleinfoReceiveThread-" + listener.getThing().getUID().getId());
         setDaemon(true);
         this.serialPort = serialPort;
         this.listener = listener;
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
+        this.ticMode = ticMode;
+        this.verifyChecksum = verifyChecksum;
     }
 
     @Override
     public void run() {
         try (TeleinfoInputStream teleinfoStream = new TeleinfoInputStream(serialPort.getInputStream(),
-                autoRepairInvalidADPSgroupLine)) {
+                autoRepairInvalidADPSgroupLine, ticMode, verifyChecksum)) {
             while (!interrupted()) {
                 TeleinfoReceiveThreadListener listener = this.listener;
                 if (listener != null) {

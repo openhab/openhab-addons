@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.powermax.internal.state;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * All defined arm modes
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public enum PowermaxArmMode {
 
     DISARMED(0, "Disarmed", "Disarmed", false, (byte) 0x00, false),
@@ -42,11 +45,11 @@ public enum PowermaxArmMode {
     ARMED_HOME_INSTANT(20, "Armed Home Instant", "StayInstant", true, (byte) 0x14, false),
     ARMED_AWAY_INSTANT(21, "Armed Away Instant", "ArmedInstant", true, (byte) 0x15, false);
 
-    private int code;
-    private String name;
-    private String shortName;
-    private boolean armed;
-    private byte commandCode;
+    private final int code;
+    private final String name;
+    private final String shortName;
+    private final boolean armed;
+    private final byte commandCode;
     private boolean allowedCommand;
 
     private PowermaxArmMode(int code, String name, String shortName, boolean armed, byte commandCode,

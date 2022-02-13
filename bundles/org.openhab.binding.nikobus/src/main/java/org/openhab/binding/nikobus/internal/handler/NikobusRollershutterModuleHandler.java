@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.nikobus.internal.handler;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikobus.internal.utils.Utils;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
@@ -45,7 +47,6 @@ import org.slf4j.LoggerFactory;
 public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
     private final Logger logger = LoggerFactory.getLogger(NikobusRollershutterModuleHandler.class);
     private final List<PositionEstimator> positionEstimators = new CopyOnWriteArrayList<>();
-
     private final Map<String, DirectionConfiguration> directionConfigurations = new ConcurrentHashMap<>();
 
     public NikobusRollershutterModuleHandler(Thing thing) {
@@ -78,7 +79,64 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
     }
 
     @Override
+    public void dispose() {
+        positionEstimators.forEach(PositionEstimator::destroy);
+        super.dispose();
+    }
+
+    @Override
     protected int valueFromCommand(String channelId, Command command) {
+        Optional<PositionEstimator> positionEstimator = getPositionEstimator(channelId);
+        if (command instanceof DecimalType) {
+            return positionEstimator.map(estimator -> {
+                return estimator.processSetPosition(((DecimalType) command).intValue());
+            }).orElseThrow(() -> {
+                throw new IllegalArgumentException(
+                        "Received position request but no estimation configured for channel " + channelId);
+            });
+        }
+        int result = convertCommandToValue(channelId, command);
+        positionEstimator.ifPresent(PositionEstimator::cancelStopMovement);
+        return result;
+    }
+
+    @Override
+    protected State stateFromValue(String channelId, int value) {
+        if (value == 0x00) {
+            return OnOffType.OFF;
+        }
+        DirectionConfiguration configuration = getDirectionConfiguration(channelId);
+        if (value == configuration.up) {
+            return UpDownType.UP;
+        }
+        if (value == configuration.down) {
+            return UpDownType.DOWN;
+        }
+        throw new IllegalArgumentException("Unexpected value " + value + " received");
+    }
+
+    @Override
+    protected void updateState(ChannelUID channelUID, State state) {
+        logger.debug("updateState {} {}", channelUID, state);
+
+        getPositionEstimator(channelUID.getId()).ifPresentOrElse(estimator -> {
+            if (state == UpDownType.UP) {
+                estimator.start(-1);
+            } else if (state == UpDownType.DOWN) {
+                estimator.start(1);
+            } else if (state == OnOffType.OFF) {
+                estimator.stop();
+            } else {
+                logger.debug("Unexpected state update '{}' for '{}'", state, channelUID);
+            }
+        }, () -> super.updateState(channelUID, state));
+    }
+
+    private void updateState(ChannelUID channelUID, int percent) {
+        super.updateState(channelUID, new PercentType(percent));
+    }
+
+    protected int convertCommandToValue(String channelId, Command command) {
         if (command == StopMoveType.STOP) {
             return 0x00;
         }
@@ -91,43 +149,9 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
         throw new IllegalArgumentException("Command '" + command + "' not supported");
     }
 
-    @Override
-    protected State stateFromValue(String channelId, int value) {
-        if (value == 0x00) {
-            return OnOffType.OFF;
-        }
-
-        DirectionConfiguration configuration = getDirectionConfiguration(channelId);
-        if (value == configuration.up) {
-            return UpDownType.UP;
-        }
-        if (value == configuration.down) {
-            return UpDownType.DOWN;
-        }
-
-        throw new IllegalArgumentException("Unexpected value " + value + " received");
-    }
-
-    @Override
-    protected void updateState(ChannelUID channelUID, State state) {
-        logger.debug("updateState {} {}", channelUID, state);
-
-        positionEstimators.stream().filter(estimator -> channelUID.equals(estimator.getChannelUID())).findFirst()
-                .ifPresentOrElse(estimator -> {
-                    if (state == UpDownType.UP) {
-                        estimator.start(-1);
-                    } else if (state == UpDownType.DOWN) {
-                        estimator.start(1);
-                    } else if (state == OnOffType.OFF) {
-                        estimator.stop();
-                    } else {
-                        logger.debug("Unexpected state update '{}' for '{}'", state, channelUID);
-                    }
-                }, () -> super.updateState(channelUID, state));
-    }
-
-    private void updateState(ChannelUID channelUID, int percent) {
-        super.updateState(channelUID, new PercentType(percent));
+    private Optional<PositionEstimator> getPositionEstimator(String channelId) {
+        return positionEstimators.stream().filter(estimator -> channelId.equals(estimator.getChannelUID().getId()))
+                .findFirst();
     }
 
     private DirectionConfiguration getDirectionConfiguration(String channelId) {
@@ -154,6 +178,7 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
         private long startTimeMillis = 0;
         private int direction = 0;
         private @Nullable Future<?> updateEstimateFuture;
+        private @Nullable Future<?> stopMovementFuture;
 
         PositionEstimator(ChannelUID channelUID, PositionEstimatorConfig config) {
             this.channelUID = channelUID;
@@ -165,6 +190,12 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
 
         public ChannelUID getChannelUID() {
             return channelUID;
+        }
+
+        public void destroy() {
+            Utils.cancel(updateEstimateFuture);
+            updateEstimateFuture = null;
+            cancelStopMovement();
         }
 
         public void start(int direction) {
@@ -189,6 +220,41 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
                 this.direction = 0;
                 startTimeMillis = 0;
             }
+        }
+
+        public int processSetPosition(int percent) {
+            if (percent < 0 || percent > 100) {
+                throw new IllegalArgumentException("Position % out of range - expecting [0, 100] but got " + percent
+                        + " for " + channelUID.getId());
+            }
+
+            cancelStopMovement();
+
+            int newPosition = (int) ((double) percent * (double) durationInMillis / 100.0 + 0.5);
+            int delta = position - newPosition;
+
+            logger.debug("Position set command {} for {}: delta = {}, current pos: {}, new position: {}", percent,
+                    channelUID, delta, position, newPosition);
+
+            if (delta == 0) {
+                return convertCommandToValue(channelUID.getId(), StopMoveType.STOP);
+            }
+
+            int time = Math.abs(delta);
+            if (percent == 0 || percent == 100) {
+                time += 5000; // Make sure we get to completely open/closed position.
+            }
+
+            stopMovementFuture = scheduler.schedule(() -> {
+                handleCommand(channelUID, StopMoveType.STOP);
+            }, time, TimeUnit.MILLISECONDS);
+
+            return convertCommandToValue(channelUID.getId(), delta > 0 ? UpDownType.UP : UpDownType.DOWN);
+        }
+
+        public void cancelStopMovement() {
+            Utils.cancel(stopMovementFuture);
+            stopMovementFuture = null;
         }
 
         private void updateEstimate() {

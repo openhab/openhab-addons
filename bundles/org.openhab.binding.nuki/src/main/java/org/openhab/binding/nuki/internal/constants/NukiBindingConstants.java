@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,8 @@ public class NukiBindingConstants {
     // Device Types
     public static final int DEVICE_SMART_LOCK = 0;
     public static final int DEVICE_OPENER = 2;
-    public static final Set<Integer> SUPPORTED_DEVICES = Set.of(DEVICE_OPENER, DEVICE_SMART_LOCK);
+    public static final int DEVICE_SMART_DOOR = 3;
+    public static final int DEVICE_SMART_LOCK_3 = 4;
 
     // Properties
     public static final String PROPERTY_WIFI_FIRMWARE_VERSION = "wifiFirmwareVersion";
@@ -59,6 +60,7 @@ public class NukiBindingConstants {
     public static final String PROPERTY_NAME = "name";
     public static final String PROPERTY_NUKI_ID = "nukiId";
     public static final String PROPERTY_BRIDGE_ID = "bridgeId";
+    public static final String PROPERTY_DEVICE_TYPE = "deviceType";
 
     // List of all Smart Lock Channel ids
     public static final String CHANNEL_SMARTLOCK_LOCK = "lock";

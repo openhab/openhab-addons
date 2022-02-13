@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,6 +87,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private static final long CLOCK_SYNC_INTERVAL_SEC = 3600;
     private static final long INITIAL_POLLING_DELAY_SEC = 30;
     private static final long INITIAL_CLOCK_SYNC_DELAY_SEC = 10;
+    private static final long PING_TIMEOUT_SEC = 60;
     // spec says wait 50ms, min is 100
     private static final long SLEEP_BETWEEN_CMD_MS = 100;
     private static final Unit<Time> API_SECOND_UNIT = Units.SECOND;
@@ -105,6 +106,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private static final int MIN_EQ = -18;
     private static final int MAX_EQ = 18;
 
+    private static final int MPS4_PORT = 5006;
+
     private static final Pattern ZONE_PATTERN = Pattern
             .compile("^ON,SRC(\\d{1}),(MUTE|VOL\\d{1,2}),DND([0-1]),LOCK([0-1])$");
     private static final Pattern DISP_PATTERN = Pattern.compile("^DISPLINE(\\d{1}),\"(.*)\"$");
@@ -121,6 +124,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> clockSyncJob;
+    private @Nullable ScheduledFuture<?> pingJob;
 
     private NuvoConnector connector = new NuvoDefaultConnector();
     private long lastEventReceived = System.currentTimeMillis();
@@ -133,6 +137,10 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
     // A tree map that maps the source ids to source labels
     TreeMap<String, String> sourceLabels = new TreeMap<String, String>();
+
+    // Indicates if there is a need to poll status because of a disconnection used for MPS4 systems
+    boolean pollStatusNeeded = true;
+    boolean isMps4 = false;
 
     /**
      * Constructor
@@ -184,6 +192,11 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             return;
         }
 
+        this.isMps4 = (port != null && port.intValue() == MPS4_PORT);
+        if (this.isMps4) {
+            logger.debug("Port set to {} configuring binding for MPS4 compatability", MPS4_PORT);
+        }
+
         if (numZones != null) {
             this.numZones = numZones;
         }
@@ -207,6 +220,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
         scheduleReconnectJob();
         schedulePollingJob();
+        schedulePingTimeoutJob();
         updateStatus(ThingStatus.UNKNOWN);
     }
 
@@ -215,6 +229,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         cancelReconnectJob();
         cancelPollingJob();
         cancelClockSyncJob();
+        cancelPingTimeoutJob();
         closeConnection();
         super.dispose();
     }
@@ -429,6 +444,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         if (connector.isConnected()) {
             connector.close();
             connector.removeEventListener(this);
+            pollStatusNeeded = true;
             logger.debug("closeConnection(): disconnected");
         }
     }
@@ -459,6 +475,11 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     connector.setEssentia(false);
                 }
                 break;
+            case TYPE_PING:
+                logger.debug("Ping message received- rescheduling ping timeout");
+                schedulePingTimeoutJob();
+                // Return here because receiving a ping does not indicate that one can poll
+                return;
             case TYPE_ALLOFF:
                 activeZones.forEach(zoneNum -> {
                     updateChannelState(NuvoEnum.valueOf(ZONE + zoneNum), CHANNEL_TYPE_POWER, OFF);
@@ -555,7 +576,12 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 break;
             default:
                 logger.debug("onNewMessageEvent: unhandled key {}", key);
-                break;
+                // Return here because receiving an unknown message does not indicate that one can poll
+                return;
+        }
+
+        if (isMps4 && pollStatusNeeded) {
+            pollStatus();
         }
     }
 
@@ -571,58 +597,10 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 closeConnection();
                 String error = null;
                 if (openConnection()) {
-                    synchronized (sequenceLock) {
-                        try {
-                            long prevUpdateTime = lastEventReceived;
-
-                            connector.sendCommand(NuvoCommand.GET_CONTROLLER_VERSION);
-
-                            NuvoEnum.VALID_SOURCES.forEach(source -> {
-                                try {
-                                    connector.sendQuery(NuvoEnum.valueOf(source), NuvoCommand.NAME);
-                                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-                                    connector.sendQuery(NuvoEnum.valueOf(source), NuvoCommand.DISPINFO);
-                                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-                                    connector.sendQuery(NuvoEnum.valueOf(source), NuvoCommand.DISPLINE);
-                                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-                                } catch (NuvoException | InterruptedException e) {
-                                    logger.debug("Error Querying Source data: {}", e.getMessage());
-                                }
-                            });
-
-                            // Query all active zones to get their current status and eq configuration
-                            activeZones.forEach(zoneNum -> {
-                                try {
-                                    connector.sendQuery(NuvoEnum.valueOf(ZONE + zoneNum), NuvoCommand.STATUS);
-                                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-                                    connector.sendCfgCommand(NuvoEnum.valueOf(ZONE + zoneNum), NuvoCommand.EQ_QUERY,
-                                            BLANK);
-                                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-                                } catch (NuvoException | InterruptedException e) {
-                                    logger.debug("Error Querying Zone data: {}", e.getMessage());
-                                }
-                            });
-
-                            // prevUpdateTime should have changed if a zone update was received
-                            if (prevUpdateTime == lastEventReceived) {
-                                error = "Controller not responding to status requests";
-                            } else {
-                                List<StateOption> sourceStateOptions = new ArrayList<>();
-                                sourceLabels.keySet().forEach(key -> {
-                                    sourceStateOptions.add(new StateOption(key, sourceLabels.get(key)));
-                                });
-
-                                // Put the source labels on all active zones
-                                activeZones.forEach(zoneNum -> {
-                                    stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(),
-                                            ZONE.toLowerCase() + zoneNum + CHANNEL_DELIMIT + CHANNEL_TYPE_SOURCE),
-                                            sourceStateOptions);
-                                });
-                            }
-                        } catch (NuvoException e) {
-                            error = "First command after connection failed";
-                            logger.debug("{}: {}", error, e.getMessage());
-                        }
+                    logger.debug("Reconnected");
+                    // Polling status will disconnect from MPS4 on reconnect
+                    if (!isMps4) {
+                        pollStatus();
                     }
                 } else {
                     error = "Reconnection failed";
@@ -635,6 +613,84 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 }
             }
         }, 1, RECON_POLLING_INTERVAL_SEC, TimeUnit.SECONDS);
+    }
+
+    /**
+     * If a ping is not received within ping interval the connection is closed and a reconnect job is scheduled
+     */
+    private void schedulePingTimeoutJob() {
+        if (isMps4) {
+            logger.debug("Schedule Ping Timeout job");
+            cancelPingTimeoutJob();
+            pingJob = scheduler.schedule(() -> {
+                closeConnection();
+                scheduleReconnectJob();
+            }, PING_TIMEOUT_SEC, TimeUnit.SECONDS);
+        } else {
+            logger.debug("Ping Timeout job on valid for MPS4 connections");
+        }
+    }
+
+    /**
+     * Cancel the ping timeout job
+     */
+    private void cancelPingTimeoutJob() {
+        ScheduledFuture<?> pingJob = this.pingJob;
+        if (pingJob != null) {
+            pingJob.cancel(true);
+            this.pingJob = null;
+        }
+    }
+
+    private void pollStatus() {
+        pollStatusNeeded = false;
+        scheduler.submit(() -> {
+            synchronized (sequenceLock) {
+                try {
+                    connector.sendCommand(NuvoCommand.GET_CONTROLLER_VERSION);
+
+                    NuvoEnum.VALID_SOURCES.forEach(source -> {
+                        try {
+                            connector.sendQuery(NuvoEnum.valueOf(source), NuvoCommand.NAME);
+                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                            connector.sendQuery(NuvoEnum.valueOf(source), NuvoCommand.DISPINFO);
+                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                            connector.sendQuery(NuvoEnum.valueOf(source), NuvoCommand.DISPLINE);
+                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                        } catch (NuvoException | InterruptedException e) {
+                            logger.debug("Error Querying Source data: {}", e.getMessage());
+                        }
+                    });
+
+                    // Query all active zones to get their current status and eq configuration
+                    activeZones.forEach(zoneNum -> {
+                        try {
+                            connector.sendQuery(NuvoEnum.valueOf(ZONE + zoneNum), NuvoCommand.STATUS);
+                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                            connector.sendCfgCommand(NuvoEnum.valueOf(ZONE + zoneNum), NuvoCommand.EQ_QUERY, BLANK);
+                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                        } catch (NuvoException | InterruptedException e) {
+                            logger.debug("Error Querying Zone data: {}", e.getMessage());
+                        }
+                    });
+
+                    List<StateOption> sourceStateOptions = new ArrayList<>();
+                    sourceLabels.keySet().forEach(key -> {
+                        sourceStateOptions.add(new StateOption(key, sourceLabels.get(key)));
+                    });
+
+                    // Put the source labels on all active zones
+                    activeZones.forEach(zoneNum -> {
+                        stateDescriptionProvider.setStateOptions(
+                                new ChannelUID(getThing().getUID(),
+                                        ZONE.toLowerCase() + zoneNum + CHANNEL_DELIMIT + CHANNEL_TYPE_SOURCE),
+                                sourceStateOptions);
+                    });
+                } catch (NuvoException e) {
+                    logger.debug("Error polling status from Nuvo: {}", e.getMessage());
+                }
+            }
+        });
     }
 
     /**
@@ -652,8 +708,14 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
      * Schedule the polling job
      */
     private void schedulePollingJob() {
-        logger.debug("Schedule polling job");
         cancelPollingJob();
+
+        if (isMps4) {
+            logger.debug("MPS4 doesn't support polling");
+            return;
+        } else {
+            logger.debug("Schedule polling job");
+        }
 
         // when the Nuvo amp is off, this will keep the connection (esp Serial over IP) alive and detect if the
         // connection goes down

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -135,7 +135,7 @@ public class SecondGenerationConfigurationHandler {
         if (size > 0) {
             extractSessionId = extractJsonArraySessionId.get(size - 1).getAsJsonObject().get("sessionId").getAsString();
         }
-        if (extractSessionId == "0") {
+        if ("0".equals(extractSessionId)) {
             sessionIdLogger.debug(" Login Post Json Reponse not OK! , inverter answered with sessionId like: {}",
                     extractSessionId);
         }
@@ -152,7 +152,7 @@ public class SecondGenerationConfigurationHandler {
         if (size > 0) {
             extractCode = extractJsonArrayCode.get(size - 1).getAsJsonObject().get("code").getAsString();
         }
-        if (extractCode != "0") {
+        if (!"0".equals(extractCode)) {
             codeLogger.debug(" Login Post Json Reponse not OK! , inverter answered with status code like: {}",
                     extractCode);
         }

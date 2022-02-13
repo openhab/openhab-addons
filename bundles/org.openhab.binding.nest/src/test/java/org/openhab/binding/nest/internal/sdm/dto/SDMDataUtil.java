@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,12 +37,12 @@ import com.google.gson.stream.JsonWriter;
 @NonNullByDefault
 public class SDMDataUtil {
 
-    public static Reader openDataReader(String fileName) throws UnsupportedEncodingException, FileNotFoundException {
+    public static Reader openDataReader(String fileName) throws FileNotFoundException {
         String packagePath = (SDMDataUtil.class.getPackage().getName()).replaceAll("\\.", "/");
         String filePath = "src/test/resources/" + packagePath + "/" + fileName;
 
         InputStream inputStream = new FileInputStream(filePath);
-        return new InputStreamReader(inputStream, "UTF-8");
+        return new InputStreamReader(inputStream, StandardCharsets.UTF_8);
     }
 
     public static <T> T fromJson(String fileName, Class<T> dataClass) throws IOException {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.mqtt.handler;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -44,6 +45,7 @@ import org.slf4j.LoggerFactory;
  * connection to the {@link MqttService}.
  *
  * @author David Graeff - Initial contribution
+ * @author Jimmy Tanagra - Add birth and shutdown message
  */
 @NonNullByDefault
 public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallback {
@@ -57,15 +59,18 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
     @Override
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         super.connectionStateChanged(state, error);
-        // Store generated client ID if none was set by the user
         final MqttBrokerConnection connection = this.connection;
-        String clientID = config.clientID;
-        if (connection != null && state == MqttConnectionState.CONNECTED && (clientID == null || clientID.isBlank())) {
-            clientID = connection.getClientId();
-            config.clientID = clientID;
-            Configuration editConfig = editConfiguration();
-            editConfig.put("clientid", clientID);
-            updateConfiguration(editConfig);
+        if (connection != null && state == MqttConnectionState.CONNECTED) {
+            String clientID = config.clientID;
+            if (clientID == null || clientID.isBlank()) {
+                // Store generated client ID if none was set by the user
+                clientID = connection.getClientId();
+                config.clientID = clientID;
+                Configuration editConfig = editConfiguration();
+                editConfig.put("clientid", clientID);
+                updateConfiguration(editConfig);
+            }
+            publish(config.birthTopic, config.birthMessage, config.birthRetain);
         }
     }
 
@@ -114,6 +119,8 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
     public void dispose() {
         try {
             if (connection != null) {
+                publish(config.shutdownTopic, config.shutdownMessage, config.shutdownRetain).get(1000,
+                        TimeUnit.MILLISECONDS);
                 connection.stop().get(1000, TimeUnit.MILLISECONDS);
             } else {
                 logger.warn("Trying to dispose handler {} but connection is already null. Most likely this is a bug.",
@@ -235,5 +242,16 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
         this.connection = connection;
 
         super.initialize();
+    }
+
+    /**
+     * Calls the @NonNull MqttBrokerConnection::publish() with @Nullable topic and message
+     */
+    private CompletableFuture<Boolean> publish(@Nullable String topic, @Nullable String message, boolean retain) {
+        if (topic == null || connection == null) {
+            return CompletableFuture.completedFuture(true);
+        }
+        String nonNullMessage = message != null ? message : "";
+        return connection.publish(topic, nonNullMessage.getBytes(), connection.getQos(), retain);
     }
 }

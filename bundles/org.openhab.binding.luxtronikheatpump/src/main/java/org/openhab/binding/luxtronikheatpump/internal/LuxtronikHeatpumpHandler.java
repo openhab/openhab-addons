@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpChannel;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpCoolingOperationMode;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpOperationMode;
@@ -75,7 +76,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
     }
 
     @Override
-    public void updateProperty(String name, String value) {
+    public void updateProperty(String name, @Nullable String value) {
         super.updateProperty(name, value);
     }
 
@@ -277,8 +278,12 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             Integer channelId = channel.getChannelId();
             int length = channel.isWritable() ? heatpumpParams.length : heatpumpValues.length;
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channel.getCommand());
-            ChannelTypeUID channelTypeUID = new ChannelTypeUID(LuxtronikHeatpumpBindingConstants.BINDING_ID,
-                    channel.getCommand());
+            ChannelTypeUID channelTypeUID;
+            if (channel.getCommand().matches("^channel[0-9]+$")) {
+                channelTypeUID = new ChannelTypeUID(LuxtronikHeatpumpBindingConstants.BINDING_ID, "unknown");
+            } else {
+                channelTypeUID = new ChannelTypeUID(LuxtronikHeatpumpBindingConstants.BINDING_ID, channel.getCommand());
+            }
             if ((channelId != null && length <= channelId)
                     || (config.showAllChannels == Boolean.FALSE && !channel.isVisible(visibilityValues))) {
                 logger.debug("Hiding channel {}", channel.getCommand());

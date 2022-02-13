@@ -28,7 +28,7 @@
 
 		<config-description>
 			<parameter name="where" type="text" required="true">
-				<label>OpenWebNet Device Address (where)</label>
+				<label>OpenWebNet Address (where)</label>
 				<description>It identifies one ZigBee device. Example: 765432100#9 (use unit=00 at the end)</description>
 			</parameter>
 		</config-description>

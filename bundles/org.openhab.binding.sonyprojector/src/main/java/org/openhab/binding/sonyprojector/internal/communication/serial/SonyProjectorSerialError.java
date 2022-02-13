@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.sonyprojector.internal.communication.serial;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.sonyprojector.internal.SonyProjectorException;
+import org.openhab.core.i18n.CommunicationException;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -77,14 +77,14 @@ public enum SonyProjectorSerialError {
      *
      * @return the error associated to the searched data code
      *
-     * @throws SonyProjectorException - If no error is associated to the searched data code
+     * @throws CommunicationException if no error is associated to the searched data code
      */
-    public static SonyProjectorSerialError getFromDataCode(byte[] dataCode) throws SonyProjectorException {
+    public static SonyProjectorSerialError getFromDataCode(byte[] dataCode) throws CommunicationException {
         for (SonyProjectorSerialError value : SonyProjectorSerialError.values()) {
             if (Arrays.equals(dataCode, value.getDataCode())) {
                 return value;
             }
         }
-        throw new SonyProjectorException("Unknwon error code: " + HexUtils.bytesToHex(dataCode));
+        throw new CommunicationException("Unknwon error code: " + HexUtils.bytesToHex(dataCode));
     }
 }

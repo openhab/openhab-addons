@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.wemo.internal;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -23,6 +22,9 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.net.http.HttpUtil;
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * {@link WemoUtil} implements some helper functions.
@@ -123,11 +125,10 @@ public class WemoUtil {
         return unescapedOutput.toString();
     }
 
-    public static @Nullable String getWemoURL(URL descriptorURL, String actionService) {
+    public static @Nullable String getWemoURL(String host, String actionService) {
         int portCheckStart = 49151;
         int portCheckStop = 49157;
         String port = null;
-        String host = substringBetween(descriptorURL.toString(), "://", ":");
         for (int i = portCheckStart; i < portCheckStop; i++) {
             if (serviceAvailableFunction.apply(host, i)) {
                 port = String.valueOf(i);
@@ -154,5 +155,31 @@ public class WemoUtil {
         entities.put("apos", "'");
         entities.put("quot", "\"");
         return entities;
+    }
+
+    public static String createBinaryStateContent(boolean binaryState) {
+        String binary = binaryState == true ? "1" : "0";
+        String content = "<?xml version=\"1.0\"?>"
+                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<BinaryState>"
+                + binary + "</BinaryState>" + "</u:SetBinaryState>" + "</s:Body>" + "</s:Envelope>";
+        return content;
+    }
+
+    public static String createStateRequestContent(String action, String actionService) {
+        String content = "<?xml version=\"1.0\"?>"
+                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
+                + action + ">" + "</s:Body>" + "</s:Envelope>";
+        return content;
+    }
+
+    public static String getCharacterDataFromElement(Element e) {
+        Node child = e.getFirstChild();
+        if (child instanceof CharacterData) {
+            CharacterData cd = (CharacterData) child;
+            return cd.getData();
+        }
+        return "?";
     }
 }

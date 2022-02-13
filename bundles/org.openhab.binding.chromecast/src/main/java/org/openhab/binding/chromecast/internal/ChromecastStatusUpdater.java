@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,6 +73,9 @@ public class ChromecastStatusUpdater {
     private @Nullable String appSessionId;
     private PercentType volume = PercentType.ZERO;
 
+    // Null is valid value for last duration
+    private @Nullable Double lastDuration = null;
+
     public ChromecastStatusUpdater(Thing thing, ChromecastHandler callback) {
         this.thing = thing;
         this.callback = callback;
@@ -80,6 +83,10 @@ public class ChromecastStatusUpdater {
 
     public PercentType getVolume() {
         return volume;
+    }
+
+    public @Nullable Double getLastDuration() {
+        return lastDuration;
     }
 
     public @Nullable String getAppSessionId() {
@@ -186,6 +193,7 @@ public class ChromecastStatusUpdater {
         if (media != null) {
             metadataType = media.getMetadataType().name();
 
+            lastDuration = media.duration;
             // duration can be null when a new song is about to play.
             if (media.duration != null) {
                 duration = new QuantityType<>(media.duration, Units.SECOND);
@@ -259,11 +267,17 @@ public class ChromecastStatusUpdater {
 
     private @Nullable RawType downloadImage(String url) {
         logger.debug("Trying to download the content of URL '{}'", url);
-        RawType downloadedImage = HttpUtil.downloadImage(url);
-        if (downloadedImage == null) {
-            logger.debug("Failed to download the content of URL '{}'", url);
+        try {
+            RawType downloadedImage = HttpUtil.downloadImage(url);
+            if (downloadedImage == null) {
+                logger.debug("Failed to download the content of URL '{}'", url);
+            }
+            return downloadedImage;
+        } catch (IllegalArgumentException e) {
+            // we catch this exception to avoid confusion errors in the log file
+            // see https://github.com/openhab/openhab-core/issues/2494#issuecomment-970162025
         }
-        return downloadedImage;
+        return null;
     }
 
     private @Nullable RawType downloadImageFromCache(String url) {

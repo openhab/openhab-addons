@@ -59,6 +59,7 @@ This binding is developed on and tested with the following devices
  * NodOn: 
     * Smart Plug (ASP-2-1-10)
     * In Wall Switch (SIN-2-2-00, SIN-2-1-0x)
+    * In Wall Rollershutter (SIN-2-RS-01)
     * Temperature & humidity sensor (STPH-2-1-05)
  * Permundo 
     * PSC234 (smart plug with metering) = Afriso APR234
@@ -68,6 +69,7 @@ This binding is developed on and tested with the following devices
  * Hoppe SecuSignal window handles
  * Rocker switches (NodOn, Eltako FT55 etc)
  * Siegenia Senso Secure window sensors
+ * Soda window handles
 
 However, because of the standardized EnOcean protocol it is more important which EEP this binding supports.
 Hence if your device supports one of the following EEPs the chances are good that your device is also supported by this binding.
@@ -76,8 +78,8 @@ Hence if your device supports one of the following EEPs the chances are good tha
 |---------------------------------|-------------|---------------|------------------------------|--------------------------------|-----------|
 | bridge                          | -           | -             | repeaterMode, setBaseId      | USB300, EnOceanPi              | -         |
 | pushButton                      | F6-01/D2-03 | 0x01/0x0A     | pushButton, doublePress,<br/>longPress, batteryLevel | NodOn soft button | Manually/Discovery  |
-| rockerSwitch                    | F6-02       | 0x01-02       | rockerswitchA, rockerswitchB | Eltako FT55                    | Discovery |
-| mechanicalHandle                | F6-10       | 0x00-01       | windowHandleState, contact   | Hoppe SecuSignal handles, Eltako TF-FGB | Discovery |
+| rockerSwitch                    | F6-02       | 0x01-02       | rockerswitchA, rockerswitchB,<br/>rockerSwitchAction | Eltako FT55                    | Discovery |
+| mechanicalHandle                | F6-10/D2-06 | 0x00-01/0x01    | windowHandleState, contact and a lot more for soda handles³   | Hoppe SecuSignal handles, Eltako TF-FGB, Soda handles | Discovery |
 | contact                         | D5-00       | 0x01          | contact                      | Eltako FTK(E) & TF-FKB            | Discovery |
 | temperatureSensor               | A5-02       | 0x01-30       | temperature                  | Thermokon SR65                 | Discovery |
 | temperatureHumiditySensor       | A5-04       | 0x01-03       | humidity, temperature        | Eltako FTSB                    | Discovery |
@@ -99,9 +101,17 @@ Hence if your device supports one of the following EEPs the chances are good tha
 
 ² These are just examples of supported devices
 
+³ Note that the soda handles potentially contain a wide range of different sensors and buttons.
+However the amount of built-in sensors and buttons may vary between different models.
+In case your particular device does not contain one of the potentially supported features the corresponding channel will never trigger an update.
+Please see the manual of your particular model to check which channels should be supported before opening an issue.  
+
 Furthermore following supporting EEP family is available too: A5-11, types 0x03 (rollershutter position status), 0x04 (extended light status) and D0-06 (battery level indication).
 
 A `rockerSwitch` is used to receive messages from a physical EnOcean Rocker Switch.
+Channel `rockerswitchA` and `rockerswitchB` just react if corresponding rocker switch channel is pressed as single action.
+These channels do not emit an event if ChannelA and ChannelB are pressed simultaneously.
+To handle simultaneously pressed channels you have to use the `rockerSwitchAction` channel.
 A `classicDevice` is used for older EnOcean devices which react only on rocker switch messages (like Opus GN-A-R12V-SR-4).
 As these devices do not send their current status, you have to add additional listener channels for each physical Rocker Switch to your thing.
 In this way you can still sync your item status with the physical status of your device whenever it gets modified by a physical rocker switch.
@@ -180,7 +190,7 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | enoceanId         | EnOceanId of device this thing belongs to | hex value as string |
 | rockerSwitch                    | receivingEEPId    |                             | F6_02_01, F6_02_02 |
 |                                 | enoceanId         | | |
-| mechanicalHandle                | receivingEEPId    |                             | F6_10_00, F6_10_01, A5_14_09 |
+| mechanicalHandle                | receivingEEPId    |                             | F6_10_00, F6_10_01, A5_14_09, D2_06_01 |
 |                                 | enoceanId         | | |
 |                                 | receivingSIGEEP   | | |
 | contact                         | receivingEEPId    |                             | D5_00_01, A5_14_01_ELTAKO |
@@ -215,9 +225,9 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | suppressRepeating | Suppress repeating of msg   | true, false |
 | rollershutter                   | senderIdOffset    |                             | 1-127 |
 |                                 | enoceanId         | | |
-|                                 | sendingEEPId      |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_38_08_07, D2_05_00 |
+|                                 | sendingEEPId      |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_38_08_07, D2_05_00_NODON |
 |                                 | broadcastMessages |                             | true, false |
-|                                 | receivingEEPId¹   |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_11_03, D2_05_00 |
+|                                 | receivingEEPId¹   |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_11_03, D2_05_00_NODON |
 |                                 | suppressRepeating |                             | true, false |
 |                                 | pollingInterval   | Refresh interval in seconds | Integer |
 | measurementSwitch               | senderIdOffset    |                             | 1-127 |
@@ -255,11 +265,13 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | repeaterMode        | String             | Set repeater level to 1, 2 or disable |
 | setBaseId           | String             | Changes the BaseId of your gateway. This can only be done 10 times! So use it with care. |
 | pushButton          | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
+| pushButton2         | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
 | doublePress         | Trigger            | Channel type system:rawbutton, emits PRESSED |
 | longPress           | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
 | rockerswitchA/B     | Trigger            | Channel type system:rawrocker, emits DIR1_PRESSED, DIR1_RELEASED, DIR2_PRESSED, DIR2_RELEASED events |
-| windowHandleState   | String             | Textual representation of handle position (OPEN, CLOSED, TILTED) |
-| windowSashState     | String             | Textual representation of sash position (OPEN, CLOSED, TILTED) |
+| rockerSwitchAction  | Trigger            | Emits combined rocker switch actions for channel A and B and RELEASED events |
+| windowHandleState   | String             | Textual representation of handle position (UP, DOWN, LEFT, RIGHT for the D2_06_01 EEP and OPEN, CLOSED, TILTED for all others) |
+| windowSashState     | String             | Textual representation of sash position (TILTED or NOT TILTED for the D2_06_01 EEP and OPEN, CLOSED, TILTED for all others) |
 | windowCalibrationState | String             | Textual representation of the calibration state (OK, ERROR, INVALID) |
 | windowCalibrationStep | String             | Textual representation of the next step that must be performed for calibrating the device (e.g. NONE, SASH CLOSED HANDLE CLOSED, SASH CLOSED HANDLE OPEN, SASH OPEN HANDLE TILTED, and so on) |
 | contact             | Contact            | State OPEN/CLOSED (tilted handle => OPEN) |
@@ -324,7 +336,9 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | repeatCount          | Number                   | Number of repeaters involved in the transmission of the telegram |
 | lastReceived         | DateTime                 | Date and time the last telegram was received |
 | statusRequestEvent   | Trigger                  | Emits event 'requestAnswer' | 
-| windowBreachEvent    | Trigger                  | Emits event 'ALARM' | 
+| windowBreachEvent    | Trigger                  | Emits event 'ALARM' |
+| protectionPlusEvent  | Trigger                  | Emits event 'ALARM' |
+| vacationModeToggleEvent | Trigger               | Emits events 'ACTIVATED', 'DEACTIVATED' |
 
 
 Items linked to bi-directional actuators (actuator sends status messages back) should always disable the `autoupdate`.
@@ -372,6 +386,14 @@ then
 end
 ```
 
+If you also want to react to simultaneously pressed channels you have to use the `rockerSwitchAction` channel.
+This channel emits events in the following form "DirectionChannelA|DirectionChannelB" (for example "Dir1|Dir2").
+If a channel is not pressed a "-" is emitted.
+To bind this channel to an item you have to use the `rockerswitchaction-toggle-switch` or the `rockerswitchaction-toggle-player` profile.
+To define for which button press combination the linked item should toggle you have to set the configuration parameters `channelAFilter` and `channelBFilter` accordingly.
+The options for these parameters are "*" (any direction), "Dir1", "Dir2", "-" (corresponding channel not pressed at all).
+An example can be found below.
+
 ## Example
 
 ```xtend
@@ -399,6 +421,7 @@ Bridge enocean:bridge:gtwy "EnOcean Gateway" [ path="/dev/ttyAMA0" ] {
 
 ```xtend
 Player Kitchen_Sonos "Sonos" (Kitchen) {channel="sonos:PLAY1:ID:control", channel="enocean:rockerSwitch:gtwy:rs01:rockerswitchA" [profile="system:rawrocker-to-play-pause"]}
+Switch Light_Switch { channel="enocean:rockerSwitch:gtwy:rs01:rockerSwitchAction" [profile="enocean:rockerswitchaction-toggle-switch", channelAFilter="DIR1", channelBFilter="DIR1"]}
 Dimmer Kitchen_Hue "Hue" <light> {channel="enocean:rockerSwitch:gtwy:rs01:rockerswitchB" [profile="system:rawrocker-to-dimmer"], channel="hue:0220:0017884f6626:9:brightness"}
 Rollershutter Kitchen_Rollershutter "Roller shutter" <blinds> (Kitchen) {channel="enocean:rollershutter:gtwy:r01:rollershutter", autoupdate="false"}
 Switch Garage_Light "Switch" {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,8 +49,10 @@ public class CoolingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
     }
 
     @Test
-    public void testChannelUpdatesForNullValues() {
+    public void testChannelUpdatesForNullValues() throws Exception {
         // given:
+        setUpBridgeAndThing();
+
         DeviceState deviceState = mock(DeviceState.class);
         when(deviceState.getDeviceIdentifier()).thenReturn(FRIDGE_FREEZER_DEVICE_THING_UID.getId());
         when(deviceState.getRawType()).thenReturn(DeviceType.FRIDGE_FREEZER_COMBINATION);
@@ -84,8 +86,10 @@ public class CoolingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
     }
 
     @Test
-    public void testChannelUpdatesForValidValues() {
+    public void testChannelUpdatesForValidValues() throws Exception {
         // given:
+        setUpBridgeAndThing();
+
         DeviceState deviceState = mock(DeviceState.class);
         when(deviceState.getDeviceIdentifier()).thenReturn(FRIDGE_FREEZER_DEVICE_THING_UID.getId());
         when(deviceState.getRawType()).thenReturn(DeviceType.FRIDGE_FREEZER_COMBINATION);
@@ -121,8 +125,10 @@ public class CoolingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
     }
 
     @Test
-    public void testChannelUpdatesForSuperCooling() {
+    public void testChannelUpdatesForSuperCooling() throws Exception {
         // given:
+        setUpBridgeAndThing();
+
         DeviceState deviceState = mock(DeviceState.class);
         when(deviceState.getDeviceIdentifier()).thenReturn(FRIDGE_FREEZER_DEVICE_THING_UID.getId());
         when(deviceState.getRawType()).thenReturn(DeviceType.FRIDGE_FREEZER_COMBINATION);
@@ -139,8 +145,10 @@ public class CoolingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
     }
 
     @Test
-    public void testChannelUpdatesForSuperFreezing() {
+    public void testChannelUpdatesForSuperFreezing() throws Exception {
         // given:
+        setUpBridgeAndThing();
+
         DeviceState deviceState = mock(DeviceState.class);
         when(deviceState.getDeviceIdentifier()).thenReturn(FRIDGE_FREEZER_DEVICE_THING_UID.getId());
         when(deviceState.getRawType()).thenReturn(DeviceType.FRIDGE_FREEZER_COMBINATION);
@@ -157,8 +165,10 @@ public class CoolingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
     }
 
     @Test
-    public void testChannelUpdatesForSuperCollingSuperFreezing() {
+    public void testChannelUpdatesForSuperCollingSuperFreezing() throws Exception {
         // given:
+        setUpBridgeAndThing();
+
         DeviceState deviceState = mock(DeviceState.class);
         when(deviceState.getDeviceIdentifier()).thenReturn(FRIDGE_FREEZER_DEVICE_THING_UID.getId());
         when(deviceState.getRawType()).thenReturn(DeviceType.FRIDGE_FREEZER_COMBINATION);
@@ -175,8 +185,10 @@ public class CoolingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
     }
 
     @Test
-    public void testActionsChannelUpdatesForValidValues() {
+    public void testActionsChannelUpdatesForValidValues() throws Exception {
         // given:
+        setUpBridgeAndThing();
+
         ActionsState actionsState = mock(ActionsState.class);
         when(actionsState.getDeviceIdentifier()).thenReturn(FRIDGE_FREEZER_DEVICE_THING_UID.getId());
         when(actionsState.canContolSupercooling()).thenReturn(true);
@@ -194,7 +206,10 @@ public class CoolingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
 
     @Override
     @Test
-    public void testHandleCommandDoesNothingWhenCommandIsNotOfOnOffType() {
+    public void testHandleCommandDoesNothingWhenCommandIsNotOfOnOffType() throws Exception {
+        // given:
+        setUpBridgeAndThing();
+
         // when:
         getThingHandler().handleCommand(channel(FRIDGE_SUPER_COOL), new DecimalType(50));
 
@@ -203,7 +218,10 @@ public class CoolingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
     }
 
     @Test
-    public void testHandleCommandStartsSupercoolingWhenRequested() {
+    public void testHandleCommandStartsSupercoolingWhenRequested() throws Exception {
+        // given:
+        setUpBridgeAndThing();
+
         // when:
         getThingHandler().handleCommand(channel(FRIDGE_SUPER_COOL), OnOffType.ON);
 
@@ -215,7 +233,10 @@ public class CoolingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
     }
 
     @Test
-    public void testHandleCommandStopsSupercoolingWhenRequested() {
+    public void testHandleCommandStopsSupercoolingWhenRequested() throws Exception {
+        // given:
+        setUpBridgeAndThing();
+
         // when:
         getThingHandler().handleCommand(channel(FRIDGE_SUPER_COOL), OnOffType.OFF);
 
@@ -227,7 +248,10 @@ public class CoolingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
     }
 
     @Test
-    public void testHandleCommandStartsSuperfreezingWhenRequested() {
+    public void testHandleCommandStartsSuperfreezingWhenRequested() throws Exception {
+        // given:
+        setUpBridgeAndThing();
+
         // when:
         getThingHandler().handleCommand(channel(FREEZER_SUPER_FREEZE), OnOffType.ON);
 
@@ -239,7 +263,10 @@ public class CoolingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
     }
 
     @Test
-    public void testHandleCommandStopsSuperfreezingWhenRequested() {
+    public void testHandleCommandStopsSuperfreezingWhenRequested() throws Exception {
+        // given:
+        setUpBridgeAndThing();
+
         // when:
         getThingHandler().handleCommand(channel(FREEZER_SUPER_FREEZE), OnOffType.OFF);
 

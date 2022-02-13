@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -421,7 +421,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                 case TARGET_TEMPERATURE_PROPERTY:
                     Unit<Temperature> temperatureUnit = sensiboSky.getTemperatureUnit();
                     TemperatureDTO validTemperatures = currentModeCapabilities.temperatures
-                            .get(temperatureUnit == SIUnits.CELSIUS ? "C" : "F");
+                            .get(SIUnits.CELSIUS.equals(temperatureUnit) ? "C" : "F");
                     DecimalType rawValue = (DecimalType) newPropertyValue;
                     stateChange.updateValue(rawValue.intValue());
                     if (!validTemperatures.validValues.contains(rawValue.intValue())) {

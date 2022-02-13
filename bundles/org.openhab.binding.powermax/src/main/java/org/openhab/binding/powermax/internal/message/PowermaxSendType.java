@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.powermax.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Used to map messages to be sent to the Visonic alarm panel to a ENUM value
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public enum PowermaxSendType {
 
     INIT(new byte[] { (byte) 0xAB, 0x0A, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x43 }, null, null),
@@ -107,11 +111,12 @@ public enum PowermaxSendType {
     POWERMASTER_ZONE_TYPE1(new byte[] { (byte) 0xB0, 0x01, 0x2D, 0x02, 0x05, 0x00, 0x43 }, null,
             PowermaxReceiveType.POWERMASTER);
 
-    private byte[] message;
-    private Integer paramPosition;
-    private PowermaxReceiveType expectedResponseType;
+    private final byte[] message;
+    private final @Nullable Integer paramPosition;
+    private final @Nullable PowermaxReceiveType expectedResponseType;
 
-    private PowermaxSendType(byte[] message, Integer paramPosition, PowermaxReceiveType expectedResponseType) {
+    private PowermaxSendType(byte[] message, @Nullable Integer paramPosition,
+            @Nullable PowermaxReceiveType expectedResponseType) {
         this.message = message;
         this.paramPosition = paramPosition;
         this.expectedResponseType = expectedResponseType;
@@ -127,14 +132,14 @@ public enum PowermaxSendType {
     /**
      * @return the position of the parameter in the message buffer
      */
-    public Integer getParamPosition() {
+    public @Nullable Integer getParamPosition() {
         return paramPosition;
     }
 
     /**
      * @return the ENUM value of the expected message as response
      */
-    public PowermaxReceiveType getExpectedResponseType() {
+    public @Nullable PowermaxReceiveType getExpectedResponseType() {
         return expectedResponseType;
     }
 }

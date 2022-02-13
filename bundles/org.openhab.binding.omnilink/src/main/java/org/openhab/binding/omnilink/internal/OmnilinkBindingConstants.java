@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -104,7 +104,7 @@ public class OmnilinkBindingConstants {
     public static final String CHANNEL_ROOM_SCENE_D = "scene_d";
     public static final String CHANNEL_ROOM_STATE = "state";
 
-    public static final String CHANNEL_SYSTEMDATE = "sysdate";
+    public static final String CHANNEL_SYSTEMDATE = "system_date";
     public static final String CHANNEL_EVENT_LOG = "last_log";
 
     // buttons
@@ -163,8 +163,7 @@ public class OmnilinkBindingConstants {
     public static final String TRIGGER_CHANNEL_ENERGY_COST_EVENT = "energy_cost_event";
     public static final String TRIGGER_CHANNEL_CAMERA_TRIGGER_EVENT = "camera_trigger_event";
     public static final String TRIGGER_CHANNEL_ACCESS_CONTROL_READER_EVENT = "access_control_reader_event";
-    public static final String TRIGGER_CHANNEL_AREA_ALL_ON_OFF_EVENT = "all_on_off_Event";
-    public static final String TRIGGER_CHANNEL_ZONE_STATE_EVENT = "zone_state_Event";
+    public static final String TRIGGER_CHANNEL_AREA_ALL_ON_OFF_EVENT = "all_on_off_event";
     public static final String TRIGGER_CHANNEL_SWITCH_PRESS_EVENT = "switch_press_event";
     public static final String TRIGGER_CHANNEL_UPB_LINK_ACTIVATED_EVENT = "upb_link_activated_event";
     public static final String TRIGGER_CHANNEL_UPB_LINK_DEACTIVATED_EVENT = "upb_link_deactivated_event";
@@ -173,12 +172,8 @@ public class OmnilinkBindingConstants {
     public static final String THING_PROPERTIES_NAME = "name";
     public static final String THING_PROPERTIES_NUMBER = "number";
     public static final String THING_PROPERTIES_AREA = "area";
-    public static final String THING_PROPERTIES_AUTO_START = "autostart";
-    public static final String THING_PROPERTIES_MODEL_NUMBER = "modelNumber";
-    public static final String THING_PROPERTIES_MAJOR_VERSION = "majorVersion";
-    public static final String THING_PROPERTIES_MINOR_VERSION = "minorVersion";
-    public static final String THING_PROPERTIES_REVISION = "revision";
-    public static final String THING_PROPERTIES_PHONE_NUMBER = "phoneNumber";
+    public static final String THING_PROPERTIES_AUTOSTART = "autostart";
+    public static final String THING_PROPERTIES_PHONE_NUMBER = "phone_number";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OMNI_AREA,
             THING_TYPE_LUMINA_AREA, THING_TYPE_ZONE, THING_TYPE_BRIDGE, THING_TYPE_FLAG, THING_TYPE_ROOM,

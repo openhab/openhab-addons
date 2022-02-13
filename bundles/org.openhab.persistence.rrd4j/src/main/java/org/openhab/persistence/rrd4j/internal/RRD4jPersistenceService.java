@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -296,7 +296,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             for (double value : result.getValues(DATASOURCE_STATE)) {
                 if (!Double.isNaN(value) && (((ts >= start) && (ts <= end)) || (start == end))) {
                     RRD4jItem rrd4jItem = new RRD4jItem(itemName, mapToState(value, item, unit),
-                            ZonedDateTime.ofInstant(Instant.ofEpochMilli(ts * 1000), ZoneId.systemDefault()));
+                            ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault()));
                     items.add(rrd4jItem);
                 }
                 ts += step;
@@ -319,7 +319,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         try {
             if (file.exists()) {
                 // recreate the RrdDb instance from the file
-                db = new RrdDb(file.getAbsolutePath());
+                db = RrdDb.of(file.getAbsolutePath());
             } else {
                 File folder = new File(DB_FOLDER);
                 if (!folder.exists()) {
@@ -328,7 +328,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 RrdDef rrdDef = getRrdDef(alias, file);
                 if (rrdDef != null) {
                     // create a new database file
-                    db = new RrdDb(rrdDef);
+                    db = RrdDb.of(rrdDef);
                 } else {
                     logger.debug(
                             "Did not create rrd4j database for item '{}' since no rrd definition could be determined. This is likely due to an unsupported item type.",
@@ -349,7 +349,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         for (Map.Entry<String, RrdDefConfig> e : rrdDefs.entrySet()) {
             // try to find special config
             RrdDefConfig rdc = e.getValue();
-            if (rdc != null && rdc.appliesTo(itemName)) {
+            if (rdc.appliesTo(itemName)) {
                 useRdc = rdc;
                 break;
             }
@@ -543,13 +543,11 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         for (RrdDefConfig rrdDef : rrdDefs.values()) {
-            if (rrdDef != null) {
-                if (rrdDef.isValid()) {
-                    logger.debug("Created {}", rrdDef);
-                } else {
-                    logger.info("Removing invalid definition {}", rrdDef);
-                    rrdDefs.remove(rrdDef.name);
-                }
+            if (rrdDef.isValid()) {
+                logger.debug("Created {}", rrdDef);
+            } else {
+                logger.info("Removing invalid definition {}", rrdDef);
+                rrdDefs.remove(rrdDef.name);
             }
         }
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,9 +37,5 @@ public class MqttThingID {
      */
     public static ThingUID getThingUID(String host, int port) {
         return new ThingUID(MqttBindingConstants.BRIDGE_TYPE_BROKER, getThingID(host, port));
-    }
-
-    public static ThingUID getTextualThingUID(String host, int port) {
-        return new ThingUID(MqttBindingConstants.BRIDGE_TYPE_SYSTEMBROKER, getThingID(host, port));
     }
 }

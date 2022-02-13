@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -90,7 +89,7 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
             // do nothing - we just wait for the next automatic refresh
             return;
@@ -133,7 +132,7 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
     }
 
     @Override
-    public void receive(@NonNull Status status) {
+    public void receive(Status status) {
         int id = getId(thing);
         Optional<Zone> zone = status.getZones().stream().filter(z -> z.getId().equals(id)).findFirst();
         if (zone.isPresent()) {

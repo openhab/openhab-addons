@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tapocontrol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- ############################### CHANNEL-GROUPS ############################### -->
+
+	<!-- CHANNEL GROUP TYPES -->
+	<!--Device-Statuss Channel Type -->
+	<channel-group-type id="deviceState">
+		<label>Device State</label>
+		<description>Information about the device</description>
+		<channels>
+			<channel id="wifiSignal" typeId="system.signal-strength"/>
+			<channel id="onTime" typeId="ontime"/>
+			<channel id="overheated" typeId="overheated"/>
+		</channels>
+	</channel-group-type>
+
+	<!--Actor Channel Type -->
+	<channel-group-type id="smartPlug">
+		<label>SmartPlug</label>
+		<description>Tapo Smart Plug Power Outlet</description>
+		<channels>
+			<channel id="output" typeId="outputChannel"/>
+		</channels>
+	</channel-group-type>
+
+	<!--Light-Bulb Channel Type -->
+	<channel-group-type id="lightBulb">
+		<label>Light Bulb</label>
+		<description>Tapo Smart Light Bulb</description>
+		<channels>
+			<channel id="output" typeId="lightOn"/>
+			<channel id="brightness" typeId="dimmerChannel"/>
+			<channel id="colorTemperature" typeId="colorTemperature"/>
+		</channels>
+	</channel-group-type>
+
+	<!--Color Channel Type -->
+	<channel-group-type id="colorBulb">
+		<label>Color Light Bulb</label>
+		<description>Tapo Multicolor Smart Light Bulb</description>
+		<channels>
+			<channel id="output" typeId="lightOn"/>
+			<channel id="brightness" typeId="dimmerChannel"/>
+			<channel id="color" typeId="colorChannel"/>
+			<channel id="colorTemperature" typeId="colorTemperature"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- LightStrip -->
+	<channel-group-type id="lightStrip">
+		<label>Color Light Strip</label>
+		<description>Tapo Multicolor Smart Light Strip</description>
+		<channels>
+			<channel id="output" typeId="lightOn"/>
+			<channel id="brightness" typeId="dimmerChannel"/>
+			<channel id="color" typeId="colorChannel"/>
+			<channel id="colorTemperature" typeId="colorTemperature"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Energy Monitor -->
+	<channel-group-type id="energyMonitor">
+		<label>Energy Usage</label>
+		<description>Energy and Power usage</description>
+		<channels>
+			<channel id="actualPower" typeId="actualPowerChannel"></channel>
+			<channel id="todayEnergyUsage" typeId="todayEnergyUsageChannel"></channel>
+			<channel id="todayRuntime" typeId="todayRuntimeChannel"></channel>
+		</channels>
+	</channel-group-type>
+
+	<!-- Lightning Effect -->
+	<channel-group-type id="lightEffect">
+		<label>Lightning Effect</label>
+		<description>Tapo Lightning Effects</description>
+		<channels>
+			<channel id="enable" typeId="effectOn"/>
+			<channel id="brightness" typeId="dimmerChannel"/>
+			<channel id="name" typeId="effectName"/>
+			<channel id="custom" typeId="customEffect"/>
+			<channel id="displayColor1" typeId="colorChannel"/>
+			<channel id="displayColor2" typeId="colorChannel"/>
+			<channel id="displayColor3" typeId="colorChannel"/>
+			<channel id="displayColor4" typeId="colorChannel"/>
+		</channels>
+	</channel-group-type>
+
+
+	<!-- ############################### CHANNELS ############################### -->
+
+	<!-- ACTOR CHANNEL TYPES -->
+	<!-- OuputState Channel Type -->
+	<channel-type id="outputChannel">
+		<item-type>Switch</item-type>
+		<label>Output Switch</label>
+		<description>Switches the power state on/off</description>
+		<category>PowerOutlet</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<!-- LightOn/Off Channel Type -->
+	<channel-type id="lightOn">
+		<item-type>Switch</item-type>
+		<label>Light On</label>
+		<description>Switches the light on/off</description>
+		<category>LightBulb</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<!-- Dimmer Channel Type -->
+	<channel-type id="dimmerChannel">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Brightness</description>
+		<category>LightBulb</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<!-- Color Channel Type -->
+	<channel-type id="colorChannel">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Color</description>
+		<category>ColorLight</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<!-- Color Temperature -->
+	<channel-type id="colorTemperature">
+		<item-type>Number</item-type>
+		<label>Color Temperature</label>
+		<description>This channel supports adjusting the color temperature from 2700K to 6500K.</description>
+		<category>LightBulb</category>
+		<state min="2500" max="6500" pattern="%d K"/>
+	</channel-type>
+
+
+	<!-- DEVICE-STATE CHANNEL TYPES -->
+	<!-- uptime -->
+	<channel-type id="ontime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>On-Time</label>
+		<description>Number of seconds since the device was powered on</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%s %unit%"/>
+	</channel-type>
+
+	<!-- overheated -->
+	<channel-type id="overheated" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Device Overheated</label>
+		<description>ON if device is overheated</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+
+	<!-- DEVICE-STATE CHANNEL TYPES -->
+	<!-- actual power usage -->
+	<channel-type id="actualPowerChannel">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description>Actual power usage</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<!-- today energy usage -->
+	<channel-type id="todayEnergyUsageChannel">
+		<item-type>Number:Energy</item-type>
+		<label>Today Usage</label>
+		<description>Today energy usage</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
+	<!-- today runtime -->
+	<channel-type id="todayRuntimeChannel">
+		<item-type>Number:Time</item-type>
+		<label>Today Runtime</label>
+		<description>Today runtime (On-Time)</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+
+
+	<!-- LIGHTNING EFFECT CHANNEL TYPES -->
+	<!-- effect on -->
+	<channel-type id="effectOn">
+		<item-type>Switch</item-type>
+		<label>Lightning Effect Enable</label>
+		<description>Switches the lightning effect on/off</description>
+		<category>LightBulb</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<!-- effect name -->
+	<channel-type id="effectName">
+		<item-type>String</item-type>
+		<label>Effect Name</label>
+		<description>Name of LightningEffect</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<!-- custom effect -->
+	<channel-type id="customEffect">
+		<item-type>Switch</item-type>
+		<label>Custom Effect</label>
+		<description>Use custom lightning effect</description>
+		<category>LightBulb</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+
+	<!-- ADVANCED SETTING CHANNELS -->
+	<!-- device led -->
+	<channel-type id="led" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Switch Led</label>
+		<description>Switch the Smart Home device led on or off.</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<!-- fade light -->
+	<channel-type id="fade" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Fade Light</label>
+		<description>Make the light darker or lighter slowly</description>
+		<category>Switch</category>
+	</channel-type>
+
+</thing:thing-descriptions>

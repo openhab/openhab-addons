@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,9 +47,10 @@ import com.google.gson.JsonDeserializer;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.linky")
 public class LinkyHandlerFactory extends BaseThingHandlerFactory {
+    private static final DateTimeFormatter LINKY_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
+
     private final Logger logger = LoggerFactory.getLogger(LinkyHandlerFactory.class);
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
     private final LocaleProvider localeProvider;
     private final Gson gson;
     private final HttpClient httpClient;
@@ -60,7 +61,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
         this.localeProvider = localeProvider;
         this.gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
                 (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
-                        .parse(json.getAsJsonPrimitive().getAsString(), formatter))
+                        .parse(json.getAsJsonPrimitive().getAsString(), LINKY_FORMATTER))
                 .create();
         this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID);
     }

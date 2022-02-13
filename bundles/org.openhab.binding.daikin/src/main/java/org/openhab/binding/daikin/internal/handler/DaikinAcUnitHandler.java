@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,7 +72,6 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             return;
         }
         ControlInfo controlInfo = webTargets.getControlInfo();
-        updateStatus(ThingStatus.ONLINE);
         updateState(DaikinBindingConstants.CHANNEL_AC_POWER, controlInfo.power ? OnOffType.ON : OnOffType.OFF);
         updateTemperatureChannel(DaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
 
@@ -153,6 +152,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             // Suppress any error if energy info is not supported.
             logger.debug("getEnergyInfoDayAndWeek() error: {}", e.getMessage());
         }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override

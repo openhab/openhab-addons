@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,6 +57,25 @@ public class MQTTActions implements ThingActions {
             @ActionInput(name = "topic", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable final String topic,
             @ActionInput(name = "value", label = "@text/actionInputValueLabel", description = "@text/actionInputValueDesc") @Nullable final String value,
             @ActionInput(name = "retain", label = "@text/actionInputRetainlabel", description = "@text/actionInputRetainDesc") @Nullable final Boolean retain) {
+        if (value == null) {
+            logger.debug("skipping MQTT publishing to topic '{}' due to null value.", topic);
+            return;
+        }
+        publishMQTT(topic, value.getBytes(), retain);
+    }
+
+    @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
+    public void publishMQTT(
+            @ActionInput(name = "topic", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable final String topic,
+            @ActionInput(name = "value", label = "@text/actionInputValueLabel", description = "@text/actionInputValueDesc") final byte[] value) {
+        publishMQTT(topic, value, null);
+    }
+
+    @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
+    public void publishMQTT(
+            @ActionInput(name = "topic", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable final String topic,
+            @ActionInput(name = "value", label = "@text/actionInputValueLabel", description = "@text/actionInputValueDesc") final byte[] value,
+            @ActionInput(name = "retain", label = "@text/actionInputRetainlabel", description = "@text/actionInputRetainDesc") @Nullable final Boolean retain) {
         AbstractBrokerHandler brokerHandler = handler;
         if (brokerHandler == null) {
             logger.warn("MQTT Action service ThingHandler is null!");
@@ -67,22 +86,17 @@ public class MQTTActions implements ThingActions {
             logger.warn("MQTT Action service ThingHandler connection is null!");
             return;
         }
-        if (value == null) {
-            logger.debug("skipping MQTT publishing to topic '{}' due to null value.", topic);
-            return;
-        }
         if (topic == null) {
             logger.debug("skipping MQTT publishing of value '{}' as topic is null.", value);
             return;
         }
 
-        connection.publish(topic, value.getBytes(), connection.getQos(), retain != null && retain.booleanValue())
-                .thenRun(() -> {
-                    logger.debug("MQTT publish to {} performed", topic);
-                }).exceptionally(e -> {
-                    logger.warn("MQTT publish to {} failed!", topic);
-                    return null;
-                });
+        connection.publish(topic, value, connection.getQos(), retain != null && retain.booleanValue()).thenRun(() -> {
+            logger.debug("MQTT publish to {} performed", topic);
+        }).exceptionally(e -> {
+            logger.warn("MQTT publish to {} failed!", topic);
+            return null;
+        });
     }
 
     public static void publishMQTT(ThingActions actions, @Nullable String topic, @Nullable String value) {
@@ -90,6 +104,15 @@ public class MQTTActions implements ThingActions {
     }
 
     public static void publishMQTT(ThingActions actions, @Nullable String topic, @Nullable String value,
+            @Nullable Boolean retain) {
+        ((MQTTActions) actions).publishMQTT(topic, value, retain);
+    }
+
+    public static void publishMQTT(ThingActions actions, @Nullable String topic, byte[] value) {
+        publishMQTT(actions, topic, value, null);
+    }
+
+    public static void publishMQTT(ThingActions actions, @Nullable String topic, byte[] value,
             @Nullable Boolean retain) {
         ((MQTTActions) actions).publishMQTT(topic, value, retain);
     }

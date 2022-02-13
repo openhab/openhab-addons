@@ -251,7 +251,6 @@
 				]
 			}
 		],
-		"readmeComment": "Specified action for filter reset \u003cbr /\u003e`action{\"did\":\"filter-reset-filter-life\",\"siid\":4,\"aiid\":1,\"in\":[3.0]}`\u003cbr /\u003eHowever, this has not been successfully tested yet.",
 		"experimental": false
 	}
 }

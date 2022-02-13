@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.2.0-SNAPSHOT</version>
+    <version>3.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.automation.jsscripting</artifactId>
@@ -22,9 +22,10 @@
       !jdk.internal.reflect.*,
       !jdk.vm.ci.services
     </bnd.importpackage>
-    <graal.version>20.1.0</graal.version>
+    <graal.version>21.3.0</graal.version>
     <asm.version>6.2.1</asm.version>
     <oh.version>${project.version}</oh.version>
+    <ohjs.version>openhab@1.2.2</ohjs.version>
   </properties>
 
   <build>
@@ -40,6 +41,62 @@
             </goals>
             <configuration>
               <excludes>META-INF/services/com.oracle.truffle.api.TruffleLanguage$Provider</excludes> <!-- we'll provide this -->
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>1.12.0</version>
+        <configuration>
+          <nodeVersion>v12.16.1</nodeVersion>
+          <workingDirectory>target/js</workingDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>Install node and npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <phase>generate-sources</phase>
+          </execution>
+          <execution>
+            <id>npm install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>install ${ohjs.version} webpack webpack-cli</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npx webpack</id>
+            <goals>
+              <goal>npx</goal>
+            </goals>
+            <configuration>
+              <arguments>webpack -c ./node_modules/openhab/webpack.config.js --entry ./node_modules/openhab/ -o ./dist</arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>add-resource</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>target/js/dist</directory>
+                  <targetPath>node_modules</targetPath>
+                </resource>
+              </resources>
             </configuration>
           </execution>
         </executions>
@@ -81,7 +138,7 @@
     <dependency>
       <groupId>com.ibm.icu</groupId>
       <artifactId>icu4j</artifactId>
-      <version>62.1</version>
+      <version>69.1</version>
     </dependency>
 
     <!-- include as version required is older than OH provides -->

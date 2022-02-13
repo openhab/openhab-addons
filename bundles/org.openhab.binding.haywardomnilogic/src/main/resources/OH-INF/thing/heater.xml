@@ -17,16 +17,25 @@
 		</channels>
 
 		<properties>
-			<property name="Vendor">Hayward</property>
+			<property name="vendor">Hayward</property>
+			<property name="type"></property>
+			<property name="heaterType"></property>
+			<property name="sharedEquipmentSystemID"></property>
 		</properties>
 		<representation-property>systemID</representation-property>
 	</thing-type>
 
 	<channel-type id="state">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Heater State</label>
 		<description>Heater State</description>
-		<state readOnly="true"/>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heating</option>
+				<option value="2">Paused</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="enable">

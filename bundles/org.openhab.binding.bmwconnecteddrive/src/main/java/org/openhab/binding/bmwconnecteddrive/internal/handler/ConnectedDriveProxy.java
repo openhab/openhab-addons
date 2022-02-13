@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -291,7 +291,7 @@ public class ConnectedDriveProxy {
             ContentResponse authResponse = authRequest.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
             String authResponseString = URLDecoder.decode(authResponse.getContentAsString(), Charset.defaultCharset());
             String authCode = getAuthCode(authResponseString);
-            if (authCode != Constants.EMPTY) {
+            if (!Constants.EMPTY.equals(authCode)) {
                 MultiMap<String> codeChallenge = getTokenBaseValues();
                 codeChallenge.put(AUTHORIZATION, authCode);
 

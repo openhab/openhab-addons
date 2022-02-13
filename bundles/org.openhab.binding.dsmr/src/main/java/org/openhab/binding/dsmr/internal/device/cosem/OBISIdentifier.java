@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,12 +24,12 @@ import org.eclipse.jdt.annotation.Nullable;
  * Class representing an OBISIdentifier
  *
  * @author M. Volaart - Initial contribution
- * @author Hilbrand Bouwkamp - Fix bug in regex pattern.
+ * @author Hilbrand Bouwkamp - Simplified, groupF not relevant, and groupB renamed to channel.
  */
 @NonNullByDefault
 public class OBISIdentifier {
     /**
-     * String representing a-b:c.d.e.f OBIS ID
+     * String representing a-channel:c.d.e.f OBIS ID
      */
     private static final String OBISID_REGEX = "((\\d+)\\-)?((\\d+):)?((\\d+)\\.)(\\d+)(\\.(\\d+))?(.(\\d+))?";
 
@@ -39,49 +39,44 @@ public class OBISIdentifier {
     private static final Pattern OBIS_ID_PATTERN = Pattern.compile(OBISID_REGEX);
 
     /* the six individual group values of the OBIS ID */
-    private int groupA;
-    private @Nullable Integer groupB;
-    private int groupC;
-    private int groupD;
-    private @Nullable Integer groupE;
-    private @Nullable Integer groupF;
+    private final int groupA;
+    private final @Nullable Integer channel;
+    private final int groupC;
+    private final int groupD;
+    private final @Nullable Integer groupE;
+    private final @Nullable Integer groupF;
 
     private boolean conflict;
 
     /**
-     * Constructs a new OBIS Identifier (A-B:C.D.E.F)
+     * Constructs a new OBIS Identifier (A-x:C.D.E.x)
      *
      * @param groupA A value
-     * @param groupB B value
      * @param groupC C value
      * @param groupD D value
      * @param groupE E value
-     * @param groupF F value
      */
-    public OBISIdentifier(int groupA, @Nullable Integer groupB, int groupC, int groupD, @Nullable Integer groupE,
-            @Nullable Integer groupF) {
-        this(groupA, groupB, groupC, groupD, groupE, groupF, false);
+    public OBISIdentifier(final int groupA, final int groupC, final int groupD, @Nullable final Integer groupE) {
+        this(groupA, groupC, groupD, groupE, false);
     }
 
     /**
-     * Constructs a new OBIS Identifier (A-B:C.D.E.F)
+     * Constructs a new OBIS Identifier (A-x:C.D.E.x)
      *
      * @param groupA A value
-     * @param groupB B value
      * @param groupC C value
      * @param groupD D value
      * @param groupE E value
-     * @param groupF F value
      * @param conflict if true indicates this OBIS Identifier is used for different types of data.
      */
-    public OBISIdentifier(int groupA, @Nullable Integer groupB, int groupC, int groupD, @Nullable Integer groupE,
-            @Nullable Integer groupF, boolean conflict) {
+    public OBISIdentifier(final int groupA, final int groupC, final int groupD, @Nullable final Integer groupE,
+            final boolean conflict) {
         this.groupA = groupA;
-        this.groupB = groupB;
+        this.channel = null;
         this.groupC = groupC;
         this.groupD = groupD;
         this.groupE = groupE;
-        this.groupF = groupF;
+        this.groupF = null;
         this.conflict = conflict;
     }
 
@@ -91,33 +86,25 @@ public class OBISIdentifier {
      * @param obisIDString the OBIS String ID
      * @throws ParseException if obisIDString is not a valid OBIS Identifier
      */
-    public OBISIdentifier(String obisIDString) throws ParseException {
-        Matcher m = OBIS_ID_PATTERN.matcher(obisIDString);
+    public OBISIdentifier(final String obisIDString) throws ParseException {
+        final Matcher m = OBIS_ID_PATTERN.matcher(obisIDString);
 
         if (m.matches()) {
             // Optional value A
-            if (m.group(2) != null) {
-                this.groupA = Integer.parseInt(m.group(2));
-            }
+            this.groupA = m.group(2) == null ? null : Integer.parseInt(m.group(2));
 
             // Optional value B
-            if (m.group(4) != null) {
-                this.groupB = Integer.valueOf(m.group(4));
-            }
+            this.channel = m.group(4) == null ? null : Integer.valueOf(m.group(4));
 
             // Required value C & D
             this.groupC = Integer.parseInt(m.group(6));
             this.groupD = Integer.parseInt(m.group(7));
 
             // Optional value E
-            if (m.group(9) != null) {
-                this.groupE = Integer.valueOf(m.group(9));
-            }
+            this.groupE = m.group(9) == null ? null : Integer.valueOf(m.group(9));
 
             // Optional value F
-            if (m.group(11) != null) {
-                this.groupF = Integer.valueOf(m.group(11));
-            }
+            this.groupF = m.group(11) == null ? null : Integer.valueOf(m.group(11));
         } else {
             throw new ParseException("Invalid OBIS identifier:" + obisIDString, 0);
         }
@@ -135,10 +122,10 @@ public class OBISIdentifier {
     }
 
     /**
-     * @return the groupB
+     * @return the M-bus channel
      */
-    public @Nullable Integer getGroupB() {
-        return groupB;
+    public @Nullable Integer getChannel() {
+        return channel;
     }
 
     /**
@@ -171,7 +158,7 @@ public class OBISIdentifier {
 
     @Override
     public String toString() {
-        return groupA + "-" + (groupB == null ? "" : (groupB + ":")) + groupC + "." + groupD
+        return groupA + "-" + (channel == null ? "" : (channel + ":")) + groupC + "." + groupD
                 + (groupE == null ? "" : ("." + groupE)) + (groupF == null ? "" : ("*" + groupF));
     }
 
@@ -184,7 +171,7 @@ public class OBISIdentifier {
      * @return true if both OBISIdentifiers match, false otherwise
      */
     @Override
-    public boolean equals(@Nullable Object other) {
+    public boolean equals(@Nullable final Object other) {
         OBISIdentifier o;
         if (other != null && other instanceof OBISIdentifier) {
             o = (OBISIdentifier) other;
@@ -194,9 +181,9 @@ public class OBISIdentifier {
         boolean result = true;
 
         result &= groupA == o.groupA;
-        if (groupB != null && o.groupB != null) {
-            result &= (groupB.equals(o.groupB));
-        } else if (!(groupB == null && o.groupB == null)) {
+        if (channel != null && o.channel != null) {
+            result &= (channel.equals(o.channel));
+        } else if (!(channel == null && o.channel == null)) {
             result = false;
         }
         result &= groupC == o.groupC;
@@ -222,12 +209,12 @@ public class OBISIdentifier {
      *
      * @return true if identifiers match fully or against a wildcard, false otherwise
      */
-    public boolean equalsWildCard(OBISIdentifier o) {
+    public boolean equalsWildCard(final OBISIdentifier o) {
         boolean result = true;
 
         result &= groupA == o.groupA;
-        if (groupB != null && o.groupB != null) {
-            result &= (groupB.equals(o.groupB));
+        if (channel != null && o.channel != null) {
+            result &= (channel.equals(o.channel));
         }
         result &= groupC == o.groupC;
         result &= groupD == o.groupD;
@@ -243,39 +230,25 @@ public class OBISIdentifier {
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupA, (groupB != null ? groupB : 0), groupC, groupD, (groupE != null ? groupE : 0),
+        return Objects.hash(groupA, (channel != null ? channel : 0), groupC, groupD, (groupE != null ? groupE : 0),
                 (groupF != null ? groupF : 0));
     }
 
     /**
-     * Returns an reduced OBIS Identifier. This means group F is set to null
-     * (.i.e. not applicable)
+     * Returns an reduced OBIS Identifier.
      *
      * @return reduced OBIS Identifier
      */
     public OBISIdentifier getReducedOBISIdentifier() {
-        return new OBISIdentifier(groupA, groupB, groupC, groupD, groupE, null);
+        return new OBISIdentifier(groupA, groupC, groupD, groupE);
     }
 
     /**
-     * Returns an reduced OBIS Identifier with both group E and F is set to null
-     * (.i.e. not applicable)
+     * Returns an reduced OBIS Identifier with group E set to null (.i.e. not applicable)
      *
      * @return reduced OBIS Identifier
      */
     public OBISIdentifier getReducedOBISIdentifierGroupE() {
-        return new OBISIdentifier(groupA, groupB, groupC, groupD, null, null);
-    }
-
-    /**
-     * Returns whether or not the reduced OBIS Identifier is a wildcard identifier (meaning groupA groupB or groupC is
-     * null)
-     * Note that the DSMR specification does not use groupF so this is implemented always as a wildcard.
-     * To distinguish wildcard from non wildcard OBISIdentifiers, groupF is ignored.
-     *
-     * @return true if the reducedOBISIdentifier is a wildcard identifier, false otherwise.
-     */
-    public boolean reducedOBISIdentifierIsWildCard() {
-        return groupB == null;
+        return new OBISIdentifier(groupA, groupC, groupD, null);
     }
 }

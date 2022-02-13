@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.spotify.internal.discovery;
 
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
+import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.PROPERTY_SPOTIFY_DEVICE_NAME;
+import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.THING_TYPE_DEVICE;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +57,8 @@ public class SpotifyDeviceDiscoveryService extends AbstractDiscoveryService
     private static final int DISCOVERY_TIME_SECONDS = 10;
     // Check every minute for new devices
     private static final long BACKGROUND_SCAN_REFRESH_MINUTES = 1;
+    // Time to life for discovered things.
+    private static final long TTL_SECONDS = Duration.ofHours(1).toSeconds();
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyDeviceDiscoveryService.class);
 
@@ -74,7 +78,7 @@ public class SpotifyDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void activate() {
-        Map<String, Object> properties = new HashMap<>();
+        final Map<String, Object> properties = new HashMap<>();
         properties.put(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, Boolean.TRUE);
         super.activate(properties);
     }
@@ -120,22 +124,22 @@ public class SpotifyDeviceDiscoveryService extends AbstractDiscoveryService
             logger.debug("Starting Spotify Device discovery for bridge {}", bridgeUID);
             try {
                 bridgeHandler.listDevices().forEach(this::thingDiscovered);
-            } catch (RuntimeException e) {
+            } catch (final RuntimeException e) {
                 logger.debug("Finding devices failed with message: {}", e.getMessage(), e);
             }
         }
     }
 
     private void thingDiscovered(Device device) {
-        Map<String, Object> properties = new HashMap<>();
+        final Map<String, Object> properties = new HashMap<>();
 
         properties.put(PROPERTY_SPOTIFY_DEVICE_NAME, device.getName());
-        ThingUID thing = new ThingUID(SpotifyBindingConstants.THING_TYPE_DEVICE, bridgeUID,
+        final ThingUID thing = new ThingUID(SpotifyBindingConstants.THING_TYPE_DEVICE, bridgeUID,
                 device.getId().substring(0, PLAYER_ID_LENGTH));
 
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thing).withBridge(bridgeUID)
+        final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thing).withBridge(bridgeUID)
                 .withProperties(properties).withRepresentationProperty(PROPERTY_SPOTIFY_DEVICE_NAME)
-                .withLabel(device.getName()).build();
+                .withTTL(TTL_SECONDS).withLabel(device.getName()).build();
 
         thingDiscovered(discoveryResult);
     }

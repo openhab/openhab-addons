@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
+import org.openhab.binding.miele.internal.DeviceMetaData;
+import org.openhab.binding.miele.internal.MieleTranslationProvider;
 import org.openhab.core.types.State;
 
 /**
@@ -52,7 +53,17 @@ public interface ApplianceChannelSelector {
     boolean isExtendedState();
 
     /**
+     * Returns a State for the given string, taking into
+     * account the metadata provided as well as text
+     * translations for corresponding numeric values.
      *
+     * @param s - the value to be used to instantiate the State
+     * @param dmd - the device meta data
+     * @param translationProvider {@link MieleTranslationProvider} instance
+     */
+    State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider);
+
+    /**
      * Returns a State for the given string, taking into
      * account the metadata provided. The meta data is sent by
      * the Miele appliance and is used to decide the State type
@@ -61,4 +72,12 @@ public interface ApplianceChannelSelector {
      * @param dmd - the device meta data
      */
     State getState(String s, DeviceMetaData dmd);
+
+    /**
+     * Returns a raw State for the given string, not taking into
+     * account any metadata.
+     *
+     * @param s - the value to be used to instantiate the State
+     */
+    State getState(String s);
 }

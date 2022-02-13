@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -130,7 +130,7 @@ public class WebSocketConnection {
 
             WebSocketMessageListener listener = listeners.get(getListenerId(changedMessage.r, changedMessage.id));
             if (listener == null) {
-                logger.debug(
+                logger.trace(
                         "Couldn't find listener for id {} with resource type {}. Either no thing for this id has been defined or this is a bug.",
                         changedMessage.id, changedMessage.r);
                 return;
@@ -158,7 +158,12 @@ public class WebSocketConnection {
 
     @SuppressWarnings("unused")
     @OnWebSocketError
-    public void onError(Session session, Throwable cause) {
+    public void onError(@Nullable Session session, Throwable cause) {
+        if (session == null) {
+            logger.trace("Encountered an error while processing on error without session. Connection state is {}: {}",
+                    connectionState, cause.getMessage());
+            return;
+        }
         if (!session.equals(this.session)) {
             handleWrongSession(session, "Connection error: " + cause.getMessage());
             return;

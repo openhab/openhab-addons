@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,7 +101,7 @@ public class LGWebOSActions implements ThingActions {
         getConnectedSocket().ifPresent(control -> control.showToast(text, createResponseListener()));
     }
 
-    @RuleAction(label = "@text/actionShowToastWithIconLabel", description = "@text/actionShowToastWithIconLabel")
+    @RuleAction(label = "@text/actionShowToastWithIconLabel", description = "@text/actionShowToastWithIconDesc")
     public void showToast(
             @ActionInput(name = "icon", label = "@text/actionShowToastInputIconLabel", description = "@text/actionShowToastInputIconDesc") String icon,
             @ActionInput(name = "text", label = "@text/actionShowToastInputTextLabel", description = "@text/actionShowToastInputTextDesc") String text)
@@ -164,7 +164,6 @@ public class LGWebOSActions implements ThingActions {
                 logger.warn("Device with ThingID {} does not support any app with id: {}.",
                         getLGWebOSHandler().getThing().getUID(), appId);
             }
-
         } catch (JsonParseException ex) {
             logger.warn("Parameters value ({}) is not in a valid JSON format. {}", params, ex.getMessage());
             return;

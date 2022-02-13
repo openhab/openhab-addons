@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,15 +12,13 @@
  */
 package org.openhab.voice.voicerss.internal.cloudapi;
 
-import static java.util.stream.Collectors.toSet;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,8 +26,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,21 +39,24 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li>All API languages supported</li>
  * <li>Only default voice supported with good audio quality</li>
- * <li>Only MP3, OGG and AAC audio formats supported</li>
+ * <li>MP3, OGG, AAC and WAV audio formats supported</li>
  * <li>It uses HTTP and not HTTPS (for performance reasons)</li>
  * </ul>
  *
  * @author Jochen Hiller - Initial contribution
  * @author Laurent Garnier - add support for all API languages
  * @author Laurent Garnier - add support for OGG and AAC audio formats
+ * @author Andreas Brenk - add support for WAV audio format
  */
+@NonNullByDefault
 public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
 
     public static final String DEFAULT_VOICE = "default";
 
-    private final Logger logger = LoggerFactory.getLogger(VoiceRSSCloudImpl.class);
+    public static final String API_URL = "https://api.voicerss.org/?key=%s&hl=%s&c=%s&f=%s&src=%s";
+    public static final String API_URL_WITH_VOICE = API_URL + "&v=%s";
 
-    private static final Set<String> SUPPORTED_AUDIO_FORMATS = Stream.of("MP3", "OGG", "AAC").collect(toSet());
+    private static final Set<String> SUPPORTED_AUDIO_CODECS = Set.of("MP3", "OGG", "AAC", "WAV", "CAF");
 
     private static final Set<Locale> SUPPORTED_LOCALES = new HashSet<>();
     static {
@@ -163,9 +164,15 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         SUPPORTED_VOICES.put("zh-tw", Set.of("Akemi", "Lin", "Lee"));
     }
 
+    protected boolean logging;
+
+    public VoiceRSSCloudImpl(boolean logging) {
+        this.logging = logging;
+    }
+
     @Override
-    public Set<String> getAvailableAudioFormats() {
-        return SUPPORTED_AUDIO_FORMATS;
+    public Set<String> getAvailableAudioCodecs() {
+        return SUPPORTED_AUDIO_CODECS;
     }
 
     @Override
@@ -200,7 +207,7 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         return allvoxes;
     }
 
-    /**
+    /*
      * This method will return an input stream to an audio stream for the given
      * parameters.
      *
@@ -208,10 +215,12 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
      * dependencies.
      */
     @Override
-    public InputStream getTextToSpeech(String apiKey, String text, String locale, String voice, String audioFormat)
-            throws IOException {
-        String url = createURL(apiKey, text, locale, voice, audioFormat);
-        logger.debug("Call {}", url);
+    public InputStream getTextToSpeech(String apiKey, String text, String locale, String voice, String audioCodec,
+            String audioFormat) throws IOException {
+        String url = createURL(apiKey, text, locale, voice, audioCodec, audioFormat);
+        if (logging) {
+            LoggerFactory.getLogger(VoiceRSSCloudImpl.class).debug("Call {}", url.replace(apiKey, "***"));
+        }
         URLConnection connection = new URL(url).openConnection();
 
         // we will check return codes. The service will ALWAYS return a HTTP
@@ -219,12 +228,18 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         // the error message in body
         int status = ((HttpURLConnection) connection).getResponseCode();
         if (HttpURLConnection.HTTP_OK != status) {
-            logger.error("Call {} returned HTTP {}", url, status);
+            if (logging) {
+                LoggerFactory.getLogger(VoiceRSSCloudImpl.class).warn("Call {} returned HTTP {}",
+                        url.replace(apiKey, "***"), status);
+            }
             throw new IOException("Could not read from service: HTTP code " + status);
         }
-        if (logger.isTraceEnabled()) {
-            for (Entry<String, List<String>> header : connection.getHeaderFields().entrySet()) {
-                logger.trace("Response.header: {}={}", header.getKey(), header.getValue());
+        if (logging) {
+            Logger logger = LoggerFactory.getLogger(VoiceRSSCloudImpl.class);
+            if (logger.isTraceEnabled()) {
+                for (Entry<String, List<String>> header : connection.getHeaderFields().entrySet()) {
+                    logger.trace("Response.header: {}={}", header.getKey(), header.getValue());
+                }
             }
         }
         String contentType = connection.getHeaderField("Content-Type");
@@ -237,10 +252,12 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
             try {
                 is.close();
             } catch (IOException ex) {
-                logger.debug("Failed to close inputstream", ex);
+                if (logging) {
+                    LoggerFactory.getLogger(VoiceRSSCloudImpl.class).debug("Failed to close inputstream", ex);
+                }
             }
             throw new IOException(
-                    "Could not read audio content, service return an error: " + new String(bytes, "UTF-8"));
+                    "Could not read audio content, service returned an error: " + new String(bytes, "UTF-8"));
         } else {
             return is;
         }
@@ -254,20 +271,15 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
      *
      * It is in package scope to be accessed by tests.
      */
-    private String createURL(String apiKey, String text, String locale, String voice, String audioFormat) {
-        String encodedMsg;
-        try {
-            encodedMsg = URLEncoder.encode(text, "UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            logger.error("UnsupportedEncodingException for UTF-8 MUST NEVER HAPPEN! Check your JVM configuration!", ex);
-            // fall through and use msg un-encoded
-            encodedMsg = text;
-        }
-        String url = "http://api.voicerss.org/?key=" + apiKey + "&hl=" + locale + "&c=" + audioFormat;
+    private String createURL(String apiKey, String text, String locale, String voice, String audioCodec,
+            String audioFormat) {
+        String encodedMsg = URLEncoder.encode(text, StandardCharsets.UTF_8);
+        String url;
         if (!DEFAULT_VOICE.equals(voice)) {
-            url += "&v=" + voice;
+            url = String.format(API_URL_WITH_VOICE, apiKey, locale, audioCodec, audioFormat, encodedMsg, voice);
+        } else {
+            url = String.format(API_URL, apiKey, locale, audioCodec, audioFormat, encodedMsg);
         }
-        url += "&f=44khz_16bit_mono&src=" + encodedMsg;
         return url;
     }
 }

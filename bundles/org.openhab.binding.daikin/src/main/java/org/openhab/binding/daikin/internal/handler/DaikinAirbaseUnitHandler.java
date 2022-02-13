@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,7 +77,6 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
     @Override
     protected void pollStatus() throws IOException {
         AirbaseControlInfo controlInfo = webTargets.getAirbaseControlInfo();
-        updateStatus(ThingStatus.ONLINE);
 
         if (airbaseModelInfo == null || !"OK".equals(airbaseModelInfo.ret)) {
             airbaseModelInfo = webTargets.getAirbaseModelInfo();
@@ -115,6 +114,7 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
                     .forEach(idx -> updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE + idx,
                             OnOffType.from(zoneInfo.zone[idx])));
         }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -178,18 +178,25 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
     }
 
     protected void changeZone(int zone, boolean command) throws DaikinCommunicationException {
-        if (zone <= 0 || zone > airbaseModelInfo.zonespresent) {
+        AirbaseZoneInfo zoneInfo = webTargets.getAirbaseZoneInfo();
+        long commonZones = 0;
+        long maxZones = zoneInfo.zone.length;
+
+        if (airbaseModelInfo != null) {
+            maxZones = Math.min(maxZones - 1, airbaseModelInfo.zonespresent);
+            commonZones = airbaseModelInfo.commonzone;
+        }
+        if (zone <= 0 || zone > maxZones) {
             logger.warn("The given zone number ({}) is outside the number of zones supported by the controller ({})",
-                    zone, airbaseModelInfo.zonespresent);
+                    zone, maxZones);
             return;
         }
 
-        AirbaseZoneInfo zoneInfo = webTargets.getAirbaseZoneInfo();
-        long count = IntStream.range(0, zoneInfo.zone.length).filter(idx -> zoneInfo.zone[idx]).count()
-                + airbaseModelInfo.commonzone;
-        logger.debug("Number of open zones: \"{}\"", count);
+        long openZones = IntStream.range(0, zoneInfo.zone.length).filter(idx -> zoneInfo.zone[idx]).count()
+                + commonZones;
+        logger.debug("Number of open zones: \"{}\"", openZones);
 
-        if (count >= 1) {
+        if (openZones >= 1) {
             zoneInfo.zone[zone] = command;
             webTargets.setAirbaseZoneInfo(zoneInfo);
         }

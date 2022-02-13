@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -136,26 +136,26 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
 
     private void createWeatherAndForecastResult(String location, ThingUID bridgeUID) {
         thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_WEATHER_AND_FORECAST, bridgeUID, LOCAL))
-                .withLabel("Local Weather and Forecast").withProperty(CONFIG_LOCATION, location)
+                .withLabel("@text/discovery.weather-and-forecast.local.label").withProperty(CONFIG_LOCATION, location)
                 .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
     }
 
     private void createAirPollutionResult(String location, ThingUID bridgeUID) {
         thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_AIR_POLLUTION, bridgeUID, LOCAL))
-                .withLabel("Local Air Pollution").withProperty(CONFIG_LOCATION, location)
+                .withLabel("@text/discovery.air-pollution.local.label").withProperty(CONFIG_LOCATION, location)
                 .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
     }
 
     private void createOneCallResult(String location, ThingUID bridgeUID) {
         thingDiscovered(
                 DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ONECALL_WEATHER_AND_FORECAST, bridgeUID, LOCAL))
-                        .withLabel("One Call API Weather and Forecast").withProperty(CONFIG_LOCATION, location)
+                        .withLabel("@text/discovery.onecall.local.label").withProperty(CONFIG_LOCATION, location)
                         .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
     }
 
     private void createOneCallHistoryResult(String location, ThingUID bridgeUID) {
         thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ONECALL_HISTORY, bridgeUID, LOCAL))
-                .withLabel("One Call API History Data").withProperty(CONFIG_LOCATION, location)
+                .withLabel("@text/discovery.onecall-history.local.label").withProperty(CONFIG_LOCATION, location)
                 .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
     }
 }

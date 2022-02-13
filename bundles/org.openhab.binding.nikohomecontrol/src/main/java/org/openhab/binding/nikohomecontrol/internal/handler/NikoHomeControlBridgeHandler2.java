@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,14 +69,15 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
                 // advanced configuration, skipping token validation.
                 // This behavior would allow the same logic to be used (with profile UUID) as before token validation
                 // was introduced.
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Token is empty");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "@text/offline.configuration-error.tokenEmpty");
                 return;
             }
         } else {
             Date now = new Date();
             if (expiryDate.before(now)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Hobby api token has expired");
+                        "@text/offline.configuration-error.tokenExpired");
                 return;
             }
         }
@@ -90,7 +91,7 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
         } catch (CertificateException e) {
             // this should not happen unless there is a programming error
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Not able to set SSL context");
+                    "@text/offline.communication-error");
             return;
         }
     }

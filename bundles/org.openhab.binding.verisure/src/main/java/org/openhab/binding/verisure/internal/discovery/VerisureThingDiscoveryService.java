@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,7 +75,8 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
         String deviceId = thing.getDeviceId();
         if (thingUID != null) {
             if (verisureBridgeHandler != null) {
-                String label = "Device Id: " + deviceId;
+                String className = thing.getClass().getSimpleName();
+                String label = "Type: " + className + " Device Id: " + deviceId;
                 if (thing.getLocation() != null) {
                     label += ", Location: " + thing.getLocation();
                 }
@@ -84,7 +85,7 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
                 }
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                         .withLabel(label).withProperty(VerisureThingConfiguration.DEVICE_ID_LABEL, deviceId)
-                        .withRepresentationProperty(deviceId).build();
+                        .withRepresentationProperty(VerisureThingConfiguration.DEVICE_ID_LABEL).build();
                 logger.debug("thinguid: {}, bridge {}, label {}", thingUID, bridgeUID, deviceId);
                 thingDiscovered(discoveryResult);
             }

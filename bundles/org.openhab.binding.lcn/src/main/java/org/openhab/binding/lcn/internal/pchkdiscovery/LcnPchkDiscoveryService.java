@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -146,7 +146,6 @@ public class LcnPchkDiscoveryService extends AbstractDiscoveryService {
 
     ServicesResponse xmlToServiceResponse(String response) {
         XStream xstream = new XStream(new StaxDriver());
-        XStream.setupDefaultSecurity(xstream);
         xstream.allowTypesByWildcard(new String[] { ServicesResponse.class.getPackageName() + ".**" });
         xstream.setClassLoader(getClass().getClassLoader());
         xstream.autodetectAnnotations(true);

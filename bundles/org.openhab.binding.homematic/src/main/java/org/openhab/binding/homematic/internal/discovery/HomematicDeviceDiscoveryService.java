@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,7 +52,6 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
     private Future<?> loadDevicesFuture;
     private volatile boolean isInInstallMode = false;
     private volatile Object installModeSync = new Object();
-    private volatile int installModeDuration = HomematicConfig.DEFAULT_INSTALL_MODE_DURATION;
 
     public HomematicDeviceDiscoveryService() {
         super(Collections.singleton(new ThingTypeUID(BINDING_ID, "-")), DISCOVER_TIMEOUT_SECONDS, false);
@@ -103,10 +102,9 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
             if (bridgeHandler != null) {
                 Thing bridge = bridgeHandler.getThing();
                 bridgeStatus = bridge.getStatus();
-                updateInstallModeDuration(bridge);
             }
             if (ThingStatus.ONLINE == bridgeStatus) {
-                gateway.setInstallMode(true, installModeDuration);
+                gateway.setInstallMode(true, getInstallModeDuration());
 
                 int remaining = gateway.getInstallMode();
                 if (remaining > 0) {
@@ -123,14 +121,16 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private void updateInstallModeDuration(Thing bridge) {
-        HomematicConfig config = bridge.getConfiguration().as(HomematicConfig.class);
-        installModeDuration = config.getInstallModeDuration();
+    private int getInstallModeDuration() {
+        if (bridgeHandler != null) {
+            return bridgeHandler.getThing().getConfiguration().as(HomematicConfig.class).getInstallModeDuration();
+        }
+        return HomematicConfig.DEFAULT_INSTALL_MODE_DURATION;
     }
 
     @Override
     public int getScanTimeout() {
-        return installModeDuration;
+        return getInstallModeDuration();
     }
 
     @Override

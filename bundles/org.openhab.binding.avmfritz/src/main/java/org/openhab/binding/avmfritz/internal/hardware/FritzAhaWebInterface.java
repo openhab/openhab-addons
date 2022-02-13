@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,8 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.avmfritz.internal.hardware;
-
-import static org.eclipse.jetty.http.HttpMethod.*;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -29,15 +27,17 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetBlindLevelCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetBlindTargetCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetBlindTargetCallback.BlindCommand;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetColorCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingModeCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingTemperatureCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetLevelPercentageCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetSwitchCallback;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -239,18 +239,18 @@ public class FritzAhaWebInterface {
      * @param path Path of the requested resource
      * @return response
      */
-    public @Nullable String syncGet(String url) {
+    public @Nullable String syncGet(String path) {
         try {
-            ContentResponse contentResponse = httpClient.newRequest(url)
-                    .timeout(config.syncTimeout, TimeUnit.MILLISECONDS).method(GET).send();
+            ContentResponse contentResponse = httpClient.newRequest(path)
+                    .timeout(config.syncTimeout, TimeUnit.MILLISECONDS).method(HttpMethod.GET).send();
             String content = contentResponse.getContentAsString();
             logger.debug("GET response complete: {}", content);
             return content;
         } catch (ExecutionException | TimeoutException e) {
-            logger.debug("response failed: {}", e.getLocalizedMessage(), e);
+            logger.debug("GET response failed: {}", e.getLocalizedMessage(), e);
             return null;
         } catch (InterruptedException e) {
-            logger.debug("response interrupted: {}", e.getLocalizedMessage(), e);
+            logger.debug("GET response interrupted: {}", e.getLocalizedMessage(), e);
             Thread.currentThread().interrupt();
             return null;
         }
@@ -268,7 +268,7 @@ public class FritzAhaWebInterface {
             authenticate();
         }
         FritzAhaContentExchange getExchange = new FritzAhaContentExchange(callback);
-        httpClient.newRequest(getURL(path, addSID(args))).method(GET).onResponseSuccess(getExchange)
+        httpClient.newRequest(getURL(path, addSID(args))).method(HttpMethod.GET).onResponseSuccess(getExchange)
                 .onResponseFailure(getExchange).send(getExchange);
         return getExchange;
     }
@@ -289,7 +289,7 @@ public class FritzAhaWebInterface {
             authenticate();
         }
         FritzAhaContentExchange postExchange = new FritzAhaContentExchange(callback);
-        httpClient.newRequest(getURL(path)).timeout(config.asyncTimeout, TimeUnit.MILLISECONDS).method(POST)
+        httpClient.newRequest(getURL(path)).timeout(config.asyncTimeout, TimeUnit.MILLISECONDS).method(HttpMethod.POST)
                 .onResponseSuccess(postExchange).onResponseFailure(postExchange)
                 .content(new StringContentProvider(addSID(args), StandardCharsets.UTF_8)).send(postExchange);
         return postExchange;
@@ -324,8 +324,14 @@ public class FritzAhaWebInterface {
         return asyncGet(callback);
     }
 
-    public FritzAhaContentExchange setLevelpercentage(String ain, BigDecimal levelpercentage) {
-        FritzAhaSetBlindLevelCallback callback = new FritzAhaSetBlindLevelCallback(this, ain, levelpercentage);
+    public FritzAhaContentExchange setLevelPercentage(String ain, BigDecimal levelPercentage) {
+        FritzAhaSetLevelPercentageCallback callback = new FritzAhaSetLevelPercentageCallback(this, ain,
+                levelPercentage);
+        return asyncGet(callback);
+    }
+
+    public FritzAhaContentExchange setHueAndSaturation(String ain, int hue, int saturation, int duration) {
+        FritzAhaSetColorCallback callback = new FritzAhaSetColorCallback(this, ain, hue, saturation, duration);
         return asyncGet(callback);
     }
 

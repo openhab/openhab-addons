@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.powermax.internal.state;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * All panel zone names
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public enum PowermaxZoneName {
 
     ZONE_0(0, "Attic"),
@@ -52,7 +55,7 @@ public enum PowermaxZoneName {
     ZONE_30(30, "Custom 5"),
     ZONE_31(31, "Not Installed");
 
-    private int id;
+    private final int id;
     private String name;
 
     private PowermaxZoneName(int id, String name) {

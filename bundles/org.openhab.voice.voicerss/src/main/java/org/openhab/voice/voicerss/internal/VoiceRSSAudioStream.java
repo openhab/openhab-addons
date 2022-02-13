@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.voice.voicerss.internal;
 
 import java.io.File;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
@@ -27,6 +28,7 @@ import org.openhab.core.audio.FileAudioStream;
  *
  * @author Jochen Hiller - Initial contribution and API
  */
+@NonNullByDefault
 class VoiceRSSAudioStream extends FileAudioStream {
 
     public VoiceRSSAudioStream(File audioFile, AudioFormat format) throws AudioException {

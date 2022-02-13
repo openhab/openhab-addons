@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.sonyprojector.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link SonyProjectorException} class is used for any exception thrown by the binding
@@ -21,15 +20,15 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Markus Wehrle - Initial contribution
  */
 @NonNullByDefault
-public class SonyProjectorException extends Exception {
+public class SonyProjectorException extends RuntimeException {
+
     private static final long serialVersionUID = 1L;
 
-    // Parameterless Constructor
-    public SonyProjectorException() {
+    public SonyProjectorException(String message) {
+        super(message);
     }
 
-    // Constructor that accepts a message
-    public SonyProjectorException(@Nullable String message) {
-        super(message);
+    public SonyProjectorException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

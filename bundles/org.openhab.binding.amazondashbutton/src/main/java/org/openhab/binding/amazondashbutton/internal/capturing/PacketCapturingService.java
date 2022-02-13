@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -137,6 +137,7 @@ public class PacketCapturingService {
      * @param packet The packet to be checked
      * @return Returns true, if the packet should be captured, otherwise false
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     private boolean shouldCapture(final Packet packet) {
         if (packet.contains(ArpPacket.class)) {
             ArpPacket arpPacket = packet.get(ArpPacket.class);

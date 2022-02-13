@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,7 +74,7 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
         } else if (stringValue.equalsIgnoreCase(settings.doorCurrentStateOpening)) {
             mode = CurrentDoorStateEnum.OPENING;
         } else if (stringValue.equalsIgnoreCase(settings.doorCurrentStateStopped)) {
-            mode = CurrentDoorStateEnum.SOPPED;
+            mode = CurrentDoorStateEnum.STOPPED;
         } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
             logger.warn("Current door state not available. Relaying value of CLOSED to HomeKit");
             mode = CurrentDoorStateEnum.CLOSED;

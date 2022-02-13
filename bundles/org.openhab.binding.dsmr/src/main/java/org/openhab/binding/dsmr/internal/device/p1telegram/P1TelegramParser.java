@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -129,12 +129,22 @@ public class P1TelegramParser implements TelegramParser {
     private final P1TelegramListener telegramListener;
 
     /**
+     * Enable in tests. Will throw an exception on CRC error.
+     */
+    private final boolean test;
+
+    /**
      * Creates a new P1TelegramParser
      *
      * @param telegramListener
      */
     public P1TelegramParser(P1TelegramListener telegramListener) {
+        this(telegramListener, false);
+    }
+
+    public P1TelegramParser(P1TelegramListener telegramListener, boolean test) {
         this.telegramListener = telegramListener;
+        this.test = test;
 
         factory = new CosemObjectFactory();
         state = State.WAIT_FOR_START;
@@ -151,7 +161,7 @@ public class P1TelegramParser implements TelegramParser {
     @Override
     public void parse(byte[] data, int length) {
         if (lenientMode || logger.isTraceEnabled()) {
-            String rawBlock = new String(data, 0, length, StandardCharsets.UTF_8);
+            final String rawBlock = new String(data, 0, length, StandardCharsets.UTF_8);
 
             if (lenientMode) {
                 rawData.append(rawBlock);
@@ -161,7 +171,7 @@ public class P1TelegramParser implements TelegramParser {
             }
         }
         for (int i = 0; i < length; i++) {
-            char c = (char) data[i];
+            final char c = (char) data[i];
 
             switch (state) {
                 case WAIT_FOR_START:
@@ -245,22 +255,7 @@ public class P1TelegramParser implements TelegramParser {
                         logger.trace("telegramState {}, crcValue to check 0x{}", telegramState, crcValue);
                         // Only perform CRC check if telegram is still ok
                         if (telegramState == TelegramState.OK && crcValue.length() > 0) {
-                            if (Pattern.matches(CRC_PATTERN, crcValue)) {
-                                int crcP1Telegram = Integer.parseInt(crcValue.toString(), 16);
-                                int calculatedCRC = crc.getCurrentCRCCode();
-
-                                if (logger.isDebugEnabled()) {
-                                    logger.trace("received CRC value: {}, calculated CRC value: 0x{}", crcValue,
-                                            String.format("%04X", calculatedCRC));
-                                }
-                                if (crcP1Telegram != calculatedCRC) {
-                                    logger.trace("CRC value does not match, p1 Telegram failed");
-
-                                    telegramState = TelegramState.CRC_ERROR;
-                                }
-                            } else {
-                                telegramState = TelegramState.CRC_ERROR;
-                            }
+                            telegramState = checkCRC(telegramState);
                         }
                         telegramListener.telegramReceived(constructTelegram());
                         reset();
@@ -278,6 +273,34 @@ public class P1TelegramParser implements TelegramParser {
             handleCharacter(c);
         }
         logger.trace("State after parsing: {}", state);
+    }
+
+    private TelegramState checkCRC(TelegramState currentState) {
+        final TelegramState telegramState;
+
+        if (Pattern.matches(CRC_PATTERN, crcValue)) {
+            final int crcP1Telegram = Integer.parseInt(crcValue.toString(), 16);
+            final int calculatedCRC = crc.getCurrentCRCCode();
+
+            if (logger.isDebugEnabled()) {
+                logger.trace("received CRC value: {}, calculated CRC value: 0x{}", crcValue,
+                        String.format("%04X", calculatedCRC));
+            }
+            if (crcP1Telegram != calculatedCRC) {
+                if (test) {
+                    throw new IllegalArgumentException(
+                            String.format("Invalid CRC. Read: %s, expected: %04X", crcValue, calculatedCRC));
+                }
+                logger.trace("CRC value does not match, p1 Telegram failed");
+
+                telegramState = TelegramState.CRC_ERROR;
+            } else {
+                telegramState = currentState;
+            }
+        } else {
+            telegramState = TelegramState.CRC_ERROR;
+        }
+        return telegramState;
     }
 
     private P1Telegram constructTelegram() {
@@ -375,11 +398,11 @@ public class P1TelegramParser implements TelegramParser {
      * Store the current CosemObject in the list of received cosem Objects
      */
     private void storeCurrentCosemObject() {
-        String obisIdString = obisId.toString();
+        final String obisIdString = obisId.toString();
 
         if (!obisIdString.isEmpty()) {
             final String obisValueString = obisValue.toString();
-            CosemObject cosemObject = factory.getCosemObject(obisIdString, obisValueString);
+            final CosemObject cosemObject = factory.getCosemObject(obisIdString, obisValueString);
 
             if (cosemObject == null) {
                 if (lenientMode) {

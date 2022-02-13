@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -233,7 +233,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             };
 
             logRefreshJob = null;
-            this.logRefreshJob = scheduler.scheduleWithFixedDelay(runnable, 1, logRefreshPeriod, TimeUnit.MINUTES);
+            this.logRefreshJob = scheduler.scheduleWithFixedDelay(runnable, (!this.clockSync ? 1 : 2), logRefreshPeriod,
+                    TimeUnit.MINUTES);
         }
     }
 
@@ -289,8 +290,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                         // set the new operating mode, reset everything else,
                         // because refreshing the tstat data below is really slow.
                         rthermData.getThermostatData().setMode(cmdInt);
-                        rthermData.getThermostatData().setHeatTarget(0);
-                        rthermData.getThermostatData().setCoolTarget(0);
+                        rthermData.getThermostatData().setHeatTarget(Double.valueOf(0));
+                        rthermData.getThermostatData().setCoolTarget(Double.valueOf(0));
                         updateChannel(SET_POINT, rthermData);
                         rthermData.getThermostatData().setHold(0);
                         updateChannel(HOLD, rthermData);
@@ -323,10 +324,10 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                     String cmdKey = null;
                     if (rthermData.getThermostatData().getMode() == 1) {
                         cmdKey = this.setpointCmdKeyPrefix + "heat";
-                        rthermData.getThermostatData().setHeatTarget(cmdInt);
+                        rthermData.getThermostatData().setHeatTarget(Double.valueOf(cmdInt));
                     } else if (rthermData.getThermostatData().getMode() == 2) {
                         cmdKey = this.setpointCmdKeyPrefix + "cool";
-                        rthermData.getThermostatData().setCoolTarget(cmdInt);
+                        rthermData.getThermostatData().setCoolTarget(Double.valueOf(cmdInt));
                     } else {
                         // don't do anything if we are not in heat or cool mode
                         break;
@@ -477,7 +478,12 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             case STATUS:
                 return data.getThermostatData().getStatus();
             case FAN_STATUS:
-                return data.getThermostatData().getFanStatus();
+                // workaround for some thermostats that don't report that the fan is on during heating or cooling
+                if (data.getThermostatData().getStatus() > 0) {
+                    return 1;
+                } else {
+                    return data.getThermostatData().getFanStatus();
+                }
             case DAY:
                 return data.getThermostatData().getTime().getDayOfWeek();
             case HOUR:

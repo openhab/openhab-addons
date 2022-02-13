@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,19 +35,21 @@ public class ICloudAccountDataRequest {
 
     public static class ClientContext {
         @SuppressWarnings("unused")
-        private String appName = "iCloud Find (Web)";
+        private String appName = "FindMyiPhone";
         @SuppressWarnings("unused")
         private boolean fmly = true;
         @SuppressWarnings("unused")
-        private String appVersion = "3.0";
+        private String appVersion = "5.0";
         @SuppressWarnings("unused")
-        private String timezone = "US/Eastern";
+        private String buildVersion = "376";
         @SuppressWarnings("unused")
-        private int inactiveTime = 2255;
+        private int clientTimestamp = 0;
         @SuppressWarnings("unused")
-        private String apiVersion = "3.0";
+        private String deviceUDID = "";
         @SuppressWarnings("unused")
-        private String webStats = "0:15";
+        private int inactiveTime = 1;
+        @SuppressWarnings("unused")
+        private String osVersion = "7.0.3";
         @SuppressWarnings("unused")
         private String productType = "iPhone6,1";
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -394,7 +394,15 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 logger.debug("removed {} address = {}", getThing().getUID().getAsString(), address);
             }
 
-            getInsteonNetworkHandler().disposed(getThing().getUID());
+            InsteonNetworkHandler handler = null;
+            try {
+                handler = getInsteonNetworkHandler();
+            } catch (IllegalArgumentException e) {
+            }
+
+            if (handler != null) {
+                handler.disposed(getThing().getUID());
+            }
         }
 
         super.dispose();

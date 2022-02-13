@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -48,6 +49,9 @@ public class MiIoBasicChannel {
     @SerializedName("channel")
     @Expose
     private @Nullable String channel;
+    @SerializedName("description")
+    @Expose
+    private @Nullable String description;
     @SerializedName("channelType")
     @Expose
     private @Nullable String channelType;
@@ -63,12 +67,21 @@ public class MiIoBasicChannel {
     @SerializedName("refresh")
     @Expose
     private @Nullable Boolean refresh;
+    @SerializedName("refreshInterval")
+    @Expose
+    private @Nullable Integer refreshInterval;
     @SerializedName("customRefreshCommand")
     @Expose
     private @Nullable String channelCustomRefreshCommand;
+    @SerializedName("customRefreshParameters")
+    @Expose
+    private @Nullable JsonElement customRefreshParameters;
     @SerializedName("transformation")
     @Expose
     private @Nullable String transformation;
+    @SerializedName("transformations")
+    @Expose
+    private @Nullable List<String> transformations;
     @SerializedName("ChannelGroup")
     @Expose
     private @Nullable String channelGroup;
@@ -142,6 +155,15 @@ public class MiIoBasicChannel {
         this.channel = channel;
     }
 
+    public String getDescription() {
+        final String description = this.description;
+        return description != null ? description : "";
+    }
+
+    public void setDescription(@Nullable String description) {
+        this.description = description;
+    }
+
     public String getChannelType() {
         final @Nullable String ct = channelType;
         if (ct == null || ct.isEmpty()) {
@@ -190,6 +212,23 @@ public class MiIoBasicChannel {
         this.refresh = refresh;
     }
 
+    public Integer getRefreshInterval() {
+        Integer refreshInterval = this.refreshInterval;
+        if (refreshInterval != null) {
+            return refreshInterval;
+        }
+        return 1;
+    }
+
+    public void setRefresh(@Nullable final Integer interval) {
+        final Integer refreshInterval = interval;
+        if (refreshInterval != null && refreshInterval.intValue() != 1) {
+            this.refreshInterval = refreshInterval;
+        } else {
+            this.refreshInterval = null;
+        }
+    }
+
     public String getChannelCustomRefreshCommand() {
         final @Nullable String channelCustomRefreshCommand = this.channelCustomRefreshCommand;
         return channelCustomRefreshCommand != null ? channelCustomRefreshCommand : "";
@@ -197,6 +236,14 @@ public class MiIoBasicChannel {
 
     public void setChannelCustomRefreshCommand(@Nullable String channelCustomRefreshCommand) {
         this.channelCustomRefreshCommand = channelCustomRefreshCommand;
+    }
+
+    public @Nullable final JsonElement getCustomRefreshParameters() {
+        return customRefreshParameters;
+    }
+
+    public final void setCustomRefreshParameters(@Nullable JsonElement customRefreshParameters) {
+        this.customRefreshParameters = customRefreshParameters;
     }
 
     public String getChannelGroup() {
@@ -223,6 +270,28 @@ public class MiIoBasicChannel {
 
     public void setTransformation(@Nullable String transformation) {
         this.transformation = transformation;
+    }
+
+    public final List<String> getTransformations() {
+        List<String> transformations = this.transformations;
+        if (transformations == null) {
+            transformations = new ArrayList<>();
+        }
+        String transformation = this.transformation;
+        if (transformation != null) {
+            List<String> allTransformation = new ArrayList<>(List.of(transformation));
+            allTransformation.addAll(transformations);
+            return allTransformation;
+        }
+        return transformations;
+    }
+
+    public final void setTransformations(@Nullable List<String> transformations) {
+        if (transformations != null && !transformations.isEmpty()) {
+            this.transformations = transformations;
+        } else {
+            this.transformations = null;
+        }
     }
 
     public @Nullable String getCategory() {

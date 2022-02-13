@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
@@ -35,20 +34,18 @@ public class WemoHttpCall {
 
     private final Logger logger = LoggerFactory.getLogger(WemoHttpCall.class);
 
-    public @Nullable String executeCall(String wemoURL, String soapHeader, String content) {
-        try {
-            Properties wemoHeaders = new Properties();
-            wemoHeaders.setProperty("CONTENT-TYPE", WemoBindingConstants.HTTP_CALL_CONTENT_HEADER);
-            wemoHeaders.put("SOAPACTION", soapHeader);
+    public String executeCall(String wemoURL, String soapHeader, String content) throws IOException {
+        Properties wemoHeaders = new Properties();
+        wemoHeaders.setProperty("CONTENT-TYPE", WemoBindingConstants.HTTP_CALL_CONTENT_HEADER);
+        wemoHeaders.put("SOAPACTION", soapHeader);
 
-            InputStream wemoContent = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+        InputStream wemoContent = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
 
-            String wemoCallResponse = HttpUtil.executeUrl("POST", wemoURL, wemoHeaders, wemoContent, null, 2000);
-            return wemoCallResponse;
-        } catch (IOException e) {
-            // throw new IllegalStateException("Could not call WeMo", e);
-            logger.debug("Could not make HTTP call to WeMo");
-            return null;
-        }
+        logger.trace("Performing HTTP call for URL: '{}', header: '{}', request body: '{}'", wemoURL, soapHeader,
+                content);
+        String responseBody = HttpUtil.executeUrl("POST", wemoURL, wemoHeaders, wemoContent, null, 2000);
+        logger.trace("HTTP response body: '{}'", responseBody);
+
+        return responseBody;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
@@ -278,9 +279,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
      */
     private boolean addGroupToList(Short groupID) {
         ApplicationGroup group = ApplicationGroup.getGroup(groupID);
-        if (ApplicationGroup.UNDEFINED.equals(group)) {
-            logger.warn("Unknown application group with ID '{}' found! Ignoring group", groupID);
-        } else {
+        if (!ApplicationGroup.UNDEFINED.equals(group)) {
             if (!this.groupList.contains(group)) {
                 this.groupList.add(group);
             }
@@ -407,7 +406,8 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     @Override
     public synchronized ApplicationGroup getFunctionalColorGroup() {
-        return groupList.stream().findFirst().get();
+        Optional<ApplicationGroup> applicationGroup = groupList.stream().findFirst();
+        return applicationGroup.isPresent() ? applicationGroup.get() : null;
     }
 
     @Override

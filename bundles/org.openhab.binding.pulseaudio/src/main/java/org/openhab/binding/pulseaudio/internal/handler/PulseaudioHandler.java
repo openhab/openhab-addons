@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -146,8 +146,10 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
             refreshJob = null;
         }
         updateStatus(ThingStatus.OFFLINE);
-        bridgeHandler.unregisterDeviceStatusListener(this);
-        bridgeHandler = null;
+        if (bridgeHandler != null) {
+            bridgeHandler.unregisterDeviceStatusListener(this);
+            bridgeHandler = null;
+        }
         logger.trace("Thing {} {} disposed.", getThing().getUID(), name);
         super.dispose();
 

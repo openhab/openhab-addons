@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,9 +27,11 @@ public enum RouterosInterfaceType {
     BRIDGE("bridge"),
     WLAN("wlan"),
     CAP("cap"),
+    PPP_CLIENT("ppp-out"),
     PPPOE_CLIENT("pppoe-out"),
     L2TP_SERVER("l2tp-in"),
-    L2TP_CLIENT("l2tp-out");
+    L2TP_CLIENT("l2tp-out"),
+    LTE("lte");
 
     private final String typeName;
 

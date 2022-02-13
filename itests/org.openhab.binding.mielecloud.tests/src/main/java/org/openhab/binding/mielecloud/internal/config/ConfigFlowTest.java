@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,7 @@ import org.openhab.binding.mielecloud.internal.util.AbstractConfigFlowTest;
 import org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants;
 import org.openhab.binding.mielecloud.internal.util.ReflectionUtil;
 import org.openhab.binding.mielecloud.internal.util.Website;
+import org.openhab.binding.mielecloud.internal.util.WebsiteCrawler;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebservice;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebserviceFactory;
 import org.openhab.core.thing.Thing;
@@ -87,7 +88,8 @@ public class ConfigFlowTest extends AbstractConfigFlowTest {
                 + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "="
                 + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID + "&" + ForwardToLoginServlet.EMAIL_PARAMETER_NAME
                 + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
-        String redirectionUrl = mieleLoginSite.getValueOfInput("redirect_uri").replace("http://127.0.0.1:8080", "");
+        String redirectionUrl = mieleLoginSite.getValueOfInput("redirect_uri")
+                .replace("http://127.0.0.1:" + WebsiteCrawler.getServerPort(), "");
         String state = mieleLoginSite.getValueOfInput("state");
 
         Website resultSite = getCrawler().doGetRelative(redirectionUrl + "?code="

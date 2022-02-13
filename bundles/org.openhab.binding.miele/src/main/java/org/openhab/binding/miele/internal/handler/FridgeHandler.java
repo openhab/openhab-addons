@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,9 @@ package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
-import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceProperty;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -39,8 +40,8 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
 
     private final Logger logger = LoggerFactory.getLogger(FridgeHandler.class);
 
-    public FridgeHandler(Thing thing) {
-        super(thing, FridgeChannelSelector.class, MIELE_DEVICE_CLASS_FRIDGE);
+    public FridgeHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
+        super(thing, i18nProvider, localeProvider, FridgeChannelSelector.class, MIELE_DEVICE_CLASS_FRIDGE);
     }
 
     @Override
@@ -49,8 +50,6 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
 
         String channelID = channelUID.getId();
         String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
-        String protocol = getThing().getProperties().get(PROTOCOL_PROPERTY_NAME);
-        var applianceIdentifier = new FullyQualifiedApplianceIdentifier(applianceId, protocol);
 
         FridgeChannelSelector selector = (FridgeChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
@@ -60,15 +59,15 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
                 switch (selector) {
                     case SUPERCOOL: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "startSuperCooling");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "startSuperCooling");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "stopSuperCooling");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "stopSuperCooling");
                         }
                         break;
                     }
                     case START: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "start");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "start");
                         }
                         break;
                     }
@@ -81,7 +80,7 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
                 }
             }
             // process result
-            if (isResultProcessable(result)) {
+            if (result != null && isResultProcessable(result)) {
                 logger.debug("Result of operation is {}", result.getAsString());
             }
         } catch (IllegalArgumentException e) {
@@ -95,7 +94,7 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
     protected void onAppliancePropertyChanged(DeviceProperty dp) {
         super.onAppliancePropertyChanged(dp);
 
-        if (!dp.Name.equals(STATE_PROPERTY_NAME)) {
+        if (!STATE_PROPERTY_NAME.equals(dp.Name)) {
             return;
         }
 

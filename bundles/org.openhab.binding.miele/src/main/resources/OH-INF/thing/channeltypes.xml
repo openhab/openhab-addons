@@ -6,8 +6,15 @@
 
 	<channel-type id="state">
 		<item-type>String</item-type>
-		<label>Status</label>
+		<label>State</label>
 		<description>Current status of the appliance</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="rawState" advanced="true">
+		<item-type>Number</item-type>
+		<label>Raw State</label>
+		<description>Current status of the appliance as raw number</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -15,6 +22,13 @@
 		<item-type>String</item-type>
 		<label>Program</label>
 		<description>Current program or function running on the appliance</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="rawProgram" advanced="true">
+		<item-type>Number</item-type>
+		<label>Raw Program</label>
+		<description>Current program or function running on the appliance as raw number</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -29,6 +43,13 @@
 		<item-type>String</item-type>
 		<label>Phase</label>
 		<description>Current phase of the program running on the appliance</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="rawPhase" advanced="true">
+		<item-type>Number</item-type>
+		<label>Raw Phase</label>
+		<description>Current phase of the program running on the appliance as raw number</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -117,7 +138,7 @@
 	<channel-type id="supercool">
 		<item-type>Switch</item-type>
 		<label>Super Cool</label>
-		<description>Start Super Cooling</description>
+		<description>Start or stop Super Cooling</description>
 		<state readOnly="false"></state>
 	</channel-type>
 
@@ -138,7 +159,7 @@
 	<channel-type id="superfreeze">
 		<item-type>Switch</item-type>
 		<label>Super Freeze</label>
-		<description>Start Super Freezing</description>
+		<description>Start or stop Super Freezing</description>
 		<state readOnly="false"></state>
 	</channel-type>
 

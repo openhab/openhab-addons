@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,6 @@ import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryParticipant;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.binding.mqtt.handler.BrokerHandler;
-import org.openhab.binding.mqtt.handler.SystemBrokerHandler;
 import org.openhab.core.io.transport.mqtt.MqttService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -54,8 +53,7 @@ import org.slf4j.LoggerFactory;
 public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements MQTTTopicDiscoveryService {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(MqttBindingConstants.BRIDGE_TYPE_SYSTEMBROKER, MqttBindingConstants.BRIDGE_TYPE_BROKER)
-            .collect(Collectors.toSet());
+            .of(MqttBindingConstants.BRIDGE_TYPE_BROKER).collect(Collectors.toSet());
 
     private final Logger logger = LoggerFactory.getLogger(MqttBrokerHandlerFactory.class);
 
@@ -107,9 +105,7 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         final AbstractBrokerHandler handler;
-        if (thingTypeUID.equals(MqttBindingConstants.BRIDGE_TYPE_SYSTEMBROKER)) {
-            handler = new SystemBrokerHandler((Bridge) thing, mqttService);
-        } else if (thingTypeUID.equals(MqttBindingConstants.BRIDGE_TYPE_BROKER)) {
+        if (thingTypeUID.equals(MqttBindingConstants.BRIDGE_TYPE_BROKER)) {
             handler = new BrokerHandler((Bridge) thing);
         } else {
             throw new IllegalStateException("Not supported " + thingTypeUID.toString());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,12 @@ public class DeviceModel extends AVMFritzBaseModel {
     private TemperatureModel temperature;
     private HumidityModel humidity;
     private AlertModel alert;
-    private LevelcontrolModel levelcontrol;
+
+    @XmlElement(name = "levelcontrol")
+    private LevelControlModel levelControlModel;
+
+    @XmlElement(name = "colorcontrol")
+    private ColorControlModel colorControlModel;
 
     @XmlElement(name = "button", type = ButtonModel.class)
     private List<ButtonModel> buttons;
@@ -64,12 +69,20 @@ public class DeviceModel extends AVMFritzBaseModel {
         this.alert = alertModel;
     }
 
-    public LevelcontrolModel getLevelcontrol() {
-        return levelcontrol;
+    public LevelControlModel getLevelControlModel() {
+        return levelControlModel;
     }
 
-    public void setLevelcontrol(LevelcontrolModel levelcontrol) {
-        this.levelcontrol = levelcontrol;
+    public void setLevelControlModel(LevelControlModel levelControlModel) {
+        this.levelControlModel = levelControlModel;
+    }
+
+    public ColorControlModel getColorControlModel() {
+        return colorControlModel;
+    }
+
+    public void setColorControlModel(ColorControlModel colorControlModel) {
+        this.colorControlModel = colorControlModel;
     }
 
     public List<ButtonModel> getButtons() {
@@ -91,7 +104,8 @@ public class DeviceModel extends AVMFritzBaseModel {
     @Override
     public String toString() {
         return new StringBuilder(super.toString()).append(temperature).append(",").append(humidity).append(",")
-                .append(alert).append(",").append(getButtons()).append(",").append(etsiunitinfo).append("]").toString();
+                .append(alert).append(",").append(levelControlModel).append(",").append(colorControlModel).append(",")
+                .append(getButtons()).append(",").append(etsiunitinfo).append("]").toString();
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)

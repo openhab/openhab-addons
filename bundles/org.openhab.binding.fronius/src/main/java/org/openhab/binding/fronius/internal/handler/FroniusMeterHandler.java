@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,7 @@ import org.openhab.core.thing.Thing;
  *
  * @author Jimmy Tanagra - Initial contribution
  * @author Thomas Kordelle - Actually constants should be all upper case.
+ * @author Hannes Spenger - Added getValue for power sum
  */
 public class FroniusMeterHandler extends FroniusBaseThingHandler {
 
@@ -98,6 +99,8 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
                 return new QuantityType<>(meterRealtimeBodyData.getPowerRealPPhase2(), Units.WATT);
             case FroniusBindingConstants.METER_POWER_PHASE_3:
                 return new QuantityType<>(meterRealtimeBodyData.getPowerRealPPhase3(), Units.WATT);
+            case FroniusBindingConstants.METER_POWER_SUM:
+                return new QuantityType<>(meterRealtimeBodyData.getPowerRealPSum(), Units.WATT);
             case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_1:
                 return meterRealtimeBodyData.getPowerFactorPhase1();
             case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_2:
@@ -122,8 +125,8 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
 
         Map<String, String> properties = editProperties();
 
-        properties.put(FroniusBindingConstants.METER_MODEL, meterRealtimeBodyData.getDetails().getModel());
-        properties.put(FroniusBindingConstants.METER_SERIAL, meterRealtimeBodyData.getDetails().getSerial());
+        properties.put(Thing.PROPERTY_MODEL_ID, meterRealtimeBodyData.getDetails().getModel());
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, meterRealtimeBodyData.getDetails().getSerial());
 
         updateProperties(properties);
     }

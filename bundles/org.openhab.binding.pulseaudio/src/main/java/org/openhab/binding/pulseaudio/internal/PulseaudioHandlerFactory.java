@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,6 @@
 package org.openhab.binding.pulseaudio.internal;
 
 import java.util.Collections;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -36,7 +34,9 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +55,8 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
                     PulseaudioHandler.SUPPORTED_THING_TYPES_UIDS.stream()).collect(Collectors.toSet()));
 
     private final Map<ThingHandler, ServiceRegistration<?>> discoveryServiceReg = new HashMap<>();
+
+    private PulseAudioBindingConfiguration configuration = new PulseAudioBindingConfiguration();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -109,7 +111,7 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (PulseaudioBridgeHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            PulseaudioBridgeHandler handler = new PulseaudioBridgeHandler((Bridge) thing);
+            PulseaudioBridgeHandler handler = new PulseaudioBridgeHandler((Bridge) thing, configuration);
             registerDeviceDiscoveryService(handler);
             return handler;
         } else if (PulseaudioHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
@@ -119,25 +121,16 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    @Override
-    protected synchronized void activate(ComponentContext componentContext) {
+    // The activate component call is used to access the bindings configuration
+    @Activate
+    protected synchronized void activate(ComponentContext componentContext, Map<String, Object> config) {
         super.activate(componentContext);
-        modified(componentContext);
+        modified(config);
     }
 
-    protected synchronized void modified(ComponentContext componentContext) {
-        Dictionary<String, ?> properties = componentContext.getProperties();
-        logger.info("pulseaudio configuration update received ({})", properties);
-        if (properties == null) {
-            return;
-        }
-        Enumeration<String> e = properties.keys();
-        while (e.hasMoreElements()) {
-            String k = e.nextElement();
-            if (PulseaudioBindingConstants.TYPE_FILTERS.containsKey(k)) {
-                PulseaudioBindingConstants.TYPE_FILTERS.put(k, (boolean) properties.get(k));
-            }
-            logger.debug("update received {}: {}", k, properties.get(k));
-        }
+    @Modified
+    protected void modified(Map<String, Object> config) {
+        configuration.update(new Configuration(config).as(PulseAudioBindingConfiguration.class));
+        logger.debug("pulseaudio configuration update received ({})", config);
     }
 }

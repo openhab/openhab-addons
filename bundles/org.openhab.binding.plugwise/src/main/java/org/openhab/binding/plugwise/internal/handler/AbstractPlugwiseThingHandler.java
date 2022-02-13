@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -287,7 +287,7 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
 
     protected void updateTask(PlugwiseDeviceTask task) {
         if (task.shouldBeScheduled()) {
-            if (!task.isScheduled() || task.getConfiguredInterval() != task.getInterval()) {
+            if (!task.isScheduled() || !task.getConfiguredInterval().equals(task.getInterval())) {
                 if (task.isScheduled()) {
                     task.stop();
                 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,15 @@ package org.openhab.binding.airquality.internal;
 
 import static org.openhab.binding.airquality.internal.AirQualityBindingConstants.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.airquality.internal.handler.AirQualityHandler;
+import org.openhab.binding.airquality.internal.handler.AirQualityBridgeHandler;
+import org.openhab.binding.airquality.internal.handler.AirQualityStationHandler;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -27,23 +32,25 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import com.google.gson.Gson;
-
 /**
- * The {@link AirQualityHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link AirQualityHandlerFactory} is responsible for creating thing and thing
+ * handler.
  *
- * @author Kuba Wolanin - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.airquality")
 @NonNullByDefault
 public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
-    private final Gson gson = new Gson();
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(BRIDGE_TYPE_API, THING_TYPE_STATION);
+
     private final TimeZoneProvider timeZoneProvider;
+    private final LocationProvider locationProvider;
 
     @Activate
-    public AirQualityHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider) {
+    public AirQualityHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider,
+            final @Reference LocationProvider locationProvider) {
         this.timeZoneProvider = timeZoneProvider;
+        this.locationProvider = locationProvider;
     }
 
     @Override
@@ -55,10 +62,9 @@ public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_AQI.equals(thingTypeUID)) {
-            return new AirQualityHandler(thing, gson, timeZoneProvider);
-        }
-
-        return null;
+        return THING_TYPE_STATION.equals(thingTypeUID)
+                ? new AirQualityStationHandler(thing, timeZoneProvider, locationProvider)
+                : BRIDGE_TYPE_API.equals(thingTypeUID) ? new AirQualityBridgeHandler((Bridge) thing, locationProvider)
+                        : null;
     }
 }

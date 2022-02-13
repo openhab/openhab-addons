@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -220,7 +220,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
      */
     private void alive() {
         logger.trace("Bridge alive check with #{} children.", getThing().getThings().size());
-        long deltaLastReceived = System.nanoTime() - telegramReceivedTimeNanos;
+        final long deltaLastReceived = System.nanoTime() - telegramReceivedTimeNanos;
 
         if (deltaLastReceived > receivedTimeoutNanos) {
             logger.debug("No data received for {} seconds, restarting port if possible.",
@@ -271,13 +271,15 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
      * @param telegram received meter values.
      */
     private void meterValueReceived(P1Telegram telegram) {
-        updateStatus(ThingStatus.ONLINE);
+        if (isInitialized() && getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
         getThing().getThings().forEach(child -> {
             if (logger.isTraceEnabled()) {
                 logger.trace("Update child:{} with {} objects", child.getThingTypeUID().getId(),
                         telegram.getCosemObjects().size());
             }
-            DSMRMeterHandler dsmrMeterHandler = (DSMRMeterHandler) child.getHandler();
+            final DSMRMeterHandler dsmrMeterHandler = (DSMRMeterHandler) child.getHandler();
 
             if (dsmrMeterHandler instanceof DSMRMeterHandler) {
                 dsmrMeterHandler.telegramReceived(telegram);

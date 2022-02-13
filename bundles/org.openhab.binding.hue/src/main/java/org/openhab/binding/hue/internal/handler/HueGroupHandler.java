@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,8 @@ import org.slf4j.LoggerFactory;
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class HueGroupHandler extends BaseThingHandler implements GroupStatusListener {
+public class HueGroupHandler extends BaseThingHandler implements HueLightActionsHandler, GroupStatusListener {
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_GROUP);
     public static final String PROPERTY_MEMBERS = "members";
 
@@ -168,6 +169,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         handleCommand(channelUID.getId(), command, defaultFadeTime);
     }
 
+    @Override
     public void handleCommand(String channel, Command command, long fadeTime) {
         HueClient bridgeHandler = getHueClient();
         if (bridgeHandler == null) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -587,10 +587,11 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         try {
             SystemInformation systemInformation = reqSystemInformation();
             Map<String, String> properties = editProperties();
-            properties.put(THING_PROPERTIES_MODEL_NUMBER, Integer.toString(systemInformation.getModel()));
-            properties.put(THING_PROPERTIES_MAJOR_VERSION, Integer.toString(systemInformation.getMajor()));
-            properties.put(THING_PROPERTIES_MINOR_VERSION, Integer.toString(systemInformation.getMinor()));
-            properties.put(THING_PROPERTIES_REVISION, Integer.toString(systemInformation.getRevision()));
+            properties.put(Thing.PROPERTY_MODEL_ID, Integer.toString(systemInformation.getModel()));
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION,
+                    Integer.toString(systemInformation.getMajor()) + "."
+                            + Integer.toString(systemInformation.getMinor()) + "."
+                            + Integer.toString(systemInformation.getRevision()));
             properties.put(THING_PROPERTIES_PHONE_NUMBER, systemInformation.getPhone());
             updateProperties(properties);
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,12 +18,14 @@ import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.library.types.DecimalType;
 
 /**
  * @author Anders Alfredsson - Initial contribution
@@ -101,7 +103,8 @@ public class SmhiTest {
         assertEquals(0, pcat0.compareTo(BigDecimal.valueOf(0)));
         assertEquals(0, pmean0.compareTo(BigDecimal.valueOf(0)));
         assertEquals(0, pmedian0.compareTo(BigDecimal.valueOf(0)));
-        assertEquals(0, wsymb0.compareTo(BigDecimal.valueOf(2)));
+        assertEquals(0, wsymb0.compareTo(BigDecimal.valueOf(20)));
+        assertEquals("20", new DecimalType(wsymb0.setScale(0, RoundingMode.DOWN)).toString());
 
         Forecast forecast1 = timeSeries1.getForecast(TIME.plusHours(1), 0).orElseThrow(AssertionError::new);
 

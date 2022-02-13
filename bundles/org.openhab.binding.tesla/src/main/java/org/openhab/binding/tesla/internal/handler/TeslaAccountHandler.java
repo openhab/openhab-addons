@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,7 +71,7 @@ import com.google.gson.JsonParser;
  */
 public class TeslaAccountHandler extends BaseBridgeHandler {
 
-    public static final int API_MAXIMUM_ERRORS_IN_INTERVAL = 2;
+    public static final int API_MAXIMUM_ERRORS_IN_INTERVAL = 3;
     public static final int API_ERROR_INTERVAL_SECONDS = 15;
     private static final int CONNECT_RETRY_INTERVAL = 15000;
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -207,7 +207,8 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             Response response = vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
                     .header("Authorization", authHeader).get();
 
-            logger.debug("Querying the vehicle: Response: {}:{}", response.getStatus(), response.getStatusInfo());
+            logger.debug("Querying the vehicle: Response: {}: {}", response.getStatus(),
+                    response.getStatusInfo().getReasonPhrase());
 
             if (!checkResponse(response, true)) {
                 logger.error("An error occurred while querying the vehicle");
@@ -218,7 +219,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             Vehicle[] vehicleArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
 
             for (Vehicle vehicle : vehicleArray) {
-                String responseString = invokeAndParse(vehicle.id, VEHICLE_CONFIG, null, dataRequestTarget);
+                String responseString = invokeAndParse(vehicle.id, VEHICLE_CONFIG, null, dataRequestTarget, 0);
                 if (responseString == null || responseString.isBlank()) {
                     continue;
                 }
@@ -307,7 +308,8 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         return new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
     }
 
-    protected String invokeAndParse(String vehicleId, String command, String payLoad, WebTarget target) {
+    protected String invokeAndParse(String vehicleId, String command, String payLoad, WebTarget target,
+            int noOfretries) {
         logger.debug("Invoking: {}", command);
 
         if (vehicleId != null) {
@@ -335,15 +337,25 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             }
 
             if (!checkResponse(response, false)) {
-                logger.debug("An error occurred while communicating with the vehicle during request {}: {}:{}", command,
-                        (response != null) ? response.getStatus() : "",
-                        (response != null) ? response.getStatusInfo() : "No Response");
+                logger.debug("An error occurred while communicating with the vehicle during request {}: {}: {}",
+                        command, (response != null) ? response.getStatus() : "",
+                        (response != null) ? response.getStatusInfo().getReasonPhrase() : "No Response");
+                if (response.getStatus() == 408 && noOfretries > 0) {
+                    try {
+                        // we give the vehicle a moment to wake up and try the request again
+                        Thread.sleep(TimeUnit.SECONDS.toMillis(API_ERROR_INTERVAL_SECONDS));
+                        logger.debug("Retrying to send the command {}.", command);
+                        return invokeAndParse(vehicleId, command, payLoad, target, noOfretries - 1);
+                    } catch (InterruptedException e) {
+                        return null;
+                    }
+                }
                 return null;
             }
 
             try {
                 JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
-                logger.trace("Request : {}:{}:{} yields {}", command, payLoad, target, jsonObject.get("response"));
+                logger.trace("Request : {}:{} yields {}", command, payLoad, jsonObject.get("response"));
                 return jsonObject.get("response").toString();
             } catch (Exception e) {
                 logger.error("An exception occurred while invoking a REST request: '{}'", e.getMessage());
@@ -444,16 +456,21 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
     protected class Request implements Runnable {
 
+        private static final int NO_OF_RETRIES = 3;
+
         private TeslaVehicleHandler handler;
         private String request;
         private String payLoad;
         private WebTarget target;
+        private boolean allowWakeUpForCommands;
 
-        public Request(TeslaVehicleHandler handler, String request, String payLoad, WebTarget target) {
+        public Request(TeslaVehicleHandler handler, String request, String payLoad, WebTarget target,
+                boolean allowWakeUpForCommands) {
             this.handler = handler;
             this.request = request;
             this.payLoad = payLoad;
             this.target = target;
+            this.allowWakeUpForCommands = allowWakeUpForCommands;
         }
 
         @Override
@@ -462,7 +479,8 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                 String result = "";
 
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    result = invokeAndParse(handler.getVehicleId(), request, payLoad, target);
+                    result = invokeAndParse(handler.getVehicleId(), request, payLoad, target,
+                            allowWakeUpForCommands ? NO_OF_RETRIES : 0);
                     if (result != null && !"".equals(result)) {
                         handler.parseAndUpdate(request, payLoad, result);
                     }
@@ -473,9 +491,9 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    public Request newRequest(TeslaVehicleHandler teslaVehicleHandler, String command, String payLoad,
-            WebTarget target) {
-        return new Request(teslaVehicleHandler, command, payLoad, target);
+    public Request newRequest(TeslaVehicleHandler teslaVehicleHandler, String command, String payLoad, WebTarget target,
+            boolean allowWakeUpForCommands) {
+        return new Request(teslaVehicleHandler, command, payLoad, target, allowWakeUpForCommands);
     }
 
     @Override

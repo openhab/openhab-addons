@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,10 @@
 package org.openhab.binding.sonyprojector.internal.communication.sdcp;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.sonyprojector.internal.SonyProjectorException;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorModel;
 import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorItem;
+import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConnectionException;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class SonyProjectorSdcpSimuConnector extends SonyProjectorSdcpConnector {
     }
 
     @Override
-    public synchronized void open() throws SonyProjectorException {
+    public synchronized void open() throws ConnectionException {
         if (!connected) {
             connected = true;
             logger.debug("Simulated SDCP connection opened");
@@ -66,7 +67,7 @@ public class SonyProjectorSdcpSimuConnector extends SonyProjectorSdcpConnector {
     }
 
     @Override
-    protected synchronized byte[] readResponse() throws SonyProjectorException {
+    protected synchronized byte[] readResponse() throws CommunicationException {
         byte[] message = new byte[34];
         byte[] communityData = getCommunity().getBytes();
         message[0] = HEADER[0];

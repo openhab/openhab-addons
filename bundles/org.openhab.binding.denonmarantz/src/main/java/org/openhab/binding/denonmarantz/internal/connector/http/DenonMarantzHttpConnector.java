@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import java.beans.Introspector;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -172,22 +171,17 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             return;
         }
 
-        try {
-            String url = cmdUrl + URLEncoder.encode(command, Charset.defaultCharset().displayName());
-            logger.trace("Calling url {}", url);
+        String url = cmdUrl + URLEncoder.encode(command, Charset.defaultCharset());
+        logger.trace("Calling url {}", url);
 
-            httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS).send(new Response.CompleteListener() {
-                @Override
-                public void onComplete(Result result) {
-                    if (result.getResponse().getStatus() != 200) {
-                        logger.warn("Error {} while sending command", result.getResponse().getReason());
-                    }
+        httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS).send(new Response.CompleteListener() {
+            @Override
+            public void onComplete(Result result) {
+                if (result.getResponse().getStatus() != 200) {
+                    logger.warn("Error {} while sending command", result.getResponse().getReason());
                 }
-            });
-
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Error sending command", e);
-        }
+            }
+        });
     }
 
     private void updateMain() throws IOException {
@@ -364,12 +358,12 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
         @Override
         public String getAttributeLocalName(int index) {
-            return Introspector.decapitalize(super.getAttributeLocalName(index));
+            return Introspector.decapitalize(super.getAttributeLocalName(index)).intern();
         }
 
         @Override
         public String getLocalName() {
-            return Introspector.decapitalize(super.getLocalName());
+            return Introspector.decapitalize(super.getLocalName()).intern();
         }
     }
 }

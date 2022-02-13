@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,21 +36,23 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.core.audio.AudioFormat;
+import org.openhab.core.auth.AuthenticationException;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
+import org.openhab.core.i18n.CommunicationException;
 import org.openhab.core.io.net.http.HttpRequestBuilder;
-import org.openhab.voice.googletts.internal.protocol.AudioConfig;
-import org.openhab.voice.googletts.internal.protocol.AudioEncoding;
-import org.openhab.voice.googletts.internal.protocol.ListVoicesResponse;
-import org.openhab.voice.googletts.internal.protocol.SsmlVoiceGender;
-import org.openhab.voice.googletts.internal.protocol.SynthesisInput;
-import org.openhab.voice.googletts.internal.protocol.SynthesizeSpeechRequest;
-import org.openhab.voice.googletts.internal.protocol.SynthesizeSpeechResponse;
-import org.openhab.voice.googletts.internal.protocol.Voice;
-import org.openhab.voice.googletts.internal.protocol.VoiceSelectionParams;
+import org.openhab.voice.googletts.internal.dto.AudioConfig;
+import org.openhab.voice.googletts.internal.dto.AudioEncoding;
+import org.openhab.voice.googletts.internal.dto.ListVoicesResponse;
+import org.openhab.voice.googletts.internal.dto.SsmlVoiceGender;
+import org.openhab.voice.googletts.internal.dto.SynthesisInput;
+import org.openhab.voice.googletts.internal.dto.SynthesizeSpeechRequest;
+import org.openhab.voice.googletts.internal.dto.SynthesizeSpeechResponse;
+import org.openhab.voice.googletts.internal.dto.Voice;
+import org.openhab.voice.googletts.internal.dto.VoiceSelectionParams;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -59,6 +60,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Google Cloud TTS API call implementation.
@@ -152,8 +154,8 @@ class GoogleCloudAPI {
                 getAccessToken();
                 initialized = true;
                 initVoices();
-            } catch (AuthenticationException | IOException ex) {
-                logger.warn("Error initializing Google Cloud TTS service: {}", ex.getMessage());
+            } catch (AuthenticationException | CommunicationException e) {
+                logger.warn("Error initializing Google Cloud TTS service: {}", e.getMessage());
                 oAuthService = null;
                 initialized = false;
                 voices.clear();
@@ -177,17 +179,24 @@ class GoogleCloudAPI {
     /**
      * Fetches the OAuth2 tokens from Google Cloud Platform if the auth-code is set in the configuration. If successful
      * the auth-code will be removed from the configuration.
+     *
+     * @throws AuthenticationException
+     * @throws CommunicationException
      */
-    private void getAccessToken() throws AuthenticationException, IOException {
+    @SuppressWarnings("null")
+    private void getAccessToken() throws AuthenticationException, CommunicationException {
         String authcode = config.authcode;
         if (authcode != null && !authcode.isEmpty()) {
             logger.debug("Trying to get access and refresh tokens.");
             try {
                 oAuthService.getAccessTokenResponseByAuthorizationCode(authcode, GCP_REDIRECT_URI);
-            } catch (OAuthException | OAuthResponseException ex) {
-                logger.debug("Error fetching access token: {}", ex.getMessage(), ex);
+            } catch (OAuthException | OAuthResponseException e) {
+                logger.debug("Error fetching access token: {}", e.getMessage(), e);
                 throw new AuthenticationException(
                         "Error fetching access token. Invalid authcode? Please generate a new one.");
+            } catch (IOException e) {
+                throw new CommunicationException(
+                        String.format("An unexpected IOException occurred: %s", e.getMessage()));
             }
 
             config.authcode = null;
@@ -207,14 +216,17 @@ class GoogleCloudAPI {
         }
     }
 
-    private String getAuthorizationHeader() throws AuthenticationException, IOException {
+    @SuppressWarnings("null")
+    private String getAuthorizationHeader() throws AuthenticationException, CommunicationException {
         final AccessTokenResponse accessTokenResponse;
         try {
             accessTokenResponse = oAuthService.getAccessTokenResponse();
-        } catch (OAuthException | OAuthResponseException ex) {
-            logger.debug("Error fetching access token: {}", ex.getMessage(), ex);
+        } catch (OAuthException | OAuthResponseException e) {
+            logger.debug("Error fetching access token: {}", e.getMessage(), e);
             throw new AuthenticationException(
                     "Error fetching access token. Invalid authcode? Please generate a new one.");
+        } catch (IOException e) {
+            throw new CommunicationException(String.format("An unexpected IOException occurred: %s", e.getMessage()));
         }
         if (accessTokenResponse == null || accessTokenResponse.getAccessToken() == null
                 || accessTokenResponse.getAccessToken().isEmpty()) {
@@ -255,13 +267,16 @@ class GoogleCloudAPI {
      */
     Set<GoogleTTSVoice> getVoicesForLocale(Locale locale) {
         Set<GoogleTTSVoice> localeVoices = voices.get(locale);
-        return localeVoices != null ? localeVoices : Collections.emptySet();
+        return localeVoices != null ? localeVoices : Set.of();
     }
 
     /**
      * Google API call to load locales and voices.
+     *
+     * @throws AuthenticationException
+     * @throws CommunicationException
      */
-    private void initVoices() throws AuthenticationException, IOException {
+    private void initVoices() throws AuthenticationException, CommunicationException {
         if (oAuthService != null) {
             voices.clear();
             for (GoogleTTSVoice voice : listVoices()) {
@@ -281,25 +296,32 @@ class GoogleCloudAPI {
     }
 
     @SuppressWarnings("null")
-    private List<GoogleTTSVoice> listVoices() throws AuthenticationException, IOException {
+    private List<GoogleTTSVoice> listVoices() throws AuthenticationException, CommunicationException {
         HttpRequestBuilder builder = HttpRequestBuilder.getFrom(LIST_VOICES_URL)
                 .withHeader(HttpHeader.AUTHORIZATION.name(), getAuthorizationHeader());
 
-        ListVoicesResponse listVoicesResponse = gson.fromJson(builder.getContentAsString(), ListVoicesResponse.class);
+        try {
+            ListVoicesResponse listVoicesResponse = gson.fromJson(builder.getContentAsString(),
+                    ListVoicesResponse.class);
 
-        if (listVoicesResponse == null || listVoicesResponse.getVoices() == null) {
-            return Collections.emptyList();
-        }
-
-        List<GoogleTTSVoice> result = new ArrayList<>();
-        for (Voice voice : listVoicesResponse.getVoices()) {
-            for (String languageCode : voice.getLanguageCodes()) {
-                result.add(new GoogleTTSVoice(Locale.forLanguageTag(languageCode), voice.getName(),
-                        voice.getSsmlGender().name()));
+            if (listVoicesResponse == null || listVoicesResponse.getVoices() == null) {
+                return List.of();
             }
-        }
 
-        return result;
+            List<GoogleTTSVoice> result = new ArrayList<>();
+            for (Voice voice : listVoicesResponse.getVoices()) {
+                for (String languageCode : voice.getLanguageCodes()) {
+                    result.add(new GoogleTTSVoice(Locale.forLanguageTag(languageCode), voice.getName(),
+                            voice.getSsmlGender().name()));
+                }
+            }
+            return result;
+        } catch (JsonSyntaxException e) {
+            // do nothing
+        } catch (IOException e) {
+            throw new CommunicationException(String.format("An unexpected IOException occurred: %s", e.getMessage()));
+        }
+        return List.of();
     }
 
     /**
@@ -319,7 +341,7 @@ class GoogleCloudAPI {
         }
     }
 
-    byte[] synthesizeSpeech(String text, GoogleTTSVoice voice, String codec) {
+    public byte[] synthesizeSpeech(String text, GoogleTTSVoice voice, String codec) {
         String[] format = getFormatForCodec(codec);
         String fileNameInCache = getUniqueFilenameForText(text, voice.getTechnicalName());
         File audioFileInCache = new File(cacheFolder, fileNameInCache + "." + format[1]);
@@ -336,19 +358,17 @@ class GoogleCloudAPI {
                 saveAudioAndTextToFile(text, audioFileInCache, audio, voice.getTechnicalName());
             }
             return audio;
-        } catch (AuthenticationException ex) {
-            logger.warn("Error initializing Google Cloud TTS service: {}", ex.getMessage());
+        } catch (AuthenticationException | CommunicationException e) {
+            logger.warn("Error initializing Google Cloud TTS service: {}", e.getMessage());
             oAuthService = null;
             initialized = false;
             voices.clear();
-            return null;
-        } catch (FileNotFoundException ex) {
-            logger.warn("Could not write {} to cache", audioFileInCache, ex);
-            return null;
-        } catch (IOException ex) {
-            logger.error("Could not write {} to cache", audioFileInCache, ex);
-            return null;
+        } catch (FileNotFoundException e) {
+            logger.warn("Could not write file {} to cache: {}", audioFileInCache, e.getMessage());
+        } catch (IOException e) {
+            logger.debug("An unexpected IOException occurred: {}", e.getMessage());
         }
+        return null;
     }
 
     /**
@@ -358,10 +378,11 @@ class GoogleCloudAPI {
      * @param cacheFile Cache entry file.
      * @param audio Byte array of the audio.
      * @param voiceName Used voice
+     * @throws FileNotFoundException
      * @throws IOException in case of file handling exceptions
      */
     private void saveAudioAndTextToFile(String text, File cacheFile, byte[] audio, String voiceName)
-            throws IOException {
+            throws IOException, FileNotFoundException {
         logger.debug("Caching audio file {}", cacheFile.getName());
         try (FileOutputStream audioFileOutputStream = new FileOutputStream(cacheFile)) {
             audioFileOutputStream.write(audio);
@@ -405,10 +426,12 @@ class GoogleCloudAPI {
      * @param voice Voice parameter
      * @param audioFormat Audio encoding format
      * @return Audio input stream or {@code null} when encoding exceptions occur
+     * @throws AuthenticationException
+     * @throws CommunicationException
      */
-    @SuppressWarnings({ "null", "unused" })
+    @SuppressWarnings("null")
     private byte[] synthesizeSpeechByGoogle(String text, GoogleTTSVoice voice, String audioFormat)
-            throws AuthenticationException, IOException {
+            throws AuthenticationException, CommunicationException {
         AudioConfig audioConfig = new AudioConfig(AudioEncoding.valueOf(audioFormat), config.pitch, config.speakingRate,
                 config.volumeGainDb);
         SynthesisInput synthesisInput = new SynthesisInput(text);
@@ -422,15 +445,22 @@ class GoogleCloudAPI {
                 .withHeader(HttpHeader.AUTHORIZATION.name(), getAuthorizationHeader())
                 .withContent(gson.toJson(request), MimeTypes.Type.APPLICATION_JSON.name());
 
-        SynthesizeSpeechResponse synthesizeSpeechResponse = gson.fromJson(builder.getContentAsString(),
-                SynthesizeSpeechResponse.class);
+        try {
+            SynthesizeSpeechResponse synthesizeSpeechResponse = gson.fromJson(builder.getContentAsString(),
+                    SynthesizeSpeechResponse.class);
 
-        if (synthesizeSpeechResponse == null) {
-            return null;
+            if (synthesizeSpeechResponse == null) {
+                return null;
+            }
+
+            byte[] encodedBytes = synthesizeSpeechResponse.getAudioContent().getBytes(StandardCharsets.UTF_8);
+            return Base64.getDecoder().decode(encodedBytes);
+        } catch (JsonSyntaxException e) {
+            // do nothing
+        } catch (IOException e) {
+            throw new CommunicationException(String.format("An unexpected IOException occurred: %s", e.getMessage()));
         }
-
-        byte[] encodedBytes = synthesizeSpeechResponse.getAudioContent().getBytes(StandardCharsets.UTF_8);
-        return Base64.getDecoder().decode(encodedBytes);
+        return null;
     }
 
     /**
@@ -445,9 +475,9 @@ class GoogleCloudAPI {
             byte[] bytesOfMessage = (config.toConfigString() + text).getBytes(StandardCharsets.UTF_8);
             String fileNameHash = String.format("%032x", new BigInteger(1, md.digest(bytesOfMessage)));
             return voiceName + "_" + fileNameHash;
-        } catch (NoSuchAlgorithmException ex) {
+        } catch (NoSuchAlgorithmException e) {
             // should not happen
-            logger.error("Could not create MD5 hash for '{}'", text, ex);
+            logger.error("Could not create MD5 hash for '{}'", text, e);
             return null;
         }
     }

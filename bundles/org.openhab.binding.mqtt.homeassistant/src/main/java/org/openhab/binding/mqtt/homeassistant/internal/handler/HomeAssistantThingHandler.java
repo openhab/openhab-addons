@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,6 +40,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
+import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -153,15 +154,14 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             if (channelConfigurationJSON == null) {
                 logger.warn("Provided channel does not have a 'config' configuration key!");
             } else {
-                component = ComponentFactory.createComponent(thingUID, haID, channelConfigurationJSON, this, this,
-                        scheduler, gson, transformationServiceProvider);
-            }
-
-            if (component != null) {
-                haComponents.put(component.getGroupUID().getId(), component);
-                component.addChannelTypes(channelTypeProvider);
-            } else {
-                logger.warn("Could not restore component {}", thing);
+                try {
+                    component = ComponentFactory.createComponent(thingUID, haID, channelConfigurationJSON, this, this,
+                            scheduler, gson, transformationServiceProvider);
+                    haComponents.put(component.getGroupUID().getId(), component);
+                    component.addChannelTypes(channelTypeProvider);
+                } catch (ConfigurationException e) {
+                    logger.error("Cannot not restore component {}: {}", thing, e.getMessage());
+                }
             }
         }
         updateThingType();

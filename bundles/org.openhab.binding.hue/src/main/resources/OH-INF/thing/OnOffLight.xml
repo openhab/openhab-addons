@@ -19,11 +19,6 @@
 
 		<representation-property>uniqueId</representation-property>
 
-		<config-description>
-			<parameter name="lightId" type="text" required="true">
-				<label>Light ID</label>
-				<description>The light identifier identifies one certain hue light.</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:hue:lightwithoutfade"/>
 	</thing-type>
 </thing:thing-descriptions>

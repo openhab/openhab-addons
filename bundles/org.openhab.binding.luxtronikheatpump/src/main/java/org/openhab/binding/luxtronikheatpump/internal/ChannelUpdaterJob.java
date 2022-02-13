@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -134,14 +134,14 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
             if (unit == null) {
                 return new DecimalType(rawValue);
             }
-            if (unit == SIUnits.CELSIUS || unit == Units.KELVIN || unit == Units.KILOWATT_HOUR || unit == Units.PERCENT
-                    || unit == Units.HOUR) {
+            if (SIUnits.CELSIUS.equals(unit) || Units.KELVIN.equals(unit) || Units.KILOWATT_HOUR.equals(unit)
+                    || Units.PERCENT.equals(unit) || Units.HOUR.equals(unit)) {
                 return new QuantityType<>((double) rawValue / 10, unit);
-            } else if (unit == Units.HERTZ || unit == Units.SECOND) {
+            } else if (Units.HERTZ.equals(unit) || Units.SECOND.equals(unit) || Units.WATT.equals(unit)) {
                 return new QuantityType<>((double) rawValue, unit);
-            } else if (unit == Units.LITRE_PER_MINUTE) {
+            } else if (Units.LITRE_PER_MINUTE.equals(unit)) {
                 return new QuantityType<>((double) rawValue / 60, unit);
-            } else if (unit == Units.BAR || unit == Units.VOLT) {
+            } else if (Units.BAR.equals(unit) || Units.VOLT.equals(unit)) {
                 return new QuantityType<>((double) rawValue / 100, unit);
             }
 
@@ -222,7 +222,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         var longState = String.format("%s - %s %s - %s", state, getStateTranslation("menuStateLine2", row2),
                 formatHours(time), getStateTranslation("menuStateLine3", row3));
 
-        handleEventType((State) new StringType(longState), HeatpumpChannel.CHANNEL_HEATPUMP_STATUS);
+        handleEventType(new StringType(longState), HeatpumpChannel.CHANNEL_HEATPUMP_STATUS);
     }
 
     private void updateProperties(Integer[] heatpumpValues) {

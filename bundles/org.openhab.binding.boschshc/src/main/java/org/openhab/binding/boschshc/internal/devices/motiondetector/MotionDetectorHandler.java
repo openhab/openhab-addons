@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,22 +14,22 @@ package org.openhab.binding.boschshc.internal.devices.motiondetector;
 
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_LATEST_MOTION;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
-import org.openhab.binding.boschshc.internal.devices.motiondetector.dto.LatestMotionState;
-import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
+import java.util.List;
 
-import com.google.gson.JsonElement;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.services.latestmotion.LatestMotionService;
+import org.openhab.binding.boschshc.internal.services.latestmotion.dto.LatestMotionServiceState;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.thing.Thing;
 
 /**
- * MotionDetectorHandler
+ * Detects every movement through an intelligent combination of passive infra-red technology and an additional
+ * temperature sensor.
  *
  * @author Stefan Kästle - Initial contribution
+ * @author Christian Oeing - Use service instead of custom logic
  */
 @NonNullByDefault
 public class MotionDetectorHandler extends BoschSHCHandler {
@@ -39,34 +39,14 @@ public class MotionDetectorHandler extends BoschSHCHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Handle command for: {} - {}", channelUID.getThingUID(), command);
+    protected void initializeServices() throws BoschSHCException {
+        super.initializeServices();
 
-        if (CHANNEL_LATEST_MOTION.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                LatestMotionState state = this.getState("LatestMotion", LatestMotionState.class);
-                if (state != null) {
-                    updateLatestMotionState(state);
-                }
-            }
-        }
+        this.createService(LatestMotionService::new, this::updateChannels, List.of(CHANNEL_LATEST_MOTION));
     }
 
-    void updateLatestMotionState(LatestMotionState state) {
+    private void updateChannels(LatestMotionServiceState state) {
         DateTimeType date = new DateTimeType(state.latestMotionDetected);
         updateState(CHANNEL_LATEST_MOTION, date);
-    }
-
-    @Override
-    public void processUpdate(String id, JsonElement state) {
-        logger.debug("Motion detector: received update: {} {}", id, state);
-
-        @Nullable
-        LatestMotionState latestMotionState = GSON.fromJson(state, LatestMotionState.class);
-        if (latestMotionState == null) {
-            logger.warn("Received unknown update in in-wall switch: {}", state);
-            return;
-        }
-        updateLatestMotionState(latestMotionState);
     }
 }

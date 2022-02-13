@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,14 +32,14 @@ import javax.ws.rs.HttpMethod;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.synopanalyser.internal.synop.Overcast;
-import org.openhab.binding.synopanalyser.internal.synop.StationDB;
-import org.openhab.binding.synopanalyser.internal.synop.Synop;
-import org.openhab.binding.synopanalyser.internal.synop.SynopLand;
-import org.openhab.binding.synopanalyser.internal.synop.SynopMobile;
-import org.openhab.binding.synopanalyser.internal.synop.SynopShip;
-import org.openhab.binding.synopanalyser.internal.synop.WindDirections;
 import org.openhab.binding.synopanalyzer.internal.config.SynopAnalyzerConfiguration;
+import org.openhab.binding.synopanalyzer.internal.synop.Overcast;
+import org.openhab.binding.synopanalyzer.internal.synop.StationDB;
+import org.openhab.binding.synopanalyzer.internal.synop.Synop;
+import org.openhab.binding.synopanalyzer.internal.synop.SynopLand;
+import org.openhab.binding.synopanalyzer.internal.synop.SynopMobile;
+import org.openhab.binding.synopanalyzer.internal.synop.SynopShip;
+import org.openhab.binding.synopanalyzer.internal.synop.WindDirections;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
@@ -98,6 +98,8 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
         if (thing.getProperties().isEmpty() && stations != null) {
             discoverAttributes(stations, configuration.stationId);
         }
+
+        updateStatus(ThingStatus.UNKNOWN);
 
         executionJob = scheduler.scheduleWithFixedDelay(this::updateSynopChannels, 0, configuration.refreshInterval,
                 TimeUnit.MINUTES);

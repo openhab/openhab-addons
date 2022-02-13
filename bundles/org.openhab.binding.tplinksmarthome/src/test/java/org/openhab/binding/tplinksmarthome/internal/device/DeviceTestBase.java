@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.tplinksmarthome.internal.device;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class DeviceTestBase<T extends SmartHomeDevice> {
      *
      * @throws IOException exception in case device not reachable
      */
-    protected DeviceTestBase(T device, String deviceStateFilename) throws IOException {
+    protected DeviceTestBase(final T device, final String deviceStateFilename) throws IOException {
         this.device = device;
         this.deviceStateFilename = deviceStateFilename;
         configuration.ipAddress = "localhost";
@@ -80,7 +80,7 @@ public class DeviceTestBase<T extends SmartHomeDevice> {
 
     @BeforeEach
     public void setUp() throws IOException {
-        when(socket.getOutputStream()).thenReturn(outputStream);
+        lenient().when(socket.getOutputStream()).thenReturn(outputStream);
         deviceState = new DeviceState(ModelTestUtil.readJson(deviceStateFilename));
     }
 
@@ -91,11 +91,11 @@ public class DeviceTestBase<T extends SmartHomeDevice> {
      * @param responseFilenames names of the files to read that contains the answer. It's the unencrypted json string
      * @throws IOException exception in case device not reachable
      */
-    protected void setSocketReturnAssert(String... responseFilenames) throws IOException {
-        AtomicInteger index = new AtomicInteger();
+    protected void setSocketReturnAssert(final String... responseFilenames) throws IOException {
+        final AtomicInteger index = new AtomicInteger();
 
-        doAnswer(i -> {
-            String stateResponse = ModelTestUtil.readJson(responseFilenames[index.getAndIncrement()]);
+        lenient().doAnswer(i -> {
+            final String stateResponse = ModelTestUtil.readJson(responseFilenames[index.getAndIncrement()]);
 
             return new ByteArrayInputStream(CryptUtil.encryptWithLength(stateResponse));
         }).when(socket).getInputStream();
@@ -109,20 +109,20 @@ public class DeviceTestBase<T extends SmartHomeDevice> {
      * @param filenames names of the files containing the reference json
      * @throws IOException exception in case device not reachable
      */
-    protected void assertInput(String... filenames) throws IOException {
+    protected void assertInput(final String... filenames) throws IOException {
         assertInput(Function.identity(), Function.identity(), filenames);
     }
 
-    protected void assertInput(Function<String, String> jsonProcessor, Function<String, String> expectedProcessor,
-            String... filenames) throws IOException {
-        AtomicInteger index = new AtomicInteger();
+    protected void assertInput(final Function<String, String> jsonProcessor,
+            final Function<String, String> expectedProcessor, final String... filenames) throws IOException {
+        final AtomicInteger index = new AtomicInteger();
 
-        doAnswer(arg -> {
-            String json = jsonProcessor.apply(ModelTestUtil.readJson(filenames[index.get()]));
+        lenient().doAnswer(arg -> {
+            final String json = jsonProcessor.apply(ModelTestUtil.readJson(filenames[index.get()]));
 
-            byte[] input = (byte[]) arg.getArguments()[0];
+            final byte[] input = (byte[]) arg.getArguments()[0];
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(input)) {
-                String expectedString = expectedProcessor.apply(CryptUtil.decryptWithLength(inputStream));
+                final String expectedString = expectedProcessor.apply(CryptUtil.decryptWithLength(inputStream));
                 assertEquals(json, expectedString, filenames[index.get()]);
             }
             index.incrementAndGet();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.haywardomnilogic.internal.handler;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,12 +22,15 @@ import org.openhab.binding.haywardomnilogic.internal.HaywardException;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.StateDescriptionFragment;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +45,37 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
 
     public HaywardVirtualHeaterHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void initialize() {
+        try {
+            setStateDescriptions();
+            updateStatus(ThingStatus.ONLINE);
+        } catch (HaywardException e) {
+            updateStatus(ThingStatus.OFFLINE);
+        }
+    }
+
+    @Override
+    public void setStateDescriptions() throws HaywardException {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
+            if (bridgehandler != null) {
+                // Set heater min and max speeds
+                Channel ch = thing.getChannel(HaywardBindingConstants.CHANNEL_VIRTUALHEATER_CURRENTSETPOINT);
+                if (ch != null) {
+                    StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                            .withMinimum(new BigDecimal(getThing().getProperties()
+                                    .get(HaywardBindingConstants.PROPERTY_VIRTUALHEATER_MINSETTABLEWATERTEMP)))
+                            .withMaximum(new BigDecimal(getThing().getProperties()
+                                    .get(HaywardBindingConstants.PROPERTY_VIRTUALHEATER_MAXSETTABLEWATERTEMP)))
+                            .build();
+                    bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
+                }
+            }
+        }
     }
 
     @Override
@@ -82,6 +117,10 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
 
         String systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
         String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
+        String heaterMinSetTemp = getThing().getProperties()
+                .get(HaywardBindingConstants.PROPERTY_VIRTUALHEATER_MINSETTABLEWATERTEMP);
+        String heaterMaxSetTemp = getThing().getProperties()
+                .get(HaywardBindingConstants.PROPERTY_VIRTUALHEATER_MAXSETTABLEWATERTEMP);
 
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -111,6 +150,14 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
                             break;
 
                         case HaywardBindingConstants.CHANNEL_VIRTUALHEATER_CURRENTSETPOINT:
+                            if (heaterMinSetTemp != null && heaterMaxSetTemp != null) {
+                                if (Integer.parseInt(cmdString) < Integer.parseInt(heaterMinSetTemp)) {
+                                    cmdString = heaterMinSetTemp;
+                                } else if (Integer.parseInt(cmdString) > Integer.parseInt(heaterMaxSetTemp)) {
+                                    cmdString = heaterMaxSetTemp;
+                                }
+                            }
+
                             cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS
                                     + "<Name>SetUIHeaterCmd</Name><Parameters>"
                                     + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token

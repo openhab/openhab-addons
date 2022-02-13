@@ -78,8 +78,8 @@ The WiFi client thing configuration parameters are:
 |---|---|---|---|
 | macAddress | String | MAC address of the client or interface |  |
 | comment | String | User-defined comment |  |
-| connected | Switch | Reflects connected or disconnected state |  |
-| continuous | Switch | Connection is considered long-running |  |
+| connected | Contact | Reflects connected or disconnected state |  |
+| continuous | Contact | Connection is considered long-running |  |
 | ssid | String | Wireless Network (SSID) the wireless client is connected to |  |
 | interface | String | Network interface name |  |
 | signal | system.signal-strength | Signal strength (RSSI) |  |
@@ -106,6 +106,8 @@ At the moment the binding supports the following RouterOS interface types:
 * `wlan`
 * `cap`
 * `pppoe-out`
+* `ppp-out`
+* `lte`
 * `l2tp-in`
 * `l2tp-out`
 
@@ -132,7 +134,7 @@ Common for all kinds of interfaces:
 | comment | String | User-defined comment |  |
 | macAddress | String | MAC address of the client or interface |  |
 | enabled | Switch | Reflects enabled or disabled state |  |
-| connected | Switch | Reflects connected or disconnected state |  |
+| connected | Contact | Reflects connected or disconnected state |  |
 | lastLinkDownTime | DateTime | Last time when link went down |  |
 | lastLinkUpTime | DateTime | Last time when link went up |  |
 | linkDowns | Number | Amount of link downs |  |
@@ -193,7 +195,7 @@ String     Eth_1_Name                  "Name"                       (gRB1Eth1) {
 String     Eth_1_Comment               "Comment"                    (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:comment"}
 String     Eth_1_Mac_Address           "Mac address"                (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:macAddress"}
 Switch     Eth_1_Enabled               "Enabled"                    (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:enabled"}
-Switch     Eth_1_Connected             "Connected"                  (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:connected"}
+Contact     Eth_1_Connected             "Connected"                  (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:connected"}
 DateTime   Eth_1_Last_Link_Down_Time   "Last link down"             (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:lastLinkDownTime"}
 DateTime   Eth_1_Last_Link_Up_Time     "Last link up"               (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:lastLinkUpTime"}
 Number     Eth_1_Link_Downs            "Link downs"                 (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:linkDowns"}
@@ -220,7 +222,7 @@ String     Eth_2_Name                  "Name"                       (gRB1Eth2) {
 String     Eth_2_Comment               "Comment"                    (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:comment"}
 String     Eth_2_Mac_Address           "Mac address"                (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:macAddress"}
 Switch     Eth_2_Enabled               "Enabled"                    (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:enabled"}
-Switch     Eth_2_Connected             "Connected"                  (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:connected"}
+Contact     Eth_2_Connected             "Connected"                  (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:connected"}
 DateTime   Eth_2_Last_Link_Down_Time   "Last link down"             (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:lastLinkDownTime"}
 DateTime   Eth_2_Last_Link_Up_Time     "Last link up"               (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:lastLinkUpTime"}
 Number     Eth_2_Link_Downs            "Link downs"                 (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:linkDowns"}
@@ -247,7 +249,7 @@ String     Cap_1_Name                  "Name"                       (gRB1Cap1) {
 String     Cap_1_Comment               "Comment"                    (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:comment"}
 String     Cap_1_Mac_Address           "Mac address"                (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:macAddress"}
 Switch     Cap_1_Enabled               "Enabled"                    (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:enabled"}
-Switch     Cap_1_Connected             "Connected"                  (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:connected"}
+Contact     Cap_1_Connected             "Connected"                  (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:connected"}
 DateTime   Cap_1_Last_Link_Down_Time   "Last link down"             (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:lastLinkDownTime"}
 DateTime   Cap_1_Last_Link_Up_Time     "Last link up"               (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:lastLinkUpTime"}
 Number     Cap_1_Link_Downs            "Link downs"                 (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:linkDowns"}
@@ -274,7 +276,7 @@ String     PP_Po_E_1_Name                  "Name"                       (gRB1Ppp
 String     PP_Po_E_1_Comment               "Comment"                    (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:comment"}
 String     PP_Po_E_1_Mac_Address           "Mac address"                (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:macAddress"}
 Switch     PP_Po_E_1_Enabled               "Enabled"                    (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:enabled"}
-Switch     PP_Po_E_1_Connected             "Connected"                  (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:connected"}
+Contact     PP_Po_E_1_Connected             "Connected"                  (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:connected"}
 DateTime   PP_Po_E_1_Last_Link_Down_Time   "Last link down"             (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:lastLinkDownTime"}
 DateTime   PP_Po_E_1_Last_Link_Up_Time     "Last link up"               (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:lastLinkUpTime"}
 Number     PP_Po_E_1_Link_Downs            "Link downs"                 (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:linkDowns"}
@@ -299,7 +301,7 @@ String     L_2_TP_Srv_1_Name                  "Name"                       (gRB1
 String     L_2_TP_Srv_1_Comment               "Comment"                    (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:comment"}
 String     L_2_TP_Srv_1_Mac_Address           "Mac address"                (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:macAddress"}
 Switch     L_2_TP_Srv_1_Enabled               "Enabled"                    (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:enabled"}
-Switch     L_2_TP_Srv_1_Connected             "Connected"                  (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:connected"}
+Contact     L_2_TP_Srv_1_Connected             "Connected"                  (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:connected"}
 DateTime   L_2_TP_Srv_1_Last_Link_Down_Time   "Last link down"             (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:lastLinkDownTime"}
 DateTime   L_2_TP_Srv_1_Last_Link_Up_Time     "Last link up"               (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:lastLinkUpTime"}
 Number     L_2_TP_Srv_1_Link_Downs            "Link downs"                 (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:linkDowns"}
@@ -319,8 +321,8 @@ Number     L_2_TP_Srv_1_Rx_Errors             "Receiving errors"           (gRB1
 Group gRB1Wifi1 "WiFi Client 1"
 String     Phone_1_Mac_Address      "Mac address"                          (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:macAddress"}
 String     Phone_1_Comment          "Comment"                              (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:comment"}
-Switch     Phone_1_Connected        "Connected"                            (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:connected"}
-Switch     Phone_1_Continuous       "Continuous"                           (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:continuous"}
+Contact     Phone_1_Connected        "Connected"                            (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:connected"}
+Contact     Phone_1_Continuous       "Continuous"                           (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:continuous"}
 String     Phone_1_Ssid             "Wi fi network"                        (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:ssid"}
 String     Phone_1_Interface        "Name"                                 (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:interface"}
 Number     Phone_1_Signal           "Received signal strength indicator"   (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:signal"}
@@ -338,8 +340,8 @@ Number     Phone_1_Rx_Packets       "Received packets"                     (gRB1
 Group gRB1Wifi2 "WiFi Client 2"
 String     Tablet_2_Mac_Address      "Mac address"                          (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:macAddress"}
 String     Tablet_2_Comment          "Comment"                              (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:comment"}
-Switch     Tablet_2_Connected        "Connected"                            (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:connected"}
-Switch     Tablet_2_Continuous       "Continuous"                           (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:continuous"}
+Contact     Tablet_2_Connected        "Connected"                            (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:connected"}
+Contact     Tablet_2_Continuous       "Continuous"                           (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:continuous"}
 String     Tablet_2_Ssid             "Wi fi network"                        (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:ssid"}
 String     Tablet_2_Interface        "Name"                                 (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:interface"}
 Number     Tablet_2_Signal           "Received signal strength indicator"   (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:signal"}

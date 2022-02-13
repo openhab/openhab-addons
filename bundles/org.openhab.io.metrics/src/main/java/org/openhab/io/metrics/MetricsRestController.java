@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RolesAllowed({ Role.USER, Role.ADMIN })
 @Tag(name = MetricsRestController.PATH_METRICS)
 @NonNullByDefault
-@ConfigurableService(category = "io", label = "Metrics service", description_uri = "io:metrics")
+@ConfigurableService(category = "io", label = "Metrics Service", description_uri = "io:metrics")
 public class MetricsRestController {
     private final Logger logger = LoggerFactory.getLogger(MetricsRestController.class);
     public static final String PATH_METRICS = "metrics";

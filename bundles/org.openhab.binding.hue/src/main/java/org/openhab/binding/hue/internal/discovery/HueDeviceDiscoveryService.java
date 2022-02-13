@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -111,8 +111,11 @@ public class HueDeviceDiscoveryService extends AbstractDiscoveryService
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof HueBridgeHandler) {
-            hueBridgeHandler = (HueBridgeHandler) handler;
+            HueBridgeHandler localHandler = (HueBridgeHandler) handler;
+            hueBridgeHandler = localHandler;
             bridgeUID = handler.getThing().getUID();
+            i18nProvider = localHandler.getI18nProvider();
+            localeProvider = localHandler.getLocaleProvider();
         }
     }
 
@@ -275,8 +278,14 @@ public class HueDeviceDiscoveryService extends AbstractDiscoveryService
             Map<String, Object> properties = new HashMap<>();
             properties.put(GROUP_ID, group.getId());
 
-            String name = String.format("%s (%s)", "0".equals(group.getId()) ? "All lights" : group.getName(),
-                    group.getType());
+            String name;
+            if ("0".equals(group.getId())) {
+                name = "@text/discovery.group.all_lights.label";
+            } else if ("Room".equals(group.getType())) {
+                name = group.getName();
+            } else {
+                name = String.format("%s (%s)", group.getName(), group.getType());
+            }
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_GROUP)
                     .withProperties(properties).withBridge(localBridgeUID).withRepresentationProperty(GROUP_ID)
                     .withLabel(name).build();

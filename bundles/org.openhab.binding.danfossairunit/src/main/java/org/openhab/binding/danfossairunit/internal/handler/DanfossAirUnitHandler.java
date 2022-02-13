@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,18 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.danfossairunit.internal;
-
-import static org.openhab.binding.danfossairunit.internal.DanfossAirUnitBindingConstants.*;
+package org.openhab.binding.danfossairunit.internal.handler;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.danfossairunit.internal.Channel;
+import org.openhab.binding.danfossairunit.internal.ChannelGroup;
+import org.openhab.binding.danfossairunit.internal.DanfossAirUnit;
+import org.openhab.binding.danfossairunit.internal.DanfossAirUnitCommunicationController;
+import org.openhab.binding.danfossairunit.internal.DanfossAirUnitConfiguration;
+import org.openhab.binding.danfossairunit.internal.DanfossAirUnitWriteAccessor;
+import org.openhab.binding.danfossairunit.internal.UnexpectedResponseValueException;
+import org.openhab.binding.danfossairunit.internal.ValueCache;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -53,6 +62,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable DanfossAirUnitCommunicationController communicationController;
     private @Nullable DanfossAirUnit airUnit;
+    private boolean propertiesInitializedSuccessfully = false;
 
     public DanfossAirUnitHandler(Thing thing) {
         super(thing);
@@ -73,7 +83,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE,
-                            "Air unit connection not initialized.");
+                            "@text/offline.connection-not-initialized");
                     return;
                 }
             } catch (IllegalArgumentException e) {
@@ -89,30 +99,40 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(DanfossAirUnitConfiguration.class);
         valueCache = new ValueCache(config.updateUnchangedValuesEveryMillis);
+        removeDeprecatedChannels();
         try {
             var localCommunicationController = new DanfossAirUnitCommunicationController(
                     InetAddress.getByName(config.host), TCP_PORT);
             this.communicationController = localCommunicationController;
-            var localAirUnit = new DanfossAirUnit(localCommunicationController);
-            this.airUnit = localAirUnit;
-            scheduler.execute(() -> {
-                try {
-                    thing.setProperty(PROPERTY_UNIT_NAME, localAirUnit.getUnitName());
-                    thing.setProperty(PROPERTY_SERIAL, localAirUnit.getUnitSerialNumber());
-                    startPolling();
-                    updateStatus(ThingStatus.ONLINE);
-                } catch (IOException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-                }
-            });
+            this.airUnit = new DanfossAirUnit(localCommunicationController);
+            startPolling();
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Unknown host: " + config.host);
+                    "@text/offline.communication-error.unknown-host [\"" + config.host + "\"]");
             return;
         }
     }
 
+    private void removeDeprecatedChannels() {
+        ChannelGroupUID mainChannelGroupUid = new ChannelGroupUID(thing.getUID(), ChannelGroup.MAIN.getGroupName());
+        ChannelUID manualFanSpeedChannelUid = new ChannelUID(mainChannelGroupUid,
+                Channel.CHANNEL_MANUAL_FAN_SPEED.getChannelName());
+        if (this.isLinked(manualFanSpeedChannelUid)) {
+            ChannelUID manualFanStepChannelUid = new ChannelUID(mainChannelGroupUid,
+                    Channel.CHANNEL_MANUAL_FAN_STEP.getChannelName());
+            logger.warn("Channel '{}' is deprecated, please use '{}' instead.", manualFanSpeedChannelUid,
+                    manualFanStepChannelUid);
+        } else {
+            logger.debug("Removing deprecated unlinked channel '{}'.", manualFanSpeedChannelUid);
+            updateThing(editThing().withoutChannel(manualFanSpeedChannelUid).build());
+        }
+    }
+
     private void updateAllChannels() {
+        if (!initializeProperties()) {
+            return;
+        }
+
         DanfossAirUnit localAirUnit = this.airUnit;
         if (localAirUnit == null) {
             return;
@@ -128,7 +148,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             try {
                 updateState(channel.getGroup().getGroupName(), channel.getChannelName(),
                         channel.getReadAccessor().access(localAirUnit));
-                if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 }
             } catch (UnexpectedResponseValueException e) {
@@ -136,7 +156,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
                 logger.debug(
                         "Cannot update channel {}: an unexpected or invalid response has been received from the air unit: {}",
                         channel.getChannelName(), e.getMessage());
-                if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 }
             } catch (IOException e) {
@@ -146,6 +166,33 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
                         channel.getChannelName(), e.getMessage());
             }
         }
+    }
+
+    private synchronized boolean initializeProperties() {
+        if (propertiesInitializedSuccessfully) {
+            return true;
+        }
+
+        DanfossAirUnit localAirUnit = this.airUnit;
+        if (localAirUnit == null) {
+            return false;
+        }
+
+        logger.debug("Initializing DanfossHRV properties '{}'", getThing().getUID());
+
+        try {
+            Map<String, String> properties = new HashMap<>(2);
+            properties.put(Thing.PROPERTY_MODEL_ID, localAirUnit.getUnitName());
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, localAirUnit.getUnitSerialNumber());
+            updateProperties(properties);
+            propertiesInitializedSuccessfully = true;
+            updateStatus(ThingStatus.ONLINE);
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            logger.debug("Cannot initialize properties: an error occurred: {}", e.getMessage());
+        }
+
+        return propertiesInitializedSuccessfully;
     }
 
     @Override

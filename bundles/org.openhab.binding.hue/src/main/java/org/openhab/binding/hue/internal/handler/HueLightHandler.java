@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,6 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import static org.openhab.core.thing.Thing.*;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -29,7 +27,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.FullLight;
 import org.openhab.binding.hue.internal.State;
 import org.openhab.binding.hue.internal.StateUpdate;
-import org.openhab.binding.hue.internal.action.LightActions;
 import org.openhab.binding.hue.internal.dto.Capabilities;
 import org.openhab.binding.hue.internal.dto.ColorTemperature;
 import org.openhab.core.library.types.DecimalType;
@@ -47,7 +44,6 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
@@ -71,15 +67,17 @@ import org.slf4j.LoggerFactory;
  * @author Denis Dudnik - switched to internally integrated source of Jue library
  * @author Christoph Weitkamp - Added support for bulbs using CIE XY colormode only
  * @author Jochen Leopold - Added support for custom fade times
+ * @author Jacob Laursen - Add workaround for LK Wiser products
  */
 @NonNullByDefault
-public class HueLightHandler extends BaseThingHandler implements LightStatusListener {
+public class HueLightHandler extends BaseThingHandler implements HueLightActionsHandler, LightStatusListener {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_COLOR_LIGHT,
             THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT,
             THING_TYPE_ON_OFF_LIGHT, THING_TYPE_ON_OFF_PLUG, THING_TYPE_DIMMABLE_PLUG);
 
     public static final String OSRAM_PAR16_50_TW_MODEL_ID = "PAR16_50_TW";
+    public static final String LK_WISER_MODEL_ID = "LK_Dimmer";
 
     private final Logger logger = LoggerFactory.getLogger(HueLightHandler.class);
 
@@ -93,8 +91,14 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     private @Nullable Integer lastSentColorTemp;
     private @Nullable Integer lastSentBrightness;
 
-    // Flag to indicate whether the bulb is of type Osram par16 50 TW or not
+    /**
+     * Flag to indicate whether the bulb is of type Osram par16 50 TW
+     */
     private boolean isOsramPar16 = false;
+    /**
+     * Flag to indicate whether the dimmer/relay is of type LK Wiser by Schneider Electric
+     */
+    private boolean isLkWiser = false;
 
     private boolean propertiesInitializedSuccessfully = false;
     private boolean capabilitiesInitializedSuccessfully = false;
@@ -163,6 +167,15 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             String modelId = fullLight.getNormalizedModelID();
             if (modelId != null) {
                 properties.put(PROPERTY_MODEL_ID, modelId);
+
+                switch (modelId) {
+                    case OSRAM_PAR16_50_TW_MODEL_ID:
+                        isOsramPar16 = true;
+                        break;
+                    case LK_WISER_MODEL_ID:
+                        isLkWiser = true;
+                        break;
+                }
             }
             properties.put(PROPERTY_VENDOR, fullLight.getManufacturerName());
             properties.put(PRODUCT_NAME, fullLight.getProductName());
@@ -171,7 +184,6 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
                 properties.put(UNIQUE_ID, uniqueID);
             }
             updateProperties(properties);
-            isOsramPar16 = OSRAM_PAR16_50_TW_MODEL_ID.equals(modelId);
             propertiesInitializedSuccessfully = true;
         }
     }
@@ -218,6 +230,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         handleCommand(channelUID.getId(), command, defaultFadeTime);
     }
 
+    @Override
     public void handleCommand(String channel, Command command, long fadeTime) {
         HueClient bridgeHandler = getHueClient();
         if (bridgeHandler == null) {
@@ -234,95 +247,99 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         }
 
         Integer lastColorTemp;
-        StateUpdate lightState = null;
+        StateUpdate newState = null;
         switch (channel) {
             case CHANNEL_COLORTEMPERATURE:
                 if (command instanceof PercentType) {
-                    lightState = LightStateConverter.toColorTemperatureLightStateFromPercentType((PercentType) command,
+                    newState = LightStateConverter.toColorTemperatureLightStateFromPercentType((PercentType) command,
                             colorTemperatureCapabilties);
-                    lightState.setTransitionTime(fadeTime);
+                    newState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
-                    lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
+                    newState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
-                        lightState = addOsramSpecificCommands(lightState, (OnOffType) command);
+                        newState = addOsramSpecificCommands(newState, (OnOffType) command);
                     }
                 } else if (command instanceof IncreaseDecreaseType) {
-                    lightState = convertColorTempChangeToStateUpdate((IncreaseDecreaseType) command, light);
-                    if (lightState != null) {
-                        lightState.setTransitionTime(fadeTime);
+                    newState = convertColorTempChangeToStateUpdate((IncreaseDecreaseType) command, light);
+                    if (newState != null) {
+                        newState.setTransitionTime(fadeTime);
                     }
                 }
                 break;
             case CHANNEL_COLORTEMPERATURE_ABS:
                 if (command instanceof DecimalType) {
-                    lightState = LightStateConverter.toColorTemperatureLightState((DecimalType) command,
+                    newState = LightStateConverter.toColorTemperatureLightState((DecimalType) command,
                             colorTemperatureCapabilties);
-                    lightState.setTransitionTime(fadeTime);
+                    newState.setTransitionTime(fadeTime);
                 }
                 break;
             case CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType) {
-                    lightState = LightStateConverter.toBrightnessLightState((PercentType) command);
-                    lightState.setTransitionTime(fadeTime);
+                    newState = LightStateConverter.toBrightnessLightState((PercentType) command);
+                    newState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
-                    lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
+                    newState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
-                        lightState = addOsramSpecificCommands(lightState, (OnOffType) command);
+                        newState = addOsramSpecificCommands(newState, (OnOffType) command);
+                    } else if (isLkWiser) {
+                        newState = addLkWiserSpecificCommands(newState, (OnOffType) command);
                     }
                 } else if (command instanceof IncreaseDecreaseType) {
-                    lightState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, light);
-                    if (lightState != null) {
-                        lightState.setTransitionTime(fadeTime);
+                    newState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, light);
+                    if (newState != null) {
+                        newState.setTransitionTime(fadeTime);
                     }
                 }
                 lastColorTemp = lastSentColorTemp;
-                if (lightState != null && lastColorTemp != null) {
+                if (newState != null && lastColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
-                    lightState.setColorTemperature(lastColorTemp, colorTemperatureCapabilties);
-                    lightState.setTransitionTime(fadeTime);
+                    newState.setColorTemperature(lastColorTemp, colorTemperatureCapabilties);
+                    newState.setTransitionTime(fadeTime);
                 }
                 break;
             case CHANNEL_SWITCH:
                 if (command instanceof OnOffType) {
-                    lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
+                    newState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
-                        lightState = addOsramSpecificCommands(lightState, (OnOffType) command);
+                        newState = addOsramSpecificCommands(newState, (OnOffType) command);
+                    } else if (isLkWiser) {
+                        newState = addLkWiserSpecificCommands(newState, (OnOffType) command);
                     }
                 }
                 lastColorTemp = lastSentColorTemp;
-                if (lightState != null && lastColorTemp != null) {
+                if (newState != null && lastColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
-                    lightState.setColorTemperature(lastColorTemp, colorTemperatureCapabilties);
-                    lightState.setTransitionTime(fadeTime);
+                    newState.setColorTemperature(lastColorTemp, colorTemperatureCapabilties);
+                    newState.setTransitionTime(fadeTime);
                 }
                 break;
             case CHANNEL_COLOR:
                 if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
                     if (hsbCommand.getBrightness().intValue() == 0) {
-                        lightState = LightStateConverter.toOnOffLightState(OnOffType.OFF);
+                        newState = LightStateConverter.toOnOffLightState(OnOffType.OFF);
                     } else {
-                        lightState = LightStateConverter.toColorLightState(hsbCommand, light.getState());
-                        lightState.setTransitionTime(fadeTime);
+                        newState = LightStateConverter.toColorLightState(hsbCommand, light.getState());
+                        newState.setTransitionTime(fadeTime);
                     }
                 } else if (command instanceof PercentType) {
-                    lightState = LightStateConverter.toBrightnessLightState((PercentType) command);
-                    lightState.setTransitionTime(fadeTime);
+                    newState = LightStateConverter.toBrightnessLightState((PercentType) command);
+                    newState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
-                    lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
+                    newState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
-                    lightState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, light);
-                    if (lightState != null) {
-                        lightState.setTransitionTime(fadeTime);
+                    newState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, light);
+                    if (newState != null) {
+                        newState.setTransitionTime(fadeTime);
                     }
                 }
                 break;
             case CHANNEL_ALERT:
                 if (command instanceof StringType) {
-                    lightState = LightStateConverter.toAlertState((StringType) command);
-                    if (lightState == null) {
+                    newState = LightStateConverter.toAlertState((StringType) command);
+                    if (newState == null) {
                         // Unsupported StringType is passed. Log a warning
                         // message and return.
                         logger.warn("Unsupported String command: {}. Supported commands are: {}, {}, {} ", command,
@@ -336,27 +353,27 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
                 break;
             case CHANNEL_EFFECT:
                 if (command instanceof OnOffType) {
-                    lightState = LightStateConverter.toOnOffEffectState((OnOffType) command);
+                    newState = LightStateConverter.toOnOffEffectState((OnOffType) command);
                 }
                 break;
         }
-        if (lightState != null) {
+        if (newState != null) {
             // Cache values which we have sent
-            Integer tmpBrightness = lightState.getBrightness();
+            Integer tmpBrightness = newState.getBrightness();
             if (tmpBrightness != null) {
                 lastSentBrightness = tmpBrightness;
             }
-            Integer tmpColorTemp = lightState.getColorTemperature();
+            Integer tmpColorTemp = newState.getColorTemperature();
             if (tmpColorTemp != null) {
                 lastSentColorTemp = tmpColorTemp;
             }
-            bridgeHandler.updateLightState(this, light, lightState, fadeTime);
+            bridgeHandler.updateLightState(this, light, newState, fadeTime);
         } else {
             logger.warn("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
         }
     }
 
-    /*
+    /**
      * Applies additional {@link StateUpdate} commands as a workaround for Osram
      * Lightify PAR16 TW firmware bug. Also see
      * http://www.everyhue.com/vanilla/discussion/1756/solved-lightify-turning-off
@@ -365,6 +382,18 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         if (actionType.equals(OnOffType.ON)) {
             lightState.setBrightness(254);
         } else {
+            lightState.setTransitionTime(0);
+        }
+        return lightState;
+    }
+
+    /**
+     * Applies additional {@link StateUpdate} commands as a workaround for LK Wiser
+     * Dimmer/Relay firmware bug. Additional details here:
+     * https://techblog.vindvejr.dk/?p=455
+     */
+    private StateUpdate addLkWiserSpecificCommands(StateUpdate lightState, OnOffType actionType) {
+        if (actionType.equals(OnOffType.OFF)) {
             lightState.setTransitionTime(0);
         }
         return lightState;
@@ -599,11 +628,6 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         }
 
         return delay;
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(LightActions.class);
     }
 
     @Override

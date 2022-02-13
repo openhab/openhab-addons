@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -294,8 +294,8 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = new QuantityType<>(Runtime.getRuntime().freeMemory(), Units.BYTE);
                     break;
                 case CHANNEL_MEMORY_USED_HEAP_PERCENT:
-                    state = new DecimalType((Runtime.getRuntime().maxMemory() - Runtime.getRuntime().freeMemory()) * 100
-                            / Runtime.getRuntime().maxMemory());
+                    state = new DecimalType((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())
+                            * 100 / Runtime.getRuntime().maxMemory());
                     break;
                 case CHANNEL_DISPLAY_INFORMATION:
                     state = systeminfo.getDisplayInformation(deviceIndex);

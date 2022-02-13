@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -94,6 +95,10 @@ public class ChannelState implements MqttMessageSubscriber {
         transformationsIn.add(transformation);
     }
 
+    public void addTransformation(String transformation, TransformationServiceProvider transformationServiceProvider) {
+        parseTransformation(transformation, transformationServiceProvider).forEach(t -> addTransformation(t));
+    }
+
     /**
      * Add a transformation that is applied for each value to be published.
      * The transformations are executed in order.
@@ -102,6 +107,18 @@ public class ChannelState implements MqttMessageSubscriber {
      */
     public void addTransformationOut(ChannelStateTransformation transformation) {
         transformationsOut.add(transformation);
+    }
+
+    public void addTransformationOut(String transformation,
+            TransformationServiceProvider transformationServiceProvider) {
+        parseTransformation(transformation, transformationServiceProvider).forEach(t -> addTransformationOut(t));
+    }
+
+    public static Stream<ChannelStateTransformation> parseTransformation(String transformation,
+            TransformationServiceProvider transformationServiceProvider) {
+        String[] transformations = transformation.split("∩");
+        return Stream.of(transformations).filter(t -> !t.isBlank())
+                .map(t -> new ChannelStateTransformation(t, transformationServiceProvider));
     }
 
     /**
@@ -191,8 +208,8 @@ public class ChannelState implements MqttMessageSubscriber {
         try {
             cachedValue.update(command);
         } catch (IllegalArgumentException | IllegalStateException e) {
-            logger.warn("Command '{}' not supported by type '{}': {}", strValue, cachedValue.getClass().getSimpleName(),
-                    e.getMessage());
+            logger.warn("Command '{}' from channel '{}' not supported by type '{}': {}", strValue, channelUID,
+                    cachedValue.getClass().getSimpleName(), e.getMessage());
             receivedOrTimeout();
             return;
         }

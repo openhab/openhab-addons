@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,13 +28,27 @@ public class MieleBindingConstants {
 
     public static final String BINDING_ID = "miele";
     public static final String APPLIANCE_ID = "uid";
-    public static final String DEVICE_CLASS = "dc";
-    public static final String PROTOCOL_PROPERTY_NAME = "protocol";
-    public static final String SERIAL_NUMBER_PROPERTY_NAME = "serialNumber";
+
+    // Properties
+    public static final String PROPERTY_DEVICE_CLASS = "deviceClass";
+    public static final String PROPERTY_PROTOCOL_ADAPTER = "protocolAdapter";
+    public static final String PROPERTY_CONNECTION_TYPE = "connectionType";
+    public static final String PROPERTY_CONNECTION_BAUD_RATE = "connectionBaudRate";
+
+    // JSON-RPC property names
     public static final String EXTENDED_DEVICE_STATE_PROPERTY_NAME = "extendedDeviceState";
     public static final String STATE_PROPERTY_NAME = "state";
+    public static final String PROGRAM_ID_PROPERTY_NAME = "programId";
+    public static final String PHASE_PROPERTY_NAME = "phase";
+    public static final String RAW_PHASE_PROPERTY_NAME = "rawPhase";
 
     // Shared Channel ID's
+    public static final String STATE_TEXT_CHANNEL_ID = "state";
+    public static final String STATE_CHANNEL_ID = "rawState";
+    public static final String PROGRAM_TEXT_CHANNEL_ID = "program";
+    public static final String PROGRAM_CHANNEL_ID = "rawProgram";
+    public static final String PHASE_TEXT_CHANNEL_ID = "phase";
+    public static final String PHASE_CHANNEL_ID = "rawPhase";
     public static final String SUPERCOOL_CHANNEL_ID = "supercool";
     public static final String SUPERFREEZE_CHANNEL_ID = "superfreeze";
     public static final String POWER_CONSUMPTION_CHANNEL_ID = "powerConsumption";
@@ -54,8 +68,14 @@ public class MieleBindingConstants {
 
     // Miele devices classes
     public static final String MIELE_DEVICE_CLASS_COFFEE_SYSTEM = "CoffeeSystem";
+    public static final String MIELE_DEVICE_CLASS_DISHWASHER = "Dishwasher";
     public static final String MIELE_DEVICE_CLASS_FRIDGE = "Fridge";
     public static final String MIELE_DEVICE_CLASS_FRIDGE_FREEZER = "FridgeFreezer";
+    public static final String MIELE_DEVICE_CLASS_HOB = "Hob";
+    public static final String MIELE_DEVICE_CLASS_HOOD = "Hood";
+    public static final String MIELE_DEVICE_CLASS_OVEN = "Oven";
+    public static final String MIELE_DEVICE_CLASS_TUMBLE_DRYER = "TumbleDryer";
+    public static final String MIELE_DEVICE_CLASS_WASHING_MACHINE = "WashingMachine";
 
     // Miele appliance states
     public static final int STATE_UNKNOWN = 0;
@@ -77,9 +97,23 @@ public class MieleBindingConstants {
     public static final int STATE_LOCKED = 145;
     public static final int STATE_NOT_CONNECTED = 255;
 
+    // Miele missing string prefixes
+    public static final String MISSING_STATE_TEXT_PREFIX = "state.";
+    public static final String MISSING_PROGRAM_TEXT_PREFIX = "program.";
+    public static final String MISSING_PHASE_TEXT_PREFIX = "phase.";
+
+    // Miele appliance localization text prefixes
+    public static final String MIELE_COFFEE_MACHINE_TEXT_PREFIX = "coffeemachine.";
+    public static final String MIELE_DISHWASHER_TEXT_PREFIX = "dishwasher.";
+    public static final String MIELE_OVEN_TEXT_PREFIX = "oven.";
+    public static final String MIELE_TUMBLE_DRYER_TEXT_PREFIX = "tumbledryer.";
+    public static final String MIELE_WASHING_MACHINE_TEXT_PREFIX = "washingmachine.";
+
     // Bridge config properties
     public static final String HOST = "ipAddress";
     public static final String INTERFACE = "interface";
     public static final String USER_NAME = "userName";
     public static final String PASSWORD = "password";
+    public static final String LANGUAGE = "language";
+    public static final String REMOVAL_GRACE_PERIOD = "removalGracePeriod";
 }

@@ -21,6 +21,22 @@ marytts:bits3hsmm bits3-hsmm (de)
 marytts:bits1hsmm bits1-hsmm (de)
 ```
 
+### Default Text-to-Speech and Voice Configuration
+
+You can setup your preferred default Text-to-Speech and default voice in the UI:
+
+* Go to **Settings**.
+* Edit **System Services - Voice**.
+* Set **MaryTTS** as **Default Text-to-Speech**.
+* Choose your preferred **Default Voice** for your setup.
+
+In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
+
+```
+org.openhab.voice:defaultTTS=marytts
+org.openhab.voice:defaultVoice=marytts:cmuslthsmm
+```
+
 ## Supported Audio Formats
 
 The MaryTTS service produces audio streams using WAV containers and PCM (signed) codec with 16bit depth.

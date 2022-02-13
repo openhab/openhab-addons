@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.xmppclient.internal;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,6 +32,7 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo.Identity;
+import org.jivesoftware.smackx.httpfileupload.HttpFileUploadManager;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -46,6 +49,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
     private final Logger logger = LoggerFactory.getLogger(XMPPClient.class);
     private AbstractXMPPConnection connection;
     private ChatManager chatManager;
+    private HttpFileUploadManager httpFileUploadManager;
     private Set<XMPPClientMessageSubscriber> subscribers = new HashSet<>();
 
     public void subscribe(XMPPClientMessageSubscriber channel) {
@@ -90,6 +94,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
 
         chatManager = ChatManager.getInstanceFor(connection);
         chatManager.addIncomingListener(this);
+        httpFileUploadManager = HttpFileUploadManager.getInstanceFor(connection);
     }
 
     public void disconnect() {
@@ -113,6 +118,24 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
             chat.send(message);
         } catch (XmppStringprepException | SmackException.NotConnectedException | InterruptedException e) {
             logger.info("XMPP message sending error", e);
+        }
+    }
+
+    public void sendImageByHTTP(String to, String filename) {
+        if (connection == null) {
+            logger.warn("XMPP connection is null");
+            return;
+        }
+        if (httpFileUploadManager == null) {
+            logger.warn("XMPP httpFileUploadManager is null");
+            return;
+        }
+        try {
+            URL u = httpFileUploadManager.uploadFile(new File(filename));
+            // Use Stanza oob
+            this.sendMessage(to, u.toString());
+        } catch (XMPPException.XMPPErrorException | SmackException | InterruptedException | IOException e) {
+            logger.warn("XMPP HTTP image sending error", e);
         }
     }
 

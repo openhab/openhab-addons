@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Thomas Rokohl - Initial contribution
  * @author Peter Schraffl - Added device status and error status channels
  * @author Thomas Kordelle - Added inverter power, battery state of charge and PV solar yield
+ * @author Hannes Spenger - Added ohmpilot & meter power sum
  */
 @NonNullByDefault
 public class FroniusBindingConstants {
@@ -32,6 +33,7 @@ public class FroniusBindingConstants {
     public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(BINDING_ID, "powerinverter");
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_METER = new ThingTypeUID(BINDING_ID, "meter");
+    public static final ThingTypeUID THING_TYPE_OHMPILOT = new ThingTypeUID(BINDING_ID, "ohmpilot");
 
     // List of all Channel ids
     public static final String INVERTER_DATA_CHANNEL_DAY_ENERGY = "inverterdatachanneldayenergy";
@@ -49,8 +51,6 @@ public class FroniusBindingConstants {
     public static final String POWER_FLOW_P_LOAD = "powerflowchannelpload";
     public static final String POWER_FLOW_P_AKKU = "powerflowchannelpakku";
     public static final String POWER_FLOW_P_PV = "powerflowchannelppv";
-    public static final String METER_MODEL = "model";
-    public static final String METER_SERIAL = "serial";
     public static final String METER_ENABLE = "enable";
     public static final String METER_LOCATION = "location";
     public static final String METER_CURRENT_AC_PHASE_1 = "currentacphase1";
@@ -62,11 +62,17 @@ public class FroniusBindingConstants {
     public static final String METER_POWER_PHASE_1 = "powerrealphase1";
     public static final String METER_POWER_PHASE_2 = "powerrealphase2";
     public static final String METER_POWER_PHASE_3 = "powerrealphase3";
+    public static final String METER_POWER_SUM = "powerrealsum";
     public static final String METER_POWER_FACTOR_PHASE_1 = "powerfactorphase1";
     public static final String METER_POWER_FACTOR_PHASE_2 = "powerfactorphase2";
     public static final String METER_POWER_FACTOR_PHASE_3 = "powerfactorphase3";
     public static final String METER_ENERGY_REAL_SUM_CONSUMED = "energyrealsumconsumed";
     public static final String METER_ENERGY_REAL_SUM_PRODUCED = "energyrealsumproduced";
+    public static final String OHMPILOT_POWER_REAL_SUM = "powerrealsum";
+    public static final String OHMPILOT_ENERGY_REAL_SUM_CONSUMED = "energyrealsumconsumed";
+    public static final String OHMPILOT_ENERGY_SENSOR_TEMPERATURE_CHANNEL_1 = "temperaturechannel1";
+    public static final String OHMPILOT_ERROR_CODE = "errorcode";
+    public static final String OHMPILOT_STATE_CODE = "statecode";
 
     /*
      * part of POWERFLOW_REALTIME_DATA using Symo Gen24
@@ -86,4 +92,5 @@ public class FroniusBindingConstants {
     public static final String INVERTER_REALTIME_DATA_URL = "http://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";
     public static final String POWERFLOW_REALTIME_DATA = "http://%IP%/solar_api/v1/GetPowerFlowRealtimeData.fcgi";
     public static final String METER_REALTIME_DATA_URL = "http://%IP%/solar_api/v1/GetMeterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=MeterRealtimeData";
+    public static final String OHMPILOT_REALTIME_DATA_URL = "http://%IP%/solar_api/v1/GetOhmPilotRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%";
 }

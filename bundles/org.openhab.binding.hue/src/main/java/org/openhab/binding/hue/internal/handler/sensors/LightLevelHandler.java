@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,7 +90,7 @@ public class LightLevelHandler extends HueSensorHandler {
         }
 
         if (sensor.getConfig().containsKey(CONFIG_LED_INDICATION)) {
-            config.put(CONFIG_LED_INDICATION, sensor.getConfig().get(CONFIG_LIGHT_LEVEL_THRESHOLD_DARK));
+            config.put(CONFIG_LED_INDICATION, sensor.getConfig().get(CONFIG_LED_INDICATION));
         }
         if (sensor.getConfig().containsKey(CONFIG_LIGHT_LEVEL_THRESHOLD_DARK)) {
             config.put(CONFIG_LIGHT_LEVEL_THRESHOLD_DARK, sensor.getConfig().get(CONFIG_LIGHT_LEVEL_THRESHOLD_DARK));

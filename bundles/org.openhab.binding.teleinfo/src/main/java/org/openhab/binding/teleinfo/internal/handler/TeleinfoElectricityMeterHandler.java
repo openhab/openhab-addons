@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,10 +21,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.teleinfo.internal.data.Frame;
 import org.openhab.binding.teleinfo.internal.data.Phase;
 import org.openhab.binding.teleinfo.internal.data.Pricing;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.FrameUtil;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.ValueType;
+import org.openhab.binding.teleinfo.internal.serial.TeleinfoTicMode;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -130,7 +133,7 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
     @Override
     public void onFrameReceived(Frame frame) {
         String adco = configuration.getAdco();
-        if (adco.equalsIgnoreCase(frame.get(Label.ADCO))) {
+        if (adco.equalsIgnoreCase(frame.get(Label.ADCO)) || adco.equalsIgnoreCase(frame.get(Label.ADSC))) {
             updateStatesForChannels(frame);
         }
     }
@@ -139,39 +142,65 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
         for (Entry<Label, String> entry : frame.getLabelToValues().entrySet()) {
             Label label = entry.getKey();
             if (!label.getChannelName().equals(NOT_A_CHANNEL)) {
+                logger.trace("Update channel {} to value {}", label.getChannelName(), entry.getValue());
                 if (label == Label.PTEC) {
                     updateState(label.getChannelName(), StringType.valueOf(entry.getValue().replace(".", "")));
                 } else if (label.getType() == ValueType.STRING) {
                     updateState(label.getChannelName(), StringType.valueOf(entry.getValue()));
                 } else if (label.getType() == ValueType.INTEGER) {
-                    updateState(label.getChannelName(),
-                            QuantityType.valueOf(Integer.parseInt(entry.getValue()), label.getUnit()));
+                    updateState(label.getChannelName(), QuantityType
+                            .valueOf(label.getFactor() * Integer.parseInt(entry.getValue()), label.getUnit()));
+                }
+            }
+            if (!label.getTimestampChannelName().equals(NOT_A_CHANNEL)) {
+                String timestamp = frame.getAsDateTime(label);
+                if (!timestamp.isEmpty()) {
+                    logger.trace("Update channel {} to value {}", label.getTimestampChannelName(), timestamp);
+                    updateState(label.getTimestampChannelName(), DateTimeType.valueOf(timestamp));
                 }
             }
         }
         try {
-            if (frame.getPricing() == Pricing.TEMPO) {
-                updateState(CHANNEL_TEMPO_FRAME_PROGRAMME_CIRCUIT_1, StringType.valueOf(frame.getProgrammeCircuit1()));
-                updateState(CHANNEL_TEMPO_FRAME_PROGRAMME_CIRCUIT_2, StringType.valueOf(frame.getProgrammeCircuit2()));
-            }
-        } catch (InvalidFrameException e) {
-            logger.warn("Can not find pricing option.");
-        }
+            if (frame.getTicMode() == TeleinfoTicMode.HISTORICAL) {
+                try {
+                    if (frame.getPricing() == Pricing.TEMPO) {
+                        updateState(CHANNEL_TEMPO_FRAME_PROGRAMME_CIRCUIT_1,
+                                StringType.valueOf(frame.getProgrammeCircuit1()));
+                        updateState(CHANNEL_TEMPO_FRAME_PROGRAMME_CIRCUIT_2,
+                                StringType.valueOf(frame.getProgrammeCircuit2()));
+                    }
+                } catch (InvalidFrameException e) {
+                    logger.warn("Can not find pricing option.");
+                }
 
-        try {
-            Phase phase = frame.getPhase();
-            if (phase == Phase.ONE_PHASED) {
-                updateStateForMissingAlert(frame, Label.ADPS);
-            } else if (phase == Phase.THREE_PHASED) {
-                if (!wasLastFrameShort) {
-                    updateStateForMissingAlert(frame, Label.ADIR1);
-                    updateStateForMissingAlert(frame, Label.ADIR2);
-                    updateStateForMissingAlert(frame, Label.ADIR3);
+                try {
+                    Phase phase = frame.getPhase();
+                    if (phase == Phase.ONE_PHASED) {
+                        updateStateForMissingAlert(frame, Label.ADPS);
+                    } else if (phase == Phase.THREE_PHASED) {
+                        if (!wasLastFrameShort) {
+                            updateStateForMissingAlert(frame, Label.ADIR1);
+                            updateStateForMissingAlert(frame, Label.ADIR2);
+                            updateStateForMissingAlert(frame, Label.ADIR3);
+                        }
+                        wasLastFrameShort = frame.isShortFrame();
+                    }
+                } catch (InvalidFrameException e) {
+                    logger.warn("Can not find phase.");
                 }
-                wasLastFrameShort = frame.isShortFrame();
+            } else {
+                if (frame.getLabelToValues().containsKey(Label.RELAIS)) {
+                    String relaisString = frame.get(Label.RELAIS);
+                    if (relaisString != null) {
+                        boolean[] relaisStates = FrameUtil.parseRelaisStates(relaisString);
+                        for (int i = 0; i <= 7; i++) {
+                            updateState(CHANNELS_LSM_RELAIS[i], OnOffType.from(relaisStates[i]));
+                        }
+                    }
+                }
             }
         } catch (InvalidFrameException e) {
-            logger.warn("Can not find phase.");
+            logger.warn("Can not find TIC mode.");
         }
 
         updateState(CHANNEL_LAST_UPDATE, new DateTimeType());

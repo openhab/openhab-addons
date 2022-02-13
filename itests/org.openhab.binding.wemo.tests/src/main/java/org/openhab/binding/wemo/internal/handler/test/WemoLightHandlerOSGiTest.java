@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,7 +65,7 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
 
     @Test
     public void handleONcommandForBRIGHTNESSchannel()
-            throws MalformedURLException, URISyntaxException, ValidationException {
+            throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         Command command = OnOffType.ON;
         String channelID = WemoBindingConstants.CHANNEL_BRIGHTNESS;
 
@@ -80,7 +80,7 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
 
     @Test
     public void handlePercentCommandForBRIGHTNESSChannel()
-            throws MalformedURLException, URISyntaxException, ValidationException {
+            throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         // Set brightness value to 20 Percent
         Command command = new PercentType(20);
         String channelID = WemoBindingConstants.CHANNEL_BRIGHTNESS;
@@ -95,7 +95,7 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
 
     @Test
     public void handleIncreaseCommandForBRIGHTNESSchannel()
-            throws MalformedURLException, URISyntaxException, ValidationException {
+            throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         // The value is increased by 5 Percents by default
         Command command = IncreaseDecreaseType.INCREASE;
         String channelID = WemoBindingConstants.CHANNEL_BRIGHTNESS;
@@ -110,7 +110,7 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
 
     @Test
     public void handleDecreaseCommandForBRIGHTNESSchannel()
-            throws MalformedURLException, URISyntaxException, ValidationException {
+            throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         // The value can not be decreased below 0
         Command command = IncreaseDecreaseType.DECREASE;
         String channelID = WemoBindingConstants.CHANNEL_BRIGHTNESS;
@@ -123,7 +123,8 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
     }
 
     @Test
-    public void handleOnCommandForSTATEChannel() throws MalformedURLException, URISyntaxException, ValidationException {
+    public void handleOnCommandForSTATEChannel()
+            throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         Command command = OnOffType.ON;
         String channelID = WemoBindingConstants.CHANNEL_STATE;
 
@@ -137,7 +138,7 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
 
     @Test
     public void handleREFRESHCommandForChannelSTATE()
-            throws MalformedURLException, URISyntaxException, ValidationException {
+            throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         Command command = RefreshType.REFRESH;
         String channelID = WemoBindingConstants.CHANNEL_STATE;
 
@@ -149,7 +150,7 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
     }
 
     private void assertRequestForCommand(String channelID, Command command, String action, String value,
-            String capitability) throws MalformedURLException, URISyntaxException, ValidationException {
+            String capitability) throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         Thing bridge = createBridge(BRIDGE_TYPE_UID);
 
         Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE);
@@ -170,6 +171,7 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
         ChannelUID channelUID = new ChannelUID(thingUID, channelID);
         ThingHandler handler = thing.getHandler();
         assertNotNull(handler);
+
         handler.handleCommand(channelUID, command);
 
         ArgumentCaptor<String> captur = ArgumentCaptor.forClass(String.class);

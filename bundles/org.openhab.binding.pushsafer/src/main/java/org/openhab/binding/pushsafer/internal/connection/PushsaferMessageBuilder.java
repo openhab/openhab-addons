@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -310,9 +310,10 @@ public class PushsaferMessageBuilder {
         body.addFieldPart(MESSAGE_KEY_TIME2LIVE, new StringContentProvider(String.valueOf(time2live)), null);
 
         if (attachment != null) {
+            String localAttachment = attachment;
             final String encodedString;
             try {
-                if (attachment.startsWith("http")) {
+                if (localAttachment.startsWith("http")) {
                     Properties headers = new Properties();
                     headers.put("User-Agent", "Mozilla/5.0");
                     if (!authentication.isBlank()) {
@@ -324,7 +325,9 @@ public class PushsaferMessageBuilder {
                         throw new IllegalArgumentException(
                                 String.format("Skip sending the message as content '%s' does not exist.", attachment));
                     }
-                    encodedString = "data:" + contentType + ";base64," + content;
+                    encodedString = "data:image/" + contentType + ";base64," + content;
+                } else if (localAttachment.startsWith("data:")) {
+                    encodedString = localAttachment;
                 } else {
                     File file = new File(attachment);
                     if (!file.exists()) {

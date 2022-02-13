@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -220,6 +220,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         readingTask = null;
         timeOut = null;
         listeners.clear();
+        eventListeners.clear();
         teachInListener = null;
         errorListener = null;
 
@@ -302,9 +303,11 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                         }
 
                         long s = Long.parseLong(HexUtils.bytesToHex(senderId), 16);
-                        HashSet<PacketListener> pl = listeners.get(s);
-                        if (pl != null) {
-                            pl.forEach(l -> l.packetReceived(msg));
+                        synchronized (this) {
+                            HashSet<PacketListener> pl = listeners.get(s);
+                            if (pl != null) {
+                                pl.forEach(l -> l.packetReceived(msg));
+                            }
                         }
                     }
                 } else {
@@ -331,7 +334,9 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                     }
                 }
 
-                eventListeners.forEach(l -> l.eventReceived(event));
+                synchronized (this) {
+                    eventListeners.forEach(l -> l.eventReceived(event));
+                }
             }
         } catch (Exception e) {
             logger.error("Exception in informListeners", e);
@@ -374,13 +379,13 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
 
     protected abstract byte[] serializePacket(BasePacket packet) throws EnOceanException;
 
-    public void addPacketListener(PacketListener listener, long senderIdToListenTo) {
+    public synchronized void addPacketListener(PacketListener listener, long senderIdToListenTo) {
         if (listeners.computeIfAbsent(senderIdToListenTo, k -> new HashSet<>()).add(listener)) {
             logger.debug("Listener added: {}", senderIdToListenTo);
         }
     }
 
-    public void removePacketListener(PacketListener listener, long senderIdToListenTo) {
+    public synchronized void removePacketListener(PacketListener listener, long senderIdToListenTo) {
         HashSet<PacketListener> pl = listeners.get(senderIdToListenTo);
         if (pl != null) {
             pl.remove(listener);
@@ -390,11 +395,11 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         }
     }
 
-    public void addEventMessageListener(EventListener listener) {
+    public synchronized void addEventMessageListener(EventListener listener) {
         eventListeners.add(listener);
     }
 
-    public void removeEventMessageListener(EventListener listener) {
+    public synchronized void removeEventMessageListener(EventListener listener) {
         eventListeners.remove(listener);
     }
 

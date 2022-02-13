@@ -8,7 +8,6 @@
 		extensible="string,number,dimmer,switch,contact,colorRGB,colorHSB,color,datetime,image,location,rollershutter,trigger">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="broker"/>
-			<bridge-type-ref id="systemBroker"/>
 		</supported-bridge-type-refs>
 		<label>Generic MQTT Thing</label>
 		<description>You need a configured Broker first. Dynamically add channels of various types to this Thing. Link
@@ -28,6 +27,19 @@
 			<parameter name="payloadNotAvailable" type="text">
 				<label>Device Unavailable Payload</label>
 				<description>Payload of the 'Availability Topic', when the device is *not* available. Default: 'OFF'</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="transformationPattern" type="text">
+				<label>Availability Payload Transformations</label>
+				<description>
+					<![CDATA[
+					Applies transformations to the incoming availability payload.
+					A transformation example for a received JSON would be "JSONPATH:$.status" for
+					a json {status: "Online"}.
+
+					You can chain transformations by separating them with the intersection character ∩.
+					]]>
+				</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

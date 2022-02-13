@@ -19,51 +19,58 @@ The following TP-Link Smart Devices are supported:
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
-### HS100 Smart Wi-Fi Plug
+## ES20M Smart Wi-Fi Light Switch, Motion-Activated
+
+* Power On/Off
+* Dimmer
+* LED On/Off
+* Wi-Fi signal strength (RSSI)
+
+### HS100 Kasa Smart Wi-Fi Plug
 
 * Power On/Off
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
-### HS103 Smart Wi-Fi Plug Lite
+### HS103 Kasa Smart Wi-Fi Plug Lite
 
 * Power On/Off
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
-### HS105 Smart Wi-Fi Plug
+### HS105 Kasa Smart Wi-Fi Plug
 
 * Power On/Off
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
-### HS107 Smart Wi-Fi Plug, 2-Outlets
+### HS107 Kasa Smart Wi-Fi Plug, 2-Outlets
 
 * Power On/Off Group
 * Power On/Off 2 Outlets
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
-### HS110 Smart Wi-Fi Plug
+### HS110 Kasa Smart Wi-Fi Plug
 
 * Power On/Off
 * Energy readings
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
-### HS200 Smart Wi-Fi Switch
+### HS200 Kasa Smart Wi-Fi Switch
 
 * Power On/Off
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
-### HS210 Smart Wi-Fi Light Switch 3-Way Kit
+### HS210 Kasa Smart Wi-Fi Light Switch 3-Way Kit
 
 * Power On/Off
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
-### HS220 Smart Wi-Fi Light Switch, Dimmer
+### HS220 Kasa Smart Wi-Fi Light Switch, Dimmer
 
 * Power On/Off
 * Adjust the brightness
@@ -78,7 +85,7 @@ If you don't use the switch manually often, you can set it to a higher refresh.
 The refresh is only relevant to detect manual using the switch.
 Switching via openHAB activates the switch directly.
 
-### HS300 Smart Wi-Fi Power Strip
+### HS300 Kasa Smart Wi-Fi Power Strip
 
 * Power On/Off Group
 * Power On/Off 6 Outlets
@@ -86,7 +93,7 @@ Switching via openHAB activates the switch directly.
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
-### LB100 Smart Wi-Fi LED Bulb with Dimmable Light
+### LB100 Kasa Smart Wi-Fi LED Bulb with Dimmable Light
 
 * Power On/Off
 * Adjust the brightness
@@ -95,7 +102,7 @@ Switching via openHAB activates the switch directly.
 
 Switching and Brightness is done using the `brightness` channel.
 
-### LB110 Smart Wi-Fi LED Bulb with Dimmable Light
+### LB110 Kasa Smart Wi-Fi LED Bulb with Dimmable Light
 
 * Power On/Off
 * Adjust the brightness
@@ -104,7 +111,7 @@ Switching and Brightness is done using the `brightness` channel.
 
 Switching and Brightness is done using the `brightness` channel.
 
-### LB120 Smart Wi-Fi LED Bulb with Tunable White Light
+### LB120 Kasa Smart Wi-Fi LED Bulb with Tunable White Light
 
 * Power On/Off
 * Adjust light appearance from soft white (2700k) to daylight (6500k)
@@ -114,7 +121,7 @@ Switching and Brightness is done using the `brightness` channel.
 
 Switching and Brightness is done using the `brightness` channel.
 
-### LB130 Smart Wi-Fi LED Bulb with Color Changing Hue
+### LB130 Kasa Smart Wi-Fi LED Bulb with Color Changing Hue
 
 * Power On/Off
 * Fine-tune colors
@@ -125,7 +132,7 @@ Switching and Brightness is done using the `brightness` channel.
 
 Switching, Brightness and Color is done using the `color` channel.
 
-### LB200 Smart Wi-Fi LED Bulb with Dimmable Light
+### LB200 Kasa Smart Wi-Fi LED Bulb with Dimmable Light
 
 * Power On/Off
 * Adjust the brightness
@@ -134,7 +141,7 @@ Switching, Brightness and Color is done using the `color` channel.
 
 Switching and Brightness is done using the `brightness` channel.
 
-### LB230 Smart Wi-Fi LED Bulb with Color Changing Hue
+### LB230 Kasa Smart Wi-Fi LED Bulb with Color Changing Hue
 
 * Power On/Off
 * Fine-tune colors
@@ -183,7 +190,7 @@ Switching and Brightness is done using the `brightness` channel.
 
 Switching and Brightness is done using the `brightness` channel.
 
-### KL110 Smart Wi-Fi LED Bulb with Dimmable Light
+### KL110 Kasa Smart Wi-Fi LED Bulb with Dimmable Light
 
 * Power On/Off
 * Adjust the brightness
@@ -192,7 +199,7 @@ Switching and Brightness is done using the `brightness` channel.
 
 Switching and Brightness is done using the `brightness` channel.
 
-### KL120 Smart Wi-Fi LED Bulb with Tunable White Light
+### KL120 Kasa Smart Wi-Fi LED Bulb with Tunable White Light
 
 * Power On/Off
 * Adjust light appearance from soft white (2700k) to daylight (6500k)
@@ -213,7 +220,7 @@ Switching and Brightness is done using the `brightness` channel.
 
 Switching, Brightness and Color is done using the `color` channel.
 
-### KL130 Smart Wi-Fi LED Bulb with Color Changing Hue
+### KL130 Kasa Smart Wi-Fi LED Bulb with Color Changing Hue
 
 * Power On/Off
 * Fine-tune colors
@@ -231,6 +238,24 @@ Switching, Brightness and Color is done using the `color` channel.
 * Adjust light appearance from soft white (2500k) to daylight (6500k)
 * Adjust the brightness
 * Actual power usage
+* Wi-Fi signal strength (RSSI)
+
+Switching, Brightness and Color is done using the `color` channel.
+
+### KL400 Kasa Smart LED Light Strip
+
+* Power On/Off
+* Fine-tune colors
+* Adjust light appearance from soft white (2500k) to daylight (9000k)
+* Adjust the brightness
+* Wi-Fi signal strength (RSSI)
+
+### KL430 Kasa Smart LED Light Strip, 16 Color Zones
+
+* Power On/Off
+* Fine-tune colors
+* Adjust light appearance from soft white (2500k) to daylight (9000k)
+* Adjust the brightness
 * Wi-Fi signal strength (RSSI)
 
 Switching, Brightness and Color is done using the `color` channel.
@@ -254,24 +279,45 @@ Switching, Brightness and Color is done using the `color` channel.
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
-### KP200 Smart Wi-Fi Power Outlet, 2-Sockets
+### KP125 Kasa Smart WiFi Plug Slim with Energy Monitoring
+
+* Power On/Off
+* Energy readings
+* LED On/Off
+* Wi-Fi signal strength (RSSI)
+
+### KP200 Kasa Smart Wi-Fi Power Outlet, 2-Sockets
 
 * Power On/Off Group
 * Power On/Off 2 Outlets
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
-### KP303 Smart Wi-Fi Power Outlet, 3-Sockets
+### KP303 Kasa Smart Wi-Fi Power Outlet, 3-Sockets
 
 * Power On/Off Group
 * Power On/Off 3 Outlets
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
-### KP400 Smart Outdoor Plug
+### KP400 Kasa Smart Outdoor Plug
 
 * Power On/Off Group
 * Power On/Off 2 Outlets
+* LED On/Off
+* Wi-Fi signal strength (RSSI)
+
+### KP405 Kasa Smart Wi-Fi Outdoor Plug-In Dimmer
+
+* Power On/Off
+* Dimmer
+* LED On/Off
+* Wi-Fi signal strength (RSSI)
+
+### KS230 Kasa Smart Wi-Fi Dimmer Switch 3-Way Kit
+
+* Power On/Off
+* Adjust the brightness
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
@@ -331,19 +377,19 @@ Either `deviceId` or `ipAddress` must be set.
 
 All devices support some of the following channels:
 
-| Channel Type ID     | Item Type                | Description                                    | Thing types supporting this channel                                                                                          |
-|---------------------|--------------------------|------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
-| switch              | Switch                   | Power the device on or off.                    | EP10, EP40, HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS300, KP100, KP105, KP115, KP200, KP303, KP400, RE270K, RE370K |
-| brightness          | Dimmer                   | Set the brightness of device or dimmer.        | HS220, KB100, KL50, KL60, KL110, KL120, LB100, LB110, LB120, LB200                                                           |
-| colorTemperature    | Dimmer                   | Set the color temperature in percentage.       | KB130, KL120, KL125, KL130, KL135, LB120, LB130, LB230                                                                       |
-| colorTemperatureAbs | Number                   | Set the color temperature in Kelvin.           | KB130, KL120, KL125, KL130, KL135, LB120, LB130, LB230                                                                       |
-| color               | Color                    | Set the color of the light.                    | KB130, KL125, KL130, KL135, LB130, LB230                                                                                     |
-| power               | Number:Power             | Actual energy usage in Watt.                   | HS110, HS300, KLxxx, KP115, LBxxx,                                                                                           |
-| eneryUsage          | Number:Energy            | Energy Usage in kWh.                           | HS110, HS300, KP115                                                                                                          |
-| current             | Number:ElectricCurrent   | Actual current usage in Ampere.                | HS110, HS300, KP115                                                                                                          |
-| voltage             | Number:ElectricPotential | Actual voltage usage in Volt.                  | HS110, HS300, KP115                                                                                                          |
-| led                 | Switch                   | Switch the status LED on the device on or off. | EP10, EP40, HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS220, HS300, KP100, KP105, KP115, KP303, KP200, KP400          |
-| rssi                | Number:Power             | Wi-Fi signal strength indicator in dBm.        | All                                                                                                                          |
+| Channel Type ID     | Item Type                | Description                                    | Thing types supporting this channel                                                                                                             |
+|---------------------|--------------------------|------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| switch              | Switch                   | Power the device on or off.                    | EP10, EP40, HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS300, KP100, KP105, KP115, KP200, KP303, KP400, KS230, RE270K, RE370K             |
+| brightness          | Dimmer                   | Set the brightness of device or dimmer.        | ES20M, HS220, KB100, KL50, KL60, KL110, KL120, KP405, LB100, LB110, LB120, LB200                                                                |
+| colorTemperature    | Dimmer                   | Set the color temperature in percentage.       | KB130, KL120, KL125, KL130, KL135, KL400, KL430, LB120, LB130, LB230                                                                            |
+| colorTemperatureAbs | Number                   | Set the color temperature in Kelvin.           | KB130, KL120, KL125, KL130, KL135, KL400, KL430, LB120, LB130, LB230                                                                            |
+| color               | Color                    | Set the color of the light.                    | KB130, KL125, KL130, KL135, KL400, KL430, LB130, LB230                                                                                          |
+| power               | Number:Power             | Actual energy usage in Watt.                   | HS110, HS300, KLxxx, KP115, KP125, LBxxx,                                                                                                       |
+| eneryUsage          | Number:Energy            | Energy Usage in kWh.                           | HS110, HS300, KP115, KP125                                                                                                                      |
+| current             | Number:ElectricCurrent   | Actual current usage in Ampere.                | HS110, HS300, KP115, KP125                                                                                                                      |
+| voltage             | Number:ElectricPotential | Actual voltage usage in Volt.                  | HS110, HS300, KP115, KP125                                                                                                                      |          
+| led                 | Switch                   | Switch the status LED on the device on or off. | ES20M, EP10, EP40, HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS220, HS300, KP100, KP105, KP115, KP125, KP303, KP200, KP400, KP405, KS230 |
+| rssi                | Number:Power             | Wi-Fi signal strength indicator in dBm.        | All                                                                                                                                             |
 
 The outlet devices (EP40, HS107, HS300, KP200, KP400) have group channels.
 This means the channel is prefixed with the group id.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.kostalinverter.internal.secondgeneration;
 
 import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -157,8 +158,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
         channelConfigsConfigurable = SecondGenerationChannelConfiguration.getChannelConfigurationConfigurable();
 
         // Set inverter configuration parameters
-        final SecondGenerationInverterConfig inverterConfig = getConfigAs(SecondGenerationInverterConfig.class);
-        this.inverterConfig = inverterConfig;
+        inverterConfig = getConfigAs(SecondGenerationInverterConfig.class);
 
         // Temporary value during initializing
         updateStatus(ThingStatus.UNKNOWN);
@@ -172,17 +172,8 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         scheduleWithFixedDelayException.getClass().getName() + ":"
                                 + scheduleWithFixedDelayException.getMessage());
-            } catch (InterruptedException interruptedException) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        interruptedException.getClass().getName() + ":" + interruptedException.getMessage());
-            } catch (ExecutionException executionException) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        executionException.getClass().getName() + ":" + executionException.getMessage());
-            } catch (TimeoutException timeoutException) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        timeoutException.getClass().getName() + ":" + timeoutException.getMessage());
             }
-        }, 0, SecondGenerationInverterConfig.REFRESHINTERVAL_SEC, TimeUnit.SECONDS);
+        }, 0, inverterConfig.refreshInterval, TimeUnit.SECONDS);
     }
 
     @Override
@@ -195,161 +186,171 @@ public class SecondGenerationHandler extends BaseThingHandler {
         }
     }
 
-    private void refresh() throws InterruptedException, ExecutionException, TimeoutException {
-        // Build posts for dxsEntries part
-        String dxsEntriesCall = inverterConfig.url + "/api/dxs.json?dxsEntries=" + channelConfigs.get(0).dxsEntries;
-        for (int i = 1; i < channelConfigs.size(); i++) {
-            dxsEntriesCall += ("&dxsEntries=" + channelConfigs.get(i).dxsEntries);
-        }
-        String jsonDxsEntriesResponse = callURL(dxsEntriesCall);
-        SecondGenerationDxsEntriesContainerDTO dxsEntriesContainer = gson.fromJson(jsonDxsEntriesResponse,
-                SecondGenerationDxsEntriesContainerDTO.class);
-
-        String[] channelPosts = new String[23];
-        int channelPostsCounter = 0;
-        for (SecondGenerationDxsEntries dxsentries : dxsEntriesContainer.dxsEntries) {
-            channelPosts[channelPostsCounter] = dxsentries.getName();
-            channelPostsCounter++;
-        }
-        channelPostsTemp = List.of(channelPosts);
-
-        // Build posts for dxsEntriesExt part
-        String dxsEntriesCallExt = inverterConfig.url + "/api/dxs.json?dxsEntries="
-                + channelConfigsExt.get(0).dxsEntries;
-        for (int i = 1; i < channelConfigs.size(); i++) {
-            dxsEntriesCallExt += ("&dxsEntries=" + channelConfigsExt.get(i).dxsEntries);
-        }
-        String jsonDxsEntriesResponseExt = callURL(dxsEntriesCallExt);
-        SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerExt = gson.fromJson(jsonDxsEntriesResponseExt,
-                SecondGenerationDxsEntriesContainerDTO.class);
-        String[] channelPostsExt = new String[23];
-        int channelPostsCounterExt = 0;
-        for (SecondGenerationDxsEntries dxsentriesExt : dxsEntriesContainerExt.dxsEntries) {
-            channelPostsExt[channelPostsCounterExt] = dxsentriesExt.getName();
-            channelPostsCounterExt++;
-        }
-        channelPostsTempExt = List.of(channelPostsExt);
-
-        // Build posts for dxsEntriesExtExt part
-        String dxsEntriesCallExtExt = inverterConfig.url + "/api/dxs.json?dxsEntries="
-                + channelConfigsExtExt.get(0).dxsEntries;
-        for (int i = 1; i < channelConfigsExtExt.size(); i++) {
-            dxsEntriesCallExtExt += ("&dxsEntries=" + channelConfigsExtExt.get(i).dxsEntries);
-        }
-        String jsonDxsEntriesResponseExtExt = callURL(dxsEntriesCallExtExt);
-        SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerExtExt = gson.fromJson(jsonDxsEntriesResponseExtExt,
-                SecondGenerationDxsEntriesContainerDTO.class);
-        String[] channelPostsExtExt = new String[3];
-        int channelPostsCounterExtExt = 0;
-        for (SecondGenerationDxsEntries dxsentriesExtExt : dxsEntriesContainerExtExt.dxsEntries) {
-            channelPostsExtExt[channelPostsCounterExtExt] = dxsentriesExtExt.getName();
-            channelPostsCounterExtExt++;
-        }
-        channelPostsTempExtExt = List.of(channelPostsExtExt);
-
-        // Concatenate posts for all parts except configurable channels
-        channelPostsTempAll = combinePostsLists(channelPostsTemp, channelPostsTempExt, channelPostsTempExtExt);
-        String[] channelPostsTempAll1 = channelPostsTempAll.toArray(new String[0]);
-
-        // Build posts for dxsEntriesConfigureable part
-        String dxsEntriesCallConfigurable = inverterConfig.url + "/api/dxs.json?dxsEntries="
-                + channelConfigsConfigurable.get(0).dxsEntries;
-        for (int i = 1; i < channelConfigsConfigurable.size(); i++) {
-            dxsEntriesCallConfigurable += ("&dxsEntries=" + channelConfigsConfigurable.get(i).dxsEntries);
-        }
-        String jsonDxsEntriesResponseConfigurable = callURL(dxsEntriesCallConfigurable);
-        SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerConfigurable = gson
-                .fromJson(jsonDxsEntriesResponseConfigurable, SecondGenerationDxsEntriesContainerDTO.class);
-        String[] channelPostsConfigurable = new String[5];
-        int channelPostsCounterConfigurable = 0;
-        for (SecondGenerationDxsEntries dxsentriesConfigurable : dxsEntriesContainerConfigurable.dxsEntries) {
-            channelPostsConfigurable[channelPostsCounterConfigurable] = dxsentriesConfigurable.getName();
-            channelPostsCounterConfigurable++;
-        }
-
-        // Create and update actual values for non-configurable channels
-        if (!inverterConfig.hasBattery) {
-            channelConfigsAll = combineChannelConfigLists(channelConfigs, channelConfigsExt, channelConfigsExtExt);
-            int channelValuesCounterAll = 0;
-            for (SecondGenerationChannelConfiguration cConfig : channelConfigsAll) {
-                String channel = cConfig.id;
-                updateState(channel, getState(channelPostsTempAll1[channelValuesCounterAll], cConfig.unit));
-                channelValuesCounterAll++;
+    private void refresh() {
+        try {
+            // Build posts for dxsEntries part
+            String dxsEntriesCall = inverterConfig.url + "/api/dxs.json?dxsEntries=" + channelConfigs.get(0).dxsEntries;
+            for (int i = 1; i < channelConfigs.size(); i++) {
+                dxsEntriesCall += ("&dxsEntries=" + channelConfigs.get(i).dxsEntries);
             }
-        }
-        // Create and update actual values for all channels
-        if (inverterConfig.hasBattery) {
-            // Part for updating non-configurable channels
-            channelConfigsAll = combineChannelConfigLists(channelConfigs, channelConfigsExt, channelConfigsExtExt);
-            // Update the non-configurable channels
-            int channelValuesCounterAll = 0;
-            for (SecondGenerationChannelConfiguration cConfig : channelConfigsAll) {
-                String channel = cConfig.id;
-                updateState(channel, getState(channelPostsTempAll1[channelValuesCounterAll], cConfig.unit));
-                channelValuesCounterAll++;
-            }
+            String jsonDxsEntriesResponse = callURL(dxsEntriesCall, httpClient);
+            SecondGenerationDxsEntriesContainerDTO dxsEntriesContainer = gson.fromJson(jsonDxsEntriesResponse,
+                    SecondGenerationDxsEntriesContainerDTO.class);
 
-            // Part for updating configurable channels
-            int channelValuesCounterConfigurable = 0;
-            for (SecondGenerationChannelConfiguration cConfig : channelConfigsConfigurable) {
-                String channel = cConfig.id;
-                String value = channelPostsConfigurable[channelValuesCounterConfigurable];
-                int dxsEntriesCheckCounter = 3;
-                if (cConfig.dxsEntries.equals("33556484")) {
-                    dxsEntriesCheckCounter = 1;
+            String[] channelPosts = new String[23];
+            int channelPostsCounter = 0;
+            for (SecondGenerationDxsEntries dxsentries : dxsEntriesContainer.dxsEntries) {
+                channelPosts[channelPostsCounter] = dxsentries.getName();
+                channelPostsCounter++;
+            }
+            channelPostsTemp = List.of(channelPosts);
+
+            // Build posts for dxsEntriesExt part
+            String dxsEntriesCallExt = inverterConfig.url + "/api/dxs.json?dxsEntries="
+                    + channelConfigsExt.get(0).dxsEntries;
+            for (int i = 1; i < channelConfigs.size(); i++) {
+                dxsEntriesCallExt += ("&dxsEntries=" + channelConfigsExt.get(i).dxsEntries);
+            }
+            String jsonDxsEntriesResponseExt = callURL(dxsEntriesCallExt, httpClient);
+            SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerExt = gson.fromJson(jsonDxsEntriesResponseExt,
+                    SecondGenerationDxsEntriesContainerDTO.class);
+            String[] channelPostsExt = new String[23];
+            int channelPostsCounterExt = 0;
+            for (SecondGenerationDxsEntries dxsentriesExt : dxsEntriesContainerExt.dxsEntries) {
+                channelPostsExt[channelPostsCounterExt] = dxsentriesExt.getName();
+                channelPostsCounterExt++;
+            }
+            channelPostsTempExt = List.of(channelPostsExt);
+
+            // Build posts for dxsEntriesExtExt part
+            String dxsEntriesCallExtExt = inverterConfig.url + "/api/dxs.json?dxsEntries="
+                    + channelConfigsExtExt.get(0).dxsEntries;
+            for (int i = 1; i < channelConfigsExtExt.size(); i++) {
+                dxsEntriesCallExtExt += ("&dxsEntries=" + channelConfigsExtExt.get(i).dxsEntries);
+            }
+            String jsonDxsEntriesResponseExtExt = callURL(dxsEntriesCallExtExt, httpClient);
+            SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerExtExt = gson
+                    .fromJson(jsonDxsEntriesResponseExtExt, SecondGenerationDxsEntriesContainerDTO.class);
+            String[] channelPostsExtExt = new String[3];
+            int channelPostsCounterExtExt = 0;
+            for (SecondGenerationDxsEntries dxsentriesExtExt : dxsEntriesContainerExtExt.dxsEntries) {
+                channelPostsExtExt[channelPostsCounterExtExt] = dxsentriesExtExt.getName();
+                channelPostsCounterExtExt++;
+            }
+            channelPostsTempExtExt = List.of(channelPostsExtExt);
+
+            // Concatenate posts for all parts except configurable channels
+            channelPostsTempAll = combinePostsLists(channelPostsTemp, channelPostsTempExt, channelPostsTempExtExt);
+            String[] channelPostsTempAll1 = channelPostsTempAll.toArray(new String[0]);
+
+            // Build posts for dxsEntriesConfigureable part
+            String[] channelPostsConfigurable = new String[5];
+            if (inverterConfig.hasBattery) {
+                String dxsEntriesCallConfigurable = inverterConfig.url + "/api/dxs.json?dxsEntries="
+                        + channelConfigsConfigurable.get(0).dxsEntries;
+                for (int i = 1; i < channelConfigsConfigurable.size(); i++) {
+                    dxsEntriesCallConfigurable += ("&dxsEntries=" + channelConfigsConfigurable.get(i).dxsEntries);
                 }
-                if (cConfig.dxsEntries.equals("33556482")) {
-                    dxsEntriesCheckCounter = 2;
-                }
-                switch (dxsEntriesCheckCounter) {
-                    case 1:
-                        if (value.equals("false")) {
-                            updateState(channel, OnOffType.OFF);
-                        }
-                        if (value.equals("true")) {
-                            updateState(channel, OnOffType.ON);
-                        }
-                        channelValuesCounterConfigurable++;
-                        break;
-                    case 2:
-                        if (value.equals("false")) {
-                            State stateFalse = new StringType("0");
-                            updateState(channel, stateFalse);
-                        }
-                        if (value.equals("true")) {
-                            State stateTrue = new StringType("1");
-                            updateState(channel, stateTrue);
-                        }
-                        channelValuesCounterConfigurable++;
-                        break;
-                    case 3:
-                        State stateOther = getState(channelPostsConfigurable[channelValuesCounterConfigurable],
-                                cConfig.unit);
-                        updateState(channel, stateOther);
-                        channelValuesCounterConfigurable++;
-                        break;
+                String jsonDxsEntriesResponseConfigurable = callURL(dxsEntriesCallConfigurable, httpClient);
+                SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerConfigurable = gson
+                        .fromJson(jsonDxsEntriesResponseConfigurable, SecondGenerationDxsEntriesContainerDTO.class);
+                int channelPostsCounterConfigurable = 0;
+                for (SecondGenerationDxsEntries dxsentriesConfigurable : dxsEntriesContainerConfigurable.dxsEntries) {
+                    channelPostsConfigurable[channelPostsCounterConfigurable] = dxsentriesConfigurable.getName();
+                    channelPostsCounterConfigurable++;
                 }
             }
+
+            // Create and update actual values for non-configurable channels
+            if (!inverterConfig.hasBattery) {
+                channelConfigsAll = combineChannelConfigLists(channelConfigs, channelConfigsExt, channelConfigsExtExt);
+                int channelValuesCounterAll = 0;
+                for (SecondGenerationChannelConfiguration cConfig : channelConfigsAll) {
+                    String channel = cConfig.id;
+                    updateState(channel, getState(channelPostsTempAll1[channelValuesCounterAll], cConfig.unit));
+                    channelValuesCounterAll++;
+                }
+            }
+            // Create and update actual values for all channels
+            if (inverterConfig.hasBattery) {
+                // Part for updating non-configurable channels
+                channelConfigsAll = combineChannelConfigLists(channelConfigs, channelConfigsExt, channelConfigsExtExt);
+                // Update the non-configurable channels
+                int channelValuesCounterAll = 0;
+                for (SecondGenerationChannelConfiguration cConfig : channelConfigsAll) {
+                    String channel = cConfig.id;
+                    updateState(channel, getState(channelPostsTempAll1[channelValuesCounterAll], cConfig.unit));
+                    channelValuesCounterAll++;
+                }
+
+                // Part for updating configurable channels
+                int channelValuesCounterConfigurable = 0;
+                for (SecondGenerationChannelConfiguration cConfig : channelConfigsConfigurable) {
+                    String channel = cConfig.id;
+                    String value = channelPostsConfigurable[channelValuesCounterConfigurable];
+                    int dxsEntriesCheckCounter = 3;
+                    if (cConfig.dxsEntries.equals("33556484")) {
+                        dxsEntriesCheckCounter = 1;
+                    }
+                    if (cConfig.dxsEntries.equals("33556482")) {
+                        dxsEntriesCheckCounter = 2;
+                    }
+                    switch (dxsEntriesCheckCounter) {
+                        case 1:
+                            if ("false".equals(value)) {
+                                updateState(channel, OnOffType.OFF);
+                            }
+                            if ("true".equals(value)) {
+                                updateState(channel, OnOffType.ON);
+                            }
+                            channelValuesCounterConfigurable++;
+                            break;
+                        case 2:
+                            if ("false".equals(value)) {
+                                State stateFalse = new StringType("0");
+                                updateState(channel, stateFalse);
+                            }
+                            if ("true".equals(value)) {
+                                State stateTrue = new StringType("1");
+                                updateState(channel, stateTrue);
+                            }
+                            channelValuesCounterConfigurable++;
+                            break;
+                        case 3:
+                            State stateOther = getState(channelPostsConfigurable[channelValuesCounterConfigurable],
+                                    cConfig.unit);
+                            updateState(channel, stateOther);
+                            channelValuesCounterConfigurable++;
+                            break;
+                    }
+                }
+            }
+        } catch (final RuntimeException e) {
+            logger.debug("Updating inverter status failed: ", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
     // Help method of handleCommand to with SecondGenerationConfigurationHandler.executeConfigurationChanges method send
     // configuration changes.
-    private final void preSetExecuteConfigurationChanges(HttpClient httpClient, String url, String username,
-            String password, String dxsEntriesConf, String valueConfiguration) {
+    private final void preSetExecuteConfigurationChanges(HttpClient httpClientHandleCommand, String url,
+            String username, String password, String dxsEntriesConf, String valueConfiguration) {
         try {
-            SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
-                    dxsEntriesConf, valueConfiguration);
-        } catch (Exception handleCommandException) {
-            logger.debug("Handle command for {} on channel {}: {}: {}: {}: {}", thing.getUID(), httpClient, url,
-                    dxsEntriesConf, valueConfiguration, handleCommandException.getMessage());
+            SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClientHandleCommand, url, username,
+                    password, dxsEntriesConf, valueConfiguration);
+        } catch (InterruptedException | ExecutionException | TimeoutException | NoSuchAlgorithmException e) {
+            logger.debug("Connection to inverter disturbed during configuration");
         }
     }
 
     // Method callURL connect to inverter for value scraping
-    private final String callURL(String dxsEntriesCall)
-            throws InterruptedException, ExecutionException, TimeoutException {
-        String jsonDxsResponse = httpClient.GET(dxsEntriesCall).getContentAsString();
+    private final String callURL(String dxsEntriesCall, HttpClient httpClient) {
+        String jsonDxsResponse = "";
+        try {
+            jsonDxsResponse = httpClient.GET(dxsEntriesCall).getContentAsString();
+        } catch (InterruptedException | ExecutionException | TimeoutException e2) {
+            logger.debug("Connection to inverter disturbed during scrape");
+        }
         return jsonDxsResponse;
     }
 

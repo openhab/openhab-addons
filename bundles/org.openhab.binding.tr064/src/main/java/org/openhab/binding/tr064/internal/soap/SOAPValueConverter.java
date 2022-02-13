@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -198,6 +199,20 @@ public class SOAPValueConverter {
         }
 
         return mappedSignalStrength;
+    }
+
+    /**
+     * post processor for decibel values (which are served as deca decibel)
+     *
+     * @param state the channel value in deca decibel
+     * @param channelConfig channel config of the channel
+     * @return the state converted to decibel
+     */
+    @SuppressWarnings("unused")
+    private State processDecaDecibel(State state, Tr064ChannelConfig channelConfig) {
+        Float value = state.as(DecimalType.class).floatValue() / 10;
+
+        return new QuantityType(value, Units.DECIBEL);
     }
 
     /**

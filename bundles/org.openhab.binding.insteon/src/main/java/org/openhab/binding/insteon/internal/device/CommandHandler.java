@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -731,7 +731,7 @@ public abstract class CommandHandler {
                 int ilevel = dc * intFactor;
                 byte level = (byte) (ilevel > 255 ? 0xFF : ((ilevel < 0) ? 0 : ilevel));
                 String vfield = getStringParameter("value", "");
-                if (vfield == "") {
+                if (vfield == null || vfield.isEmpty()) {
                     logger.warn("{} has no value field specified", nm());
                 }
                 //

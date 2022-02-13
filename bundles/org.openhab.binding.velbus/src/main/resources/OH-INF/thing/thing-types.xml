@@ -916,7 +916,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Brightness control for dimmer action in Velbus</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 	<channel-type id="rollershutter">
 		<item-type>Rollershutter</item-type>
@@ -1072,7 +1072,7 @@
 		<channels>
 			<channel id="counter1" typeId="counter"/>
 			<channel id="counter1Current" typeId="counter"/>
-			<channel id="counter" typeId="counter"/>
+			<channel id="counter2" typeId="counter"/>
 			<channel id="counter2Current" typeId="counter"/>
 			<channel id="counter3" typeId="counter"/>
 			<channel id="counter3Current" typeId="counter"/>

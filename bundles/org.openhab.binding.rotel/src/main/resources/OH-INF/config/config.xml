@@ -9,17 +9,17 @@
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
-			<label>Serial Port</label>
-			<description>Serial port to use for connecting to the Rotel device</description>
+			<label>@text/config.serialPort.label</label>
+			<description>@text/config.serialPort.description</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
-			<label>Address</label>
-			<description>Host name or IP address of the machine connected to the Rotel device (serial over IP)</description>
+			<label>@text/config.hostOverIp.label</label>
+			<description>@text/config.hostOverIp.description</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
-			<label>Port</label>
-			<description>Communication port (serial over IP)</description>
+			<label>@text/config.portOverIp.label</label>
+			<description>@text/config.portOverIp.description</description>
 		</parameter>
 	</config-description>
 
@@ -27,19 +27,17 @@
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
-			<label>Serial Port</label>
-			<description>Serial port to use for connecting to the Rotel device</description>
+			<label>@text/config.serialPort.label</label>
+			<description>@text/config.serialPort.description</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
-			<label>Address</label>
-			<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device
-				(serial over IP)</description>
+			<label>@text/config.host.label</label>
+			<description>@text/config.host.description</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
-			<label>Port</label>
-			<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port
-				9590</description>
+			<label>@text/config.port.label</label>
+			<description>@text/config.port.description</description>
 			<default>9590</default>
 		</parameter>
 	</config-description>
@@ -48,19 +46,17 @@
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
-			<label>Serial Port</label>
-			<description>Serial port to use for connecting to the Rotel device</description>
+			<label>@text/config.serialPort.label</label>
+			<description>@text/config.serialPort.description</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
-			<label>Address</label>
-			<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device
-				(serial over IP)</description>
+			<label>@text/config.host.label</label>
+			<description>@text/config.host.description</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
-			<label>Port</label>
-			<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port
-				9590</description>
+			<label>@text/config.port.label</label>
+			<description>@text/config.port.description</description>
 			<default>9596</default>
 		</parameter>
 	</config-description>
@@ -69,28 +65,26 @@
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
-			<label>Serial Port</label>
-			<description>Serial port to use for connecting to the Rotel device</description>
+			<label>@text/config.serialPort.label</label>
+			<description>@text/config.serialPort.description</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
-			<label>Address</label>
-			<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device
-				(serial over IP)</description>
+			<label>@text/config.host.label</label>
+			<description>@text/config.host.description</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
-			<label>Port</label>
-			<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port
-				9590</description>
+			<label>@text/config.port.label</label>
+			<description>@text/config.port.description</description>
 			<default>9590</default>
 		</parameter>
 		<parameter name="protocol" type="text" required="false">
-			<label>Protocol Version</label>
-			<description>Choose one of the two protocol versions (depends on your device firmware)</description>
+			<label>@text/config.protocol.label</label>
+			<description>@text/config.protocol.description</description>
 			<limitToOptions>true</limitToOptions>
 			<options>
-				<option value="ASCII_V1">ASCII V1</option>
-				<option value="ASCII_V2">ASCII V2</option>
+				<option value="ASCII_V1">@text/config.protocol.option.ASCII_V1</option>
+				<option value="ASCII_V2">@text/config.protocol.option.ASCII_V2</option>
 			</options>
 			<default>ASCII_V2</default>
 			<advanced>true</advanced>
@@ -101,25 +95,25 @@
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
-			<label>Serial Port</label>
-			<description>Serial port to use for connecting to the Rotel device</description>
+			<label>@text/config.serialPort.label</label>
+			<description>@text/config.serialPort.description</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
-			<label>Address</label>
-			<description>Host name or IP address of the machine connected to the Rotel device (serial over IP)</description>
+			<label>@text/config.hostOverIp.label</label>
+			<description>@text/config.hostOverIp.description</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
-			<label>Port</label>
-			<description>Communication port (serial over IP)</description>
+			<label>@text/config.portOverIp.label</label>
+			<description>@text/config.portOverIp.description</description>
 		</parameter>
 		<parameter name="protocol" type="text" required="false">
-			<label>Protocol Version</label>
-			<description>Choose one of the two protocol versions (depends on your device firmware)</description>
+			<label>@text/config.protocol.label</label>
+			<description>@text/config.protocol.description</description>
 			<limitToOptions>true</limitToOptions>
 			<options>
-				<option value="ASCII_V1">ASCII V1</option>
-				<option value="ASCII_V2">ASCII V2</option>
+				<option value="ASCII_V1">@text/config.protocol.option.ASCII_V1</option>
+				<option value="ASCII_V2">@text/config.protocol.option.ASCII_V2</option>
 			</options>
 			<default>ASCII_V2</default>
 			<advanced>true</advanced>
@@ -130,37 +124,37 @@
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
-			<label>Serial Port</label>
-			<description>Serial port to use for connecting to the Rotel device</description>
+			<label>@text/config.serialPort.label</label>
+			<description>@text/config.serialPort.description</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
-			<label>Address</label>
-			<description>Host name or IP address of the machine connected to the Rotel device (serial over IP)</description>
+			<label>@text/config.hostOverIp.label</label>
+			<description>@text/config.hostOverIp.description</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
-			<label>Port</label>
-			<description>Communication port (serial over IP)</description>
+			<label>@text/config.portOverIp.label</label>
+			<description>@text/config.portOverIp.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo1" type="text" required="false">
-			<label>Input Label Video 1</label>
-			<description>Label setup for the source Video 1</description>
+			<label>@text/config.inputLabelVideo1.label</label>
+			<description>@text/config.inputLabelVideo1.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo2" type="text" required="false">
-			<label>Input Label Video 2</label>
-			<description>Label setup for the source Video 2</description>
+			<label>@text/config.inputLabelVideo2.label</label>
+			<description>@text/config.inputLabelVideo2.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo3" type="text" required="false">
-			<label>Input Label Video 3</label>
-			<description>Label setup for the source Video 3</description>
+			<label>@text/config.inputLabelVideo3.label</label>
+			<description>@text/config.inputLabelVideo3.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo4" type="text" required="false">
-			<label>Input Label Video 4</label>
-			<description>Label setup for the source Video 4</description>
+			<label>@text/config.inputLabelVideo4.label</label>
+			<description>@text/config.inputLabelVideo4.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo5" type="text" required="false">
-			<label>Input Label Video 5</label>
-			<description>Label setup for the source Video 5</description>
+			<label>@text/config.inputLabelVideo5.label</label>
+			<description>@text/config.inputLabelVideo5.description</description>
 		</parameter>
 	</config-description>
 
@@ -168,49 +162,49 @@
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
-			<label>Serial Port</label>
-			<description>Serial port to use for connecting to the Rotel device</description>
+			<label>@text/config.serialPort.label</label>
+			<description>@text/config.serialPort.description</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
-			<label>Address</label>
-			<description>Host name or IP address of the machine connected to the Rotel device (serial over IP)</description>
+			<label>@text/config.hostOverIp.label</label>
+			<description>@text/config.hostOverIp.description</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
-			<label>Port</label>
-			<description>Communication port (serial over IP)</description>
+			<label>@text/config.portOverIp.label</label>
+			<description>@text/config.portOverIp.description</description>
 		</parameter>
 		<parameter name="inputLabelCd" type="text" required="false">
-			<label>Input Label CD</label>
-			<description>Label setup for the source CD</description>
+			<label>@text/config.inputLabelCd.label</label>
+			<description>@text/config.inputLabelCd.description</description>
 		</parameter>
 		<parameter name="inputLabelTuner" type="text" required="false">
-			<label>Input Label Tuner</label>
-			<description>Label setup for the source Tuner</description>
+			<label>@text/config.inputLabelTuner.label</label>
+			<description>@text/config.inputLabelTuner.description</description>
 		</parameter>
 		<parameter name="inputLabelTape" type="text" required="false">
-			<label>Input Label Tape</label>
-			<description>Label setup for the source Tape</description>
+			<label>@text/config.inputLabelTape.label</label>
+			<description>@text/config.inputLabelTape.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo1" type="text" required="false">
-			<label>Input Label Video 1</label>
-			<description>Label setup for the source Video 1</description>
+			<label>@text/config.inputLabelVideo1.label</label>
+			<description>@text/config.inputLabelVideo1.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo2" type="text" required="false">
-			<label>Input Label Video 2</label>
-			<description>Label setup for the source Video 2</description>
+			<label>@text/config.inputLabelVideo2.label</label>
+			<description>@text/config.inputLabelVideo2.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo3" type="text" required="false">
-			<label>Input Label Video 3</label>
-			<description>Label setup for the source Video 3</description>
+			<label>@text/config.inputLabelVideo3.label</label>
+			<description>@text/config.inputLabelVideo3.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo4" type="text" required="false">
-			<label>Input Label Video 4</label>
-			<description>Label setup for the source Video 4</description>
+			<label>@text/config.inputLabelVideo4.label</label>
+			<description>@text/config.inputLabelVideo4.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo5" type="text" required="false">
-			<label>Input Label Video 5</label>
-			<description>Label setup for the source Video 5</description>
+			<label>@text/config.inputLabelVideo5.label</label>
+			<description>@text/config.inputLabelVideo5.description</description>
 		</parameter>
 	</config-description>
 
@@ -218,53 +212,53 @@
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
-			<label>Serial Port</label>
-			<description>Serial port to use for connecting to the Rotel device</description>
+			<label>@text/config.serialPort.label</label>
+			<description>@text/config.serialPort.description</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
-			<label>Address</label>
-			<description>Host name or IP address of the machine connected to the Rotel device (serial over IP)</description>
+			<label>@text/config.hostOverIp.label</label>
+			<description>@text/config.hostOverIp.description</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
-			<label>Port</label>
-			<description>Communication port (serial over IP)</description>
+			<label>@text/config.portOverIp.label</label>
+			<description>@text/config.portOverIp.description</description>
 		</parameter>
 		<parameter name="inputLabelCd" type="text" required="false">
-			<label>Input Label CD</label>
-			<description>Label setup for the source CD</description>
+			<label>@text/config.inputLabelCd.label</label>
+			<description>@text/config.inputLabelCd.description</description>
 		</parameter>
 		<parameter name="inputLabelTuner" type="text" required="false">
-			<label>Input Label Tuner</label>
-			<description>Label setup for the source Tuner</description>
+			<label>@text/config.inputLabelTuner.label</label>
+			<description>@text/config.inputLabelTuner.description</description>
 		</parameter>
 		<parameter name="inputLabelTape" type="text" required="false">
-			<label>Input Label Tape</label>
-			<description>Label setup for the source Tape</description>
+			<label>@text/config.inputLabelTape.label</label>
+			<description>@text/config.inputLabelTape.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo1" type="text" required="false">
-			<label>Input Label Video 1</label>
-			<description>Label setup for the source Video 1</description>
+			<label>@text/config.inputLabelVideo1.label</label>
+			<description>@text/config.inputLabelVideo1.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo2" type="text" required="false">
-			<label>Input Label Video 2</label>
-			<description>Label setup for the source Video 2</description>
+			<label>@text/config.inputLabelVideo2.label</label>
+			<description>@text/config.inputLabelVideo2.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo3" type="text" required="false">
-			<label>Input Label Video 3</label>
-			<description>Label setup for the source Video 3</description>
+			<label>@text/config.inputLabelVideo3.label</label>
+			<description>@text/config.inputLabelVideo3.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo4" type="text" required="false">
-			<label>Input Label Video 4</label>
-			<description>Label setup for the source Video 4</description>
+			<label>@text/config.inputLabelVideo4.label</label>
+			<description>@text/config.inputLabelVideo4.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo5" type="text" required="false">
-			<label>Input Label Video 5</label>
-			<description>Label setup for the source Video 5</description>
+			<label>@text/config.inputLabelVideo5.label</label>
+			<description>@text/config.inputLabelVideo5.description</description>
 		</parameter>
 		<parameter name="inputLabelMulti" type="text" required="false">
-			<label>Input Label Multi Input</label>
-			<description>Label setup for the source Multi Input</description>
+			<label>@text/config.inputLabelMulti.label</label>
+			<description>@text/config.inputLabelMulti.description</description>
 		</parameter>
 	</config-description>
 
@@ -272,57 +266,57 @@
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
-			<label>Serial Port</label>
-			<description>Serial port to use for connecting to the Rotel device</description>
+			<label>@text/config.serialPort.label</label>
+			<description>@text/config.serialPort.description</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
-			<label>Address</label>
-			<description>Host name or IP address of the machine connected to the Rotel device (serial over IP)</description>
+			<label>@text/config.hostOverIp.label</label>
+			<description>@text/config.hostOverIp.description</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
-			<label>Port</label>
-			<description>Communication port (serial over IP)</description>
+			<label>@text/config.portOverIp.label</label>
+			<description>@text/config.portOverIp.description</description>
 		</parameter>
 		<parameter name="inputLabelCd" type="text" required="false">
-			<label>Input Label CD</label>
-			<description>Label setup for the source CD</description>
+			<label>@text/config.inputLabelCd.label</label>
+			<description>@text/config.inputLabelCd.description</description>
 		</parameter>
 		<parameter name="inputLabelTuner" type="text" required="false">
-			<label>Input Label Tuner</label>
-			<description>Label setup for the source Tuner</description>
+			<label>@text/config.inputLabelTuner.label</label>
+			<description>@text/config.inputLabelTuner.description</description>
 		</parameter>
 		<parameter name="inputLabelUsb" type="text" required="false">
-			<label>Input Label USB</label>
-			<description>Label setup for the source USB</description>
+			<label>@text/config.inputLabelUsb.label</label>
+			<description>@text/config.inputLabelUsb.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo1" type="text" required="false">
-			<label>Input Label Video 1</label>
-			<description>Label setup for the source Video 1</description>
+			<label>@text/config.inputLabelVideo1.label</label>
+			<description>@text/config.inputLabelVideo1.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo2" type="text" required="false">
-			<label>Input Label Video 2</label>
-			<description>Label setup for the source Video 2</description>
+			<label>@text/config.inputLabelVideo2.label</label>
+			<description>@text/config.inputLabelVideo2.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo3" type="text" required="false">
-			<label>Input Label Video 3</label>
-			<description>Label setup for the source Video 3</description>
+			<label>@text/config.inputLabelVideo3.label</label>
+			<description>@text/config.inputLabelVideo3.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo4" type="text" required="false">
-			<label>Input Label Video 4</label>
-			<description>Label setup for the source Video 4</description>
+			<label>@text/config.inputLabelVideo4.label</label>
+			<description>@text/config.inputLabelVideo4.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo5" type="text" required="false">
-			<label>Input Label Video 5</label>
-			<description>Label setup for the source Video 5</description>
+			<label>@text/config.inputLabelVideo5.label</label>
+			<description>@text/config.inputLabelVideo5.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo6" type="text" required="false">
-			<label>Input Label Video 6</label>
-			<description>Label setup for the source Video 6</description>
+			<label>@text/config.inputLabelVideo6.label</label>
+			<description>@text/config.inputLabelVideo6.description</description>
 		</parameter>
 		<parameter name="inputLabelMulti" type="text" required="false">
-			<label>Input Label Multi Input</label>
-			<description>Label setup for the source Multi Input</description>
+			<label>@text/config.inputLabelMulti.label</label>
+			<description>@text/config.inputLabelMulti.description</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>
