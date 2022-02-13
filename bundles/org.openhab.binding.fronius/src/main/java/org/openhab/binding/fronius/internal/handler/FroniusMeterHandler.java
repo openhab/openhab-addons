@@ -17,6 +17,7 @@ import java.util.Map;
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
+import org.openhab.binding.fronius.internal.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.MeterRealtimeBodyDataDTO;
 import org.openhab.binding.fronius.internal.api.MeterRealtimeResponseDTO;
 import org.openhab.core.library.types.QuantityType;
@@ -46,7 +47,7 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
     }
 
     @Override
-    public void refresh(FroniusBridgeConfiguration bridgeConfiguration) {
+    protected void handleRefresh(FroniusBridgeConfiguration bridgeConfiguration) throws FroniusCommunicationException {
         updateData(bridgeConfiguration, config);
         updateChannels();
         updateProperties();
@@ -134,14 +135,11 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
     /**
      * Get new data
      */
-    private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config) {
+    private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config)
+            throws FroniusCommunicationException {
         MeterRealtimeResponseDTO meterRealtimeResponse = getMeterRealtimeData(bridgeConfiguration.hostname,
                 config.deviceId);
-        if (meterRealtimeResponse == null) {
-            meterRealtimeBodyData = null;
-        } else {
-            meterRealtimeBodyData = meterRealtimeResponse.getBody().getData();
-        }
+        meterRealtimeBodyData = meterRealtimeResponse.getBody().getData();
     }
 
     /**
@@ -151,10 +149,11 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
      * @param deviceId of the device
      * @return {MeterRealtimeResponse} the object representation of the json response
      */
-    private MeterRealtimeResponseDTO getMeterRealtimeData(String ip, int deviceId) {
+    private MeterRealtimeResponseDTO getMeterRealtimeData(String ip, int deviceId)
+            throws FroniusCommunicationException {
         String location = FroniusBindingConstants.METER_REALTIME_DATA_URL.replace("%IP%",
                 (ip != null ? ip.trim() : ""));
         location = location.replace("%DEVICEID%", Integer.toString(deviceId));
-        return collectDataFormUrl(MeterRealtimeResponseDTO.class, location);
+        return collectDataFromUrl(MeterRealtimeResponseDTO.class, location);
     }
 }

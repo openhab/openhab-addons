@@ -13,5 +13,4 @@
   <artifactId>org.openhab.binding.fronius</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Fronius Binding</name>
-
 </project>
