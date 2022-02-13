@@ -280,7 +280,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
             // 101 for expander 1, relay 1 = zone13
             // 212 for expander 2, relay 12 = zone36
             // division of integers in Java give whole numbers, not remainders FYI
-            int zoneNumber = ((zone.number.value / 100) * 12) + zone.number.value - ((zone.number.value / 100) * 100);
+            int zoneNumber = ((zone.number.value / 100) * 12) + (zone.number.value % 100);
 
             String group = "zone" + zoneNumber;
             zoneMaps.put(group, zone);
