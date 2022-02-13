@@ -1237,10 +1237,6 @@
 		<label>Power</label>
 		<description>Current Power</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%d W"/>
 	</channel-type>
 
