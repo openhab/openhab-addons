@@ -186,7 +186,6 @@ The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing.
 | `localOffset`          | `bus_thermo_zone`                    | String             | The zone local offset status: `OFF`, `PROTECTION`, `MINUS_3`, `MINUS_2` , `MINUS_1`, `NORMAL`, `PLUS_1`, `PLUS_2`, `PLUS_3`  | R | Y |
 | `remoteControl`          | `bus_thermo_cu`                    | String             | The Central Unit Remote Control status: `ENABLED`, `DISABLED`  | R | Y |
 | `batteryStatus`          | `bus_thermo_cu`                    | String             | The Central Unit Battery status: `OK`, `KO`  | R | Y |
-| `modeCentralUnit`                       | `bus_thermo_cu`                    | String             | The Central Unit set mode: `MANUAL`, `OFF`, `PROTECTION`, `WEEKLY`, `SCENARIO`  | R/W        | N        |
 | `weeklyProgram`                       | `bus_thermo_cu`                    | String             | The program number (`1`, `2`, `3`) when Central Unit mode is `WEEKLY`  | R/W        | N        |
 | `scenarioProgram`                       | `bus_thermo_cu`                    | String             | The program number (`1`, `2`, .. ,  `16`) when Central Unit mode is `SCENARIO` | R/W        | N        |
 
