@@ -65,11 +65,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME
         + " Speech-to-Text", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class VoskSTTService implements STTService {
-    private final Logger logger = LoggerFactory.getLogger(VoskSTTService.class);
-    private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("OH-voice-voskstt");
-    private final LocaleService localeService;
-    private VoskSTTConfiguration config = new VoskSTTConfiguration();
-    private @Nullable Model model;
     private static final String VOSK_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "vosk").toString();
     private static final String MODEL_PATH = Path.of(VOSK_FOLDER, "model").toString();
     static {
@@ -81,6 +76,11 @@ public class VoskSTTService implements STTService {
             }
         }
     }
+    private final Logger logger = LoggerFactory.getLogger(VoskSTTService.class);
+    private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("OH-voice-voskstt");
+    private final LocaleService localeService;
+    private VoskSTTConfiguration config = new VoskSTTConfiguration();
+    private @Nullable Model model;
 
     @Activate
     public VoskSTTService(@Reference LocaleService localeService) {
@@ -253,7 +253,7 @@ public class VoskSTTService implements STTService {
                 logger.warn("Error running speech to text: {}", e.getMessage());
                 if (config.errorMessage.isBlank()) {
                     sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("Error"));
-                } else if (!config.errorMessage.isBlank()) {
+                } else {
                     sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
                 }
             } finally {

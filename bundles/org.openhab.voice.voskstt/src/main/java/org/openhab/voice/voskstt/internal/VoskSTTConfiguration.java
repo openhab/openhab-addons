@@ -37,11 +37,11 @@ public class VoskSTTConfiguration {
     /**
      * Message to be told when no results.
      */
-    public String noResultsMessage = "";
+    public String noResultsMessage = "Sorry, I didn't understand you";
     /**
      * Message to be told when an error has happened.
      */
-    public String errorMessage = "";
+    public String errorMessage = "Sorry, something went wrong";
     /**
      * Keep language model loaded
      */
