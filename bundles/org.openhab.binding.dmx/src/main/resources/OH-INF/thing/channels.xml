@@ -22,7 +22,7 @@
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>ColorTemperature</tag>
 		</tags>
 	</channel-type>
 	<!-- Color Channel -->
