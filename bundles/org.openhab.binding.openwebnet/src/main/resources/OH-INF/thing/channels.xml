@@ -35,7 +35,8 @@
 		<description>Control the roller shutter position</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Blinds</tag>
+			<tag>OpenLevel</tag>
+			<tag>Opening</tag>
 		</tags>
 	</channel-type>
 
