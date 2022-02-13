@@ -16,6 +16,7 @@ import java.security.KeyStore;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,8 +43,12 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
+import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
+import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
+import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3DisconnectException;
 import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth;
+import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 
 import io.netty.handler.ssl.util.SimpleTrustManagerFactory;
 
@@ -128,23 +133,28 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
         MqttClientSslConfig sslConfig = MqttClientSslConfig.builder().trustManagerFactory(createTrustManagerFactory())
                 .build();
 
+        final MqttClientDisconnectedListener disconnectListener = ctx -> {
+            boolean expectedShutdown = ctx.getSource() == MqttDisconnectSource.USER
+                    && ctx.getCause() instanceof Mqtt3DisconnectException;
+            if (!expectedShutdown) {
+                logger.debug("{}: MQTT disconnected (source {}): {}", getSerialNumber(), ctx.getSource(),
+                        ctx.getCause().getMessage());
+                listener.onEventStreamFailure(EcovacsIotMqDevice.this, ctx.getCause());
+            }
+        };
+
         final Mqtt3AsyncClient client = MqttClient.builder().useMqttVersion3()
                 .identifier(userName + "/" + loginData.getResource()).simpleAuth(auth).serverHost(host).serverPort(8883)
-                .sslConfig(sslConfig).buildAsync();
+                .sslConfig(sslConfig).addDisconnectedListener(disconnectListener).buildAsync();
 
-        client.connect().whenComplete((connAck, connError) -> {
-            if (connError != null) {
-                listener.onEventStreamFailure(this, connError);
-                return;
-            }
+        try {
+            this.mqttClient = client;
+            client.connect().get();
 
-            logger.debug("Established MQTT connection to device {}", getSerialNumber());
             final ReportParser parser = desc.protoVersion == ProtocolVersion.XML
                     ? new XmlReportParser(this, listener, gson)
                     : new JsonReportParser(this, listener, desc.protoVersion, gson);
-            String topic = String.format("iot/atr/+/%s/%s/%s/+", device.getDid(), device.getDeviceClass(),
-                    device.getResource());
-            client.subscribeWith().topicFilter(topic).callback(publish -> {
+            final Consumer<Mqtt3Publish> eventCallback = publish -> {
                 String receivedTopic = publish.getTopic().toString();
                 String payload = new String(publish.getPayloadAsBytes());
                 try {
@@ -154,28 +164,29 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
                 } catch (Exception e) {
                     listener.onEventStreamFailure(this, e);
                 }
-            }).send().whenComplete((subAck, subError) -> {
-                if (subError != null) {
-                    listener.onEventStreamFailure(this, subError);
-                }
-            });
-        });
+            };
 
-        this.mqttClient = client;
+            String topic = String.format("iot/atr/+/%s/%s/%s/+", device.getDid(), device.getDeviceClass(),
+                    device.getResource());
+
+            client.subscribeWith().topicFilter(topic).callback(eventCallback).send().get();
+            logger.debug("Established MQTT connection to device {}", getSerialNumber());
+        } catch (Exception e) {
+            throw new EcovacsApiException(e);
+        }
     }
 
     @Override
     public void disconnect() {
         Mqtt3AsyncClient client = this.mqttClient;
         if (client != null) {
-            client.disconnect().whenComplete((nop, error) -> {
-                if (error != null) {
-                    logger.debug("Closing MQTT connection to device {} failed", getSerialNumber(), error);
-                } else {
-                    logger.debug("Closed MQTT connection to device {}", getSerialNumber());
-                }
-            });
+            try {
+                client.disconnect().get();
+            } catch (Exception e) {
+                // ignored
+            }
         }
+        this.mqttClient = null;
     }
 
     private TrustManagerFactory createTrustManagerFactory() {
