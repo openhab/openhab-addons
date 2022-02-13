@@ -8,7 +8,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Controls the brightness and switches the light on and off</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
 			<tag>Light</tag>

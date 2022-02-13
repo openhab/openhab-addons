@@ -342,7 +342,7 @@
 			It is also possible to switch the
 			light on and off.
 		</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 
 	<channel-type id="relay">

@@ -12,7 +12,7 @@
 			It is also possible to switch the
 			light on and off.
 		</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
 			<tag>Light</tag>
@@ -36,7 +36,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Color Temperature</label>
 		<description>The CT channel allows to control the CT of a light.</description>
-		<category>DimmableCT</category>
+		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
 			<tag>ColorTemperature</tag>

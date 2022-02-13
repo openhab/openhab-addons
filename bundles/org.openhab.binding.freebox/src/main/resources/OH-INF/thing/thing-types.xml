@@ -325,7 +325,7 @@
 		<item-type>Number</item-type>
 		<label>Screen Brightness</label>
 		<description>Brightness level of the screen in percent</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<state pattern="%d %%"/>
 	</channel-type>
 
