@@ -1265,7 +1265,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer Brightness</label>
 		<description>The brightness can be set in 16 steps for RGBW/White leds and in 64 steps for RGBWW leds</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<state min="0" max="100" step="1" pattern="%d"/>
 	</channel-type>
 
@@ -1273,14 +1273,14 @@
 		<item-type>Switch</item-type>
 		<label>White Mode</label>
 		<description>Switch lamp to white mode</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 
 	<channel-type id="rollerBrightness">
 		<item-type>RollerShutter</item-type>
 		<label>Roller Brightness</label>
 		<description>Brightness Up/Down</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<state readOnly="false"/>
 	</channel-type>
 </thing:thing-descriptions>

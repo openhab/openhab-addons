@@ -67,7 +67,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
 		<description>Dimmer</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<config-description>
 			<parameter name="rampingTime" type="integer">
 				<label>Ramping Time</label>
