@@ -35,10 +35,6 @@
 		<item-type>Switch</item-type>
 		<label>Any On</label>
 		<description>"On" if any light in this group is "On", otherwise "Off".</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
