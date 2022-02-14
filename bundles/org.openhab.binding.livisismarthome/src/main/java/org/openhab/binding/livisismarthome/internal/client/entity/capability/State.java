@@ -156,6 +156,52 @@ public class State {
     @SerializedName("windowReductionActive")
     private BooleanState windowReductionActiveState;
 
+    public State() {
+        absoluteEnergyConsumptionState = new DoubleState();
+        activeChannelState = new StringState();
+        dimLevelState = new IntegerState();
+        energyConsumptionDayEuroState = new DoubleState();
+        energyConsumptionDayKWhState = new DoubleState();
+        energyConsumptionMonthEuroState = new DoubleState();
+        energyConsumptionMonthKWhState = new DoubleState();
+        energyPerDayInEuroState = new DoubleState();
+        energyPerDayInKWhState = new DoubleState();
+        energyPerMonthInEuroState = new DoubleState();
+        energyPerMonthInKWhState = new DoubleState();
+        frostWarningState = new BooleanState();
+        humidityState = new DoubleState();
+        isDayState = new BooleanState();
+        isOnState = new BooleanState();
+        isOpenState = new BooleanState();
+        isSmokeAlarmState = new BooleanState();
+        lastKeyPressCounterState = new IntegerState();
+        lastPressedButtonIndex = new IntegerState();
+        lastPressedButtonIndexState = new StringState();
+        luminanceState = new DoubleState();
+        moldWarningState = new BooleanState();
+        motionDetectedCountState = new IntegerState();
+        nextSunrise = new DateTimeState();
+        nextSunsetState = new DateTimeState();
+        nextTimeEventState = new DateTimeState();
+        onState = new BooleanState();
+        operationModeState = new StringState();
+        pointTemperatureState = new DoubleState();
+        powerConsumptionWattState = new DoubleState();
+        powerInWattState = new DoubleState();
+        shutterLevelState = new IntegerState();
+        supplyValueInCubicMetterPerDayState = new DoubleState();
+        supplyValueInCubicMetterPerMonthState = new DoubleState();
+        supplyValueInCurrencyPerDayState = new DoubleState();
+        supplyValueInCurrencyPerMonthState = new DoubleState();
+        supplyValueInLitrePerDayState = new DoubleState();
+        supplyValueInLitrePerMonthState = new DoubleState();
+        temperatureState = new DoubleState();
+        totalEnergyState = new DoubleState();
+        valueState = new BooleanState();
+        valvePositionState = new BooleanState();
+        windowReductionActiveState = new BooleanState();
+    }
+
     /**
      * @return the absoluteEnergyConsumptionState
      */

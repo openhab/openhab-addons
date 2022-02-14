@@ -25,7 +25,6 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.openhab.binding.livisismarthome.internal.handler.LivisiBridgeHandler;
 import org.openhab.binding.livisismarthome.internal.listener.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +41,7 @@ import org.slf4j.LoggerFactory;
 public class LivisiWebSocket {
 
     private final Logger logger = LoggerFactory.getLogger(LivisiWebSocket.class);
+
     private final EventListener eventListener;
     private final URI webSocketURI;
     private final int maxIdleTimeout;
@@ -53,7 +53,8 @@ public class LivisiWebSocket {
     /**
      * Constructs the {@link LivisiWebSocket}.
      *
-     * @param eventListener the responsible {@link LivisiBridgeHandler}
+     * @param eventListener the responsible
+     *            {@link org.openhab.binding.livisismarthome.internal.handler.LivisiBridgeHandler}
      * @param webSocketURI the {@link URI} of the websocket endpoint
      * @param maxIdleTimeout
      */

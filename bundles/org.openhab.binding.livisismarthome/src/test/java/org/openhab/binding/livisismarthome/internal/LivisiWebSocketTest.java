@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.net.URI;
 import java.util.concurrent.Future;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -45,6 +46,8 @@ public class LivisiWebSocketTest {
 
         webSocketClientMock = mock(WebSocketClient.class);
         when(webSocketClientMock.connect(any(), any())).thenReturn(futureMock);
+
+        HttpClient httpClientMock = mock(HttpClient.class);
 
         eventListener = new EventListenerDummy();
         webSocket = new LivisiWebSocketAccessible(eventListener, new URI(""), 1000);

@@ -32,19 +32,10 @@ public class LivisiBindingConstants {
 
     public static final String BINDING_ID = "livisismarthome";
 
-    // client ids
-    public static final String CLIENT_ID_LIVISI_SMARTHOME = "24635748";
-    public static final String CLIENT_SECRET_LIVISI_SMARTHOME = "no secret";
-    public static final String REDIRECT_URL_LIVISI_SMARTHOME = "https://www.openhab.org/oauth/innogy/innogy-smarthome.html";
-
-    public static final String CONFIG_AUTH_CODE = "authcode";
+    public static final String USERNAME = "admin";
+    public static final String AUTH_HEADER_VALUE = "Y2xpZW50SWQ6Y2xpZW50UGFzcw==";
 
     public static final long REINITIALIZE_DELAY_SECONDS = 30;
-
-    // API URLs
-    public static final String API_VERSION = "1.1";
-    public static final String WEBSOCKET_API_URL_EVENTS = "wss://api.services-smarthome.de/API/" + API_VERSION
-            + "/events?token={token}";
 
     // properties
     public static final String PROPERTY_ID = "id";

@@ -13,7 +13,6 @@
 package org.openhab.binding.livisismarthome.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.livisismarthome.internal.LivisiBindingConstants;
 
 /**
  * @author Hilbrand Bouwkamp - Initial contribution
@@ -22,10 +21,7 @@ import org.openhab.binding.livisismarthome.internal.LivisiBindingConstants;
 @NonNullByDefault
 public class LivisiBridgeConfiguration {
 
-    public String authcode = "";
+    public String host = "";
+    public String password = "";
     public int websocketidletimeout = 900;
-
-    public String clientId = LivisiBindingConstants.CLIENT_ID_LIVISI_SMARTHOME;
-    public String clientSecret = LivisiBindingConstants.CLIENT_SECRET_LIVISI_SMARTHOME;
-    public String redirectUrl = LivisiBindingConstants.REDIRECT_URL_LIVISI_SMARTHOME;
 }

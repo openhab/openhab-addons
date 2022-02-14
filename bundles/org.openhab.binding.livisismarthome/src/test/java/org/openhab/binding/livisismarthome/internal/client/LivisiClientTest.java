@@ -26,33 +26,33 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.binding.livisismarthome.internal.handler.LivisiBridgeConfiguration;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 
 /**
  * @author Sven Strohschein - Initial contribution
  */
-@ExtendWith(MockitoExtension.class)
 public class LivisiClientTest {
 
-    private static final String DEVICES_URL = "https://api.services-smarthome.de/API/1.1/device";
+    private static final String DEVICES_URL = "http://127.0.0.1:8080/device";
 
     private LivisiClient client;
-    @Mock
-    private OAuthClientService oAuthClient;
-    @Mock
-    private HttpClient httpClient;
+    private HttpClient httpClientMock;
 
     @BeforeEach
     public void before() throws Exception {
+        httpClientMock = mock(HttpClient.class);
+
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse();
         accessTokenResponse.setAccessToken("accessToken");
-        when(oAuthClient.getAccessTokenResponse()).thenReturn(accessTokenResponse);
 
-        client = new LivisiClient(oAuthClient, httpClient);
+        OAuthClientService oAuthClientMock = mock(OAuthClientService.class);
+        when(oAuthClientMock.getAccessTokenResponse()).thenReturn(accessTokenResponse);
+
+        LivisiBridgeConfiguration bridgeConfiguration = new LivisiBridgeConfiguration();
+        bridgeConfiguration.host = "127.0.0.1";
+        client = new LivisiClient(bridgeConfiguration, oAuthClientMock, httpClientMock);
     }
 
     @Test
@@ -91,7 +91,7 @@ public class LivisiClientTest {
         when(response.getContentAsString()).thenReturn(responseContent);
 
         Request requestMock = mock(Request.class);
-        when(httpClient.newRequest(url)).thenReturn(requestMock);
+        when(httpClientMock.newRequest(url)).thenReturn(requestMock);
         when(requestMock.method(any(HttpMethod.class))).thenReturn(requestMock);
         when(requestMock.header(any(HttpHeader.class), any())).thenReturn(requestMock);
         when(requestMock.idleTimeout(anyLong(), any())).thenReturn(requestMock);

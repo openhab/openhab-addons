@@ -13,10 +13,10 @@
 package org.openhab.binding.livisismarthome.internal.listener;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.livisismarthome.internal.LivisiWebSocket;
 
 /**
- * The {@link EventListener} is called by the {@link LivisiWebSocket} on new Events and if the {@link LivisiWebSocket}
+ * The {@link EventListener} is called by the {@link org.openhab.binding.livisismarthome.internal.LivisiWebSocket} on
+ * new Events and if the {@link org.openhab.binding.livisismarthome.internal.LivisiWebSocket}
  * closed the connection.
  *
  * @author Oliver Kuhl - Initial contribution

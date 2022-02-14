@@ -25,14 +25,14 @@
 				<advanced>true</advanced>
 			</parameter-group>
 
-			<parameter name="authcode" type="text" groupName="connection">
-				<label>Authorization Code</label>
-				<description><![CDATA[ The auth-code is a one-time code needed to retrieve the
-				necessary access-codes from Livisi SmartHome Service. <b>Please go to...</b>
-				<ul>
-				<li><b>Livisi SmartHome Portal</b>: https://auth.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635748&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Finnogy-smarthome.html&scope&lang=de-DE</li>
-				</ul>
-				<b>... to generate an auth-code and paste it here</b>. After initial authorization, this code is not needed anymore.]]></description>
+			<parameter name="host" type="text" required="true" groupName="connection">
+				<label>Host</label>
+				<description>The hostname or local IP address of the Livisi SmartHome Controller (SHC)</description>
+			</parameter>
+			<parameter name="password" type="text" required="true" groupName="connection">
+				<label>Password</label>
+				<description>Password for the local API of Livisi SmartHome</description>
+				<context>password</context>
 			</parameter>
 			<parameter name="websocketidletimeout" type="integer" min="0" max="3600" unit="s" groupName="advanced">
 				<unitLabel>seconds</unitLabel>

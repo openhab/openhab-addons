@@ -12,25 +12,23 @@
  */
 package org.openhab.binding.livisismarthome.internal.client.entity.message;
 
-import org.openhab.binding.livisismarthome.internal.client.entity.device.Device;
-
 /**
  * @author Oliver Kuhl - Initial contribution
  *
  */
 public class MessageProperties {
     /**
-     * Name of the referenced {@link Device}
+     * Name of the referenced {@link org.openhab.binding.livisismarthome.internal.client.entity.device.Device}
      */
     private String deviceName;
 
     /**
-     * Serialnumber of the referenced {@link Device}
+     * Serialnumber of the referenced {@link org.openhab.binding.livisismarthome.internal.client.entity.device.Device}
      */
     private String serialNumber;
 
     /**
-     * Locationname of the referenced {@link Device}
+     * Locationname of the referenced {@link org.openhab.binding.livisismarthome.internal.client.entity.device.Device}
      */
     private String locationName;
 

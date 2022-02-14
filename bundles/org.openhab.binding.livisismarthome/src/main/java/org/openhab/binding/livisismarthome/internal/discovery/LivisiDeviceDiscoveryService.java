@@ -23,7 +23,6 @@ import org.openhab.binding.livisismarthome.internal.LivisiBindingConstants;
 import org.openhab.binding.livisismarthome.internal.client.entity.device.Device;
 import org.openhab.binding.livisismarthome.internal.handler.LivisiBridgeHandler;
 import org.openhab.binding.livisismarthome.internal.handler.LivisiDeviceHandler;
-import org.openhab.binding.livisismarthome.internal.listener.DeviceStatusListener;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -59,7 +58,8 @@ public class LivisiDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     /**
-     * Deactivates the {@link LivisiDeviceDiscoveryService} by unregistering it as {@link DeviceStatusListener} on the
+     * Deactivates the {@link LivisiDeviceDiscoveryService} by unregistering it as
+     * {@link org.openhab.binding.livisismarthome.internal.listener.DeviceStatusListener} on the
      * {@link LivisiBridgeHandler}. Older discovery results will be removed.
      *
      * @see org.openhab.core.config.discovery.AbstractDiscoveryService#deactivate()

@@ -400,7 +400,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
 
                 logger.debug("->capability:{} ({}/{})", c.getId(), c.getType(), c.getName());
 
-                if (c.getCapabilityState() == null) {
+                if (!c.hasState()) {
                     logger.debug("Capability not available for device {} ({})", device.getConfig().getName(),
                             device.getType());
                     continue;

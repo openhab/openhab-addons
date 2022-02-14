@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.livisismarthome.internal.client.entity.event;
 
-import org.openhab.binding.livisismarthome.internal.client.entity.capability.Capability;
-import org.openhab.binding.livisismarthome.internal.client.entity.device.Device;
 import org.openhab.binding.livisismarthome.internal.client.entity.link.Link;
 import org.openhab.binding.livisismarthome.internal.client.entity.message.Message;
 
@@ -23,9 +21,6 @@ import org.openhab.binding.livisismarthome.internal.client.entity.message.Messag
  * @author Oliver Kuhl - Initial contribution
  */
 public class MessageEvent extends BaseEvent {
-
-    public static final String EVENT_PROPERTY_CONFIGURATION_VERSION = "ConfigurationVersion";
-    public static final String EVENT_PROPERTY_IS_CONNECTED = "IsConnected";
 
     /**
      * Reference to the associated entity (instance or metadata) for the given event. Always available.
@@ -80,7 +75,7 @@ public class MessageEvent extends BaseEvent {
     }
 
     /**
-     * @param message the message to set
+     * @param data the data to set
      */
     public void setData(Message data) {
         this.data = data;
@@ -118,7 +113,8 @@ public class MessageEvent extends BaseEvent {
     }
 
     /**
-     * Returns true, if the {@link Link} points to a {@link Capability}.
+     * Returns true, if the {@link Link} points to a
+     * {@link org.openhab.binding.livisismarthome.internal.client.entity.capability.Capability}.
      *
      * @return
      */
@@ -127,7 +123,8 @@ public class MessageEvent extends BaseEvent {
     }
 
     /**
-     * Returns true, if the {@link Link} points to a {@link Device}.
+     * Returns true, if the {@link Link} points to a
+     * {@link org.openhab.binding.livisismarthome.internal.client.entity.device.Device}.
      *
      * @return
      */
@@ -145,7 +142,8 @@ public class MessageEvent extends BaseEvent {
     }
 
     /**
-     * Returns true, if the {@link Link} points to the SHC {@link Device}.
+     * Returns true, if the {@link Link} points to the SHC
+     * {@link org.openhab.binding.livisismarthome.internal.client.entity.device.Device}.
      *
      * @return
      */

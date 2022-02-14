@@ -13,7 +13,6 @@
 package org.openhab.binding.livisismarthome.internal.handler;
 
 import static org.openhab.binding.livisismarthome.internal.LivisiBindingConstants.*;
-import static org.openhab.binding.livisismarthome.internal.client.Constants.API_URL_TOKEN;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -36,9 +35,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.livisismarthome.internal.LivisiBindingConstants;
 import org.openhab.binding.livisismarthome.internal.LivisiWebSocket;
 import org.openhab.binding.livisismarthome.internal.client.LivisiClient;
+import org.openhab.binding.livisismarthome.internal.client.URLCreator;
 import org.openhab.binding.livisismarthome.internal.client.entity.action.ShutterAction;
 import org.openhab.binding.livisismarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.livisismarthome.internal.client.entity.device.Device;
@@ -64,8 +63,6 @@ import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.auth.client.oauth2.OAuthResponseException;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -150,46 +147,28 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * Initializes the services and LivisiClient.
      */
     private void initializeClient() {
+        String tokenURL = URLCreator.createTokenURL(bridgeConfiguration.host);
         final OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
-                API_URL_TOKEN, API_URL_TOKEN, bridgeConfiguration.clientId, bridgeConfiguration.clientSecret, null,
-                true);
+                tokenURL, tokenURL, "clientId", null, null, true);
         this.oAuthService = oAuthService;
-
-        if (checkOnAuthCode()) {
+        try {
             final LivisiClient localClient = createClient(oAuthService, httpClient);
             client = localClient;
             deviceStructMan = new DeviceStructureManager(createFullDeviceManager(localClient));
-            oAuthService.addAccessTokenRefreshListener(this);
             registerDeviceStatusListener(LivisiBridgeHandler.this);
-            scheduleRestartClient(false);
-        }
-    }
 
-    /**
-     * Fetches the OAuth2 tokens from Livisi SmartHome service if the auth code is set in the configuration and if
-     * successful removes the auth code. Returns true if the auth code was not set or if the authcode was successfully
-     * used to get a new refresh and access token.
-     *
-     * @return true if success
-     */
-    private boolean checkOnAuthCode() {
-        if (!bridgeConfiguration.authcode.isBlank()) {
-            logger.debug("Trying to get access and refresh tokens");
-            try {
-                oAuthService.getAccessTokenResponseByAuthorizationCode(bridgeConfiguration.authcode,
-                        bridgeConfiguration.redirectUrl);
-                final Configuration configuration = editConfiguration();
-                configuration.put(CONFIG_AUTH_CODE, "");
-                updateConfiguration(configuration);
-            } catch (IOException | OAuthException | OAuthResponseException e) {
-                logger.debug("Error fetching access tokens. Invalid authcode! Please generate a new one. Detail: {}",
-                        e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Cannot connect to Livisi SmartHome service. Please set auth-code!");
-                return false;
-            }
+            oAuthService.addAccessTokenRefreshListener(this);
+
+            AccessTokenResponse tokenResponse = client.login();
+            oAuthService.importAccessTokenResponse(tokenResponse);
+
+            scheduleRestartClient(false);
+        } catch (AuthenticationException | ApiException | IOException | OAuthException e) {
+            logger.debug("Error fetching access tokens. Invalid authcode! Please generate a new one. Detail: {}",
+                    e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Cannot connect to Livisi SmartHome service. Please set auth-code!");
         }
-        return true;
     }
 
     /**
@@ -260,7 +239,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
     LivisiWebSocket createWebSocket() throws IOException, AuthenticationException {
         final AccessTokenResponse accessTokenResponse = client.getAccessTokenResponse();
-        final String webSocketUrl = WEBSOCKET_API_URL_EVENTS.replace("{token}", accessTokenResponse.getAccessToken());
+        final String webSocketUrl = URLCreator.createEventsURL(bridgeConfiguration.host,
+                accessTokenResponse.getAccessToken());
 
         logger.debug("WebSocket URL: {}...{}", webSocketUrl.substring(0, 70),
                 webSocketUrl.substring(webSocketUrl.length() - 10));
@@ -277,7 +257,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * Schedules a re-initialization in the given future.
      *
      * @param delayed when it is scheduled delayed, it starts with a delay of
-     *            {@link LivisiBindingConstants#REINITIALIZE_DELAY_SECONDS}
+     *            {@link org.openhab.binding.livisismarthome.internal.LivisiBindingConstants#REINITIALIZE_DELAY_SECONDS}
      *            seconds,
      *            otherwise it starts directly
      */
@@ -888,7 +868,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     LivisiClient createClient(final OAuthClientService oAuthService, final HttpClient httpClient) {
-        return new LivisiClient(oAuthService, httpClient);
+        return new LivisiClient(bridgeConfiguration, oAuthService, httpClient);
     }
 
     /**
@@ -947,14 +927,13 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     private void refreshAccessToken() {
-        try {
-            final OAuthClientService localOAuthService = this.oAuthService;
-
-            if (localOAuthService != null) {
-                oAuthService.refreshToken();
+        if (oAuthService != null && client != null) {
+            try {
+                AccessTokenResponse tokenResponse = client.login();
+                oAuthService.importAccessTokenResponse(tokenResponse);
+            } catch (AuthenticationException | ApiException | IOException | OAuthException e) {
+                logger.debug("Could not refresh tokens", e);
             }
-        } catch (IOException | OAuthResponseException | OAuthException e) {
-            logger.debug("Could not refresh tokens", e);
         }
     }
 

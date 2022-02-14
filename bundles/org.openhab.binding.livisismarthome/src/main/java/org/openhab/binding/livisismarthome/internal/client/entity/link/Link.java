@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.livisismarthome.internal.client.entity.link;
 
-import org.openhab.binding.livisismarthome.internal.client.entity.capability.Capability;
-import org.openhab.binding.livisismarthome.internal.client.entity.device.Device;
-import org.openhab.binding.livisismarthome.internal.client.entity.message.Message;
-
 /**
  * Defines the data structure for a {@link Link}. This is the basic component used to link different data types in the
  * Livisi API.
@@ -66,7 +62,8 @@ public class Link {
     }
 
     /**
-     * Returns true, if the {@link Link} points to a {@link Capability}.
+     * Returns true, if the {@link Link} points to a
+     * {@link org.openhab.binding.livisismarthome.internal.client.entity.capability.Capability}.
      *
      * @return
      */
@@ -75,7 +72,8 @@ public class Link {
     }
 
     /**
-     * Returns true, if the {@link Link} points to a {@link Device}.
+     * Returns true, if the {@link Link} points to a
+     * {@link org.openhab.binding.livisismarthome.internal.client.entity.device.Device}.
      *
      * @return
      */
@@ -84,7 +82,8 @@ public class Link {
     }
 
     /**
-     * Returns true, if the {@link Link} points to a {@link Message}.
+     * Returns true, if the {@link Link} points to a
+     * {@link org.openhab.binding.livisismarthome.internal.client.entity.message.Message}.
      *
      * @return
      */

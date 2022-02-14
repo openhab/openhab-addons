@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.livisismarthome.internal.client;
 
-import static org.openhab.binding.livisismarthome.internal.client.Constants.*;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
@@ -38,6 +36,8 @@ import org.openhab.binding.livisismarthome.internal.client.entity.StatusResponse
 import org.openhab.binding.livisismarthome.internal.client.entity.action.Action;
 import org.openhab.binding.livisismarthome.internal.client.entity.action.ShutterAction;
 import org.openhab.binding.livisismarthome.internal.client.entity.action.StateActionSetter;
+import org.openhab.binding.livisismarthome.internal.client.entity.auth.LivisiAccessTokenRequest;
+import org.openhab.binding.livisismarthome.internal.client.entity.auth.LivisiAccessTokenResponse;
 import org.openhab.binding.livisismarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.livisismarthome.internal.client.entity.capability.CapabilityState;
 import org.openhab.binding.livisismarthome.internal.client.entity.device.Device;
@@ -55,6 +55,7 @@ import org.openhab.binding.livisismarthome.internal.client.exception.RemoteAcces
 import org.openhab.binding.livisismarthome.internal.client.exception.ServiceUnavailableException;
 import org.openhab.binding.livisismarthome.internal.client.exception.SessionExistsException;
 import org.openhab.binding.livisismarthome.internal.client.exception.SessionNotFoundException;
+import org.openhab.binding.livisismarthome.internal.handler.LivisiBridgeConfiguration;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -76,6 +77,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class LivisiClient {
 
+    private static final String BASIC = "Basic ";
     private static final String BEARER = "Bearer ";
     private static final String CONTENT_TYPE = "application/json";
     private static final int HTTP_REQUEST_TIMEOUT_SECONDS = 10;
@@ -89,12 +91,15 @@ public class LivisiClient {
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
     private final Gson gson = new GsonBuilder().setDateFormat(DATE_FORMAT).create();
+    private final LivisiBridgeConfiguration bridgeConfiguration;
     private final OAuthClientService oAuthService;
     private final HttpClient httpClient;
     private @Nullable Gateway bridgeDetails;
     private String configVersion = "";
 
-    public LivisiClient(final OAuthClientService oAuthService, final HttpClient httpClient) {
+    public LivisiClient(final LivisiBridgeConfiguration bridgeConfiguration, final OAuthClientService oAuthService,
+            final HttpClient httpClient) {
+        this.bridgeConfiguration = bridgeConfiguration;
         this.oAuthService = oAuthService;
         this.httpClient = httpClient;
     }
@@ -109,7 +114,8 @@ public class LivisiClient {
      */
     public void refreshStatus() throws IOException, ApiException, AuthenticationException {
         logger.debug("Get Livisi SmartHome status...");
-        final StatusResponse status = executeGet(API_URL_STATUS, StatusResponse.class);
+        final StatusResponse status = executeGet(URLCreator.createStatusURL(bridgeConfiguration.host),
+                StatusResponse.class);
 
         bridgeDetails = status.gateway;
         configVersion = bridgeDetails.getConfigVersion();
@@ -174,6 +180,35 @@ public class LivisiClient {
         return response;
     }
 
+    public AccessTokenResponse login() throws AuthenticationException, IOException, ApiException {
+        LivisiAccessTokenRequest requestBody = new LivisiAccessTokenRequest();
+        requestBody.setUserName(LivisiBindingConstants.USERNAME);
+        requestBody.setPassword(bridgeConfiguration.password);
+        requestBody.setGrantType("password");
+
+        final String json = gson.toJson(requestBody);
+        Request request = httpClient.newRequest(URLCreator.createTokenURL(bridgeConfiguration.host))
+                .method(HttpMethod.POST).content(new StringContentProvider(json), CONTENT_TYPE).accept(CONTENT_TYPE);
+
+        ContentResponse response;
+        try {
+            response = request.header(HttpHeader.ACCEPT, CONTENT_TYPE)
+                    .header(HttpHeader.AUTHORIZATION, BASIC + LivisiBindingConstants.AUTH_HEADER_VALUE)
+                    .idleTimeout(HTTP_REQUEST_IDLE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    .timeout(HTTP_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            throw new AuthenticationException("Authentication failed: " + e.getMessage());
+        }
+        handleResponseErrors(response, request.getURI());
+
+        LivisiAccessTokenResponse tokenResponse = gson.fromJson(response.getContentAsString(),
+                LivisiAccessTokenResponse.class);
+        if (tokenResponse == null) {
+            throw new AuthenticationException("The access token response couldn't get parsed!");
+        }
+        return tokenResponse.createAccessTokenResponse();
+    }
+
     public AccessTokenResponse getAccessTokenResponse() throws AuthenticationException, IOException {
         @Nullable
         final AccessTokenResponse accessTokenResponse;
@@ -184,7 +219,7 @@ public class LivisiClient {
         }
         if (accessTokenResponse == null || accessTokenResponse.getAccessToken() == null
                 || accessTokenResponse.getAccessToken().isBlank()) {
-            throw new AuthenticationException("No Livisi accesstoken. Is this thing authorized?");
+            throw new AuthenticationException("No Livisi access token. Is this thing authorized?");
         }
         return accessTokenResponse;
     }
@@ -252,7 +287,7 @@ public class LivisiClient {
      */
     public void setSwitchActuatorState(final String capabilityId, final boolean state)
             throws IOException, ApiException, AuthenticationException {
-        executePost(API_URL_ACTION, new StateActionSetter(capabilityId, Capability.TYPE_SWITCHACTUATOR, state));
+        executePost(createActionURL(), new StateActionSetter(capabilityId, Capability.TYPE_SWITCHACTUATOR, state));
     }
 
     /**
@@ -260,7 +295,7 @@ public class LivisiClient {
      */
     public void setDimmerActuatorState(final String capabilityId, final int dimLevel)
             throws IOException, ApiException, AuthenticationException {
-        executePost(API_URL_ACTION, new StateActionSetter(capabilityId, Capability.TYPE_DIMMERACTUATOR, dimLevel));
+        executePost(createActionURL(), new StateActionSetter(capabilityId, Capability.TYPE_DIMMERACTUATOR, dimLevel));
     }
 
     /**
@@ -268,7 +303,7 @@ public class LivisiClient {
      */
     public void setRollerShutterActuatorState(final String capabilityId, final int rollerShutterLevel)
             throws IOException, ApiException, AuthenticationException {
-        executePost(API_URL_ACTION,
+        executePost(createActionURL(),
                 new StateActionSetter(capabilityId, Capability.TYPE_ROLLERSHUTTERACTUATOR, rollerShutterLevel));
     }
 
@@ -278,7 +313,7 @@ public class LivisiClient {
     public void setRollerShutterAction(final String capabilityId,
             final ShutterAction.ShutterActions rollerShutterAction)
             throws IOException, ApiException, AuthenticationException {
-        executePost(API_URL_ACTION, new ShutterAction(capabilityId, rollerShutterAction));
+        executePost(createActionURL(), new ShutterAction(capabilityId, rollerShutterAction));
     }
 
     /**
@@ -286,7 +321,7 @@ public class LivisiClient {
      */
     public void setVariableActuatorState(final String capabilityId, final boolean state)
             throws IOException, ApiException, AuthenticationException {
-        executePost(API_URL_ACTION, new StateActionSetter(capabilityId, Capability.TYPE_VARIABLEACTUATOR, state));
+        executePost(createActionURL(), new StateActionSetter(capabilityId, Capability.TYPE_VARIABLEACTUATOR, state));
     }
 
     /**
@@ -294,7 +329,7 @@ public class LivisiClient {
      */
     public void setPointTemperatureState(final String capabilityId, final double pointTemperature)
             throws IOException, ApiException, AuthenticationException {
-        executePost(API_URL_ACTION,
+        executePost(createActionURL(),
                 new StateActionSetter(capabilityId, Capability.TYPE_THERMOSTATACTUATOR, pointTemperature));
     }
 
@@ -303,7 +338,7 @@ public class LivisiClient {
      */
     public void setOperationMode(final String capabilityId, final boolean autoMode)
             throws IOException, ApiException, AuthenticationException {
-        executePost(API_URL_ACTION,
+        executePost(createActionURL(),
                 new StateActionSetter(capabilityId, Capability.TYPE_THERMOSTATACTUATOR,
                         autoMode ? CapabilityState.STATE_VALUE_OPERATION_MODE_AUTO
                                 : CapabilityState.STATE_VALUE_OPERATION_MODE_MANUAL));
@@ -314,7 +349,7 @@ public class LivisiClient {
      */
     public void setAlarmActuatorState(final String capabilityId, final boolean alarmState)
             throws IOException, ApiException, AuthenticationException {
-        executePost(API_URL_ACTION, new StateActionSetter(capabilityId, Capability.TYPE_ALARMACTUATOR, alarmState));
+        executePost(createActionURL(), new StateActionSetter(capabilityId, Capability.TYPE_ALARMACTUATOR, alarmState));
     }
 
     /**
@@ -328,7 +363,7 @@ public class LivisiClient {
     public List<Device> getDevices(Collection<String> deviceIds)
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading Livisi devices...");
-        List<Device> devices = executeGetList(API_URL_DEVICE, Device[].class);
+        List<Device> devices = executeGetList(URLCreator.createDevicesURL(bridgeConfiguration.host), Device[].class);
         return devices.stream().filter(d -> isDeviceUsable(d, deviceIds)).collect(Collectors.toList());
     }
 
@@ -337,7 +372,7 @@ public class LivisiClient {
      */
     public Device getDeviceById(final String deviceId) throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device with id {}...", deviceId);
-        return executeGet(API_URL_DEVICE_ID.replace("{id}", deviceId), Device.class);
+        return executeGet(URLCreator.createDeviceURL(bridgeConfiguration.host, deviceId), Device.class);
     }
 
     /**
@@ -345,7 +380,7 @@ public class LivisiClient {
      */
     public List<DeviceState> getDeviceStates() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device states...");
-        return executeGetList(API_URL_DEVICE_STATES, DeviceState[].class);
+        return executeGetList(URLCreator.createDeviceStatesURL(bridgeConfiguration.host), DeviceState[].class);
     }
 
     /**
@@ -354,7 +389,7 @@ public class LivisiClient {
     public State getDeviceStateByDeviceId(final String deviceId)
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device states for device id {}...", deviceId);
-        return executeGet(API_URL_DEVICE_ID_STATE.replace("{id}", deviceId), State.class);
+        return executeGet(URLCreator.createDeviceStateURL(bridgeConfiguration.host, deviceId), State.class);
     }
 
     /**
@@ -364,7 +399,7 @@ public class LivisiClient {
      */
     public List<Location> getLocations() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading locations...");
-        return executeGetList(API_URL_LOCATION, Location[].class);
+        return executeGetList(URLCreator.createLocationURL(bridgeConfiguration.host), Location[].class);
     }
 
     /**
@@ -376,7 +411,8 @@ public class LivisiClient {
     public List<Capability> getCapabilitiesForDevice(final String deviceId)
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading capabilities for device {}...", deviceId);
-        return executeGetList(API_URL_DEVICE_CAPABILITIES.replace("{id}", deviceId), Capability[].class);
+        return executeGetList(URLCreator.createDeviceCapabilitiesURL(bridgeConfiguration.host, deviceId),
+                Capability[].class);
     }
 
     /**
@@ -384,7 +420,7 @@ public class LivisiClient {
      */
     public List<Capability> getCapabilities() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading capabilities...");
-        return executeGetList(API_URL_CAPABILITY, Capability[].class);
+        return executeGetList(URLCreator.createCapabilityURL(bridgeConfiguration.host), Capability[].class);
     }
 
     /**
@@ -392,7 +428,7 @@ public class LivisiClient {
      */
     public List<CapabilityState> getCapabilityStates() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading capability states...");
-        return executeGetList(API_URL_CAPABILITY_STATES, CapabilityState[].class);
+        return executeGetList(URLCreator.createCapabilityStatesURL(bridgeConfiguration.host), CapabilityState[].class);
     }
 
     /**
@@ -400,7 +436,7 @@ public class LivisiClient {
      */
     public List<Message> getMessages() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading messages...");
-        return executeGetList(API_URL_MESSAGE, Message[].class);
+        return executeGetList(URLCreator.createMessageURL(bridgeConfiguration.host), Message[].class);
     }
 
     /**
@@ -408,6 +444,10 @@ public class LivisiClient {
      */
     public String getConfigVersion() {
         return configVersion;
+    }
+
+    private String createActionURL() {
+        return URLCreator.createActionURL(bridgeConfiguration.host);
     }
 
     /**

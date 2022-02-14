@@ -90,6 +90,34 @@ public class State {
 
     private DoubleState memoryUsage;
 
+    public State() {
+        deviceInclusionState = new StringState();
+        deviceConfigurationState = new StringState();
+        isReachable = new BooleanState();
+        updateState = new StringState();
+        firmwareVersion = new StringState();
+        wHRating = new DoubleState();
+        lastReboot = new DateTimeState();
+        memoryLoad = new IntegerState();
+        cpuLoad = new IntegerState();
+        lBDongleAttached = new BooleanState();
+        mBusDongleAttached = new BooleanState();
+        configVersion = new IntegerState();
+        oSState = new StringState();
+        wifiSignalStrength = new IntegerState();
+        ethIpAddress = new StringState();
+        wifiIpAddress = new StringState();
+        ethMacAddress = new StringState();
+        wifiMacAddress = new StringState();
+        inUseAdapter = new StringState();
+        discoveryActive = new BooleanState();
+        operationStatus = new StringState();
+        currentUtcOffset = new DoubleState();
+        cpuUsage = new DoubleState();
+        diskUsage = new DoubleState();
+        memoryUsage = new DoubleState();
+    }
+
     /**
      * @return the deviceInclusionState
      */

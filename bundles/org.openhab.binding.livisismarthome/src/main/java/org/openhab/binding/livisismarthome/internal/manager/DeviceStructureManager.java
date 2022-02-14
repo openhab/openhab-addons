@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.livisismarthome.internal.LivisiBindingConstants;
-import org.openhab.binding.livisismarthome.internal.client.LivisiClient;
 import org.openhab.binding.livisismarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.livisismarthome.internal.client.entity.device.Device;
 import org.openhab.binding.livisismarthome.internal.client.entity.link.Link;
@@ -34,7 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Manages the structure of the {@link Device}s and the calls to the {@link LivisiClient} to load the {@link Device}
+ * Manages the structure of the {@link Device}s and the calls to the
+ * {@link org.openhab.binding.livisismarthome.internal.client.LivisiClient} to load the {@link Device}
  * data from the Livisi SmartHome web service.
  *
  * @author Oliver Kuhl - Initial contribution
