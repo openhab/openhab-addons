@@ -318,6 +318,8 @@ public class PorcupineKSService implements KSService {
                     Thread.sleep(100);
                     continue;
                 }
+                // do not monopolize the thread
+                Thread.sleep(0);
                 // copy into 16-bit buffer
                 captureBuffer.asShortBuffer().get(porcupineBuffer);
                 // process with porcupine
