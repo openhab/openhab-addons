@@ -14,26 +14,28 @@ package org.openhab.binding.flicbutton.internal.handler;
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import io.flic.fliclib.javaclient.BatteryStatusListener;
 import io.flic.fliclib.javaclient.Bdaddr;
 
 /**
  *
- * @author Patrick Fink
+ * @author Patrick Fink Initial contribution
  *
  */
+@NonNullByDefault
 public class FlicButtonBatteryLevelListener extends BatteryStatusListener.Callbacks {
 
     private final FlicButtonHandler thingHandler;
 
-    FlicButtonBatteryLevelListener(@NonNull FlicButtonHandler thingHandler) {
+    FlicButtonBatteryLevelListener(FlicButtonHandler thingHandler) {
         this.thingHandler = thingHandler;
     }
 
     @Override
-    public void onBatteryStatus(Bdaddr bdaddr, int i, long l) throws IOException {
+    public void onBatteryStatus(@Nullable Bdaddr bdaddr, int i, long l) throws IOException {
         thingHandler.updateBatteryChannel(i);
     }
 }

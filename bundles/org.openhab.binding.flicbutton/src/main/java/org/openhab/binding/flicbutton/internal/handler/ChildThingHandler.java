@@ -16,6 +16,8 @@ package org.openhab.binding.flicbutton.internal.handler;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -27,11 +29,12 @@ import org.openhab.core.thing.binding.BridgeHandler;
  * @author Patrick Fink - Initial contribution
  * @param <BridgeHandlerType> The bridge type this child handler depends on
  */
+@NonNullByDefault
 public abstract class ChildThingHandler<BridgeHandlerType extends BridgeHandler> extends BaseThingHandler {
     private static final Collection<ThingStatus> defaultToleratedBridgeStatuses = Collections
             .singleton(ThingStatus.ONLINE);
     protected boolean bridgeValid = false;
-    protected BridgeHandlerType bridgeHandler;
+    protected @Nullable BridgeHandlerType bridgeHandler;
 
     public ChildThingHandler(Thing thing) {
         super(thing);

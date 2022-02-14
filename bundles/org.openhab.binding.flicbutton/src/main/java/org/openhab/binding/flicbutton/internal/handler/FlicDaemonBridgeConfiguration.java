@@ -15,23 +15,29 @@ package org.openhab.binding.flicbutton.internal.handler;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  *
  * @author Patrick Fink - Initial contribution
  *
  */
+@NonNullByDefault
 public class FlicDaemonBridgeConfiguration {
 
+    @Nullable
     private String hostname;
     private int port;
 
+    @Nullable
     private InetAddress host;
 
     public void initAndValidate() throws UnknownHostException {
         host = InetAddress.getByName(hostname);
     }
 
-    public InetAddress getHost() {
+    public @Nullable InetAddress getHost() {
         return host;
     }
 

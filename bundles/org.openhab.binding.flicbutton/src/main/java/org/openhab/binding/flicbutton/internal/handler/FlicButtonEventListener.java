@@ -24,7 +24,7 @@ import io.flic.fliclib.javaclient.enums.*;
 
 /**
  *
- * @author Patrick Fink
+ * @author Patrick Fink Initial contribution
  *
  */
 public class FlicButtonEventListener extends ButtonConnectionChannel.Callbacks {

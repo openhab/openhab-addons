@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.flicbutton.internal.discovery;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
@@ -22,7 +21,7 @@ import io.flic.fliclib.javaclient.FlicClient;
 
 /**
  *
- * @author Patrick Fink
+ * @author Patrick Fink Initial contribution
  *
  */
 @NonNullByDefault
@@ -35,7 +34,7 @@ public interface FlicButtonDiscoveryService extends DiscoveryService {
      */
     public ThingUID flicButtonDiscovered(Bdaddr bdaddr);
 
-    public void activate(@NonNull FlicClient client);
+    public void activate(FlicClient client);
 
     public void deactivate();
 }

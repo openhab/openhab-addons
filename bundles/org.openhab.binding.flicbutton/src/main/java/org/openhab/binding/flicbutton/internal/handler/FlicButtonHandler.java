@@ -19,6 +19,8 @@ import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.*;
 import org.openhab.core.types.Command;
@@ -37,20 +39,23 @@ import io.flic.fliclib.javaclient.enums.DisconnectReason;
  *
  * @author Patrick Fink - Initial contribution
  */
+@NonNullByDefault
 public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler> {
 
     private Logger logger = LoggerFactory.getLogger(FlicButtonHandler.class);
-    private ScheduledFuture<?> delayedDisconnectTask;
-    private DisconnectReason latestDisconnectReason;
-    private ButtonConnectionChannel eventConnection;
-    private Bdaddr bdaddr;
+    private @Nullable ScheduledFuture<?> delayedDisconnectTask;
+    @Nullable
+    DisconnectReason latestDisconnectReason;
+    private @Nullable ButtonConnectionChannel eventConnection;
+    private @Nullable Bdaddr bdaddr;
+    @Nullable
     BatteryStatusListener batteryConnection;
 
     public FlicButtonHandler(Thing thing) {
         super(thing);
     }
 
-    public Bdaddr getBdaddr() {
+    public @Nullable Bdaddr getBdaddr() {
         return bdaddr;
     }
 
@@ -156,7 +161,7 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
 
     // Cleanup delayedDisconnect on status change to online
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, String description) {
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         if (status == ThingStatus.ONLINE) {
             cancelDelayedDisconnectTask();
         }
@@ -181,7 +186,7 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
     }
 
     void fireTriggerEvent(String event) {
-        String channelID = event == CommonTriggerEvents.PRESSED || event == CommonTriggerEvents.RELEASED
+        String channelID = event.equals(CommonTriggerEvents.PRESSED) || event.equals(CommonTriggerEvents.RELEASED)
                 ? CHANNEL_ID_RAWBUTTON_EVENTS
                 : CHANNEL_ID_BUTTON_EVENTS;
         updateStatus(ThingStatus.ONLINE);

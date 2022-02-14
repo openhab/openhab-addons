@@ -19,6 +19,9 @@ import java.util.Collection;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.flicbutton.internal.discovery.FlicButtonDiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -36,24 +39,25 @@ import io.flic.fliclib.javaclient.FlicClient;
  *
  * @author Patrick Fink - Initial contribution
  */
+@NonNullByDefault
 public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
     private static final Logger logger = LoggerFactory.getLogger(FlicDaemonBridgeHandler.class);
     private static final long REINITIALIZE_DELAY_SECONDS = 10;
     // Config parameters
-    private FlicDaemonBridgeConfiguration cfg;
+    private @Nullable FlicDaemonBridgeConfiguration cfg;
     // Services
     private FlicButtonDiscoveryService buttonDiscoveryService;
-    private Future<?> flicClientFuture;
+    private @Nullable Future<?> flicClientFuture;
     // For disposal
-    private Collection<Future<?>> startedTasks = new ArrayList<>(2);
-    private FlicClient flicClient;
+    private Collection<@Nullable Future<?>> startedTasks = new ArrayList<>(2);
+    private @Nullable FlicClient flicClient;
 
     public FlicDaemonBridgeHandler(Bridge bridge, FlicButtonDiscoveryService buttonDiscoveryService) {
         super(bridge);
         this.buttonDiscoveryService = buttonDiscoveryService;
     }
 
-    public FlicClient getFlicClient() {
+    public @Nullable FlicClient getFlicClient() {
         return flicClient;
     }
 
@@ -80,7 +84,7 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
     }
 
     private void activateButtonDiscoveryService() {
-        buttonDiscoveryService.activate(flicClient);
+        buttonDiscoveryService.activate((@NonNull FlicClient) flicClient);
     }
 
     private void startFlicdClientAsync() throws IOException {

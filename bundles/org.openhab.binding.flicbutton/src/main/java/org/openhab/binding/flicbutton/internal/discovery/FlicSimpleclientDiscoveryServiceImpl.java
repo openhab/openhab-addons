@@ -15,8 +15,9 @@ package org.openhab.binding.flicbutton.internal.discovery;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.flicbutton.internal.FlicButtonBindingConstants;
-import org.openhab.binding.flicbutton.internal.FlicButtonHandlerFactory;
 import org.openhab.binding.flicbutton.internal.util.FlicButtonUtils;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -44,13 +45,14 @@ import io.flic.fliclib.javaclient.enums.BluetoothControllerState;
  *
  * @author Patrick Fink - Initial contribution
  */
+@NonNullByDefault
 public class FlicSimpleclientDiscoveryServiceImpl extends AbstractDiscoveryService
         implements FlicButtonDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(FlicSimpleclientDiscoveryServiceImpl.class);
 
     private boolean activated = false;
     private ThingUID bridgeUID;
-    private FlicClient flicClient;
+    private @Nullable FlicClient flicClient;
 
     public FlicSimpleclientDiscoveryServiceImpl(@NonNull ThingUID bridgeUID) {
         super(FlicButtonBindingConstants.SUPPORTED_THING_TYPES_UIDS, 2, true);
@@ -89,13 +91,15 @@ public class FlicSimpleclientDiscoveryServiceImpl extends AbstractDiscoveryServi
         // Register FlicButtonEventListener to all already existing Flic buttons
         flicClient.getInfo(new GetInfoResponseCallback() {
             @Override
-            public void onGetInfoResponse(BluetoothControllerState bluetoothControllerState, Bdaddr myBdAddr,
-                    BdAddrType myBdAddrType, int maxPendingConnections, int maxConcurrentlyConnectedButtons,
-                    int currentPendingConnections, boolean currentlyNoSpaceForNewConnection, Bdaddr[] verifiedButtons)
-                    throws IOException {
+            public void onGetInfoResponse(@Nullable BluetoothControllerState bluetoothControllerState,
+                    @Nullable Bdaddr myBdAddr, @Nullable BdAddrType myBdAddrType, int maxPendingConnections,
+                    int maxConcurrentlyConnectedButtons, int currentPendingConnections,
+                    boolean currentlyNoSpaceForNewConnection, Bdaddr @Nullable [] verifiedButtons) throws IOException {
 
-                for (final Bdaddr bdaddr : verifiedButtons) {
-                    flicButtonDiscovered(bdaddr);
+                for (final @Nullable Bdaddr bdaddr : verifiedButtons) {
+                    if (bdaddr != null) {
+                        flicButtonDiscovered((@NonNull Bdaddr) bdaddr);
+                    }
                 }
             }
         });
@@ -106,9 +110,11 @@ public class FlicSimpleclientDiscoveryServiceImpl extends AbstractDiscoveryServi
         super.startBackgroundDiscovery();
         flicClient.setGeneralCallbacks(new GeneralCallbacks() {
             @Override
-            public void onNewVerifiedButton(Bdaddr bdaddr) throws IOException {
+            public void onNewVerifiedButton(@Nullable Bdaddr bdaddr) throws IOException {
                 logger.debug("A new Flic button was added by an external flicd client: {}", bdaddr);
-                flicButtonDiscovered(bdaddr);
+                if (bdaddr != null) {
+                    flicButtonDiscovered((@NonNull Bdaddr) bdaddr);
+                }
             }
         });
     }

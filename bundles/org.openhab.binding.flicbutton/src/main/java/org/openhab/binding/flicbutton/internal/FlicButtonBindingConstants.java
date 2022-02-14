@@ -15,6 +15,7 @@ package org.openhab.binding.flicbutton.internal;
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -23,15 +24,16 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Patrick Fink - Initial contribution
  */
+@NonNullByDefault
 public class FlicButtonBindingConstants {
 
     public static final String BINDING_ID = "flicbutton";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "flicd-bridge");
-    public final static ThingTypeUID FLICBUTTON_THING_TYPE = new ThingTypeUID(BINDING_ID, "button");
+    public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "flicd-bridge");
+    public static final ThingTypeUID FLICBUTTON_THING_TYPE = new ThingTypeUID(BINDING_ID, "button");
 
-    public final static Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(BRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(BRIDGE_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(FLICBUTTON_THING_TYPE);
 
     // List of all configuration options
@@ -40,10 +42,10 @@ public class FlicButtonBindingConstants {
     public static final String CONFIG_ADDRESS = "address";
 
     // List of all Channel ids
-    public final static String CHANNEL_ID_RAWBUTTON_EVENTS = "rawbutton";
-    public final static String CHANNEL_ID_BUTTON_EVENTS = "button";
-    public final static String CHANNEL_ID_BATTERY_LEVEL = "battery-level";
+    public static final String CHANNEL_ID_RAWBUTTON_EVENTS = "rawbutton";
+    public static final String CHANNEL_ID_BUTTON_EVENTS = "button";
+    public static final String CHANNEL_ID_BATTERY_LEVEL = "battery-level";
 
     // Other stuff
-    public final static int BUTTON_OFFLINE_GRACE_PERIOD_SECONDS = 60;
+    public static final int BUTTON_OFFLINE_GRACE_PERIOD_SECONDS = 60;
 }

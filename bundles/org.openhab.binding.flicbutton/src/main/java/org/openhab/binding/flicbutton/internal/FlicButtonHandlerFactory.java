@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.flicbutton.internal.discovery.FlicButtonDiscoveryService;
 import org.openhab.binding.flicbutton.internal.discovery.FlicSimpleclientDiscoveryServiceImpl;
@@ -42,9 +43,10 @@ import org.osgi.service.component.annotations.Component;
  * @author Patrick Fink - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.flicbutton")
+@NonNullByDefault
 public class FlicButtonHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .concat(FlicButtonBindingConstants.BRIDGE_THING_TYPES_UIDS.stream(),
                     FlicButtonBindingConstants.SUPPORTED_THING_TYPES_UIDS.stream())
             .collect(Collectors.toSet());
@@ -56,6 +58,7 @@ public class FlicButtonHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
+    @Nullable
     protected ThingHandler createHandler(Thing thing) {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
