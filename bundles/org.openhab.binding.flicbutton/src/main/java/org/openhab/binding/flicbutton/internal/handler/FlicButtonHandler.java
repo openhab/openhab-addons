@@ -181,7 +181,7 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
 
     private void cancelInitializationTask() {
         if (initializationTask != null) {
-            initializationTask.cancel(false);
+            initializationTask.cancel(true);
             initializationTask = null;
         }
     }
