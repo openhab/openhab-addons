@@ -22,7 +22,12 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.CommonTriggerEvents;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,7 +137,7 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
         }
     }
 
-    void connectionStatusChanged(ConnectionStatus connectionStatus, DisconnectReason disconnectReason) {
+    void connectionStatusChanged(ConnectionStatus connectionStatus, @Nullable DisconnectReason disconnectReason) {
         latestDisconnectReason = disconnectReason;
         if (connectionStatus == ConnectionStatus.Disconnected) {
             // Status change to offline have to be scheduled to improve stability,

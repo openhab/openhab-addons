@@ -22,7 +22,7 @@ import io.flic.fliclib.javaclient.Bdaddr;
 
 /**
  *
- * @author Patrick Fink Initial contribution
+ * @author Patrick Fink - Initial contribution
  *
  */
 @NonNullByDefault

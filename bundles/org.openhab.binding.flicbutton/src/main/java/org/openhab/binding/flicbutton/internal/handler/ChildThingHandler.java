@@ -31,7 +31,7 @@ import org.openhab.core.thing.binding.BridgeHandler;
  */
 @NonNullByDefault
 public abstract class ChildThingHandler<BridgeHandlerType extends BridgeHandler> extends BaseThingHandler {
-    private static final Collection<ThingStatus> defaultToleratedBridgeStatuses = Collections
+    private static final Collection<ThingStatus> DEFAULT_TOLERATED_BRIDGE_STATUSES = Collections
             .singleton(ThingStatus.ONLINE);
     protected boolean bridgeValid = false;
     protected @Nullable BridgeHandlerType bridgeHandler;
@@ -58,7 +58,7 @@ public abstract class ChildThingHandler<BridgeHandlerType extends BridgeHandler>
     }
 
     protected void setStatusBasedOnBridge() {
-        setStatusBasedOnBridge(defaultToleratedBridgeStatuses);
+        setStatusBasedOnBridge(DEFAULT_TOLERATED_BRIDGE_STATUSES);
     }
 
     @Override

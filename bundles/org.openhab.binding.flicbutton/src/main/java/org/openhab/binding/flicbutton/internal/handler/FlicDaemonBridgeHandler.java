@@ -41,7 +41,7 @@ import io.flic.fliclib.javaclient.FlicClient;
  */
 @NonNullByDefault
 public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
-    private static final Logger logger = LoggerFactory.getLogger(FlicDaemonBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(FlicDaemonBridgeHandler.class);
     private static final long REINITIALIZE_DELAY_SECONDS = 10;
     // Config parameters
     private @Nullable FlicDaemonBridgeConfiguration cfg;
@@ -84,7 +84,11 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
     }
 
     private void activateButtonDiscoveryService() {
-        buttonDiscoveryService.activate((@NonNull FlicClient) flicClient);
+        if (flicClient != null) {
+            buttonDiscoveryService.activate((@NonNull FlicClient) flicClient);
+        } else {
+            throw new IllegalStateException("flicClient not properly initialized");
+        }
     }
 
     private void startFlicdClientAsync() throws IOException {

@@ -54,13 +54,13 @@ public class FlicSimpleclientDiscoveryServiceImpl extends AbstractDiscoveryServi
     private ThingUID bridgeUID;
     private @Nullable FlicClient flicClient;
 
-    public FlicSimpleclientDiscoveryServiceImpl(@NonNull ThingUID bridgeUID) {
+    public FlicSimpleclientDiscoveryServiceImpl(ThingUID bridgeUID) {
         super(FlicButtonBindingConstants.SUPPORTED_THING_TYPES_UIDS, 2, true);
         this.bridgeUID = bridgeUID;
     }
 
     @Override
-    public void activate(@NonNull FlicClient flicClient) {
+    public void activate(FlicClient flicClient) {
         this.flicClient = flicClient;
         activated = true;
         super.activate(null);
@@ -78,7 +78,6 @@ public class FlicSimpleclientDiscoveryServiceImpl extends AbstractDiscoveryServi
             if (activated) {
                 discoverVerifiedButtons();
             }
-
         } catch (IOException e) {
             logger.warn("Error occured during button discovery", e);
             if (this.scanListener != null) {
@@ -95,7 +94,6 @@ public class FlicSimpleclientDiscoveryServiceImpl extends AbstractDiscoveryServi
                     @Nullable Bdaddr myBdAddr, @Nullable BdAddrType myBdAddrType, int maxPendingConnections,
                     int maxConcurrentlyConnectedButtons, int currentPendingConnections,
                     boolean currentlyNoSpaceForNewConnection, Bdaddr @Nullable [] verifiedButtons) throws IOException {
-
                 for (final @Nullable Bdaddr bdaddr : verifiedButtons) {
                     if (bdaddr != null) {
                         flicButtonDiscovered((@NonNull Bdaddr) bdaddr);

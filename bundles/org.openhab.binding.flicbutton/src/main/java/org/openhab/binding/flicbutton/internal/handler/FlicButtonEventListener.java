@@ -15,69 +15,82 @@ package org.openhab.binding.flicbutton.internal.handler;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.flicbutton.internal.util.FlicButtonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.flic.fliclib.javaclient.ButtonConnectionChannel;
-import io.flic.fliclib.javaclient.enums.*;
+import io.flic.fliclib.javaclient.enums.ClickType;
+import io.flic.fliclib.javaclient.enums.ConnectionStatus;
+import io.flic.fliclib.javaclient.enums.CreateConnectionChannelError;
+import io.flic.fliclib.javaclient.enums.DisconnectReason;
+import io.flic.fliclib.javaclient.enums.RemovedReason;
 
 /**
  *
- * @author Patrick Fink Initial contribution
+ * @author Patrick Fink - Initial contribution
  *
  */
+@NonNullByDefault
 public class FlicButtonEventListener extends ButtonConnectionChannel.Callbacks {
     private final Logger logger = LoggerFactory.getLogger(FlicButtonEventListener.class);
 
     private final FlicButtonHandler thingHandler;
 
-    FlicButtonEventListener(@NonNull FlicButtonHandler thingHandler) {
+    FlicButtonEventListener(FlicButtonHandler thingHandler) {
         this.thingHandler = thingHandler;
     }
 
     @Override
-    public synchronized void onCreateConnectionChannelResponse(ButtonConnectionChannel channel,
-            CreateConnectionChannelError createConnectionChannelError, ConnectionStatus connectionStatus) {
+    public synchronized void onCreateConnectionChannelResponse(@Nullable ButtonConnectionChannel channel,
+            @Nullable CreateConnectionChannelError createConnectionChannelError,
+            @Nullable ConnectionStatus connectionStatus) {
         logger.debug("Create response {}: {}, {}", channel.getBdaddr(), createConnectionChannelError, connectionStatus);
         // Handling does not differ from Status change, so redirect
-        thingHandler.initializeStatus(connectionStatus);
-        notify();
+        if (connectionStatus != null) {
+            thingHandler.initializeStatus((@NonNull ConnectionStatus) connectionStatus);
+            notify();
+        }
     }
 
     @Override
-    public void onRemoved(ButtonConnectionChannel channel, RemovedReason removedReason) {
+    public void onRemoved(@Nullable ButtonConnectionChannel channel, @Nullable RemovedReason removedReason) {
         thingHandler.flicButtonRemoved();
         logger.debug("Button {} removed. ThingStatus updated to OFFLINE. Reason: {}", channel.getBdaddr(),
                 removedReason);
     }
 
     @Override
-    public void onConnectionStatusChanged(ButtonConnectionChannel channel, ConnectionStatus connectionStatus,
-            DisconnectReason disconnectReason) {
+    public void onConnectionStatusChanged(@Nullable ButtonConnectionChannel channel,
+            @Nullable ConnectionStatus connectionStatus, @Nullable DisconnectReason disconnectReason) {
         logger.trace("New status for {}: {}", channel.getBdaddr(),
                 connectionStatus + (connectionStatus == ConnectionStatus.Disconnected ? ", " + disconnectReason : ""));
-
-        thingHandler.connectionStatusChanged(connectionStatus, disconnectReason);
-    }
-
-    @Override
-    public void onButtonUpOrDown(ButtonConnectionChannel channel, ClickType clickType, boolean wasQueued, int timeDiff)
-            throws IOException {
-
-        logger.trace("{} {}", channel.getBdaddr(), clickType.name());
-
-        String commonTriggerEvent = FlicButtonUtils.flicOpenhabTriggerEventMap.get(clickType.name());
-
-        if (commonTriggerEvent != null) {
-            thingHandler.fireTriggerEvent(commonTriggerEvent);
+        if (connectionStatus != null) {
+            thingHandler.connectionStatusChanged((@NonNull ConnectionStatus) connectionStatus, disconnectReason);
         }
     }
 
     @Override
-    public void onButtonSingleOrDoubleClickOrHold(ButtonConnectionChannel channel, ClickType clickType,
+    public void onButtonUpOrDown(@Nullable ButtonConnectionChannel channel, @Nullable ClickType clickType,
             boolean wasQueued, int timeDiff) throws IOException {
+        if (channel != null && clickType != null) {
+            logger.trace("{} {}", channel.getBdaddr(), clickType.name());
+            String commonTriggerEvent = FlicButtonUtils.FLIC_OPENHAB_TRIGGER_EVENT_MAP.get(clickType.name());
+            if (commonTriggerEvent != null) {
+                thingHandler.fireTriggerEvent(commonTriggerEvent);
+            }
+        }
+    }
+
+    @Override
+    public void onButtonSingleOrDoubleClickOrHold(@Nullable ButtonConnectionChannel channel,
+            @Nullable ClickType clickType, boolean wasQueued, int timeDiff) throws IOException {
         // Handling does not differ from up/down events, so redirect
-        onButtonUpOrDown(channel, clickType, wasQueued, timeDiff);
+        if (channel != null && clickType != null) {
+            onButtonUpOrDown((@NonNull ButtonConnectionChannel) channel, (@NonNull ClickType) clickType, wasQueued,
+                    timeDiff);
+        }
     }
 }

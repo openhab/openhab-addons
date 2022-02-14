@@ -60,7 +60,6 @@ public class FlicButtonHandlerFactory extends BaseThingHandlerFactory {
     @Override
     @Nullable
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(FlicButtonBindingConstants.FLICBUTTON_THING_TYPE)) {

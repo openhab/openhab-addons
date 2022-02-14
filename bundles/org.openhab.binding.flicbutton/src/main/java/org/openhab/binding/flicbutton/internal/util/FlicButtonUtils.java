@@ -30,7 +30,7 @@ import io.flic.fliclib.javaclient.Bdaddr;
  */
 @NonNullByDefault
 public class FlicButtonUtils {
-    public static final Map<String, String> flicOpenhabTriggerEventMap = Collections
+    public static final Map<String, String> FLIC_OPENHAB_TRIGGER_EVENT_MAP = Collections
             .unmodifiableMap(new HashMap<String, String>() {
                 {
                     put("ButtonSingleClick", CommonTriggerEvents.SHORT_PRESSED);

@@ -21,7 +21,7 @@ import io.flic.fliclib.javaclient.FlicClient;
 
 /**
  *
- * @author Patrick Fink Initial contribution
+ * @author Patrick Fink - Initial contribution
  *
  */
 @NonNullByDefault
