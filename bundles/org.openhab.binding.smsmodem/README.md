@@ -87,7 +87,7 @@ Where uid is the Bridge UID of the *smsconversation* thing.
 Once this action instance is retrieved, you can invoke the 'send' method on it:
 
 ```
-smsAction.send("1234567890", "Hello world!")
+smsAction.sendSMS("1234567890", "Hello world!")
 ```
 
 ## Full Example
@@ -102,7 +102,7 @@ when
    Item Alarm changed
 then
    val smsAction = getActions("smsmodem","smsmodem:smsmodembridge:dongleuid")
-   smsAction.send("33123456789", "Alert !")
+   smsAction.sendSMS("33123456789", "Alert !")
 end
 ```
 

@@ -47,7 +47,7 @@ public class SMSModemActions implements ThingActions {
     }
 
     @RuleAction(label = "Send Message", description = "Send a message")
-    public void send(
+    public void sendSMS(
             @ActionInput(name = "recipient", label = "recipient", description = "Recipient of the message") @Nullable String recipient,
             @ActionInput(name = "message", label = "message", description = "Message to send") @Nullable String message) {
         if (recipient != null && !recipient.isEmpty() && message != null) {
@@ -57,9 +57,9 @@ public class SMSModemActions implements ThingActions {
         }
     }
 
-    public static void send(@Nullable ThingActions actions, @Nullable String recipient, @Nullable String message) {
+    public static void sendSMS(@Nullable ThingActions actions, @Nullable String recipient, @Nullable String message) {
         if (actions instanceof SMSModemActions) {
-            ((SMSModemActions) actions).send(recipient, message);
+            ((SMSModemActions) actions).sendSMS(recipient, message);
         } else {
             throw new IllegalArgumentException("Instance is not an SMSModemActions class.");
         }

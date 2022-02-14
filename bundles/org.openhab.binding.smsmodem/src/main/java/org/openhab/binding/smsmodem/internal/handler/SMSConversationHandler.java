@@ -99,6 +99,7 @@ public class SMSConversationHandler extends BaseThingHandler {
         }
         if (channelUID.getId().equals(SMSModemBindingConstants.CHANNEL_SEND)) {
             send(command.toString());
+            updateState(SMSModemBindingConstants.CHANNEL_SEND, new StringType(command.toString()));
         }
     }
 
