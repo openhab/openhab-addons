@@ -27,4 +27,5 @@ public class RenaultConfiguration {
     public String locale = "";
     public String vin = "";
     public int refreshInterval = 10;
+    public int updateDelay = 30;
 }

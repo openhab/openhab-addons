@@ -19,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
@@ -70,10 +71,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class IpObserverHandler extends BaseThingHandler {
     private final HttpClient httpClient;
+    private final IpObserverUpdateReceiver ipObserverUpdateReceiver;
     private final Logger logger = LoggerFactory.getLogger(IpObserverHandler.class);
     private Map<String, ChannelHandler> channelHandlers = new HashMap<String, ChannelHandler>();
     private @Nullable ScheduledFuture<?> pollingFuture = null;
     private IpObserverConfiguration config = new IpObserverConfiguration();
+    private String idPass = "";
     // Config settings parsed from weather station.
     private boolean imperialTemperature = false;
     private boolean imperialRain = false;
@@ -135,9 +138,47 @@ public class IpObserverHandler extends BaseThingHandler {
         }
     }
 
-    public IpObserverHandler(Thing thing, HttpClient httpClient) {
+    public IpObserverHandler(Thing thing, HttpClient httpClient, IpObserverUpdateReceiver UpdateReceiver) {
         super(thing);
         this.httpClient = httpClient;
+        ipObserverUpdateReceiver = UpdateReceiver;
+    }
+
+    /**
+     * Takes a String of queries from the GET request made to the openHAB Jetty server and splits them
+     * into keys and values made up from the weather stations readings.
+     *
+     * @param update
+     */
+    public void processServerQuery(String update) {
+        if (update.startsWith(idPass)) {
+            String matchedUpdate = update.substring(idPass.length() + 1, update.length());
+            logger.trace("Update received:{}", matchedUpdate);
+            updateState(LAST_UPDATED_TIME, new DateTimeType(ZonedDateTime.now()));
+            Map<String, String> mappedQuery = new HashMap<>();
+            String[] readings = matchedUpdate.split("&");
+            for (String pair : readings) {
+                int index = pair.indexOf("=");
+                if (index > 0) {
+                    mappedQuery.put(pair.substring(0, index), pair.substring(index + 1, pair.length()));
+                }
+            }
+            handleServerReadings(mappedQuery);
+        }
+    }
+
+    public void handleServerReadings(Map<String, String> updates) {
+        Iterator<?> it = updates.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<?, ?> pair = (Map.Entry<?, ?>) it.next();
+            ChannelHandler localUpdater = channelHandlers.get(pair.getKey());
+            if (localUpdater != null) {
+                logger.trace("Found element {}, value is {}", pair.getKey(), pair.getValue());
+                localUpdater.processValue(pair.getValue().toString());
+            } else {
+                logger.trace("UNKNOWN element {}, value is {}", pair.getKey(), pair.getValue());
+            }
+        }
     }
 
     @Override
@@ -244,6 +285,27 @@ public class IpObserverHandler extends BaseThingHandler {
         }
     }
 
+    private void setupServerChannels() {
+        createChannelHandler(WIND_DIRECTION, QuantityType.class, Units.DEGREE_ANGLE, "winddir");
+        createChannelHandler(INDOOR_HUMIDITY, DecimalType.class, Units.PERCENT, "indoorhumidity");
+        createChannelHandler(OUTDOOR_HUMIDITY, DecimalType.class, Units.PERCENT, "humidity");
+        createChannelHandler(TEMP_INDOOR, QuantityType.class, ImperialUnits.FAHRENHEIT, "indoortempf");
+        createChannelHandler(TEMP_OUTDOOR, QuantityType.class, ImperialUnits.FAHRENHEIT, "tempf");
+        createChannelHandler(TEMP_WIND_CHILL, QuantityType.class, ImperialUnits.FAHRENHEIT, "windchillf");
+        createChannelHandler(TEMP_DEW_POINT, QuantityType.class, ImperialUnits.FAHRENHEIT, "dewptf");
+        createChannelHandler(HOURLY_RAIN_RATE, QuantityType.class, ImperialUnits.INCH, "rainin");
+        createChannelHandler(DAILY_RAIN, QuantityType.class, ImperialUnits.INCH, "dailyrainin");
+        createChannelHandler(WEEKLY_RAIN, QuantityType.class, ImperialUnits.INCH, "weeklyrainin");
+        createChannelHandler(MONTHLY_RAIN, QuantityType.class, ImperialUnits.INCH, "monthlyrainin");
+        createChannelHandler(YEARLY_RAIN, QuantityType.class, ImperialUnits.INCH, "yearlyrainin");
+        createChannelHandler(UV_INDEX, DecimalType.class, SIUnits.CELSIUS, "UV");
+        createChannelHandler(WIND_AVERAGE_SPEED, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "windspeedmph");
+        createChannelHandler(WIND_GUST, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "windgustmph");
+        createChannelHandler(SOLAR_RADIATION, QuantityType.class, Units.IRRADIANCE, "solarradiation");
+        createChannelHandler(REL_PRESSURE, QuantityType.class, ImperialUnits.INCH_OF_MERCURY, "baromin");
+        createChannelHandler(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "lowbatt");
+    }
+
     private void setupChannels() {
         if (imperialTemperature) {
             logger.debug("Using imperial units of measurement for temperature.");
@@ -332,12 +394,20 @@ public class IpObserverHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(IpObserverConfiguration.class);
-        updateStatus(ThingStatus.UNKNOWN);
-        pollingFuture = scheduler.scheduleWithFixedDelay(this::pollStation, 1, config.pollTime, TimeUnit.SECONDS);
+        if (!config.id.isBlank() && !config.password.isBlank()) {
+            updateStatus(ThingStatus.ONLINE);
+            idPass = "ID=" + config.id + "&PASSWORD=" + config.password;
+            setupServerChannels();
+            ipObserverUpdateReceiver.addStation(this);
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
+            pollingFuture = scheduler.scheduleWithFixedDelay(this::pollStation, 1, config.pollTime, TimeUnit.SECONDS);
+        }
     }
 
     @Override
     public void dispose() {
+        ipObserverUpdateReceiver.removeStation(this);
         channelHandlers.clear();
         ScheduledFuture<?> localFuture = pollingFuture;
         if (localFuture != null) {

@@ -49,10 +49,6 @@
 		<label>Current Flow</label>
 		<description>Current river flow</description>
 		<category>flow</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -61,10 +57,6 @@
 		<label>Observation Time</label>
 		<description>Observation date and time</description>
 		<category>time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -83,10 +75,6 @@
 	<channel-type id="gauge">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Relative Measure</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -113,9 +101,6 @@
 		<label>Comment</label>
 		<description>Detailed comment</description>
 		<category>text</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -123,9 +108,6 @@
 		<item-type>Image</item-type>
 		<label>Pictogram</label>
 		<description>Official pictogram associated to alert level.</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

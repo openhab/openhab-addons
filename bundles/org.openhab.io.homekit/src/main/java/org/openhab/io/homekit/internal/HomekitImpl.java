@@ -51,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.HomekitAccessory;
+import io.github.hapjava.server.HomekitAccessoryCategories;
 import io.github.hapjava.server.impl.HomekitRoot;
 import io.github.hapjava.server.impl.HomekitServer;
 import io.github.hapjava.server.impl.crypto.HAPSetupCodeUtils;
@@ -175,9 +176,10 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
     private void startBridge() throws IOException {
         final @Nullable HomekitServer homekitServer = this.homekitServer;
         if (homekitServer != null && bridge == null) {
-            final HomekitRoot bridge = homekitServer.createBridge(authInfo, settings.name, HomekitSettings.MANUFACTURER,
-                    HomekitSettings.MODEL, HomekitSettings.SERIAL_NUMBER,
-                    FrameworkUtil.getBundle(getClass()).getVersion().toString(), HomekitSettings.HARDWARE_REVISION);
+            final HomekitRoot bridge = homekitServer.createBridge(authInfo, settings.name,
+                    HomekitAccessoryCategories.BRIDGES, HomekitSettings.MANUFACTURER, HomekitSettings.MODEL,
+                    HomekitSettings.SERIAL_NUMBER, FrameworkUtil.getBundle(getClass()).getVersion().toString(),
+                    HomekitSettings.HARDWARE_REVISION);
             changeListener.setBridge(bridge);
             this.bridge = bridge;
             bridge.setConfigurationIndex(changeListener.getConfigurationRevision());
@@ -297,7 +299,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
             logger.trace("removed interface {}", i.getAddress().toString());
             if (i.getAddress().equals(networkInterface)) {
                 final @Nullable HomekitRoot bridge = this.bridge;
-                if (this.bridge != null) {
+                if (bridge != null) {
                     bridge.stop();
                     this.bridge = null;
                 }
