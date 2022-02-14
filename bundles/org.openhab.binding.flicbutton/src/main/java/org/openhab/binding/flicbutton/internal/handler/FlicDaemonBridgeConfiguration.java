@@ -30,15 +30,8 @@ public class FlicDaemonBridgeConfiguration {
     private String hostname;
     private int port;
 
-    @Nullable
-    private InetAddress host;
-
-    public void initAndValidate() throws UnknownHostException {
-        host = InetAddress.getByName(hostname);
-    }
-
-    public @Nullable InetAddress getHost() {
-        return host;
+    public @Nullable InetAddress getHost() throws UnknownHostException {
+        return InetAddress.getByName(hostname);
     }
 
     public int getPort() {

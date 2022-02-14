@@ -49,7 +49,7 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
     private FlicButtonDiscoveryService buttonDiscoveryService;
     private @Nullable Future<?> flicClientFuture;
     // For disposal
-    private Collection<@Nullable Future<?>> startedTasks = new ArrayList<>(2);
+    private Collection<@Nullable Future<?>> startedTasks = new ArrayList<>(3);
     private @Nullable FlicClient flicClient;
 
     public FlicDaemonBridgeHandler(Bridge bridge, FlicButtonDiscoveryService buttonDiscoveryService) {
@@ -63,6 +63,10 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        startedTasks.add(scheduler.submit(this::initializeThing));
+    }
+
+    public void initializeThing() {
         try {
             initConfigParameters();
             startFlicdClientAsync();
@@ -78,9 +82,8 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void initConfigParameters() throws UnknownHostException {
+    private void initConfigParameters() {
         cfg = getConfigAs(FlicDaemonBridgeConfiguration.class);
-        cfg.initAndValidate();
     }
 
     private void activateButtonDiscoveryService() {
@@ -96,16 +99,21 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
         Runnable flicClientService = () -> {
             try {
                 flicClient.handleEvents();
-                logger.warn("Listening to flicd unexpectedly ended");
+                flicClient.close();
+                logger.debug("Listening to flicd ended");
             } catch (IOException e) {
                 logger.debug("Error occured while listening to flicd", e);
             } finally {
-                onClientFailure();
+                if (Thread.currentThread().isInterrupted()) {
+                    onClientFailure();
+                }
             }
         };
 
-        flicClientFuture = scheduler.submit(flicClientService);
-        startedTasks.add(flicClientFuture);
+        if (!Thread.currentThread().isInterrupted()) {
+            flicClientFuture = scheduler.submit(flicClientService);
+            startedTasks.add(flicClientFuture);
+        }
     }
 
     private void onClientFailure() {
@@ -127,19 +135,9 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
-        for (Future<?> startedTask : startedTasks) {
-            startedTask.cancel(true);
-        }
+        startedTasks.forEach(task -> task.cancel(true));
         startedTasks = new ArrayList<>(2);
         buttonDiscoveryService.deactivate();
-        if (flicClient != null) {
-            try {
-                flicClient.close();
-                flicClient = null;
-            } catch (IOException e) {
-                logger.debug("Error closing connection to flicd: {}", e.getMessage());
-            }
-        }
     }
 
     private void scheduleReinitialize() {

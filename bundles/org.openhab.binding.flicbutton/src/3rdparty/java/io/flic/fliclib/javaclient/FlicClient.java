@@ -404,7 +404,7 @@ public class FlicClient {
      */
     public void handleEvents() throws IOException {
         handleEventsThread = Thread.currentThread();
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             Map.Entry<Long, TimerTask> firstTimer = timers.firstEntry();
             long timeout = 0;
             if (firstTimer != null) {

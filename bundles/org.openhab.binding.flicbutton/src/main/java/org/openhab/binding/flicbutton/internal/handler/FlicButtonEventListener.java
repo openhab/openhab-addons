@@ -13,6 +13,7 @@
 package org.openhab.binding.flicbutton.internal.handler;
 
 import java.io.IOException;
+import java.util.concurrent.Semaphore;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,9 +39,14 @@ public class FlicButtonEventListener extends ButtonConnectionChannel.Callbacks {
     private final Logger logger = LoggerFactory.getLogger(FlicButtonEventListener.class);
 
     private final FlicButtonHandler thingHandler;
+    private final Semaphore channelResponseSemaphore = new Semaphore(0);
 
     FlicButtonEventListener(FlicButtonHandler thingHandler) {
         this.thingHandler = thingHandler;
+    }
+
+    public Semaphore getChannelResponseSemaphore() {
+        return channelResponseSemaphore;
     }
 
     @Override
@@ -51,7 +57,7 @@ public class FlicButtonEventListener extends ButtonConnectionChannel.Callbacks {
         // Handling does not differ from Status change, so redirect
         if (connectionStatus != null) {
             thingHandler.initializeStatus((@NonNull ConnectionStatus) connectionStatus);
-            notify();
+            channelResponseSemaphore.release();
         }
     }
 

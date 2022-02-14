@@ -16,6 +16,7 @@ import static org.openhab.binding.flicbutton.internal.FlicButtonBindingConstants
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -49,12 +50,11 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
 
     private Logger logger = LoggerFactory.getLogger(FlicButtonHandler.class);
     private @Nullable ScheduledFuture<?> delayedDisconnectTask;
-    @Nullable
-    DisconnectReason latestDisconnectReason;
+    private @Nullable Future<?> initializationTask;
+    private @Nullable DisconnectReason latestDisconnectReason;
     private @Nullable ButtonConnectionChannel eventConnection;
     private @Nullable Bdaddr bdaddr;
-    @Nullable
-    BatteryStatusListener batteryConnection;
+    private @Nullable BatteryStatusListener batteryConnection;
 
     public FlicButtonHandler(Thing thing) {
         super(thing);
@@ -74,7 +74,7 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
         super.initialize();
         bdaddr = new Bdaddr((String) this.getThing().getConfiguration().get(CONFIG_ADDRESS));
         if (bridgeValid) {
-            initializeThing();
+            initializationTask = scheduler.submit(this::initializeThing);
         }
     }
 
@@ -82,28 +82,19 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
         if (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE && bridgeValid) {
-            initializeThing();
+            dispose();
+            initializationTask = scheduler.submit(this::initializeThing);
         }
     }
 
-    public void initializeThing() {
+    private void initializeThing() {
         try {
-            FlicButtonBatteryLevelListener batteryListener = new FlicButtonBatteryLevelListener(this);
-            BatteryStatusListener batteryConnection = new BatteryStatusListener(getBdaddr(), batteryListener);
-            bridgeHandler.getFlicClient().addBatteryStatusListener(batteryConnection);
-            this.batteryConnection = batteryConnection;
-
-            FlicButtonEventListener eventListener = new FlicButtonEventListener(this);
-            synchronized (eventListener) {
-                ButtonConnectionChannel eventConnection = new ButtonConnectionChannel(getBdaddr(), eventListener);
-                bridgeHandler.getFlicClient().addConnectionChannel(eventConnection);
-                this.eventConnection = eventConnection;
-                eventListener.wait(5000);
-                // Listener calls initializeStatus() before notifying so that ThingStatus is should be set at this point
-                if (this.getThing().getStatus().equals(ThingStatus.INITIALIZING)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Got no response by eventListener");
-                }
+            initializeBatteryListener();
+            initializeEventListener();
+            // EventListener calls initializeStatus() before releasing so that ThingStatus should be set at this point
+            if (this.getThing().getStatus().equals(ThingStatus.INITIALIZING)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Got no response by eventListener");
             }
         } catch (IOException | InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -111,10 +102,25 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
         }
     }
 
+    private void initializeBatteryListener() throws IOException {
+        FlicButtonBatteryLevelListener batteryListener = new FlicButtonBatteryLevelListener(this);
+        BatteryStatusListener batteryConnection = new BatteryStatusListener(getBdaddr(), batteryListener);
+        bridgeHandler.getFlicClient().addBatteryStatusListener(batteryConnection);
+        this.batteryConnection = batteryConnection;
+    }
+
+    public void initializeEventListener() throws IOException, InterruptedException {
+        FlicButtonEventListener eventListener = new FlicButtonEventListener(this);
+        ButtonConnectionChannel eventConnection = new ButtonConnectionChannel(getBdaddr(), eventListener);
+        bridgeHandler.getFlicClient().addConnectionChannel(eventConnection);
+        this.eventConnection = eventConnection;
+        eventListener.getChannelResponseSemaphore().tryAcquire(5, TimeUnit.SECONDS);
+    }
+
     @Override
     public void dispose() {
         cancelDelayedDisconnectTask();
-
+        cancelInitializationTask();
         try {
             if (eventConnection != null) {
                 bridgeHandler.getFlicClient().removeConnectionChannel(eventConnection);
@@ -171,6 +177,13 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
             cancelDelayedDisconnectTask();
         }
         super.updateStatus(status, statusDetail, description);
+    }
+
+    private void cancelInitializationTask() {
+        if (initializationTask != null) {
+            initializationTask.cancel(false);
+            initializationTask = null;
+        }
     }
 
     private void cancelDelayedDisconnectTask() {
