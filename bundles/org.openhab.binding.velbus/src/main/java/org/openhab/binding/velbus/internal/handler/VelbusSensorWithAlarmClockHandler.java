@@ -40,6 +40,7 @@ import org.openhab.core.types.RefreshType;
  * sent to one of the channels.
  *
  * @author Cedric Boon - Initial contribution
+ * @author Daniel Rosengarten - Add VMBELPIR support
  */
 @NonNullByDefault
 public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
@@ -58,6 +59,7 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBEL2, 0x0357);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBEL4, 0x0357);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBELO, 0x0593);
+        ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBELPIR, 0x030F);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBPIRC, 0x0031);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBPIRM, 0x0031);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBPIRO, 0x0031);
