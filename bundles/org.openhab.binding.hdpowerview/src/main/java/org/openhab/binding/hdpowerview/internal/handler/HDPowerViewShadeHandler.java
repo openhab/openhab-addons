@@ -37,6 +37,7 @@ import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubShadeTimeoutException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -72,6 +73,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     private static final String COMMAND_CALIBRATE = "CALIBRATE";
+    private static final String COMMAND_IDENTIFY = "IDENTIFY";
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
     private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
@@ -107,7 +109,12 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     "@text/offline.conf-error.invalid-bridge-handler");
             return;
         }
-        updateStatus(ThingStatus.UNKNOWN);
+        ThingStatus bridgeStatus = bridge.getStatus();
+        if (bridgeStatus == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.UNKNOWN);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
     }
 
     @Override
@@ -176,6 +183,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
+        } catch (HubShadeTimeoutException e) {
+            logger.warn("Shade {} timeout when sending command {}", shadeId, command);
         } catch (HubException e) {
             // ScheduledFutures will be cancelled by dispose(), naturally causing InterruptedException in invoke()
             // for any ongoing requests. Logging this would only cause confusion.
@@ -186,7 +195,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     private void handleShadeCommand(String channelId, Command command, HDPowerViewWebTargets webTargets, int shadeId)
-            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException,
+            HubShadeTimeoutException {
         switch (channelId) {
             case CHANNEL_SHADE_POSITION:
                 if (command instanceof PercentType) {
@@ -226,7 +236,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
             case CHANNEL_SHADE_COMMAND:
                 if (command instanceof StringType) {
-                    if (COMMAND_CALIBRATE.equals(((StringType) command).toString())) {
+                    if (COMMAND_IDENTIFY.equals(((StringType) command).toString())) {
+                        logger.debug("Identify shade {}", shadeId);
+                        identifyShade(webTargets, shadeId);
+                    } else if (COMMAND_CALIBRATE.equals(((StringType) command).toString())) {
                         logger.debug("Calibrate shade {}", shadeId);
                         calibrateShade(webTargets, shadeId);
                     }
@@ -240,26 +253,19 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     /**
      * Update the state of the channels based on the ShadeData provided.
      *
-     * @param shadeData the ShadeData to be used; may be null.
+     * @param shadeData the ShadeData to be used.
      */
-    protected void onReceiveUpdate(@Nullable ShadeData shadeData) {
-        if (shadeData != null) {
-            updateStatus(ThingStatus.ONLINE);
-            updateCapabilities(shadeData);
-            updateSoftProperties(shadeData);
-            updateFirmwareProperties(shadeData);
-            ShadePosition shadePosition = shadeData.positions;
-            if (shadePosition != null) {
-                updatePositionStates(shadePosition);
-            }
-            updateBatteryLevelStates(shadeData.batteryStatus);
-            updateState(CHANNEL_SHADE_BATTERY_VOLTAGE,
-                    shadeData.batteryStrength > 0 ? new QuantityType<>(shadeData.batteryStrength / 10, Units.VOLT)
-                            : UnDefType.UNDEF);
-            updateState(CHANNEL_SHADE_SIGNAL_STRENGTH, new DecimalType(shadeData.signalStrength));
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+    protected void onReceiveUpdate(ShadeData shadeData) {
+        updateStatus(ThingStatus.ONLINE);
+        updateCapabilities(shadeData);
+        updateSoftProperties(shadeData);
+        updateFirmwareProperties(shadeData);
+        ShadePosition shadePosition = shadeData.positions;
+        if (shadePosition != null) {
+            updatePositionStates(shadePosition);
         }
+        updateBatteryStates(shadeData.batteryStatus, shadeData.batteryStrength);
+        updateState(CHANNEL_SHADE_SIGNAL_STRENGTH, new DecimalType(shadeData.signalStrength));
     }
 
     private void updateCapabilities(ShadeData shade) {
@@ -400,6 +406,12 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         updateState(CHANNEL_SHADE_SECONDARY_POSITION, shadePos.getState(capabilities, SECONDARY_POSITION));
     }
 
+    private void updateBatteryStates(int batteryStatus, double batteryStrength) {
+        updateBatteryLevelStates(batteryStatus);
+        updateState(CHANNEL_SHADE_BATTERY_VOLTAGE,
+                batteryStrength > 0 ? new QuantityType<>(batteryStrength / 10, Units.VOLT) : UnDefType.UNDEF);
+    }
+
     private void updateBatteryLevelStates(int batteryStatus) {
         int mappedValue;
         switch (batteryStatus) {
@@ -423,7 +435,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     private void moveShade(CoordinateSystem coordSys, int newPercent, HDPowerViewWebTargets webTargets, int shadeId)
-            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException,
+            HubShadeTimeoutException {
         ShadePosition newPosition = null;
         // (try to) read the positions from the hub
         ShadeData shadeData = webTargets.getShade(shadeId);
@@ -439,16 +452,21 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         updateShadePositions(shadeData);
     }
 
-    private void stopShade(HDPowerViewWebTargets webTargets, int shadeId)
-            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+    private void stopShade(HDPowerViewWebTargets webTargets, int shadeId) throws HubInvalidResponseException,
+            HubProcessingException, HubMaintenanceException, HubShadeTimeoutException {
         updateShadePositions(webTargets.stopShade(shadeId));
         // Positions in response from stop motion is not updated to to actual positions yet,
         // so we need to request hard refresh.
         requestRefreshShadePosition();
     }
 
-    private void calibrateShade(HDPowerViewWebTargets webTargets, int shadeId)
-            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+    private void identifyShade(HDPowerViewWebTargets webTargets, int shadeId) throws HubInvalidResponseException,
+            HubProcessingException, HubMaintenanceException, HubShadeTimeoutException {
+        updateShadePositions(webTargets.jogShade(shadeId));
+    }
+
+    private void calibrateShade(HDPowerViewWebTargets webTargets, int shadeId) throws HubInvalidResponseException,
+            HubProcessingException, HubMaintenanceException, HubShadeTimeoutException {
         updateShadePositions(webTargets.calibrateShade(shadeId));
     }
 
@@ -517,6 +535,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             switch (kind) {
                 case POSITION:
                     shadeData = webTargets.refreshShadePosition(shadeId);
+                    updateShadePositions(shadeData);
+                    updateHardProperties(shadeData);
                     break;
                 case SURVEY:
                     Survey survey = webTargets.getShadeSurvey(shadeId);
@@ -525,18 +545,13 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     } else {
                         logger.warn("No response from shade {} survey", shadeId);
                     }
-                    return;
+                    break;
                 case BATTERY_LEVEL:
                     shadeData = webTargets.refreshShadeBatteryLevel(shadeId);
+                    updateBatteryStates(shadeData.batteryStatus, shadeData.batteryStrength);
                     break;
                 default:
                     throw new NotSupportedException("Unsupported refresh kind " + kind.toString());
-            }
-            if (Boolean.TRUE.equals(shadeData.timedOut)) {
-                logger.warn("Shade {} wireless refresh time out", shadeId);
-            } else if (kind == RefreshKind.POSITION) {
-                updateShadePositions(shadeData);
-                updateHardProperties(shadeData);
             }
         } catch (HubInvalidResponseException e) {
             Throwable cause = e.getCause();
@@ -547,6 +562,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
+        } catch (HubShadeTimeoutException e) {
+            logger.info("Shade {} wireless refresh time out", shadeId);
         } catch (HubException e) {
             // ScheduledFutures will be cancelled by dispose(), naturally causing InterruptedException in invoke()
             // for any ongoing requests. Logging this would only cause confusion.

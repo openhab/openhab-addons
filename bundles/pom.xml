@@ -153,6 +153,7 @@
     <module>org.openhab.binding.helios</module>
     <module>org.openhab.binding.heliosventilation</module>
     <module>org.openhab.binding.heos</module>
+    <module>org.openhab.binding.herzborg</module>
     <module>org.openhab.binding.homeconnect</module>
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.homewizard</module>
@@ -401,6 +402,7 @@
     <module>org.openhab.voice.pollytts</module>
     <module>org.openhab.voice.porcupineks</module>
     <module>org.openhab.voice.voicerss</module>
+    <module>org.openhab.voice.watsonstt</module>
   </modules>
 
   <properties>

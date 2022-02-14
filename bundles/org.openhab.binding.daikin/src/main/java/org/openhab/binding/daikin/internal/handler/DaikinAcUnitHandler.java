@@ -72,7 +72,6 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             return;
         }
         ControlInfo controlInfo = webTargets.getControlInfo();
-        updateStatus(ThingStatus.ONLINE);
         updateState(DaikinBindingConstants.CHANNEL_AC_POWER, controlInfo.power ? OnOffType.ON : OnOffType.OFF);
         updateTemperatureChannel(DaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
 
@@ -153,6 +152,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             // Suppress any error if energy info is not supported.
             logger.debug("getEnergyInfoDayAndWeek() error: {}", e.getMessage());
         }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override

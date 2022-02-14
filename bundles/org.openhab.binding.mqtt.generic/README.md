@@ -11,7 +11,6 @@ MQTT servers are called brokers and the clients are simply the connected devices
 * When a device (a client) wants to send data to the broker, we call this operation a “publish”.
 * When a device (a client) wants to receive data from the broker, we call this operation a “subscribe”.
 
-
 ![Publish and Subscribe](doc/subpub.png)
 
 openHAB itself is not an MQTT Broker and needs to connect to one as a regular client.
@@ -52,9 +51,18 @@ On each of those things you can add an arbitrary number of channels.
 
 Remember that you need a configured broker Thing first!
 
-You can add the following channels:
+### Thing Configuration
 
-#### Supported Channels
+The following optional parameters can be set for the Thing:
+
+* __availabilityTopic__: The MQTT topic that represents the availability of the thing. This can be the thing's LWT topic.
+* __payloadAvailable__: Payload of the `Availability Topic`, when the device is available. Default: `ON`.
+* __payloadNotAvailable__: Payload of the `Availability Topic`, when the device is *not* available. Default: `OFF`.
+* __transformationPattern__: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to the incoming availability payload. Transformations can be chained by separating them with the mathematical intersection character "∩". The result of the transformations is then checked against `payloadAvailable` and `payloadNotAvailable`.
+
+## Supported Channels
+
+You can add the following channels:
 
 * **string**: This channel can show the received text on the given topic and can send text to a given topic.
 * **number**: This channel can show the received number on the given topic and can send a number to a given topic. It can have a min, max and step values.
@@ -129,7 +137,7 @@ You can connect this channel to a Contact or Switch item.
 
 ### Channel Type "color"
 
-* __color_mode__: A required string that defines the color representation: "hsb", "rgb" or "xyY" (x,y,brightness).
+* __color_mode__: An optional string that defines the color representation: `HSB`, `RGB` or `XYY` (x,y,brightness). Defaults to `HSB` when not specified.
 * __on__: An optional string (like "BRIGHT") that is recognized as on state. (ON will always be recognized.)
 * __off__: An optional string (like "DARK") that is recognized as off state. (OFF will always be recognized.)
 * __onBrightness__: If you connect this channel to a Switch item and turn it on,
@@ -204,15 +212,17 @@ This binding includes a rule action, which allows one to publish MQTT messages f
 There is a separate instance for each MQTT broker (i.e. bridge), which can be retrieved through
 
 ```
-val mqttActions = getActions("mqtt","mqtt:systemBroker:embedded-mqtt-broker")
+val mqttActions = getActions("mqtt","mqtt:broker:myBroker")
 ```
 
-where the first parameter always has to be `mqtt` and the second (`mqtt:systemBroker:embedded-mqtt-broker`) is the Thing UID of the broker that should be used.
+where the first parameter always has to be `mqtt` and the second (`mqtt:broker:myBroker`) is the Thing UID of the broker that should be used.
 Once this action instance is retrieved, you can invoke the `publishMQTT(String topic, String value, Boolean retained)` method on it:
 
 ```
 mqttActions.publishMQTT("mytopic","myvalue", true)
 ```
+
+Alternatively, `publishMQTT(String topic, byte[] value, Boolean retained)` can publish a byte array data.
 
 The retained argument is optional and if not supplied defaults to `false`.
 
@@ -222,8 +232,8 @@ The retained argument is optional and if not supplied defaults to `false`.
 
 ```
 mqtt:broker:mySecureBroker [ host="192.168.0.41", secure=true, certificatepin=true, publickeypin=true ]
-mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
-mqtt:broker:myAuthentificatedBroker [ host="192.168.0.43",secure=true, username="user", password="password" ]
+mqtt:broker:myInsecureBroker [ host="192.168.0.42", secure=false ]
+mqtt:broker:myAuthenticatedBroker [ host="192.168.0.43",secure=true, username="user", password="password" ]
 mqtt:broker:pinToPublicKey [ host="192.168.0.44", secure=true , publickeypin=true, publickey="SHA-256:9a6f30e67ae9723579da2575c35daf7da3b370b04ac0bde031f5e1f5e4617eb8" ]
 ```
 
@@ -232,22 +242,31 @@ The second connection is a plain, unsecured one. Use this only for local MQTT Br
 A third connection uses a username and password for authentication. The credentials are plain values on the wire, therefore you should only use this on a secure connection.
 In a fourth connection, the public key pinning is enabled again. This time, a public key hash is provided to pin the connection to a specific server. It follows the form "hashname:hashvalue". Valid hashnames are SHA-1, SHA-224, SHA-256, SHA-384, SHA-512 and all others listed in Java MessageDigest Algorithms.
 
-### Example
+### Examples
 
 Files can also be used to create topic things and channels and to combine them with a broker connection:
 
 *mqtt.things* file:
 
 ```
-Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
+Bridge mqtt:broker:myInsecureBroker [ host="192.168.0.42", secure=false ]
 
-Thing mqtt:topic:mything "mything" (mqtt:broker:myUnsecureBroker) {
+Thing mqtt:topic:mything "mything" (mqtt:broker:myInsecureBroker) {
     Channels:
     Type switch : lamp "Kitchen Lamp" [ stateTopic="lamp/enabled", commandTopic="lamp/enabled/set" ]
     Type switch : fancylamp "Fancy Lamp" [ stateTopic="fancy/lamp/state", commandTopic="fancy/lamp/command", on="i-am-on", off="i-am-off" ]
     Type string : alarmpanel "Alarm system" [ stateTopic="alarm/panel/state", commandTopic="alarm/panel/set", allowedStates="ARMED_HOME,ARMED_AWAY,UNARMED" ]
     Type color : lampcolor "Kitchen Lamp color" [ stateTopic="lamp/color", commandTopic="lamp/color/set", rgb=true ]
     Type dimmer : blind "Blind" [ stateTopic="blind/state", commandTopic="blind/set", min=0, max=5, step=1 ]
+}
+```
+
+If the availability status is available, it can be configured to set the Thing status:
+
+```
+Thing mqtt:topic:bedroom1-switch (mqtt:broker:myInsecureBroker) [ availabilityTopic="tele/bedroom1-switch/LWT", payloadAvailable="Online", payloadNotAvailable="Offline" ] {
+    Channels:
+         Type switch        : power        [ stateTopic="stat/bedroom1-switch/RESULT", transformationPattern="REGEX:(.*POWER.*)∩JSONPATH:$.POWER", commandTopic="cmnd/bedroom1-switch/POWER" ]
 }
 ```
     

@@ -17,7 +17,7 @@ import java.io.InputStream;
 import java.util.Locale;
 import java.util.Set;
 
-import org.openhab.core.audio.AudioFormat;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Interface which represents the functionality needed from the VoiceRSS TTS
@@ -25,6 +25,7 @@ import org.openhab.core.audio.AudioFormat;
  *
  * @author Jochen Hiller - Initial contribution
  */
+@NonNullByDefault
 public interface VoiceRSSCloudAPI {
 
     /**
@@ -35,13 +36,12 @@ public interface VoiceRSSCloudAPI {
     Set<Locale> getAvailableLocales();
 
     /**
-     * Get all supported audio formats by the TTS service. This includes MP3,
-     * WAV and more audio formats as used in APIs. About supported audio
-     * formats, see {@link AudioFormat}
+     * Get all supported audio codecs by the TTS service. This includes MP3,
+     * WAV and more audio formats as used in APIs.
      *
-     * @return A set of all audio formats supported
+     * @return A set of all audio codecs supported
      */
-    Set<AudioFormat> getAvailableAudioFormats();
+    Set<String> getAvailableAudioCodecs();
 
     /**
      * Get all supported voices.
