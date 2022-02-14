@@ -29,9 +29,6 @@
 		<label>Lock/Unlock</label>
 		<description>Lock or unlock this lock.</description>
 		<category>Switch</category>
-		<tags>
-			<tag>OpenState</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>
