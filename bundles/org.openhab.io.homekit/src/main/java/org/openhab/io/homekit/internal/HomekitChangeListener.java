@@ -90,11 +90,11 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             @Override
             public void added(final Metadata metadata) {
                 final MetadataKey uid = metadata.getUID();
-                if (uid.getNamespace().equalsIgnoreCase(HomekitAccessoryFactory.METADATA_KEY)) {
+                if (HomekitAccessoryFactory.METADATA_KEY.equalsIgnoreCase(uid.getNamespace())) {
                     try {
                         markDirty(itemRegistry.getItem(uid.getItemName()));
                     } catch (ItemNotFoundException e) {
-                        logger.debug("Could not found item for metadata {}", metadata);
+                        logger.debug("Could not find item for metadata {}", metadata);
                     }
                 }
             }
@@ -102,11 +102,11 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             @Override
             public void removed(final Metadata metadata) {
                 final MetadataKey uid = metadata.getUID();
-                if (uid.getNamespace().equalsIgnoreCase(HomekitAccessoryFactory.METADATA_KEY)) {
+                if (HomekitAccessoryFactory.METADATA_KEY.equalsIgnoreCase(uid.getNamespace())) {
                     try {
                         markDirty(itemRegistry.getItem(uid.getItemName()));
                     } catch (ItemNotFoundException e) {
-                        logger.debug("Could not found item for metadata {}", metadata);
+                        logger.debug("Could not find item for metadata {}", metadata);
                     }
                 }
             }
@@ -121,7 +121,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
                         // the item name is same in old and new metadata, so we can take any.
                         markDirty(itemRegistry.getItem(oldUid.getItemName()));
                     } catch (ItemNotFoundException e) {
-                        logger.debug("Could not found item for metadata {}", oldMetadata);
+                        logger.debug("Could not find item for metadata {}", oldMetadata);
                     }
                 }
             }
