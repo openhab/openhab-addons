@@ -17,9 +17,7 @@ import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.LGThinQDeviceDynStateDescriptionProvider;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
@@ -50,6 +48,7 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
     private final ChannelUID stateChannelUUID;
     private final ChannelUID courseChannelUUID;
     private final ChannelUID smartCourseChannelUUID;
+    private final ChannelUID temperatureChannelUUID;
     private final Logger logger = LoggerFactory.getLogger(LGThinQWasherHandler.class);
     @NonNullByDefault
     private final LGThinQWMApiClientService lgThinqWMApiClientService;
@@ -68,6 +67,7 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
         stateChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_STATE_ID);
         courseChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_COURSE_ID);
         smartCourseChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_SMART_COURSE_ID);
+        temperatureChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_TEMP_LEVEL_ID);
     }
 
     static class AsyncCommandParams {
@@ -87,17 +87,12 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
         initializeThing((bridge == null) ? null : bridge.getStatus());
     }
 
-    @NonNull
-    private String emptyIfNull(@Nullable String value) {
-        return value == null ? "" : "" + value;
-    }
-
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
         WasherCapability wmCap = getCapabilities();
         if (isLinked(stateChannelUUID)) {
             List<StateOption> options = new ArrayList<>();
-            wmCap.getState().forEach((k, v) -> options.add(new StateOption(v, emptyIfNull(CAP_WP_STATE.get(k)))));
+            wmCap.getState().forEach((k, v) -> options.add(new StateOption(v, keyIfValueNotFound(CAP_WP_STATE, k))));
             stateDescriptionProvider.setStateOptions(stateChannelUUID, options);
         }
         if (isLinked(courseChannelUUID)) {
@@ -109,6 +104,12 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
             List<StateOption> options = new ArrayList<>();
             wmCap.getSmartCourses().forEach((k, v) -> options.add(new StateOption(k, emptyIfNull(v))));
             stateDescriptionProvider.setStateOptions(smartCourseChannelUUID, options);
+        }
+        if (isLinked(temperatureChannelUUID)) {
+            List<StateOption> options = new ArrayList<>();
+            wmCap.getTemperature()
+                    .forEach((k, v) -> options.add(new StateOption(v, keyIfValueNotFound(CAP_WP_TEMPERATURE, k))));
+            stateDescriptionProvider.setStateOptions(temperatureChannelUUID, options);
         }
     }
 
