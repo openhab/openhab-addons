@@ -115,8 +115,8 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             public void updated(final Metadata oldMetadata, final Metadata newMetadata) {
                 final MetadataKey oldUid = oldMetadata.getUID();
                 final MetadataKey newUid = newMetadata.getUID();
-                if (oldUid.getNamespace().equalsIgnoreCase(HomekitAccessoryFactory.METADATA_KEY)
-                        || newUid.getNamespace().equalsIgnoreCase(HomekitAccessoryFactory.METADATA_KEY)) {
+                if (HomekitAccessoryFactory.METADATA_KEY.equalsIgnoreCase(oldUid.getNamespace())
+                        || HomekitAccessoryFactory.METADATA_KEY.equalsIgnoreCase(newUid.getNamespace())) {
                     try {
                         // the item name is same in old and new metadata, so we can take any.
                         markDirty(itemRegistry.getItem(oldUid.getItemName()));
