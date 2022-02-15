@@ -30,10 +30,24 @@
 			<description>The password to access the UniFi Controller.</description>
 			<context>password</context>
 		</parameter>
-		<parameter name="refresh" type="integer" required="false">
+		<parameter name="refresh" type="integer" required="false" unit="s">
 			<label>Refresh Interval</label>
 			<description>The refresh interval in seconds to poll the UniFi controller</description>
 			<default>10</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:unifi:site">
+		<parameter name="sid" type="text" required="true">
+			<label>Site Id</label>
+			<description>The id, name or description of the site</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:unifi:wlan">
+		<parameter name="wid" type="text" required="true">
+			<label>WLAN Id</label>
+			<description>The id or name of the wlan</description>
 		</parameter>
 	</config-description>
 
@@ -46,7 +60,7 @@
 			<label>Site</label>
 			<description>The site where the client should be found (optional)</description>
 		</parameter>
-		<parameter name="considerHome" type="integer" required="false">
+		<parameter name="considerHome" type="integer" required="false" unit="s">
 			<label>Consider Home Interval</label>
 			<description>The interval in seconds to consider the client as home</description>
 			<default>180</default>

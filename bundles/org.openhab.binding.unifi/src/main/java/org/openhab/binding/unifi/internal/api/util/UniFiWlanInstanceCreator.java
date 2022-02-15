@@ -16,27 +16,26 @@ import java.lang.reflect.Type;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
-import org.openhab.binding.unifi.internal.api.model.UniFiSite;
+import org.openhab.binding.unifi.internal.api.model.UniFiWlan;
 
 import com.google.gson.InstanceCreator;
 
 /**
- *
- * The {@link UniFiSiteInstanceCreator} creates instances of {@link UniFiSite}s during the JSON unmarshalling of
+ * The {@link UniFiWlanInstanceCreator} creates instances of {@link UniFiWlan}s during the JSON unmarshalling of
  * controller responses.
  *
- * @author Matthew Bowman - Initial contribution
+ * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class UniFiSiteInstanceCreator implements InstanceCreator<UniFiSite> {
+public class UniFiWlanInstanceCreator implements InstanceCreator<UniFiWlan> {
 
     private final UniFiControllerCache cache;
 
-    public UniFiSiteInstanceCreator(final UniFiControllerCache cache) {
+    public UniFiWlanInstanceCreator(final UniFiControllerCache cache) {
         this.cache = cache;
     }
 
     @Override
-    public UniFiSite createInstance(final @Nullable Type type) {
-        return UniFiSite.class.equals(type) ? new UniFiSite(cache) : null;
+    public UniFiWlan createInstance(final @Nullable Type type) {
+        return UniFiWlan.class.equals(type) ? new UniFiWlan(cache) : null;
     }
 }

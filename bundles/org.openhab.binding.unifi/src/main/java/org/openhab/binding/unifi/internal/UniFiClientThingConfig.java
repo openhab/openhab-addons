@@ -22,6 +22,7 @@ import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
  * @author Matthew Bowman - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("unused")
 public class UniFiClientThingConfig {
 
     private String cid = "";
@@ -34,8 +35,18 @@ public class UniFiClientThingConfig {
         return cid;
     }
 
+    private void setCid(final String cid) {
+        // method to avoid ide auto format mark the field as final
+        this.cid = cid;
+    }
+
     public String getSite() {
         return site;
+    }
+
+    private void setSite(final String site) {
+        // method to avoid ide auto format mark the field as final
+        this.site = site;
     }
 
     public int getConsiderHome() {
@@ -44,6 +55,11 @@ public class UniFiClientThingConfig {
 
     public boolean isValid() {
         return !cid.isBlank();
+    }
+
+    private void setConsiderHome(final int considerHome) {
+        // method to avoid ide auto format mark the field as final
+        this.considerHome = considerHome;
     }
 
     @Override

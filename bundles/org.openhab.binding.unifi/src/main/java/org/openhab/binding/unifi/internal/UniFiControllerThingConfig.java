@@ -22,6 +22,7 @@ import org.openhab.binding.unifi.internal.handler.UniFiControllerThingHandler;
  * @author Matthew Bowman - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("unused")
 public class UniFiControllerThingConfig {
 
     private String host = "unifi";
@@ -40,24 +41,54 @@ public class UniFiControllerThingConfig {
         return host;
     }
 
+    private void setHost(final String host) {
+        // method to avoid ide auto format mark the field as final
+        this.host = host;
+    }
+
     public int getPort() {
         return port;
+    }
+
+    private void setPort(final int port) {
+        // method to avoid ide auto format mark the field as final
+        this.port = port;
     }
 
     public String getUsername() {
         return username;
     }
 
+    private void setUsername(final String username) {
+        // method to avoid ide auto format mark the field as final
+        this.username = username;
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    private void setPassword(final String password) {
+        // method to avoid ide auto format mark the field as final
+        this.password = password;
     }
 
     public int getRefresh() {
         return refresh;
     }
 
+    private void setRefresh(final int refresh) {
+        // method to avoid ide auto format mark the field as final
+        this.refresh = refresh;
+    }
+
     public boolean isUniFiOS() {
         return unifios;
+    }
+
+    private void setUnifiOS(final boolean unifios) {
+        // method to avoid ide auto format mark the field as final
+        this.unifios = unifios;
     }
 
     public boolean isValid() {

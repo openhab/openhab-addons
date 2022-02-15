@@ -6,6 +6,8 @@ This binding integrates with [Ubiquiti UniFi Networks](https://www.ubnt.com/prod
 ## Supported Things
 
 * `controller` - An instance of the UniFi controller software
+* `site` - A site thing with connection statistics
+* `wlan` - A wireless network thing. Control Wi-Fi network and easy access to access.
 * `wirelessClient` - Any wireless client connected to a UniFi wireless network
 * `wiredClient` - A wired client connected to the UniFi network
 * `poePort` - A PoE (Power Over Ethernet) port on a Unifi switch
@@ -38,7 +40,23 @@ The following table describes the Bridge configuration parameters:
 
 ## Thing Configuration
 
-You must define a UniFi Controller (Bridge) before defining UniFi Clients (Things) for this binding to work.
+You must define a UniFi Controller (Bridge) before defining UniFi Things for this binding to work.
+
+### `site`
+
+The following table describes the `site` configuration parameters:
+
+| Parameter    | Description                                                  | Config   | Default |
+| ------------ | -------------------------------------------------------------|--------- | ------- |
+| sid          | The name, description or id of the site                      | Required | -       |
+
+### `wlan`
+
+The following table describes the `wlan` configuration parameters:
+
+| Parameter    | Description                                                  | Config   | Default |
+| ------------ | -------------------------------------------------------------|--------- | ------- |
+| wid          | The name or id of the wlan                                   | Required | -       |
 
 ### `wirelessClient` & `wiredClient`
 
@@ -91,6 +109,42 @@ The following table describes the `poePort` configuration parameters:
 
 
 ## Channels
+
+### `site`
+
+The `site` information that is retrieved is available as these channels:
+
+| Channel ID      | Item Type | Description                          | Permissions |
+|-----------------|-----------|--------------------------------------|-------------|
+| totalClients    | Number    | Total number of clients connected    | Read        |
+| wirelessClients | Number    | Number of wireless clients connected | Read        |
+| wiredClients    | Number    | Number of wired clients connected    | Read        |
+| guestClients    | Number    | Number of guest clients connected    | Read        |
+
+### `wlan`
+
+The `wlan` information that is retrieved is available as these channels:
+
+| Channel ID     | Item Type | Description                                                                    | Permissions |
+|----------------|-----------|--------------------------------------------------------------------------------|-------------|
+| enable         | Switch    | Enable status of the wLAN                                                      | Read, Write |
+| essid          | String    | Wireless Network (ESSID)                                                       | Read        |
+| site           | String    | UniFi Site the client is associated with                                       | Read        |
+| security       | String    | Security protocol of the Wi-Fi network                                         | Read        |
+| wlanBand       | String    | Wireless LAN band of the Wi-Fi network                                         | Read        |
+| wpaEnc         | String    | WPA Encoding of the Wi-Fi network                                              | Read        |
+| wpaMode        | String    | WPA Mode of the Wi-Fi network                                                  | Read        |
+| xPassphrase    | String    | Passphrase of the Wi-Fi network                                                | Read        |
+| qrcodeEncoding | String    | MECARD like encoding to generate a QRCode for easy access to the Wi-Fi network | Read        |
+
+::: warning Attention
+If you link an item to the `xPrassphrase` or `qrcodeEncoding` channel your Wi-Fi password will be  exposed in openHAB.
+The passwords is also visible in openHAB event log.
+:::
+
+The `qrcodeEncoding` channel can be used to easily create a QRCode to access, for example, a guest network.
+It contains a MECARD like representation of the access.
+This is the notation used in QRCodes that can be scanned by mobile phones.
 
 ### `wirelessClient`
 

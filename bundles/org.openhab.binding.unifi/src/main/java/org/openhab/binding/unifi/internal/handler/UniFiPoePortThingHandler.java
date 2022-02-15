@@ -58,14 +58,15 @@ import org.slf4j.LoggerFactory;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public class UniFiPoePortHandler extends UniFiBaseThingHandler<Map<Integer, UniFiPortTable>, UniFiPoePortThingConfig> {
+public class UniFiPoePortThingHandler
+        extends UniFiBaseThingHandler<Map<Integer, UniFiPortTable>, UniFiPoePortThingConfig> {
 
-    private final Logger logger = LoggerFactory.getLogger(UniFiPoePortHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(UniFiPoePortThingHandler.class);
 
     private UniFiPoePortThingConfig config = new UniFiPoePortThingConfig();
     private String poeEnableMode = "";
 
-    public UniFiPoePortHandler(final Thing thing) {
+    public UniFiPoePortThingHandler(final Thing thing) {
         super(thing);
     }
 

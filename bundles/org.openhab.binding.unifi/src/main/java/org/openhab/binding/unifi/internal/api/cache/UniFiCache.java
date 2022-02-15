@@ -73,7 +73,7 @@ abstract class UniFiCache<T extends @Nullable HasId> {
                 final String id = getId(cid);
 
                 if (id == null) {
-                    logger.debug("Could not find an entry in the cache for cid: '{}'", cid);
+                    logger.debug("Could not find an entry in the cache for id: '{}'", cid);
                     value = null;
                 } else {
                     value = map.get(id);
@@ -123,7 +123,7 @@ abstract class UniFiCache<T extends @Nullable HasId> {
     }
 
     private static String key(final Prefix prefix, final String suffix) {
-        return (prefix.name() + SEPARATOR + suffix).toLowerCase(Locale.ROOT);
+        return prefix.name() + SEPARATOR + suffix.replace(":", "").toLowerCase(Locale.ROOT);
     }
 
     public final Collection<T> values() {

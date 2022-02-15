@@ -7,11 +7,56 @@
 	<bridge-type id="controller">
 
 		<label>UniFi Controller</label>
-		<description>A UniFi controller.</description>
+		<description>A UniFi controller</description>
 
 		<config-description-ref uri="thing-type:unifi:controller"/>
 	</bridge-type>
 
+	<thing-type id="site">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+
+		<label>UniFi Site</label>
+		<description>A site defined in a UniFi network</description>
+
+		<channels>
+			<channel id="totalClients" typeId="totalClients"/>
+			<channel id="wirelessClients" typeId="wirelessClients"/>
+			<channel id="wiredClients" typeId="wiredClients"/>
+			<channel id="guestClients" typeId="guestClients"/>
+		</channels>
+
+		<representation-property>sid</representation-property>
+
+		<config-description-ref uri="thing-type:unifi:site"/>
+	</thing-type>
+
+	<thing-type id="wlan">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+
+		<label>UniFi WLAN</label>
+		<description>A UniFi Wireless LAN</description>
+
+		<channels>
+			<channel id="enable" typeId="wlanEnable"/>
+			<channel id="essid" typeId="wlanEssid"/>
+			<channel id="site" typeId="site"/>
+			<channel id="security" typeId="security"/>
+			<channel id="wlanBand" typeId="wlanBand"/>
+			<channel id="wpaEnc" typeId="wpaEnc"/>
+			<channel id="wpaMode" typeId="wpaMode"/>
+			<channel id="xPassphrase" typeId="xPassphrase"/>
+			<channel id="qrcodeEncoding" typeId="qrcodeEncoding"/>
+		</channels>
+
+		<representation-property>wid</representation-property>
+
+		<config-description-ref uri="thing-type:unifi:wlan"/>
+	</thing-type>
 
 	<thing-type id="wiredClient">
 
@@ -89,6 +134,89 @@
 
 	<!-- Channels -->
 
+	<channel-type id="totalClients">
+		<item-type>Number</item-type>
+		<label>Total Clients</label>
+		<description>Total number of clients connected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="wirelessClients">
+		<item-type>Number</item-type>
+		<label>Wireless Clients</label>
+		<description>Number of wireless clients connected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="wiredClients">
+		<item-type>Number</item-type>
+		<label>Wired Clients</label>
+		<description>Number of wired clients connected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="guestClients">
+		<item-type>Number</item-type>
+		<label>Guest Clients</label>
+		<description>Number of guest clients connected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="wlanEnable">
+		<item-type>Switch</item-type>
+		<label>Enable</label>
+		<description>Enable status of the wLAN</description>
+	</channel-type>
+
+	<channel-type id="wlanEssid">
+		<item-type>String</item-type>
+		<label>Wireless Network</label>
+		<description>Wireless Network (ESSID)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="security" advanced="true">
+		<item-type>String</item-type>
+		<label>Security</label>
+		<description>Security protocol of the Wi-Fi network</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="wlanBand" advanced="true">
+		<item-type>String</item-type>
+		<label>WLAN Band</label>
+		<description>Wireless LAN band of the Wi-Fi network</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="wpaEnc" advanced="true">
+		<item-type>String</item-type>
+		<label>WPA Encoding</label>
+		<description>WPA Encoding of the Wi-Fi network</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="wpaMode" advanced="true">
+		<item-type>String</item-type>
+		<label>WPA Mode</label>
+		<description>WPA Mode of the Wi-Fi network</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="xPassphrase" advanced="true">
+		<item-type>String</item-type>
+		<label>Passphrase</label>
+		<description>Passphrase of the Wi-Fi network</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="qrcodeEncoding">
+		<item-type>String</item-type>
+		<label>QR Code Encoding</label>
+		<description>MECARD like encoding to generate a QRCode for easy access to the Wi-Fi network</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="online">
 		<item-type>Switch</item-type>
 		<label>Online</label>
@@ -99,7 +227,7 @@
 	<channel-type id="site">
 		<item-type>String</item-type>
 		<label>Site Name</label>
-		<description>UniFi Site the client is associated with</description>
+		<description>UniFi Site the device is associated with</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -172,8 +300,8 @@
 
 	<channel-type id="portOnline">
 		<item-type>Switch</item-type>
-		<label>Port Up</label>
-		<description></description>
+		<label>Port Active</label>
+		<description>PoE port is active</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -187,7 +315,7 @@
 	<channel-type id="poeMode">
 		<item-type>String</item-type>
 		<label>PoE Mode</label>
-		<description>The PoE mode the port is in.</description>
+		<description>The PoE mode the port is in</description>
 		<state>
 			<options>
 				<option value="off">Off</option>

@@ -44,13 +44,12 @@ public class UniFiClientDeserializer implements JsonDeserializer<UniFiClient> {
     public @Nullable UniFiClient deserialize(final JsonElement json, final Type type,
             final JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = json.getAsJsonObject();
-        final JsonElement isWiredElement = jsonObject.get(PROPERTY_IS_WIRED);
+        final JsonElement wiredElement = jsonObject.get(PROPERTY_IS_WIRED);
         // mgb: if the "is_wired "property is missing, the client is unknown
-        if (isWiredElement == null) {
+        if (wiredElement == null) {
             return context.deserialize(json, UniFiUnknownClient.class);
         }
-        final boolean isWired = isWiredElement.getAsBoolean();
-        if (isWired) {
+        if (wiredElement.getAsBoolean()) {
             return context.deserialize(json, UniFiWiredClient.class);
         }
         return context.deserialize(json, UniFiWirelessClient.class);

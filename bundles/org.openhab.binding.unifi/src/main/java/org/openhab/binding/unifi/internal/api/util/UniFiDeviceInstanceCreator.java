@@ -22,7 +22,6 @@ import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
 import com.google.gson.InstanceCreator;
 
 /**
- *
  * The {@link UniFiDeviceInstanceCreator} creates instances of {@link UniFiDevice}s during the JSON unmarshalling of
  * controller responses.
  *

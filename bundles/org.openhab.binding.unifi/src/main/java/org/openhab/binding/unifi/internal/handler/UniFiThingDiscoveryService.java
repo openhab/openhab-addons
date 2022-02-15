@@ -15,7 +15,10 @@ package org.openhab.binding.unifi.internal.handler;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_CID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_MAC_ADDRESS;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_PORT_IDX;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_SID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_SITE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_WID;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_WIFI_NAME;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,6 +31,8 @@ import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
 import org.openhab.binding.unifi.internal.api.model.UniFiClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiPortTable;
+import org.openhab.binding.unifi.internal.api.model.UniFiSite;
+import org.openhab.binding.unifi.internal.api.model.UniFiWlan;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -51,6 +56,8 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
      */
     private static final int UNIFI_DISCOVERY_TIMEOUT_SECONDS = 30;
     private static final long TTL_SECONDS = TimeUnit.MINUTES.toSeconds(5);
+    private static final int THING_ID_LENGTH = 8;
+    private static final String DEFAULT_PORTNAME = "Port";
 
     private final Logger logger = LoggerFactory.getLogger(UniFiThingDiscoveryService.class);
 
@@ -91,6 +98,8 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
         try {
             controller.refresh();
             final ThingUID bridgeUID = bh.getThing().getUID();
+            discoverSites(controller, bridgeUID);
+            discoverWlans(controller, bridgeUID);
             discoverClients(controller, bridgeUID);
             discoverPoePorts(controller, bridgeUID);
         } catch (final UniFiException e) {
@@ -98,17 +107,53 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
         }
     }
 
+    private void discoverSites(final UniFiController controller, final ThingUID bridgeUID) {
+        for (final UniFiSite site : controller.getSites()) {
+            final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_SITE, bridgeUID,
+                    stripIdShort(site.getId()));
+            final Map<String, Object> properties = Map.of(PARAMETER_SID, site.getId());
+
+            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(UniFiBindingConstants.THING_TYPE_SITE)
+                    .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_SID).withTTL(TTL_SECONDS)
+                    .withProperties(properties).withLabel(site.getName()).build());
+        }
+    }
+
+    private void discoverWlans(final UniFiController controller, final ThingUID bridgeUID) {
+        for (final UniFiWlan wlan : controller.getWlans()) {
+            final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_WLAN, bridgeUID,
+                    stripIdShort(wlan.getId()));
+            final Map<String, Object> properties = Map.of(PARAMETER_WID, wlan.getId(), PARAMETER_SITE,
+                    wlan.getSite().getName(), PARAMETER_WIFI_NAME, wlan.getName());
+
+            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(UniFiBindingConstants.THING_TYPE_WLAN)
+                    .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_WID).withTTL(TTL_SECONDS)
+                    .withProperties(properties).withLabel(wlan.getName()).build());
+        }
+    }
+
     private void discoverClients(final UniFiController controller, final ThingUID bridgeUID) {
         for (final UniFiClient uc : controller.getClients()) {
             final var thingTypeUID = uc.isWireless() ? UniFiBindingConstants.THING_TYPE_WIRELESS_CLIENT
                     : UniFiBindingConstants.THING_TYPE_WIRED_CLIENT;
-            final ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, uc.getId());
+            final ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, stripIdShort(uc.getId()));
             final Map<String, Object> properties = Map.of(PARAMETER_CID, uc.getMac(), PARAMETER_SITE,
                     uc.getSite().getName());
 
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withBridge(bridgeUID)
-                    .withTTL(TTL_SECONDS).withProperties(properties).withLabel(uc.getAlias()).build());
+                    .withRepresentationProperty(PARAMETER_CID).withTTL(TTL_SECONDS).withProperties(properties)
+                    .withLabel(uc.getAlias()).build());
         }
+    }
+
+    /**
+     * Shorten the id to make it a bit more comprehensible.
+     * 
+     * @param id id to shorten.
+     * @return shortened id or if to short the original id
+     */
+    private static String stripIdShort(final String id) {
+        return id.length() > THING_ID_LENGTH ? id.substring(id.length() - THING_ID_LENGTH) : id;
     }
 
     private void discoverPoePorts(final UniFiController controller, final ThingUID bridgeUID) {
@@ -116,15 +161,27 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
             for (final Entry<Integer, UniFiPortTable> sp : uc.entrySet()) {
                 final UniFiPortTable pt = sp.getValue();
                 final String deviceMac = pt.getDevice().getMac();
-                final String id = deviceMac.replaceAll(":", "") + "_" + pt.getPortIdx();
+                final String id = deviceMac.replace(":", "") + "_" + pt.getPortIdx();
                 final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_POE_PORT, bridgeUID, id);
                 final Map<String, Object> properties = Map.of(PARAMETER_PORT_IDX, pt.getPortIdx(),
                         PARAMETER_MAC_ADDRESS, deviceMac);
-                logger.debug("Found PoE PORT: {} ", properties);
+
                 thingDiscovered(DiscoveryResultBuilder.create(thingUID)
                         .withThingType(UniFiBindingConstants.THING_TYPE_POE_PORT).withBridge(bridgeUID)
-                        .withTTL(TTL_SECONDS).withProperties(properties).withLabel(pt.getName()).build());
+                        .withTTL(TTL_SECONDS).withProperties(properties).withLabel(portName(pt)).build());
             }
         }
+    }
+
+    /**
+     * If the PoE port hasn't it's own name, but is named Port with a number the name is prefixed with the device name.
+     *
+     * @param pt port object
+     * @return label for the discovered PoE port
+     */
+    private static @Nullable String portName(final UniFiPortTable pt) {
+        final String portName = pt.getName();
+
+        return portName.startsWith(DEFAULT_PORTNAME) ? pt.getDevice().getName() + " " + portName : portName;
     }
 }

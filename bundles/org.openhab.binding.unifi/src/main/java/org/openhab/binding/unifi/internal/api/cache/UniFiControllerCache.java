@@ -27,6 +27,7 @@ import org.openhab.binding.unifi.internal.api.model.UniFiClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
 import org.openhab.binding.unifi.internal.api.model.UniFiPortTable;
 import org.openhab.binding.unifi.internal.api.model.UniFiSite;
+import org.openhab.binding.unifi.internal.api.model.UniFiWlan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ public class UniFiControllerCache {
     private final Logger logger = LoggerFactory.getLogger(UniFiControllerCache.class);
 
     private final UniFiSiteCache sitesCache = new UniFiSiteCache();
+    private final UniFiWlanCache wlansCache = new UniFiWlanCache();
     private final UniFiDeviceCache devicesCache = new UniFiDeviceCache();
     private final UniFiClientCache clientsCache = new UniFiClientCache();
     private final UniFiClientCache insightsCache = new UniFiClientCache();
@@ -49,6 +51,7 @@ public class UniFiControllerCache {
 
     public void clear() {
         sitesCache.clear();
+        wlansCache.clear();
         devicesCache.clear();
         clientsCache.clear();
         insightsCache.clear();
@@ -63,6 +66,24 @@ public class UniFiControllerCache {
 
     public @Nullable UniFiSite getSite(final @Nullable String id) {
         return sitesCache.get(id);
+    }
+
+    public Collection<UniFiSite> getSites() {
+        return sitesCache.values();
+    }
+
+    // Wlans Cache
+
+    public void putWlans(final UniFiWlan @Nullable [] wlans) {
+        wlansCache.putAll(wlans);
+    }
+
+    public @Nullable UniFiWlan getWlan(@Nullable final String id) {
+        return wlansCache.get(id);
+    }
+
+    public Collection<UniFiWlan> getWlans() {
+        return wlansCache.values();
     }
 
     // Devices Cache
@@ -100,6 +121,10 @@ public class UniFiControllerCache {
 
     public Collection<UniFiClient> getClients() {
         return clientsCache.values();
+    }
+
+    public long countClients(final UniFiSite site, final Function<UniFiClient, Boolean> filter) {
+        return getClients().stream().filter(c -> site.isSite(c.getSite())).filter(filter::apply).count();
     }
 
     public @Nullable UniFiClient getClient(@Nullable final String cid) {

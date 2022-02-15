@@ -30,10 +30,12 @@ import org.openhab.binding.unifi.internal.api.model.UniFiSite;
 import org.openhab.binding.unifi.internal.api.model.UniFiUnknownClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiWiredClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiWirelessClient;
+import org.openhab.binding.unifi.internal.api.model.UniFiWlan;
 import org.openhab.binding.unifi.internal.api.util.UniFiClientDeserializer;
 import org.openhab.binding.unifi.internal.api.util.UniFiClientInstanceCreator;
 import org.openhab.binding.unifi.internal.api.util.UniFiDeviceInstanceCreator;
 import org.openhab.binding.unifi.internal.api.util.UniFiSiteInstanceCreator;
+import org.openhab.binding.unifi.internal.api.util.UniFiWlanInstanceCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,10 +82,12 @@ public class UniFiController {
         this.unifios = unifios;
         this.csrfToken = "";
         final UniFiSiteInstanceCreator siteInstanceCreator = new UniFiSiteInstanceCreator(cache);
+        final UniFiWlanInstanceCreator wlanInstanceCreator = new UniFiWlanInstanceCreator(cache);
         final UniFiDeviceInstanceCreator deviceInstanceCreator = new UniFiDeviceInstanceCreator(cache);
         final UniFiClientInstanceCreator clientInstanceCreator = new UniFiClientInstanceCreator(cache);
         this.gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(UniFiSite.class, siteInstanceCreator)
+                .registerTypeAdapter(UniFiWlan.class, wlanInstanceCreator)
                 .registerTypeAdapter(UniFiDevice.class, deviceInstanceCreator)
                 .registerTypeAdapter(UniFiClient.class, new UniFiClientDeserializer())
                 .registerTypeAdapter(UniFiUnknownClient.class, clientInstanceCreator)
@@ -137,6 +141,7 @@ public class UniFiController {
         synchronized (this) {
             cache.clear();
             final Collection<UniFiSite> sites = refreshSites();
+            refreshWlans(sites);
             refreshDevices(sites);
             refreshClients(sites);
             refreshInsights(sites);
@@ -145,6 +150,18 @@ public class UniFiController {
 
     public @Nullable UniFiSite getSite(final @Nullable String id) {
         return cache.getSite(id);
+    }
+
+    public Collection<UniFiSite> getSites() {
+        return cache.getSites();
+    }
+
+    public @Nullable UniFiWlan getWlan(@Nullable final String wid) {
+        return cache.getWlan(wid);
+    }
+
+    public Collection<UniFiWlan> getWlans() {
+        return cache.getWlans();
     }
 
     public @Nullable UniFiClient getClient(@Nullable final String cid) {
@@ -169,7 +186,7 @@ public class UniFiController {
 
     public void block(final UniFiClient client, final boolean blocked) throws UniFiException {
         final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.POST, gson);
-        req.setAPIPath("/api/s/" + client.getSite().getName() + "/cmd/stamgr");
+        req.setAPIPath(String.format("/api/s/%s/cmd/stamgr", client.getSite().getName()));
         req.setBodyParameter("cmd", blocked ? "block-sta" : "unblock-sta");
         req.setBodyParameter("mac", client.getMac());
         executeRequest(req);
@@ -178,7 +195,7 @@ public class UniFiController {
 
     public void reconnect(final UniFiClient client) throws UniFiException {
         final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.POST, gson);
-        req.setAPIPath("/api/s/" + client.getSite().getName() + "/cmd/stamgr");
+        req.setAPIPath(String.format("/api/s/%s/cmd/stamgr", client.getSite().getName()));
         req.setBodyParameter("cmd", "kick-sta");
         req.setBodyParameter("mac", client.getMac());
         executeRequest(req);
@@ -187,8 +204,17 @@ public class UniFiController {
 
     public void poeMode(final UniFiDevice device, final Map<Integer, UnfiPortOverride> data) throws UniFiException {
         final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, poeGson);
-        req.setAPIPath("/api/s/" + device.getSite().getName() + "/rest/device/" + device.getId());
+        req.setAPIPath(String.format("/api/s/%s/rest/device/%s", device.getSite().getName(), device.getId()));
         req.setBodyParameter("port_overrides", data.values());
+        executeRequest(req);
+        refresh();
+    }
+
+    public void enableWifi(final UniFiWlan wlan, final boolean enable) throws UniFiException {
+        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, poeGson);
+        req.setAPIPath(String.format("/api/s/%s/rest/wlanconf/%s", wlan.getSite().getName(), wlan.getId()));
+        req.setBodyParameter("_id", wlan.getId());
+        req.setBodyParameter("enabled", enable ? "true" : "false");
         executeRequest(req);
         refresh();
     }
@@ -232,6 +258,18 @@ public class UniFiController {
         return cache.setSites(executeRequest(req));
     }
 
+    private void refreshWlans(final Collection<UniFiSite> sites) throws UniFiException {
+        for (final UniFiSite site : sites) {
+            cache.putWlans(getWlans(site));
+        }
+    }
+
+    private UniFiWlan @Nullable [] getWlans(final UniFiSite site) throws UniFiException {
+        final UniFiControllerRequest<UniFiWlan[]> req = newRequest(UniFiWlan[].class, HttpMethod.GET, gson);
+        req.setAPIPath(String.format("/api/s/%s/rest/wlanconf", site.getName()));
+        return executeRequest(req);
+    }
+
     private void refreshDevices(final Collection<UniFiSite> sites) throws UniFiException {
         for (final UniFiSite site : sites) {
             cache.putDevices(getDevices(site));
@@ -240,7 +278,7 @@ public class UniFiController {
 
     private UniFiDevice @Nullable [] getDevices(final UniFiSite site) throws UniFiException {
         final UniFiControllerRequest<UniFiDevice[]> req = newRequest(UniFiDevice[].class, HttpMethod.GET, gson);
-        req.setAPIPath("/api/s/" + site.getName() + "/stat/device");
+        req.setAPIPath(String.format("/api/s/%s/stat/device", site.getName()));
         return executeRequest(req);
     }
 
@@ -252,7 +290,7 @@ public class UniFiController {
 
     private UniFiClient @Nullable [] getClients(final UniFiSite site) throws UniFiException {
         final UniFiControllerRequest<UniFiClient[]> req = newRequest(UniFiClient[].class, HttpMethod.GET, gson);
-        req.setAPIPath("/api/s/" + site.getName() + "/stat/sta");
+        req.setAPIPath(String.format("/api/s/%s/stat/sta", site.getName()));
         return executeRequest(req);
     }
 
@@ -264,7 +302,7 @@ public class UniFiController {
 
     private UniFiClient @Nullable [] getInsights(final UniFiSite site) throws UniFiException {
         final UniFiControllerRequest<UniFiClient[]> req = newRequest(UniFiClient[].class, HttpMethod.GET, gson);
-        req.setAPIPath("/api/s/" + site.getName() + "/stat/alluser");
+        req.setAPIPath(String.format("/api/s/%s/stat/alluser", site.getName()));
         req.setQueryParameter("within", INSIGHT_WITH_HOURS);
         return executeRequest(req);
     }

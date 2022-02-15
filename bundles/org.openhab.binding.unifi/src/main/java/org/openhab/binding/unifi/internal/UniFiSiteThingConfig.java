@@ -13,35 +13,35 @@
 package org.openhab.binding.unifi.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.unifi.internal.handler.UniFiSiteThingHandler;
 
 /**
- * The {@link UniFiPoeThingConfig} encapsulates all the configuration options for an instance of the
- * {@link UniFiPoePortThingHandler}.
+ * The {@link UniFiSiteThingConfig} encapsulates all the configuration options for an instance of the
+ * {@link UniFiSiteThingHandler}.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Matthew Bowman - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings("unused")
-public class UniFiPoePortThingConfig {
+public class UniFiSiteThingConfig {
 
-    private int portIdx;
+    private String sid = "";
 
-    private String macAddress = "";
-
-    public int getPortIdx() {
-        return portIdx;
+    public String getSiteID() {
+        return sid;
     }
 
-    public String getMacAddress() {
-        return macAddress;
-    }
-
-    private void setMacAddress(final String macAddress) {
+    private void setSiteID(final String sid) {
         // method to avoid ide auto format mark the field as final
-        this.macAddress = macAddress;
+        this.sid = sid;
     }
 
     public boolean isValid() {
-        return !macAddress.isBlank();
+        return !sid.isBlank();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("UniFiSiteThingConfig{sid: '%s'}", sid);
     }
 }
