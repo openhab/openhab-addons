@@ -17,6 +17,7 @@ import java.util.Map;
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
+import org.openhab.binding.fronius.internal.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.OhmpilotRealtimeBodyDataDTO;
 import org.openhab.binding.fronius.internal.api.OhmpilotRealtimeResponseDTO;
 import org.openhab.core.library.types.DecimalType;
@@ -46,7 +47,7 @@ public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
     }
 
     @Override
-    public void refresh(FroniusBridgeConfiguration bridgeConfiguration) {
+    public void handleRefresh(FroniusBridgeConfiguration bridgeConfiguration) throws FroniusCommunicationException {
         updateData(bridgeConfiguration, config);
         updateChannels();
         updateProperties();
@@ -111,14 +112,11 @@ public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
     /**
      * Get new data
      */
-    private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config) {
+    private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config)
+            throws FroniusCommunicationException {
         OhmpilotRealtimeResponseDTO ohmpilotRealtimeResponse = getOhmpilotRealtimeData(bridgeConfiguration.hostname,
                 config.deviceId);
-        if (ohmpilotRealtimeResponse == null) {
-            ohmpilotRealtimeBodyData = null;
-        } else {
-            ohmpilotRealtimeBodyData = ohmpilotRealtimeResponse.getBody().getData();
-        }
+        ohmpilotRealtimeBodyData = ohmpilotRealtimeResponse.getBody().getData();
     }
 
     /**
@@ -128,10 +126,11 @@ public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
      * @param deviceId of the device
      * @return {OhmpilotRealtimeResponse} the object representation of the json response
      */
-    private OhmpilotRealtimeResponseDTO getOhmpilotRealtimeData(String ip, int deviceId) {
+    private OhmpilotRealtimeResponseDTO getOhmpilotRealtimeData(String ip, int deviceId)
+            throws FroniusCommunicationException {
         String location = FroniusBindingConstants.OHMPILOT_REALTIME_DATA_URL.replace("%IP%",
                 (ip != null ? ip.trim() : ""));
         location = location.replace("%DEVICEID%", Integer.toString(deviceId));
-        return collectDataFormUrl(OhmpilotRealtimeResponseDTO.class, location);
+        return collectDataFromUrl(OhmpilotRealtimeResponseDTO.class, location);
     }
 }
