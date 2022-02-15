@@ -61,9 +61,6 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
 
     private @Nullable Group groupState;
 
-    // TODO: should be configurable?
-    private static final int VOLUME_STEP_PERCENTAGE = 5;
-
     public AmpliPiGroupHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
@@ -72,6 +69,10 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
 
     private int getId(Thing thing) {
         return Integer.valueOf(thing.getConfiguration().get(AmpliPiBindingConstants.CFG_PARAM_ID).toString());
+    }
+
+    private int getVolumeDelta(Thing thing) {
+        return Integer.valueOf(thing.getConfiguration().get(AmpliPiBindingConstants.CFG_PARAM_VOLUME_DELTA).toString());
     }
 
     @Override
@@ -116,10 +117,10 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
                         PercentType newVolDelta;
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {
                             newVolDelta = new PercentType(
-                                    Math.min(currentVolDelta.intValue() + VOLUME_STEP_PERCENTAGE, 100));
+                                    Math.min(currentVolDelta.intValue() + getVolumeDelta(thing), 100));
                         } else {
                             newVolDelta = new PercentType(
-                                    Math.max(currentVolDelta.intValue() - VOLUME_STEP_PERCENTAGE, 0));
+                                    Math.max(currentVolDelta.intValue() - getVolumeDelta(thing), 0));
                         }
                         groupState.setVolDelta(AmpliPiUtils.percentTypeToVolume(newVolDelta));
                         update.setVolDelta(groupState.getVolDelta());

@@ -61,9 +61,6 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
 
     private @Nullable Zone zoneState;
 
-    // TODO: should be configurable?
-    private static final int VOLUME_STEP_PERCENTAGE = 5;
-
     public AmpliPiZoneHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
@@ -94,6 +91,10 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
         return Integer.valueOf(thing.getConfiguration().get(AmpliPiBindingConstants.CFG_PARAM_ID).toString());
     }
 
+    private int getVolumeDelta(Thing thing) {
+        return Integer.valueOf(thing.getConfiguration().get(AmpliPiBindingConstants.CFG_PARAM_VOLUME_DELTA).toString());
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
@@ -115,9 +116,9 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
                         PercentType currentVol = AmpliPiUtils.volumeToPercentType(zoneState.getVol());
                         PercentType newVol;
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {
-                            newVol = new PercentType(Math.min(currentVol.intValue() + VOLUME_STEP_PERCENTAGE, 100));
+                            newVol = new PercentType(Math.min(currentVol.intValue() + getVolumeDelta(thing), 100));
                         } else {
-                            newVol = new PercentType(Math.max(currentVol.intValue() - VOLUME_STEP_PERCENTAGE, 0));
+                            newVol = new PercentType(Math.max(currentVol.intValue() - getVolumeDelta(thing), 0));
                         }
                         zoneState.setVol(AmpliPiUtils.percentTypeToVolume(newVol));
                         update.setVol(zoneState.getVol());
