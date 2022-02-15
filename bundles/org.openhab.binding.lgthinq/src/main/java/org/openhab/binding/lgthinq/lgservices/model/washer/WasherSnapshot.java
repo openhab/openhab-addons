@@ -12,18 +12,19 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.washer;
 
-import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.WM_POWER_OFF_VALUE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WM_POWER_OFF_VALUE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.Snapshot;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The {@link WasherDryerSnapshot}
+ * The {@link WasherSnapshot}
  * This map the snapshot result from Washing Machine devices
  * This json payload come with path: snapshot->washerDryer, but this POJO expects
  * to map field below washerDryer
@@ -32,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @NonNullByDefault
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class WasherDryerSnapshot implements Snapshot {
+public class WasherSnapshot implements Snapshot {
     private DevicePowerState powerState = DevicePowerState.DV_POWER_UNK;
     private String state = "";
     private boolean online;
@@ -40,6 +41,8 @@ public class WasherDryerSnapshot implements Snapshot {
     private String smartCourse = "";
     private String temperatureLevel = "";
     private String doorLock = "";
+    private Double remainingHour = 0.00;
+    private Double remainingMinute = 0.00;
 
     @JsonAlias({ "Course", "courseFL24inchBaseTitan" })
     @JsonProperty("courseFL24inchBaseTitan")
@@ -81,6 +84,31 @@ public class WasherDryerSnapshot implements Snapshot {
     @JsonAlias({ "smartCourseFL24inchBaseTitan", "SmartCourse" })
     public String getSmartCourse() {
         return smartCourse;
+    }
+
+    @JsonIgnore
+    public String getRemainingTime() {
+        return String.format("%02.0f:%02.0f", getRemainingHour(), getRemainingMinute());
+    }
+
+    @JsonProperty("remainTimeHour")
+    @JsonAlias({ "remainTimeHour", "Remain_Time_H" })
+    public Double getRemainingHour() {
+        return remainingHour;
+    }
+
+    public void setRemainingHour(Double remainingHour) {
+        this.remainingHour = remainingHour;
+    }
+
+    @JsonProperty("remainTimeMinute")
+    @JsonAlias({ "remainTimeMinute", "Remain_Time_M" })
+    public Double getRemainingMinute() {
+        return remainingMinute;
+    }
+
+    public void setRemainingMinute(Double remainingMinute) {
+        this.remainingMinute = remainingMinute;
     }
 
     public void setSmartCourse(String smartCourse) {

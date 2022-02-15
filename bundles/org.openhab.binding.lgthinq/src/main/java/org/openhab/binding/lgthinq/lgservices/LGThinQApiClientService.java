@@ -20,7 +20,10 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.errors.*;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1MonitorExpiredException;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1OfflineException;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.*;
 
 /**
@@ -29,7 +32,7 @@ import org.openhab.binding.lgthinq.lgservices.model.*;
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public interface LGThinQApiClientService<C extends CapabilityDefinition, S extends SnapshotDefinition> {
+public interface LGThinQApiClientService<C extends Capability, S extends Snapshot> {
 
     List<LGDevice> listAccountDevices(String bridgeName) throws LGThinqApiException;
 
@@ -49,9 +52,6 @@ public interface LGThinQApiClientService<C extends CapabilityDefinition, S exten
     S getDeviceData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull CapabilityDefinition capDef)
             throws LGThinqApiException;
 
-    double getInstantPowerConsumption(@NonNull String bridgeName, @NonNull String deviceId)
-            throws LGThinqApiException, IOException;
-
     void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState) throws LGThinqApiException;
 
     String startMonitor(String bridgeName, String deviceId) throws LGThinqApiException, IOException;
@@ -65,6 +65,5 @@ public interface LGThinQApiClientService<C extends CapabilityDefinition, S exten
 
     @Nullable
     S getMonitorData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull String workerId,
-            DeviceTypes deviceType, @NonNull C deviceCapability)
-            throws LGThinqApiException, LGThinqDeviceV1MonitorExpiredException, IOException, LGThinqUnmarshallException;
+            DeviceTypes deviceType) throws LGThinqApiException, LGThinqDeviceV1MonitorExpiredException, IOException;
 }

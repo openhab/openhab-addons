@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model;
 
-import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.WM_SNAPSHOT_WASHER_DRYER_NODE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WM_SNAPSHOT_WASHER_DRYER_NODE;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,8 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.ac.ACSnapshot;
-import org.openhab.binding.lgthinq.lgservices.model.washer.WasherDryerSnapshot;
+import org.openhab.binding.lgthinq.lgservices.model.dryer.DryerSnapshot;
+import org.openhab.binding.lgthinq.lgservices.model.washer.WasherSnapshot;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -40,7 +41,7 @@ public class SnapshotFactory {
         instance = new SnapshotFactory();
     }
 
-    public static final SnapshotFactory getInstance() {
+    public static SnapshotFactory getInstance() {
         return instance;
     }
 
@@ -52,20 +53,22 @@ public class SnapshotFactory {
      * @return returns Snapshot implementation based on device type provided
      * @throws LGThinqApiException any error.
      */
-    public Snapshot create(String snapshotDataJson, DeviceTypes deviceType) throws LGThinqApiException {
+    public <S extends Snapshot> S create(String snapshotDataJson, DeviceTypes deviceType, Class<S> clazz)
+            throws LGThinqApiException {
         try {
             Map<String, Object> snapshotMap = objectMapper.readValue(snapshotDataJson, new TypeReference<>() {
             });
             Map<String, Object> deviceSetting = new HashMap<>();
             deviceSetting.put("deviceType", deviceType.deviceTypeId());
             deviceSetting.put("snapshot", snapshotMap);
-            return create(deviceSetting);
+            return create(deviceSetting, clazz);
         } catch (JsonProcessingException e) {
             throw new LGThinqApiException("Unexpected Error unmarshalling json to map", e);
         }
     }
 
-    public Snapshot create(Map<String, Object> deviceSettings) throws LGThinqApiException {
+    public <S extends Snapshot> S create(Map<String, Object> deviceSettings, Class<S> clazz)
+            throws LGThinqApiException {
         DeviceTypes type = getDeviceType(deviceSettings);
         Map<String, Object> snapMap = ((Map<String, Object>) deviceSettings.get("snapshot"));
         if (snapMap == null) {
@@ -74,7 +77,7 @@ public class SnapshotFactory {
         LGAPIVerion version = discoveryAPIVersion(snapMap, type);
         switch (type) {
             case AIR_CONDITIONER:
-                return objectMapper.convertValue(snapMap, ACSnapshot.class);
+                return clazz.cast(objectMapper.convertValue(snapMap, ACSnapshot.class));
             case WASHING_MACHINE:
                 switch (version) {
                     case V1_0: {
@@ -84,10 +87,21 @@ public class SnapshotFactory {
                         Map<String, String> washerDryerMap = Objects.requireNonNull(
                                 (Map<String, String>) snapMap.get(WM_SNAPSHOT_WASHER_DRYER_NODE),
                                 "washerDryer node must be present in the snapshot");
-                        return objectMapper.convertValue(washerDryerMap, WasherDryerSnapshot.class);
+                        return clazz.cast(objectMapper.convertValue(washerDryerMap, WasherSnapshot.class));
                     }
                 }
-
+            case DRYER:
+                switch (version) {
+                    case V1_0: {
+                        throw new IllegalArgumentException("Version 1.0 for Washer is not supported yet.");
+                    }
+                    case V2_0: {
+                        Map<String, String> washerDryerMap = Objects.requireNonNull(
+                                (Map<String, String>) snapMap.get(WM_SNAPSHOT_WASHER_DRYER_NODE),
+                                "washerDryer node must be present in the snapshot");
+                        return clazz.cast(objectMapper.convertValue(washerDryerMap, DryerSnapshot.class));
+                    }
+                }
             default:
                 throw new IllegalStateException("Unexpected capability. The type " + type + " was not implemented yet");
         }
@@ -110,7 +124,7 @@ public class SnapshotFactory {
                     throw new IllegalStateException(
                             "Unexpected error. Can't find key node attributes to determine AC API version.");
                 }
-
+            case DRYER:
             case WASHING_MACHINE:
                 return LGAPIVerion.V2_0;
             default:
