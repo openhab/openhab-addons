@@ -72,6 +72,7 @@ public class FroniusHttpUtil {
                 attemptCount++;
             }
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new FroniusCommunicationException("Interrupted", e);
         }
     }

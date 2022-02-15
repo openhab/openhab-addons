@@ -219,6 +219,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             logger.debug("Received Invalid JSON Data", e);
             throw new FroniusCommunicationException("Invalid JSON data received", e);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new FroniusCommunicationException("Data collection interrupted", e);
         }
     }
