@@ -35,7 +35,7 @@ import org.openhab.binding.unifi.internal.api.model.UniFiClient;
 class UniFiClientCache extends UniFiCache<UniFiClient> {
 
     public UniFiClientCache() {
-        super("Client", ID, MAC, IP, HOSTNAME, ALIAS);
+        super(ID, MAC, IP, HOSTNAME, ALIAS);
     }
 
     @Override

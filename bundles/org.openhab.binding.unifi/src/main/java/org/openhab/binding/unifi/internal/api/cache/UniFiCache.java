@@ -56,10 +56,8 @@ abstract class UniFiCache<T extends @Nullable HasId> {
     // Map of id to data object
     private final Map<String, T> map = new HashMap<>();
     private final Prefix[] prefixes;
-    private final String type;
 
-    protected UniFiCache(final String type, final Prefix... prefixes) {
-        this.type = type;
+    protected UniFiCache(final Prefix... prefixes) {
         this.prefixes = prefixes;
     }
 
@@ -75,7 +73,7 @@ abstract class UniFiCache<T extends @Nullable HasId> {
                 final String id = getId(cid);
 
                 if (id == null) {
-                    logger.debug("Could not find a matching {} for cid = '{}'", type, cid);
+                    logger.debug("Could not find an entry in the cache for cid: '{}'", cid);
                     value = null;
                 } else {
                     value = map.get(id);
@@ -105,7 +103,8 @@ abstract class UniFiCache<T extends @Nullable HasId> {
 
     public final void putAll(final T @Nullable [] values) {
         if (values != null) {
-            logger.debug("Found {} UniFi {} (s): {}", type, values.length, lazyFormatAsList(values));
+            logger.debug("Put #{} entries in {}: {}", values.length, getClass().getSimpleName(),
+                    lazyFormatAsList(values));
             for (final T value : values) {
                 put(value.getId(), value);
             }
@@ -123,7 +122,7 @@ abstract class UniFiCache<T extends @Nullable HasId> {
         map.put(id, value);
     }
 
-    private String key(final Prefix prefix, final String suffix) {
+    private static String key(final Prefix prefix, final String suffix) {
         return (prefix.name() + SEPARATOR + suffix).toLowerCase(Locale.ROOT);
     }
 

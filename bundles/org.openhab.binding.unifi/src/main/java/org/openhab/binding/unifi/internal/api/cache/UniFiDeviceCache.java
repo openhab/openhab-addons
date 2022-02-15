@@ -30,7 +30,7 @@ import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
 class UniFiDeviceCache extends UniFiCache<UniFiDevice> {
 
     public UniFiDeviceCache() {
-        super("Device", MAC);
+        super(MAC);
     }
 
     @Override

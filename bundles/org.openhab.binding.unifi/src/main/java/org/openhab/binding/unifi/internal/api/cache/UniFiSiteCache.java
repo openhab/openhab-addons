@@ -32,7 +32,7 @@ import org.openhab.binding.unifi.internal.api.model.UniFiSite;
 class UniFiSiteCache extends UniFiCache<UniFiSite> {
 
     public UniFiSiteCache() {
-        super("Site", ID, NAME, DESC);
+        super(ID, NAME, DESC);
     }
 
     @Override
