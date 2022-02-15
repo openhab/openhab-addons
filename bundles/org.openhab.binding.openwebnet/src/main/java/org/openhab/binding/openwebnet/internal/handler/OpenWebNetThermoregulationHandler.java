@@ -92,7 +92,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
         if (!isCentralUnit) {
             Object standAloneConfig = getConfig().get(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE);
-            isStandAlone = Boolean.parseBoolean(standAloneConfig.toString());
+            if (standAloneConfig != null) // null in case of thermo_sensor
+                isStandAlone = Boolean.parseBoolean(standAloneConfig.toString());
         } else {
             // central unit must have WHERE=0
             if (!deviceWhere.value().equals("0")) {
