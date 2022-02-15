@@ -20,7 +20,7 @@
 			<channel id="smart-course" typeId="washer-smart-course"/>
 			<channel id="temperature-level" typeId="washer-temp-level"/>
 			<channel id="door-lock" typeId="washer-door-lock"/>
-			<channel id="remain-time" typeId="washer-remain-time"/>
+			<channel id="remain-time" typeId="washerdryer-remain-time"/>
 		</channels>
 
 	</thing-type>
