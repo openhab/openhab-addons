@@ -10,8 +10,8 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>LG Thinq Washer</label>
-		<description>LG Thinq Washing Machine</description>
+		<label>LG ThinQ Washer</label>
+		<description>LG ThinQ Washing Machine</description>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -20,6 +20,7 @@
 			<channel id="smart-course" typeId="washer-smart-course"/>
 			<channel id="temperature-level" typeId="washer-temp-level"/>
 			<channel id="door-lock" typeId="washer-door-lock"/>
+			<channel id="remain-time" typeId="washer-remain-time"/>
 		</channels>
 
 	</thing-type>
