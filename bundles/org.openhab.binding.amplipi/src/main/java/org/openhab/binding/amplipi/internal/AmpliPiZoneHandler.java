@@ -27,6 +27,7 @@ import org.openhab.binding.amplipi.internal.model.Status;
 import org.openhab.binding.amplipi.internal.model.Zone;
 import org.openhab.binding.amplipi.internal.model.ZoneUpdate;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Bridge;
@@ -57,6 +58,11 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
     private final Gson gson;
 
     private @Nullable AmpliPiHandler bridgeHandler;
+
+    private @Nullable Zone zoneState;
+
+    // TODO: should be configurable?
+    private static final int VOLUME_STEP_PERCENTAGE = 5;
 
     public AmpliPiZoneHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -104,6 +110,17 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
             case AmpliPiBindingConstants.CHANNEL_VOLUME:
                 if (command instanceof PercentType) {
                     update.setVol(AmpliPiUtils.percentTypeToVolume((PercentType) command));
+                } else if (command instanceof IncreaseDecreaseType) {
+                    if (zoneState != null) {
+                        PercentType currentVol = AmpliPiUtils.volumeToPercentType(zoneState.getVol());
+                        if (IncreaseDecreaseType.INCREASE.equals(command)) {
+                            update.setVol(AmpliPiUtils.percentTypeToVolume(
+                                    new PercentType(currentVol.intValue() + VOLUME_STEP_PERCENTAGE)));
+                        } else {
+                            update.setVol(AmpliPiUtils.percentTypeToVolume(
+                                    new PercentType(currentVol.intValue() - VOLUME_STEP_PERCENTAGE)));
+                        }
+                    }
                 }
                 break;
             case AmpliPiBindingConstants.CHANNEL_SOURCE:
@@ -135,13 +152,18 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
     public void receive(Status status) {
         int id = getId(thing);
         Optional<Zone> zone = status.getZones().stream().filter(z -> z.getId().equals(id)).findFirst();
-        if (zone.isPresent()) {
-            Boolean mute = zone.get().getMute();
-            Integer volume = zone.get().getVol();
-            Integer source = zone.get().getSourceId();
-            updateState(AmpliPiBindingConstants.CHANNEL_MUTE, mute ? OnOffType.ON : OnOffType.OFF);
-            updateState(AmpliPiBindingConstants.CHANNEL_VOLUME, AmpliPiUtils.volumeToPercentType(volume));
-            updateState(AmpliPiBindingConstants.CHANNEL_SOURCE, new DecimalType(source));
-        }
+        zone.ifPresent(this::updateZoneState);
+    }
+
+    private void updateZoneState(Zone state) {
+        this.zoneState = state;
+
+        Boolean mute = zoneState.getMute();
+        Integer vol = zoneState.getVol();
+        Integer sourceId = zoneState.getSourceId();
+
+        updateState(AmpliPiBindingConstants.CHANNEL_MUTE, mute ? OnOffType.ON : OnOffType.OFF);
+        updateState(AmpliPiBindingConstants.CHANNEL_VOLUME, AmpliPiUtils.volumeToPercentType(vol));
+        updateState(AmpliPiBindingConstants.CHANNEL_SOURCE, new DecimalType(sourceId));
     }
 }

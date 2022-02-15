@@ -27,6 +27,7 @@ import org.openhab.binding.amplipi.internal.model.Group;
 import org.openhab.binding.amplipi.internal.model.GroupUpdate;
 import org.openhab.binding.amplipi.internal.model.Status;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Bridge;
@@ -57,6 +58,11 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
     private final Gson gson;
 
     private @Nullable AmpliPiHandler bridgeHandler;
+
+    private @Nullable Group groupState;
+
+    // TODO: should be configurable?
+    private static final int VOLUME_STEP_PERCENTAGE = 5;
 
     public AmpliPiGroupHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -104,6 +110,17 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
             case AmpliPiBindingConstants.CHANNEL_VOLUME:
                 if (command instanceof PercentType) {
                     update.setVolDelta(AmpliPiUtils.percentTypeToVolume((PercentType) command));
+                } else if (command instanceof IncreaseDecreaseType) {
+                    if (groupState != null) {
+                        PercentType currentVolDelta = AmpliPiUtils.volumeToPercentType(groupState.getVolDelta());
+                        if (IncreaseDecreaseType.INCREASE.equals(command)) {
+                            update.setVolDelta(AmpliPiUtils.percentTypeToVolume(
+                                    new PercentType(currentVolDelta.intValue() + VOLUME_STEP_PERCENTAGE)));
+                        } else {
+                            update.setVolDelta(AmpliPiUtils.percentTypeToVolume(
+                                    new PercentType(currentVolDelta.intValue() - VOLUME_STEP_PERCENTAGE)));
+                        }
+                    }
                 }
                 break;
             case AmpliPiBindingConstants.CHANNEL_SOURCE:
@@ -136,13 +153,18 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
     public void receive(Status status) {
         int id = getId(thing);
         Optional<Group> group = status.getGroups().stream().filter(z -> z.getId().equals(id)).findFirst();
-        if (group.isPresent()) {
-            Boolean mute = group.get().getMute();
-            Integer volume = group.get().getVolDelta();
-            Integer source = group.get().getSourceId();
-            updateState(AmpliPiBindingConstants.CHANNEL_MUTE, mute ? OnOffType.ON : OnOffType.OFF);
-            updateState(AmpliPiBindingConstants.CHANNEL_VOLUME, AmpliPiUtils.volumeToPercentType(volume));
-            updateState(AmpliPiBindingConstants.CHANNEL_SOURCE, new DecimalType(source));
-        }
+        group.ifPresent(this::updateGroupState);
+    }
+
+    private void updateGroupState(Group state) {
+        this.groupState = state;
+
+        Boolean mute = groupState.getMute();
+        Integer volDelta = groupState.getVolDelta();
+        Integer sourceId = groupState.getSourceId();
+
+        updateState(AmpliPiBindingConstants.CHANNEL_MUTE, mute ? OnOffType.ON : OnOffType.OFF);
+        updateState(AmpliPiBindingConstants.CHANNEL_VOLUME, AmpliPiUtils.volumeToPercentType(volDelta));
+        updateState(AmpliPiBindingConstants.CHANNEL_SOURCE, new DecimalType(sourceId));
     }
 }
