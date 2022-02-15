@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<timetable station='Lehrte'>
+  <s id="-2338143139486100041-2108162316-1">
+    <tl t="p" o="R0" c="ENO" n="83537"/>
+    <dp pt="2108162316" pp="3" l="RE30" ppth="Immensen-Arpke|Dollbergen|Dedenhausen|Meinersen|Leiferde(b Gifhorn)|Gifhorn|Calberlah|Fallersleben|Wolfsburg Hbf"/>
+  </s>
+  <s id="225524803682367536-2108162355-1">
+    <tl f="S" t="p" o="800244" c="S" n="99137"/>
+    <dp pt="2108162355" pp="13" l="3" ppth="Ahlten|Hannover Anderten-Misburg|Hannover Karl-Wiechert-Allee|Hannover-Kleefeld|Hannover Hbf"/>
+  </s>
+  <s id="-2108753935575260460-2108162247-6">
+    <tl f="S" t="p" o="800244" c="S" n="99136"/>
+    <ar pt="2108162310" pp="13" l="7" ppth="Hannover Hbf|Hannover-Kleefeld|Hannover Karl-Wiechert-Allee|Hannover Anderten-Misburg|Ahlten"/>
+  </s>
+  <s id="-3319200239513168009-2108162311-6">
+    <tl f="S" t="p" o="800244" c="S" n="99059"/>
+    <ar pt="2108162334" pp="13" l="3" ppth="Celle|Ehlershausen|Otze|Burgdorf|Aligse"/>
+    <dp pt="2108162338" pp="13" l="3" ppth="Sehnde|Algermissen|Harsum|Hildesheim Hbf"/>
+  </s>
+  <s id="2998651517533835490-2108162038-20">
+    <tl f="D" t="p" o="W3" c="WFB" n="95789"/>
+    <ar pt="2108162315" pp="14" l="RE60" ppth="Rheine|H&#246;rstel|Ibbenb&#252;ren-Esch|Ibbenb&#252;ren|Ibbenb&#252;ren-Laggenbeck|Osnabr&#252;ck Altstadt|Osnabr&#252;ck Hbf|Melle|B&#252;nde(Westf)|Kirchlengern|L&#246;hne(Westf)|Bad Oeynhausen|Porta Westfalica|Minden(Westf)|B&#252;ckeburg|Stadthagen|Haste|Wunstorf|Hannover Hbf"/>
+    <dp pt="2108162318" pp="14" l="RE60" ppth="H&#228;melerwald|V&#246;hrum|Peine|Vechelde|Braunschweig Hbf"/>
+  </s>
+  <s id="2495224407053131128-2108162258-10">
+    <tl t="p" o="R0" c="ENO" n="83536"/>
+    <ar pt="2108162340" pp="3" l="RE30" ppth="Wolfsburg Hbf|Fallersleben|Calberlah|Gifhorn|Leiferde(b Gifhorn)|Meinersen|Dedenhausen|Dollbergen|Immensen-Arpke"/>
+  </s>
+  <s id="4731596700926155152-2108162312-6">
+    <tl f="D" t="p" o="W3" c="WFB" n="95790"/>
+    <ar pt="2108162344" pp="14" l="RE70" ppth="Braunschweig Hbf|Vechelde|Peine|V&#246;hrum|H&#228;melerwald"/>
+    <dp pt="2108162347" pp="14" l="RE70" ppth="Hannover Hbf|Wunstorf|Haste|Stadthagen|B&#252;ckeburg|Minden(Westf)"/>
+  </s>
+  <s id="-451319054335837606-2108162306-5">
+    <tl f="S" t="p" o="800244" c="S" n="99058"/>
+    <ar pt="2108162329" pp="14" l="3" ppth="Hildesheim Hbf|Harsum|Algermissen|Sehnde"/>
+    <dp pt="2108162334" pp="14" l="3" ppth="Aligse|Burgdorf|Otze|Ehlershausen|Celle"/>
+  </s>
+</timetable>

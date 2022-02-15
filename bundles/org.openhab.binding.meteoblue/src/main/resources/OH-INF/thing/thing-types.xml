@@ -196,6 +196,7 @@
 	<channel-type id="cardinalWindDirection">
 		<item-type>String</item-type>
 		<label>Cardinal Wind Direction</label>
+		<description>The cardinal direction of the wind</description>
 		<state readOnly="true" pattern="%s">
 		</state>
 	</channel-type>
@@ -212,7 +213,7 @@
 	<channel-type id="maxWindSpeed">
 		<item-type>Number:Speed</item-type>
 		<label>Maximum Wind Speed</label>
-		<description>Maximum wind speed</description>
+		<description>The maximum wind speed</description>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -220,6 +221,7 @@
 	<channel-type id="minWindSpeed">
 		<item-type>Number:Speed</item-type>
 		<label>Minimum Wind Speed</label>
+		<description>The minimum wind speed</description>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -227,6 +229,7 @@
 	<channel-type id="meanWindSpeed">
 		<item-type>Number:Speed</item-type>
 		<label>Mean Wind Speed</label>
+		<description>The mean wind speed</description>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

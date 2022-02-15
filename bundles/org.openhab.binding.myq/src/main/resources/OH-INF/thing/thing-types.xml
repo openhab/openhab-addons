@@ -19,6 +19,8 @@
 			<channel id="status" typeId="doorstatus"/>
 			<channel id="switch" typeId="doorswitch"/>
 			<channel id="rollershutter" typeId="doorrollershutter"/>
+			<channel id="closeerror" typeId="doorcloseerror"/>
+			<channel id="openerror" typeId="dooropenerror"/>
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description-ref uri="thing-type:myq:garagedoor"/>
@@ -59,6 +61,16 @@
 	<channel-type id="doorrollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Garage Door Rollershutter</label>
+	</channel-type>
+	<channel-type id="doorcloseerror">
+		<item-type>Switch</item-type>
+		<label>Garage Door Close Error</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="dooropenerror">
+		<item-type>Switch</item-type>
+		<label>Garage Door Open Error</label>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lampswitch">
 		<item-type>Switch</item-type>

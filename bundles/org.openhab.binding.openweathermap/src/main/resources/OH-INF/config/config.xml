@@ -11,7 +11,7 @@
 			<label>API Key</label>
 			<description>API key to access the OpenWeatherMap API.</description>
 		</parameter>
-		<parameter name="refreshInterval" type="integer" min="10" unit="min">
+		<parameter name="refreshInterval" type="integer" min="1" unit="min">
 			<label>Refresh Interval</label>
 			<description>Specifies the refresh interval (in minutes).</description>
 			<default>60</default>

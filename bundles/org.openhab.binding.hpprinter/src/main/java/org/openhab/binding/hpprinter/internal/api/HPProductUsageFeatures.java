@@ -65,7 +65,7 @@ public class HPProductUsageFeatures {
             final String inkName = currInk.getElementsByTagName("dd:MarkerColor").item(0).getTextContent();
             final String consumeType = currInk.getElementsByTagName("dd:ConsumableTypeEnum").item(0).getTextContent();
 
-            if (consumeType.equalsIgnoreCase("printhead")) {
+            if ("printhead".equalsIgnoreCase(consumeType)) {
                 continue;
             }
 

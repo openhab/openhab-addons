@@ -4,6 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Monoprice Whole House Audio Binding</name>
-	<description>Controls the Monoprice MPR-SG6Z or Dayton Audio DAX66 Whole House Amplifier.</description>
+	<description>Controls Monoprice and Dayton Audio Whole House Amplifiers.</description>
 
 </binding:binding>

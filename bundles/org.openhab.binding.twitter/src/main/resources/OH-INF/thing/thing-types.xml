@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="twitter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="account">
+		<label>Twitter Account</label>
+		<description>Account uses for sending Tweets</description>
+
+		<channels>
+			<channel id="lasttweet" typeId="lasttweet"/>
+		</channels>
+
+		<config-description>
+			<parameter name="consumerKey" type="text" required="true">
+				<label>Consumer API Key</label>
+				<context>password</context>
+			</parameter>
+			<parameter name="consumerSecret" type="text" required="true">
+				<label>Consumer API Secret</label>
+				<context>password</context>
+			</parameter>
+			<parameter name="accessToken" type="text" required="true">
+				<label>Access Token</label>
+				<context>password</context>
+			</parameter>
+			<parameter name="accessTokenSecret" type="text" required="true">
+				<label>Access Token Secret</label>
+				<context>password</context>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false" unit="min" min="1">
+				<label>Refresh Time</label>
+				<description>Refresh Time for This Account in Mins</description>
+				<default>30</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="lasttweet">
+		<item-type>String</item-type>
+		<label>Last Tweet</label>
+		<description>Users Last Tweet</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

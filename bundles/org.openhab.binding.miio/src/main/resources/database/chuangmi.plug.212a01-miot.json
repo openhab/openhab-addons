@@ -274,8 +274,79 @@
 				},
 				"refresh": true,
 				"actions": []
+			},
+			{
+				"property": "",
+				"friendlyName": "BT Gateway",
+				"channel": "bt-gw",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": false,
+					"options": [
+						{
+							"value": "disable",
+							"label": "Disable"
+						},
+						{
+							"value": "enable",
+							"label": "Enable"
+						}
+					]
+				},
+				"refresh": true,
+				"customRefreshCommand": "bt_gateway_status",
+				"transformation": "getJsonElement-gateway_status",
+				"actions": [
+					{
+						"command": "bt_gateway_enable",
+						"parameterType": "EMPTY",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "enable"
+								}
+							]
+						}
+					},
+					{
+						"command": "bt_gateway_disable",
+						"parameterType": "EMPTY",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "disable"
+								}
+							]
+						}
+					}
+				],
+				"category": "bluetooth",
+				"readmeComment": "Value mapping `[\"disable\"\u003d\"Disable\",\"enable\"\u003d\"Enable\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Connected BT Gateway Devices",
+				"channel": "bt-gw-devices",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"refreshInterval": 2,
+				"customRefreshCommand": "/device/get_bledevice_by_gateway",
+				"customRefreshParameters": {
+					"dids": [
+						"$deviceId$"
+					]
+				},
+				"transformation": "getDiDElement",
+				"actions": [],
+				"category": "bluetooth",
+				"readmeComment": "Note, refreshes every 2nd refresh. Channel requires cloud connectivity to function. Sample widget to visualise the (json) output available from the widget market"
 			}
 		],
-		"experimental": true
+		"experimental": false
 	}
 }

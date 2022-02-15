@@ -154,6 +154,10 @@
 				<option value="OPEN">Open</option>
 				<option value="TILTED">Tilted</option>
 				<option value="CLOSED">Closed</option>
+				<option value="UP">Up</option>
+				<option value="DOWN">Down</option>
+				<option value="LEFT">Left</option>
+				<option value="RIGHT">Right</option>
 			</options>
 		</state>
 	</channel-type>
@@ -166,6 +170,7 @@
 			<options>
 				<option value="OPEN">Open</option>
 				<option value="TILTED">Tilted</option>
+				<option value="NOT TILTED">Not Tilted</option>
 				<option value="CLOSED">Closed</option>
 			</options>
 		</state>
@@ -211,7 +216,30 @@
 		<description>Is triggered 10 times in 5 seconds when the sensor detects a break-in attempt.</description>
 		<event>
 			<options>
-				<option value="ALARM">alarm</option>
+				<option value="ALARM">Alarm</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="protectionPlusEvent">
+		<kind>trigger</kind>
+		<label>Protection Plus Event</label>
+		<description>Triggered when a Protection Plus capable device detects a break-in attempt.</description>
+		<event>
+			<options>
+				<option value="ALARM">Alarm</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="vacationModeToggleEvent">
+		<kind>trigger</kind>
+		<label>Vacation Mode Toggle Event</label>
+		<description>Triggered when the vacation mode has been toggled on the device.</description>
+		<event>
+			<options>
+				<option value="ACTIVATED">Activated</option>
+				<option value="DEACTIVATED">Deactivated</option>
 			</options>
 		</event>
 	</channel-type>
@@ -808,6 +836,25 @@
 		<label>Exhaust Fan Speed</label>
 		<description>Exhaust fan speed in revolutions per minutes</description>
 		<state min="0" max="100" pattern="%.1f rpm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rockerSwitchAction">
+		<kind>trigger</kind>
+		<label>Rocker Switch Action</label>
+		<description>Is triggered when a certain combination of rockers is pressed or released.</description>
+		<event>
+			<options>
+				<option value="DIR1|-"></option>
+				<option value="DIR2|-"></option>
+				<option value="DIR1|DIR1"></option>
+				<option value="DIR1|DIR2"></option>
+				<option value="DIR2|DIR1"></option>
+				<option value="DIR2|DIR2"></option>
+				<option value="-|DIR1"></option>
+				<option value="-|DIR2"></option>
+				<option value="RELEASED"></option>
+			</options>
+		</event>
 	</channel-type>
 
 </thing:thing-descriptions>

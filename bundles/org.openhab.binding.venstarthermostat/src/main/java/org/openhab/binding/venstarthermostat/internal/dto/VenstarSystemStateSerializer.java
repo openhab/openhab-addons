@@ -24,12 +24,17 @@ import com.google.gson.JsonParseException;
  * from the REST API JSON.
  *
  * @author William Welliver - Initial contribution
+ * @author Matthew Davies - added IllegalArgumentException handling
  */
 public class VenstarSystemStateSerializer implements JsonDeserializer<VenstarSystemState> {
     @Override
     public VenstarSystemState deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
             throws JsonParseException {
         int key = element.getAsInt();
-        return VenstarSystemState.fromInt(key);
+        try {
+            return VenstarSystemState.fromInt(key);
+        } catch (IllegalArgumentException e) {
+            throw new JsonParseException(e);
+        }
     }
 }

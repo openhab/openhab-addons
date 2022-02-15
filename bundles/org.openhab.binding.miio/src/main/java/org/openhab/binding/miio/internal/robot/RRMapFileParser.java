@@ -52,12 +52,14 @@ public class RRMapFileParser {
     public static final int NO_GO_AREAS = 9;
     public static final int VIRTUAL_WALLS = 10;
     public static final int BLOCKS = 11;
-    public static final int MFBZS_AREA = 12;
+    public static final int MOB_FORBIDDEN_AREA = 12;
     public static final int OBSTACLES = 13;
     public static final int IGNORED_OBSTACLES = 14;
     public static final int OBSTACLES2 = 15;
     public static final int IGNORED_OBSTACLES2 = 16;
     public static final int CARPET_MAP = 17;
+    public static final int MOP_PATH = 18;
+    public static final int CARPET_FORBIDDEN_AREA = 19;
 
     public static final int DIGEST = 1024;
     public static final int HEADER = 0x7272;
@@ -94,6 +96,7 @@ public class RRMapFileParser {
     private Map<Integer, ArrayList<int[]>> obstacles = new HashMap<>();
     private byte[] blocks = new byte[0];
     private int[] carpetMap = {};
+    private int[] mopPath = {};
 
     private final Logger logger = LoggerFactory.getLogger(RRMapFileParser.class);
 
@@ -183,7 +186,8 @@ public class RRMapFileParser {
                     }
                     break;
                 case NO_GO_AREAS:
-                case MFBZS_AREA:
+                case MOB_FORBIDDEN_AREA:
+                case CARPET_FORBIDDEN_AREA:
                     int areaPairs = getUInt16(header, 0x08);
                     ArrayList<float[]> area = new ArrayList<float[]>();
                     for (int areaPair = 0; areaPair < areaPairs; areaPair++) {
@@ -258,12 +262,18 @@ public class RRMapFileParser {
                         carpetMap[carpetNode] = data[carpetNode] & 0xFF;
                     }
                     break;
+                case MOP_PATH:
+                    mopPath = new int[blockDataLength];
+                    for (int mopNode = 0; mopNode < blockDataLength; mopNode++) {
+                        mopPath[mopNode] = data[mopNode] & 0xFF;
+                    }
+                    break;
                 case BLOCKS:
                     int blocksPairs = getUInt16(header, 0x08);
                     blocks = getBytes(data, 0, blocksPairs);
                     break;
                 default:
-                    logger.info("Unknown blocktype (pls report to author)");
+                    logger.info("Unknown blocktype {} (pls report to author)", blocktype);
                     printBlockDetails = true;
             }
             if (logger.isTraceEnabled() || printBlockDetails) {
@@ -335,7 +345,19 @@ public class RRMapFileParser {
         pw.printf("Robo pos:\tX: %.0f\tY: %.0f\tAngle: %d\r\n", getRoboX(), getRoboY(), getRoboA());
         pw.printf("Goto:\tX: %.0f\tY: %.0f\r\n", getGotoX(), getGotoY());
         for (Entry<Integer, ArrayList<float[]>> area : areas.entrySet()) {
-            pw.print(area.getKey() == NO_GO_AREAS ? "No Go zones:\t" : "MFBZS zones:\t");
+            switch (area.getKey()) {
+                case NO_GO_AREAS:
+                    pw.print("Regular No Go zones:\t");
+                    break;
+                case MOB_FORBIDDEN_AREA:
+                    pw.print("Mop No Go zones:\t");
+                    break;
+                case CARPET_FORBIDDEN_AREA:
+                    pw.print("Carpet No Go zones:\t");
+                    break;
+                default:
+                    pw.print("Unknown type zones:\t");
+            }
             pw.printf("%d\r\n", area.getValue().size());
             printAreaDetails(area.getValue(), pw);
         }
@@ -356,6 +378,8 @@ public class RRMapFileParser {
             }
         }
         pw.println();
+        pw.printf("Carpet Map:\t%d\r\n", carpetMap.length);
+        pw.printf("Mop Path:\t%d\r\n", mopPath.length);
         pw.close();
         return sw.toString();
     }
@@ -505,5 +529,9 @@ public class RRMapFileParser {
 
     public final int[] getCarpetMap() {
         return carpetMap;
+    }
+
+    public final int[] getMopPath() {
+        return mopPath;
     }
 }

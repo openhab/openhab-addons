@@ -21,6 +21,8 @@ receive the password and go ONLINE.
 
 After you've done this procedure you can write the password somewhere in case if you need to reconfigure your binding. It's
 not known, however, whether the password is eternal or can change during factory reset.
+If you have issues getting the password make sure there are no other devices like your smartphone communicating with the robot.
+You can also try using [these python scripts](https://github.com/NickWaterton/Roomba980-Python) to get the password. 
 
 ## Thing Configuration
 
@@ -148,10 +150,13 @@ Error codes. Data type is string in order to be able to utilize mapping to human
 You can clean one or many specific regions of a given map by sending the following String to the command channel:
 
 ```
- cleanRegions:<pmapId>;<region_id1>,<region_id2>,..
+ cleanRegions:<pmapId>;[r=]<region_id1>,[r=]<region_id2>,z=<zone_id1>,...;[<user_pmapv_id>]
 ```
 
-The easiest way to determine the pmapId and region_ids is to monitor the last_command channel while starting a new mission for the specific region with the iRobot-App.
+Some devices support cleaning rooms (aka regions). Additionally, support for cleaning rectangle areas previously defined in the iRobot-App (aka zones) may be available.
+If the type string such as `r=` (region) or `z=` (zone) is omnitted, the type defaults to region.
+
+The easiest way to determine the pmapId, region_ids/zoneids and userPmapvId is to monitor the last_command channel while starting a new mission for the specific region or zone with the iRobot-App.
 
 ## Known Problems / Caveats
 
@@ -166,7 +171,7 @@ The easiest way to determine the pmapId and region_ids is to monitor the last_co
 irobot.things:
 
 ```
-irobot:roomba:my_roomba [ ipaddress="192.168.0.5", password="xxxxxxxx" ]
+Thing irobot:roomba:my_roomba [ ipaddress="192.168.0.5", password="xxxxxxxx" ]
 ```
 
 irobot.items:

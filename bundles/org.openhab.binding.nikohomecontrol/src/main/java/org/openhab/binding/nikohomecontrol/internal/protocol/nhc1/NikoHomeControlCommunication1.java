@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.protocol.nhc1;
 
+import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.THREAD_NAME_PREFIX;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -56,6 +58,8 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
 
     private Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication1.class);
 
+    private String eventThreadName = THREAD_NAME_PREFIX;
+
     private final NhcSystemInfo1 systemInfo = new NhcSystemInfo1();
     private final Map<String, NhcLocation1> locations = new ConcurrentHashMap<>();
 
@@ -77,9 +81,11 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
      * Niko Home Control IP-interface.
      *
      */
-    public NikoHomeControlCommunication1(NhcControllerEvent handler, ScheduledExecutorService scheduler) {
+    public NikoHomeControlCommunication1(NhcControllerEvent handler, ScheduledExecutorService scheduler,
+            String eventThreadName) {
         super(handler);
         this.scheduler = scheduler;
+        this.eventThreadName = eventThreadName;
 
         // When we set up this object, we want to get the proper gson adapter set up once
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -113,11 +119,11 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
 
             // Start Niko Home Control event listener. This listener will act on all messages coming from
             // IP-interface.
-            (new Thread(this::runNhcEvents)).start();
+            (new Thread(this::runNhcEvents, eventThreadName)).start();
 
         } catch (IOException | InterruptedException e) {
             stopCommunication();
-            handler.controllerOffline("Error initializing communication");
+            handler.controllerOffline("@text/offline.communication-error");
         }
     }
 
@@ -227,7 +233,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             logger.debug("resend json {}", json);
             nhcOut.println(json);
             if (nhcOut.checkError()) {
-                handler.controllerOffline("Error resending message");
+                handler.controllerOffline("@text/offline.communication-error");
             }
         }
     }

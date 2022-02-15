@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bluetooth.enoceanble.internal;
 
+import java.nio.ByteBuffer;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -30,9 +32,15 @@ public class EnoceanBlePtm215Event {
     private static final byte BUTTON2_DIR2 = 0x2;
 
     private final byte byteState;
+    private final int sequence;
 
     public EnoceanBlePtm215Event(byte[] manufacturerData) {
         byteState = manufacturerData[6];
+
+        byte[] sequenceBytes = new byte[] { manufacturerData[5], manufacturerData[4], manufacturerData[3],
+                manufacturerData[2] };
+        ByteBuffer sequenceBytesBuffered = ByteBuffer.wrap(sequenceBytes); // big-endian by default
+        sequence = sequenceBytesBuffered.getInt();
     }
 
     public boolean isPressed() {
@@ -59,9 +67,13 @@ public class EnoceanBlePtm215Event {
         return (byteState & flag) == flag;
     }
 
+    public int getSequence() {
+        return sequence;
+    }
+
     @Override
     public String toString() {
         return "Button " + (isButton1() ? 1 : 2) + " Dir " + (isDir1() ? 1 : 2) + " "
-                + (isPressed() ? "PRESSED" : "RELEASED");
+                + (isPressed() ? "PRESSED" : "RELEASED") + " (seq. " + this.sequence + ")";
     }
 }

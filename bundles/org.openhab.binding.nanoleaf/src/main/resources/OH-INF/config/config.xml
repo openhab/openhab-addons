@@ -31,7 +31,7 @@
 			<default>lightPanels</default>
 			<options>
 				<option value="lightPanels">Light Panels</option>
-				<option value="canvas">Canvas</option>
+				<option value="canvas">Canvas/Shapes</option>
 			</options>
 		</parameter>
 	</config-description>

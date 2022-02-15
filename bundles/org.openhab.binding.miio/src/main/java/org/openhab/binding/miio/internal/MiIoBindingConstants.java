@@ -65,6 +65,7 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_VACUUM = "actions#vacuum";
     public static final String CHANNEL_FAN_CONTROL = "actions#fan";
     public static final String CHANNEL_TESTCOMMANDS = "actions#testcommands";
+    public static final String CHANNEL_TESTMIOT = "actions#testmiot";
     public static final String CHANNEL_POWER = "actions#power";
 
     public static final String CHANNEL_SSID = "network#ssid";
@@ -122,4 +123,8 @@ public final class MiIoBindingConstants {
             + File.separator + BINDING_ID;
     public static final String BINDING_USERDATA_PATH = OpenHAB.getUserDataFolder() + File.separator
             + MiIoBindingConstants.BINDING_ID;
+
+    public static final String I18N_THING_PREFIX = "thing.";
+    public static final String I18N_CHANNEL_PREFIX = "ch.";
+    public static final String I18N_OPTION_PREFIX = "option.";
 }

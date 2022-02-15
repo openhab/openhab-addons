@@ -1020,7 +1020,6 @@
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]`"
 			}
 		],
-		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"filter-reset-filter-life\",\"siid\":4,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"button-toggle\",\"siid\":8,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"button-toggle-mode\",\"siid\":8,\"aiid\":2,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",
 		"experimental": true
 	}
 }

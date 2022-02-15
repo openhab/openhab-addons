@@ -11,7 +11,8 @@
 		<description>Switch the power ON and OFF</description>
 		<category>Light</category>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Switch</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 
@@ -22,7 +23,8 @@
 		<description>Control the brightness and switch the light ON and OFF</description>
 		<category>DimmableLight</category>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 
@@ -44,7 +46,8 @@
 		<description>Current temperature (read only)</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>CurrentTemperature</tag>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -68,7 +71,8 @@
 		<description>Setpoint temperature (read/write)</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>TargetTemperature</tag>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
@@ -174,4 +178,39 @@
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
+
+	<!-- CEN/CEN+ trigger channels -->
+	<channel-type id="cenButtonEvent">
+		<kind>trigger</kind>
+		<label>CEN Button Event</label>
+		<event>
+			<options>
+				<option value="START_PRESS">start press</option>
+				<option value="SHORT_PRESS">release after short press</option>
+				<option value="EXTENDED_PRESS">extended press (repeated until release)</option>
+				<option value="RELEASE_EXTENDED_PRESS">release after extended press</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="cenPlusButtonEvent">
+		<kind>trigger</kind>
+		<label>CEN+ Button Event</label>
+		<event>
+			<options>
+				<option value="SHORT_PRESS">short press</option>
+				<option value="START_EXTENDED_PRESS">start of extended press</option>
+				<option value="EXTENDED_PRESS">extended press (repeated until release)</option>
+				<option value="RELEASE_EXTENDED_PRESS">release after extended press</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="dryContactIR">
+		<item-type>Switch</item-type>
+		<label>Sensor</label>
+		<description>Dry Contact Interface or IR Interface sensor movement (read only)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
 </thing:thing-descriptions>

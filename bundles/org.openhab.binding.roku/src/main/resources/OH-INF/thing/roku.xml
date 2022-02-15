@@ -46,6 +46,13 @@
 			<channel id="playMode" typeId="playMode"/>
 			<channel id="timeElapsed" typeId="timeElapsed"/>
 			<channel id="timeTotal" typeId="timeTotal"/>
+			<channel id="activeChannel" typeId="activeChannel"/>
+			<channel id="signalMode" typeId="signalMode"/>
+			<channel id="signalQuality" typeId="signalQuality"/>
+			<channel id="channelName" typeId="channelName"/>
+			<channel id="programTitle" typeId="programTitle"/>
+			<channel id="programDescription" typeId="programDescription"/>
+			<channel id="programRating" typeId="programRating"/>
 		</channels>
 
 		<properties>
@@ -151,6 +158,54 @@
 		<label>Total Time</label>
 		<description>The Total Length of the Current Title</description>
 		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="activeChannel">
+		<item-type>String</item-type>
+		<label>Active Channel</label>
+		<description>The TV Channel Currently Selected on the Roku TV</description>
+	</channel-type>
+
+	<channel-type id="signalMode">
+		<item-type>String</item-type>
+		<label>Signal Mode</label>
+		<description>The Signal Type of the Current TV Channel, ie: 1080i</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="signalQuality">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Signal Quality</label>
+		<description>The Signal Quality of the Current TV Channel</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="channelName">
+		<item-type>String</item-type>
+		<label>Channel Name</label>
+		<description>The Name of the Channel Currently Selected</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="programTitle">
+		<item-type>String</item-type>
+		<label>Program Title</label>
+		<description>The Name of the Current TV Program</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="programDescription">
+		<item-type>String</item-type>
+		<label>Program Description</label>
+		<description>The Description of the Current TV Program</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="programRating">
+		<item-type>String</item-type>
+		<label>Program Rating</label>
+		<description>The TV Parental Guideline Rating of the Current TV Program</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

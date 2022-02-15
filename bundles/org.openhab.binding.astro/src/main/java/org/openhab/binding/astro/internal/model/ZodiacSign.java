@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * All zodiac signs.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public enum ZodiacSign {
     ARIES,
     TAURUS,

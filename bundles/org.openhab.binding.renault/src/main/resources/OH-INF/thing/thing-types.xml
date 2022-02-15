@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="renault"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="car">
+
+		<label>Renault Car</label>
+		<description>A MyRenault registered car.</description>
+
+		<channels>
+			<channel id="batterylevel" typeId="system.battery-level"/>
+			<channel id="hvacstatus" typeId="hvacstatus"/>
+			<channel id="image" typeId="image"/>
+			<channel id="location" typeId="system.location"/>
+			<channel id="odometer" typeId="odometer"/>
+		</channels>
+		<config-description>
+
+			<parameter name="myRenaultUsername" type="text" required="true">
+				<label>MyRenault Username</label>
+			</parameter>
+			<parameter name="myRenaultPassword" type="text" required="true">
+				<context>password</context>
+				<label>MyRenault Password</label>
+			</parameter>
+			<parameter name="locale" type="text" required="true">
+				<label>MyRenault Location</label>
+				<description>The country (and language combination) that best fits with your MyRenault registered car.</description>
+				<options>
+					<option value="de_AT">Austria</option>
+					<option value="nl_BE">Belgium (Dutch)</option>
+					<option value="fr_BE">Belgium (French)</option>
+					<option value="bg_BG">Bulgaria</option>
+					<option value="hr_HR">Croatia</option>
+					<option value="cs_CZ">Czech</option>
+					<option value="da_DK">Denmark</option>
+					<option value="it_IT">Italy</option>
+					<option value="fi_FI">Finland</option>
+					<option value="fr_FR">France</option>
+					<option value="de_DE">Germany</option>
+					<option value="hu_HU">Hungary</option>
+					<option value="en_IE">Ireland</option>
+					<option value="fr_LU">Luxembourg</option>
+					<option value="es_MX">Mexico</option>
+					<option value="nl_NL">Netherlands</option>
+					<option value="no_NO">Norway</option>
+					<option value="pl_PL">Poland</option>
+					<option value="pt_PT">Portugal</option>
+					<option value="ro_RO">Romania</option>
+					<option value="ru_RU">Russian</option>
+					<option value="sk_SK">Slovakia</option>
+					<option value="sl_SI">Slovenia</option>
+					<option value="es_ES">Spain</option>
+					<option value="sv_SE">Sweden</option>
+					<option value="fr_CH">Switzerland (French)</option>
+					<option value="de_CH">Switzerland (German)</option>
+					<option value="it_CH">Switzerland (Italian)</option>
+					<option value="en_GB">United Kingdom</option>
+				</options>
+			</parameter>
+			<parameter name="vin" type="text" required="true">
+				<label>VIN</label>
+				<description>Vehicle Identification Number</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="min" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the car is polled in minutes.</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="hvacstatus">
+		<item-type>Switch</item-type>
+		<label>HVAC Status</label>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="image">
+		<item-type>String</item-type>
+		<label>Image URL</label>
+		<description>Image URL of MyRenault</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="odometer">
+		<item-type>Number:Length</item-type>
+		<label>Odometer</label>
+		<description>Total distance travelled</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

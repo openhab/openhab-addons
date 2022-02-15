@@ -129,7 +129,8 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
 
     protected Predicate<Channel> channelFilter(EEPType eepType, byte[] senderId) {
         return c -> {
-            boolean result = eepType.GetSupportedChannels().containsKey(c.getUID().getId());
+
+            boolean result = eepType.isChannelSupported(c);
             return (isLinked(c.getUID()) || c.getKind() == ChannelKind.TRIGGER) && result;
         };
     }

@@ -12,20 +12,23 @@
  */
 package org.openhab.binding.powermax.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link PowermaxSerialConfiguration} is responsible for holding
  * configuration informations associated to a Powermax serial thing type
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxSerialConfiguration {
 
-    public String serialPort;
-    public Integer motionOffDelay;
-    public Boolean allowArming;
-    public Boolean allowDisarming;
-    public String pinCode;
-    public Boolean forceStandardMode;
-    public String panelType;
-    public Boolean autoSyncTime;
+    public String serialPort = "";
+    public int motionOffDelay = 3;
+    public boolean allowArming = false;
+    public boolean allowDisarming = false;
+    public String pinCode = "";
+    public boolean forceStandardMode = false;
+    public String panelType = "PowerMaxPro";
+    public boolean autoSyncTime = false;
 }

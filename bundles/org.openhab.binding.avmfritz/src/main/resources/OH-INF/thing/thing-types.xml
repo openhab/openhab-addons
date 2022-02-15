@@ -5,6 +5,23 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Supported FRITZ! devices and features -->
+	<thing-type id="FRITZ_DECT_500">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+		</supported-bridge-type-refs>
+
+		<label>FRITZ!DECT 500</label>
+		<description>FRITZ!DECT500 color light.</description>
+
+		<channels>
+			<channel id="color" typeId="system.color"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
 	<thing-type id="FRITZ_DECT_400">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox"/>
@@ -288,6 +305,41 @@
 
 		<channels>
 			<channel id="rollershutter" typeId="rollershutter"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
+	<thing-type id="HAN_FUN_COLOR_BULB">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+		</supported-bridge-type-refs>
+
+		<label>HAN-FUN Color Light</label>
+		<description>HAN-FUN color light (e.g SmartHome LED-Lampe E27 (farbig)).</description>
+
+		<channels>
+			<channel id="color" typeId="system.color"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
+
+	<thing-type id="HAN_FUN_DIMMABLE_BULB">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+		</supported-bridge-type-refs>
+
+		<label>HAN-FUN Dimmable Light</label>
+		<description>HAN-FUN dimmable light (e.g. SmartHome LED-Lampe E27 (warmweiß)).</description>
+
+		<channels>
+			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
 
 		<representation-property>ain</representation-property>

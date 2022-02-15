@@ -1072,7 +1072,7 @@
 		<channels>
 			<channel id="counter1" typeId="counter"/>
 			<channel id="counter1Current" typeId="counter"/>
-			<channel id="counter" typeId="counter"/>
+			<channel id="counter2" typeId="counter"/>
 			<channel id="counter2Current" typeId="counter"/>
 			<channel id="counter3" typeId="counter"/>
 			<channel id="counter3Current" typeId="counter"/>

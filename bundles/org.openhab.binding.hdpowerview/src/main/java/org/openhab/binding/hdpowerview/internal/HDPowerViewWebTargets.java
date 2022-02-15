@@ -28,20 +28,25 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMove;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeStop;
+import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
+import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 
 /**
  * JAX-RS targets for communicating with an HD PowerView hub
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
+ * @author Jacob Laursen - Add support for scene groups and automations
  */
 @NonNullByDefault
 public class HDPowerViewWebTargets {
@@ -61,6 +66,9 @@ public class HDPowerViewWebTargets {
     private final String shades;
     private final String sceneActivate;
     private final String scenes;
+    private final String sceneCollectionActivate;
+    private final String sceneCollections;
+    private final String scheduledEvents;
 
     private final Gson gson = new Gson();
     private final HttpClient httpClient;
@@ -101,6 +109,9 @@ public class HDPowerViewWebTargets {
         shades = base + "shades/";
         sceneActivate = base + "scenes";
         scenes = base + "scenes/";
+        sceneCollectionActivate = base + "sceneCollections";
+        sceneCollections = base + "sceneCollections/";
+        scheduledEvents = base + "scheduledevents";
         this.httpClient = httpClient;
     }
 
@@ -154,6 +165,68 @@ public class HDPowerViewWebTargets {
      */
     public void activateScene(int sceneId) throws HubProcessingException, HubMaintenanceException {
         invoke(HttpMethod.GET, sceneActivate, Query.of("sceneId", Integer.toString(sceneId)), null);
+    }
+
+    /**
+     * Fetches a JSON package that describes all scene collections in the hub, and wraps it in
+     * a SceneCollections class instance
+     *
+     * @return SceneCollections class instance
+     * @throws JsonParseException if there is a JSON parsing error
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public @Nullable SceneCollections getSceneCollections()
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, sceneCollections, null, null);
+        return gson.fromJson(json, SceneCollections.class);
+    }
+
+    /**
+     * Instructs the hub to execute a specific scene collection
+     *
+     * @param sceneCollectionId id of the scene collection to be executed
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public void activateSceneCollection(int sceneCollectionId) throws HubProcessingException, HubMaintenanceException {
+        invoke(HttpMethod.GET, sceneCollectionActivate,
+                Query.of("sceneCollectionId", Integer.toString(sceneCollectionId)), null);
+    }
+
+    /**
+     * Fetches a JSON package that describes all scheduled events in the hub, and wraps it in
+     * a ScheduledEvents class instance
+     *
+     * @return ScheduledEvents class instance
+     * @throws JsonParseException if there is a JSON parsing error
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public @Nullable ScheduledEvents getScheduledEvents()
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, scheduledEvents, null, null);
+        return gson.fromJson(json, ScheduledEvents.class);
+    }
+
+    /**
+     * Enables or disables a scheduled event in the hub.
+     * 
+     * @param scheduledEventId id of the scheduled event to be enabled or disabled
+     * @param enable true to enable scheduled event, false to disable
+     * @throws JsonParseException if there is a JSON parsing error
+     * @throws JsonSyntaxException if there is a JSON syntax error
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public void enableScheduledEvent(int scheduledEventId, boolean enable)
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String uri = scheduledEvents + "/" + scheduledEventId;
+        String json = invoke(HttpMethod.GET, uri, null, null);
+        JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
+        JsonObject scheduledEventObject = jsonObject.get("scheduledEvent").getAsJsonObject();
+        scheduledEventObject.addProperty("enabled", enable);
+        invoke(HttpMethod.PUT, uri, null, jsonObject.toString());
     }
 
     /**
@@ -234,8 +307,8 @@ public class HDPowerViewWebTargets {
 
     /**
      * Instructs the hub to do a hard refresh (discovery on the hubs RF network) on
-     * a specific shade; fetches a JSON package that describes that shade, and wraps
-     * it in a Shade class instance
+     * a specific shade's position; fetches a JSON package that describes that shade,
+     * and wraps it in a Shade class instance
      *
      * @param shadeId id of the shade to be refreshed
      * @return Shade class instance
@@ -243,10 +316,28 @@ public class HDPowerViewWebTargets {
      * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public @Nullable Shade refreshShade(int shadeId)
+    public @Nullable Shade refreshShadePosition(int shadeId)
             throws JsonParseException, HubProcessingException, HubMaintenanceException {
         String json = invoke(HttpMethod.GET, shades + Integer.toString(shadeId),
                 Query.of("refresh", Boolean.toString(true)), null);
+        return gson.fromJson(json, Shade.class);
+    }
+
+    /**
+     * Instructs the hub to do a hard refresh (discovery on the hubs RF network) on
+     * a specific shade's battery level; fetches a JSON package that describes that shade,
+     * and wraps it in a Shade class instance
+     *
+     * @param shadeId id of the shade to be refreshed
+     * @return Shade class instance
+     * @throws JsonParseException if there is a JSON parsing error
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public @Nullable Shade refreshShadeBatteryLevel(int shadeId)
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, shades + Integer.toString(shadeId),
+                Query.of("updateBatteryLevel", Boolean.toString(true)), null);
         return gson.fromJson(json, Shade.class);
     }
 

@@ -47,8 +47,23 @@ The parameter `message` is **mandatory**, the `title` parameter defaults to what
 
 - `sendPushsaferMonospaceMessage(String message, @Nullable String title)` - This method is used to send a monospace message.
 
-- `sendPushsaferAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType, @Nullable String authentication)` - This method is used to send a message with an image attachment. It takes a local path or url to the image attachment (parameter `attachment` **mandatory**), an optional `contentType` to define the content-type of the attachment (default: `"jpeg"`, possible values: `"jpeg"`, `"png"`, `"gif"`) and an optional `authentication` for the given URL to define the authentication if needed (default: `""`, example: `"user:password"`).
+- `sendPushsaferAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType, @Nullable String authentication)` - This method is used to send a message with an image attachment. It takes a local path or URL to the image attachment (parameter `attachment` **mandatory**), an optional `contentType` to define the content-type of the attachment (default: `"jpeg"`, possible values: `"jpeg"`, `"png"`, `"gif"`) and an optional `authentication` for the given URL to define the credentials to authenticate a user if needed (default: `""`, example: `"user:password"`).
 
 - `sendPushsaferURLMessage(String message, @Nullable String title, String url, @Nullable String urlTitle)` - This method is used to send a message with an URL. A supplementary `url` to show with the message and a `urlTitle` for the URL, otherwise just the URL is shown.
 
 - `sendPushsaferPriorityMessage(String message, @Nullable String title, @Nullable Integer priority)` - This method is used to send a priority message. Parameter `priority` is the priority (`-2`, `-1`, `0`, `1`, `2`) to be used (default: `2`).
+
+## Example
+
+demo.rules
+
+```java
+```java
+val actions = getActions("pushsafer", "pushsafer:pushsafer-account:account")
+// send message with attachment
+actions.sendPushsaferAttachmentMessage("Hello World!", "openHAB", "/path/to/my-local-image.png", "png", null)
+actions.sendPushsaferAttachmentMessage("Hello World!", "openHAB", "https://www.openhab.org/openhab-logo-square.png", "png", "user:password")
+actions.sendPushsaferAttachmentMessage("Hello World!", "openHAB", "data:[<media type>][;base64],<data>", null, null)
+// in case you want to send the content of an Image Item (RawType)
+actions.sendPushsaferAttachmentMessage("Hello World!", "openHAB", myImageItem.state.toFullString, null, null)
+```
