@@ -123,7 +123,9 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
             Runnable runnable = () -> {
                 try {
                     checkBridgeOnline(config);
-                    updateStatus(ThingStatus.ONLINE);
+                    if (getThing().getStatus() != ThingStatus.OFFLINE) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                     for (FroniusBaseThingHandler service : services) {
                         service.refresh(config);
                     }
