@@ -15,12 +15,12 @@ package org.openhab.binding.lgthinq.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link LGThinqConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link LGThinQConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class LGThinqConfiguration {
+public class LGThinQConfiguration {
     /**
      * Sample configuration parameters. Replace with your own.
      */
@@ -31,10 +31,10 @@ public class LGThinqConfiguration {
     public Integer pollingIntervalSec = 0;
     public String alternativeServer = "";
 
-    public LGThinqConfiguration() {
+    public LGThinQConfiguration() {
     }
 
-    public LGThinqConfiguration(String username, String password, String country, String language,
+    public LGThinQConfiguration(String username, String password, String country, String language,
             Integer pollingIntervalSec, String alternativeServer) {
         this.username = username;
         this.password = password;
