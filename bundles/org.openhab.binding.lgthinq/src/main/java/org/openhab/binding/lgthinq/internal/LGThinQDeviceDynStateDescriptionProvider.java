@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
+import org.openhab.binding.lgthinq.internal.handler.LGThinQAbstractDeviceHandler;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
@@ -22,14 +23,14 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link LGThinqDeviceThing} is a main interface contract for all LG Thinq things
+ * The {@link LGThinQAbstractDeviceHandler} is a main interface contract for all LG Thinq things
  *
  * @author Nemer Daud - Initial contribution
  */
-@Component(service = { DynamicStateDescriptionProvider.class, LGThinqDeviceDynStateDescriptionProvider.class })
-public class LGThinqDeviceDynStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
+@Component(service = { DynamicStateDescriptionProvider.class, LGThinQDeviceDynStateDescriptionProvider.class })
+public class LGThinQDeviceDynStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
     @Activate
-    public LGThinqDeviceDynStateDescriptionProvider(final @Reference EventPublisher eventPublisher, //
+    public LGThinQDeviceDynStateDescriptionProvider(final @Reference EventPublisher eventPublisher, //
             final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, //
             final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
         this.eventPublisher = eventPublisher;

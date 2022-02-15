@@ -19,12 +19,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.Capability;
 
 /**
- * The {@link WMCapability}
+ * The {@link WasherCapability}
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class WMCapability extends Capability {
+public class WasherCapability extends Capability {
     public enum MonitoringCap {
         STATE("state"),
         SOIL_WASH("soilWash"),
