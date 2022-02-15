@@ -61,10 +61,10 @@
 				<label>Zone ID</label>
 				<description>The ID of the zone</description>
 			</parameter>
-			<parameter name="volumeDelta" type="integer" required="true" unit="%" min="3" max="10">
+			<parameter name="volumeDelta" type="integer" min="1" max="10">
 				<label>Volume Delta</label>
-				<description>How much to change the zone volume for each INCREASE/DECREASE command (in percent)</description>
-				<default>5</default>
+				<description>How much to change the zone volume for each INCREASE/DECREASE command (in dB)</description>
+				<default>1</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -88,10 +88,10 @@
 				<label>Group ID</label>
 				<description>The ID of the group</description>
 			</parameter>
-			<parameter name="volumeDelta" type="integer" required="true" unit="%" min="3" max="10">
+			<parameter name="volumeDelta" type="integer" min="1" max="10">
 				<label>Volume Delta</label>
-				<description>How much to change the group volume for each INCREASE/DECREASE command (in percent)</description>
-				<default>5</default>
+				<description>How much to change the group volume for each INCREASE/DECREASE command (in dB)</description>
+				<default>1</default>
 			</parameter>
 		</config-description>
 	</thing-type>

@@ -113,14 +113,13 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
                     update.setVol(AmpliPiUtils.percentTypeToVolume((PercentType) command));
                 } else if (command instanceof IncreaseDecreaseType) {
                     if (zoneState != null) {
-                        PercentType currentVol = AmpliPiUtils.volumeToPercentType(zoneState.getVol());
-                        PercentType newVol;
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {
-                            newVol = new PercentType(Math.min(currentVol.intValue() + getVolumeDelta(thing), 100));
+                            zoneState.setVol(
+                                    Math.min(zoneState.getVol() + getVolumeDelta(thing), AmpliPiUtils.MAX_VOLUME_DB));
                         } else {
-                            newVol = new PercentType(Math.max(currentVol.intValue() - getVolumeDelta(thing), 0));
+                            zoneState.setVol(
+                                    Math.max(zoneState.getVol() - getVolumeDelta(thing), AmpliPiUtils.MIN_VOLUME_DB));
                         }
-                        zoneState.setVol(AmpliPiUtils.percentTypeToVolume(newVol));
                         update.setVol(zoneState.getVol());
                     }
                 }
