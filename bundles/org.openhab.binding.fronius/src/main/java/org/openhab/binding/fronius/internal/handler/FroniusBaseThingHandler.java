@@ -156,7 +156,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
     public void refresh(FroniusBridgeConfiguration bridgeConfiguration) {
         try {
             handleRefresh(bridgeConfiguration);
-            if (getThing().getStatus() != ThingStatus.OFFLINE) {
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (FroniusCommunicationException | RuntimeException e) {
