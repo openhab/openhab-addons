@@ -113,13 +113,16 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
                 } else if (command instanceof IncreaseDecreaseType) {
                     if (groupState != null) {
                         PercentType currentVolDelta = AmpliPiUtils.volumeToPercentType(groupState.getVolDelta());
+                        PercentType newVolDelta;
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {
-                            update.setVolDelta(AmpliPiUtils.percentTypeToVolume(
-                                    new PercentType(currentVolDelta.intValue() + VOLUME_STEP_PERCENTAGE)));
+                            newVolDelta = new PercentType(
+                                    Math.min(currentVolDelta.intValue() + VOLUME_STEP_PERCENTAGE, 100));
                         } else {
-                            update.setVolDelta(AmpliPiUtils.percentTypeToVolume(
-                                    new PercentType(currentVolDelta.intValue() - VOLUME_STEP_PERCENTAGE)));
+                            newVolDelta = new PercentType(
+                                    Math.max(currentVolDelta.intValue() - VOLUME_STEP_PERCENTAGE, 0));
                         }
+                        groupState.setVolDelta(AmpliPiUtils.percentTypeToVolume(newVolDelta));
+                        update.setVolDelta(groupState.getVolDelta());
                     }
                 }
                 break;
