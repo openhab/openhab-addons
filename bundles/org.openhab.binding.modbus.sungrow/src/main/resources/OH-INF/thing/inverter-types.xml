@@ -15,26 +15,26 @@
 
 		<channel-groups>
 			<channel-group id="deviceInformation" typeId="sungrow-device-information"/>
-			<channel-group id="acGeneral" typeId="ac-general"/>
-			<channel-group id="acPhaseA" typeId="ac-phase">
+			<channel-group id="acGeneral" typeId="sungrow-ac-general"/>
+			<channel-group id="acPhaseA" typeId="sungrow-ac-phase">
 				<label>AC Phase A (L1)</label>
 			</channel-group>
-			<channel-group id="acPhaseB" typeId="ac-phase">
+			<channel-group id="acPhaseB" typeId="sungrow-ac-phase">
 				<label>AC Phase B (L2)</label>
 			</channel-group>
-			<channel-group id="acPhaseC" typeId="ac-phase">
+			<channel-group id="acPhaseC" typeId="sungrow-ac-phase">
 				<label>AC Phase C (L3)</label>
 			</channel-group>
-			<channel-group id="powerInfo" typeId="power-info">
+			<channel-group id="powerInfo" typeId="sungrow-power-info">
 				<label>Power Information</label>
 			</channel-group>
-			<channel-group id="mppt1" typeId="mppt-general">
+			<channel-group id="mppt1" typeId="sungrow-mppt-info">
 				<label>MPPT1</label>
 			</channel-group>
-			<channel-group id="mppt2" typeId="mppt-general">
+			<channel-group id="mppt2" typeId="sungrow-mppt-info">
 				<label>MPPT2</label>
 			</channel-group>
-			<channel-group id="battery" typeId="battery">
+			<channel-group id="battery" typeId="sungrow-battery-info">
 				<label>Battery</label>
 			</channel-group>
 		</channel-groups>

@@ -16,7 +16,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="ac-general">
+	<channel-group-type id="sungrow-ac-general">
 		<label>AC Summary</label>
 		<channels>
 			<channel id="ac-grid-state" typeId="ac-grid-state-type"/>
@@ -26,7 +26,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="ac-phase">
+	<channel-group-type id="sungrow-ac-phase">
 		<label>AC Phase</label>
 		<channels>
 			<channel id="ac-phase-current" typeId="ac-phase-current-type"/>
@@ -35,7 +35,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="power-info">
+	<channel-group-type id="sungrow-power-info">
 		<label>Power Information</label>
 		<channels>
 			<channel id="dc-total-power" typeId="dc-total-power-type"/>
@@ -44,7 +44,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="mppt-general">
+	<channel-group-type id="sungrow-mppt-info">
 		<label>MPPT Summary</label>
 		<channels>
 			<channel id="dc-current" typeId="dc-current-type"/>
@@ -53,7 +53,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="battery">
+	<channel-group-type id="sungrow-battery-info">
 		<label>Device Information</label>
 		<channels>
 			<channel id="battery-voltage" typeId="battery-voltage-type"/>
