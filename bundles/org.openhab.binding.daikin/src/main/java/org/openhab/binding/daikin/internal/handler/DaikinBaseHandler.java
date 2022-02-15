@@ -130,7 +130,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
             }
             logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command,
                     thing.getUID().getAsString(), channelUID.getId());
-        } catch (DaikinCommunicationException | RuntimeException e) {
+        } catch (DaikinCommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -182,7 +182,9 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
         try {
             logger.trace("Polling for state");
             pollStatus();
-            updateStatus(ThingStatus.ONLINE);
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
         } catch (DaikinCommunicationForbiddenException e) {
             if (!uuidRegistrationAttempted && config.key != null && config.uuid != null) {
                 logger.debug("poll: Attempting to register uuid {} with key {}", config.uuid, config.key);
@@ -193,7 +195,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
                         "Access denied. Check uuid/key.");
                 logger.warn("{} access denied by adapter. Check uuid/key.", thing.getUID());
             }
-        } catch (DaikinCommunicationException | RuntimeException e) {
+        } catch (DaikinCommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

@@ -213,6 +213,7 @@ public class DaikinWebTargets {
                 }
             }
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new DaikinCommunicationException("Execution interrupted");
         }
     }
