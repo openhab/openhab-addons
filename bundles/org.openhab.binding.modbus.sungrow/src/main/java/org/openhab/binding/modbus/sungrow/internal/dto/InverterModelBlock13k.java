@@ -14,9 +14,6 @@ package org.openhab.binding.modbus.sungrow.internal.dto;
 
 import java.util.Optional;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 /**
  * Model for Sungrow compatible inverter data
  *
@@ -203,6 +200,26 @@ public class InverterModelBlock13k {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
+        return this.getClass().getCanonicalName() + "[\n" + "  acCurrentPhaseA=" + this.acCurrentPhaseA + "\n"
+                + "  acCurrentPhaseB=" + this.acCurrentPhaseB + "\n" + "  acCurrentPhaseC=" + this.acCurrentPhaseC
+                + "\n" + "  batteryCapacity=" + this.batteryCapacity + "\n" + "  batteryCurrent=" + this.batteryCurrent
+                + "\n" + "  batteryHealth=" + this.batteryHealth + "\n" + "  batteryLevel=" + this.batteryLevel + "\n"
+                + "  batteryPower=" + this.batteryPower + "\n" + "  batteryTemperature=" + this.batteryTemperature
+                + "\n" + "  batteryVoltage=" + this.batteryVoltage + "\n" + "  co2Reduction=" + this.co2Reduction + "\n"
+                + "  dailyBatteryCharge=" + this.dailyBatteryCharge + "\n" + "  dailyBatteryDischarge="
+                + this.dailyBatteryDischarge + "\n" + "  dailyChargeEnergy=" + this.dailyChargeEnergy + "\n"
+                + "  dailyDirectConsumption=" + this.dailyDirectConsumption + "\n" + "  dailyExportEnergy="
+                + this.dailyExportEnergy + "\n" + "  dailyImportEnergy=" + this.dailyImportEnergy + "\n"
+                + "  dailyPVExport=" + this.dailyPVExport + "\n" + "  dailyPVGeneration=" + this.dailyPVGeneration
+                + "\n" + "  drmState=" + this.drmState + "\n" + "  exportPower=" + this.exportPower + "\n"
+                + "  gridState=" + this.gridState + "\n" + "  loadPower=" + this.loadPower + "\n" + "  runningState="
+                + this.runningState + "\n" + "  systemState=" + this.systemState + "\n" + "  totalActivePower="
+                + this.totalActivePower + "\n" + "  totalBatteryCharge=" + this.totalBatteryCharge + "\n"
+                + "  totalBatteryDischarge=" + this.totalBatteryDischarge + "\n" + "  totalChargeEnergy="
+                + this.totalChargeEnergy + "\n" + "  totalDirectConsumption=" + this.totalDirectConsumption + "\n"
+                + "  totalExportEnergy=" + this.totalExportEnergy + "\n" + "  totalImportEnergy="
+                + this.totalImportEnergy + "\n" + "  totalPVExport=" + this.totalPVExport + "\n"
+                + "  totalPVGeneration=" + this.totalPVGeneration + "\n" + "  todaySelfConsumption="
+                + this.todaySelfConsumption + "\n" + "]";
     }
 }

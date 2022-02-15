@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.modbus.sungrow.internal.dto;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -48,6 +47,9 @@ public class CommonModelBlock {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this);
+        return this.getClass().getCanonicalName() + "[\n" + "  deviceAddress=" + this.deviceAddress + "\n" + "  length="
+                + this.length + "\n" + "  manufacturer=" + this.manufacturer + "\n" + "  model=" + this.model + "\n"
+                + "  serialNumber=" + this.serialNumber + "\n" + "  sungrowDID=" + this.sungrowDID + "\n" + "  version="
+                + this.version + "\n" + "]";
     }
 }

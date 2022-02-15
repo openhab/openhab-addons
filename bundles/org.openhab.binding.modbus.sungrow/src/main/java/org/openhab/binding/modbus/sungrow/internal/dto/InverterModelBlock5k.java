@@ -14,9 +14,6 @@ package org.openhab.binding.modbus.sungrow.internal.dto;
 
 import java.util.Optional;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 /**
  * Model for Sungrow compatible inverter data
  *
@@ -137,6 +134,17 @@ public class InverterModelBlock5k {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
+        return this.getClass().getCanonicalName() + "[\n" + "  acPowerFactor=" + this.acPowerFactor + "\n"
+                + "  acReactivePower=" + this.acReactivePower + "\n" + "  acVoltageAB=" + this.acVoltageAB + "\n"
+                + "  acVoltageBC=" + this.acVoltageBC + "\n" + "  acVoltageCA=" + this.acVoltageCA + "\n"
+                + "  acVoltageAtoN=" + this.acVoltageAtoN + "\n" + "  acVoltageBtoN=" + this.acVoltageBtoN + "\n"
+                + "  acVoltageCtoN=" + this.acVoltageCtoN + "\n" + "  acFrequency=" + this.acFrequency + "\n"
+                + "  dailyOutputEnergy=" + this.dailyOutputEnergy + "\n" + "  deviceType=" + this.deviceType + "\n"
+                + "  insideTemperature=" + this.insideTemperature + "\n" + "  mppt1Current=" + this.mppt1Current + "\n"
+                + "  mppt1Power=" + this.mppt1Power + "\n" + "  mppt1Voltage=" + this.mppt1Voltage + "\n"
+                + "  mppt2Current=" + this.mppt2Current + "\n" + "  mppt2Power=" + this.mppt2Power + "\n"
+                + "  mppt2Voltage=" + this.mppt2Voltage + "\n" + "  nominalOutputPower=" + this.nominalOutputPower
+                + "\n" + "  outputType=" + this.outputType + "\n" + "  totalDCPower=" + this.totalDCPower + "\n"
+                + "  totalOutputEnergy=" + this.totalOutputEnergy + "\n" + "}";
     }
 }
