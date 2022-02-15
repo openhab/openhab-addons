@@ -52,6 +52,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     private final HomekitAccessoryUpdater updater;
     private final HomekitSettings settings;
     private final List<Service> services;
+    private Service primaryService;
 
     public AbstractHomekitAccessoryImpl(HomekitTaggedItem accessory, List<HomekitTaggedItem> characteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) {
@@ -316,5 +317,17 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                 .orElseThrow(() -> new IncompleteAccessoryException(characteristicType));
         return new BooleanItemReader(taggedItem.getItem(), taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON,
                 taggedItem.isInverted() ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+    }
+
+    public void setPrimaryService(Service primaryService) {
+        this.primaryService = primaryService;
+    }
+
+    @Override
+    public Service getPrimaryService() {
+        if ((this.primaryService == null) && (services.size() > 0)) {
+            this.primaryService = this.services.iterator().next();
+        }
+        return this.primaryService;
     }
 }

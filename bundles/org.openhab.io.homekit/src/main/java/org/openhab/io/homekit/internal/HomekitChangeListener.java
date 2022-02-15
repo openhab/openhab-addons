@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.items.GroupItem;
@@ -305,18 +306,38 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         if (!accessoryTypes.isEmpty()
                 && (groups.isEmpty() || groups.stream().noneMatch(g -> g.getBaseItem() == null))) {
             logger.trace("Item {} is a HomeKit accessory of types {}", item.getName(), accessoryTypes);
-            final HomekitOHItemProxy itemProxy = new HomekitOHItemProxy(item);
-            accessoryTypes.forEach(rootAccessory -> createRootAccessory(new HomekitTaggedItem(itemProxy,
-                    rootAccessory.getKey(), HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry))));
-        }
-    }
 
-    private void createRootAccessory(HomekitTaggedItem taggedItem) {
-        try {
-            accessoryRegistry.addRootAccessory(taggedItem.getName(),
-                    HomekitAccessoryFactory.create(taggedItem, metadataRegistry, updater, settings));
-        } catch (HomekitException e) {
-            logger.warn("Could not add device {}: {}", taggedItem.getItem().getUID(), e.getMessage());
+            final @Nullable Map<String, Object> configuration = HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry);
+
+            final Entry<HomekitAccessoryType, HomekitCharacteristicType> primaryService;
+            if ((configuration != null) && (configuration.get(HomekitTaggedItem.PRIMARY_SERVICE)!=null)) {
+                final String primaryServiceTypeAsStr = (String) configuration.get(HomekitTaggedItem.PRIMARY_SERVICE);
+                primaryService = accessoryTypes.stream().filter(aType -> aType.getKey().getTag().equalsIgnoreCase(primaryServiceTypeAsStr)).findAny().orElse(accessoryTypes.get(0));
+            } else {
+                primaryService = accessoryTypes.get(0);
+            }
+            final HomekitOHItemProxy itemProxy = new HomekitOHItemProxy(item);
+            final HomekitTaggedItem taggedItem = new HomekitTaggedItem(itemProxy, primaryService.getKey(),
+                    HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry));
+            try {
+                final HomekitAccessory accessory = HomekitAccessoryFactory.create(taggedItem, metadataRegistry, updater,
+                        settings);
+                if (accessoryTypes.size() > 1) {
+                    logger.info("#### multiple services: {}", accessoryTypes);
+                    for (int i = 0; i < accessoryTypes.size(); i++) {
+                        if (accessoryTypes.get(i).getKey() != primaryService.getKey()) {
+                            logger.info("#### adding {}", accessoryTypes.get(i).getKey());
+                            HomekitTaggedItem additionalTaggedItem = new HomekitTaggedItem(itemProxy, accessoryTypes.get(i).getKey(),
+                                                                                           HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry));
+                            HomekitAccessory additionalAccessory = HomekitAccessoryFactory.create(additionalTaggedItem, metadataRegistry, updater, settings);
+                            accessory.getServices().add(additionalAccessory.getPrimaryService());
+                        }
+                    }
+                }
+                accessoryRegistry.addRootAccessory(taggedItem.getName(), accessory);
+            } catch (HomekitException e) {
+                logger.warn("cannot create accessory {}", taggedItem);
+            }
         }
     }
 }
