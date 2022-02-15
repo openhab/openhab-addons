@@ -17,7 +17,6 @@ import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.LGThinQDeviceDynStateDescriptionProvider;
@@ -114,16 +113,6 @@ public class LGThinQDryerHandler extends LGThinQAbstractDeviceHandler<DryerCapab
                 logger.error("Command {} to the channel {} not supported. Ignored.", command, params.channelUID);
             }
         }
-    }
-
-    @NonNull
-    private String emptyIfNull(@Nullable String value) {
-        return value == null ? "" : "" + value;
-    }
-
-    @NonNull
-    private String keyIfValueNotFound(Map<String, String> map, @NonNull String key) {
-        return Objects.requireNonNullElse(map.get(key), key);
     }
 
     @Override
