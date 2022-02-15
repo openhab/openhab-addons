@@ -10,8 +10,8 @@
 		<description>Grid state</description>
 		<state readOnly="true">
 			<options>
-				<option value="0xAA">Off Grid</option>
-				<option value="0x55">On Grid</option>
+				<option value="OFF_GRID">Off Grid</option>
+				<option value="ON_GRID">On Grid</option>
 			</options>
 		</state>
 	</channel-type>
