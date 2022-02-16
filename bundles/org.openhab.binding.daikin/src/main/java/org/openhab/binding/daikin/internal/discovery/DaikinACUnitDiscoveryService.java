@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
  *
  */
-@Component(service = DiscoveryService.class)
+@Component(service = DiscoveryService.class, configurationPid = "discovery.daikin")
 @NonNullByDefault
 public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
     private static final String UDP_PACKET_CONTENTS = "DAIKIN_UDP/common/basic_info";
@@ -62,17 +62,15 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
     private Logger logger = LoggerFactory.getLogger(DaikinACUnitDiscoveryService.class);
 
     private @Nullable HttpClient httpClient;
-    private final Runnable scanner;
     private @Nullable ScheduledFuture<?> backgroundFuture;
 
     public DaikinACUnitDiscoveryService() {
         super(Collections.singleton(DaikinBindingConstants.THING_TYPE_AC_UNIT), 600, true);
-        scanner = createScanner();
     }
 
     @Override
     protected void startScan() {
-        scheduler.execute(scanner);
+        scheduler.execute(this::scanner);
     }
 
     @Override
@@ -83,7 +81,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
             backgroundFuture.cancel(true);
             backgroundFuture = null;
         }
-        backgroundFuture = scheduler.scheduleWithFixedDelay(scanner, 0, 60, TimeUnit.SECONDS);
+        backgroundFuture = scheduler.scheduleWithFixedDelay(this::scanner, 0, 60, TimeUnit.SECONDS);
     }
 
     @Override
@@ -96,32 +94,30 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
         super.stopBackgroundDiscovery();
     }
 
-    private Runnable createScanner() {
-        return () -> {
-            long timestampOfLastScan = getTimestampOfLastScan();
-            for (InetAddress broadcastAddress : getBroadcastAddresses()) {
-                logger.trace("Starting broadcast for {}", broadcastAddress.toString());
+    private void scanner() {
+        long timestampOfLastScan = getTimestampOfLastScan();
+        for (InetAddress broadcastAddress : getBroadcastAddresses()) {
+            logger.trace("Starting broadcast for {}", broadcastAddress.toString());
 
-                try (DatagramSocket socket = new DatagramSocket()) {
-                    socket.setBroadcast(true);
-                    socket.setReuseAddress(true);
-                    byte[] packetContents = UDP_PACKET_CONTENTS.getBytes(StandardCharsets.UTF_8);
-                    DatagramPacket packet = new DatagramPacket(packetContents, packetContents.length, broadcastAddress,
-                            REMOTE_UDP_PORT);
+            try (DatagramSocket socket = new DatagramSocket()) {
+                socket.setBroadcast(true);
+                socket.setReuseAddress(true);
+                byte[] packetContents = UDP_PACKET_CONTENTS.getBytes(StandardCharsets.UTF_8);
+                DatagramPacket packet = new DatagramPacket(packetContents, packetContents.length, broadcastAddress,
+                        REMOTE_UDP_PORT);
 
-                    // Send before listening in case the port isn't bound until here.
-                    socket.send(packet);
+                // Send before listening in case the port isn't bound until here.
+                socket.send(packet);
 
-                    // receivePacketAndDiscover will return false if no packet is received after 1 second
-                    while (receivePacketAndDiscover(socket)) {
-                    }
-                } catch (Exception e) {
-                    // Nothing to do here - the host couldn't be found, likely because it doesn't exist
+                // receivePacketAndDiscover will return false if no packet is received after 1 second
+                while (receivePacketAndDiscover(socket)) {
                 }
+            } catch (Exception e) {
+                // Nothing to do here - the host couldn't be found, likely because it doesn't exist
             }
+        }
 
-            removeOlderResults(timestampOfLastScan);
-        };
+        removeOlderResults(timestampOfLastScan);
     }
 
     private boolean receivePacketAndDiscover(DatagramSocket socket) {
