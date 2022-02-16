@@ -59,7 +59,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
     private static final List<String> CLASSIC_300S_NIGHT_LIGHT_MODES = Arrays.asList(MODE_ON, MODE_DIM, MODE_OFF);
 
     public static final List<String> SUPPORTED_DEVICE_TYPES = List.of(DEV_TYPE_DUAL_200S, DEV_TYPE_CLASSIC_200S,
-            DEV_TYPE_CLASSIC_300S, DEV_TYPE_600S);
+            DEV_TYPE_CLASSIC_300S, DEV_TYPE_CORE_301S, DEV_TYPE_600S);
 
     private final Logger logger = LoggerFactory.getLogger(VeSyncDeviceAirHumidifierHandler.class);
 
