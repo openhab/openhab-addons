@@ -77,6 +77,9 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                     break;
                 case DEV_TYPE_DUAL_200S:
                 case DEV_TYPE_CLASSIC_200S:
+                    toRemove = new String[] { DEVICE_CHANNEL_WARM_ENABLED, DEVICE_CHANNEL_WARM_LEVEL,
+                            DEVICE_CHANNEL_AF_NIGHT_LIGHT };
+                    break;
                 case DEV_TYPE_600S:
                     toRemove = new String[] { DEVICE_CHANNEL_AF_NIGHT_LIGHT };
                     break;
