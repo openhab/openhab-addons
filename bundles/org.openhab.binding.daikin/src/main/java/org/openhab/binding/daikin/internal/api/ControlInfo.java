@@ -50,7 +50,7 @@ public class ControlInfo {
     }
 
     public static ControlInfo parse(String response) {
-        LOGGER.debug("Parsing string: \"{}\"", response);
+        LOGGER.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 

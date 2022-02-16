@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.daikin.internal.handler;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -40,7 +39,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -66,12 +64,11 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
     }
 
     @Override
-    protected void pollStatus() throws IOException {
-        DaikinWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            return;
-        }
+    protected void pollStatus() throws DaikinCommunicationException {
         ControlInfo controlInfo = webTargets.getControlInfo();
+        if (!"OK".equals(controlInfo.ret)) {
+            throw new DaikinCommunicationException("Invalid response from host");
+        }
         updateState(DaikinBindingConstants.CHANNEL_AC_POWER, controlInfo.power ? OnOffType.ON : OnOffType.OFF);
         updateTemperatureChannel(DaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
 
@@ -152,7 +149,6 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             // Suppress any error if energy info is not supported.
             logger.debug("getEnergyInfoDayAndWeek() error: {}", e.getMessage());
         }
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
