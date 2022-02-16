@@ -338,7 +338,7 @@
 /bundles/org.openhab.binding.weathercompany/ @mhilbush
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
 /bundles/org.openhab.binding.webthing/ @grro
-/bundles/org.openhab.binding.wemo/ @hmerk
+/bundles/org.openhab.binding.wemo/ @hmerk @jlaur
 /bundles/org.openhab.binding.wifiled/ @rvt @xylo
 /bundles/org.openhab.binding.windcentrale/ @marcelrv
 /bundles/org.openhab.binding.wlanthermo/ @CSchlipp
@@ -383,6 +383,7 @@
 /bundles/org.openhab.voice.pollytts/ @hillmanr
 /bundles/org.openhab.voice.porcupineks/ @GiviMAD
 /bundles/org.openhab.voice.voicerss/ @JochenHiller @lolodomo
+/bundles/org.openhab.voice.watsonstt/ @GiviMAD
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.feed.tests/ @svilenvul

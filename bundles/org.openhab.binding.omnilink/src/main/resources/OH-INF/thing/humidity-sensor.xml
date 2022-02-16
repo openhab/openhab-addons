@@ -16,10 +16,6 @@
 			<channel id="low_setpoint" typeId="sensor_humidity_low_setpoint"/>
 			<channel id="high_setpoint" typeId="sensor_humidity_high_setpoint"/>
 		</channels>
-		<properties>
-			<property name="name"/>
-			<property name="area"/>
-		</properties>
 		<representation-property>number</representation-property>
 		<config-description>
 			<parameter name="number" type="integer" required="true">
@@ -35,6 +31,10 @@
 		<label>Humidity</label>
 		<description>The current relative humidity at this humidity sensor.</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 

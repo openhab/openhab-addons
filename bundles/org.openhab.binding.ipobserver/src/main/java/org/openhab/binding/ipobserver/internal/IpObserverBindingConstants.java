@@ -26,6 +26,7 @@ public class IpObserverBindingConstants {
     public static final String BINDING_ID = "ipobserver";
     public static final String REBOOT_URL = "/msgreboot.htm";
     public static final String LIVE_DATA_URL = "/livedata.htm";
+    public static final String SERVER_UPDATE_URL = "/weatherstation/updateweatherstation.php";
     public static final String STATION_SETTINGS_URL = "/station.htm";
     public static final int DISCOVERY_THREAD_POOL_SIZE = 15;
 
@@ -35,6 +36,8 @@ public class IpObserverBindingConstants {
     // List of all Channel ids
     public static final String TEMP_INDOOR = "temperatureIndoor";
     public static final String TEMP_OUTDOOR = "temperatureOutdoor";
+    public static final String TEMP_WIND_CHILL = "temperatureWindChill";
+    public static final String TEMP_DEW_POINT = "temperatureDewPoint";
     public static final String INDOOR_HUMIDITY = "humidityIndoor";
     public static final String OUTDOOR_HUMIDITY = "humidityOutdoor";
     public static final String ABS_PRESSURE = "pressureAbsolute";

@@ -502,7 +502,7 @@
 		<item-type>Number:Length</item-type>
 		<label>Precipitation</label>
 		<description>Precipitation volume of the related timespan.</description>
-		<category>Precipitation</category>
+		<category>Rain</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -551,6 +551,10 @@
 		<label>Gust Speed</label>
 		<description>Current gust speed.</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -566,7 +570,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Cloudiness</label>
 		<description>Current cloudiness.</description>
-		<category>Clouds</category>
+		<category>Sun_Clouds</category>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -574,7 +578,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Forecasted Cloudiness</label>
 		<description>Forecasted cloudiness.</description>
-		<category>Clouds</category>
+		<category>Sun_Clouds</category>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -583,6 +587,10 @@
 		<label>Rain</label>
 		<description>Rain volume of the last hour.</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -614,6 +622,10 @@
 		<item-type>Number</item-type>
 		<label>UV Index</label>
 		<description>Current UV Index.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Ultraviolet</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 
@@ -686,6 +698,10 @@
 		<item-type>Number:Density</item-type>
 		<label>Carbon Monoxide</label>
 		<description>Current concentration of carbon monoxide.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 

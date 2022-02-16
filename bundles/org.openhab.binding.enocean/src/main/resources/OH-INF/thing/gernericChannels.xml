@@ -27,7 +27,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
 		<description>Dimmer</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<config-description-ref uri="channel-type:enocean:genericChannel"/>
 	</channel-type>
 
