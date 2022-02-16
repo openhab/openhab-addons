@@ -70,11 +70,10 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
 
     public void deleteRefreshToken() {
         this.storage.remove(STORAGE_KEY_REFRESH_TOKEN);
-        this.initialize();
-
         if (refreshTokenFuture != null) {
             refreshTokenFuture.cancel(true);
         }
+        this.initialize();
     }
 
     public void setRefreshToken(String refreshToken) {
@@ -86,7 +85,8 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
         if (ondusService != null) {
             Instant expiresAt = ondusService.authorizationExpiresAt();
             // Refresh 1 hour before expiry
-            Duration between = Duration.between(Instant.now(), expiresAt.minus(5, ChronoUnit.MINUTES));
+            Instant refreshTime = expiresAt.minus(5, ChronoUnit.MINUTES);
+            Duration durationUntilRefresh = Duration.between(Instant.now(), refreshTime);
             refreshTokenFuture = scheduler.schedule(() -> {
                 OndusService ondusService = this.ondusService;
                 if (ondusService == null) {
@@ -94,15 +94,15 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
                     return;
                 }
                 try {
+                    logger.debug("Refreshing token");
                     setRefreshToken(ondusService.refreshAuthorization());
                 } catch (Exception e) {
-                    logger.debug(
-                            "Could not refresh authorization for GROHE ONDUS account, scheduling another attempt in 55 minutes. Keeping original token",
-                            e);
+                    logger.debug("Could not refresh token for GROHE ONDUS account, retrying login", e);
                     // Initiate a new login
                     deleteRefreshToken();
                 }
-            }, between.getSeconds(), TimeUnit.SECONDS);
+            }, durationUntilRefresh.getSeconds(), TimeUnit.SECONDS);
+            logger.debug("Scheduled token refresh at {}", refreshTime);
         }
     }
 
