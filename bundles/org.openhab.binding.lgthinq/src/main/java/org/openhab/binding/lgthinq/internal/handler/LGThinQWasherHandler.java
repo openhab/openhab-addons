@@ -82,7 +82,7 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Thinq thing.");
+        logger.debug("Initializing Thinq thing. Washer Thing v0.1");
         Bridge bridge = getBridge();
         initializeThing((bridge == null) ? null : bridge.getStatus());
     }
@@ -125,7 +125,8 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
 
     @Override
     protected void updateDeviceChannels(WasherSnapshot shot) {
-        updateState(CHANNEL_POWER_ID, OnOffType.from(shot.getPowerStatus() == DevicePowerState.DV_POWER_ON));
+        updateState(CHANNEL_POWER_ID,
+                (DevicePowerState.DV_POWER_ON.equals(shot.getPowerStatus()) ? OnOffType.ON : OnOffType.OFF));
         updateState(WM_CHANNEL_STATE_ID, new StringType(shot.getState()));
         updateState(WM_CHANNEL_COURSE_ID, new StringType(shot.getCourse()));
         updateState(WM_CHANNEL_SMART_COURSE_ID, new StringType(shot.getSmartCourse()));
