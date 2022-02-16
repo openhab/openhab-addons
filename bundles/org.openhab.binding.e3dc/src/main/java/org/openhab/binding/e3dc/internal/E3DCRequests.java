@@ -38,6 +38,8 @@ public class E3DCRequests {
 
     private static final int MAX_PM_COUNT = 8;
     private static final int MAX_WB_COUNT = 8;
+    private static final int MAX_SE_COUNT = 8;
+    private static final int MAX_BAT_COUNT = 8;
 
     private static int tempCount = 4;
     private static int acCount = 3;
@@ -45,6 +47,8 @@ public class E3DCRequests {
     private static int pmCount = 1;
     private static int wbCount = 0;
     private static int pviCount = 2;
+    private static int seCount = 2;
+    private static int batCount = 1;
 
     public static int getTempCount() {
         return tempCount;
@@ -70,6 +74,14 @@ public class E3DCRequests {
         return pmCount;
     }
 
+    public static int getSeCount() {
+        return seCount;
+    }
+
+    public static int getBatCount() {
+        return batCount;
+    }
+
     public static void setTempCount(int value) {
         tempCount = value;
     }
@@ -92,6 +104,14 @@ public class E3DCRequests {
 
     public static void setPviCount(int value) {
         pviCount = value;
+    }
+
+    public static void setSeCount(int value) {
+        seCount = value;
+    }
+
+    public static void setBatCount(int value) {
+        batCount = value;
     }
 
     public static byte[] buildAuthenticationMessage(String user, String password) {
@@ -134,7 +154,7 @@ public class E3DCRequests {
                 new RSCPTag[] { RSCPTag.TAG_EMS_REQ_BATTERY_TO_CAR_MODE, RSCPTag.TAG_EMS_REQ_BATTERY_BEFORE_CAR_MODE });
 
         MultiReqGen(buildFrame,
-                new RSCPTag[] { RSCPTag.TAG_EMS_REQ_GET_IDLE_PERIODS /* ? */, RSCPTag.TAG_EMS_REQ_GET_POWER_SETTINGS,
+                new RSCPTag[] { RSCPTag.TAG_EMS_REQ_GET_IDLE_PERIODS, RSCPTag.TAG_EMS_REQ_GET_POWER_SETTINGS,
                         RSCPTag.TAG_EMS_REQ_GET_MANUAL_CHARGE, RSCPTag.TAG_EMS_REQ_GET_GENERATOR_STATE,
                         RSCPTag.TAG_EMS_REQ_EMERGENCYPOWER_TEST_STATUS });
 
@@ -146,8 +166,6 @@ public class E3DCRequests {
     }
 
     public static void buildFrame02(Builder buildFrame) {
-        // INSTALLER TAG_PVI_REQ_SET_COS_PHI
-
         for (int pviIndex = 0; pviIndex < pviCount; pviIndex++) {
             logger.trace("PVI request {}/{}", pviIndex + 1, pviCount);
 
@@ -170,8 +188,10 @@ public class E3DCRequests {
         reqList.add(ReqGen(RSCPTag.TAG_PVI_REQ_USED_STRING_COUNT));
         reqList.add(ReqGen(RSCPTag.TAG_PVI_REQ_DERATE_TO_POWER));
         reqList.add(ReqGen(RSCPTag.TAG_PVI_REQ_TEMPERATURE_COUNT));
+            reqList.add(ReqGen(RSCPTag.TAG_PVI_REQ_SET_COS_PHI)); // INSTALLER
 
         for (int i = 0; i < tempCount; i++) {
+                logger.trace("PVI Temp request {}/{}", i + 1, tempCount);
             reqList.add(ReqGeni(RSCPTag.TAG_PVI_REQ_TEMPERATURE, (short) i));
             reqList.add(ReqGeni(RSCPTag.TAG_PVI_REQ_MAX_TEMPERATURE, (short) i));
             reqList.add(ReqGeni(RSCPTag.TAG_PVI_REQ_MIN_TEMPERATURE, (short) i));
@@ -181,6 +201,7 @@ public class E3DCRequests {
         reqList.add(ReqGen(RSCPTag.TAG_PVI_REQ_AC_MAX_PHASE_COUNT));
 
         for (int i = 0; i < acCount; i++) {
+                logger.trace("PVI AC request {}/{}", i + 1, acCount);
             reqList.add(ReqGeni(RSCPTag.TAG_PVI_REQ_AC_POWER, (short) i));
             reqList.add(ReqGeni(RSCPTag.TAG_PVI_REQ_AC_VOLTAGE, (short) i));
             reqList.add(ReqGeni(RSCPTag.TAG_PVI_REQ_AC_CURRENT, (short) i));
@@ -195,6 +216,7 @@ public class E3DCRequests {
         reqList.add(ReqGen(RSCPTag.TAG_PVI_REQ_DC_MAX_STRING_COUNT));
 
         for (int i = 0; i < dcCount; i++) {
+                logger.trace("PVI DC request {}/{}", i + 1, dcCount);
             reqList.add(ReqGeni(RSCPTag.TAG_PVI_REQ_DC_POWER, (short) i));
             reqList.add(ReqGeni(RSCPTag.TAG_PVI_REQ_DC_VOLTAGE, (short) i));
             reqList.add(ReqGeni(RSCPTag.TAG_PVI_REQ_DC_CURRENT, (short) i));
@@ -212,15 +234,14 @@ public class E3DCRequests {
     }
 
     public static void buildFrame03(Builder buildFrame) {
-        List<RSCPData> reqList = new ArrayList<RSCPData>();
-
-        final var maxBAT = 2;
+        final var maxBAT = 1;
 
         for (int batIndex = 0; batIndex < maxBAT; batIndex++) {
-
             logger.trace("BAT request {}/{}", batIndex + 1, maxBAT);
 
-            reqList.add(RSCPData.builder().tag(RSCPTag.TAG_DCDC_INDEX).int16Value((short) batIndex).build());
+            final List<RSCPData> reqList = new ArrayList<RSCPData>();
+
+            reqList.add(RSCPData.builder().tag(RSCPTag.TAG_BAT_INDEX).int16Value((short) batIndex).build());
 
         reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_RSOC));
         reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_MODULE_VOLTAGE));
@@ -239,7 +260,6 @@ public class E3DCRequests {
         reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_ASOC));
         reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_FCC));
         reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_RC));
-        reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_MAX_DCB_CELL_CURRENT));
         reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_FIRMWARE_VERSION));
         reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_INFO));
         reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_TRAINING_MODE));
@@ -249,13 +269,20 @@ public class E3DCRequests {
         reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_USABLE_CAPACITY));
         reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_USABLE_REMAINING_CAPACITY));
         reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_CONTROL_CODE));
+            reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_MIN_DCB_CELL_CURRENT));
+            reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_MAX_DCB_CELL_CURRENT));
+            reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_MIN_DCB_CELL_VOLTAGE));
+            reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_MAX_DCB_CELL_VOLTAGE));
         reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_MAX_DCB_CELL_TEMPERATURE));
         reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_MIN_DCB_CELL_TEMPERATURE));
         reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_READY_FOR_SHUTDOWN));
 
-        // TODO
-            // MultiReqGen(buildFrame, new RSCPTag[] { RSCPTag.TAG_BAT_REQ_DCB_INFO,
-            // RSCPTag.TAG_BAT_REQ_DEVICE_STATE });
+            for (int i = 0; i < getBatCount(); i++) {
+                logger.trace("BAT DCB request {}/{}", i + 1, getBatCount());
+                reqList.add(ReqGeni(RSCPTag.TAG_BAT_REQ_DCB_INFO, (short) i));
+                reqList.add(ReqGeni(RSCPTag.TAG_BAT_REQ_DCB_ALL_CELL_VOLTAGES, (short) i));
+                reqList.add(ReqGeni(RSCPTag.TAG_BAT_REQ_DCB_ALL_CELL_TEMPERATURES, (short) i));
+            }
 
         buildFrame = buildFrame
                 .addData(RSCPData.builder().tag(RSCPTag.TAG_BAT_REQ_DATA).containerValues(reqList).build());
@@ -264,13 +291,12 @@ public class E3DCRequests {
     }
 
     public static void buildFrame04(Builder buildFrame) {
-        final List<RSCPData> reqList = new ArrayList<RSCPData>();
-
-        final var maxDCDC = 3;
+        final var maxDCDC = 2; // 255 = Group 0xnn for FBC No or 0xFF for Group???
 
         for (int dcdcIndex = 0; dcdcIndex < maxDCDC; dcdcIndex++) {
-
             logger.trace("DCDC request {}/{}", dcdcIndex + 1, maxDCDC);
+
+            final List<RSCPData> reqList = new ArrayList<RSCPData>();
 
             reqList.add(RSCPData.builder().tag(RSCPTag.TAG_DCDC_INDEX).int16Value((short) dcdcIndex).build());
 
@@ -287,6 +313,12 @@ public class E3DCRequests {
         reqList.add(ReqGen(RSCPTag.TAG_DCDC_REQ_IS_FLASHING));
         reqList.add(ReqGen(RSCPTag.TAG_DCDC_REQ_STATUS));
         reqList.add(ReqGen(RSCPTag.TAG_DCDC_REQ_STATUS_AS_STRING));
+            reqList.add(ReqGen(RSCPTag.TAG_DCDC_REQ_ON_GRID));
+
+            // Test Values:
+            reqList.add(ReqGen(RSCPTag.TAG_DCDC_REQ_FLASH_STATUS));
+            reqList.add(ReqGen(RSCPTag.TAG_DCDC_REQ_COUNT_HW_CONTROLLER));
+            reqList.add(ReqGen(RSCPTag.TAG_DCDC_REQ_PVI_TYPE));
         reqList.add(ReqGen(RSCPTag.TAG_DCDC_REQ_DEVICE_STATE));
 
         buildFrame = buildFrame
@@ -295,7 +327,6 @@ public class E3DCRequests {
     }
 
     public static void buildFrame05(Builder buildFrame) {
-
         if (pmCount <= 0 || pmCount > MAX_PM_COUNT)
             return;
 
@@ -330,7 +361,6 @@ public class E3DCRequests {
     }
 
     public static void buildFrame_DeviceQuery(Builder buildFrame) {
-
         List<RSCPTag> requestList = new ArrayList<RSCPTag>();
         RSCPTag[] requestArray = new RSCPTag[requestList.size()];
         requestList.add(RSCPTag.TAG_PM_REQ_CONNECTED_DEVICES);
@@ -343,6 +373,23 @@ public class E3DCRequests {
         requestArray = requestList.toArray(requestArray);
 
         MultiReqGen(buildFrame, requestArray);
+
+        final int pviIndex = 0;
+        List<RSCPData> reqList = new ArrayList<RSCPData>();
+        reqList.add(RSCPData.builder().tag(RSCPTag.TAG_PVI_INDEX).int16Value((short) pviIndex).build());
+        reqList.add(ReqGen(RSCPTag.TAG_PVI_REQ_DC_MAX_STRING_COUNT));
+        reqList.add(ReqGen(RSCPTag.TAG_PVI_REQ_AC_MAX_PHASE_COUNT));
+        reqList.add(ReqGen(RSCPTag.TAG_PVI_REQ_TEMPERATURE_COUNT));
+
+        buildFrame = buildFrame
+                .addData(RSCPData.builder().tag(RSCPTag.TAG_PVI_REQ_DATA).containerValues(reqList).build());
+
+        final int batIndex = 0;
+        reqList = new ArrayList<RSCPData>();
+        reqList.add(RSCPData.builder().tag(RSCPTag.TAG_BAT_INDEX).int16Value((short) batIndex).build());
+        reqList.add(ReqGen(RSCPTag.TAG_BAT_REQ_DCB_COUNT));
+        buildFrame = buildFrame
+                .addData(RSCPData.builder().tag(RSCPTag.TAG_BAT_REQ_DATA).containerValues(reqList).build());
     }
 
     public static void buildFrame08(Builder buildFrame) {
@@ -359,12 +406,31 @@ public class E3DCRequests {
                 new RSCPTag[] { RSCPTag.TAG_UPNPC_REQ_DEFAULT_LIST, RSCPTag.TAG_UPNPC_REQ_SERVICE_LIST });
     }
 
-    public static void buildFrame1bTest(Builder buildFrame) {
-        MultiReqGen(buildFrame,
-                new RSCPTag[] { RSCPTag.TAG_QPI_REQ_INVERTER_COUNT, RSCPTag.TAG_QPI_REQ_INVERTER_DATA });
+    public static void buildFrame1b_Test(Builder buildFrame) {
+
+        buildFrame.addData(ReqGen(RSCPTag.TAG_SE_REQ_SE_COUNT));
+
+        if (seCount <= 0 || seCount > MAX_SE_COUNT)
+            return;
+
+        for (int seIndex = 0; seIndex < seCount; seIndex++) {
+            logger.trace("SE request {}/{}", seIndex + 1, seCount);
+
+        // final List<RSCPData> reqList = new ArrayList<RSCPData>();
+        // reqList.add(RSCPData.builder().tag(RSCPTag.TAG_SE_PARAM_INDEX).int16Value((short)
+            // seIndex).build());
+
+        // buildFrame = buildFrame
+        // .addData(RSCPData.builder().tag(RSCPTag.TAG_SE_REQ_SE_DATA).containerValues(reqList).build());
+        buildFrame = buildFrame.addData(RSCPData.builder().tag(RSCPTag.TAG_SE_REQ_SE_DATA)
+                    .containerValue(
+                            RSCPData.builder().tag(RSCPTag.TAG_SE_PARAM_INDEX).int16Value((short) seIndex).build())
+                .build());
+    }
     }
 
     public static void buildFrame1c_Test(Builder buildFrame) {
+
         MultiReqGen(buildFrame,
                 new RSCPTag[] { RSCPTag.TAG_QPI_REQ_INVERTER_COUNT, RSCPTag.TAG_QPI_REQ_INVERTER_DATA });
     }
@@ -394,7 +460,7 @@ public class E3DCRequests {
                         RSCPTag.TAG_EP_REQ_IS_POSSIBLE });
     }
 
-    public static void buildFrame0B_Test(Builder buildFrame) {
+    public static void buildFrame0E_Test(Builder buildFrame) {
         MultiReqGen(buildFrame, new RSCPTag[] { RSCPTag.TAG_WB_REQ_CONNECTED_DEVICES });
     }
 
@@ -495,7 +561,7 @@ public class E3DCRequests {
         buildFrame03(buildFrame); // "03" - Requests - Battery
                 break;
             case 1:
-        buildFrame04(buildFrame); // "04" - Requests - DCDC
+                /* buildFrame04(buildFrame); // "04" - Requests - DCDC */
         buildFrame05(buildFrame); // "05" - Requests - Power Meter
                 break;
             case 2:
@@ -515,19 +581,22 @@ public class E3DCRequests {
             case 5:
 
                 buildFrame01(buildFrame); // "01" - Requests - Basis details
+                buildFrame04(buildFrame); // "04" - Requests - DCDC
                 buildFrame05(buildFrame); // "05" - Requests - Power Meter
                 buildFrame0A(buildFrame); // "0A" - Requests - E3DC network/status details
                 buildFrame0D(buildFrame); // "0D" - Requests - Update Manager
                 break;
+            case 6:
+                break;
 
             case 10:
-                buildFrame1a_Test(buildFrame); // "1A" - Requests - Farming system
                 buildFrame13_Test(buildFrame); // "13" - Requests - Modbus
                 break;
             case 11:
-                buildFrame0B_Test(buildFrame); // "0b" - Requests - Wallbox++
+                buildFrame0E_Test(buildFrame); // "0b" - Requests - Wallbox++
                 break;
             case 12:
+                buildFrame1b_Test(buildFrame); // "1B" - Requests - SE
                 buildFrame1c_Test(buildFrame); // "1C" - Requests - QPI
                 break;
             case 13:
@@ -538,6 +607,7 @@ public class E3DCRequests {
                 break;
             case 15:
                 buildFrame15_Test(buildFrame); // "1C" - Requests - UPNPC
+                buildFrame1a_Test(buildFrame); // "1A" - Requests - Farming system
                 break;
 
             default:
@@ -553,9 +623,12 @@ public class E3DCRequests {
 
         // MultiReqGen(buildFrame,
         // new RSCPTag[] { RSCPTag.TAG_EMS_REQ_POWER_PV, RSCPTag.TAG_EMS_REQ_POWER_BAT,
-        // RSCPTag.TAG_EMS_REQ_POWER_HOME, RSCPTag.TAG_EMS_REQ_POWER_GRID, RSCPTag.TAG_EMS_REQ_POWER_ADD,
-        // RSCPTag.TAG_EMS_REQ_AUTARKY, RSCPTag.TAG_EMS_REQ_SELF_CONSUMPTION, RSCPTag.TAG_EMS_REQ_BAT_SOC,
-        // RSCPTag.TAG_EMS_REQ_GET_POWER_SETTINGS, RSCPTag.TAG_EMS_REQ_EMERGENCY_POWER_STATUS,
+        // RSCPTag.TAG_EMS_REQ_POWER_HOME, RSCPTag.TAG_EMS_REQ_POWER_GRID,
+        // RSCPTag.TAG_EMS_REQ_POWER_ADD,
+        // RSCPTag.TAG_EMS_REQ_AUTARKY, RSCPTag.TAG_EMS_REQ_SELF_CONSUMPTION,
+        // RSCPTag.TAG_EMS_REQ_BAT_SOC,
+        // RSCPTag.TAG_EMS_REQ_GET_POWER_SETTINGS,
+        // RSCPTag.TAG_EMS_REQ_EMERGENCY_POWER_STATUS,
         // RSCPTag.TAG_EP_REQ_IS_GRID_CONNECTED, RSCPTag.TAG_INFO_REQ_SW_RELEASE });
 
         // buildFrame = buildFrame

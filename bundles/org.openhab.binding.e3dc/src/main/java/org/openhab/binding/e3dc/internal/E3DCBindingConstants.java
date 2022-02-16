@@ -50,6 +50,10 @@ public class E3DCBindingConstants {
     public static final String PROPERTY_PVI_USED_STRING_COUNT = "connectedStrings";
     public static final String PROPERTY_QPI_INVERTER_COUNT = "connectedInverters";
     public static final String PROPERTY_SE_SE_COUNT = "connectedStorageExtensions";
+    public static final String PROPERTY_BAT_DCB_COUNT = "batDcbCount";
+    public static final String PROPERTY_PVI_DC_COUNT = "pviDcCount";
+    public static final String PROPERTY_PVI_AC_COUNT = "pviAcCount";
+    public static final String PROPERTY_PVI_TEMP_COUNT = "pviTempCount";
 
     // List of channel groups types
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_EMS = new ChannelGroupTypeUID(BINDING_ID, "ems");
@@ -122,6 +126,25 @@ public class E3DCBindingConstants {
     public static final String CHANNEL_PhaseActive_2 = "PMPhaseActiveL2";
     public static final String CHANNEL_PhaseActive_3 = "PMPhaseActiveL3";
     public static final String CHANNEL_PMType = "PMType";
+
+    public static final String CHANNEL_DCDC_powerBattery = "PowerBattery";
+    public static final String CHANNEL_DCDC_voltageBattery = "VoltageBattery";
+    public static final String CHANNEL_DCDC_engergyBattery = "EngergyBattery";
+    public static final String CHANNEL_DCDC_powerDCL = "PowerDCL";
+    public static final String CHANNEL_DCDC_voltageDCL = "VoltageDCL";
+    public static final String CHANNEL_DCDC_engergyDCL = "EngergyDCL";
+    public static final String CHANNEL_DCDC_firmwareVersion = "FirmwareVersion";
+    public static final String CHANNEL_DCDC_FPGAVersion = "FPGAVersion";
+    public static final String CHANNEL_DCDC_serialNumber = "SerialNumber";
+    public static final String CHANNEL_DCDC_boardVersion = "BoardVersion";
+    public static final String CHANNEL_DCDC_isFlashing = "IsFlashing";
+    public static final String CHANNEL_DCDC_state = "State";
+    public static final String CHANNEL_DCDC_subState = "SubState";
+    public static final String CHANNEL_DCDC_stateText = "StateText";
+    public static final String CHANNEL_DCDC_subStateText = "SubStateText";
+    public static final String CHANNEL_DCDC_deviceConnected = "DeviceConnected";
+    public static final String CHANNEL_DCDC_deviceWorking = "DeviceWorking";
+    public static final String CHANNEL_DCDC_deviceInService = "DeviceInService";
 
     public static final String CHANNEL_PowerLimitsUsed = "PowerLimitsUsed";
     public static final String CHANNEL_MaxDischarge = "MaxDischarge";

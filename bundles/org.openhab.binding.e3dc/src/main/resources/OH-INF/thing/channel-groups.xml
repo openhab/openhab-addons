@@ -59,7 +59,7 @@
 	<!-- BAT -->
 	<channel-group-type id="battery">
 		<label>Battery</label>
-		<description>Battery Description</description>
+		<description>Battery description</description>
 		<category>battery</category>
 		<channels>
 			<channel id="BatteryDummy" typeId="batteryDummy"/>
@@ -68,10 +68,28 @@
 
 	<!-- DCDC -->
 	<channel-group-type id="dcdc">
-		<label>Battery DCDC system</label>
-		<description>Battery DCDCsystem DDescriptionsc</description>
+		<label>DC-DC Converter</label>
+		<description>DC-DC Converter description</description>
 		<channels>
-			<channel id="DCDCDummy" typeId="dcdcDummy"/>
+			<channel id="PowerBattery" typeId="powerBattery"/>
+			<channel id="VoltageBattery" typeId="voltageBattery"/>
+			<channel id="EngergyBattery" typeId="engergyBattery"/>
+			<channel id="PowerDCL" typeId="powerDCL"/>
+			<channel id="VoltageDCL" typeId="voltageDCL"/>
+			<channel id="EngergyDCL" typeId="engergyDCL"/>
+			<channel id="FirmwareVersion" typeId="firmwareVersion"/>
+			<channel id="FPGAVersion" typeId="FPGAVersion"/>
+			<channel id="SerialNumber" typeId="serialNumber"/>
+			<channel id="BoardVersion" typeId="boardVersion"/>
+			<channel id="IsFlashing" typeId="isFlashing"/>
+
+			<channel id="State" typeId="state"/>
+			<channel id="StateText" typeId="stateText"/>
+			<channel id="SubState" typeId="subState"/>
+			<channel id="SubStateText" typeId="subStateText"/>
+			<channel id="DeviceConnected" typeId="deviceConnected"/>
+			<channel id="DeviceWorking" typeId="deviceWorking"/>
+			<channel id="DeviceInService" typeId="deviceInService"/>
 		</channels>
 	</channel-group-type>
 
@@ -142,7 +160,7 @@
 	<!-- INFO -->
 	<channel-group-type id="information">
 		<label>System Information</label>
-		<description>System Information Description</description>
+		<description>System Information description</description>
 		<channels>
 			<!-- 0A: TAG_INFO_REQ_SW_RELEASE => TAG_INFO_SERIAL_NUMBER -->
 			<channel id="SerialNumber" typeId="SerialNumber"/>
@@ -232,7 +250,7 @@
 	<!-- MBS -->
 	<channel-group-type id="modbus">
 		<label>Modbus Connection Information</label>
-		<description>Modbus Connection Description </description>
+		<description>Modbus Connection description </description>
 		<channels>
 			<channel id="IsModbusEnabled" typeId="isModbusEnabled"/>
 		</channels>

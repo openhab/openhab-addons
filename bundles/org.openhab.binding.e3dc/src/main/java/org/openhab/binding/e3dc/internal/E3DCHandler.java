@@ -64,6 +64,9 @@ public class E3DCHandler extends BaseThingHandler {
     private int count_PM = 1;
     private final int minCount_PM = 1;
     private final int maxCount_PM = 8;
+    private int count_BAT = 1;
+    private final int minCount_BAT = 0;
+    private final int maxCount_BAT = 8;
     private int count_WB = 0;
     private final int minCount_WB = 0;
     private final int maxCount_WB = 8;
@@ -76,27 +79,36 @@ public class E3DCHandler extends BaseThingHandler {
     private int count_PVI = 1;
     private final int minCount_PVI = 0;
     private final int maxCount_PVI = 2;
+    private int count_PVI_DC = 2;
+    private final int minCount_PVI_DC = 0;
+    private final int maxCount_PVI_DC = 2;
+    private int count_PVI_AC = 3;
+    private final int minCount_PVI_AC = 0;
+    private final int maxCount_PVI_AC = 3;
+    private int count_PVI_TEMP = 4;
+    private final int minCount_PVI_TEMP = 0;
+    private final int maxCount_PVI_TEMP = 4;
     private int count_QPI = 1;
     private final int minCount_QPI = 0;
     private final int maxCount_QPI = 2;
     private int count_SE = 0;
     private final int minCount_SE = 0;
-    private final int maxCount_SE = 2;
+    private final int maxCount_SE = 8;
 
     public int getCount_PM() {
         return count_PM;
     }
 
     public int getForcedCount_PM() {
-        return (config.getpowerMeterCount() > count_PM) ? config.getpowerMeterCount() : count_PM;
+        return (config != null && config.getpowerMeterCount() > count_PM) ? config.getpowerMeterCount() : count_PM;
     }
 
     public int getForcedCount_PVI() {
-        return (config.getTrackerCount() > count_PVI) ? config.getpowerMeterCount() : count_PVI;
+        return (config != null && config.getTrackerCount() > count_PVI) ? config.getpowerMeterCount() : count_PVI;
     }
 
     public int getForcedCount_WB() {
-        return (config.getWallboxCount() > count_WB) ? config.getWallboxCount() : count_WB;
+        return (config != null && config.getWallboxCount() > count_WB) ? config.getWallboxCount() : count_WB;
     }
 
     public void setCount_PM(int count_PM) {
@@ -162,6 +174,52 @@ public class E3DCHandler extends BaseThingHandler {
     public void setCount_SE(int count_SE) {
         this.count_SE = Math.min(Math.max(count_SE, minCount_SE), maxCount_SE);
         updateProperty(PROPERTY_SE_SE_COUNT, Integer.toString(this.count_SE));
+
+        E3DCRequests.setSeCount(this.count_SE);
+    }
+
+    public int getCount_BAT() {
+        return count_BAT;
+    }
+
+    public void setCount_BAT(int count_BAT) {
+        this.count_BAT = Math.min(Math.max(count_BAT, minCount_BAT), maxCount_BAT);
+        updateProperty(PROPERTY_BAT_DCB_COUNT, Integer.toString(this.count_BAT));
+
+        E3DCRequests.setBatCount(this.count_BAT);
+    }
+
+    public int getCount_PVI_DC() {
+        return count_PVI_DC;
+    }
+
+    public void setCount_PVI_DC(int count_PVI_DC) {
+        this.count_PVI_DC = Math.min(Math.max(count_PVI_DC, minCount_PVI_DC), maxCount_PVI_DC);
+        updateProperty(PROPERTY_PVI_DC_COUNT, Integer.toString(this.count_PVI_DC));
+
+        E3DCRequests.setDcCount(this.count_PVI_DC);
+    }
+
+    public int getCount_PVI_AC() {
+        return count_PVI_AC;
+    }
+
+    public void setCount_PVI_AC(int count_PVI_AC) {
+        this.count_PVI_AC = Math.min(Math.max(count_PVI_AC, minCount_PVI_AC), maxCount_PVI_AC);
+        updateProperty(PROPERTY_PVI_AC_COUNT, Integer.toString(this.count_PVI_AC));
+
+        E3DCRequests.setAcCount(this.count_PVI_AC);
+    }
+
+    public int getCount_PVI_TEMP() {
+        return count_PVI_TEMP;
+    }
+
+    public void setCount_PVI_TEMP(int count_PVI_TEMP) {
+        this.count_PVI_TEMP = Math.min(Math.max(count_PVI_TEMP, minCount_PVI_TEMP), maxCount_PVI_TEMP);
+        updateProperty(PROPERTY_PVI_TEMP_COUNT, Integer.toString(this.count_PVI_TEMP));
+
+        E3DCRequests.setAcCount(this.count_PVI_TEMP);
     }
 
     public E3DCHandler(Thing thing) {

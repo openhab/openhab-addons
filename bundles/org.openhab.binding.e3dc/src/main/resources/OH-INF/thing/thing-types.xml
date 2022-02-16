@@ -13,8 +13,15 @@
 		<channel-groups>
 			<channel-group id="ems" typeId="ems"/>								<!-- EMS 0x01 / -->
 			<channel-group id="pvi01" typeId="pvi"/>							<!-- PVI 0x02 / -->
-			<channel-group id="battery" typeId="battery"/>                      <!-- BAT 0x03 / -->
-			<channel-group id="dcdc" typeId="dcdc"/>                            <!-- DCDC 0x04 / -->
+			<channel-group id="battery01" typeId="battery"/>                      <!-- BAT 0x03 / -->
+			<channel-group id="dcdc01" typeId="dcdc">                            <!-- DCDC 0x04 / -->
+				<label>DCDC 1</label>
+				<description>DCDC 1 Desc</description>
+			</channel-group>
+			<channel-group id="dcdc02" typeId="dcdc">                            <!-- DCDC 0x04 / -->
+				<label>DCDC 2</label>
+				<description>DCDC 2 Desc</description>
+			</channel-group>
 			<channel-group id="powermeter01" typeId="powermeter">				<!-- PM 0x05 / -->
 				<label>Power Meter 1</label>
 				<description>Power Meter 1 Desc</description>

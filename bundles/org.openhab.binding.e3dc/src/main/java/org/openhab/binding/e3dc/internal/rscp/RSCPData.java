@@ -375,7 +375,8 @@ public class RSCPData {
             RSCPNamespace namespace = RSCPNamespace.getForBytes(Arrays.copyOfRange(tagNameBytes, 0, 1));
 
             if (tag == null) {
-                logger.warn("Tag could not be matched: {}", tagNameBytes);
+                logger.warn("Tag could not be matched: {} - {}", ByteUtils.byteArrayToHexString(tagNameBytes),
+                        tagNameBytes);
                 tag = RSCPTag.getTagForBytes(new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF });
             }
             if (namespace == null) {

@@ -110,7 +110,7 @@
 		<item-type>String</item-type>
 		<label>Start Manual Charge - no function yet (i18n me)</label>
 		<description>Starts the manual battery charge (limited to once a day by E3DC) (Not implemented yet)</description>
-		<category>Status</category>
+		<category>Switch</category>
 		<command>
 			<options>
 				<option value="START_MAN_CHARGE">Start</option>
@@ -122,7 +122,7 @@
 		<item-type>String</item-type>
 		<label>Start Emergency Power Test - no function yet (i18n me)</label>
 		<description>Starts the Emergency Power Test (Not implemented yet/ever?)</description>
-		<category>Status</category>
+		<category>Switch</category>
 		<command>
 			<options>
 				<option value="START_EP">Start</option>
@@ -148,10 +148,129 @@
 	</channel-type>
 
 	<!-- DCDC -->
-	<channel-type id="dcdcDummy" advanced="true">
+	<channel-type id="powerBattery" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Current BAT</label>
+		<description>Current pf this battery</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="voltageBattery" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage BAT</label>
+		<description>Voltage of this battery</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="engergyBattery">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Battery</label>
+		<description>Energy of this battery</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="powerDCL" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Current DCL</label>
+		<description>Current pf this DCL</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="voltageDCL" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage DCL</label>
+		<description>Voltage of this DCL</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="engergyDCL">
+		<item-type>Number:Energy</item-type>
+		<label>Energy DCL</label>
+		<description>Energy of this DCL</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="firmwareVersion">
 		<item-type>String</item-type>
-		<label>DCDC Dummy channel</label>
-		<description>DCDC Dummy channel</description>
+		<label>Firmware Version</label>
+		<description>Firmware Version DCDC</description>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="FPGAVersion">
+		<item-type>String</item-type>
+		<label>FPGA Version</label>
+		<description>FPGA Version DCDC</description>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="serialNumber">
+		<item-type>String</item-type>
+		<label>Serial Number</label>
+		<description>Serial Number DCDC</description>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="boardVersion">
+		<item-type>String</item-type>
+		<label>Board Version</label>
+		<description>Board Version DCDC</description>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="isFlashing">
+		<item-type>Switch</item-type>
+		<label>Is Flashing</label>
+		<description>Is Flashing description???</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="stateText">
+		<item-type>String</item-type>
+		<label>State Text</label>
+		<description>State Text DCDC</description>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="subStateText">
+		<item-type>String</item-type>
+		<label>Substate Text</label>
+		<description>Substate Text DCDC</description>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="state">
+		<item-type>Number</item-type>
+		<label>State</label>
+		<description>State DCDC</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="subState">
+		<item-type>Number</item-type>
+		<label>Substate</label>
+		<description>Substate DCDC</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="deviceConnected">
+		<item-type>Switch</item-type>
+		<label>Device Conncted</label>
+		<description>Device Conncted DCDC</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="deviceWorking">
+		<item-type>Switch</item-type>
+		<label>Device Working</label>
+		<description>Device Working DCDC</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="deviceInService">
+		<item-type>Switch</item-type>
+		<label>Device in Service</label>
+		<description>Device in Service DCD</description>
 		<state readOnly="true"/>
 	</channel-type>
 

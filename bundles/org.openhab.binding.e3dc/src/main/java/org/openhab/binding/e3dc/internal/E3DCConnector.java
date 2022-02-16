@@ -53,6 +53,10 @@ import org.slf4j.LoggerFactory;
  */
 public class E3DCConnector {
 
+    /**
+     *
+     */
+    private static final double INVALID_VALUE = -99999.0;
     private static final int SOCKET_TIMEOUT = 10000;
     private static final int maxRetries = 3;
     private static final long sleepMillisBeforeRetry = 5000;
@@ -205,20 +209,16 @@ public class E3DCConnector {
 
             logger.trace("START of complete data query -------------------------- ");
 
-            reqFrame = E3DCRequests.buildRequestFrameDebug(0);
-            handleRequest(reqFrame);
+            for (int number : new int[] { 0, 1, 2, 3 }) {
 
-            reqFrame = E3DCRequests.buildRequestFrameDebug(1);
+                logger.trace("Debug Query buildRequestFrameDebug({})...", number);
+                reqFrame = E3DCRequests.buildRequestFrameDebug(number);
             handleRequest(reqFrame);
-
-            reqFrame = E3DCRequests.buildRequestFrameDebug(2);
-            handleRequest(reqFrame);
-
-            reqFrame = E3DCRequests.buildRequestFrameDebug(3);
-            handleRequest(reqFrame);
+            }
 
             for (int i = 10; i < 15; i++) {
                 try {
+                    logger.trace("buildRequestFrameDebug({})...", i);
                     reqFrame = E3DCRequests.buildRequestFrameDebug(i);
                     handleRequest(reqFrame);
                 } catch (Exception e) {
@@ -229,15 +229,14 @@ public class E3DCConnector {
             logger.trace("END of complete data query -------------------------- ");
 
         } else {
-            // reqFrame = E3DCRequests.buildRequestFrameBase();
-            // handleRequest(reqFrame);
 
-            reqFrame = E3DCRequests.buildRequestFrameDebug(5);
-            handleRequest(reqFrame);
+            for (int number : new int[] { 5, 3 }) {
 
-            reqFrame = E3DCRequests.buildRequestFrameDebug(3);
+                logger.trace("buildRequestFrameDebug({})...", number);
+                reqFrame = E3DCRequests.buildRequestFrameDebug(number);
             handleRequest(reqFrame);
         }
+    }
     }
 
     long connnectFails = 0L;
@@ -452,18 +451,279 @@ public class E3DCConnector {
     }
 
     public void handlePVI(RSCPData data) {
+        final String dt = data.getDataTag().name();
         var tag = data.getDataTag();
-        String groupPref = CHANNEL_GROUP_PVI + "#";
+
+        List<RSCPData> containedDataList;
+        int index = 0;
+        String sValue = "";
+
+        switch (tag) {
+
+            case TAG_PVI_DATA:
+                containedDataList = data.getContainerData();
+
+                index = 0;
+                for (RSCPData containedData : containedDataList) {
+                    index = handleContainerPVIData(containedData, index);
+                }
+                break;
+
+            default:
+                sValue = data.getValueAsString().orElse("ERR");
+                logger.trace("PVI TAG TODO: {} - Value: {}", dt, sValue);
+                break;
+        }
+    }
+
+    public int handleContainerPVIData(RSCPData data, int index) {
+        final String dt = data.getDataTag().name();
+        final var tag = data.getDataTag();
+
+        final String groupPref = CHANNEL_GROUP_PVI + ((index + 1 < 10) ? "0" : "") + Integer.toString(index + 1) + "#";
+
+        int newIndex = index;
+        String sValue = "";
+        int iValue = -1;
+
+        switch (tag) {
+            case TAG_PVI_INDEX:
+                newIndex = data.getValueAsInt().get();
+                logger.debug("{} with index of {}", dt, newIndex);
+                break;
+
+            case TAG_PVI_DC_MAX_STRING_COUNT:
+                iValue = data.getValueAsInt().get();
+                handle.setCount_PVI_DC(iValue);
+                break;
+
+            case TAG_PVI_AC_MAX_PHASE_COUNT:
+                iValue = data.getValueAsInt().get();
+                handle.setCount_PVI_AC(iValue);
+                break;
+
+            case TAG_PVI_TEMPERATURE_COUNT:
+                iValue = data.getValueAsInt().get();
+                handle.setCount_PVI_TEMP(iValue);
+                break;
+
+            default:
+                sValue = data.getValueAsString().orElse("ERR");
+                logger.trace("PVI DATA TAG TODO: {} - Value: {}", dt, sValue);
+                break;
+        }
+        return newIndex;
     }
 
     public void handleBAT(RSCPData data) {
+        final String dt = data.getDataTag().name();
         var tag = data.getDataTag();
-        String groupPref = CHANNEL_GROUP_BAT + "#";
+
+        List<RSCPData> containedDataList;
+        int index = 0;
+        String sValue = "";
+
+        switch (tag) {
+
+            case TAG_BAT_DATA:
+                containedDataList = data.getContainerData();
+
+                index = 0;
+                for (RSCPData containedData : containedDataList) {
+                    index = handleContainerBATData(containedData, index);
+                }
+                break;
+
+            default:
+                sValue = data.getValueAsString().orElse("ERR");
+                logger.trace("BAT TAG TODO: {} - Value: {}", dt, sValue);
+                break;
+        }
+    }
+
+    public int handleContainerBATData(RSCPData data, int index) {
+        final String dt = data.getDataTag().name();
+        final var tag = data.getDataTag();
+
+        final String groupPref = CHANNEL_GROUP_BAT + ((index + 1 < 10) ? "0" : "") + Integer.toString(index + 1) + "#";
+
+        int newIndex = index;
+        String sValue = "";
+        int iValue = -1;
+
+        switch (tag) {
+            case TAG_PVI_INDEX:
+                newIndex = data.getValueAsInt().get();
+                logger.debug("{} with index of {}", dt, newIndex);
+                break;
+
+            case TAG_BAT_DCB_COUNT:
+                iValue = data.getValueAsInt().get();
+                handle.setCount_BAT(iValue);
+                break;
+
+            default:
+                sValue = data.getValueAsString().orElse("ERR");
+                logger.trace("BAT DATA TAG TODO: {} - Value: {}", dt, sValue);
+                break;
+        }
+        return newIndex;
     }
 
     public void handleDCDC(RSCPData data) {
         var tag = data.getDataTag();
-        String groupPref = CHANNEL_GROUP_DCDC + "#";
+
+        List<RSCPData> containedDataList;
+        int index = 0;
+
+        switch (tag) {
+
+            case TAG_DCDC_DATA:
+                containedDataList = data.getContainerData();
+
+                index = 0;
+                for (RSCPData containedData : containedDataList) {
+                    index = handleContainerDCDCData(containedData, index);
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private int handleContainerDCDCData(RSCPData data, int index) {
+
+        List<RSCPData> containedDataList;
+        final String dt = data.getDataTag().name();
+        final var tag = data.getDataTag();
+
+        final String groupPref = CHANNEL_GROUP_DCDC + ((index + 1 < 10) ? "0" : "") + Integer.toString(index + 1) + "#";
+
+        int newIndex = index;
+        String sValue = "";
+
+        switch (tag) {
+            case TAG_DCDC_INDEX:
+                newIndex = data.getValueAsInt().get();
+                logger.debug("{} with index of {}", dt, newIndex);
+                break;
+            case TAG_DCDC_I_BAT:
+                handle.updateState(groupPref + CHANNEL_DCDC_powerBattery,
+                        new QuantityType<>(data.getValueAsFloat().orElse((float) INVALID_VALUE), Units.WATT));
+                break;
+            case TAG_DCDC_U_BAT:
+                handle.updateState(groupPref + CHANNEL_DCDC_voltageBattery,
+                        new QuantityType<>(data.getValueAsFloat().orElse((float) INVALID_VALUE), Units.VOLT));
+                break;
+            case TAG_DCDC_P_BAT:
+                handle.updateState(groupPref + CHANNEL_DCDC_engergyBattery,
+                        new QuantityType<>(data.getValueAsFloat().orElse((float) INVALID_VALUE), Units.WATT_HOUR));
+                break;
+            case TAG_DCDC_I_DCL:
+                handle.updateState(groupPref + CHANNEL_DCDC_powerDCL,
+                        new QuantityType<>(data.getValueAsFloat().orElse((float) INVALID_VALUE), Units.WATT));
+                break;
+            case TAG_DCDC_U_DCL:
+                handle.updateState(groupPref + CHANNEL_DCDC_voltageDCL,
+                        new QuantityType<>(data.getValueAsFloat().orElse((float) INVALID_VALUE), Units.VOLT));
+                break;
+            case TAG_DCDC_P_DCL:
+                handle.updateState(groupPref + CHANNEL_DCDC_engergyDCL,
+                        new QuantityType<>(data.getValueAsFloat().orElse((float) INVALID_VALUE), Units.WATT_HOUR));
+                break;
+
+            case TAG_DCDC_FIRMWARE_VERSION:
+                sValue = data.getValueAsString().orElse("ERR");
+                handle.updateState(groupPref + CHANNEL_DCDC_firmwareVersion, new StringType(sValue));
+                break;
+
+            case TAG_DCDC_FPGA_FIRMWARE:
+                sValue = data.getValueAsString().orElse("ERR");
+                handle.updateState(groupPref + CHANNEL_DCDC_FPGAVersion, new StringType(sValue));
+                break;
+
+            case TAG_DCDC_SERIAL_NUMBER:
+                sValue = data.getValueAsString().orElse("ERR");
+                handle.updateState(groupPref + CHANNEL_DCDC_serialNumber, new StringType(sValue));
+                break;
+
+            case TAG_DCDC_BOARD_VERSION:
+                sValue = data.getValueAsString().orElse("ERR");
+                handle.updateState(groupPref + CHANNEL_DCDC_boardVersion, new StringType(sValue));
+                break;
+
+            case TAG_DCDC_IS_FLASHING:
+                handle.updateState(groupPref + CHANNEL_DCDC_isFlashing,
+                        OnOffType.from(data.getValueAsBool().orElse(false)));
+                break;
+
+            case TAG_DCDC_STATE:
+                handle.updateState(groupPref + CHANNEL_DCDC_state,
+                        new DecimalType(data.getValueAsInt().orElse((int) INVALID_VALUE)));
+                break;
+
+            case TAG_DCDC_SUBSTATE:
+                handle.updateState(groupPref + CHANNEL_DCDC_subState,
+                        new DecimalType(data.getValueAsInt().orElse((int) INVALID_VALUE)));
+                break;
+
+            case TAG_DCDC_STATUS_AS_STRING:
+                containedDataList = data.getContainerData();
+
+                for (RSCPData containedData : containedDataList) {
+                    final var subTag = containedData.getDataTag();
+
+                    switch (subTag) {
+                        case TAG_DCDC_STATE_AS_STRING:
+                            sValue = data.getValueAsString().orElse("ERR");
+                            handle.updateState(groupPref + CHANNEL_DCDC_stateText, new StringType(sValue));
+                            break;
+                        case TAG_DCDC_SUBSTATE_AS_STRING:
+                            sValue = data.getValueAsString().orElse("ERR");
+                            handle.updateState(groupPref + CHANNEL_DCDC_subStateText, new StringType(sValue));
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                }
+                break;
+
+            case TAG_DCDC_DEVICE_STATE:
+                containedDataList = data.getContainerData();
+
+                for (RSCPData containedData : containedDataList) {
+                    final var subTag = containedData.getDataTag();
+
+                    switch (subTag) {
+                        case TAG_DCDC_DEVICE_CONNECTED:
+                            handle.updateState(groupPref + CHANNEL_DCDC_deviceConnected,
+                                    OnOffType.from(data.getValueAsBool().orElse(false)));
+                            break;
+                        case TAG_DCDC_DEVICE_WORKING:
+                            handle.updateState(groupPref + CHANNEL_DCDC_deviceWorking,
+                                    OnOffType.from(data.getValueAsBool().orElse(false)));
+                            break;
+                        case TAG_DCDC_DEVICE_IN_SERVICE:
+                            handle.updateState(groupPref + CHANNEL_DCDC_deviceInService,
+                                    OnOffType.from(data.getValueAsBool().orElse(false)));
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                }
+                break;
+
+            default:
+                sValue = data.getValueAsString().orElse("ERR");
+                logger.trace("DCDC TAG TODO: {} - Value: {}", dt, sValue);
+                break;
+        }
+        return newIndex;
     }
 
     public void handleRSCP(RSCPData data) {
@@ -1052,10 +1312,10 @@ public class E3DCConnector {
     /**
      * Receive a frame from a socket and decrypted it.
      *
-     * @param socket A socket to read from.
      * @param decryptFunc A function to decrypt the received byte array.
      * @return Either an exception or the decrypted response as byte array.
      */
+    @SuppressWarnings("null")
     public byte[] receiveFrameFromServer(Function<byte[], byte[]> decryptFunc) {
         if (isNotConnected()) {
             throw new IllegalStateException("Not connected to server. Must connect to server first before sending.");
