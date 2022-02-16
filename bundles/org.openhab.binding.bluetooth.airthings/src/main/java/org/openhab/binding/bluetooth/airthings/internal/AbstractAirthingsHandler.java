@@ -106,12 +106,15 @@ abstract public class AbstractAirthingsHandler extends BeaconBluetoothHandler {
     }
 
     private void executePeridioc() {
-        sinceLastReadSec.addAndGet(CHECK_PERIOD_SEC);
-        execute();
+        try {
+            sinceLastReadSec.addAndGet(CHECK_PERIOD_SEC);
+            execute();
+        } catch (Exception e) { // catch all to avoid scheduleWithFixedDelay being suppressed
+            logger.warn("Failed to read Airthings device", e);
+        }
     }
 
     private synchronized void execute() {
-        try {
             ConnectionState connectionState = device.getConnectionState();
             logger.debug("Device {} state is {}, serviceState {}, readState {}", address, connectionState, serviceState,
                     readState);
@@ -130,9 +133,6 @@ abstract public class AbstractAirthingsHandler extends BeaconBluetoothHandler {
                 default:
                     break;
             }
-        } catch (Exception e) { // catch all to avoid scheduleWithFixedDelay being suppressed
-            logger.warn("Failed to read Airthings device", e);
-        }
     }
 
     private void connect() {
