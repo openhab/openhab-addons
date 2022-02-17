@@ -275,15 +275,60 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     }
 
     /**
+     * select primary accessory type from list of type.
+     * selection logic:
+     * - if accessory has only one type, it is the primary type
+     * - if accessory has no primary type defined per configuration, then the first type on the list is the primary type
+     * - if accessory has primary type defined per configuration and this type is on the list of type, then it is the
+     * primary
+     * - if accessory has primary type defined per configuration and this type is NOT on the list of type, then the
+     * first type on the list is the primary type
+     *
+     * @param item openhab item
+     * @param accessoryTypes list of accessory type attached to the item
+     * @return primary accessory type
+     */
+    private HomekitAccessoryType getPrimaryAccessoryType(Item item,
+            List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessoryTypes) {
+        if (accessoryTypes.size() > 1) {
+            final @Nullable Map<String, Object> configuration = HomekitAccessoryFactory.getItemConfiguration(item,
+                    metadataRegistry);
+            if (configuration != null) {
+                final @Nullable Object value = configuration.get(HomekitTaggedItem.PRIMARY_SERVICE);
+                if (value instanceof String) {
+                    return accessoryTypes.stream()
+                            .filter(aType -> ((String) value).equalsIgnoreCase(aType.getKey().getTag())).findAny()
+                            .orElse(accessoryTypes.get(0)).getKey();
+                }
+            }
+        }
+        // no primary accessory found or there is only one type, so return the first type from the list
+        return accessoryTypes.get(0).getKey();
+    }
+
+    /**
      * creates one or more HomeKit items for given openhab item.
      * one OpenHAB item can linked to several HomeKit accessories or characteristics.
-     * OpenHAB Item is a good candidate for homeKit accessory IF
-     * - it has HomeKit accessory types, i.e. HomeKit accessory tag AND
-     * - has no group with HomeKit tag, i.e. single line accessory ODER
-     * - has groups with HomeKit tag, but all groups are with baseItem, e.g. Group:Switch,
-     * so that the groups already complete accessory and group members can be a standalone HomeKit accessory.
+     * OpenHAB item is a good candidate for HomeKit accessory
+     * IF
+     * - it has HomeKit accessory types defined using HomeKit accessory metadata
+     * - AND is not part of groups with HomeKit metadata
+     * e.g.
+     * Switch light "Light" {homekit="Lighting"}
+     * Group gLight "Light Group" {homekit="Lighting"}
+     * OR
+     * - it has HomeKit accessory types defined using HomeKit accessory metadata
+     * - AND is part of groups with HomeKit metadata, but all groups are with baseItem, e.g. Group:Switch
+     * e.g.
+     * Group:Switch:OR(ON,OFF) gLight "Light Group " {homekit="Lighting"}
+     * Switch light "Light" (gLight) {homekit="Lighting.OnState"}
+     *
+     *
      * In contrast, items which are part of groups without BaseItem are additional HomeKit characteristics of the
      * accessory defined by that group and dont need to be created as RootAccessory here.
+     * e.g.
+     * Switch light "Light" (gLight) {homekit="Lighting.OnState"}
+     * is not the root accessory but only a characteristic "OnState"
      *
      * Examples:
      * // Single Line HomeKit Accessory
@@ -305,38 +350,33 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         final List<GroupItem> groups = HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry);
         if (!accessoryTypes.isEmpty()
                 && (groups.isEmpty() || groups.stream().noneMatch(g -> g.getBaseItem() == null))) {
-            logger.trace("Item {} is a HomeKit accessory of types {}", item.getName(), accessoryTypes);
-
-            final @Nullable Map<String, Object> configuration = HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry);
-
-            final Entry<HomekitAccessoryType, HomekitCharacteristicType> primaryService;
-            if ((configuration != null) && (configuration.get(HomekitTaggedItem.PRIMARY_SERVICE)!=null)) {
-                final String primaryServiceTypeAsStr = (String) configuration.get(HomekitTaggedItem.PRIMARY_SERVICE);
-                primaryService = accessoryTypes.stream().filter(aType -> aType.getKey().getTag().equalsIgnoreCase(primaryServiceTypeAsStr)).findAny().orElse(accessoryTypes.get(0));
-            } else {
-                primaryService = accessoryTypes.get(0);
-            }
+            final HomekitAccessoryType primaryAccessoryType = getPrimaryAccessoryType(item, accessoryTypes);
+            logger.trace("Item {} is a HomeKit accessory of types {}. Primary type is {}", item.getName(),
+                    accessoryTypes, primaryAccessoryType);
             final HomekitOHItemProxy itemProxy = new HomekitOHItemProxy(item);
-            final HomekitTaggedItem taggedItem = new HomekitTaggedItem(itemProxy, primaryService.getKey(),
-                    HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry));
+            final HomekitTaggedItem taggedItem = new HomekitTaggedItem(new HomekitOHItemProxy(item),
+                    primaryAccessoryType, HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry));
             try {
                 final HomekitAccessory accessory = HomekitAccessoryFactory.create(taggedItem, metadataRegistry, updater,
                         settings);
-                if (accessoryTypes.size() > 1) {
-                    logger.info("#### multiple services: {}", accessoryTypes);
-                    for (int i = 0; i < accessoryTypes.size(); i++) {
-                        if (accessoryTypes.get(i).getKey() != primaryService.getKey()) {
-                            logger.info("#### adding {}", accessoryTypes.get(i).getKey());
-                            HomekitTaggedItem additionalTaggedItem = new HomekitTaggedItem(itemProxy, accessoryTypes.get(i).getKey(),
-                                                                                           HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry));
-                            HomekitAccessory additionalAccessory = HomekitAccessoryFactory.create(additionalTaggedItem, metadataRegistry, updater, settings);
-                            accessory.getServices().add(additionalAccessory.getPrimaryService());
-                        }
-                    }
-                }
+
+                accessoryTypes.stream().filter(aType -> !primaryAccessoryType.equals(aType.getKey()))
+                        .forEach(additionalAccessoryType -> {
+                            logger.info("#### adding {}", additionalAccessoryType);
+                            final HomekitTaggedItem additionalTaggedItem = new HomekitTaggedItem(itemProxy,
+                                    additionalAccessoryType.getKey(),
+                                    HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry));
+                            try {
+                                final HomekitAccessory additionalAccessory = HomekitAccessoryFactory
+                                        .create(additionalTaggedItem, metadataRegistry, updater, settings);
+                                accessory.getServices().add(additionalAccessory.getPrimaryService());
+                            } catch (HomekitException e) {
+                                logger.warn("Cannot create additional accessory {}", additionalTaggedItem);
+                            }
+                        });
                 accessoryRegistry.addRootAccessory(taggedItem.getName(), accessory);
             } catch (HomekitException e) {
-                logger.warn("cannot create accessory {}", taggedItem);
+                logger.warn("Cannot create accessory {}", taggedItem);
             }
         }
     }

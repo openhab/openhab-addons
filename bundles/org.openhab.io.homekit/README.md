@@ -457,7 +457,64 @@ or using UI
 
 ![sensor_ui_config.png](doc/sensor_ui_config.png)
 
+### Complex accessory
+Multiple HomeKit accessories can be combined to one accessory to group several functions provided by one or multiple physical devices. 
 
+For example, ceiling fans often include lighting functionality. Such fans can be modelled as:
+
+- two separate HomeKit accessories - fan and light. 
+  iOS home app would show them as 2 tiles which can be controlled directly from home screen.
+  ![ios_fan_and_light_home_screen.png](doc/ios_fan_and_light_home_screen.png)
+  
+- one complex accessory - fan with light. 
+  iOS home app would show them as 1 tile which opens view with 2 controls
+  ![ios_fan_with_light_home_screen.png](doc/ios_fan_with_light_home_screen.png)
+  ![ios_fan_with_light_details.png](doc/ios_fan_with_light_details.png)
+
+The provided functionality is in both cases identical.
+
+In order to combine multiple accessories to one HomeKit accessory you need:
+
+- add corresponding openHAB items to one openHAB group
+- add HomeKit metadata of both HomeKit accessories to the group. 
+
+e.g. configuration for a fan with light would look as follows
+
+```xtend
+Group           FanWithLight        "Fan with Light"                           {homekit = "Fan,Light"}
+Switch          FanActiveStatus     "Fan Active Status"     (FanWithLight)     {homekit = "Fan.ActiveStatus"}
+Number          FanRotationSpeed    "Fan Rotation Speed"    (FanWithLight)     {homekit = "Fan.RotationSpeed"}
+Switch          Light               "Light"                 (FanWithLight)     {homekit = "Lighting.OnState"}
+```
+
+or in graphical representation
+![ui_fan_with_light_group_view.png](doc/ui_fan_with_light_group_view.png)
+![ui_fan_with_light_group_code.png](doc/ui_fan_with_light_group_code.png)
+![ui_fan_with_light_group_config.png](doc/ui_fan_with_light_group_config.png)
+
+iOS home app use by default the type of the first accessory on the list for the tile on home screen. 
+e.g. accessory defined as homekit = "Fan,Light" will be shown as fan and homekit = "Light,Fan" as light in iOS home app.  
+
+if you want to change the tile you can either change the order of types in homekit metadata or add "primary=<type>" as configuration. 
+e.g. follows will force "fan" to be used as tile
+
+```xtend
+Group           FanWithLight        "Fan with Light"                           {homekit = "Light,Fan" [primary="Fan"]}
+```
+
+![ui_fan_with_light_primary.png](doc/ui_fan_with_light_primary.png)
+
+
+You can combine more than two accessories as well as accessories linked to different physical devices. 
+You can do also unusually combination, e.g. you can combine temperature sensor with blinds and light. 
+It will be represented by home app as follows
+![ios_complex_accessory_detail_screen.png](doc/ios_complex_accessory_detail_screen.png)
+
+
+#### Limitations
+Currently, it is not possible to combine multiple accessories of the same type, e.g. 2 lights. 
+Support for this will be added in the future release of openHAB HomeKit binding.
+ 
 ## Supported accessory type
 
 | Accessory Tag        | Mandatory Characteristics   | Optional     Characteristics | Supported OH items       | Description                                                      |
