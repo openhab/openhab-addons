@@ -34,7 +34,6 @@ import org.openhab.core.items.ItemRegistryChangeListener;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.storage.Storage;
-import org.openhab.core.storage.StorageService;
 import org.openhab.io.homekit.internal.accessories.HomekitAccessoryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,11 +77,11 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     private final Debouncer applyUpdatesDebouncer;
 
     HomekitChangeListener(ItemRegistry itemRegistry, HomekitSettings settings, MetadataRegistry metadataRegistry,
-            StorageService storageService) {
+            Storage<String> storage) {
         this.itemRegistry = itemRegistry;
         this.settings = settings;
         this.metadataRegistry = metadataRegistry;
-        storage = storageService.getStorage(HomekitAuthInfoImpl.STORAGE_KEY);
+        this.storage = storage;
         this.applyUpdatesDebouncer = new Debouncer("update-homekit-devices", scheduler, Duration.ofMillis(1000),
                 Clock.systemUTC(), this::applyUpdates);
         metadataChangeListener = new RegistryChangeListener<Metadata>() {
