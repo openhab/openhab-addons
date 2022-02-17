@@ -65,6 +65,7 @@
 				<label>Volume Delta</label>
 				<description>How much to change the zone volume for each INCREASE/DECREASE command (in dB)</description>
 				<default>1</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -92,6 +93,7 @@
 				<label>Volume Delta</label>
 				<description>How much to change the group volume for each INCREASE/DECREASE command (in dB)</description>
 				<default>1</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
