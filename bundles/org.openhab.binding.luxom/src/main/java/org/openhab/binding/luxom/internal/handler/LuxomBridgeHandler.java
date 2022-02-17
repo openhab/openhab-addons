@@ -26,7 +26,6 @@ import javax.validation.constraints.NotNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.luxom.internal.handler.config.LuxomBridgeConfig;
-import org.openhab.binding.luxom.internal.handler.util.LocalizationService;
 import org.openhab.binding.luxom.internal.protocol.LuxomAction;
 import org.openhab.binding.luxom.internal.protocol.LuxomCommand;
 import org.openhab.binding.luxom.internal.protocol.LuxomCommunication;
@@ -55,7 +54,6 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     private static final long HEARTBEAT_ACK_TIMEOUT_SECONDS = 20;
 
     private final Logger logger = LoggerFactory.getLogger(LuxomBridgeHandler.class);
-    private final LocalizationService localizationService;
 
     private @Nullable LuxomBridgeConfig config;
     private final AtomicInteger nrOfSendPermits = new AtomicInteger(0);
@@ -75,17 +73,16 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
         return config;
     }
 
-    public LuxomBridgeHandler(Bridge bridge, LocalizationService localizationService) {
+    public LuxomBridgeHandler(Bridge bridge) {
         super(bridge);
-        logger.info("{}", localizationService.getText("status.bridge-initializing", "Luxom bridge init"));
-        this.localizationService = localizationService;
+        logger.debug("Luxom bridge init");
         this.systemInfo = new LuxomSystemInfo();
         this.communication = new LuxomCommunication(this);
     }
 
     @Override
     public void handleCommand(@NotNull ChannelUID channelUID, Command command) {
-        logger.debug("bridge received command {} for {}", command.toFullString(), channelUID);
+        logger.debug("Bridge received command {} for {}", command.toFullString(), channelUID);
     }
 
     @Override
@@ -96,8 +93,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
             reconnectInterval = (config.reconnectInterval > 0) ? config.reconnectInterval
                     : DEFAULT_RECONNECT_INTERVAL_IN_MINUTES;
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                    localizationService.getText("status.connecting", "Connecting"));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/status.connecting");
             scheduler.submit(this::connect); // start the async connect task
         }
     }
@@ -105,14 +101,13 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     private boolean validConfiguration(@Nullable LuxomBridgeConfig config) {
         if (config == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    localizationService.getText("status.bridge-configuration-missing", "bridge configuration missing"));
+                    "@text/bridge-configuration-missing");
 
             return false;
         }
 
         if (config.ipAddress == null || config.ipAddress.trim().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    localizationService.getText("status.bridge-address-missing", "bridge address not specified"));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/bridge-address-missing");
 
             return false;
         }
@@ -157,7 +152,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     }
 
     private void sendCommandsThread() {
-        logger.info("Starting send commands thread...");
+        logger.debug("Starting send commands thread...");
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 logger.debug("waiting for command to send...");
@@ -292,28 +287,28 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     public void handleIncomingLuxomMessage(String luxomMessage) throws IOException {
         cancelCheckAliveTimeoutTask(); // we got a message
 
-        logger.debug("Luxom: received {}", luxomMessage);
+        logger.trace("Luxom: received {}", luxomMessage);
         LuxomCommand luxomCommand = new LuxomCommand(luxomMessage);
 
         // Now dispatch update to the proper thing handler
 
-        if (LuxomAction.PASSWORD_REQUEST.equals(luxomCommand.getAction())) {
+        if (LuxomAction.PASSWORD_REQUEST == luxomCommand.getAction()) {
             communication.sendMessage(LuxomAction.REQUEST_FOR_INFORMATION.getCommand()); // direct send, no queue, so
             // no tcp flow constraint
-        } else if (LuxomAction.MODULE_INFORMATION.equals(luxomCommand.getAction())) {
+        } else if (LuxomAction.MODULE_INFORMATION == luxomCommand.getAction()) {
             cmdSystemInfo(luxomCommand.getData());
-            if (!ThingStatus.ONLINE.equals(this.getThing().getStatus())) {
+            if (ThingStatus.ONLINE != this.getThing().getStatus()) {
                 // this all happens before TCP flow controle, when startProcessing is called, TCP flow is activated...
                 startProcessing();
             }
-        } else if (LuxomAction.ACKNOWLEDGE.equals(luxomCommand.getAction())) {
-            logger.debug("received acknowledgement");
-        } else if (LuxomAction.DATA.equals(luxomCommand.getAction())
-                || LuxomAction.DATA_RESPONSE.equals(luxomCommand.getAction())) {
+        } else if (LuxomAction.ACKNOWLEDGE == luxomCommand.getAction()) {
+            logger.trace("received acknowledgement");
+        } else if (LuxomAction.DATA == luxomCommand.getAction()
+                || LuxomAction.DATA_RESPONSE == luxomCommand.getAction()) {
             previousCommand = luxomCommand;
-        } else if (!LuxomAction.INVALID_ACTION.equals(luxomCommand.getAction())) {
-            if (LuxomAction.DATA_BYTE.equals(luxomCommand.getAction())
-                    || LuxomAction.DATA_BYTE_RESPONSE.equals(luxomCommand.getAction())) {
+        } else if (LuxomAction.INVALID_ACTION != luxomCommand.getAction()) {
+            if (LuxomAction.DATA_BYTE == luxomCommand.getAction()
+                    || LuxomAction.DATA_BYTE_RESPONSE == luxomCommand.getAction()) {
                 // data for previous command if it needs it
                 if (previousCommand != null && previousCommand.getAction().isNeedsData()) {
                     previousCommand.setData(luxomCommand.getData());
@@ -335,7 +330,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
                 logger.warn("Something was wrong with the order of incomming commands, resulting command is null");
             }
         } else {
-            logger.debug("Luxom: not handled {}", luxomMessage);
+            logger.trace("Luxom: not handled {}", luxomMessage);
         }
         logger.trace("nrOfPermits after receive: {}", nrOfSendPermits.get());
     }
