@@ -186,7 +186,7 @@ Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank
 Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity"                      { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidity" }
 Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
 Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity"                        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:configTargetHumidity" }
-Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:mistVirtualLevel" }
+Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
 ```
 
 #### Air Humidifier Classic 300S Model
@@ -202,7 +202,7 @@ Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank
 Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity"                      { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidity" }
 Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
 Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity"                        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:configTargetHumidity" }
-Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:mistVirtualLevel" }
+Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
 ```
 
 #### Air Humidifier 600S Model
@@ -217,7 +217,7 @@ Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank
 Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity"                      { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidity" }
 Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
 Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity"                        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:configTargetHumidity" }
-Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:mistVirtualLevel" }
+Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
 ```
 
 ### Configuration (*.sitemap)
