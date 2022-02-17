@@ -3,7 +3,7 @@
 This binding integrates with a https://luxom.io/ based system through a Luxom IP interface module.
 The binding has been tested with the DS65L IP interface, but it's not an official binding by Luxom.
 
-The communication api is based on the following documentation: 
+The API implementation is based on the following documentation: 
 
 - https://old.luxom.io/uploads/ppfiles/27/LUXOM_ASCII.pdf
 - https://old.luxom.io/uploads/ppfiles/28/LUXOM_ASCII_extended.pdf
@@ -38,7 +38,7 @@ Bridge luxom:bridge:myhouse [ ipAddress="192.168.0.50", port="2300"] {
 ### Devices
 
 - Each device has an address on the Luxom bus, this address must be specified in the 'address' parameter. You will have to look it up in your documentation or in the 'Luxom Plusconfig' software.
-- Sometimes a device does not send back a confirmation over the bus having set the correct state. I've encountered it with one dimmer, the dimmer does do the dimming, but does not send back the set brightness level. To be able to use these devices, you can add the `doesNotReply=true` parameter so that the binding immediately set's the items state and does not wait for confirmation.
+- Sometimes a device does not send back a confirmation over the bus having set the correct state. I've encountered it with one dimmer, the dimmer does do the dimming, but does not send back the set brightness level. To be able to use these devices, you can add the `doesNotReply=true` parameter so that the binding immediately sets the item's state and does not wait for confirmation.
   
 #### Dimmers
 
@@ -82,16 +82,16 @@ demo.things:
 
 ```
 Bridge luxom:bridge:myhouse [ ipAddress="192.168.0.50", port="2300"] {
-    Thing switch switchLiving1 "Switch 1" @ "living room" [address="1,01"]
-    Thing dimmer dimmerLightLiving1 "dimmer 1" @ "living room" [address="A,02"]
-    Thing dimmer dimmerLightKitchen1 "dimmer 1" @ "kitchen" [address="A,04", doesNotReply=true]
+    Thing switch switchBedroom1 "Switch 1" @ "Bedroom" [address="1,01"]
+    Thing dimmer dimmerBedroom1 "dimmer 1" @ "Bedroom" [address="A,02"]
+    Thing dimmer dimmerKitchen1 "dimmer 1" @ "Kitchen" [address="A,04", doesNotReply=true]
 }
 ```
 
 demo.items:
 
 ```
-Dimmer          FF_Living_Lights             "Living light"   <light>            (FF_Living, gLight)      ["Lighting"] {channel="luxom:dimmer:myhouse:dimmerLightKitchen1:brightness", ga="Light", homekit="Lighting, Lighting.Brightness"}
-Switch          FF_Living_PowerOutlet1       "Living Power Outlet 1"   <poweroutlet>            (FF_Living, gPower)            ["Switchable"] {channel="luxom:switch:elsenmario:switchLiving1:switch", ga="Outlet"}
-Dimmer          FF_Kitchen_Lights            "Keuken licht"   <light>            (FF_Kitchen, gLight)             ["Lighting"] {channel="luxom:dimmer:elsenmario:keukenLicht:brightness", ga="Light", homekit="Lighting, Lighting.Brightness"}
+Dimmer          FF_Bedroom_Lights             "Bedroom dimmer light"   <light>            (FF_Living, gLight)      ["Lighting"] {channel="luxom:dimmer:myhouse:dimmerBedroom1:brightness", ga="Light", homekit="Lighting, Lighting.Brightness"}
+Switch          FF_Bedroom_PowerOutlet1       "Bedroom Power Outlet 1"   <poweroutlet>    (FF_Living, gPower)      ["Switchable"] {channel="luxom:switch:myhouse:switchBedroom1:switch", ga="Outlet"}
+Dimmer          FF_Kitchen_Lights             "Kitchen dimmer light"   <light>            (FF_Kitchen, gLight)     ["Lighting"] {channel="luxom:dimmer:myhouse:dimmerKitchen1:brightness", ga="Light", homekit="Lighting, Lighting.Brightness"}
 ```

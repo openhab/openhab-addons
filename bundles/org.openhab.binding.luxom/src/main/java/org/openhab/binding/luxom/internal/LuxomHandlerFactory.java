@@ -17,18 +17,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.luxom.internal.handler.LuxomBridgeHandler;
 import org.openhab.binding.luxom.internal.handler.LuxomDimmerHandler;
 import org.openhab.binding.luxom.internal.handler.LuxomSwitchHandler;
-import org.openhab.binding.luxom.internal.handler.util.LocalizationService;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link LuxomHandlerFactory} is responsible for creating things and thing
@@ -39,31 +34,6 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.luxom", service = ThingHandlerFactory.class)
 public class LuxomHandlerFactory extends BaseThingHandlerFactory {
-    private LocaleProvider localeProvider;
-    private TranslationProvider i18nProvider;
-    private final LocalizationService localizationService;
-
-    // Constructor
-    @Activate
-    public LuxomHandlerFactory(final @Reference LocaleProvider givenLocaleProvider,
-            final @Reference TranslationProvider givenI18nProvider) {
-        localeProvider = givenLocaleProvider;
-        i18nProvider = givenI18nProvider;
-        localizationService = new LocalizationService(localeProvider, i18nProvider);
-    }
-
-    @Reference
-    protected void setLocaleProvider(final LocaleProvider givenLocaleProvider) {
-        localeProvider = givenLocaleProvider;
-        localizationService.setLocaleProvider(localeProvider);
-    }
-
-    @Reference
-    protected void setTranslationProvider(TranslationProvider givenI18nProvider) {
-        i18nProvider = givenI18nProvider;
-        localizationService.setI18nProvider(i18nProvider);
-    }
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return LuxomBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -72,11 +42,11 @@ public class LuxomHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (LuxomBindingConstants.BRIDGE_THING_TYPE.equals(thing.getThingTypeUID())) {
-            return new LuxomBridgeHandler((Bridge) thing, localizationService);
+            return new LuxomBridgeHandler((Bridge) thing);
         } else if (LuxomBindingConstants.THING_TYPE_SWITCH.equals(thing.getThingTypeUID())) {
-            return new LuxomSwitchHandler(thing, localizationService);
+            return new LuxomSwitchHandler(thing);
         } else if (LuxomBindingConstants.THING_TYPE_DIMMER.equals(thing.getThingTypeUID())) {
-            return new LuxomDimmerHandler(thing, localizationService);
+            return new LuxomDimmerHandler(thing);
         }
 
         return null;

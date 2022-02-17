@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.luxom.internal.LuxomBindingConstants;
 import org.openhab.binding.luxom.internal.handler.config.LuxomThingDimmerConfig;
-import org.openhab.binding.luxom.internal.handler.util.LocalizationService;
 import org.openhab.binding.luxom.internal.handler.util.PercentageConverter;
 import org.openhab.binding.luxom.internal.protocol.LuxomAction;
 import org.openhab.binding.luxom.internal.protocol.LuxomCommand;
@@ -46,8 +45,8 @@ import org.slf4j.LoggerFactory;
 public class LuxomDimmerHandler extends LuxomThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LuxomDimmerHandler.class);
 
-    public LuxomDimmerHandler(Thing thing, LocalizationService localizationService) {
-        super(thing, localizationService);
+    public LuxomDimmerHandler(Thing thing) {
+        super(thing);
     }
 
     @Nullable
@@ -73,11 +72,10 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
             if (config != null && config.doesNotReply) {
-                logger.warn("Switch {} will not reply, so always keeping it ONLINE", getAddress());
+                logger.debug("Switch {} will not reply, so always keeping it ONLINE", getAddress());
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
-                        localizationService.getText("status.awaiting-initial-response", "Awaiting initial response"));
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.awaiting-initial-response");
                 ping(); // handleUpdate() will set thing status to online when response arrives
             }
         } else {

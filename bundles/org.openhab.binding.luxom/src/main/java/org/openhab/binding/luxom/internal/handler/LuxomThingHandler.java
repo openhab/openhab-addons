@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.luxom.internal.handler.util.LocalizationService;
 import org.openhab.binding.luxom.internal.protocol.LuxomAction;
 import org.openhab.binding.luxom.internal.protocol.LuxomCommand;
 import org.openhab.core.thing.Bridge;
@@ -38,7 +37,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class LuxomThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LuxomThingHandler.class);
-    final LocalizationService localizationService;
 
     private String address = "";
 
@@ -47,16 +45,15 @@ public abstract class LuxomThingHandler extends BaseThingHandler {
         String id = (String) getThing().getConfiguration().get("address");
         if (id == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    localizationService.getText("status.thing-address-missing", "No address"));
+                    "@text/status.thing-address-missing");
             address = "noaddress";
             return;
         }
         address = id;
     }
 
-    public LuxomThingHandler(Thing thing, LocalizationService localizationService) {
+    public LuxomThingHandler(Thing thing) {
         super(thing);
-        this.localizationService = localizationService;
     }
 
     public abstract void handleCommandCommingFromBridge(LuxomCommand command);
@@ -105,7 +102,7 @@ public abstract class LuxomThingHandler extends BaseThingHandler {
 
         if (bridgeHandler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR,
-                    localizationService.getText("status.bridge-handler-missing", "No bridge associated"));
+                    "@text/status.bridge-handler-missing");
             thingOfflineNotify();
         } else {
             bridgeHandler.sendCommands(commands);

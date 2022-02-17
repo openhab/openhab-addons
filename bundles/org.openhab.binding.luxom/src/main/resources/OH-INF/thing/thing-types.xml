@@ -34,7 +34,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>switch</label>
-		<description>switch type action in Luxom</description>
+		<description>Switch type action in Luxom</description>
 		<channels>
 			<channel id="switch" typeId="button"/>
 		</channels>
