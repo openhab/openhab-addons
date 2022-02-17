@@ -43,10 +43,10 @@ public class EnergyInfoYear {
 
         EnergyInfoYear info = new EnergyInfoYear();
         info.energyHeatingThisYear = Optional.ofNullable(responseMap.get("curr_year_heat"))
-                .flatMap(value -> InfoParser.parseArrayofInt(value, 12));
+                .flatMap(value -> InfoParser.parseArrayOfInt(value, 12));
 
         info.energyCoolingThisYear = Optional.ofNullable(responseMap.get("curr_year_cool"))
-                .flatMap(value -> InfoParser.parseArrayofInt(value, 12));
+                .flatMap(value -> InfoParser.parseArrayOfInt(value, 12));
 
         return info;
     }

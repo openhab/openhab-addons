@@ -916,7 +916,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Brightness control for dimmer action in Velbus</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 	<channel-type id="rollershutter">
 		<item-type>Rollershutter</item-type>

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Holds information from the basic_info call.
  *
- * @author Jimy Tanagra - Initial contribution
+ * @author Jimmy Tanagra - Initial contribution
  *
  */
 @NonNullByDefault
@@ -38,7 +38,7 @@ public class BasicInfo {
     }
 
     public static BasicInfo parse(String response) {
-        LOGGER.debug("Parsing string: \"{}\"", response);
+        LOGGER.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 

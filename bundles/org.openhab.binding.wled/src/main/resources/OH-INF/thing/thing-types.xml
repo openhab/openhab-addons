@@ -87,7 +87,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Segment Brightness</label>
 		<description>Changes the brightness of the whole segment</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 
 	<channel-type id="primaryColor" advanced="true">
@@ -101,7 +101,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Primary White</label>
 		<description>Changes the brightness of the primary white LED</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 
 	<channel-type id="secondaryColor" advanced="true">
@@ -115,7 +115,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Secondary White</label>
 		<description>Changes the brightness of the secondary white LED</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 
 	<channel-type id="tertiaryColor" advanced="true">
@@ -129,7 +129,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Tertiary White</label>
 		<description>Changes the brightness of the third white LED</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 
 	<channel-type id="palettes">
