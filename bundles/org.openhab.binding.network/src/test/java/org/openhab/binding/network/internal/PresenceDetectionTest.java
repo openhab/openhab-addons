@@ -38,7 +38,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync;
 import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheHelper;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
-import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
+import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingMethodEnum;
 import org.openhab.binding.network.internal.utils.NetworkUtils.IpPingMethodEnum;
 import org.openhab.binding.network.internal.utils.PingResult;
 
@@ -63,7 +63,7 @@ public class PresenceDetectionTest {
     public void setUp() throws UnknownHostException {
         // Mock an interface
         when(networkUtils.getInterfaceNames()).thenReturn(Collections.singleton("TESTinterface"));
-        doReturn(ArpPingUtilEnum.IPUTILS_ARPING).when(networkUtils).determineNativeARPpingMethod(anyString());
+        doReturn(ArpPingMethodEnum.IPUTILS_ARPING).when(networkUtils).determineNativeARPpingMethod(anyString());
         doReturn(IpPingMethodEnum.WINDOWS_PING).when(networkUtils).determinePingMethod();
 
         subject = spy(new PresenceDetection(listener, (int) CACHETIME));
@@ -78,7 +78,7 @@ public class PresenceDetectionTest {
         subject.setUseDhcpSniffing(false);
         subject.setIOSDevice(true);
         subject.setServicePorts(Collections.singleton(1010));
-        subject.setUseArpPing(true, "arping", ArpPingUtilEnum.IPUTILS_ARPING);
+        subject.setUseArpPing(true, "arping", ArpPingMethodEnum.IPUTILS_ARPING);
         subject.setUseIcmpPing(true);
 
         assertThat(subject.pingMethod, is(IpPingMethodEnum.WINDOWS_PING));
@@ -116,7 +116,7 @@ public class PresenceDetectionTest {
         doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING),
                 anyString(), anyInt());
         doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils)
-                .nativeARPPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(), anyString(), any(), anyInt());
+                .nativeARPPing(eq(ArpPingMethodEnum.IPUTILS_ARPING), anyString(), anyString(), any(), anyInt());
         doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).servicePing(anyString(), anyInt(), anyInt());
 
         assertTrue(subject.performPresenceDetection(false));
@@ -139,7 +139,7 @@ public class PresenceDetectionTest {
         doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING),
                 anyString(), anyInt());
         doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils)
-                .nativeARPPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(), anyString(), any(), anyInt());
+                .nativeARPPing(eq(ArpPingMethodEnum.IPUTILS_ARPING), anyString(), anyString(), any(), anyInt());
         doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).servicePing(anyString(), anyInt(), anyInt());
 
         doReturn(executorService).when(subject).getThreadsFor(anyInt());
@@ -178,8 +178,8 @@ public class PresenceDetectionTest {
 
     @Test
     public void reuseValueTests() throws InterruptedException, IOException {
-        final long START_TIME = 1000L;
-        when(subject.cache.getCurrentNanoTime()).thenReturn(TimeUnit.MILLISECONDS.toNanos(START_TIME));
+        final long startTime = 1000L;
+        when(subject.cache.getCurrentNanoTime()).thenReturn(TimeUnit.MILLISECONDS.toNanos(startTime));
 
         // The PresenceDetectionValue.getLowestLatency() should return the smallest latency
         PresenceDetectionValue v = subject.updateReachableValue(PresenceDetectionType.ICMP_PING, 20);
@@ -188,19 +188,19 @@ public class PresenceDetectionTest {
         assertThat(v.getLowestLatency(), is(19.0));
 
         // Advance in time but not expire the cache (1ms left)
-        final long ALMOST_EXPIRE = START_TIME + CACHETIME - 1;
-        when(subject.cache.getCurrentNanoTime()).thenReturn(TimeUnit.MILLISECONDS.toNanos(ALMOST_EXPIRE));
+        final long almostExpire = startTime + CACHETIME - 1;
+        when(subject.cache.getCurrentNanoTime()).thenReturn(TimeUnit.MILLISECONDS.toNanos(almostExpire));
 
         // Updating should reset the expire timer of the cache
         v2 = subject.updateReachableValue(PresenceDetectionType.ICMP_PING, 28);
         assertEquals(v, v2);
         assertThat(v2.getLowestLatency(), is(19.0));
         assertThat(ExpiringCacheHelper.expireTime(subject.cache),
-                is(TimeUnit.MILLISECONDS.toNanos(ALMOST_EXPIRE + CACHETIME)));
+                is(TimeUnit.MILLISECONDS.toNanos(almostExpire + CACHETIME)));
 
         // Cache expire. A new PresenceDetectionValue instance will be returned
         when(subject.cache.getCurrentNanoTime())
-                .thenReturn(TimeUnit.MILLISECONDS.toNanos(ALMOST_EXPIRE + CACHETIME + CACHETIME + 1));
+                .thenReturn(TimeUnit.MILLISECONDS.toNanos(almostExpire + CACHETIME + CACHETIME + 1));
         v2 = subject.updateReachableValue(PresenceDetectionType.ICMP_PING, 25);
         assertNotEquals(v, v2);
         assertThat(v2.getLowestLatency(), is(25.0));

@@ -18,7 +18,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
-import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
+import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingMethodEnum;
 
 /**
  * Contains the binding configuration and default values. The field names represent the configuration names,
@@ -29,11 +29,11 @@ import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 @NonNullByDefault
 public class NetworkBindingConfiguration {
 
-    public Boolean allowSystemPings = true;
-    public Boolean allowDHCPlisten = true;
+    public boolean allowSystemPings = true;
+    public boolean allowDHCPlisten = true;
     public BigDecimal cacheDeviceStateTimeInMS = BigDecimal.valueOf(2000);
     public String arpPingToolPath = "arping";
-    public @NonNullByDefault({}) ArpPingUtilEnum arpPingUtilMethod;
+    public ArpPingMethodEnum arpPingUtilMethod = ArpPingMethodEnum.DISBALED;
     // For backwards compatibility reasons, the default is to use the ping method execution time as latency value
     public boolean preferResponseTimeAsLatency = false;
 

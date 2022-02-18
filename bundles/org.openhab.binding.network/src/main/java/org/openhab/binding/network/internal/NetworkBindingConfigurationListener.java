@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.network.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Listener for binding configuration changes.
  *
  * @author Andreas Hirsch - Initial contribution
  */
+@NonNullByDefault
 public interface NetworkBindingConfigurationListener {
 
     void bindingConfigurationChanged();

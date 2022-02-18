@@ -200,22 +200,22 @@ public class NetworkUtils {
     /**
      * Return true if the external arp ping utility (arping) is available and executable on the given path.
      */
-    public ArpPingUtilEnum determineNativeARPpingMethod(String arpToolPath) {
+    public ArpPingMethodEnum determineNativeARPpingMethod(String arpToolPath) {
         String result = ExecUtil.executeCommandLineAndWaitResponse(Duration.ofMillis(100), arpToolPath, "--help");
         if (result == null || result.isBlank()) {
-            return ArpPingUtilEnum.UNKNOWN_TOOL;
+            return ArpPingMethodEnum.DISABLED_UNKNOWN_TOOL;
         } else if (result.contains("Thomas Habets")) {
             if (result.matches("(?s)(.*)w sec Specify a timeout(.*)")) {
-                return ArpPingUtilEnum.THOMAS_HABERT_ARPING;
+                return ArpPingMethodEnum.THOMAS_HABERT_ARPING;
             } else {
-                return ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT;
+                return ArpPingMethodEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT;
             }
-        } else if (result.contains("-w timeout")) {
-            return ArpPingUtilEnum.IPUTILS_ARPING;
+        } else if (result.contains("-w timeout") || result.contains("-w <timeout>")) {
+            return ArpPingMethodEnum.IPUTILS_ARPING;
         } else if (result.contains("Usage: arp-ping.exe")) {
-            return ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS;
+            return ArpPingMethodEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS;
         }
-        return ArpPingUtilEnum.UNKNOWN_TOOL;
+        return ArpPingMethodEnum.DISABLED_UNKNOWN_TOOL;
     }
 
     public enum IpPingMethodEnum {
@@ -291,12 +291,22 @@ public class NetworkUtils {
         }
     }
 
-    public enum ArpPingUtilEnum {
-        UNKNOWN_TOOL,
-        IPUTILS_ARPING,
-        THOMAS_HABERT_ARPING,
-        THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT,
-        ELI_FULKERSON_ARP_PING_FOR_WINDOWS
+    public enum ArpPingMethodEnum {
+        DISBALED("Disabled", false),
+        DISABLED_INVALID_IP("Destination is not a valid IPv4 address", false),
+        DISABLED_UNKNOWN_TOOL("Unknown arping tool", false),
+        IPUTILS_ARPING("Iputils Arping", true),
+        THOMAS_HABERT_ARPING("Arping tool by Thomas Habets", true),
+        THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT("Arping tool by Thomas Habets (old version)", true),
+        ELI_FULKERSON_ARP_PING_FOR_WINDOWS("Eli Fulkerson ARPing tool for Windows", true);
+
+        public final String description;
+        public final boolean canProceed;
+
+        ArpPingMethodEnum(String description, boolean canProceed) {
+            this.description = description;
+            this.canProceed = canProceed;
+        }
     }
 
     /**
@@ -313,20 +323,20 @@ public class NetworkUtils {
      * @return Ping result information. Optional is empty if ping command was not executed.
      * @throws IOException The ping command could probably not be found
      */
-    public Optional<PingResult> nativeARPPing(@Nullable ArpPingUtilEnum arpingTool, @Nullable String arpUtilPath,
+    public Optional<PingResult> nativeARPPing(@Nullable ArpPingMethodEnum arpingTool, @Nullable String arpUtilPath,
             String interfaceName, String ipV4address, int timeoutInMS) throws IOException, InterruptedException {
         double execStartTimeInMS = System.currentTimeMillis();
 
-        if (arpUtilPath == null || arpingTool == null || arpingTool == ArpPingUtilEnum.UNKNOWN_TOOL) {
+        if (arpUtilPath == null || arpingTool == null || !arpingTool.canProceed) {
             return Optional.empty();
         }
         Process proc;
-        if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT) {
+        if (arpingTool == ArpPingMethodEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT) {
             proc = new ProcessBuilder(arpUtilPath, "-c", "1", "-i", interfaceName, ipV4address).start();
-        } else if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING) {
+        } else if (arpingTool == ArpPingMethodEnum.THOMAS_HABERT_ARPING) {
             proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-C", "1", "-i",
                     interfaceName, ipV4address).start();
-        } else if (arpingTool == ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
+        } else if (arpingTool == ArpPingMethodEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
             proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS), "-x", ipV4address).start();
         } else {
             proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", "-I",
