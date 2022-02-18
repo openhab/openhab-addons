@@ -31,16 +31,16 @@ public class Color {
         this.brightness = brightness;
         int rgb = hsbType.getRGB();
         java.awt.Color color = new java.awt.Color(rgb);
-        this.red = color.getRed();
-        this.green = color.getGreen();
-        this.blue = color.getBlue();
+        red = color.getRed();
+        green = color.getGreen();
+        blue = color.getBlue();
     }
 
     public Color(int brightness, java.awt.Color color) {
         this.brightness = brightness;
-        this.red = color.getRed();
-        this.green = color.getGreen();
-        this.blue = color.getBlue();
+        red = color.getRed();
+        green = color.getGreen();
+        blue = color.getBlue();
     }
 
     public Color(int brightness, int red, int green, int blue) {
