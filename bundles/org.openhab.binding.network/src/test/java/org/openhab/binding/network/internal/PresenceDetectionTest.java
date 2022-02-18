@@ -38,7 +38,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync;
 import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheHelper;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
-import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingMethodEnum;
+import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 import org.openhab.binding.network.internal.utils.NetworkUtils.IpPingMethodEnum;
 import org.openhab.binding.network.internal.utils.PingResult;
 
@@ -63,7 +63,7 @@ public class PresenceDetectionTest {
     public void setUp() throws UnknownHostException {
         // Mock an interface
         when(networkUtils.getInterfaceNames()).thenReturn(Collections.singleton("TESTinterface"));
-        doReturn(ArpPingMethodEnum.IPUTILS_ARPING).when(networkUtils).determineNativeARPpingMethod(anyString());
+        doReturn(ArpPingUtilEnum.IPUTILS_ARPING).when(networkUtils).determineNativeARPpingMethod(anyString());
         doReturn(IpPingMethodEnum.WINDOWS_PING).when(networkUtils).determinePingMethod();
 
         subject = spy(new PresenceDetection(listener, (int) CACHETIME));
@@ -78,7 +78,7 @@ public class PresenceDetectionTest {
         subject.setUseDhcpSniffing(false);
         subject.setIOSDevice(true);
         subject.setServicePorts(Collections.singleton(1010));
-        subject.setUseArpPing(true, "arping", ArpPingMethodEnum.IPUTILS_ARPING);
+        subject.setUseArpPing(true, "arping", ArpPingUtilEnum.IPUTILS_ARPING);
         subject.setUseIcmpPing(true);
 
         assertThat(subject.pingMethod, is(IpPingMethodEnum.WINDOWS_PING));
@@ -116,7 +116,7 @@ public class PresenceDetectionTest {
         doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING),
                 anyString(), anyInt());
         doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils)
-                .nativeARPPing(eq(ArpPingMethodEnum.IPUTILS_ARPING), anyString(), anyString(), any(), anyInt());
+                .nativeARPPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(), anyString(), any(), anyInt());
         doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).servicePing(anyString(), anyInt(), anyInt());
 
         assertTrue(subject.performPresenceDetection(false));
@@ -139,7 +139,7 @@ public class PresenceDetectionTest {
         doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING),
                 anyString(), anyInt());
         doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils)
-                .nativeARPPing(eq(ArpPingMethodEnum.IPUTILS_ARPING), anyString(), anyString(), any(), anyInt());
+                .nativeARPPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(), anyString(), any(), anyInt());
         doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).servicePing(anyString(), anyInt(), anyInt());
 
         doReturn(executorService).when(subject).getThreadsFor(anyInt());
