@@ -95,8 +95,8 @@ public class LivisiBindingConstants {
             .collect(Collectors.toSet()));
 
     public static final Set<String> BATTERY_POWERED_DEVICES = Collections
-            .unmodifiableSet(Stream.of(DEVICE_RST, DEVICE_RST2, DEVICE_WRT, DEVICE_WDS, DEVICE_WSD, DEVICE_WSD2,
-                    DEVICE_WMD, DEVICE_WMDO, DEVICE_WSC2, DEVICE_BRC8).collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(DEVICE_ISC2, DEVICE_RST, DEVICE_RST2, DEVICE_WRT, DEVICE_WDS, DEVICE_WSD,
+                    DEVICE_WSD2, DEVICE_WMD, DEVICE_WMDO, DEVICE_WSC2, DEVICE_BRC8).collect(Collectors.toSet()));
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");

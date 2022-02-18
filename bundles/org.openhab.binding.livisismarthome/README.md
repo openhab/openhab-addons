@@ -1,18 +1,20 @@
-# Livisi SmartHome Binding
+# LIVISI SmartHome Binding
 
-The binding integrates the [Livisi SmartHome](https://www.livisi.de) system into openHAB.
-The binding is a newer version and forked from the innogysmarthome openHAB binding.
-It uses the official API 1.1 as provided by Livisi as cloud service.
-As all status updates and commands have to go through the API, a permanent internet connection is required.
-Currently there is no API for a direct communication with the Livisi SmartHome Controller (SHC).
+The binding integrates the [LIVISI (RWE/innogy) SmartHome](https://www.livisi.de) system into openHAB.
+The binding is the successor of the innogy SmartHome openHAB binding, which is communicating with the LIVISI cloud-servers over the internet.
+
+This binding uses a DIRECT communication with LIVISI SmartHome Controllers (SHC). It does NOT need to communicate with the LIVISI cloud-services and does NOT require an internet connection.
+
+On your SHC you need a minimum Software Version of 1.2.XX.XXX with activated "Local SmartHome". 
+
 
 ## Supported things
 
 ### Bridge
 
-The Livisi SmartHome Controller (SHC) is the bridge, that provides the central communication with the devices.
+The LIVISI SmartHome Controller (SHC) is the bridge, that provides the central communication with the devices.
 Without the SHC, you cannot communicate with the devices.
-This binding supports both the SHC and the SHC2 (with support for Bluetooth devices).
+At this time, this binding supports only the SHC2 (with support for Bluetooth devices).
 
 ### Devices
 
@@ -21,8 +23,9 @@ The channels are described in detail in the next chapter.
 
 | Device | Description                                                              | Supported channels                                                                                                        |
 |--------|--------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| BRC8   | Basic Remote Controller                                                  | button1 ... button8, button1_count ... button8_count, battery_low                                                         |
-| ISC2   | In Wall Smart Controller                                                 | button1, button2, button1_count, button2_count                                                                            |
+| SHC    | SmartHome Controller (Bridge)                                            | cpu, disk, memory, state                                                                                                  |
+| BRC8   | Basic Remote Controller                                                  | button1 ... button8, button1_count ... button8_count, battery_low                                                         || BRC8   | Basic Remote Controller                                                  | button1 ... button8, button1_count ... button8_count, battery_low                                                         |
+| ISC2   | In Wall Smart Controller                                                 | button1, button2, button1_count, button2_count, battery_low                                                               |
 | ISD2   | In Wall Smart Dimmer                                                     | button1, button2, button1_count, button2_count, dimmer                                                                    |
 | ISR2   | In Wall Smart Rollershutter                                              | button1, button2, button1_count, button2_count, rollershutter                                                             |
 | ISS2   | In Wall Smart Switch                                                     | button1, button2, button1_count, button2_count, switch                                                                    |
@@ -45,62 +48,72 @@ Powermeter devices
 
 | Device          | Description                                                    | Supported channels                                                                                                                                                                                         |
 |-----------------|----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| AnalogMeter     | The Analog Meter from the Livisi EnergyControl product         | energy_consumption_month_kwh, absolute_energy_consumption, energy_consumption_month_euro, energy_consumption_day_euro, energy_consumption_day_kwh                                                          |
-| GenerationMeter | The Generation Meter from the Livisi PowerControlSolar product | energy_generation_month_kwh, total_energy_generation, energy_generation_month_euro, energy_generation_day_euro, energy_generation_day_kwh, power_generation_watt                                           |
-| SmartMeter      | The Smart Meter from the Livisi PowerControl product.          | energy_consumption_month_kwh, absolute_energy_consumption, energy_consumption_month_euro, energy_consumption_day_euro, energy_consumption_day_kwh, power_consumption_watt                                  |
-| Two-Way-Meter   | The Two-Way-Meter from the Livisi PowerControlSolar product    | energy_month_kwh, total_energy, energy_month_euro, energy_day_euro, energy_day_kwh, energy_feed_month_kwh, total_energy_fed, energy_feed_month_euro, energy_feed_day_euro, energy_feed_day_kwh, power_watt |
+| AnalogMeter     | The Analog Meter from the LIVISI EnergyControl product         | energy_consumption_month_kwh, absolute_energy_consumption, energy_consumption_month_euro, energy_consumption_day_euro, energy_consumption_day_kwh                                                          |
+| GenerationMeter | The Generation Meter from the LIVISI PowerControlSolar product | energy_generation_month_kwh, total_energy_generation, energy_generation_month_euro, energy_generation_day_euro, energy_generation_day_kwh, power_generation_watt                                           |
+| SmartMeter      | The Smart Meter from the LIVISI PowerControl product.          | energy_consumption_month_kwh, absolute_energy_consumption, energy_consumption_month_euro, energy_consumption_day_euro, energy_consumption_day_kwh, power_consumption_watt                                  |
+| Two-Way-Meter   | The Two-Way-Meter from the LIVISI PowerControlSolar product    | energy_month_kwh, total_energy, energy_month_euro, energy_day_euro, energy_day_kwh, energy_feed_month_kwh, total_energy_fed, energy_feed_month_euro, energy_feed_day_euro, energy_feed_day_kwh, power_watt |
 
 ## Discovery
 
-If the bridge (SHC) is located in the same LAN as the openHAB server, the bridge should be discovered automatically by mDNS.
-However, this can sometimes take a couple of minutes.
-If the bridge is not found, it can be added manually (see below under "Configuration").
+The bridge (SHC) can not be discovered automatically. It must be added manually (see below under "Configuration").
 
 After the bridge is added, devices are discovered automatically.
 As there is no background discovery implemented at the moment, you have to start the discovery manually.
-However, only devices will appear that are added in the Livisi SmartHome app before, as the Livisi Binding does not support the coupling of devices to the bridge.
+However, only devices will appear that are added in the LIVISI SmartHome app before, as the LIVISI Binding does not support the coupling of devices to the bridge.
 
 ## Channels
 
-| Channel Type ID         | Item Type     | Description                                                           | Available on thing                              |
-|-------------------------|---------------|-----------------------------------------------------------------------|-------------------------------------------------|
-| alarm                   | Switch        | Switches the alarm (ON/OFF)                                           | WSD, WSD2                                       |
-| battery_low             | Switch        | Indicates, if the battery is low (ON/OFF)                             | BRC8, RST, WDS, WMD, WMD0, WRT, WSC2, WSD, WSD2 |
-| contact                 | Contact       | Indicates the contact state (OPEN/CLOSED)                             | WDS                                             |
-| dimmer                  | Dimmer        | Allows to dimm a light device                                         | ISD2, PSD                                       |
-| frost_warning           | Switch        | active, if the measured temperature is too low (ON/OFF)               | RST                                             |
-| humidity                | Number        | Relative humidity in percent                                          | RST, WRT                                        |
-| button1                 | -             | trigger channel for rules, fires with each push                       | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2              |
-| button2                 | -             | trigger channel for rules, fires with each push                       | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2              |
-| button3                 | -             | trigger channel for rules, fires with each push                       | BRC8                                            |
-| button4                 | -             | trigger channel for rules, fires with each push                       | BRC8                                            |
-| button5                 | -             | trigger channel for rules, fires with each push                       | BRC8                                            |
-| button6                 | -             | trigger channel for rules, fires with each push                       | BRC8                                            |
-| button7                 | -             | trigger channel for rules, fires with each push                       | BRC8                                            |
-| button8                 | -             | trigger channel for rules, fires with each push                       | BRC8                                            |
-| button1_count           | Number        | number of button pushes for button 1, increased with each push        | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2              |
-| button2_count           | Number        | number of button pushes for button 2, increased with each push        | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2              |
-| button3_count           | Number        | number of button pushes for button 3, increased with each push        | BRC8                                            |
-| button4_count           | Number        | number of button pushes for button 4, increased with each push        | BRC8                                            |
-| button5_count           | Number        | number of button pushes for button 5, increased with each push        | BRC8                                            |
-| button6_count           | Number        | number of button pushes for button 6, increased with each push        | BRC8                                            |
-| button7_count           | Number        | number of button pushes for button 7, increased with each push        | BRC8                                            |
-| button8_count           | Number        | number of button pushes for button 8, increased with each push        | BRC8                                            |
-| luminance               | Number        | Indicates the measured luminance in percent                           | WMD, WMD0                                       |
-| mold_warning            | Switch        | active, if the measured humidity is too low (ON/OFF)                  | RST                                             |
-| motion_count            | Number        | Number of detected motions, increases with each detected motion       | WMD, WMDO                                       |
-| operation_mode          | String        | the mode of a thermostat (auto/manual)                                | RST                                             |
-| rollershutter*          | Rollershutter | Controls a roller shutter                                             | ISR2                                            |
-| set_temperature         | Number        | Sets the target temperature in °C                                     | RST, WRT                                        |
-| smoke                   | Switch        | Indicates, if smoke was detected (ON/OFF)                             | WSD, WSD2                                       |
-| switch                  | Switch        | A switch to turn the device or variable on/off (ON/OFF)               | ISS2, PSS, PSSO, VariableActuator               |
-| temperature             | Number        | Holds the actual temperature in °C                                    | RST, WRT                                        |
-| window_reduction_active | Switch        | indicates if a linked window is open and temperature reduced (ON/OFF) | RST                                             |
+| Channel Type ID         | Item Type     | Description                                                           | Available on thing                                    |
+|-------------------------|---------------|-----------------------------------------------------------------------|-------------------------------------------------------|
+| alarm                   | Switch        | Switches the alarm (ON/OFF)                                           | WSD, WSD2                                             |
+| battery_low             | Switch        | Indicates, if the battery is low (ON/OFF)                             | BRC8, ISC2, RST, WDS, WMD, WMD0, WRT, WSC2, WSD, WSD2 |
+| contact                 | Contact       | Indicates the contact state (OPEN/CLOSED)                             | WDS                                                   |
+| cpu                     | Number        | CPU-Usage of the SHC in percent                                       |                                                       |
+| dimmer                  | Dimmer        | Allows to dimm a light device                                         | ISD2, PSD                                             |
+| disk                    | Number        | Disk-Usage of the SHC in percent                                      |                                                       |
+| frost_warning           | Switch        | active, if the measured temperature is too low (ON/OFF)               | RST                                                   |
+| humidity                | Number        | Relative humidity in percent                                          | RST, WRT                                              |
+| button1                 | -             | Trigger channel for rules, fires with each push                       | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
+| button2                 | -             | Trigger channel for rules, fires with each push                       | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
+| button3                 | -             | Trigger channel for rules, fires with each push                       | BRC8                                                  |
+| button4                 | -             | Trigger channel for rules, fires with each push                       | BRC8                                                  |
+| button5                 | -             | Trigger channel for rules, fires with each push                       | BRC8                                                  |
+| button6                 | -             | Trigger channel for rules, fires with each push                       | BRC8                                                  |
+| button7                 | -             | Trigger channel for rules, fires with each push                       | BRC8                                                  |
+| button8                 | -             | Trigger channel for rules, fires with each push                       | BRC8                                                  |
+| button1_count           | Number        | Number of button pushes for button 1, increased with each push        | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
+| button2_count           | Number        | Number of button pushes for button 2, increased with each push        | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
+| button3_count           | Number        | Number of button pushes for button 3, increased with each push        | BRC8                                                  |
+| button4_count           | Number        | Number of button pushes for button 4, increased with each push        | BRC8                                                  |
+| button5_count           | Number        | Number of button pushes for button 5, increased with each push        | BRC8                                                  |
+| button6_count           | Number        | Number of button pushes for button 6, increased with each push        | BRC8                                                  |
+| button7_count           | Number        | Number of button pushes for button 7, increased with each push        | BRC8                                                  |
+| button8_count           | Number        | Number of button pushes for button 8, increased with each push        | BRC8                                                  |
+| luminance               | Number        | Indicates the measured luminance in percent                           | WMD, WMD0                                             |
+| memory                  | Number        | Memory-Usage of the SHC in percent                                    |                                                       |
+| mold_warning            | Switch        | Active, if the measured humidity is too low (ON/OFF)                  | RST                                                   |
+| motion_count            | Number        | Number of detected motions, increases with each detected motion       | WMD, WMDO                                             |
+| operation_mode          | String        | The mode of a thermostat (auto/manual)                                | RST                                                   |
+| rollershutter*          | Rollershutter | Controls a roller shutter                                             | ISR2                                                  |
+| set_temperature         | Number        | Sets the target temperature in °C                                     | RST, WRT                                              |
+| smoke                   | Switch        | Indicates, if smoke was detected (ON/OFF)                             | WSD, WSD2                                             |
+| switch                  | Switch        | A switch to turn the device or variable on/off (ON/OFF)               | ISS2, PSS, PSSO, VariableActuator                     |
+| temperature             | Number        | Holds the actual temperature in °C                                    | RST, WRT                                              |
+| window_reduction_active | Switch        | Indicates if a linked window is open and temperature reduced (ON/OFF) | RST                                                   |
 
 The `rollershutter` channel has a `boolean` parameter `invert`.
 It is `false` by default.
-This means `100` on Livisi is `UP` and `0` is `DOWN`.
-When `invert` is `true` than `0` on Livisi is `UP` and `100` is `DOWN`.
+This means `100` on LIVISI is `UP` and `0` is `DOWN`.
+When `invert` is `true` than `0` on LIVISI is `UP` and `100` is `DOWN`.
+
+
+## Triggers
+
+| Trigger Type  | Description                          | Available on thing                                    |
+|---------------|--------------------------------------|-------------------------------------------------------|
+| SHORT_PRESSED | Fired when you press a button        | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
+| LONG_PRESSED  | Fired when you press a button longer | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
+
 
 ## Thing configuration
 
@@ -108,30 +121,8 @@ When `invert` is `true` than `0` on Livisi is `UP` and `100` is `DOWN`.
 
 The SmartHome Controller (SHC) can be configured in the UI as follows:
 
-After the "Livisi SmartHome Controller" is added via the Inbox, edit the controller and add the "Authorization code" by following the hints in the description.
-Save your changes.
-The SHC should now login and go online.
-Be sure it is connected to the Internet.
-
-### Obtaining the authorization code and tokens
-
-Authorization is done as oauth2 workflow with the Livisi API.
-
-To receive the auth-code, go to one of the following URLs depending on your brand and login with your credentials (you can find this link also in the SHC thing in the UI, if you edit it):
-https://auth.services-smarthome.de/AUTH
-* [Livisi SmartHome authorization page](https://auth.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635748&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Finnogy-smarthome.html&scope&lang=de-DE)
-* [SmartHome Austria authorization page](https://auth.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635749&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fsmarthome-austria.html&scope&lang=de-DE)
-* [Start SmartHome authorization page](https://auth.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635750&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fstart-smarthome.html&scope&lang=de-DE)
-
-You will be redirected to openhab.org and the auth-code will be displayed.
-Copy and paste it into your SHC configuration and you are done.
-
-The binding then requests the access and refresh tokens and saves them in the SHC configuration.
-The auth-code can only be used once and therefore is dropped.
-The access token is then used to login at the Livisi API, but is valid only for a couple of hours.
-The binding automatically requests a new access token as needed by using the refresh token.
-So the refresh token is the relevant credential.
-**Never give it to anybody!**
+When adding the "LIVISI SmartHome Controller" via the Inbox, you have to define the hostname or local IP address and the password for the local user.
+Save your changes. The SHC should now login and go online.
 
 ### Discovering devices
 
@@ -142,23 +133,17 @@ Now you can add all devices from your Inbox as things.
 ### File based configuration
 
 As an alternative to the automatic discovery process and graphical configuration using the UI, Livisi things can be configured manually.
-The Livisi SmartHome Controller (SHC) can be configured using the following syntax:
+The LIVISI SmartHome Controller (SHC) can be configured using the following syntax:
 
 ```
-Bridge livisismarthome:bridge:<bridge-id> []
-```
-
-Then the required authcode is retrieved and set **automatically**:
-
-```
-Bridge livisismarthome:bridge:<bridge-id> [ authcode="<authcode>" ]
+Bridge livisismarthome:bridge:<bridge-id> "Livisi: SmartHome Controller (SHC)" [ host="192.168.0.99", password="SomethingSecret", websocketidletimeout=900]
 ```
 
 ** *Security warning!**
-As the refresh-token is THE one and only credential one needs to access the Livisi webservice with all device data, you have to make sure it is never given to another person.
-Thus it is recommended to remove the line from the openhab.log and/or make sure, the logfile is definitely never accessible by others!
+The communication betweeen the binding and the SHC is not encrypted and can be traced.
+So be carefull and secure your local network from unauthorized access.
 
-All other Livisi devices can be added using the following syntax:
+All other LIVISI devices can be added using the following syntax:
 
 ```
 Thing WDS <thing-id> "<thing-name>" @ "<room-name>" [ id="<the-device-id>" ]
@@ -174,6 +159,8 @@ Bridge livisismarthome:bridge:mybride "Livisi SmartHome Controller" {
     Thing ISS2 myLightSwitch "Light Livingroom" @ "Livingroom" [ id="<device-id>" ]
     Thing PSS myTVSwitch "TV" @ "Livingroom" [ id="<device-id>" ]
     Thing RST myHeating "Thermostat Livingroom" @ "Livingroom" [ id="<device-id>" ]
+    Thing ISR2 myRollerShutter1 "RollerShutter" @ "Livingroom" [ id="<device-id>" ]
+    Thing ISR2 myRollerShutter2 "RollerShutter (inverted)" @ "Livingroom" [ id="<device-id>" ] {Type RollerShutterActuator : rollershutter  [invert=true]}
     Thing VariableActuator myLivisiVariable "My Variable" [ id="<device-id>" ]
     Thing WDS myWindowContact "Window Kitchen" @ "Kitchen" [ id="<device-id>" ]
     Thing WMD myMotionSensor "Motion entry" @ "Entry" [ id="<device-id>" ]
@@ -211,36 +198,17 @@ sitemap default label="Home" {
 }
 ```
 
-## Rules example for pushbuttons
+## Rules example for push-buttons
 
-Pushbuttons provide trigger channels, that can only be used in rules.
+Push-buttons provide trigger channels, that can only be used in rules.
 Here is an example rule:
 
 ```
 rule "Button triggered rule"
 when
-	Channel 'livisismarthome:WSC2:mybridge:myPushButton:button1' triggered PRESSED
+	Channel 'livisismarthome:WSC2:mybridge:myPushButton:button1' triggered SHORT_PRESSED
 then
     // do something...
-	logInfo("testlogger", "Button 1 pressed")
+	logInfo("testlogger", "Button 1 pressed (short)")
 end
 ```
-
-## Resolving certificate issues
-
-If the bridge stays offline with the following status shown in the UI, the reason could be an expired certificate:
-
-`OFFLINE - COMMUNICATION_ERROR sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target`
-
-To solve this on a Linux system, follow this steps:
-
-1. Download the certificates (.cer-files) of https://home.livisi.de and https://livisi.de including the "DigiCert Global Root G2" to your computer.
-As this depends on the used browser and operating system, please use a web search engine to find out how to achieve this for your situation.
-2. On your Linux system, goto your Java Machine's certificate store, e.g. `/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security`.
-The path should include a file called `cacerts` (this is the certificate store) and may differ depending on the system used.
-3. Copy the .cer-files from step 1 into this directory.
-4. Import each certificate with the command: `sudo keytool –importcert –alias “livisismarthome” –keystore cacerts –file livisi.cer`
-(alias can be freely chosen but must be unique; replace livisi.cer with the filename of the downloaded certificate)
-5. Restart the JVM and openHAB.
-
-The default password of the certificate store is "changeit".

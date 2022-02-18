@@ -17,6 +17,7 @@
 			<channel id="button2" typeId="system.button"/>
 			<channel id="button1_count" typeId="PushButtonCounter"/>
 			<channel id="button2_count" typeId="PushButtonCounter"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:livisismarthome:config"/>
