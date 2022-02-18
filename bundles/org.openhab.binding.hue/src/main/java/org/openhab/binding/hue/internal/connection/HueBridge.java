@@ -773,9 +773,11 @@ public class HueBridge {
      * is thrown and the internal username is not changed.
      *
      * @param username username to authenticate
+     * @throws ConfigurationException thrown on ssl failure
      * @throws UnauthorizedException thrown if authentication failed
      */
-    public void authenticate(String username) throws IOException, ApiException {
+    public void authenticate(String username)
+            throws IOException, ApiException, ConfigurationException, UnauthorizedException {
         try {
             this.username = username;
             getLights();
@@ -970,28 +972,29 @@ public class HueBridge {
         return path.isEmpty() ? relativeUrl : relativeUrl + "/" + path;
     }
 
-    public HueResult get(String address) throws CommunicationException {
+    public HueResult get(String address) throws ConfigurationException, CommunicationException {
         return doNetwork(address, HttpMethod.GET);
     }
 
-    public HueResult post(String address, String body) throws CommunicationException {
+    public HueResult post(String address, String body) throws ConfigurationException, CommunicationException {
         return doNetwork(address, HttpMethod.POST, body);
     }
 
-    public HueResult put(String address, String body) throws CommunicationException {
+    public HueResult put(String address, String body) throws ConfigurationException, CommunicationException {
         return doNetwork(address, HttpMethod.PUT, body);
     }
 
-    public HueResult delete(String address) throws CommunicationException {
+    public HueResult delete(String address) throws ConfigurationException, CommunicationException {
         return doNetwork(address, HttpMethod.DELETE);
     }
 
-    private HueResult doNetwork(String address, HttpMethod requestMethod) throws CommunicationException {
+    private HueResult doNetwork(String address, HttpMethod requestMethod)
+            throws ConfigurationException, CommunicationException {
         return doNetwork(address, requestMethod, null);
     }
 
     private HueResult doNetwork(String address, HttpMethod requestMethod, @Nullable String body)
-            throws CommunicationException {
+            throws ConfigurationException, CommunicationException {
         logger.trace("Hue request: {} - URL = '{}'", requestMethod, address);
         try {
             final Request request = httpClient.newRequest(address).method(requestMethod).timeout(timeout,

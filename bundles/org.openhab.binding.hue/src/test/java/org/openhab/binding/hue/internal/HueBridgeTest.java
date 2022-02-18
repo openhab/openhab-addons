@@ -30,6 +30,7 @@ import org.openhab.binding.hue.internal.connection.HueBridge;
 import org.openhab.binding.hue.internal.dto.Scene;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConfigurationException;
 
 /**
  * @author Hengrui Jiang - initial contribution
@@ -42,7 +43,7 @@ public class HueBridgeTest {
         HueBridge hueBridge = new HueBridge(mock(HttpClient.class), "ip", 443, HueBridgeConfig.HTTPS, "username",
                 Executors.newScheduledThreadPool(1)) {
             @Override
-            public HueResult get(String address) throws CommunicationException {
+            public HueResult get(String address) throws ConfigurationException, CommunicationException {
                 if ("https://ip:443/api/username/lights".equals(address)) {
                     return new HueResult("{}", HttpStatus.OK_200);
                 } else if ("https://ip:443/api/username/scenes".equals(address)) {

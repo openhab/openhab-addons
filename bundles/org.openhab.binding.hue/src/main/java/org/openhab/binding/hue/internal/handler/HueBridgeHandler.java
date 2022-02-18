@@ -717,9 +717,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                         scheduler);
 
                 updateStatus(ThingStatus.UNKNOWN);
-
-                onUpdate();
             }
+            onUpdate();
         }
     }
 
@@ -728,11 +727,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     }
 
     private synchronized void onUpdate() {
-        if (hueBridge != null) {
-            startLightPolling();
-            startSensorPolling();
-            startScenePolling();
-        }
+        startLightPolling();
+        startSensorPolling();
+        startScenePolling();
     }
 
     /**
