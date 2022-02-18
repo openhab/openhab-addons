@@ -148,22 +148,18 @@ public class VoskSTTService implements STTService {
     public STTServiceHandle recognize(STTListener sttListener, AudioStream audioStream, Locale locale, Set<String> set)
             throws STTException {
         Future<?> task;
-        AtomicBoolean keepStreaming = new AtomicBoolean(true);
+        AtomicBoolean aborted = new AtomicBoolean(false);
         try {
             var frequency = audioStream.getFormat().getFrequency();
             if (frequency == null) {
                 throw new IOException("missing audio stream frequency");
             }
-
-            task = backgroundRecognize(sttListener, audioStream, frequency, keepStreaming);
+            backgroundRecognize(sttListener, audioStream, frequency, aborted);
         } catch (IOException e) {
             throw new STTException(e);
         }
         return () -> {
-            if (keepStreaming.getAndSet(false)) {
-                trySleep(100);
-            }
-            task.cancel(true);
+            aborted.set(true);
         };
     }
 
@@ -199,7 +195,7 @@ public class VoskSTTService implements STTService {
     }
 
     private Future<?> backgroundRecognize(STTListener sttListener, InputStream audioStream, long frequency,
-            AtomicBoolean keepStreaming) {
+            AtomicBoolean aborted) {
         StringBuilder transcriptBuilder = new StringBuilder();
         long maxTranscriptionMillis = (config.maxTranscriptionSeconds * 1000L);
         long maxSilenceMillis = (config.maxSilenceSeconds * 1000L);
@@ -214,9 +210,9 @@ public class VoskSTTService implements STTService {
                 int nbytes;
                 byte[] b = new byte[4096];
                 sttListener.sttEventReceived(new RecognitionStartEvent());
-                while (keepStreaming.get()) {
+                while (!aborted.get()) {
                     nbytes = audioStream.read(b);
-                    if (!keepStreaming.get()) {
+                    if (aborted.get()) {
                         break;
                     }
                     if (isExpiredInterval(maxTranscriptionMillis, startTime)) {
@@ -245,16 +241,18 @@ public class VoskSTTService implements STTService {
                         logger.debug("Partial: {}", recognizer.getPartialResult());
                     }
                 }
-                sttListener.sttEventReceived(new RecognitionStopEvent());
-                var transcript = transcriptBuilder.toString().trim();
-                logger.debug("Final: {}", transcript);
-                if (!transcript.isBlank()) {
-                    sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, 1F));
-                } else {
-                    if (!config.noResultsMessage.isBlank()) {
-                        sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
+                if (!aborted.get()) {
+                    sttListener.sttEventReceived(new RecognitionStopEvent());
+                    var transcript = transcriptBuilder.toString().trim();
+                    logger.debug("Final: {}", transcript);
+                    if (!transcript.isBlank()) {
+                        sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, 1F));
                     } else {
-                        sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("No results"));
+                        if (!config.noResultsMessage.isBlank()) {
+                            sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
+                        } else {
+                            sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("No results"));
+                        }
                     }
                 }
             } catch (IOException e) {
