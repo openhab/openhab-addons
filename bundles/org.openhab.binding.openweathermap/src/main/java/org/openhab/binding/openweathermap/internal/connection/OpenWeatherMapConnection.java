@@ -40,8 +40,8 @@ import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonDailyFo
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonHourlyForecastData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonUVIndexData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonWeatherData;
-import org.openhab.binding.openweathermap.internal.dto.onecall.OpenWeatherMapOneCallAPIData;
-import org.openhab.binding.openweathermap.internal.dto.onecallhist.OpenWeatherMapOneCallHistAPIData;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapOneCallAPIData;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapOneCallHistAPIData;
 import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAPIHandler;
 import org.openhab.core.cache.ByteArrayFileCache;
 import org.openhab.core.cache.ExpiringCacheMap;

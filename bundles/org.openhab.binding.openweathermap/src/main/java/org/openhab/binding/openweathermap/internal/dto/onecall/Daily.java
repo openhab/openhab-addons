@@ -14,7 +14,9 @@ package org.openhab.binding.openweathermap.internal.dto.onecall;
 
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
+import org.openhab.binding.openweathermap.internal.dto.forecast.daily.FeelsLikeTemp;
+import org.openhab.binding.openweathermap.internal.dto.forecast.daily.Temp;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -28,60 +30,28 @@ import com.google.gson.annotations.SerializedName;
  * @author Wolfgang Klimt - Initial contribution
  */
 public class Daily {
-
-    @SerializedName("dt")
-    @Expose
     private int dt;
-    @SerializedName("sunrise")
-    @Expose
     private int sunrise;
-    @SerializedName("sunset")
-    @Expose
     private int sunset;
-    @SerializedName("temp")
-    @Expose
     private Temp temp;
     @SerializedName("feels_like")
-    @Expose
-    private FeelsLike feelsLike;
-    @SerializedName("pressure")
-    @Expose
+    private FeelsLikeTemp feelsLikeTemp;
     private int pressure;
-    @SerializedName("humidity")
-    @Expose
     private int humidity;
     @SerializedName("dew_point")
-    @Expose
     private double dewPoint;
     @SerializedName("wind_speed")
-    @Expose
     private double windSpeed;
     @SerializedName("wind_deg")
-    @Expose
     private int windDeg;
     @SerializedName("wind_gust")
-    @Expose
     private double windGust;
-    @SerializedName("weather")
-    @Expose
     private List<Weather> weather = null;
-    @SerializedName("clouds")
-    @Expose
     private int clouds;
-    @SerializedName("pop")
-    @Expose
     private double pop;
-    @SerializedName("visibility")
-    @Expose
     private int visibility;
-    @SerializedName("rain")
-    @Expose
     private double rain;
-    @SerializedName("snow")
-    @Expose
     private double snow;
-    @SerializedName("uvi")
-    @Expose
     private double uvi;
 
     public int getDt() {
@@ -116,12 +86,12 @@ public class Daily {
         this.temp = temp;
     }
 
-    public FeelsLike getFeelsLike() {
-        return feelsLike;
+    public FeelsLikeTemp getFeelsLike() {
+        return feelsLikeTemp;
     }
 
-    public void setFeelsLike(FeelsLike feelsLike) {
-        this.feelsLike = feelsLike;
+    public void setFeelsLike(FeelsLikeTemp feelsLikeTemp) {
+        this.feelsLikeTemp = feelsLikeTemp;
     }
 
     public int getPressure() {
