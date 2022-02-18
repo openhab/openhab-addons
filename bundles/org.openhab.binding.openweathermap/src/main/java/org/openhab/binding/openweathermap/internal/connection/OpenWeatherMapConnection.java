@@ -428,10 +428,16 @@ public class OpenWeatherMapConnection {
                 throw new CommunicationException(
                         errorMessage == null ? "@text/offline.communication-error" : errorMessage, e.getCause());
             }
-        } catch (InterruptedException | TimeoutException e) {
+        } catch (TimeoutException e) {
             String errorMessage = e.getMessage();
-            logger.debug("InterruptedException or TimeoutException occurred during execution: {}", errorMessage, e);
+            logger.debug("TimeoutException occurred during execution: {}", errorMessage, e);
             throw new CommunicationException(errorMessage == null ? "@text/offline.communication-error" : errorMessage,
+                    e.getCause());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            String message = e.getMessage();
+            logger.debug("InterruptedException occurred during execution: {}", message, e);
+            throw new CommunicationException(message == null ? "@text/offline.communication-error" : message,
                     e.getCause());
         }
     }
