@@ -12,6 +12,7 @@
  */
 package org.openhab.persistence.jdbc.internal;
 
+import java.sql.SQLInvalidAuthorizationSpecException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +34,8 @@ import org.openhab.persistence.jdbc.dto.ItemsVO;
 import org.openhab.persistence.jdbc.dto.JdbcPersistenceItemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 
 /**
  * Mapper class
@@ -203,13 +206,24 @@ public class JdbcMapper {
     /***********************
      * DATABASE CONNECTION *
      ***********************/
+    @SuppressWarnings("null")
     protected boolean openConnection() {
         logger.debug("JDBC::openConnection isDriverAvailable: {}", conf.isDriverAvailable());
         if (conf.isDriverAvailable() && !conf.isDbConnected()) {
             logger.info("JDBC::openConnection: Driver is available::Yank setupDataSource");
-            Yank.setupDefaultConnectionPool(conf.getHikariConfiguration());
-            conf.setDbConnected(true);
-            return true;
+            try {
+                Yank.setupDefaultConnectionPool(conf.getHikariConfiguration());
+                conf.setDbConnected(true);
+                return true;
+            } catch (PoolInitializationException e) {
+                if (e.getCause() instanceof SQLInvalidAuthorizationSpecException) {
+                    logger.warn("JDBC::openConnection: failed to open connection: {}", e.getCause().getMessage());
+                } else {
+                    logger.warn("JDBC::openConnection: failed to open connection: {}", e.getMessage());
+                }
+                initialized = false;
+                return false;
+            }
         } else if (!conf.isDriverAvailable()) {
             logger.warn("JDBC::openConnection: no driver available!");
             initialized = false;
