@@ -16,7 +16,6 @@
 
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
-
 			<channel id="radon" typeId="radoneye_radon"/>
 		</channels>
 
