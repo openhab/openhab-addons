@@ -562,6 +562,9 @@ public class HDPowerViewWebTargets {
         try {
             response = request.send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             if (Instant.now().isBefore(maintenanceScheduledEnd)) {
                 // throw "softer" exception during maintenance window
                 logger.debug("Hub still undergoing maintenance");
