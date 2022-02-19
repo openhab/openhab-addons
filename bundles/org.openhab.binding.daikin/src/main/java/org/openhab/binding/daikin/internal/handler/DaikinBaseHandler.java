@@ -92,6 +92,10 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (webTargets == null) {
+            logger.error("Unable to handle commands. Check Daikin binding configurations");
+            return;
+        }
         try {
             if (handleCommandInternal(channelUID, command)) {
                 return;
