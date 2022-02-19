@@ -13,6 +13,14 @@ This may work with the older KRP series of wired adapters, but has not been test
 This add-on will broadcast messages on your local network looking for Daikin air conditioning units and adding them to the queue of new items discovered.
 You can also manually add a new item if you know the IP address.
 
+Background discovery polls the network every minute for devices.
+Background discovery is **enabled** by default.
+To **disable** background discovery, add the following line to the *conf/services/runtime.cfg* file:
+
+```text
+discovery.daikin:background=false
+```
+
 ### BRP072C42 adapter discovery
 
 A BRP072C42 adapter requires a registered UUID to authenticate. Upon discovery, a UUID will be generated but the adapter's key must be entered in the Thing configuration to complete the UUID registration.
