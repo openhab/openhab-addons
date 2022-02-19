@@ -28,6 +28,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.http.HttpService;
 
 /**
  * The {@link IpObserverHandlerFactory} is responsible for creating things and thing
@@ -39,11 +40,14 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.ipobserver", service = ThingHandlerFactory.class)
 public class IpObserverHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_WEATHER_STATION);
+    private final IpObserverUpdateReceiver ipObserverUpdateReceiver;
     protected final HttpClient httpClient;
 
     @Activate
-    public IpObserverHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public IpObserverHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference HttpService httpService) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        ipObserverUpdateReceiver = new IpObserverUpdateReceiver(httpService);
     }
 
     protected HttpClient getHttpClient() {
@@ -60,7 +64,7 @@ public class IpObserverHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_WEATHER_STATION.equals(thingTypeUID)) {
-            return new IpObserverHandler(thing, httpClient);
+            return new IpObserverHandler(thing, httpClient, ipObserverUpdateReceiver);
         }
 
         return null;

@@ -13,6 +13,8 @@
 package org.openhab.binding.tapocontrol.internal.helpers;
 
 import javax.measure.Unit;
+import javax.measure.quantity.Energy;
+import javax.measure.quantity.Power;
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -340,9 +342,31 @@ public class TapoUtils {
      * 
      * @param numVal Number with value
      * @param unit TimeUnit (Unit<Time>)
-     * @return QuantityTime<Time>
+     * @return QuantityType<Time>
      */
-    public static QuantityType<Time> getQuantityType(@Nullable Number numVal, Unit<Time> unit) {
+    public static QuantityType<Time> getTimeType(@Nullable Number numVal, Unit<Time> unit) {
+        return new QuantityType<>((numVal != null ? numVal : 0), unit);
+    }
+
+    /**
+     * Return QuantityType with Power
+     * 
+     * @param numVal Number with value
+     * @param unit PowerUnit (Unit<Power>)
+     * @return QuantityType<Power>
+     */
+    public static QuantityType<Power> getPowerType(@Nullable Number numVal, Unit<Power> unit) {
+        return new QuantityType<>((numVal != null ? numVal : 0), unit);
+    }
+
+    /**
+     * Return QuantityType with Energy
+     * 
+     * @param numVal Number with value
+     * @param unit PowerUnit (Unit<Power>)
+     * @return QuantityType<Energy>
+     */
+    public static QuantityType<Energy> getEnergyType(@Nullable Number numVal, Unit<Energy> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);
     }
 }

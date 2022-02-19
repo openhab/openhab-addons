@@ -10,7 +10,6 @@
 		<description>Current detailed power state of the projector</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Power</tag>
 		</tags>
 		<state readOnly="true">
 			<options>

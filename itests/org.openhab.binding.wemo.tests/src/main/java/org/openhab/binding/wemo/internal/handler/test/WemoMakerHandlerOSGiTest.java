@@ -70,7 +70,7 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
 
     @Test
     public void assertThatThingHandlesOnOffCommandCorrectly()
-            throws MalformedURLException, URISyntaxException, ValidationException {
+            throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         Command command = OnOffType.OFF;
 
         Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE);
@@ -86,6 +86,7 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
         ChannelUID channelUID = new ChannelUID(thing.getUID(), DEFAULT_TEST_CHANNEL);
         ThingHandler handler = thing.getHandler();
         assertNotNull(handler);
+
         handler.handleCommand(channelUID, command);
 
         ArgumentCaptor<String> captur = ArgumentCaptor.forClass(String.class);
@@ -105,7 +106,7 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
 
     @Test
     public void assertThatThingHandlesREFRESHCommand()
-            throws MalformedURLException, URISyntaxException, ValidationException {
+            throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         Command command = RefreshType.REFRESH;
 
         Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE);
@@ -121,6 +122,7 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
         ChannelUID channelUID = new ChannelUID(thing.getUID(), DEFAULT_TEST_CHANNEL);
         ThingHandler handler = thing.getHandler();
         assertNotNull(handler);
+
         handler.handleCommand(channelUID, command);
 
         ArgumentCaptor<String> captur = ArgumentCaptor.forClass(String.class);

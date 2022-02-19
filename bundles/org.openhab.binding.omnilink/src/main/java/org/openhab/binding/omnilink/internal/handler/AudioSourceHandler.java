@@ -64,7 +64,7 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
         final OmnilinkBridgeHandler bridgeHandler = getOmnilinkBridgeHandler();
         if (bridgeHandler != null) {
             updateStatus(ThingStatus.ONLINE);
-            if (((Boolean) getThing().getConfiguration().get(THING_PROPERTIES_AUTO_START)).booleanValue()) {
+            if (((Boolean) getThing().getConfiguration().get(THING_PROPERTIES_AUTOSTART)).booleanValue()) {
                 logger.debug("Autostart enabled, scheduling polling for Audio Source: {}", thingID);
                 schedulePolling();
             } else {

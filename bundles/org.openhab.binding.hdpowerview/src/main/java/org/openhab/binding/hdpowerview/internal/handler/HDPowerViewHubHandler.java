@@ -12,16 +12,12 @@
  */
 package org.openhab.binding.hdpowerview.internal.handler;
 
-import java.time.DayOfWeek;
-import java.time.LocalTime;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.StringJoiner;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -44,6 +40,9 @@ import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
+import org.openhab.binding.hdpowerview.internal.builders.AutomationChannelBuilder;
+import org.openhab.binding.hdpowerview.internal.builders.SceneChannelBuilder;
+import org.openhab.binding.hdpowerview.internal.builders.SceneGroupChannelBuilder;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
@@ -59,6 +58,8 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -79,11 +80,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
-    private static final long INITIAL_SOFT_POLL_DELAY_MS = 5_000;
-
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubHandler.class);
     private final HttpClient httpClient;
     private final HDPowerViewTranslationProvider translationProvider;
+    private final ConcurrentHashMap<ThingUID, ShadeData> pendingShadeInitializations = new ConcurrentHashMap<>();
 
     private long refreshInterval;
     private long hardRefreshPositionInterval;
@@ -137,11 +137,11 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             if (sceneChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON == command) {
                 webTargets.activateScene(id);
                 // Reschedule soft poll for immediate shade position update.
-                scheduleSoftPoll(0);
+                scheduleSoftPoll();
             } else if (sceneGroupChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON == command) {
                 webTargets.activateSceneCollection(id);
                 // Reschedule soft poll for immediate shade position update.
-                scheduleSoftPoll(0);
+                scheduleSoftPoll();
             } else if (automationChannelTypeUID.equals(channel.getChannelTypeUID())) {
                 webTargets.enableScheduledEvent(id, OnOffType.ON == command);
             }
@@ -164,11 +164,13 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             return;
         }
 
+        pendingShadeInitializations.clear();
         webTargets = new HDPowerViewWebTargets(httpClient, host);
         refreshInterval = config.refresh;
         hardRefreshPositionInterval = config.hardRefresh;
         hardRefreshBatteryLevelInterval = config.hardRefreshBatteryLevel;
         initializeChannels();
+        firmwareVersions = null;
         schedulePoll();
     }
 
@@ -195,21 +197,46 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     public void dispose() {
         super.dispose();
         stopPoll();
+        pendingShadeInitializations.clear();
+    }
+
+    @Override
+    public void childHandlerInitialized(final ThingHandler childHandler, final Thing childThing) {
+        logger.debug("Child handler initialized: {}", childThing.getUID());
+        if (childHandler instanceof HDPowerViewShadeHandler) {
+            ShadeData shadeData = pendingShadeInitializations.remove(childThing.getUID());
+            if (shadeData != null) {
+                if (shadeData.id > 0) {
+                    updateShadeThing(shadeData.id, childThing, shadeData);
+                } else {
+                    updateUnknownShadeThing(childThing);
+                }
+            }
+        }
+        super.childHandlerInitialized(childHandler, childThing);
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        logger.debug("Child handler disposed: {}", childThing.getUID());
+        if (childHandler instanceof HDPowerViewShadeHandler) {
+            pendingShadeInitializations.remove(childThing.getUID());
+        }
+        super.childHandlerDisposed(childHandler, childThing);
     }
 
     private void schedulePoll() {
-        scheduleSoftPoll(INITIAL_SOFT_POLL_DELAY_MS);
+        scheduleSoftPoll();
         scheduleHardPoll();
     }
 
-    private void scheduleSoftPoll(long initialDelay) {
+    private void scheduleSoftPoll() {
         ScheduledFuture<?> future = this.pollFuture;
         if (future != null) {
             future.cancel(false);
         }
-        logger.debug("Scheduling poll for {} ms out, then every {} ms", initialDelay, refreshInterval);
-        this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, initialDelay, refreshInterval,
-                TimeUnit.MILLISECONDS);
+        logger.debug("Scheduling poll every {} ms", refreshInterval);
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 0, refreshInterval, TimeUnit.MILLISECONDS);
     }
 
     private void scheduleHardPoll() {
@@ -256,17 +283,22 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private synchronized void poll() {
         try {
-            logger.debug("Polling for state");
             updateFirmwareProperties();
+        } catch (HubException e) {
+            logger.warn("Failed to update firmware properties: {}", e.getMessage());
+        }
+
+        try {
+            logger.debug("Polling for state");
             pollShades();
 
             List<Scene> scenes = updateSceneChannels();
-            List<SceneCollection> sceneCollections = updateSceneCollectionChannels();
-            List<ScheduledEvent> scheduledEvents = updateScheduledEventChannels(scenes, sceneCollections);
+            List<SceneCollection> sceneCollections = updateSceneGroupChannels();
+            List<ScheduledEvent> scheduledEvents = updateAutomationChannels(scenes, sceneCollections);
 
             // Scheduled events should also have their current state updated if event has been
             // enabled or disabled through app or other integration.
-            updateScheduledEventStates(scheduledEvents);
+            updateAutomationStates(scheduledEvents);
         } catch (HubInvalidResponseException e) {
             Throwable cause = e.getCause();
             if (cause == null) {
@@ -327,28 +359,76 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.ONLINE);
         logger.debug("Received data for {} shades", shadesData.size());
 
-        Map<String, ShadeData> idShadeDataMap = getIdShadeDataMap(shadesData);
-        Map<Thing, String> thingIdMap = getThingIdMap();
-        for (Entry<Thing, String> item : thingIdMap.entrySet()) {
+        Map<Integer, ShadeData> idShadeDataMap = getIdShadeDataMap(shadesData);
+        Map<Thing, Integer> thingIdMap = getShadeThingIdMap();
+        for (Entry<Thing, Integer> item : thingIdMap.entrySet()) {
             Thing thing = item.getKey();
-            String shadeId = item.getValue();
+            int shadeId = item.getValue();
             ShadeData shadeData = idShadeDataMap.get(shadeId);
-            updateShadeThing(shadeId, thing, shadeData);
+            if (shadeData != null) {
+                updateShadeThing(shadeId, thing, shadeData);
+            } else {
+                updateUnknownShadeThing(thing);
+            }
         }
     }
 
-    private void updateShadeThing(String shadeId, Thing thing, @Nullable ShadeData shadeData) {
+    private void updateShadeThing(int shadeId, Thing thing, ShadeData shadeData) {
         HDPowerViewShadeHandler thingHandler = ((HDPowerViewShadeHandler) thing.getHandler());
         if (thingHandler == null) {
             logger.debug("Shade '{}' handler not initialized", shadeId);
+            pendingShadeInitializations.put(thing.getUID(), shadeData);
             return;
         }
-        if (shadeData == null) {
-            logger.debug("Shade '{}' has no data in hub", shadeId);
-        } else {
-            logger.debug("Updating shade '{}'", shadeId);
+        ThingStatus thingStatus = thingHandler.getThing().getStatus();
+        switch (thingStatus) {
+            case UNKNOWN:
+            case ONLINE:
+            case OFFLINE:
+                logger.debug("Updating shade '{}'", shadeId);
+                thingHandler.onReceiveUpdate(shadeData);
+                break;
+            case UNINITIALIZED:
+            case INITIALIZING:
+                logger.debug("Shade '{}' handler not yet ready; status: {}", shadeId, thingStatus);
+                pendingShadeInitializations.put(thing.getUID(), shadeData);
+                break;
+            case REMOVING:
+            case REMOVED:
+            default:
+                logger.debug("Ignoring shade update for shade '{}' in status {}", shadeId, thingStatus);
+                break;
         }
-        thingHandler.onReceiveUpdate(shadeData);
+    }
+
+    private void updateUnknownShadeThing(Thing thing) {
+        String shadeId = thing.getUID().getId();
+        logger.debug("Shade '{}' has no data in hub", shadeId);
+        HDPowerViewShadeHandler thingHandler = ((HDPowerViewShadeHandler) thing.getHandler());
+        if (thingHandler == null) {
+            logger.debug("Shade '{}' handler not initialized", shadeId);
+            pendingShadeInitializations.put(thing.getUID(), new ShadeData());
+            return;
+        }
+        ThingStatus thingStatus = thingHandler.getThing().getStatus();
+        switch (thingStatus) {
+            case UNKNOWN:
+            case ONLINE:
+            case OFFLINE:
+                thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                        "@text/offline.gone.shade-unknown-to-hub"));
+                break;
+            case UNINITIALIZED:
+            case INITIALIZING:
+                logger.debug("Shade '{}' handler not yet ready; status: {}", shadeId, thingStatus);
+                pendingShadeInitializations.put(thing.getUID(), new ShadeData());
+                break;
+            case REMOVING:
+            case REMOVED:
+            default:
+                logger.debug("Ignoring shade status update for shade '{}' in status {}", shadeId, thingStatus);
+                break;
+        }
     }
 
     private List<Scene> fetchScenes()
@@ -383,23 +463,17 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         allChannels.removeIf(c -> HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES.equals(c.getUID().getGroupId()));
-        scenes.stream().sorted().forEach(scene -> allChannels.add(createSceneChannel(scene)));
-        updateThing(editThing().withChannels(allChannels).build());
+
+        SceneChannelBuilder channelBuilder = SceneChannelBuilder
+                .create(this.translationProvider,
+                        new ChannelGroupUID(thing.getUID(), HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES))
+                .withScenes(scenes).withChannels(allChannels);
+
+        updateThing(editThing().withChannels(channelBuilder.build()).build());
 
         createDeprecatedSceneChannels(scenes);
 
         return scenes;
-    }
-
-    private Channel createSceneChannel(Scene scene) {
-        ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
-                HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES);
-        ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(scene.id));
-        String description = translationProvider.getText("dynamic-channel.scene-activate.description", scene.getName());
-        Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH).withType(sceneChannelTypeUID)
-                .withLabel(scene.getName()).withDescription(description).build();
-
-        return channel;
     }
 
     /**
@@ -460,40 +534,32 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         return sceneCollectionData;
     }
 
-    private List<SceneCollection> updateSceneCollectionChannels()
+    private List<SceneCollection> updateSceneGroupChannels()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         List<SceneCollection> sceneCollections = fetchSceneCollections();
 
         if (sceneCollections.size() == sceneCollectionCache.size()
                 && sceneCollectionCache.containsAll(sceneCollections)) {
             // Duplicates are not allowed. Reordering is not supported.
-            logger.debug("Preserving scene collection channels, no changes detected");
+            logger.debug("Preserving scene group channels, no changes detected");
             return sceneCollections;
         }
 
-        logger.debug("Updating all scene collection channels, changes detected");
+        logger.debug("Updating all scene group channels, changes detected");
         sceneCollectionCache = new CopyOnWriteArrayList<SceneCollection>(sceneCollections);
 
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         allChannels
                 .removeIf(c -> HDPowerViewBindingConstants.CHANNEL_GROUP_SCENE_GROUPS.equals(c.getUID().getGroupId()));
-        sceneCollections.stream().sorted()
-                .forEach(sceneCollection -> allChannels.add(createSceneCollectionChannel(sceneCollection)));
-        updateThing(editThing().withChannels(allChannels).build());
+
+        SceneGroupChannelBuilder channelBuilder = SceneGroupChannelBuilder
+                .create(this.translationProvider,
+                        new ChannelGroupUID(thing.getUID(), HDPowerViewBindingConstants.CHANNEL_GROUP_SCENE_GROUPS))
+                .withSceneCollections(sceneCollections).withChannels(allChannels);
+
+        updateThing(editThing().withChannels(channelBuilder.build()).build());
 
         return sceneCollections;
-    }
-
-    private Channel createSceneCollectionChannel(SceneCollection sceneCollection) {
-        ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
-                HDPowerViewBindingConstants.CHANNEL_GROUP_SCENE_GROUPS);
-        ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(sceneCollection.id));
-        String description = translationProvider.getText("dynamic-channel.scene-group-activate.description",
-                sceneCollection.getName());
-        Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH).withType(sceneGroupChannelTypeUID)
-                .withLabel(sceneCollection.getName()).withDescription(description).build();
-
-        return channel;
     }
 
     private List<ScheduledEvent> fetchScheduledEvents()
@@ -513,140 +579,33 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         return scheduledEventData;
     }
 
-    private List<ScheduledEvent> updateScheduledEventChannels(List<Scene> scenes,
-            List<SceneCollection> sceneCollections)
+    private List<ScheduledEvent> updateAutomationChannels(List<Scene> scenes, List<SceneCollection> sceneCollections)
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         List<ScheduledEvent> scheduledEvents = fetchScheduledEvents();
 
         if (scheduledEvents.size() == scheduledEventCache.size() && scheduledEventCache.containsAll(scheduledEvents)) {
             // Duplicates are not allowed. Reordering is not supported.
-            logger.debug("Preserving scheduled event channels, no changes detected");
+            logger.debug("Preserving automation channels, no changes detected");
             return scheduledEvents;
         }
 
-        logger.debug("Updating all scheduled event channels, changes detected");
+        logger.debug("Updating all automation channels, changes detected");
         scheduledEventCache = new CopyOnWriteArrayList<ScheduledEvent>(scheduledEvents);
 
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         allChannels
                 .removeIf(c -> HDPowerViewBindingConstants.CHANNEL_GROUP_AUTOMATIONS.equals(c.getUID().getGroupId()));
-        scheduledEvents.stream().forEach(scheduledEvent -> {
-            Channel channel = createScheduledEventChannel(scheduledEvent, scenes, sceneCollections);
-            if (channel != null) {
-                allChannels.add(channel);
-            }
-        });
-        updateThing(editThing().withChannels(allChannels).build());
+        AutomationChannelBuilder channelBuilder = AutomationChannelBuilder
+                .create(this.translationProvider,
+                        new ChannelGroupUID(thing.getUID(), HDPowerViewBindingConstants.CHANNEL_GROUP_AUTOMATIONS))
+                .withScenes(scenes).withSceneCollections(sceneCollections).withScheduledEvents(scheduledEvents)
+                .withChannels(allChannels);
+        updateThing(editThing().withChannels(channelBuilder.build()).build());
 
         return scheduledEvents;
     }
 
-    private @Nullable Channel createScheduledEventChannel(ScheduledEvent scheduledEvent, List<Scene> scenes,
-            List<SceneCollection> sceneCollections) {
-        String referencedName = getReferencedSceneOrSceneCollectionName(scheduledEvent, scenes, sceneCollections);
-        if (referencedName == null) {
-            return null;
-        }
-        ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
-                HDPowerViewBindingConstants.CHANNEL_GROUP_AUTOMATIONS);
-        ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(scheduledEvent.id));
-        String label = getScheduledEventName(referencedName, scheduledEvent);
-        String description = translationProvider.getText("dynamic-channel.automation-enabled.description",
-                referencedName);
-        Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH).withType(automationChannelTypeUID)
-                .withLabel(label).withDescription(description).build();
-
-        return channel;
-    }
-
-    private @Nullable String getReferencedSceneOrSceneCollectionName(ScheduledEvent scheduledEvent, List<Scene> scenes,
-            List<SceneCollection> sceneCollections) {
-        if (scheduledEvent.sceneId > 0) {
-            for (Scene scene : scenes) {
-                if (scene.id == scheduledEvent.sceneId) {
-                    return scene.getName();
-                }
-            }
-            logger.error("Scene '{}' was not found for scheduled event '{}'", scheduledEvent.sceneId,
-                    scheduledEvent.id);
-            return null;
-        } else if (scheduledEvent.sceneCollectionId > 0) {
-            for (SceneCollection sceneCollection : sceneCollections) {
-                if (sceneCollection.id == scheduledEvent.sceneCollectionId) {
-                    return sceneCollection.getName();
-                }
-            }
-            logger.error("Scene collection '{}' was not found for scheduled event '{}'",
-                    scheduledEvent.sceneCollectionId, scheduledEvent.id);
-            return null;
-        } else {
-            logger.error("Scheduled event '{}'' not related to any scene or scene collection", scheduledEvent.id);
-            return null;
-        }
-    }
-
-    private String getScheduledEventName(String sceneName, ScheduledEvent scheduledEvent) {
-        String timeString, daysString;
-
-        switch (scheduledEvent.eventType) {
-            case ScheduledEvents.SCHEDULED_EVENT_TYPE_TIME:
-                timeString = LocalTime.of(scheduledEvent.hour, scheduledEvent.minute).toString();
-                break;
-            case ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE:
-                if (scheduledEvent.minute == 0) {
-                    timeString = translationProvider.getText("dynamic-channel.automation.at_sunrise");
-                } else if (scheduledEvent.minute < 0) {
-                    timeString = translationProvider.getText("dynamic-channel.automation.before_sunrise",
-                            getFormattedTimeOffset(-scheduledEvent.minute));
-                } else {
-                    timeString = translationProvider.getText("dynamic-channel.automation.after_sunrise",
-                            getFormattedTimeOffset(scheduledEvent.minute));
-                }
-                break;
-            case ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNSET:
-                if (scheduledEvent.minute == 0) {
-                    timeString = translationProvider.getText("dynamic-channel.automation.at_sunset");
-                } else if (scheduledEvent.minute < 0) {
-                    timeString = translationProvider.getText("dynamic-channel.automation.before_sunset",
-                            getFormattedTimeOffset(-scheduledEvent.minute));
-                } else {
-                    timeString = translationProvider.getText("dynamic-channel.automation.after_sunset",
-                            getFormattedTimeOffset(scheduledEvent.minute));
-                }
-                break;
-            default:
-                return sceneName;
-        }
-
-        EnumSet<DayOfWeek> days = scheduledEvent.getDays();
-        if (EnumSet.allOf(DayOfWeek.class).equals(days)) {
-            daysString = translationProvider.getText("dynamic-channel.automation.all-days");
-        } else if (ScheduledEvents.WEEKDAYS.equals(days)) {
-            daysString = translationProvider.getText("dynamic-channel.automation.weekdays");
-        } else if (ScheduledEvents.WEEKENDS.equals(days)) {
-            daysString = translationProvider.getText("dynamic-channel.automation.weekends");
-        } else {
-            StringJoiner joiner = new StringJoiner(", ");
-            days.forEach(day -> joiner.add(day.getDisplayName(TextStyle.SHORT, translationProvider.getLocale())));
-            daysString = joiner.toString();
-        }
-
-        return translationProvider.getText("dynamic-channel.automation-enabled.label", sceneName, timeString,
-                daysString);
-    }
-
-    private String getFormattedTimeOffset(int minutes) {
-        if (minutes >= 60) {
-            int remainder = minutes % 60;
-            if (remainder == 0) {
-                return translationProvider.getText("dynamic-channel.automation.hour", minutes / 60);
-            }
-            return translationProvider.getText("dynamic-channel.automation.hour-minute", minutes / 60, remainder);
-        }
-        return translationProvider.getText("dynamic-channel.automation.minute", minutes);
-    }
-
-    private void updateScheduledEventStates(List<ScheduledEvent> scheduledEvents) {
+    private void updateAutomationStates(List<ScheduledEvent> scheduledEvents) {
         ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
                 HDPowerViewBindingConstants.CHANNEL_GROUP_AUTOMATIONS);
         for (ScheduledEvent scheduledEvent : scheduledEvents) {
@@ -656,50 +615,62 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
     }
 
-    private Map<Thing, String> getThingIdMap() {
-        Map<Thing, String> ret = new HashMap<>();
-        for (Thing thing : getThing().getThings()) {
-            String id = thing.getConfiguration().as(HDPowerViewShadeConfiguration.class).id;
-            if (id != null && !id.isEmpty()) {
-                ret.put(thing, id);
-            }
-        }
+    private Map<Thing, Integer> getShadeThingIdMap() {
+        Map<Thing, Integer> ret = new HashMap<>();
+        getThing().getThings().stream()
+                .filter(thing -> HDPowerViewBindingConstants.THING_TYPE_SHADE.equals(thing.getThingTypeUID()))
+                .forEach(thing -> {
+                    int id = thing.getConfiguration().as(HDPowerViewShadeConfiguration.class).id;
+                    if (id > 0) {
+                        ret.put(thing, id);
+                    }
+                });
         return ret;
     }
 
-    private Map<String, ShadeData> getIdShadeDataMap(List<ShadeData> shadeData) {
-        Map<String, ShadeData> ret = new HashMap<>();
+    private Map<Integer, ShadeData> getIdShadeDataMap(List<ShadeData> shadeData) {
+        Map<Integer, ShadeData> ret = new HashMap<>();
         for (ShadeData shade : shadeData) {
-            if (shade.id != 0) {
-                ret.put(Integer.toString(shade.id), shade);
+            if (shade.id > 0) {
+                ret.put(shade.id, shade);
             }
         }
         return ret;
     }
 
     private void requestRefreshShadePositions() {
-        Map<Thing, String> thingIdMap = getThingIdMap();
-        for (Entry<Thing, String> item : thingIdMap.entrySet()) {
+        Map<Thing, Integer> thingIdMap = getShadeThingIdMap();
+        for (Entry<Thing, Integer> item : thingIdMap.entrySet()) {
             Thing thing = item.getKey();
+            if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.GONE) {
+                // Skip shades unknown to the Hub.
+                logger.debug("Shade '{}' is unknown, skipping position refresh", item.getValue());
+                continue;
+            }
             ThingHandler handler = thing.getHandler();
             if (handler instanceof HDPowerViewShadeHandler) {
                 ((HDPowerViewShadeHandler) handler).requestRefreshShadePosition();
             } else {
-                String shadeId = item.getValue();
+                int shadeId = item.getValue();
                 logger.debug("Shade '{}' handler not initialized", shadeId);
             }
         }
     }
 
     private void requestRefreshShadeBatteryLevels() {
-        Map<Thing, String> thingIdMap = getThingIdMap();
-        for (Entry<Thing, String> item : thingIdMap.entrySet()) {
+        Map<Thing, Integer> thingIdMap = getShadeThingIdMap();
+        for (Entry<Thing, Integer> item : thingIdMap.entrySet()) {
             Thing thing = item.getKey();
+            if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.GONE) {
+                // Skip shades unknown to the Hub.
+                logger.debug("Shade '{}' is unknown, skipping battery level refresh", item.getValue());
+                continue;
+            }
             ThingHandler handler = thing.getHandler();
             if (handler instanceof HDPowerViewShadeHandler) {
                 ((HDPowerViewShadeHandler) handler).requestRefreshShadeBatteryLevel();
             } else {
-                String shadeId = item.getValue();
+                int shadeId = item.getValue();
                 logger.debug("Shade '{}' handler not initialized", shadeId);
             }
         }
