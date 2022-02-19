@@ -135,6 +135,8 @@ public class VoskSTTService implements STTService {
 
     @Override
     public Set<Locale> getSupportedLocales() {
+        // as it is not possible to determine the language of the model that was downloaded and setup by the user, it is
+        // assumed the language of the model is matching the locale of the openHAB server
         return Set.of(localeService.getLocale(null));
     }
 
@@ -147,7 +149,6 @@ public class VoskSTTService implements STTService {
     @Override
     public STTServiceHandle recognize(STTListener sttListener, AudioStream audioStream, Locale locale, Set<String> set)
             throws STTException {
-        Future<?> task;
         AtomicBoolean aborted = new AtomicBoolean(false);
         try {
             var frequency = audioStream.getFormat().getFrequency();
