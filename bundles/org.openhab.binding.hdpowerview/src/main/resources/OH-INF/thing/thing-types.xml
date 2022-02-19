@@ -90,6 +90,12 @@
 		<description>Hunter Douglas (Luxaflex) PowerView Repeater</description>
 
 		<channels>
+			<channel id="color" typeId="system.color">
+				<description>Controls the color of the LED ring</description>
+			</channel>
+			<channel id="brightness" typeId="system.brightness">
+				<description>Controls the brightness of the LED ring</description>
+			</channel>
 			<channel id="identify" typeId="repeater-identify"/>
 			<channel id="blinkingEnabled" typeId="repeater-blinking-enabled"/>
 		</channels>
