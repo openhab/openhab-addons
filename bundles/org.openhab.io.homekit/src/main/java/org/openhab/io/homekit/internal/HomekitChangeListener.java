@@ -32,6 +32,7 @@ import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.ItemRegistryChangeListener;
 import org.openhab.core.items.Metadata;
+import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -88,31 +89,40 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         metadataChangeListener = new RegistryChangeListener<Metadata>() {
             @Override
             public void added(final Metadata metadata) {
-                try {
-                    markDirty(itemRegistry.getItem(metadata.getUID().getItemName()));
-                } catch (ItemNotFoundException e) {
-                    logger.debug("Could not found item for metadata {}", metadata);
+                final MetadataKey uid = metadata.getUID();
+                if (HomekitAccessoryFactory.METADATA_KEY.equalsIgnoreCase(uid.getNamespace())) {
+                    try {
+                        markDirty(itemRegistry.getItem(uid.getItemName()));
+                    } catch (ItemNotFoundException e) {
+                        logger.debug("Could not find item for metadata {}", metadata);
+                    }
                 }
             }
 
             @Override
             public void removed(final Metadata metadata) {
-                try {
-                    markDirty(itemRegistry.getItem(metadata.getUID().getItemName()));
-                } catch (ItemNotFoundException e) {
-                    logger.debug("Could not found item for metadata {}", metadata);
+                final MetadataKey uid = metadata.getUID();
+                if (HomekitAccessoryFactory.METADATA_KEY.equalsIgnoreCase(uid.getNamespace())) {
+                    try {
+                        markDirty(itemRegistry.getItem(uid.getItemName()));
+                    } catch (ItemNotFoundException e) {
+                        logger.debug("Could not find item for metadata {}", metadata);
+                    }
                 }
             }
 
             @Override
-            public void updated(final Metadata metadata, final Metadata e1) {
-                try {
-                    markDirty(itemRegistry.getItem(metadata.getUID().getItemName()));
-                    if (!metadata.getUID().getItemName().equals(e1.getUID().getItemName())) {
-                        markDirty(itemRegistry.getItem(e1.getUID().getItemName()));
+            public void updated(final Metadata oldMetadata, final Metadata newMetadata) {
+                final MetadataKey oldUid = oldMetadata.getUID();
+                final MetadataKey newUid = newMetadata.getUID();
+                if (HomekitAccessoryFactory.METADATA_KEY.equalsIgnoreCase(oldUid.getNamespace())
+                        || HomekitAccessoryFactory.METADATA_KEY.equalsIgnoreCase(newUid.getNamespace())) {
+                    try {
+                        // the item name is same in old and new metadata, so we can take any.
+                        markDirty(itemRegistry.getItem(oldUid.getItemName()));
+                    } catch (ItemNotFoundException e) {
+                        logger.debug("Could not find item for metadata {}", oldMetadata);
                     }
-                } catch (ItemNotFoundException e) {
-                    logger.debug("Could not found item for metadata {}", metadata);
                 }
             }
         };
@@ -148,9 +158,15 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         accessoryRegistry.setConfigurationRevision(revision);
     }
 
+    private boolean hasHomeKitMetadata(Item item) {
+        return metadataRegistry.get(new MetadataKey(HomekitAccessoryFactory.METADATA_KEY, item.getUID())) != null;
+    }
+
     @Override
     public synchronized void added(Item item) {
-        markDirty(item);
+        if (hasHomeKitMetadata(item)) {
+            markDirty(item);
+        }
     }
 
     @Override
@@ -179,7 +195,9 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     @Override
     public synchronized void removed(Item item) {
-        markDirty(item);
+        if (hasHomeKitMetadata(item)) {
+            markDirty(item);
+        }
     }
 
     private Optional<Item> getItemOptional(String name) {
@@ -193,17 +211,17 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     public void makeNewConfigurationRevision() {
         final int newRevision = accessoryRegistry.makeNewConfigurationRevision();
         lastAccessoryCount = accessoryRegistry.getAllAccessories().size();
-        logger.trace("make new configuration revision. new revision number {}, number of accessories {}", newRevision,
+        logger.trace("Make new configuration revision. new revision number {}, number of accessories {}", newRevision,
                 lastAccessoryCount);
         storage.put(REVISION_CONFIG, "" + newRevision);
         storage.put(ACCESSORY_COUNT, "" + lastAccessoryCount);
     }
 
     private synchronized void applyUpdates() {
-        logger.trace("apply updates");
+        logger.trace("Apply updates");
         for (final String name : pendingUpdates) {
             accessoryRegistry.remove(name);
-            logger.trace(" add items {}", name);
+            logger.trace(" Add items {}", name);
             getItemOptional(name).ifPresent(this::createRootAccessories);
         }
         if (!pendingUpdates.isEmpty()) {

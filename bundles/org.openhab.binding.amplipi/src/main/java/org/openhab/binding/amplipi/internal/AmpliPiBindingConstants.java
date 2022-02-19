@@ -41,4 +41,5 @@ public class AmpliPiBindingConstants {
     // list of configuration parameters
     public static final String CFG_PARAM_HOSTNAME = "hostname";
     public static final String CFG_PARAM_ID = "id";
+    public static final String CFG_PARAM_VOLUME_DELTA = "volumeDelta";
 }

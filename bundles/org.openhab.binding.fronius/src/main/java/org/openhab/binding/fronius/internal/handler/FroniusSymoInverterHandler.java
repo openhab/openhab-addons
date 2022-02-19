@@ -17,6 +17,7 @@ import java.util.Map;
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
+import org.openhab.binding.fronius.internal.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.InverterRealtimeResponse;
 import org.openhab.binding.fronius.internal.api.PowerFlowRealtimeInverter;
 import org.openhab.binding.fronius.internal.api.PowerFlowRealtimeResponse;
@@ -57,7 +58,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     }
 
     @Override
-    public void refresh(FroniusBridgeConfiguration bridgeConfiguration) {
+    protected void handleRefresh(FroniusBridgeConfiguration bridgeConfiguration) throws FroniusCommunicationException {
         updateData(bridgeConfiguration, config);
         updateChannels();
     }
@@ -177,7 +178,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     /**
      * Get new data
      */
-    private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config) {
+    private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config)
+            throws FroniusCommunicationException {
         inverterRealtimeResponse = getRealtimeData(bridgeConfiguration.hostname, config.deviceId);
         powerFlowResponse = getPowerFlowRealtime(bridgeConfiguration.hostname);
     }
@@ -188,10 +190,10 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @param ip address of the device
      * @return {PowerFlowRealtimeResponse} the object representation of the json response
      */
-    private PowerFlowRealtimeResponse getPowerFlowRealtime(String ip) {
+    private PowerFlowRealtimeResponse getPowerFlowRealtime(String ip) throws FroniusCommunicationException {
         String location = FroniusBindingConstants.POWERFLOW_REALTIME_DATA.replace("%IP%",
                 (ip != null ? ip.trim() : ""));
-        return collectDataFormUrl(PowerFlowRealtimeResponse.class, location);
+        return collectDataFromUrl(PowerFlowRealtimeResponse.class, location);
     }
 
     /**
@@ -201,10 +203,10 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @param deviceId of the device
      * @return {InverterRealtimeResponse} the object representation of the json response
      */
-    private InverterRealtimeResponse getRealtimeData(String ip, int deviceId) {
+    private InverterRealtimeResponse getRealtimeData(String ip, int deviceId) throws FroniusCommunicationException {
         String location = FroniusBindingConstants.INVERTER_REALTIME_DATA_URL.replace("%IP%",
                 (ip != null ? ip.trim() : ""));
         location = location.replace("%DEVICEID%", Integer.toString(deviceId));
-        return collectDataFormUrl(InverterRealtimeResponse.class, location);
+        return collectDataFromUrl(InverterRealtimeResponse.class, location);
     }
 }
