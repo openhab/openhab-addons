@@ -164,10 +164,9 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
             scheduleRestartClient(false);
         } catch (AuthenticationException | ApiException | IOException | OAuthException e) {
-            logger.debug("Error fetching access tokens. Invalid authcode! Please generate a new one. Detail: {}",
-                    e.getMessage());
+            logger.debug("Error fetching access tokens. Please check your credentials. Detail: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Cannot connect to Livisi SmartHome service. Please set auth-code!");
+                    "Cannot connect to Livisi SmartHome service. Please check your credentials!");
         }
     }
 

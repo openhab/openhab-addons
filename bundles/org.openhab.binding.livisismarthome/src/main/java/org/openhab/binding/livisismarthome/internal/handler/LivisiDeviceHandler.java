@@ -586,17 +586,23 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                             // prevent error when buttonIndexState is null
                             if (buttonIndexState != null) {
                                 if (buttonIndexState >= 0 && buttonIndexState <= 7) {
-                                    final int channelIndex = buttonIndexState + 1;
                                     final String type = c.getCapabilityState().getPushButtonSensorButtonIndexType();
-                                    final String triggerEvent = SHORT_PRESS.equals(type)
-                                            ? CommonTriggerEvents.SHORT_PRESSED
-                                            : (LONG_PRESS.equals(type) ? CommonTriggerEvents.LONG_PRESSED
-                                                    : CommonTriggerEvents.PRESSED);
-
-                                    triggerChannel(CHANNEL_BUTTON + channelIndex, triggerEvent);
-                                    updateState(String.format(CHANNEL_BUTTON_COUNT, channelIndex), pushCount);
+                                    if (type != null) {
+                                        final int channelIndex = buttonIndexState + 1;
+                                        if (SHORT_PRESS.equals(type)) {
+                                            triggerChannel(CHANNEL_BUTTON + channelIndex,
+                                                    CommonTriggerEvents.SHORT_PRESSED);
+                                        } else if (LONG_PRESS.equals(type)) {
+                                            triggerChannel(CHANNEL_BUTTON + channelIndex,
+                                                    CommonTriggerEvents.LONG_PRESSED);
+                                        }
+                                        triggerChannel(CHANNEL_BUTTON + channelIndex, CommonTriggerEvents.PRESSED);
+                                        updateState(String.format(CHANNEL_BUTTON_COUNT, channelIndex), pushCount);
+                                    } else {
+                                        logger.debug("Button type NULL not supported.");
+                                    }
                                 } else {
-                                    logger.debug("Button index {} not supported.", buttonIndexState);
+                                    logger.debug("Button index NULL not supported.");
                                 }
                                 // Button handled so remove state to avoid re-trigger.
                                 c.getCapabilityState().setPushButtonSensorButtonIndexState(null);
@@ -820,21 +826,13 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                         // PushButtonSensor
                     } else if (capability.isTypePushButtonSensor()) {
                         // Some devices send both StateChanged and ButtonPressed. But only one should be handled.
-                        // If ButtonPressed is send lastPressedButtonIndex is not set in StateChanged so ignore
-                        // StateChanged.
-                        // type is also not always present if null will be interpreted as a normal key press.
-                        final Integer tmpButtonIndex = event.getProperties().getLastPressedButtonIndex();
-
-                        if (tmpButtonIndex != null) {
-                            capabilityState.setPushButtonSensorButtonIndexState(tmpButtonIndex);
-                            capabilityState
-                                    .setPushButtonSensorButtonIndexType(event.getProperties().getLastKeyPressType());
-
-                            final Integer tmpLastKeyPressCounter = event.getProperties().getLastKeyPressCounter();
-
-                            if (tmpLastKeyPressCounter != null) {
-                                capabilityState.setPushButtonSensorCounterState(tmpLastKeyPressCounter);
-                            }
+                        // LastPressedButtonIndex is not set in StateChanged so ignore StateChanged.
+                        final Integer buttonIndex = event.getProperties().getKeyPressButtonIndex();
+                        final boolean isButtonPressedEvent = buttonIndex != null;
+                        if (isButtonPressedEvent) {
+                            capabilityState.setPushButtonSensorButtonIndexState(buttonIndex);
+                            capabilityState.setPushButtonSensorButtonIndexType(event.getProperties().getKeyPressType());
+                            capabilityState.setPushButtonSensorCounterState(event.getProperties().getKeyPressCounter());
                             deviceChanged = true;
                         }
 

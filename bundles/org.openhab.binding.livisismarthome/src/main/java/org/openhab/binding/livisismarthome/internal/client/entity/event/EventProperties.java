@@ -64,15 +64,13 @@ public class EventProperties {
 
     private Boolean isSmokeAlarm;
 
-    private Integer lastKeyPressCounter;
+    private Integer keyPressCounter;
 
-    private Integer lastPressedButtonIndex;
+    @SerializedName("index")
+    private Integer keyPressButtonIndex;
 
-    /**
-     * Key press type
-     */
     @SerializedName("type")
-    private String lastKeyPressType;
+    private String keyPressType;
 
     private Double luminance;
 
@@ -391,39 +389,33 @@ public class EventProperties {
     }
 
     /**
-     * @return the lastKeyPressCounter
+     * @return the keyPressCounter
      */
-    public Integer getLastKeyPressCounter() {
-        return lastKeyPressCounter;
+    public Integer getKeyPressCounter() {
+        return keyPressCounter;
     }
 
     /**
-     * @param lastKeyPressCounter the lastKeyPressCounter to set
+     * @param keyPressCounter the lastKeyPressCounter to set
      */
-    public void setLastKeyPressCounter(final Integer lastKeyPressCounter) {
-        this.lastKeyPressCounter = lastKeyPressCounter;
+    public void setKeyPressCounter(final Integer keyPressCounter) {
+        this.keyPressCounter = keyPressCounter;
     }
 
-    /**
-     * @return the lastPressedButtonIndex
-     */
-    public Integer getLastPressedButtonIndex() {
-        return lastPressedButtonIndex;
+    public Integer getKeyPressButtonIndex() {
+        return keyPressButtonIndex;
     }
 
-    /**
-     * @param lastPressedButtonIndex the lastPressedButtonIndex to set
-     */
-    public void setLastPressedButtonIndex(final Integer lastPressedButtonIndex) {
-        this.lastPressedButtonIndex = lastPressedButtonIndex;
+    public void setKeyPressButtonIndex(final Integer keyPressButtonIndex) {
+        this.keyPressButtonIndex = keyPressButtonIndex;
     }
 
-    public String getLastKeyPressType() {
-        return lastKeyPressType;
+    public String getKeyPressType() {
+        return keyPressType;
     }
 
-    public void setLastKeyPressType(final String lastKeyPressType) {
-        this.lastKeyPressType = lastKeyPressType;
+    public void setKeyPressType(final String keyPressType) {
+        this.keyPressType = keyPressType;
     }
 
     /**

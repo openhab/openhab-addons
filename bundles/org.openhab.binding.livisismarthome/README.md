@@ -59,7 +59,7 @@ The bridge (SHC) can not be discovered automatically. It must be added manually 
 
 After the bridge is added, devices are discovered automatically.
 As there is no background discovery implemented at the moment, you have to start the discovery manually.
-However, only devices will appear that are added in the LIVISI SmartHome app before, as the LIVISI Binding does not support the coupling of devices to the bridge.
+However, only devices will appear that are added in the LIVISI SmartHome app before, because the LIVISI Binding does not support the coupling of devices to the bridge.
 
 ## Channels
 
@@ -109,10 +109,11 @@ When `invert` is `true` than `0` on LIVISI is `UP` and `100` is `DOWN`.
 
 ## Triggers
 
-| Trigger Type  | Description                          | Available on thing                                    |
-|---------------|--------------------------------------|-------------------------------------------------------|
-| SHORT_PRESSED | Fired when you press a button        | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
-| LONG_PRESSED  | Fired when you press a button longer | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
+| Trigger Type  | Description                                   | Available on thing                                    |
+|---------------|-----------------------------------------------|-------------------------------------------------------|
+| SHORT_PRESSED | Fired when you press a button short           | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
+| LONG_PRESSED  | Fired when you press a button longer          | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
+| PRESSED       | Fired when you press a button (short or long) | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
 
 
 ## Thing configuration
