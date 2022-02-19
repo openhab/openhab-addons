@@ -401,6 +401,7 @@
     <module>org.openhab.voice.pollytts</module>
     <module>org.openhab.voice.porcupineks</module>
     <module>org.openhab.voice.voicerss</module>
+    <module>org.openhab.voice.voskstt</module>
     <module>org.openhab.voice.watsonstt</module>
   </modules>
 
