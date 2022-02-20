@@ -527,7 +527,6 @@
 	<channel-type id="meterPowerFactor">
 		<item-type>Number</item-type>
 		<label>Power Factor</label>
-		<description></description>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>

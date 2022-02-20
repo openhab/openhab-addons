@@ -6,7 +6,6 @@
 
 	<thing-type id="f1x45-udp">
 		<label>UDP Connected Nibe F1145 and F1245 Heat Pumps</label>
-		<description></description>
 
 		<channel-groups>
 			<channel-group typeId="f1x45-sensor-group-channels" id="sensor"/>
@@ -67,7 +66,6 @@
 
 	<thing-type id="f1x45-serial">
 		<label>Serial Port Connected F1145 and F1245 Heat Pumps</label>
-		<description></description>
 
 		<channel-groups>
 			<channel-group typeId="f1x45-sensor-group-channels" id="sensor"/>
@@ -127,7 +125,6 @@
 
 	<thing-type id="f1x45-simulator">
 		<label>Simulator for Nibe F1145 and F1245 Heat Pumps</label>
-		<description></description>
 
 		<channel-groups>
 			<channel-group typeId="f1x45-sensor-group-channels" id="sensor"/>

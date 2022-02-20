@@ -85,13 +85,11 @@
 	<channel-type id="textualstate">
 		<item-type>String</item-type>
 		<label>Textual State</label>
-		<description></description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="mowed">
 		<item-type>Dimmer</item-type>
 		<label>Cut Grass</label>
-		<description></description>
 		<state readOnly="true" pattern="%d %%"></state>
 	</channel-type>
 	<channel-type id="ready">
