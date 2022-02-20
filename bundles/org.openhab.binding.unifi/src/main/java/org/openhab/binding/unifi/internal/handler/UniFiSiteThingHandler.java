@@ -30,6 +30,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link UniFiSiteThingHandler} is responsible for handling commands and status
@@ -59,17 +61,16 @@ public class UniFiSiteThingHandler extends UniFiBaseThingHandler<UniFiSite, UniF
     }
 
     @Override
-    protected synchronized @Nullable UniFiSite getEntity(final UniFiController controller) {
-        return controller.getSite(config.getSiteID());
+    protected @Nullable UniFiSite getEntity(final UniFiControllerCache cache) {
+        return cache.getSite(config.getSiteID());
     }
 
     @Override
-    protected void refreshChannel(final UniFiSite site, final ChannelUID channelUID) {
-        final String channelID = channelUID.getIdWithoutGroup();
+    protected State getChannelState(final UniFiSite site, final String channelId) {
         final UniFiControllerCache cache = site.getCache();
         final long count;
 
-        switch (channelID) {
+        switch (channelId) {
             case CHANNEL_TOTAL_CLIENTS:
                 count = cache.countClients(site, c -> true);
                 break;
@@ -84,9 +85,9 @@ public class UniFiSiteThingHandler extends UniFiBaseThingHandler<UniFiSite, UniF
                 break;
             default:
                 // Unsupported channel; nothing to update
-                return;
+                return UnDefType.NULL;
         }
-        updateState(channelUID, new DecimalType(count));
+        return new DecimalType(count);
     }
 
     @Override

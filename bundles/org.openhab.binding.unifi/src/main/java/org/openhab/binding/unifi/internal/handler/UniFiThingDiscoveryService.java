@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.UniFiBindingConstants;
 import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
+import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.model.UniFiClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiPortTable;
 import org.openhab.binding.unifi.internal.api.model.UniFiSite;
@@ -97,18 +98,20 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
         }
         try {
             controller.refresh();
+            final UniFiControllerCache cache = controller.getCache();
             final ThingUID bridgeUID = bh.getThing().getUID();
-            discoverSites(controller, bridgeUID);
-            discoverWlans(controller, bridgeUID);
-            discoverClients(controller, bridgeUID);
-            discoverPoePorts(controller, bridgeUID);
+
+            discoverSites(cache, bridgeUID);
+            discoverWlans(cache, bridgeUID);
+            discoverClients(cache, bridgeUID);
+            discoverPoePorts(cache, bridgeUID);
         } catch (final UniFiException e) {
             logger.debug("Exception during discovery of UniFi Things", e);
         }
     }
 
-    private void discoverSites(final UniFiController controller, final ThingUID bridgeUID) {
-        for (final UniFiSite site : controller.getSites()) {
+    private void discoverSites(final UniFiControllerCache cache, final ThingUID bridgeUID) {
+        for (final UniFiSite site : cache.getSites()) {
             final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_SITE, bridgeUID,
                     stripIdShort(site.getId()));
             final Map<String, Object> properties = Map.of(PARAMETER_SID, site.getId());
@@ -119,8 +122,8 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private void discoverWlans(final UniFiController controller, final ThingUID bridgeUID) {
-        for (final UniFiWlan wlan : controller.getWlans()) {
+    private void discoverWlans(final UniFiControllerCache cache, final ThingUID bridgeUID) {
+        for (final UniFiWlan wlan : cache.getWlans()) {
             final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_WLAN, bridgeUID,
                     stripIdShort(wlan.getId()));
             final Map<String, Object> properties = Map.of(PARAMETER_WID, wlan.getId(), PARAMETER_SITE,
@@ -132,8 +135,8 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private void discoverClients(final UniFiController controller, final ThingUID bridgeUID) {
-        for (final UniFiClient uc : controller.getClients()) {
+    private void discoverClients(final UniFiControllerCache cache, final ThingUID bridgeUID) {
+        for (final UniFiClient uc : cache.getClients()) {
             final var thingTypeUID = uc.isWireless() ? UniFiBindingConstants.THING_TYPE_WIRELESS_CLIENT
                     : UniFiBindingConstants.THING_TYPE_WIRED_CLIENT;
             final ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, stripIdShort(uc.getId()));
@@ -148,7 +151,7 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
 
     /**
      * Shorten the id to make it a bit more comprehensible.
-     * 
+     *
      * @param id id to shorten.
      * @return shortened id or if to short the original id
      */
@@ -156,8 +159,8 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
         return id.length() > THING_ID_LENGTH ? id.substring(id.length() - THING_ID_LENGTH) : id;
     }
 
-    private void discoverPoePorts(final UniFiController controller, final ThingUID bridgeUID) {
-        for (final Map<Integer, UniFiPortTable> uc : controller.getSwitchPorts()) {
+    private void discoverPoePorts(final UniFiControllerCache cache, final ThingUID bridgeUID) {
+        for (final Map<Integer, UniFiPortTable> uc : cache.getSwitchPorts()) {
             for (final Entry<Integer, UniFiPortTable> sp : uc.entrySet()) {
                 final UniFiPortTable pt = sp.getValue();
                 final String deviceMac = pt.getDevice().getMac();

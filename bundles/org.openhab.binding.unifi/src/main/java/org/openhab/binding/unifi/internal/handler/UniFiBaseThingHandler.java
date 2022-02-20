@@ -17,18 +17,21 @@ import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
+import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +91,7 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
 
     private @Nullable E getEntity() {
         final UniFiController controller = getController();
-        return controller == null ? null : getEntity(controller);
+        return controller == null ? null : getEntity(controller.getCache());
     }
 
     @Override
@@ -99,10 +102,10 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
             final E entity = getEntity();
             final UniFiController controller = getController();
 
-            if (entity != null && controller != null) {
-                if (command == REFRESH) {
-                    refreshChannel(entity, channelUID);
-                } else {
+            if (command == REFRESH) {
+                updateState(entity, channelUID);
+            } else {
+                if (entity != null && controller != null) {
                     try {
                         if (!handleCommand(controller, entity, channelUID, command)) {
                             logger.info("Ignoring unsupported command = {} for channel = {}", command, channelUID);
@@ -111,11 +114,14 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
                         logger.info("Unexpected error handling command = {} for channel = {} : {}", command, channelUID,
                                 e.getMessage());
                     }
+                } else {
+                    logger.info(
+                            "Could not handle command {} for channel = {} because no entity/controller data available.",
+                            command, channelUID);
                 }
-            } else {
-                // mgb: set the default state if we're online yet cannot find the respective entity
-                // updateState(channelUID, getDefaultState(channelUID)State);
             }
+        } else {
+            logger.info("Could not handle command {} for channel = {} because thing not online.", command, channelUID);
         }
     }
 
@@ -123,12 +129,18 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
         // mgb: only refresh if we're ONLINE
         if (getThing().getStatus() == ONLINE) {
             final E entity = getEntity();
-            if (entity != null) {
-                for (final Channel channel : getThing().getChannels()) {
-                    final ChannelUID channelUID = channel.getUID();
-                    refreshChannel(entity, channelUID);
-                }
-            }
+
+            getThing().getChannels().forEach(channel -> updateState(entity, channel.getUID()));
+        }
+    }
+
+    private void updateState(final E entity, final ChannelUID channelUID) {
+        final String channelId = channelUID.getId();
+        final State state = Optional.ofNullable(entity).map(e -> getChannelState(e, channelId))
+                .orElseGet(() -> getDefaultState(channelId));
+
+        if (state != UnDefType.NULL) {
+            updateState(channelUID, state);
         }
     }
 
@@ -137,15 +149,49 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
      * If initialization is unsuccessful it should set the thing status and return false.
      * if it was successful it should return true
      *
-     * @param config
+     * @param config thing configuration
      * @return true if initialization was successful
      */
     protected abstract boolean initialize(C config);
 
-    protected abstract @Nullable E getEntity(UniFiController controller);
+    /**
+     * Returns the default state if no data available. Default implementation return {@link UnDefType#UNDEF}.
+     *
+     * @param channelId channel to update
+     * @return default state
+     */
+    protected State getDefaultState(final String channelId) {
+        return UnDefType.UNDEF;
+    }
 
-    protected abstract void refreshChannel(E entity, ChannelUID channelUID);
+    /**
+     * Returns the cached UniFi entity object related to this thing.
+     *
+     * @param cache cache to get the cached entity from
+     * @return cached entry or null if not exists
+     */
+    protected abstract @Nullable E getEntity(UniFiControllerCache cache);
 
+    /**
+     * Returns the state to set for the given channel. If {@link UnDefType#NULL} is returned it means the channel should
+     * not be updated.
+     *
+     * @param entity UniFi entity object to get the state information from
+     * @param channelId Channel to update
+     * @return state to set or {@link UnDefType#NULL} if channel state should not be updated.
+     */
+    protected abstract State getChannelState(E entity, String channelId);
+
+    /**
+     * Send the given command to the UniFi controller.
+     *
+     * @param controller controller object to use to send the command to the UniFi controller
+     * @param entity data object of the thing to send command to
+     * @param channelUID channel the command is from
+     * @param command command to send
+     * @return true if command was send
+     * @throws UniFiException
+     */
     protected abstract boolean handleCommand(UniFiController controller, E entity, ChannelUID channelUID,
             Command command) throws UniFiException;
 }

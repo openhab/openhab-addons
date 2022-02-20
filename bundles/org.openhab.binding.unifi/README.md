@@ -139,7 +139,7 @@ The `wlan` information that is retrieved is available as these channels:
 
 ::: warning Attention
 If you link an item to the `xPrassphrase` or `qrcodeEncoding` channel your Wi-Fi password will be  exposed in openHAB.
-The passwords is also visible in openHAB event log.
+The password will also be visible in openHAB event log.
 :::
 
 The `qrcodeEncoding` channel can be used to easily create a QRCode to access, for example, a guest network.

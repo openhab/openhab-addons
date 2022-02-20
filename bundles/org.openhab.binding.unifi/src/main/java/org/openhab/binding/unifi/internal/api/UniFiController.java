@@ -148,40 +148,12 @@ public class UniFiController {
         }
     }
 
-    public @Nullable UniFiSite getSite(final @Nullable String id) {
-        return cache.getSite(id);
-    }
-
-    public Collection<UniFiSite> getSites() {
-        return cache.getSites();
-    }
-
-    public @Nullable UniFiWlan getWlan(@Nullable final String wid) {
-        return cache.getWlan(wid);
-    }
-
-    public Collection<UniFiWlan> getWlans() {
-        return cache.getWlans();
-    }
-
-    public @Nullable UniFiClient getClient(@Nullable final String cid) {
-        return cache.getClient(cid);
-    }
-
-    public Collection<UniFiClient> getClients() {
-        return cache.getClients();
-    }
-
-    public @Nullable UniFiDevice getDevice(@Nullable final String id) {
-        return cache.getDevice(id);
+    public UniFiControllerCache getCache() {
+        return cache;
     }
 
     public @Nullable Map<Integer, UniFiPortTable> getSwitchPorts(@Nullable final String deviceId) {
         return cache.getSwitchPorts(deviceId);
-    }
-
-    public Collection<Map<Integer, UniFiPortTable>> getSwitchPorts() {
-        return cache.getSwitchPorts();
     }
 
     public void block(final UniFiClient client, final boolean blocked) throws UniFiException {

@@ -36,6 +36,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.UniFiClientThingConfig;
 import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
+import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.model.UniFiClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
 import org.openhab.binding.unifi.internal.api.model.UniFiSite;
@@ -97,8 +98,8 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
     }
 
     @Override
-    protected synchronized @Nullable UniFiClient getEntity(final UniFiController controller) {
-        final UniFiClient client = controller.getClient(config.getClientID());
+    protected @Nullable UniFiClient getEntity(final UniFiControllerCache cache) {
+        final UniFiClient client = cache.getClient(config.getClientID());
         // mgb: short circuit
         if (client == null || !belongsToSite(client, config.getSite())) {
             return null;
@@ -106,7 +107,8 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
         return client;
     }
 
-    private State getDefaultState(final String channelID) {
+    @Override
+    protected State getDefaultState(final String channelID) {
         final State state;
         switch (channelID) {
             case CHANNEL_SITE:
@@ -151,13 +153,13 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
     }
 
     @Override
-    protected void refreshChannel(final UniFiClient client, final ChannelUID channelUID) {
+    protected State getChannelState(final UniFiClient client, final String channelId) {
         final boolean clientHome = isClientHome(client);
         final UniFiDevice device = client.getDevice();
         final UniFiSite site = (device == null ? null : device.getSite());
-        final String channelID = channelUID.getIdWithoutGroup();
-        State state = getDefaultState(channelID);
-        switch (channelID) {
+        State state = getDefaultState(channelId);
+
+        switch (channelId) {
             // mgb: common wired + wireless client channels
 
             // :online
@@ -215,30 +217,27 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             default:
                 // mgb: additional wired client channels
                 if (client.isWired() && (client instanceof UniFiWiredClient)) {
-                    state = getWiredChannelState((UniFiWiredClient) client, channelID, state);
+                    state = getWiredChannelState((UniFiWiredClient) client, channelId, state);
                 }
 
                 // mgb: additional wireless client channels
                 else if (client.isWireless() && (client instanceof UniFiWirelessClient)) {
-                    state = getWirelessChannelState((UniFiWirelessClient) client, channelID, state);
+                    state = getWirelessChannelState((UniFiWirelessClient) client, channelId, state);
                 }
                 break;
         }
-        // mgb: only non null states get updates
-        if (state != UnDefType.NULL) {
-            updateState(channelID, state);
-        }
+        return state;
     }
 
-    private State getWiredChannelState(final UniFiWiredClient client, final String channelID,
+    private State getWiredChannelState(final UniFiWiredClient client, final String channelId,
             final State defaultState) {
         return defaultState;
     }
 
-    private State getWirelessChannelState(final UniFiWirelessClient client, final String channelID,
+    private State getWirelessChannelState(final UniFiWirelessClient client, final String channelId,
             final State defaultState) {
         State state = defaultState;
-        switch (channelID) {
+        switch (channelId) {
             // :ap
             case CHANNEL_AP:
                 final UniFiDevice device = client.getDevice();

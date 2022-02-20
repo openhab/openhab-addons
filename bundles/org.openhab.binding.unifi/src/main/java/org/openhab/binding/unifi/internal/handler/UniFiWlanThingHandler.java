@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.UniFiWlanThingConfig;
 import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
+import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.model.UniFiSite;
 import org.openhab.binding.unifi.internal.api.model.UniFiWlan;
 import org.openhab.core.library.types.OnOffType;
@@ -65,17 +66,16 @@ public class UniFiWlanThingHandler extends UniFiBaseThingHandler<UniFiWlan, UniF
     }
 
     @Override
-    protected synchronized @Nullable UniFiWlan getEntity(final UniFiController controller) {
-        return controller.getWlan(config.getWlanId());
+    protected @Nullable UniFiWlan getEntity(final UniFiControllerCache cache) {
+        return cache.getWlan(config.getWlanId());
     }
 
     @Override
-    protected void refreshChannel(final UniFiWlan wlan, final ChannelUID channelUID) {
-        final String channelID = channelUID.getIdWithoutGroup();
+    protected State getChannelState(final UniFiWlan wlan, final String channelId) {
         // final UniFiControllerCache cache = wlan.
         final State state;
 
-        switch (channelID) {
+        switch (channelId) {
             case CHANNEL_ENABLE:
                 state = OnOffType.from(wlan.isEnabled());
                 break;
@@ -110,14 +110,19 @@ public class UniFiWlanThingHandler extends UniFiBaseThingHandler<UniFiWlan, UniF
                 break;
             default:
                 // Unsupported channel; nothing to update
-                return;
+                state = UnDefType.NULL;
         }
-        updateState(channelUID, state);
+        return state;
     }
 
-    // WIFI:S:<SSID>;T:<WPA|WEP|>;P:<password>;;
-    // WIFI:S:<SSID>;T:WPA|blank;P:<password>;;
-    // https://github.com/zxing/zxing/wiki/Barcode-Contents#wi-fi-network-config-android-ios-11
+    /**
+     * Returns a MERCARD like notation of the Wi-Fi access code. Format:
+     * <code>WIFI:S:&lt;SSID>;T:WPA|blank;P:&lt;password>;;</code>
+     *
+     * @param wlan wlan UniFi entity object containing the data
+     * @return MERCARD like Wi-Fi access format
+     * @see https://github.com/zxing/zxing/wiki/Barcode-Contents#wi-fi-network-config-android-ios-11
+     */
     private static State qrcodeEncoding(final UniFiWlan wlan) {
         final String name = encode(wlan.getName());
 
