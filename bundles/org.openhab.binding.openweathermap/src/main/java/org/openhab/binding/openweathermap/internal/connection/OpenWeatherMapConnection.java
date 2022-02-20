@@ -434,10 +434,10 @@ public class OpenWeatherMapConnection {
             throw new CommunicationException(errorMessage == null ? "@text/offline.communication-error" : errorMessage,
                     e.getCause());
         } catch (InterruptedException e) {
+            String errorMessage = e.getMessage();
+            logger.debug("InterruptedException occurred during execution: {}", errorMessage, e);
             Thread.currentThread().interrupt();
-            String message = e.getMessage();
-            logger.debug("InterruptedException occurred during execution: {}", message, e);
-            throw new CommunicationException(message == null ? "@text/offline.communication-error" : message,
+            throw new CommunicationException(errorMessage == null ? "@text/offline.communication-error" : errorMessage,
                     e.getCause());
         }
     }
