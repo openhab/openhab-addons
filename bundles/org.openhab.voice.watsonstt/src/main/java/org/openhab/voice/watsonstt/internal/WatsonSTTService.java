@@ -134,7 +134,7 @@ public class WatsonSTTService implements STTService {
                 .build();
         final AtomicReference<@Nullable WebSocket> socketRef = new AtomicReference<>();
         final AtomicBoolean aborted = new AtomicBoolean(false);
-        var task = executor.submit(() -> {
+        executor.submit(() -> {
             int retries = 2;
             while (retries > 0) {
                 try {
@@ -272,8 +272,10 @@ public class WatsonSTTService implements STTService {
                 return;
             }
             logger.warn("TranscriptionError: {}", errorMessage);
-            sttListener.sttEventReceived(
-                    new SpeechRecognitionErrorEvent(errorMessage != null ? errorMessage : "Unknown error"));
+            if (!aborted.get()) {
+                sttListener.sttEventReceived(
+                        new SpeechRecognitionErrorEvent(errorMessage != null ? errorMessage : "Unknown error"));
+            }
         }
 
         @Override
