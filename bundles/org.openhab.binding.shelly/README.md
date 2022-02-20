@@ -887,7 +887,7 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
 
-### Shelly Smoke(thing-type: shellysmoke)
+### Shelly Gas (thing-type: shellygas)
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
