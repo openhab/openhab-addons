@@ -9,7 +9,7 @@
 		<description>This bridge represents a running instance of the fliclib-linux-hci server (flicd).</description>
 
 		<config-description>
-			<parameter name="hostname" type="text" required="true">
+			<parameter name="hostname" type="text" required="false">
 				<context>network-address</context>
 				<label>Flic Daemon (flicd) Hostname</label>
 				<description>IP or Host name of the Flic daemon (flicd).</description>
@@ -35,7 +35,7 @@
 			<channel id="battery-level" typeId="system.battery-level"/>
 		</channels>
 		<config-description>
-			<parameter name="address" type="text">
+			<parameter name="address" type="text" required="true">
 				<label>Address</label>
 				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
 			</parameter>
