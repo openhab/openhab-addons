@@ -41,7 +41,6 @@ access to some portion of the premises to selected users.]]>
 		<config-description>
 			<parameter name="id" type="integer" min="1" max="32" required="true">
 				<label>Partition Number</label>
-				<description></description>
 			</parameter>
 			<parameter name="forceArming" type="boolean" required="false">
 				<label>Force Arming</label>
