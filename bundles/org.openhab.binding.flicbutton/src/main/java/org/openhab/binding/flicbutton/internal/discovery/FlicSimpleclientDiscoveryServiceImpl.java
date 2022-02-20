@@ -35,8 +35,7 @@ import io.flic.fliclib.javaclient.enums.BluetoothControllerState;
 
 /**
  * For each configured flicd service, there is a {@link FlicSimpleclientDiscoveryServiceImpl} which will be initialized
- * by
- * {@link FlicButtonHandlerFactory}.
+ * by {@link org.openhab.binding.flicbutton.internal.FlicButtonHandlerFactory}.
  *
  * It can scan for Flic Buttons already that are already added to fliclib-linux-hci ("verified" buttons), *
  * but it does not support adding and verify new buttons on it's own.
