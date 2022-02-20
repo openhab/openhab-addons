@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.flicbutton.internal.discovery.FlicButtonDiscoveryService;
@@ -87,8 +86,9 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
     }
 
     private void activateButtonDiscoveryService() {
+        FlicClient flicClient = this.flicClient;
         if (flicClient != null) {
-            buttonDiscoveryService.activate((@NonNull FlicClient) flicClient);
+            buttonDiscoveryService.activate(flicClient);
         } else {
             throw new IllegalStateException("flicClient not properly initialized");
         }

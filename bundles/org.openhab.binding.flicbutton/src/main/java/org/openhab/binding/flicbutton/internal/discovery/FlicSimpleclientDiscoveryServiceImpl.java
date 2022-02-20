@@ -14,7 +14,6 @@ package org.openhab.binding.flicbutton.internal.discovery;
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.flicbutton.internal.FlicButtonBindingConstants;
@@ -94,7 +93,7 @@ public class FlicSimpleclientDiscoveryServiceImpl extends AbstractDiscoveryServi
                     boolean currentlyNoSpaceForNewConnection, Bdaddr @Nullable [] verifiedButtons) throws IOException {
                 for (final @Nullable Bdaddr bdaddr : verifiedButtons) {
                     if (bdaddr != null) {
-                        flicButtonDiscovered((@NonNull Bdaddr) bdaddr);
+                        flicButtonDiscovered(bdaddr);
                     }
                 }
             }
@@ -109,7 +108,7 @@ public class FlicSimpleclientDiscoveryServiceImpl extends AbstractDiscoveryServi
             public void onNewVerifiedButton(@Nullable Bdaddr bdaddr) throws IOException {
                 logger.debug("A new Flic button was added by an external flicd client: {}", bdaddr);
                 if (bdaddr != null) {
-                    flicButtonDiscovered((@NonNull Bdaddr) bdaddr);
+                    flicButtonDiscovered(bdaddr);
                 }
             }
         });
