@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.network.internal.dhcp.DHCPPacket.BadPacketException;
 
@@ -30,6 +31,7 @@ import org.openhab.binding.network.internal.dhcp.DHCPPacket.BadPacketException;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class DHCPTest {
     @Test
     public void testService() throws SocketException {
