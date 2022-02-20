@@ -10,15 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ecovacs.internal.api.impl;
+package org.openhab.binding.ecovacs.internal.api.util;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 
 /**
  * @author Danny Baumann - Initial contribution
  */
 @NonNullByDefault
-public interface ReportParser {
-    void handleMessage(String eventName, String payload) throws DataParsingException;
+public class DataParsingException extends Exception {
+    public DataParsingException(String message) {
+        super(message);
+    }
+
+    public DataParsingException(Exception cause) {
+        super(cause);
+    }
 }

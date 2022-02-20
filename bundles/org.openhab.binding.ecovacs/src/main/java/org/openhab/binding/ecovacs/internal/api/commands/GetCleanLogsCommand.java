@@ -13,12 +13,14 @@
 package org.openhab.binding.ecovacs.internal.api.commands;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ecovacs.internal.api.impl.ProtocolVersion;
@@ -26,10 +28,12 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.Abstrac
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandXmlResponse;
 import org.openhab.binding.ecovacs.internal.api.model.CleanLogRecord;
 import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import com.google.gson.Gson;
 
@@ -55,23 +59,27 @@ public class GetCleanLogsCommand extends IotDeviceCommand<List<CleanLogRecord>> 
 
     @Override
     public List<CleanLogRecord> convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version,
-            Gson gson) throws Exception {
+            Gson gson) throws DataParsingException {
         String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        NodeList entryNodes = db.parse(new ByteArrayInputStream(payload.getBytes("UTF-8"))).getFirstChild()
-                .getChildNodes();
-        List<CleanLogRecord> result = new ArrayList<>();
+        try {
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            NodeList entryNodes = db.parse(new ByteArrayInputStream(payload.getBytes("UTF-8"))).getFirstChild()
+                    .getChildNodes();
+            List<CleanLogRecord> result = new ArrayList<>();
 
-        for (int i = 0; i < entryNodes.getLength(); i++) {
-            NamedNodeMap attrs = entryNodes.item(i).getAttributes();
-            String area = attrs.getNamedItem("a").getNodeValue();
-            String startTime = attrs.getNamedItem("s").getNodeValue();
-            String duration = attrs.getNamedItem("l").getNodeValue();
+            for (int i = 0; i < entryNodes.getLength(); i++) {
+                NamedNodeMap attrs = entryNodes.item(i).getAttributes();
+                String area = attrs.getNamedItem("a").getNodeValue();
+                String startTime = attrs.getNamedItem("s").getNodeValue();
+                String duration = attrs.getNamedItem("l").getNodeValue();
 
-            result.add(new CleanLogRecord(Long.parseLong(startTime), Integer.parseInt(duration), Integer.parseInt(area),
-                    Optional.empty(), CleanMode.IDLE));
+                result.add(new CleanLogRecord(Long.parseLong(startTime), Integer.parseInt(duration),
+                        Integer.parseInt(area), Optional.empty(), CleanMode.IDLE));
+            }
+            return result;
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new DataParsingException(e);
         }
-        return result;
     }
 }

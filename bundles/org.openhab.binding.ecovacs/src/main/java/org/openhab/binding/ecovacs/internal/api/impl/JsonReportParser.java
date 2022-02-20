@@ -24,6 +24,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json.StatsReport;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json.WaterInfoReport;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandJsonResponse.JsonResponsePayloadWrapper;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 
 import com.google.gson.Gson;
 
@@ -44,7 +45,7 @@ class JsonReportParser implements ReportParser {
     }
 
     @Override
-    public void handleMessage(String eventName, String payload) {
+    public void handleMessage(String eventName, String payload) throws DataParsingException {
         JsonResponsePayloadWrapper response = gson.fromJson(payload, JsonResponsePayloadWrapper.class);
         if (response == null) {
             return;
@@ -53,13 +54,11 @@ class JsonReportParser implements ReportParser {
             lastFirmwareVersion = response.header.firmwareVersion;
             listener.onFirmwareVersionChanged(device, lastFirmwareVersion);
         }
-
         if (eventName.startsWith("on")) {
             eventName = eventName.substring(2);
         } else if (eventName.startsWith("report")) {
             eventName = eventName.substring(6);
         }
-
         switch (eventName) {
             case "battery": {
                 BatteryReport report = payloadAs(response, BatteryReport.class);

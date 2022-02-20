@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ecovacs.internal.api.impl.ProtocolVersion;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.AbstractPortalIotCommandResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandXmlResponse;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.binding.ecovacs.internal.api.util.XPathUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -46,7 +47,7 @@ public class GetFirmwareVersionCommand extends IotDeviceCommand<String> {
 
     @Override
     public String convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
-            throws Exception {
+            throws DataParsingException {
         String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();
         return XPathUtils.getFirstXPathMatch(payload, "//ver[@name='FW']").getTextContent();
     }

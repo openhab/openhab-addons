@@ -23,6 +23,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.AbstractPortalIotCommandResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandJsonResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandXmlResponse;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.binding.ecovacs.internal.api.util.XPathUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -63,7 +64,7 @@ public class GetMapSpotAreasWithMapIdCommand extends IotDeviceCommand<List<Strin
 
     @Override
     public List<String> convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
-            throws Exception {
+            throws DataParsingException {
         if (response instanceof PortalIotCommandJsonResponse) {
             MapSetReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
                     MapSetReport.class);

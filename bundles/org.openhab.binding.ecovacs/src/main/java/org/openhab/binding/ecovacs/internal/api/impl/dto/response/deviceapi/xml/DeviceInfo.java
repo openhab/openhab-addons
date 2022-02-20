@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ecovacs.internal.api.model.ChargeMode;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.binding.ecovacs.internal.api.util.XPathUtils;
 import org.w3c.dom.Node;
 
@@ -29,12 +30,12 @@ import com.google.gson.Gson;
 public class DeviceInfo {
     private static final Set<String> ERROR_ATTR_NAMES = Set.of("code", "error", "errno", "errs");
 
-    public static int parseBatteryInfo(String xml) throws Exception {
+    public static int parseBatteryInfo(String xml) throws DataParsingException {
         Node batteryAttr = XPathUtils.getFirstXPathMatch(xml, "//battery/@power");
         return Integer.valueOf(batteryAttr.getNodeValue());
     }
 
-    public static ChargeMode parseChargeInfo(String xml, Gson gson) throws Exception {
+    public static ChargeMode parseChargeInfo(String xml, Gson gson) throws DataParsingException {
         String modeString = XPathUtils.getFirstXPathMatch(xml, "//charge/@type").getNodeValue();
         ChargeMode mode = gson.fromJson(modeString, ChargeMode.class);
         if (mode == null) {
@@ -43,20 +44,22 @@ public class DeviceInfo {
         return mode;
     }
 
-    public static Optional<Integer> parseErrorInfo(String xml) throws Exception {
+    public static Optional<Integer> parseErrorInfo(String xml) throws DataParsingException {
         for (String attr : ERROR_ATTR_NAMES) {
             Optional<Node> node = XPathUtils.getFirstXPathMatchOpt(xml, "//@" + attr);
             if (node.isPresent()) {
-                return node.flatMap(n -> {
-                    String value = n.getNodeValue();
+                try {
+                    String value = node.get().getNodeValue();
                     return value.isEmpty() ? Optional.empty() : Optional.of(Integer.valueOf(value));
-                });
+                } catch (NumberFormatException e) {
+                    throw new DataParsingException(e);
+                }
             }
         }
         return Optional.empty();
     }
 
-    public static int parseComponentLifespanInfo(String xml) throws Exception {
+    public static int parseComponentLifespanInfo(String xml) throws DataParsingException {
         Optional<Integer> value = nodeValueToInt(xml, "value");
         Optional<Integer> total = nodeValueToInt(xml, "total");
         Optional<Integer> left = nodeValueToInt(xml, "left");
@@ -72,7 +75,12 @@ public class DeviceInfo {
         return 0;
     }
 
-    private static Optional<Integer> nodeValueToInt(String xml, String attrName) throws Exception {
-        return XPathUtils.getFirstXPathMatchOpt(xml, "//ctl/@" + attrName).map(n -> Integer.valueOf(n.getNodeValue()));
+    private static Optional<Integer> nodeValueToInt(String xml, String attrName) throws DataParsingException {
+        try {
+            return XPathUtils.getFirstXPathMatchOpt(xml, "//ctl/@" + attrName)
+                    .map(n -> Integer.valueOf(n.getNodeValue()));
+        } catch (NumberFormatException e) {
+            throw new DataParsingException(e);
+        }
     }
 }

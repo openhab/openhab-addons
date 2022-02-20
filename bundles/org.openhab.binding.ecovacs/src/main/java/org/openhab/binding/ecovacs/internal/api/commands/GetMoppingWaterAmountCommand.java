@@ -20,6 +20,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.Abstrac
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandJsonResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandXmlResponse;
 import org.openhab.binding.ecovacs.internal.api.model.MoppingWaterAmount;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 
 import com.google.gson.Gson;
 
@@ -37,8 +38,9 @@ public class GetMoppingWaterAmountCommand extends IotDeviceCommand<MoppingWaterA
         return version == ProtocolVersion.XML ? "GetWaterPermeability" : "getWaterInfo";
     }
 
+    @Override
     public MoppingWaterAmount convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version,
-            Gson gson) throws Exception {
+            Gson gson) throws DataParsingException {
         if (response instanceof PortalIotCommandJsonResponse) {
             WaterInfoReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
                     WaterInfoReport.class);

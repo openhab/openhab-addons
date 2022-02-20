@@ -21,6 +21,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jivesoftware.smack.ConnectionListener;
@@ -52,6 +55,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalI
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalLoginResponse;
 import org.openhab.binding.ecovacs.internal.api.model.CleanLogRecord;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.binding.ecovacs.internal.api.util.XPathUtils;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.slf4j.Logger;
@@ -105,7 +109,7 @@ public class EcovacsXmppDevice implements EcovacsDevice {
     }
 
     @Override
-    public <T> T sendCommand(IotDeviceCommand<T> command) throws EcovacsApiException {
+    public <T> T sendCommand(IotDeviceCommand<T> command) throws EcovacsApiException, InterruptedException {
         IncomingMessageHandler handler = this.messageHandler;
         XMPPConnection conn = this.connection;
         Jid from = this.ownAddress;
@@ -142,7 +146,7 @@ public class EcovacsXmppDevice implements EcovacsDevice {
                     return command.convertResponse(responseObj, ProtocolVersion.XML, gson);
                 }
             }
-        } catch (Exception e) {
+        } catch (DataParsingException | ParserConfigurationException | TransformerException e) {
             throw new EcovacsApiException(e);
         }
 
@@ -150,7 +154,7 @@ public class EcovacsXmppDevice implements EcovacsDevice {
     }
 
     @Override
-    public List<CleanLogRecord> getCleanLogs() throws EcovacsApiException {
+    public List<CleanLogRecord> getCleanLogs() throws EcovacsApiException, InterruptedException {
         return sendCommand(new GetCleanLogsCommand());
     }
 
@@ -369,7 +373,7 @@ public class EcovacsXmppDevice implements EcovacsDevice {
                             logger.debug("{}: Got unexpected XML payload {}", getSerialNumber(), iq.payload);
                         }
                     }
-                } catch (Exception e) {
+                } catch (DataParsingException e) {
                     listener.onEventStreamFailure(EcovacsXmppDevice.this, e);
                 }
             } else if (iqRequest instanceof ErrorIQ) {
@@ -395,7 +399,8 @@ public class EcovacsXmppDevice implements EcovacsDevice {
         final String id;
 
         // request
-        public DeviceCommandIQ(IotDeviceCommand<?> cmd, Jid from, Jid to) throws Exception {
+        public DeviceCommandIQ(IotDeviceCommand<?> cmd, Jid from, Jid to)
+                throws ParserConfigurationException, TransformerException {
             super(TAG_NAME, NAMESPACE);
             setType(Type.set);
             setTo(to);

@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ecovacs.internal.api.impl.ProtocolVersion;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.AbstractPortalIotCommandResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandJsonResponse;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -39,7 +40,7 @@ public class GetVolumeCommand extends IotDeviceCommand<Integer> {
 
     @Override
     public Integer convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
-            throws Exception {
+            throws DataParsingException {
         if (response instanceof PortalIotCommandJsonResponse) {
             JsonResponse resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
                     JsonResponse.class);

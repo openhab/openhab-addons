@@ -13,9 +13,11 @@
 package org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -30,23 +32,31 @@ public class PortalIotCommandJsonResponse extends AbstractPortalIotCommandRespon
         this.response = response;
     }
 
-    public <T> T getResponsePayloadAs(Gson gson, Class<T> clazz) {
-        JsonElement payloadRaw = getResponsePayload(gson);
-        @Nullable
-        T payload = gson.fromJson(payloadRaw, clazz);
-        if (payload == null) {
-            throw new IllegalArgumentException();
+    public <T> T getResponsePayloadAs(Gson gson, Class<T> clazz) throws DataParsingException {
+        try {
+            JsonElement payloadRaw = getResponsePayload(gson);
+            @Nullable
+            T payload = gson.fromJson(payloadRaw, clazz);
+            if (payload == null) {
+                throw new DataParsingException("Empty JSON payload");
+            }
+            return payload;
+        } catch (JsonSyntaxException e) {
+            throw new DataParsingException(e);
         }
-        return payload;
     }
 
-    public JsonElement getResponsePayload(Gson gson) {
-        @Nullable
-        JsonResponsePayloadWrapper wrapper = gson.fromJson(response, JsonResponsePayloadWrapper.class);
-        if (wrapper == null) {
-            throw new IllegalArgumentException();
+    public JsonElement getResponsePayload(Gson gson) throws DataParsingException {
+        try {
+            @Nullable
+            JsonResponsePayloadWrapper wrapper = gson.fromJson(response, JsonResponsePayloadWrapper.class);
+            if (wrapper == null) {
+                throw new DataParsingException("Empty JSON payload");
+            }
+            return wrapper.body.payload;
+        } catch (JsonSyntaxException e) {
+            throw new DataParsingException(e);
         }
-        return wrapper.body.payload;
     }
 
     public static class JsonPayloadHeader {

@@ -19,6 +19,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.xml.
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.AbstractPortalIotCommandResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandJsonResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandXmlResponse;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 
 import com.google.gson.Gson;
 
@@ -38,7 +39,7 @@ public class GetBatteryInfoCommand extends IotDeviceCommand<Integer> {
 
     @Override
     public Integer convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
-            throws Exception {
+            throws DataParsingException {
         if (response instanceof PortalIotCommandJsonResponse) {
             BatteryReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
                     BatteryReport.class);

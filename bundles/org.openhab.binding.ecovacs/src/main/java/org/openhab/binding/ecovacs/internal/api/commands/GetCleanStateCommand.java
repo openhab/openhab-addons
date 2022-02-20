@@ -21,6 +21,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.Abstrac
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandJsonResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandXmlResponse;
 import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 
 import com.google.gson.Gson;
 
@@ -48,7 +49,7 @@ public class GetCleanStateCommand extends IotDeviceCommand<CleanMode> {
 
     @Override
     public CleanMode convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
-            throws Exception {
+            throws DataParsingException {
         if (response instanceof PortalIotCommandJsonResponse) {
             if (version == ProtocolVersion.JSON) {
                 CleanReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,

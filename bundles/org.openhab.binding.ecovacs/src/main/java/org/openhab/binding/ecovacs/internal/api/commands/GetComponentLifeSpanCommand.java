@@ -24,12 +24,14 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.Abstrac
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandJsonResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandXmlResponse;
 import org.openhab.binding.ecovacs.internal.api.model.Component;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -62,16 +64,20 @@ public class GetComponentLifeSpanCommand extends IotDeviceCommand<Integer> {
 
     @Override
     public Integer convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
-            throws Exception {
+            throws DataParsingException {
         if (response instanceof PortalIotCommandJsonResponse) {
             JsonElement respPayloadRaw = ((PortalIotCommandJsonResponse) response).getResponsePayload(gson);
             Type type = new TypeToken<List<ComponentLifeSpanReport>>() {
             }.getType();
-            List<ComponentLifeSpanReport> resp = gson.fromJson(respPayloadRaw, type);
-            if (resp == null || resp.isEmpty()) {
-                throw new IllegalArgumentException("Invalid lifespan response " + respPayloadRaw);
+            try {
+                List<ComponentLifeSpanReport> resp = gson.fromJson(respPayloadRaw, type);
+                if (resp == null || resp.isEmpty()) {
+                    throw new DataParsingException("Invalid lifespan response " + respPayloadRaw);
+                }
+                return (int) Math.round(100.0 * resp.get(0).left / resp.get(0).total);
+            } catch (JsonSyntaxException e) {
+                throw new DataParsingException(e);
             }
-            return (int) Math.round(100.0 * resp.get(0).left / resp.get(0).total);
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();
             return DeviceInfo.parseComponentLifespanInfo(payload);

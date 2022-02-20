@@ -15,6 +15,7 @@ package org.openhab.binding.ecovacs.internal.api.impl;
 import java.security.KeyStore;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -36,6 +37,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.Device;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalLoginResponse;
 import org.openhab.binding.ecovacs.internal.api.model.CleanLogRecord;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,12 +96,12 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
     }
 
     @Override
-    public <T> T sendCommand(IotDeviceCommand<T> command) throws EcovacsApiException {
+    public <T> T sendCommand(IotDeviceCommand<T> command) throws EcovacsApiException, InterruptedException {
         return api.sendIotCommand(device, desc, command);
     }
 
     @Override
-    public List<CleanLogRecord> getCleanLogs() throws EcovacsApiException {
+    public List<CleanLogRecord> getCleanLogs() throws EcovacsApiException, InterruptedException {
         Stream<CleanLogRecord> logEntries;
         if (desc.protoVersion == ProtocolVersion.XML) {
             logEntries = sendCommand(new GetCleanLogsCommand()).stream();
@@ -111,7 +113,8 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
     }
 
     @Override
-    public void connect(final EventListener listener, ScheduledExecutorService scheduler) throws EcovacsApiException {
+    public void connect(final EventListener listener, ScheduledExecutorService scheduler)
+            throws EcovacsApiException, InterruptedException {
         EcovacsApiConfiguration config = api.getConfig();
         PortalLoginResponse loginData = api.getLoginData();
         if (loginData == null) {
@@ -161,7 +164,7 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
                     String eventName = receivedTopic.split("/")[2].toLowerCase();
                     logger.trace("{}: Got MQTT message on topic {}: {}", getSerialNumber(), receivedTopic, payload);
                     parser.handleMessage(eventName, payload);
-                } catch (Exception e) {
+                } catch (DataParsingException e) {
                     listener.onEventStreamFailure(this, e);
                 }
             };
@@ -171,7 +174,7 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
 
             client.subscribeWith().topicFilter(topic).callback(eventCallback).send().get();
             logger.debug("Established MQTT connection to device {}", getSerialNumber());
-        } catch (Exception e) {
+        } catch (ExecutionException e) {
             throw new EcovacsApiException(e);
         }
     }
@@ -182,7 +185,7 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
         if (client != null) {
             try {
                 client.disconnect().get();
-            } catch (Exception e) {
+            } catch (InterruptedException | ExecutionException e) {
                 // ignored
             }
         }

@@ -35,8 +35,7 @@ public abstract class AbstractNoResponseCommand extends IotDeviceCommand<Abstrac
     }
 
     @Override
-    public Nothing convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
-            throws Exception {
+    public Nothing convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson) {
         return Nothing.INSTANCE;
     }
 }

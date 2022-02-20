@@ -13,7 +13,6 @@
 package org.openhab.binding.ecovacs.internal.api.util;
 
 import java.io.StringReader;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import javax.xml.xpath.XPath;
@@ -34,25 +33,26 @@ import org.xml.sax.InputSource;
 public class XPathUtils {
     private static @Nullable XPathFactory FACTORY;
 
-    public static Node getFirstXPathMatch(String xml, String xpathExpression)
-            throws XPathExpressionException, NoSuchElementException {
+    public static Node getFirstXPathMatch(String xml, String xpathExpression) throws DataParsingException {
         NodeList nodes = getXPathMatches(xml, xpathExpression);
         if (nodes.getLength() == 0) {
-            throw new NoSuchElementException();
+            throw new DataParsingException("No nodes matching expression " + xpathExpression + " in XML " + xml);
         }
         return nodes.item(0);
     }
 
-    public static Optional<Node> getFirstXPathMatchOpt(String xml, String xpathExpression)
-            throws XPathExpressionException, NoSuchElementException {
+    public static Optional<Node> getFirstXPathMatchOpt(String xml, String xpathExpression) throws DataParsingException {
         NodeList nodes = getXPathMatches(xml, xpathExpression);
         return nodes.getLength() == 0 ? Optional.empty() : Optional.of(nodes.item(0));
     }
 
-    public static NodeList getXPathMatches(String xml, String xpathExpression)
-            throws XPathExpressionException, NoSuchElementException {
-        InputSource source = new InputSource(new StringReader(xml));
-        return (NodeList) newXPath().evaluate(xpathExpression, source, XPathConstants.NODESET);
+    public static NodeList getXPathMatches(String xml, String xpathExpression) throws DataParsingException {
+        try {
+            InputSource source = new InputSource(new StringReader(xml));
+            return (NodeList) newXPath().evaluate(xpathExpression, source, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            throw new DataParsingException(e);
+        }
     }
 
     private static XPath newXPath() {

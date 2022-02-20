@@ -15,6 +15,7 @@ package org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.xml
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
 import org.openhab.binding.ecovacs.internal.api.model.SuctionPower;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.binding.ecovacs.internal.api.util.XPathUtils;
 
 import com.google.gson.Gson;
@@ -24,7 +25,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class CleaningInfo {
-    public static CleanMode parseCleanStateInfo(String xml, Gson gson) throws Exception {
+    public static CleanMode parseCleanStateInfo(String xml, Gson gson) throws DataParsingException {
         String stateString = XPathUtils.getFirstXPathMatchOpt(xml, "//clean/@st").map(n -> n.getNodeValue()).orElse("");
         final CleanMode mode;
 
@@ -39,14 +40,14 @@ public class CleaningInfo {
         if (mode != null) {
             return mode;
         }
-        throw new IllegalArgumentException("Unexpected clean state report: " + xml);
+        throw new DataParsingException("Unexpected clean state report: " + xml);
     }
 
-    public static SuctionPower parseCleanSpeedInfo(String xml, Gson gson) throws Exception {
+    public static SuctionPower parseCleanSpeedInfo(String xml, Gson gson) throws DataParsingException {
         String levelString = XPathUtils.getFirstXPathMatch(xml, "//@speed").getNodeValue();
         SuctionPower level = gson.fromJson(levelString, SuctionPower.class);
         if (level == null) {
-            throw new IllegalArgumentException("Could not parse power level " + levelString);
+            throw new DataParsingException("Could not parse power level " + levelString);
         }
         return level;
     }

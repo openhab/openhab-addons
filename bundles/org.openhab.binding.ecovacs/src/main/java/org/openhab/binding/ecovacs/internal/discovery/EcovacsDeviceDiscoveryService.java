@@ -138,6 +138,8 @@ public class EcovacsDeviceDiscoveryService extends AbstractDiscoveryService impl
                     thingRemoved(thing.getUID());
                 }
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } catch (EcovacsApiException e) {
             logger.debug("Could not retrieve devices from Ecovacs API", e);
         } finally {

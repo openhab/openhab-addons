@@ -20,6 +20,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.xml.
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.xml.WaterSystemInfo;
 import org.openhab.binding.ecovacs.internal.api.model.ChargeMode;
 import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.binding.ecovacs.internal.api.util.XPathUtils;
 import org.w3c.dom.Node;
 
@@ -41,7 +42,7 @@ class XmlReportParser implements ReportParser {
     }
 
     @Override
-    public void handleMessage(String eventName, String payload) throws Exception {
+    public void handleMessage(String eventName, String payload) throws DataParsingException {
         switch (eventName.toLowerCase()) {
             case "batteryinfo":
                 listener.onBatteryLevelUpdated(device, DeviceInfo.parseBatteryInfo(payload));

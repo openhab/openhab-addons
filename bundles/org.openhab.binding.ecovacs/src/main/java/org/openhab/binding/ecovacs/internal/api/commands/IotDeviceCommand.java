@@ -15,8 +15,10 @@ package org.openhab.binding.ecovacs.internal.api.commands;
 import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -26,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecovacs.internal.api.impl.ProtocolVersion;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.request.portal.PortalIotCommandRequest.JsonPayloadHeader;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.AbstractPortalIotCommandResponse;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -43,7 +46,7 @@ public abstract class IotDeviceCommand<RESPONSETYPE> {
 
     public abstract String getName(ProtocolVersion version);
 
-    public final String getXmlPayload(@Nullable String id) throws Exception {
+    public final String getXmlPayload(@Nullable String id) throws ParserConfigurationException, TransformerException {
         Document xmlDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         Element ctl = xmlDoc.createElement("ctl");
         ctl.setAttribute("td", getName(ProtocolVersion.XML));
@@ -80,5 +83,5 @@ public abstract class IotDeviceCommand<RESPONSETYPE> {
     }
 
     public abstract RESPONSETYPE convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version,
-            Gson gson) throws Exception;
+            Gson gson) throws DataParsingException;
 }

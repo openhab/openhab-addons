@@ -128,6 +128,10 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
                 if (discoveryService != null) {
                     discoveryService.startScan();
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                updateStatus(ThingStatus.OFFLINE);
+                this.api = null;
             } catch (EcovacsApiException e) {
                 logger.debug("Ecovacs API login failed", e);
                 this.api = null;

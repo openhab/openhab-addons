@@ -24,6 +24,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -56,6 +59,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalI
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandXmlResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotProductResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalLoginResponse;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.binding.ecovacs.internal.api.util.MD5Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +97,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
     }
 
     @Override
-    public void loginAndGetAccessToken() throws EcovacsApiException {
+    public void loginAndGetAccessToken() throws EcovacsApiException, InterruptedException {
         loginData = null;
 
         AccessData accessData = login();
@@ -110,7 +114,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
         return loginData;
     }
 
-    private AccessData login() throws EcovacsApiException {
+    private AccessData login() throws EcovacsApiException, InterruptedException {
         // Generate login Params
         HashMap<String, String> loginParameters = new HashMap<>();
         loginParameters.put(RequestQueryParameter.AUTH_ACCOUNT, configuration.getUsername());
@@ -131,7 +135,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
         return handleResponseWrapper(gson.fromJson(loginResponse.getContentAsString(), responseType));
     }
 
-    private AuthCode getAuthCode(AccessData accessData) throws EcovacsApiException {
+    private AuthCode getAuthCode(AccessData accessData) throws EcovacsApiException, InterruptedException {
         HashMap<String, String> authCodeParameters = new HashMap<>();
         authCodeParameters.put(RequestQueryParameter.AUTH_CODE_UID, accessData.getUid());
         authCodeParameters.put(RequestQueryParameter.AUTH_CODE_ACCESS_TOKEN, accessData.getAccessToken());
@@ -151,7 +155,8 @@ public final class EcovacsApiImpl implements EcovacsApi {
         return handleResponseWrapper(gson.fromJson(authCodeResponse.getContentAsString(), responseType));
     }
 
-    private PortalLoginResponse portalLogin(AuthCode authCode, AccessData accessData) throws EcovacsApiException {
+    private PortalLoginResponse portalLogin(AuthCode authCode, AccessData accessData)
+            throws EcovacsApiException, InterruptedException {
         PortalLoginRequest loginRequestData = new PortalLoginRequest(PortalTodo.LOGIN_BY_TOKEN,
                 configuration.getCountry(), "", configuration.getOrg(), configuration.getResource(),
                 configuration.getRealm(), authCode.getAuthCode(), accessData.getUid(), configuration.getEdition());
@@ -168,7 +173,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
     }
 
     @Override
-    public List<EcovacsDevice> getDevices() throws EcovacsApiException {
+    public List<EcovacsDevice> getDevices() throws EcovacsApiException, InterruptedException {
         List<DeviceDescription> descriptions = getSupportedDeviceList();
         List<IotProduct> products = null;
         List<EcovacsDevice> devices = new ArrayList<>();
@@ -219,7 +224,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
         }).collect(Collectors.toList());
     }
 
-    private List<Device> getDeviceList() throws EcovacsApiException {
+    private List<Device> getDeviceList() throws EcovacsApiException, InterruptedException {
         PortalAuthRequest data = new PortalAuthRequest(PortalTodo.GET_DEVICE_LIST, createAuthData());
         String json = gson.toJson(data);
         String userUrl = EcovacsApiUrlFactory.getPortalUsersUrl(configuration);
@@ -229,7 +234,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
         return handleResponse(deviceResponse, PortalDeviceResponse.class).getDevices();
     }
 
-    private List<IotProduct> getIotProductMap() throws EcovacsApiException {
+    private List<IotProduct> getIotProductMap() throws EcovacsApiException, InterruptedException {
         PortalIotProductRequest data = new PortalIotProductRequest(createAuthData());
         String json = gson.toJson(data);
         String url = EcovacsApiUrlFactory.getPortalProductIotMapUrl(configuration);
@@ -240,7 +245,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
     }
 
     public <T> T sendIotCommand(Device device, DeviceDescription desc, IotDeviceCommand<T> command)
-            throws EcovacsApiException {
+            throws EcovacsApiException, InterruptedException {
         String commandName = command.getName(desc.protoVersion);
         final Object payload;
         try {
@@ -252,7 +257,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
                 logger.trace("{}: Sending IOT command {} with payload {}", device.getName(), commandName,
                         gson.toJson(payload));
             }
-        } catch (Exception e) {
+        } catch (ParserConfigurationException | TransformerException e) {
             logger.debug("Could not convert payload for {}", command, e);
             throw new EcovacsApiException(e);
         }
@@ -282,13 +287,14 @@ public final class EcovacsApiImpl implements EcovacsApi {
         }
         try {
             return command.convertResponse(commandResponse, desc.protoVersion, gson);
-        } catch (Exception e) {
+        } catch (DataParsingException e) {
             logger.debug("Converting response for command {} failed", command, e);
             throw new EcovacsApiException(e);
         }
     }
 
-    public List<PortalCleanLogsResponse.LogRecord> fetchCleanLogs(Device device) throws EcovacsApiException {
+    public List<PortalCleanLogsResponse.LogRecord> fetchCleanLogs(Device device)
+            throws EcovacsApiException, InterruptedException {
         PortalCleanLogsRequest data = new PortalCleanLogsRequest(createAuthData(), device.getDid(),
                 device.getResource());
         String json = gson.toJson(data);
@@ -334,14 +340,14 @@ public final class EcovacsApiImpl implements EcovacsApi {
         return respObject;
     }
 
-    private ContentResponse executeRequest(Request request) throws EcovacsApiException {
+    private ContentResponse executeRequest(Request request) throws EcovacsApiException, InterruptedException {
         try {
             ContentResponse response = request.send();
             if (response.getStatus() != HttpStatus.OK_200) {
                 throw new EcovacsApiException(response);
             }
             return response;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException e) {
             throw new EcovacsApiException(e);
         }
     }

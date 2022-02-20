@@ -17,6 +17,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.ProtocolVersion;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.AbstractPortalIotCommandResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandJsonResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandXmlResponse;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.binding.ecovacs.internal.api.util.XPathUtils;
 
 import com.google.gson.Gson;
@@ -51,8 +52,9 @@ public class GetTotalStatsCommand extends IotDeviceCommand<GetTotalStatsCommand.
         return version == ProtocolVersion.XML ? "GetCleanSum" : "getTotalStats";
     }
 
+    @Override
     public TotalStats convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
-            throws Exception {
+            throws DataParsingException {
         if (response instanceof PortalIotCommandJsonResponse) {
             return ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson, TotalStats.class);
         } else {
@@ -60,7 +62,11 @@ public class GetTotalStatsCommand extends IotDeviceCommand<GetTotalStatsCommand.
             String area = XPathUtils.getFirstXPathMatch(payload, "//@a").getNodeValue();
             String time = XPathUtils.getFirstXPathMatch(payload, "//@l").getNodeValue();
             String count = XPathUtils.getFirstXPathMatch(payload, "//@c").getNodeValue();
-            return new TotalStats(Integer.valueOf(area), Integer.valueOf(time), Integer.valueOf(count));
+            try {
+                return new TotalStats(Integer.valueOf(area), Integer.valueOf(time), Integer.valueOf(count));
+            } catch (NumberFormatException e) {
+                throw new DataParsingException(e);
+            }
         }
     }
 }

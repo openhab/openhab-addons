@@ -27,7 +27,7 @@ public interface EcovacsApi {
         return new EcovacsApiImpl(httpClient, configuration);
     }
 
-    public void loginAndGetAccessToken() throws EcovacsApiException;
+    public void loginAndGetAccessToken() throws EcovacsApiException, InterruptedException;
 
-    public List<EcovacsDevice> getDevices() throws EcovacsApiException;
+    public List<EcovacsDevice> getDevices() throws EcovacsApiException, InterruptedException;
 }

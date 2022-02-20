@@ -19,6 +19,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.Abstrac
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandJsonResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandXmlResponse;
 import org.openhab.binding.ecovacs.internal.api.model.NetworkInfo;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.binding.ecovacs.internal.api.util.XPathUtils;
 import org.w3c.dom.Node;
 
@@ -40,11 +41,15 @@ public class GetNetworkInfoCommand extends IotDeviceCommand<NetworkInfo> {
 
     @Override
     public NetworkInfo convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
-            throws Exception {
+            throws DataParsingException {
         if (response instanceof PortalIotCommandJsonResponse) {
             NetworkInfoReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
                     NetworkInfoReport.class);
-            return new NetworkInfo(resp.ip, resp.mac, resp.ssid, Integer.valueOf(resp.rssi));
+            try {
+                return new NetworkInfo(resp.ip, resp.mac, resp.ssid, Integer.valueOf(resp.rssi));
+            } catch (NumberFormatException e) {
+                throw new DataParsingException(e);
+            }
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();
             Node ipAttr = XPathUtils.getFirstXPathMatch(payload, "//@wi");

@@ -158,6 +158,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             }
             logger.debug("{}: Ignoring unsupported device command {} for channel {}", getDeviceSerial(), command,
                     channel);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } catch (EcovacsApiException e) {
             logger.debug("{}: Handling device command {} failed", getDeviceSerial(), command, e);
         }
@@ -198,6 +200,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                     logger.info("{}: Device not found in device list, setting offline", serial);
                     updateStatus(ThingStatus.OFFLINE);
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             } catch (EcovacsApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
@@ -244,6 +248,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                     scheduleNextPoll(5); // add some delay in case multiple channels are linked at once
                     break;
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } catch (EcovacsApiException e) {
             logger.debug("{}: Fetching initial data for channel {} failed", getDeviceSerial(), channelUID.getId(), e);
         }
@@ -316,12 +322,13 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, fwVersion);
     }
 
-    private void fetchInitialBatteryStatus(EcovacsDevice device) throws EcovacsApiException {
+    private void fetchInitialBatteryStatus(EcovacsDevice device) throws EcovacsApiException, InterruptedException {
         Integer batteryPercent = device.sendCommand(new GetBatteryInfoCommand());
         onBatteryLevelUpdated(device, batteryPercent);
     }
 
-    private void fetchInitialStateAndCommandValues(EcovacsDevice device) throws EcovacsApiException {
+    private void fetchInitialStateAndCommandValues(EcovacsDevice device)
+            throws EcovacsApiException, InterruptedException {
         lastWasCharging = device.sendCommand(new GetChargeStateCommand()) == ChargeMode.CHARGING;
         CleanMode mode = device.sendCommand(new GetCleanStateCommand());
         if (mode.isActive()) {
@@ -331,7 +338,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         updateStateAndCommandChannels();
     }
 
-    private void fetchInitialWaterSystemPresentState(EcovacsDevice device) throws EcovacsApiException {
+    private void fetchInitialWaterSystemPresentState(EcovacsDevice device)
+            throws EcovacsApiException, InterruptedException {
         if (!device.hasCapability(DeviceCapability.MOPPING_SYSTEM)) {
             return;
         }
@@ -339,7 +347,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         onWaterSystemPresentUpdated(device, present);
     }
 
-    private void fetchInitialErrorCode(EcovacsDevice device) throws EcovacsApiException {
+    private void fetchInitialErrorCode(EcovacsDevice device) throws EcovacsApiException, InterruptedException {
         Optional<Integer> errorOpt = device.sendCommand(new GetErrorCommand());
         if (errorOpt.isPresent()) {
             onErrorReported(device, errorOpt.get());
@@ -631,7 +639,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     }
 
     private interface WithDeviceAction {
-        void run(EcovacsDevice device) throws EcovacsApiException;
+        void run(EcovacsDevice device) throws EcovacsApiException, InterruptedException;
     }
 
     private void doWithDevice(WithDeviceAction action) {
@@ -641,10 +649,9 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         }
         try {
             action.run(device);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } catch (EcovacsApiException e) {
-            if (e.getCause() instanceof InterruptedException) {
-                return;
-            }
             logger.debug("{}: Failed communicating to device, reconnecting", getDeviceSerial(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             teardownAndScheduleReconnection();

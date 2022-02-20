@@ -21,6 +21,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.xml.
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.AbstractPortalIotCommandResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandJsonResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandXmlResponse;
+import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 
 import com.google.gson.Gson;
 
@@ -40,7 +41,7 @@ public class GetErrorCommand extends IotDeviceCommand<Optional<Integer>> {
 
     @Override
     public Optional<Integer> convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version,
-            Gson gson) throws Exception {
+            Gson gson) throws DataParsingException {
         if (response instanceof PortalIotCommandJsonResponse) {
             ErrorReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson, ErrorReport.class);
             if (resp.errorCodes.isEmpty()) {

@@ -55,11 +55,12 @@ public interface EcovacsDevice {
 
     public boolean hasCapability(DeviceCapability cap);
 
-    public void connect(EventListener listener, ScheduledExecutorService scheduler) throws EcovacsApiException;
+    public void connect(EventListener listener, ScheduledExecutorService scheduler)
+            throws EcovacsApiException, InterruptedException;
 
     public void disconnect();
 
-    public <T> T sendCommand(IotDeviceCommand<T> command) throws EcovacsApiException;
+    public <T> T sendCommand(IotDeviceCommand<T> command) throws EcovacsApiException, InterruptedException;
 
-    public List<CleanLogRecord> getCleanLogs() throws EcovacsApiException;
+    public List<CleanLogRecord> getCleanLogs() throws EcovacsApiException, InterruptedException;
 }
