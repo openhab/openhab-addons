@@ -199,7 +199,7 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
     }
 
     void flicButtonRemoved() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.GONE,
                 "Button was removed/detached from flicd (e.g. by simpleclient).");
     }
 
