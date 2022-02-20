@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +88,6 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
         double value = getDouble(s.value);
         String reason = "";
         switch (sen.id) {
-            case "3103": // H, humidity, 0-100 percent, unknown 999
             case "3106": // L, luminosity, lux, U32, -1
             case "3110": // S, luminosityLevel, dark/twilight/bright, "unknown"=unknown
             case "3111": // B, battery, 0-100%, unknown -1
@@ -143,7 +143,14 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "2403": // EVC, inputEventCnt, U16
                 handleInputEvent(sen, "", getInteger((int) s.value), serial, updates);
                 break;
-            case "3101": // sensor_0: T, extTemp, C, -55/125; unknown 999
+            case "3101":
+                if (profile.isTRV) {
+                    // TRV: current temp
+                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
+                            toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                    break;
+                }
+                // sensor_0: T, extTemp, C, -55/125; unknown 999
             case "3201": // sensor_1: T, extTemp, C, -55/125; unknown 999
             case "3301": // sensor_2: T, extTemp, C, -55/125; unknown 999
                 int idx = getExtTempId(sen.id);
@@ -156,7 +163,21 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                     logger.debug("{}: Unable to get extSensorId {} from {}/{}", thingName, sen.id, sen.type, sen.desc);
                 }
                 break;
+            case "3103":
+                // TRV: target temp in C. 4/31, 999=unknown
+                // general: H, humidity, 0-100 percent, unknown 999
+                if (profile.isTRV) {
+                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
+                            toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                    // toQuantityType(value, DIGITS_TEMP, Units.PERCENT));
+                }
+                break;
             case "3104": // T, deviceTemp, Celsius -40/300; 999=unknown
+                if ("targetTemp".equalsIgnoreCase(sen.desc)) {
+
+                    break; // target temp in F-> ignore
+                }
+                // sensor_0: T, internalTemp, F, 39/88, unknown 999
                 updateChannel(updates, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
                         toQuantityType(value, DIGITS_NONE, SIUnits.CELSIUS));
                 break;
@@ -172,7 +193,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 break;
             case "3108": // DW: S, dwIsOpened, 0/1, -1=unknown
                 if (value != -1) {
-                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
+                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
                             value != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 } else {
                     logger.debug("{}: Sensor error reported, check device, battery and installation", thingName);
@@ -191,9 +212,28 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "3117": // S, extInput, 0/1
                 handleInput(sen, s, rGroup, updates);
                 break;
+
+            case "3116": // TRV: S, valveError, 0/1
+                if (s.value == 1) {
+                    logger.debug("{}: Device reported valve error, check calibration", thingName);
+                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VALVE, getStringType("failure"));
+                }
+                break; // currently not processed
             case "3118":
-                updateChannel(updates, mGroup, CHANNEL_SENSOR_VOLTAGE,
-                        toQuantityType(getDouble(s.value), 2, Units.VOLT));
+                if (profile.isTRV) {
+                    // TRV: Valve state
+                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
+                            value != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                } else {
+                    updateChannel(updates, mGroup, CHANNEL_SENSOR_VOLTAGE,
+                            toQuantityType(getDouble(s.value), 2, Units.VOLT));
+                }
+                break;
+            case "3121": // valvePos, Type=S, Range=0/100;
+                updateChannel(updates, mGroup, CHANNEL_CONTROL_POSITION,
+                        s.value != -1 ? toQuantityType(getDouble(s.value), 0, Units.PERCENT) : UnDefType.UNDEF);
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VALVE,
+                        getStringType(s.value == 0 ? "closed" : "opened"));
                 break;
 
             case "4101": // relay_0/light_0: P, power, W

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -280,10 +280,10 @@ public class ShellyCoIoTProtocol {
         } else if (profile.isSensor) {
             // Sensor state
             if (profile.isDW) { // Door Window has item type Contact
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
                         s.value != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
             } else {
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
                         s.value == 1 ? OnOffType.ON : OnOffType.OFF);
             }
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,6 +54,13 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_URL_CONTROL_LIGHT = "/light";
 
     public static final String SHELLY_URL_SETTINGS_DIMMER = "/settings/light";
+
+    // Wakeup reasons
+    public static final String SHELLY_WAKEUPT_SENSOR = "SENSOR"; // new sensordata
+    public static final String SHELLY_WAKEUPT_PERIODIC = "PERIODIC"; // periodic wakeup
+    public static final String SHELLY_WAKEUPT_BUTTON = "BUTTON"; // button pressed
+    public static final String SHELLY_WAKEUPT_POWERON = "POWERON"; // device powered up
+    public static final String SHELLY_WAKEUPT_UNKNOWN = "UNKNOWN"; // other event
 
     //
     // Action URLs according to the device type
@@ -229,6 +236,10 @@ public class ShellyApiJsonDTO {
 
     // Motion
     public static final int SHELLY_MOTION_SLEEPTIME_OFFSET = 3; // we need to substract and offset
+
+    // TRV
+    public static final int SHELLY_TRV_MIN_TEMP = 5; // < 5: means: lowest (valve fully closed)
+    public static final int SHELLY_TRV_MAX_TEMP = 30; // > 30: means: highest (valve fully open)
 
     // CoIoT Multicast setting
     public static final String SHELLY_COIOT_MCAST = "mcast";
@@ -574,6 +585,7 @@ public class ShellyApiJsonDTO {
         public String mode;
         @SerializedName("max_power")
         public Double maxPower;
+        public Boolean calibrated;
 
         public ArrayList<ShellySettingsRelay> relays;
         public Double voltage; // AC voltage for Shelly 2.5
@@ -698,6 +710,10 @@ public class ShellyApiJsonDTO {
         // Shelly Dimmer only
         public Boolean loaderror;
         public Boolean overload;
+
+        // Shelly TRV
+        public Boolean calibrated;
+        public ArrayList<ShellyThermnostat> thermostats;
 
         public ShellySettingsUpdate update;
         @SerializedName("ram_total")
@@ -828,6 +844,27 @@ public class ShellyApiJsonDTO {
         public String unit;
     }
 
+    // Shelly TRV
+    public class ShellyThermnostat {
+        public class ShellyThermTargetTemp {
+            public Boolean enabled;
+            public Double value;
+            public String unit;
+        }
+
+        public class ShellyThermTemp {
+            public Double value;
+            public String units;
+            @SerializedName("is_valid")
+            public Boolean isValid;
+        }
+
+        public Double pos;
+        @SerializedName("target_t")
+        public ShellyThermTargetTemp targetTemp;
+        public ShellyThermTemp tmp;
+    }
+
     public static class ShellyStatusSensor {
         // https://shelly-api-docs.shelly.cloud/#h-amp-t-settings
         public static class ShellySensorTmp {
@@ -931,7 +968,7 @@ public class ShellyApiJsonDTO {
         public Boolean rainSensor; // Shelly Flood: true=in rain mode
 
         public Boolean motion; // Shelly Sense: true=motion detected
-        public Boolean charger; // Shelly Sense: true=charger connected
+        public Boolean charger; // Shelly Sense, TRV: true=charger connected
 
         @SerializedName("act_reasons")
         public List<Object> actReasons; // HT/Smoke/Flood: list of reasons which woke up the device
@@ -953,6 +990,10 @@ public class ShellyApiJsonDTO {
 
         // Shelly UNI FW 1.9+
         public ArrayList<ShellyADC> adcs;
+
+        // Shelly TRV
+        public Boolean calibrated;
+        public ArrayList<ShellyThermnostat> thermostats;
     }
 
     public static class ShellySettingsSmoke {

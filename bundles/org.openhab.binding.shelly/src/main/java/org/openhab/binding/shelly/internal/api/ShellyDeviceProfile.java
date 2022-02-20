@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,6 +93,7 @@ public class ShellyDeviceProfile {
     public boolean isDW = false; // true for Door Window sensor
     public boolean isButton = false; // true for a Shelly Button 1
     public boolean isIX3 = false; // true for a Shelly IX
+    public boolean isTRV = false; // true for a Shelly TRV
 
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
@@ -204,9 +205,10 @@ public class ShellyDeviceProfile {
         isMotion = thingType.startsWith(THING_TYPE_SHELLYMOTION_STR);
         isSense = thingType.equals(THING_TYPE_SHELLYSENSE_STR);
         isIX3 = thingType.equals(THING_TYPE_SHELLYIX3_STR);
-        isButton = thingType.equals(THING_TYPE_SHELLYBUTTON1_STR);
-        isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense;
-        hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion;
+        isButton = thingType.equals(THING_TYPE_SHELLYBUTTON1_STR) || thingType.equals(THING_TYPE_SHELLYBUTTON2_STR);
+        isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense || isTRV;
+        hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV;
+        isTRV = thingType.equals(THING_TYPE_SHELLYTRV_STR);
 
         alwaysOn = !hasBattery || isMotion || isSense; // true means: device is reachable all the time (no sleep mode)
     }

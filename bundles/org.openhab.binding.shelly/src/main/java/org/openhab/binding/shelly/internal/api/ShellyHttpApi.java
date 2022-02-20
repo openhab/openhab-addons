@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -199,8 +199,8 @@ public class ShellyHttpApi {
             status.tmp.tC = status.tmp.units.equals(SHELLY_TEMP_CELSIUS) ? status.tmp.value
                     : ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(getDouble(status.tmp.value))
                             .doubleValue();
-            double f = SIUnits.CELSIUS.getConverterTo(ImperialUnits.FAHRENHEIT).convert(getDouble(status.tmp.value))
-                    .doubleValue();
+            double f = (double) SIUnits.CELSIUS.getConverterTo(ImperialUnits.FAHRENHEIT)
+                    .convert(getDouble(status.tmp.value));
             status.tmp.tF = status.tmp.units.equals(SHELLY_TEMP_FAHRENHEIT) ? status.tmp.value : f;
         }
         if ((status.charger == null) && (profile.settings.externalPower != null)) {
@@ -223,6 +223,14 @@ public class ShellyHttpApi {
 
     public void setSleepTime(int value) throws ShellyApiException {
         request(SHELLY_URL_SETTINGS + "?sleep_time=" + value);
+    }
+
+    public void setTemperature(int value) throws ShellyApiException {
+        request("/thermostat/0?target_t_enabled=1&target_t=" + value);
+    }
+
+    public void setValvePosition(double value) throws ShellyApiException {
+        request("/thermostat/0?pos=" + value); // percentage to open the valve
     }
 
     public void setLedStatus(String ledName, Boolean value) throws ShellyApiException {

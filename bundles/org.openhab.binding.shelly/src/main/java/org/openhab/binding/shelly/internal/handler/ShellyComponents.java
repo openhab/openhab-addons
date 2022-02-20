@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,12 +17,14 @@ import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor.ShellyADC;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
@@ -68,6 +70,12 @@ public class ShellyComponents {
                 toQuantityType(getInteger(status.sleepTime), Units.SECOND));
 
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE, getOnOff(status.hasUpdate));
+
+        ShellyDeviceProfile profile = thingHandler.getProfile();
+        if (profile.settings.calibrated != null) {
+            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CALIBRATED,
+                    getOnOff(profile.settings.calibrated));
+        }
 
         return false; // device status never triggers update
     }
@@ -269,7 +277,7 @@ public class ShellyComponents {
 
             if ((sdata.sensor != null) && sdata.sensor.isValid) {
                 // Shelly DW: “sensor”:{“state”:“open”, “is_valid”:true},
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
                         getString(sdata.sensor.state).equalsIgnoreCase(SHELLY_API_DWSTATE_OPEN) ? OpenClosedType.OPEN
                                 : OpenClosedType.CLOSED);
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR,
@@ -288,8 +296,33 @@ public class ShellyComponents {
                     // convert Fahrenheit to Celsius
                     temp = ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(temp).doubleValue();
                 }
+                temp = convertToC(temp, getString(sdata.tmp.units));
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
                         toQuantityType(temp.doubleValue(), DIGITS_TEMP, SIUnits.CELSIUS));
+            } else if (status.thermostats != null && status.thermostats.size() > 0) {
+                // Shelly TRV
+                ShellyThermnostat t = status.thermostats.get(0);
+                if (t.tmp != null) {
+                    Double temp = convertToC(t.tmp.value, getString(t.tmp.units));
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
+                            toQuantityType(temp.doubleValue(), DIGITS_TEMP, SIUnits.CELSIUS));
+                    temp = convertToC(t.targetTemp.value, getString(t.targetTemp.unit));
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
+                            /* t.targetTemp.enabled ? */toQuantityType(t.targetTemp.value, DIGITS_TEMP, SIUnits.CELSIUS)
+                    /*
+                     * toQuantityType(t.targetTemp.value, DIGITS_NONE,
+                     * Units.PERCENT)
+                     * : UnDefType.UNDEF
+                     */);
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MODE,
+                            getStringType(t.targetTemp.enabled ? "automatic" : "manual"));
+                }
+                if (t.pos != null) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_POSITION,
+                            t.pos != -1 ? toQuantityType(t.pos, DIGITS_NONE, Units.PERCENT) : UnDefType.UNDEF);
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VALVE,
+                            getStringType(t.pos == -1 ? "failure" : t.pos == 0 ? "closed" : "opened"));
+                }
             }
             if (sdata.hum != null) {
                 thingHandler.logger.trace("{}: Updating humidity", thingHandler.thingName);
@@ -381,5 +414,16 @@ public class ShellyComponents {
             }
         }
         return updated;
+    }
+
+    private static Double convertToC(@Nullable Double temp, String unit) {
+        if (temp == null) {
+            return 0.0;
+        }
+        if (SHELLY_TEMP_FAHRENHEIT.equalsIgnoreCase(unit)) {
+            // convert Fahrenheit to Celsius
+            return ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(temp).doubleValue();
+        }
+        return temp;
     }
 }

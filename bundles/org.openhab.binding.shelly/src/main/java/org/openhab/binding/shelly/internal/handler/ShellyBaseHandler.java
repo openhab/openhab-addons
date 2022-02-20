@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -344,10 +344,22 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
                 case CHANNEL_SENSOR_SLEEPTIME:
                     logger.debug("{}: Set sensor sleep time to {}", thingName, command);
-                    int value = ((DecimalType) command).intValue();
+                    int value = (int) getNumber(command);
                     value = value > 0 ? Math.max(SHELLY_MOTION_SLEEPTIME_OFFSET, value - SHELLY_MOTION_SLEEPTIME_OFFSET)
                             : 0;
                     api.setSleepTime(value);
+                    break;
+
+                case CHANNEL_SENSOR_MODE:
+                    logger.debug("{}: Set sensor mode to {}", thingName, command);
+                    break;
+
+                case CHANNEL_CONTROL_SETTEMP:
+                    logger.debug("{}: Set temperature to {}", thingName, command);
+                    api.setTemperature((int) getNumber(command));
+                    break;
+                case CHANNEL_CONTROL_POSITION:
+                    api.setValvePosition(getNumber(command));
                     break;
 
                 default:
@@ -373,6 +385,19 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         } catch (IllegalArgumentException e) {
             logger.debug("{}: {}", thingName, messages.get("command.failed", command, channelUID));
         }
+    }
+
+    private double getNumber(Command command) {
+        if (command instanceof QuantityType) {
+            return ((QuantityType<?>) command).doubleValue();
+        }
+        if (command instanceof DecimalType) {
+            return ((DecimalType) command).doubleValue();
+        }
+        if (command instanceof Number) {
+            return ((Number) command).doubleValue();
+        }
+        throw new IllegalArgumentException("Invalid Number type for conversion: " + command);
     }
 
     /**
@@ -591,22 +616,30 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      *
      * @param alarm Alarm Message
      */
-    public void postEvent(String alarm, boolean force) {
+    public void postEvent(String event, boolean force) {
         String channelId = mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM);
         State value = cache.getValue(channelId);
         String lastAlarm = value != UnDefType.NULL ? value.toString() : "";
 
-        if (force || !lastAlarm.equals(alarm)
-                || (lastAlarm.equals(alarm) && now() > stats.lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC)) {
-            if (alarm.isEmpty() || alarm.equals(ALARM_TYPE_NONE)) {
-                cache.updateChannel(channelId, getStringType(alarm));
-            } else {
-                logger.info("{}: {}", thingName, messages.get("event.triggered", alarm));
-                triggerChannel(channelId, alarm);
-                cache.updateChannel(channelId, getStringType(alarm));
-                stats.lastAlarm = alarm;
-                stats.lastAlarmTs = now();
-                stats.alarms++;
+        if (force || !lastAlarm.equals(event)
+                || (lastAlarm.equals(event) && now() > stats.lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC)) {
+            switch (event) {
+                case "":
+                case ALARM_TYPE_NONE:
+                case SHELLY_WAKEUPT_SENSOR:
+                case SHELLY_WAKEUPT_PERIODIC:
+                case SHELLY_WAKEUPT_BUTTON:
+                case SHELLY_WAKEUPT_POWERON:
+                case SHELLY_WAKEUPT_UNKNOWN:
+                    logger.debug("{}: {}", thingName, messages.get("event.filtered", event));
+                    break;
+                default:
+                    logger.info("{}: {}", thingName, messages.get("event.triggered", event));
+                    triggerChannel(channelId, event);
+                    cache.updateChannel(channelId, getStringType(event));
+                    stats.lastAlarm = event;
+                    stats.lastAlarmTs = now();
+                    stats.alarms++;
             }
         }
     }
@@ -699,7 +732,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
                     case SHELLY_EVENT_CLOSE: // DW 1.7
                     case SHELLY_EVENT_OPEN: // DW 1.7
-                        updateChannel(group, CHANNEL_SENSOR_CONTACT,
+                        updateChannel(group, CHANNEL_SENSOR_STATE,
                                 event.equalsIgnoreCase(SHELLY_API_DWSTATE_OPEN) ? OpenClosedType.OPEN
                                         : OpenClosedType.CLOSED);
                         break;
