@@ -15,7 +15,6 @@ package org.openhab.binding.flicbutton.internal.handler;
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.flicbutton.internal.FlicButtonBindingConstants;
@@ -58,7 +57,7 @@ public class FlicButtonEventListener extends ButtonConnectionChannel.Callbacks {
         logger.debug("Create response {}: {}, {}", channel.getBdaddr(), createConnectionChannelError, connectionStatus);
         // Handling does not differ from Status change, so redirect
         if (connectionStatus != null) {
-            thingHandler.initializeStatus((@NonNull ConnectionStatus) connectionStatus);
+            thingHandler.initializeStatus(connectionStatus);
             channelResponseSemaphore.release();
         }
     }
@@ -76,7 +75,7 @@ public class FlicButtonEventListener extends ButtonConnectionChannel.Callbacks {
         logger.trace("New status for {}: {}", channel.getBdaddr(),
                 connectionStatus + (connectionStatus == ConnectionStatus.Disconnected ? ", " + disconnectReason : ""));
         if (connectionStatus != null) {
-            thingHandler.connectionStatusChanged((@NonNull ConnectionStatus) connectionStatus, disconnectReason);
+            thingHandler.connectionStatusChanged(connectionStatus, disconnectReason);
         }
     }
 
@@ -97,8 +96,7 @@ public class FlicButtonEventListener extends ButtonConnectionChannel.Callbacks {
             @Nullable ClickType clickType, boolean wasQueued, int timeDiff) throws IOException {
         // Handling does not differ from up/down events, so redirect
         if (channel != null && clickType != null) {
-            onButtonUpOrDown((@NonNull ButtonConnectionChannel) channel, (@NonNull ClickType) clickType, wasQueued,
-                    timeDiff);
+            onButtonUpOrDown(channel, clickType, wasQueued, timeDiff);
         }
     }
 }
