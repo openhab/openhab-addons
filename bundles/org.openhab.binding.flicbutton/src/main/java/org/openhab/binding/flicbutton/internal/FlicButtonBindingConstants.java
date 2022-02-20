@@ -13,13 +13,16 @@
 package org.openhab.binding.flicbutton.internal;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link FlicButtonBinding} class defines common constants, which are
+ * The {@link FlicButtonBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Patrick Fink - Initial contribution
@@ -48,4 +51,15 @@ public class FlicButtonBindingConstants {
 
     // Other stuff
     public static final int BUTTON_OFFLINE_GRACE_PERIOD_SECONDS = 60;
+
+    public static final Map<String, String> FLIC_OPENHAB_TRIGGER_EVENT_MAP = Collections
+            .unmodifiableMap(new HashMap<String, String>() {
+                {
+                    put("ButtonSingleClick", CommonTriggerEvents.SHORT_PRESSED);
+                    put("ButtonDoubleClick", CommonTriggerEvents.DOUBLE_PRESSED);
+                    put("ButtonHold", CommonTriggerEvents.LONG_PRESSED);
+                    put("ButtonDown", CommonTriggerEvents.PRESSED);
+                    put("ButtonUp", CommonTriggerEvents.RELEASED);
+                }
+            });
 }

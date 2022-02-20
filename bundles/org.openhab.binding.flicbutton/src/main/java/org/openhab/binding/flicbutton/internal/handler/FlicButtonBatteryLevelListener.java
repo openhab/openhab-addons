@@ -21,6 +21,8 @@ import io.flic.fliclib.javaclient.BatteryStatusListener;
 import io.flic.fliclib.javaclient.Bdaddr;
 
 /**
+ * Each {@link FlicButtonBatteryLevelListener} object listens to the battery status of a specific Flic button
+ * and calls updates the {@link FlicButtonHandler} accordingly.
  *
  * @author Patrick Fink - Initial contribution
  *

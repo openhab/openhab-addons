@@ -87,7 +87,6 @@ public class FlicSimpleclientDiscoveryServiceImpl extends AbstractDiscoveryServi
     }
 
     protected void discoverVerifiedButtons() throws IOException {
-        // Register FlicButtonEventListener to all already existing Flic buttons
         flicClient.getInfo(new GetInfoResponseCallback() {
             @Override
             public void onGetInfoResponse(@Nullable BluetoothControllerState bluetoothControllerState,

@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * The configuration of a flicd bridge handled by {@link FlicDaemonBridgeHandler}.
  *
  * @author Patrick Fink - Initial contribution
  *

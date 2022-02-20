@@ -40,8 +40,8 @@ import io.flic.fliclib.javaclient.enums.ConnectionStatus;
 import io.flic.fliclib.javaclient.enums.DisconnectReason;
 
 /**
- * The {@link FlicButtonHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link FlicButtonHandler} is responsible for initializing the online status of Flic Buttons
+ * and trigger channel events when they're used.
  *
  * @author Patrick Fink - Initial contribution
  */

@@ -20,6 +20,7 @@ import io.flic.fliclib.javaclient.Bdaddr;
 import io.flic.fliclib.javaclient.FlicClient;
 
 /**
+ * A {@link DiscoveryService} for Flic buttons.
  *
  * @author Patrick Fink - Initial contribution
  *

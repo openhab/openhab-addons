@@ -11,12 +11,12 @@
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
-				<label>flicd Hostname</label>
+				<label>Flic Daemon (flicd) Hostname</label>
 				<description>IP or Host name of the Flic daemon (flicd).</description>
 				<default>localhost</default>
 			</parameter>
-			<parameter name="port" type="integer" required="true">
-				<label>Flic daemon (flicd) port</label>
+			<parameter name="port" type="integer" required="false">
+				<label>Flic Daemon (flicd) Port</label>
 				<description>Port where flicd is running. Defaults to 5551.</description>
 				<default>5551</default>
 			</parameter>

@@ -18,7 +18,7 @@ import java.util.concurrent.Semaphore;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.flicbutton.internal.util.FlicButtonUtils;
+import org.openhab.binding.flicbutton.internal.FlicButtonBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +30,8 @@ import io.flic.fliclib.javaclient.enums.DisconnectReason;
 import io.flic.fliclib.javaclient.enums.RemovedReason;
 
 /**
+ * Each {@link FlicButtonEventListener} object listens to events of a specific Flic button and calls the
+ * associated {@link FlicButtonHandler} back accordingly.
  *
  * @author Patrick Fink - Initial contribution
  *
@@ -83,7 +85,7 @@ public class FlicButtonEventListener extends ButtonConnectionChannel.Callbacks {
             boolean wasQueued, int timeDiff) throws IOException {
         if (channel != null && clickType != null) {
             logger.trace("{} {}", channel.getBdaddr(), clickType.name());
-            String commonTriggerEvent = FlicButtonUtils.FLIC_OPENHAB_TRIGGER_EVENT_MAP.get(clickType.name());
+            String commonTriggerEvent = FlicButtonBindingConstants.FLIC_OPENHAB_TRIGGER_EVENT_MAP.get(clickType.name());
             if (commonTriggerEvent != null) {
                 thingHandler.fireTriggerEvent(commonTriggerEvent);
             }

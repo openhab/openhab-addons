@@ -26,6 +26,9 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 
 /**
+ * The {@link ChildThingHandler} class is an abstract class for handlers that are dependent from a parent
+ * {@link BridgeHandler}.
+ *
  * @author Patrick Fink - Initial contribution
  * @param <BridgeHandlerType> The bridge type this child handler depends on
  */
