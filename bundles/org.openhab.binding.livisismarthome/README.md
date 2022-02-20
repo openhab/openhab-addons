@@ -133,7 +133,7 @@ Now you can add all devices from your Inbox as things.
 
 ### File based configuration
 
-As an alternative to the automatic discovery process and graphical configuration using the UI, Livisi things can be configured manually.
+As an alternative to the automatic discovery process and graphical configuration using the UI, LIVISI things can be configured manually.
 The LIVISI SmartHome Controller (SHC) can be configured using the following syntax:
 
 ```
@@ -155,7 +155,7 @@ The device ID (e.g. e9a74941a3807b57332214f346fb1129) can be found in the UI inb
 However, a full example .things configuration look like this:
 
 ```
-Bridge livisismarthome:bridge:mybride "Livisi SmartHome Controller" {
+Bridge livisismarthome:bridge:mybride "LIVISI SmartHome Controller" {
     Thing ISD2 myDimmer "Dimmer Kitchen" @ "Kitchen" [ id="<device-id>" ]
     Thing ISS2 myLightSwitch "Light Livingroom" @ "Livingroom" [ id="<device-id>" ]
     Thing PSS myTVSwitch "TV" @ "Livingroom" [ id="<device-id>" ]

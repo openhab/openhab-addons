@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LivisiBridgeDiscoveryParticipant} is responsible for discovering
- * the Livisi SmartHome bridge.
+ * the LIVISI SmartHome bridge.
  *
  * @author Oliver Kuhl - Initial contribution
  * @author Sven Strohschein - Renamed from Innogy to Livisi
@@ -57,7 +57,7 @@ public class LivisiBridgeDiscoveryParticipant implements MDNSDiscoveryParticipan
         ThingUID uid = getThingUID(service);
         if (uid != null) {
             DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-                    .withLabel("Livisi SmartHome Controller (" + service.getName() + ")").build();
+                    .withLabel("LIVISI SmartHome Controller (" + service.getName() + ")").build();
             return result;
         }
         return null;
@@ -68,7 +68,7 @@ public class LivisiBridgeDiscoveryParticipant implements MDNSDiscoveryParticipan
         if (service != null) {
             String serviceName = service.getName();
             if (serviceName.startsWith("SMARTHOME")) {
-                logger.debug("Found Livisi bridge via mDNS:{} v4:{} v6:{}", service.getName(),
+                logger.debug("Found LIVISI SmartHome bridge via mDNS:{} v4:{} v6:{}", service.getName(),
                         service.getInet4Addresses(), service.getInet6Addresses());
                 return new ThingUID(LivisiBindingConstants.THING_TYPE_BRIDGE, serviceName);
             }

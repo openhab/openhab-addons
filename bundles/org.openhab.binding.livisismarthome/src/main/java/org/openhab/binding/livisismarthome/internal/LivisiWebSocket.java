@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LivisiWebSocket} implements the websocket for receiving constant updates
- * from the Livisi SmartHome web service.
+ * from the LIVISI SmartHome web service.
  *
  * @author Oliver Kuhl - Initial contribution
  * @author Sven Strohschein - Renamed from Innogy to Livisi
@@ -78,7 +78,7 @@ public class LivisiWebSocket {
             session.close();
         }
 
-        logger.debug("Connecting to Livisi WebSocket...");
+        logger.debug("Connecting to LIVISI SmartHome webSocket...");
         session = client.connect(this, webSocketURI).get();
     }
 
@@ -118,17 +118,17 @@ public class LivisiWebSocket {
     @OnWebSocketConnect
     public void onConnect(Session session) {
         this.closing = false;
-        logger.info("Connected to Livisi Webservice.");
-        logger.trace("Livisi Websocket session: {}", session);
+        logger.info("Connected to LIVISI SmartHome webservice.");
+        logger.trace("LIVISI SmartHome websocket session: {}", session);
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
         if (statusCode == StatusCode.NORMAL) {
-            logger.info("Connection to Livisi Webservice was closed normally.");
+            logger.info("Connection to LIVISI SmartHome webservice was closed normally.");
         } else if (!closing) {
             // An additional reconnect attempt is only required when the close/stop wasn't executed by the binding.
-            logger.info("Connection to Livisi Webservice was closed abnormally (code: {}). Reason: {}", statusCode,
+            logger.info("Connection to LIVISI SmartHome webservice was closed abnormally (code: {}). Reason: {}", statusCode,
                     reason);
             eventListener.connectionClosed();
         }
@@ -136,15 +136,15 @@ public class LivisiWebSocket {
 
     @OnWebSocketError
     public void onError(Throwable cause) {
-        logger.debug("Livisi WebSocket onError() - {}", cause.getMessage());
+        logger.debug("LIVISI SmartHome websocket onError() - {}", cause.getMessage());
         eventListener.onError(cause);
     }
 
     @OnWebSocketMessage
     public void onMessage(String msg) {
-        logger.debug("Livisi WebSocket onMessage() - {}", msg);
+        logger.debug("LIVISI SmartHome websocket onMessage() - {}", msg);
         if (closing) {
-            logger.debug("Livisi WebSocket onMessage() - ignored, WebSocket is closing...");
+            logger.debug("LIVISI SmartHome websocket onMessage() - ignored, WebSocket is closing...");
         } else {
             eventListener.onEvent(msg);
         }

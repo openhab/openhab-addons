@@ -3,7 +3,7 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
-	<name>Livisi SmartHome Binding</name>
-	<description>The Livisi SmartHome binding integrates your Livisi SmartHome system.</description>
+	<name>LIVISI SmartHome Binding</name>
+	<description>The LIVISI SmartHome binding integrates your LIVISI SmartHome system.</description>
 
 </binding:binding>

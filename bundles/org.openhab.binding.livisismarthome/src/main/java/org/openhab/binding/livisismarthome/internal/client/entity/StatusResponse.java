@@ -21,7 +21,7 @@ import org.openhab.binding.livisismarthome.internal.client.entity.device.Gateway
  */
 public class StatusResponse {
     /**
-     * The Livisi SmartHome gateway. Can be null in case there is no registered for the current logged in user.
+     * The LIVISI SmartHome gateway. Can be null in case there is no registered for the current logged in user.
      */
     public Gateway gateway;
 }

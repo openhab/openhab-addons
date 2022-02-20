@@ -68,7 +68,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The main client that handles the communication with the Livisi SmartHome API service.
+ * The main client that handles the communication with the LIVISI SmartHome API service.
  *
  * @author Oliver Kuhl - Initial contribution
  * @author Hilbrand Bouwkamp - Refactored to use openHAB http and oauth2 libraries
@@ -113,14 +113,14 @@ public class LivisiClient {
      * @throws SessionExistsException thrown, if a session already exists
      */
     public void refreshStatus() throws IOException, ApiException, AuthenticationException {
-        logger.debug("Get Livisi SmartHome status...");
+        logger.debug("Get LIVISI SmartHome status...");
         final StatusResponse status = executeGet(URLCreator.createStatusURL(bridgeConfiguration.host),
                 StatusResponse.class);
 
         bridgeDetails = status.gateway;
         configVersion = bridgeDetails.getConfigVersion();
 
-        logger.debug("Livisi SmartHome Status loaded. Configuration version is {}.", configVersion);
+        logger.debug("LIVISI SmartHome status loaded. Configuration version is {}.", configVersion);
     }
 
     /**
@@ -219,7 +219,7 @@ public class LivisiClient {
         }
         if (accessTokenResponse == null || accessTokenResponse.getAccessToken() == null
                 || accessTokenResponse.getAccessToken().isBlank()) {
-            throw new AuthenticationException("No Livisi access token. Is this thing authorized?");
+            throw new AuthenticationException("No LIVISI SmartHome access token. Is this thing authorized?");
         }
         return accessTokenResponse;
     }
@@ -229,7 +229,7 @@ public class LivisiClient {
      *
      * @param response response
      * @param uri uri of api call made
-     * @throws ControllerOfflineException thrown, if the Livisi SmartHome controller (SHC) is offline.
+     * @throws ControllerOfflineException thrown, if the LIVISI SmartHome controller (SHC) is offline.
      */
     private void handleResponseErrors(final ContentResponse response, final URI uri) throws IOException, ApiException {
         String content = "";
@@ -239,8 +239,8 @@ public class LivisiClient {
                 logger.debug("Statuscode is OK: [{}]", uri);
                 return;
             case HttpStatus.SERVICE_UNAVAILABLE_503:
-                logger.debug("Livisi service is unavailabe (503).");
-                throw new ServiceUnavailableException("Livisi service is unavailabe (503).");
+                logger.debug("LIVISI SmartHome service is unavailable (503).");
+                throw new ServiceUnavailableException("LIVISI SmartHome service is unavailable (503).");
             default:
                 logger.debug("Statuscode {} is NOT OK: [{}]", response.getStatus(), uri);
                 try {
@@ -362,7 +362,7 @@ public class LivisiClient {
      */
     public List<Device> getDevices(Collection<String> deviceIds)
             throws IOException, ApiException, AuthenticationException {
-        logger.debug("Loading Livisi devices...");
+        logger.debug("Loading LIVISI SmartHome devices...");
         List<Device> devices = executeGetList(URLCreator.createDevicesURL(bridgeConfiguration.host), Device[].class);
         return devices.stream().filter(d -> isDeviceUsable(d, deviceIds)).collect(Collectors.toList());
     }

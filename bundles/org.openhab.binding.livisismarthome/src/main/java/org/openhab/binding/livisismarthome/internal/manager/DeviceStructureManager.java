@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Manages the structure of the {@link Device}s and the calls to the
  * {@link org.openhab.binding.livisismarthome.internal.client.LivisiClient} to load the {@link Device}
- * data from the Livisi SmartHome web service.
+ * data from the LIVISI SmartHome web service.
  *
  * @author Oliver Kuhl - Initial contribution
  *

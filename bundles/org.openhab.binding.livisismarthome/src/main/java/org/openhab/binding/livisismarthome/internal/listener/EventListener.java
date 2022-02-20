@@ -25,14 +25,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface EventListener {
 
     /**
-     * This method is called, whenever a new event comes from the Livisi service (like a device change for example).
+     * This method is called, whenever a new event comes from the LIVISI SmartHome service (like a device change for example).
      *
      * @param msg
      */
     void onEvent(String msg);
 
     /**
-     * This method is called when the Livisi websocket services throws an onError.
+     * This method is called when the LIVISI SmartHome websocket services throws an onError.
      *
      * @param cause
      */

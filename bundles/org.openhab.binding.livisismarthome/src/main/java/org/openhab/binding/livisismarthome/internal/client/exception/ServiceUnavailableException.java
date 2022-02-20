@@ -15,7 +15,7 @@ package org.openhab.binding.livisismarthome.internal.client.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Thrown, if the Livisi service is unavailable (HTTP response 503).
+ * Thrown, if the LIVISI service is unavailable (HTTP response 503).
  *
  * @author Oliver Kuhl - Initial contribution
  *

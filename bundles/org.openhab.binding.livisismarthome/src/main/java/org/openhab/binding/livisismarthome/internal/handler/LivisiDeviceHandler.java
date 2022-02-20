@@ -200,7 +200,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Livisi SmartHome device handler.");
+        logger.debug("Initializing LIVISI SmartHome device handler.");
         initializeThing(getBridge() == null ? null : getBridge().getStatus());
     }
 
@@ -235,7 +235,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                         updateStatus(ThingStatus.ONLINE);
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
-                                "Device not found in Livisi config. Was it removed?");
+                                "Device not found in LIVISI SmartHome config. Was it removed?");
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -329,7 +329,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     /**
-     * Returns the Livisi bridge handler.
+     * Returns the LIVISI bridge handler.
      *
      * @return the {@link LivisiBridgeHandler} or null
      */

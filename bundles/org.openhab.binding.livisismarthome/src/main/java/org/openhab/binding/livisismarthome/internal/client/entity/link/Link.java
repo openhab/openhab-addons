@@ -14,7 +14,7 @@ package org.openhab.binding.livisismarthome.internal.client.entity.link;
 
 /**
  * Defines the data structure for a {@link Link}. This is the basic component used to link different data types in the
- * Livisi API.
+ * LIVISI API.
  *
  * @author Oliver Kuhl - Initial contribution
  */

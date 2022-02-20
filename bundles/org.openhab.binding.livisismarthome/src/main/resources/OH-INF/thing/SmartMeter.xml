@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Smart Meter</label>
-		<description>The Smart Meter from the Livisi PowerControl product.</description>
+		<description>The Smart Meter from the LIVISI PowerControl product.</description>
 
 		<channels>
 			<channel id="energy_consumption_month_kwh" typeId="EnergyConsumptionMonthKWh"/>

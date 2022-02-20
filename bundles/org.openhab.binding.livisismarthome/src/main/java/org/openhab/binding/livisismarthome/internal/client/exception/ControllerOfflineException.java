@@ -17,7 +17,7 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Thrown, if the Livisi SmartHome controller (SHC) is offline.
+ * Thrown, if the LIVISI SmartHome controller (SHC) is offline.
  *
  * @author Oliver Kuhl - Initial contribution
  *

@@ -18,7 +18,7 @@ import org.openhab.binding.livisismarthome.internal.client.entity.Property;
 import org.openhab.binding.livisismarthome.internal.client.entity.link.Link;
 
 /**
- * Defines the {@link Event}, which is sent by the Livisi websocket to inform the clients about changes.
+ * Defines the {@link Event}, which is sent by the LIVISI websocket to inform the clients about changes.
  *
  * @author Oliver Kuhl - Initial contribution
  */

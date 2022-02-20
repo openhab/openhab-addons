@@ -79,14 +79,14 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * The {@link LivisiBridgeHandler} is responsible for handling the Livisi SmartHome controller including the connection
- * to the Livisi backend for all communications with the Livisi {@link Device}s.
+ * The {@link LivisiBridgeHandler} is responsible for handling the LIVISI SmartHome controller including the connection
+ * to the LIVISI SmartHome backend for all communications with the LIVISI SmartHome {@link Device}s.
  * <p/>
  * It implements the {@link AccessTokenRefreshListener} to handle updates of the oauth2 tokens and the
  * {@link EventListener} to handle {@link Event}s, that are received by the {@link LivisiWebSocket}.
  * <p/>
  * The {@link Device}s are organized by the {@link DeviceStructureManager}, which is also responsible for the connection
- * to the Livisi SmartHome webservice via the {@link LivisiClient}.
+ * to the LIVISI SmartHome webservice via the {@link LivisiClient}.
  *
  * @author Oliver Kuhl - Initial contribution
  * @author Hilbrand Bouwkamp - Refactored to use openHAB http and oauth2 libraries
@@ -138,7 +138,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Livisi SmartHome BridgeHandler...");
+        logger.debug("Initializing LIVISI SmartHome BridgeHandler...");
         this.bridgeConfiguration = getConfigAs(LivisiBridgeConfiguration.class);
         getScheduler().execute(this::initializeClient);
     }
@@ -166,18 +166,18 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         } catch (AuthenticationException | ApiException | IOException | OAuthException e) {
             logger.debug("Error fetching access tokens. Please check your credentials. Detail: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Cannot connect to Livisi SmartHome service. Please check your credentials!");
+                    "Cannot connect to LIVISI SmartHome service. Please check your credentials!");
         }
     }
 
     /**
-     * Initializes the client and connects to the Livisi SmartHome service via Client API. Based on the provided
+     * Initializes the client and connects to the LIVISI SmartHome service via Client API. Based on the provided
      * {@Link Configuration} while constructing {@Link LivisiClient}, the given oauth2 access and refresh tokens are
      * used or - if not yet available - new tokens are fetched from the service using the provided auth code.
      */
     private void startClient() {
         try {
-            logger.debug("Initializing Livisi SmartHome client...");
+            logger.debug("Initializing LIVISI SmartHome client...");
             final LivisiClient localClient = this.client;
             if (localClient != null) {
                 localClient.refreshStatus();
@@ -185,7 +185,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         } catch (AuthenticationException | ApiException | IOException e) {
             if (handleClientException(e)) {
                 // If exception could not be handled properly it's no use to continue so we won't continue start
-                logger.debug("Error initializing Livisi SmartHome client.", e);
+                logger.debug("Error initializing LIVISI SmartHome client.", e);
                 return;
             }
         }
@@ -215,7 +215,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     /**
-     * Start the websocket connection for receiving permanent update {@link Event}s from the Livisi API.
+     * Start the websocket connection for receiving permanent update {@link Event}s from the LIVISI API.
      */
     private void startWebsocket() {
         try {
@@ -226,7 +226,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 this.webSocket = null;
             }
 
-            logger.debug("Starting Livisi websocket.");
+            logger.debug("Starting LIVISI SmartHome websocket.");
             this.webSocket = localWebSocket;
             localWebSocket.start();
             updateStatus(ThingStatus.ONLINE);
@@ -314,7 +314,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void dispose() {
-        logger.debug("Disposing Livisi SmartHome bridge handler '{}'", getThing().getUID().getId());
+        logger.debug("Disposing LIVISI SmartHome bridge handler '{}'", getThing().getUID().getId());
         unregisterDeviceStatusListener(this);
         cancelReinitJob();
         if (webSocket != null) {
@@ -325,7 +325,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         deviceStructMan = null;
 
         super.dispose();
-        logger.debug("Livisi SmartHome bridge handler shut down.");
+        logger.debug("LIVISI SmartHome bridge handler shut down.");
     }
 
     private synchronized void cancelReinitJob() {
@@ -388,7 +388,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     /**
-     * Refreshes the {@link Device} with the given id, by reloading the full device from the Livisi webservice.
+     * Refreshes the {@link Device} with the given id, by reloading the full device from the LIVISI webservice.
      *
      * @param deviceId
      * @return the {@link Device} or null, if it does not exist or no {@link DeviceStructureManager} is available
@@ -492,7 +492,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                                     "Ignored configuration changed event with version '{}' as current version is '{}' the same.",
                                     event.getConfigurationVersion(), client.getConfigVersion());
                         } else {
-                            logger.info("Configuration changed from version {} to {}. Restarting Livisi binding...",
+                            logger.info("Configuration changed from version {} to {}. Restarting LIVISI SmartHome binding...",
                                     client.getConfigVersion(), event.getConfigurationVersion());
                             scheduleRestartClient(false);
                         }
@@ -891,7 +891,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             logger.debug("Remote access not allowed. Dropping access token and reinitializing binding...");
             refreshAccessToken();
         } else if (e instanceof ControllerOfflineException) {
-            logger.debug("Livisi SmartHome Controller is offline.");
+            logger.debug("LIVISI SmartHome Controller is offline.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } else if (e instanceof AuthenticationException) {
             logger.debug("OAuthenticaton error, refreshing tokens: {}", e.getMessage());

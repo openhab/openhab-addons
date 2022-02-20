@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Two-Way-Meter</label>
-		<description>The Two-Way-Meter from the Livisi PowerControlSolar product.</description>
+		<description>The Two-Way-Meter from the LIVISI PowerControlSolar product.</description>
 
 		<channels>
 			<channel id="energy_month_kwh" typeId="EnergyConsumptionMonthKWh"/>

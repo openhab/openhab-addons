@@ -29,7 +29,7 @@
 		<config-description>
 			<parameter name="invert" type="boolean">
 				<label>Invert Position</label>
-				<description>When invert is true than 0 on Livisi is UP and 100 is DOWN</description>
+				<description>When invert is true than 0 on LIVISI is UP and 100 is DOWN</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -83,7 +83,7 @@
 	<channel-type id="TemperatureSensor_FrostWarning" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Frost Warning</label>
-		<description>Warns, if temperature drop below a threshold (configured in Livisi app)</description>
+		<description>Warns, if temperature drop below a threshold (configured in LIVISI app)</description>
 		<category>Temperature</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -100,7 +100,7 @@
 	<channel-type id="HumiditySensor_MoldWarning" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Mold Warning</label>
-		<description>Active, if humidity is over a threshold (configured in Livisi app)</description>
+		<description>Active, if humidity is over a threshold (configured in LIVISI app)</description>
 		<category>Humidity</category>
 		<state readOnly="true"/>
 	</channel-type>

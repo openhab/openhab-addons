@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Analog Meter</label>
-		<description>The Analog Meter from the Livisi EnergyControl product.</description>
+		<description>The Analog Meter from the LIVISI EnergyControl product.</description>
 
 		<channels>
 			<channel id="energy_consumption_month_kwh" typeId="EnergyConsumptionMonthKWh"/>

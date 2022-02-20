@@ -40,7 +40,7 @@ public class Gateway {
     private String osVersion;
 
     /**
-     * Version of the configuration. Changes each time the configuration was changed via the Livisi client app.
+     * Version of the configuration. Changes each time the configuration was changed via the LIVISI client app.
      */
     private String configVersion;
 

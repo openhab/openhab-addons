@@ -76,7 +76,7 @@ public class LivisiDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected void startScan() {
-        logger.debug("SCAN for new Livisi devices started...");
+        logger.debug("SCAN for new LIVISI SmartHome devices started...");
         if (bridgeHandler != null) {
             for (final Device d : bridgeHandler.loadDevices()) {
                 onDeviceAdded(d);

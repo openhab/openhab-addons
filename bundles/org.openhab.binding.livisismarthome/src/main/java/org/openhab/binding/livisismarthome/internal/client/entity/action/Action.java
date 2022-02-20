@@ -15,7 +15,7 @@ package org.openhab.binding.livisismarthome.internal.client.entity.action;
 import org.openhab.binding.livisismarthome.internal.client.entity.link.Link;
 
 /**
- * Implements the Action structure needed to send JSON actions to the Livisi backend. They are used to e.g. switch the
+ * Implements the Action structure needed to send JSON actions to the LIVISI backend. They are used to e.g. switch the
  * state of a device.
  *
  * @author Oliver Kuhl - Initial contribution

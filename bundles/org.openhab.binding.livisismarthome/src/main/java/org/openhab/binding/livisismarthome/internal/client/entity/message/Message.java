@@ -17,7 +17,7 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Defines the structure of a {@link Message}. Messages are part of the Livisi system and besides other things are used
+ * Defines the structure of a {@link Message}. Messages are part of the LIVISI SmartHome system and besides other things are used
  * to raise battery warnings.
  *
  * @author Oliver Kuhl - Initial contribution

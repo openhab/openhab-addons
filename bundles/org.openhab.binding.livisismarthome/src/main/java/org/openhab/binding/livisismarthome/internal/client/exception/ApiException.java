@@ -15,7 +15,7 @@ package org.openhab.binding.livisismarthome.internal.client.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Thrown, when the Livisi SmartHome Client API returns an unknown error.
+ * Thrown, when the LIVISI SmartHome Client API returns an unknown error.
  *
  * @author Oliver Kuhl - Initial contribution
  */

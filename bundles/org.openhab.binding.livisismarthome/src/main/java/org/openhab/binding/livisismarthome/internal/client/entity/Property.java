@@ -13,7 +13,7 @@
 package org.openhab.binding.livisismarthome.internal.client.entity;
 
 /**
- * Defines a {@link Property}, that is a basic key/value structure used for several data types in the Livisi API.
+ * Defines a {@link Property}, that is a basic key/value structure used for several data types in the LIVISI API.
  *
  * @author Oliver Kuhl - Initial contribution
  */
