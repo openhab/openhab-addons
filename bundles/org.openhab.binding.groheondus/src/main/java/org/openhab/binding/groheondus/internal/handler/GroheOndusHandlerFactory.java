@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.groheondus.internal.handler;
 
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.*;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.THING_TYPE_BRIDGE_ACCOUNT;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.THING_TYPE_SENSE;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.THING_TYPE_SENSEGUARD;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,7 +24,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.groheondus.internal.AccountsServlet;
 import org.openhab.binding.groheondus.internal.discovery.GroheOndusDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.storage.StorageService;
@@ -52,15 +53,12 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
 
     private HttpService httpService;
     private StorageService storageService;
-    private AccountsServlet accountsServlet;
     private int thingCounter = 0;
 
     @Activate
-    public GroheOndusHandlerFactory(@Reference HttpService httpService, @Reference StorageService storageService,
-            @Reference AccountsServlet accountsServlet) {
+    public GroheOndusHandlerFactory(@Reference HttpService httpService, @Reference StorageService storageService) {
         this.httpService = httpService;
         this.storageService = storageService;
-        this.accountsServlet = accountsServlet;
     }
 
     private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_SENSEGUARD,
@@ -76,7 +74,7 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE_ACCOUNT.equals(thingTypeUID)) {
-            GroheOndusAccountHandler handler = new GroheOndusAccountHandler((Bridge) thing, httpService,
+            GroheOndusAccountHandler handler = new GroheOndusAccountHandler((Bridge) thing,
                     storageService.getStorage(thing.getUID().toString(),
                             FrameworkUtil.getBundle(getClass()).adapt(BundleWiring.class).getClassLoader()));
             onAccountCreated(thing, handler);
@@ -92,9 +90,6 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
 
     private void onAccountCreated(Thing thing, GroheOndusAccountHandler handler) {
         registerDeviceDiscoveryService(handler);
-        if (this.accountsServlet != null) {
-            this.accountsServlet.addAccount(thing);
-        }
     }
 
     @Override
