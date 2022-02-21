@@ -93,7 +93,6 @@ public class LGThinQDryerHandler extends LGThinQAbstractDeviceHandler<DryerCapab
         updateState(DR_CHANNEL_REMAIN_TIME_ID, new StringType(shot.getRemainingTime()));
         updateState(DR_CHANNEL_DRY_LEVEL_ID, new StringType(shot.getDryLevel()));
         updateState(DR_CHANNEL_ERROR_ID, new StringType(shot.getError()));
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override

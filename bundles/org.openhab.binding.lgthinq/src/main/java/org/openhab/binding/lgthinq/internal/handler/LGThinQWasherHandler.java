@@ -133,7 +133,6 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
         updateState(WM_CHANNEL_TEMP_LEVEL_ID, new StringType(shot.getTemperatureLevel()));
         updateState(WM_CHANNEL_DOOR_LOCK_ID, new StringType(shot.getDoorLock()));
         updateState(WM_CHANNEL_REMAIN_TIME_ID, new StringType(shot.getRemainingTime()));
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
