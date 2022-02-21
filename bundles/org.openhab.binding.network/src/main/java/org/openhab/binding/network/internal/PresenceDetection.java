@@ -49,8 +49,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PresenceDetection implements IPRequestReceivedCallback {
 
-    public static final double NOT_REACHABLE = -1;
-    public static final int DESTINATION_TTL = 300 * 1000; // in ms, 300 s
+    private static final int DESTINATION_TTL = 300 * 1000; // in ms, 300 s
 
     NetworkUtils networkUtils = new NetworkUtils();
     private final Logger logger = LoggerFactory.getLogger(PresenceDetection.class);
@@ -59,7 +58,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private boolean useDHCPsniffing = false;
     private String ipPingState = "Disabled";
     protected String arpPingUtilPath = "";
-    protected ArpPingUtilEnum arpPingMethod = ArpPingUtilEnum.DISABLED;
+    private ArpPingUtilEnum arpPingMethod = ArpPingUtilEnum.DISABLED;
     protected @Nullable IpPingMethodEnum pingMethod = null;
     private boolean iosDevice;
     private Set<Integer> tcpPorts = new HashSet<>();
@@ -72,7 +71,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private @NonNullByDefault({}) ExpiringCache<@Nullable InetAddress> destination;
     private @Nullable InetAddress cachedDestination = null;
 
-    public boolean preferResponseTimeAsLatency;
+    private boolean preferResponseTimeAsLatency;
 
     /// State variables (cannot be final because of test dependency injections)
     ExpiringCacheAsync<PresenceDetectionValue> cache;
@@ -80,7 +79,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private @Nullable ScheduledFuture<?> refreshJob;
     protected @Nullable ExecutorService executorService;
     private String dhcpState = "off";
-    Integer currentCheck = 0;
+    private Integer currentCheck = 0;
     int detectionChecks;
 
     public PresenceDetection(final PresenceDetectionListener updateListener, int cacheDeviceStateTimeInMS)

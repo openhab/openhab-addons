@@ -37,12 +37,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DHCPPacketListenerServer extends Thread {
     private byte[] buffer = new byte[1024];
-    protected @Nullable DatagramSocket dsocket;
+    private @Nullable DatagramSocket dsocket;
     private DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-    boolean willbeclosed = false;
-    Logger logger = LoggerFactory.getLogger(DHCPPacketListenerServer.class);
-    private boolean useUnprevilegedPort = false;
     private final IPRequestReceivedCallback listener;
+    private final Logger logger = LoggerFactory.getLogger(DHCPPacketListenerServer.class);
+    private boolean useUnprevilegedPort = false;
+    private boolean willbeclosed = false;
 
     DHCPPacketListenerServer(IPRequestReceivedCallback listener) throws SocketException, BindException {
         this.listener = listener;
@@ -54,7 +54,7 @@ public class DHCPPacketListenerServer extends Thread {
         }
     }
 
-    protected void bindSocketTo(int port) throws SocketException {
+    private void bindSocketTo(int port) throws SocketException {
         DatagramSocket dsocket = new DatagramSocket(null);
         dsocket.setReuseAddress(true);
         dsocket.setBroadcast(true);
