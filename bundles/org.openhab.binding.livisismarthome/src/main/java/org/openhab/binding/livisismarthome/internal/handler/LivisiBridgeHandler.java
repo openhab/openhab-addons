@@ -47,7 +47,6 @@ import org.openhab.binding.livisismarthome.internal.client.entity.event.Event;
 import org.openhab.binding.livisismarthome.internal.client.entity.event.MessageEvent;
 import org.openhab.binding.livisismarthome.internal.client.entity.link.Link;
 import org.openhab.binding.livisismarthome.internal.client.entity.message.Message;
-import org.openhab.binding.livisismarthome.internal.client.entity.state.StringState;
 import org.openhab.binding.livisismarthome.internal.client.exception.ApiException;
 import org.openhab.binding.livisismarthome.internal.client.exception.AuthenticationException;
 import org.openhab.binding.livisismarthome.internal.client.exception.ControllerOfflineException;
@@ -442,10 +441,10 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                     logger.debug("-> Memory usage state: {}", memoryUsage);
                     updateState(CHANNEL_MEMORY, new DecimalType(memoryUsage));
                 }
-                StringState operationStatus = device.getDeviceState().getState().getOperationStatus();
-                if (operationStatus != null && operationStatus.getValue() != null) {
-                    logger.debug("-> Operation status: {}", operationStatus.getValue());
-                    updateState(CHANNEL_OPERATION_STATUS, new StringType(operationStatus.getValue().toUpperCase()));
+                String operationStatus = device.getDeviceState().getState().getOperationStatus().getValue();
+                if (operationStatus != null) {
+                    logger.debug("-> Operation status: {}", operationStatus);
+                    updateState(CHANNEL_OPERATION_STATUS, new StringType(operationStatus.toUpperCase()));
                 }
             }
         }

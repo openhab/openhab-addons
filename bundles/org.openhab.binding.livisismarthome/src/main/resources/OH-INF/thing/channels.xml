@@ -324,7 +324,7 @@
 	<channel-type id="CPUUsage">
 		<item-type>Number</item-type>
 		<label>CPU Usage</label>
-		<description>The CPU usage of SHC-A, updated every 5 minutes</description>
+		<description>The CPU usage of SHC-A</description>
 		<category>System</category>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -333,7 +333,7 @@
 	<channel-type id="DiskUsage">
 		<item-type>Number</item-type>
 		<label>Disk Usage</label>
-		<description>The disk usage of SHC-A, updated every 5 minutes</description>
+		<description>The disk usage of SHC-A</description>
 		<category>System</category>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -342,7 +342,7 @@
 	<channel-type id="MemoryUsage">
 		<item-type>Number</item-type>
 		<label>Memory Usage</label>
-		<description>The memory usage of SHC-A, updated every 5 minutes</description>
+		<description>The memory usage of SHC-A</description>
 		<category>System</category>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -351,7 +351,7 @@
 	<channel-type id="OperationStatus">
 		<item-type>String</item-type>
 		<label>Status</label>
-		<description>The operation status of SHC-A, updated every 5 minutes</description>
+		<description>The operation status of SHC-A</description>
 		<category>System</category>
 		<state readOnly="true"></state>
 	</channel-type>
