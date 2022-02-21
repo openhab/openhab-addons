@@ -31,6 +31,8 @@ public class EventProperties {
 
     private String operationMode;
 
+    private String operationStatus;
+
     private Double pointTemperature;
 
     private Integer shutterLevel;
@@ -162,6 +164,20 @@ public class EventProperties {
      */
     public void setOperationMode(final String operationMode) {
         this.operationMode = operationMode;
+    }
+
+    /**
+     * @return the operationStatus
+     */
+    public String getOperationStatus() {
+        return operationStatus;
+    }
+
+    /**
+     * @param operationStatus the operationStatus to set
+     */
+    public void setOperationStatus(final String operationStatus) {
+        this.operationStatus = operationStatus;
     }
 
     /**

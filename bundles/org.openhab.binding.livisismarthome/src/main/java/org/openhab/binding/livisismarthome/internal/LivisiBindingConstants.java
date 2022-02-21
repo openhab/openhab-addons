@@ -178,4 +178,5 @@ public class LivisiBindingConstants {
     public static final String CHANNEL_CPU = "cpu";
     public static final String CHANNEL_DISK = "disk";
     public static final String CHANNEL_MEMORY = "memory";
+    public static final String CHANNEL_OPERATION_STATUS = "status";
 }

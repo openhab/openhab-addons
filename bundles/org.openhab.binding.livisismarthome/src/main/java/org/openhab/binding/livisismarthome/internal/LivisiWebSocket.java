@@ -128,8 +128,8 @@ public class LivisiWebSocket {
             logger.info("Connection to LIVISI SmartHome webservice was closed normally.");
         } else if (!closing) {
             // An additional reconnect attempt is only required when the close/stop wasn't executed by the binding.
-            logger.info("Connection to LIVISI SmartHome webservice was closed abnormally (code: {}). Reason: {}", statusCode,
-                    reason);
+            logger.info("Connection to LIVISI SmartHome webservice was closed abnormally (code: {}). Reason: {}",
+                    statusCode, reason);
             eventListener.connectionClosed();
         }
     }

@@ -9,6 +9,7 @@
 		<description>The LIVISI SmartHome Controller (SHC) is the bridge for the LIVISI SmartHome System.</description>
 
 		<channels>
+			<channel id="status" typeId="OperationStatus"/>
 			<channel id="cpu" typeId="CPUUsage"/>
 			<channel id="disk" typeId="DiskUsage"/>
 			<channel id="memory" typeId="MemoryUsage"/>

@@ -23,8 +23,8 @@ The channels are described in detail in the next chapter.
 
 | Device | Description                                                              | Supported channels                                                                                                        |
 |--------|--------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| SHC    | SmartHome Controller (Bridge)                                            | cpu, disk, memory, state                                                                                                  |
-| BRC8   | Basic Remote Controller                                                  | button1 ... button8, button1_count ... button8_count, battery_low                                                         || BRC8   | Basic Remote Controller                                                  | button1 ... button8, button1_count ... button8_count, battery_low                                                         |
+| SHC    | SmartHome Controller (Bridge)                                            | status, cpu, disk, memory                                                                                                 |
+| BRC8   | Basic Remote Controller                                                  | button1 ... button8, button1_count ... button8_count, battery_low                                                         |
 | ISC2   | In Wall Smart Controller                                                 | button1, button2, button1_count, button2_count, battery_low                                                               |
 | ISD2   | In Wall Smart Dimmer                                                     | button1, button2, button1_count, button2_count, dimmer                                                                    |
 | ISR2   | In Wall Smart Rollershutter                                              | button1, button2, button1_count, button2_count, rollershutter                                                             |
@@ -97,6 +97,7 @@ However, only devices will appear that are added in the LIVISI SmartHome app bef
 | rollershutter*          | Rollershutter | Controls a roller shutter                                             | ISR2                                                  |
 | set_temperature         | Number        | Sets the target temperature in °C                                     | RST, WRT                                              |
 | smoke                   | Switch        | Indicates, if smoke was detected (ON/OFF)                             | WSD, WSD2                                             |
+| status                  | String        | Status of the SHC (ACTIVE, INITIALIZING or SHUTTINGDOWN)              |                                                       |
 | switch                  | Switch        | A switch to turn the device or variable on/off (ON/OFF)               | ISS2, PSS, PSSO, VariableActuator                     |
 | temperature             | Number        | Holds the actual temperature in °C                                    | RST, WRT                                              |
 | window_reduction_active | Switch        | Indicates if a linked window is open and temperature reduced (ON/OFF) | RST                                                   |

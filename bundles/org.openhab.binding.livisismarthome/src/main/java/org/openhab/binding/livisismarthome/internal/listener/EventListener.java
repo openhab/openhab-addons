@@ -25,7 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface EventListener {
 
     /**
-     * This method is called, whenever a new event comes from the LIVISI SmartHome service (like a device change for example).
+     * This method is called, whenever a new event comes from the LIVISI SmartHome service (like a device change for
+     * example).
      *
      * @param msg
      */

@@ -47,6 +47,7 @@ import org.openhab.binding.livisismarthome.internal.client.entity.event.Event;
 import org.openhab.binding.livisismarthome.internal.client.entity.event.MessageEvent;
 import org.openhab.binding.livisismarthome.internal.client.entity.link.Link;
 import org.openhab.binding.livisismarthome.internal.client.entity.message.Message;
+import org.openhab.binding.livisismarthome.internal.client.entity.state.StringState;
 import org.openhab.binding.livisismarthome.internal.client.exception.ApiException;
 import org.openhab.binding.livisismarthome.internal.client.exception.AuthenticationException;
 import org.openhab.binding.livisismarthome.internal.client.exception.ControllerOfflineException;
@@ -64,6 +65,7 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -209,8 +211,11 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             scheduleRestartClient(true);
             return;
         }
+
         setBridgeProperties(bridgeDevice);
         bridgeId = bridgeDevice.getId();
+        onDeviceStateChanged(bridgeDevice); // initialize channels
+
         startWebsocket();
     }
 
@@ -437,9 +442,12 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                     logger.debug("-> Memory usage state: {}", memoryUsage);
                     updateState(CHANNEL_MEMORY, new DecimalType(memoryUsage));
                 }
-
+                StringState operationStatus = device.getDeviceState().getState().getOperationStatus();
+                if (operationStatus != null && operationStatus.getValue() != null) {
+                    logger.debug("-> Operation status: {}", operationStatus.getValue());
+                    updateState(CHANNEL_OPERATION_STATUS, new StringType(operationStatus.getValue().toUpperCase()));
+                }
             }
-
         }
     }
 
@@ -455,6 +463,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             logger.trace("DeviceId {} relevant for this handler.", device.getId());
 
             if (event.isLinkedtoDevice() && DEVICE_SHCA.equals(device.getType())) {
+                device.getDeviceState().getState().getOperationStatus()
+                        .setValue(event.getProperties().getOperationStatus());
                 device.getDeviceState().getState().getCpuUsage().setValue(event.getProperties().getCpuUsage());
                 device.getDeviceState().getState().getDiskUsage().setValue(event.getProperties().getDiskUsage());
                 device.getDeviceState().getState().getMemoryUsage().setValue(event.getProperties().getMemoryUsage());
@@ -492,7 +502,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                                     "Ignored configuration changed event with version '{}' as current version is '{}' the same.",
                                     event.getConfigurationVersion(), client.getConfigVersion());
                         } else {
-                            logger.info("Configuration changed from version {} to {}. Restarting LIVISI SmartHome binding...",
+                            logger.info(
+                                    "Configuration changed from version {} to {}. Restarting LIVISI SmartHome binding...",
                                     client.getConfigVersion(), event.getConfigurationVersion());
                             scheduleRestartClient(false);
                         }
