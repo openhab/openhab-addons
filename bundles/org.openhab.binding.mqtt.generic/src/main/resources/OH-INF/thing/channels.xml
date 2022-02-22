@@ -65,28 +65,24 @@
 	<channel-type id="colorRGB">
 		<item-type>Color</item-type>
 		<label>Color Value (Red,Green,Blue)</label>
-		<description></description>
 		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
 	</channel-type>
 
 	<channel-type id="colorHSB">
 		<item-type>Color</item-type>
 		<label>Color Value (Hue,Saturation,Brightness)</label>
-		<description></description>
 		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
 	</channel-type>
 
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color Value (HSB, RGB or CIE xyY)</label>
-		<description></description>
 		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
 	</channel-type>
 
 	<channel-type id="trigger">
 		<kind>trigger</kind>
 		<label>Trigger</label>
-		<description></description>
 		<config-description-ref uri="thing-type:mqtt:trigger_channel"></config-description-ref>
 	</channel-type>
 

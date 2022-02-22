@@ -69,7 +69,8 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
     }
 
     private synchronized void startSpeedTest() {
-        if (speedTestSocket == null) {
+        String url = configuration.getDownloadURL();
+        if (speedTestSocket == null && url != null) {
             logger.debug("Network speedtest started");
             final SpeedTestSocket socket = new SpeedTestSocket(1500);
             speedTestSocket = socket;
@@ -78,7 +79,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
             updateState(CHANNEL_TEST_START, new DateTimeType());
             updateState(CHANNEL_TEST_END, UnDefType.NULL);
             updateProgress(new QuantityType<>(0, Units.PERCENT));
-            socket.startDownload(configuration.getDownloadURL());
+            socket.startDownload(url);
         } else {
             logger.info("A speedtest is already in progress, will retry on next refresh");
         }
@@ -109,7 +110,8 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
                 switch (testReport.getSpeedTestMode()) {
                     case DOWNLOAD:
                         updateState(CHANNEL_RATE_DOWN, quantity);
-                        if (speedTestSocket != null && configuration != null) {
+                        String url = configuration.getUploadURL();
+                        if (speedTestSocket != null && url != null) {
                             speedTestSocket.startUpload(configuration.getUploadURL(), configuration.uploadSize);
                         }
                         break;
