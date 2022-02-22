@@ -158,6 +158,50 @@
 		<config-description-ref uri="thing-type:shelly:battery"/>
 	</thing-type>
 
+	<channel-type id="controlMode">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.controlMode.label</label>
+		<description>@text/channel-type.shelly.controlMode.description</description>
+		<state>
+			<options>
+				<option value="manual">@text/channel-type.shelly.controlMode.state.option.manual</option>
+				<option value="automatic">@text/channel-type.shelly.controlMode.state.option.automatic</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="controlProfile">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.controlProfile.label</label>
+		<description>@text/channel-type.shelly.controlProfile.description</description>
+		<state min="0" max="31" step="1" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="targetTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>@text/channel-type.shelly.targetTemp.label</label>
+		<description>@text/channel-type.shelly.targetTemp.description</description>
+		<category>Heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="4" max="31" step="1" pattern="%.0f %unit%" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="boostControl">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.boostControl.label</label>
+		<description>@text/channel-type.shelly.boostControl.description</description>
+	</channel-type>
+	<channel-type id="boostTimer">
+		<item-type>Number:Time</item-type>
+		<label>@text/channel-type.shelly.boostTimer.label</label>
+		<description>@text/channel-type.shelly.boostTimer.description</description>
+		<category>Time</category>
+		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"></state>
+	</channel-type>
+
 
 	<channel-group-type id="sensorData">
 		<label>@text/channel-group-type.shelly.sensorData.label</label>
@@ -184,7 +228,6 @@
 		<item-type>Contact</item-type>
 		<label>@text/channel-type.shelly.sensorContact.label</label>
 		<description>@text/channel-type.shelly.sensorContact.description</description>
-		<category>Contact</category>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="OPEN">@text/channel-type.shelly.sensorContact.state.option.OPEN</option>
@@ -270,18 +313,6 @@
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
-	</channel-type>
-
-	<channel-type id="targetTemp">
-		<item-type>Number:Temperature</item-type>
-		<label>@text/channel-type.shelly.targetTemp.label</label>
-		<description>@text/channel-type.shelly.targetTemp.description</description>
-		<category>Heating</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state min="4" max="31" step="1" pattern="%.0f %unit%" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="sensorExtHum">
@@ -445,19 +476,6 @@
 				<option value="opening">@text/channel-type.shelly.sensorValve.state.option.opening</option>
 				<option value="checking">@text/channel-type.shelly.sensorValve.state.option.checking</option>
 				<option value="unknown">@text/channel-type.shelly.sensorValve.state.option.UNKNOWN</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="sensorMode">
-		<item-type>String</item-type>
-		<label>@text/channel-type.shelly.sensorMode.label</label>
-		<description>@text/channel-type.shelly.sensorMode.description</description>
-		<state>
-			<options>
-				<option value="manual">@text/channel-type.shelly.sensorMode.state.option.manual</option>
-				<option value="boost">@text/channel-type.shelly.sensorMode.state.option.boost</option>
-				<option value="automatic">@text/channel-type.shelly.sensorMode.state.option.automatic</option>
 			</options>
 		</state>
 	</channel-type>

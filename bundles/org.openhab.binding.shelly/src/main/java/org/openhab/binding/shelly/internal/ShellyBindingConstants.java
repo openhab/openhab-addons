@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -255,14 +255,16 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_MOTION_ACT = "motionActive";
     public static final String CHANNEL_SENSOR_MOTION = "motion";
     public static final String CHANNEL_SENSOR_MOTION_TS = "motionTimestamp";
-    public static final String CHANNEL_SENSOR_MODE = "mode";
-    public static final String CHANNEL_SENSOR_PROFILE = "profile"; // Shelly TRV
     public static final String CHANNEL_SENSOR_SLEEPTIME = "sensorSleepTime";
     public static final String CHANNEL_SENSOR_ALARM_STATE = "alarmState";
     public static final String CHANNEL_SENSOR_ERROR = "lastError";
 
     public static final String CHANNEL_CONTROL_SETTEMP = "targetTemp"; // Shelly TRV: target temp
     public static final String CHANNEL_CONTROL_POSITION = "position"; // Shelly TRV: Valve position
+    public static final String CHANNEL_CONTROL_MODE = "mode"; // Shelly TRV
+    public static final String CHANNEL_CONTROL_PROFILE = "profile"; // Shelly TRV
+    public static final String CHANNEL_CONTROL_BCONTROL = "boost"; // Shelly TRV
+    public static final String CHANNEL_CONTROL_BTIMER = "boostTimer"; // Shelly TRV
 
     // External sensors for Shelly1/1PM
     public static final String CHANNEL_ESENDOR_TEMP1 = CHANNEL_SENSOR_TEMP + "1";
@@ -315,6 +317,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_SELFTTEST = "selfTest";
     public static final String CHANNEL_DEVST_VOLTAGE = "supplyVoltage";
     public static final String CHANNEL_DEVST_CALIBRATED = "calibrated";
+    public static final String CHANNEL_DEVST_SCHEDULE = "schedule";
 
     public static final String CHANNEL_LED_STATUS_DISABLE = "statusLed";
     public static final String CHANNEL_LED_POWER_DISABLE = "powerLed";
@@ -349,6 +352,7 @@ public class ShellyBindingConstants {
     public static final String ALARM_TYPE_LOADERR = "LOAD_ERROR";
     public static final String ALARM_TYPE_SENSOR_ERROR = "SENSOR_ERROR";
     public static final String ALARM_TYPE_LOW_BATTERY = "LOW_BATTERY";
+    public static final String ALARM_TYPE_VALVE_ERROR = "VALVE_ERROR";
     public static final String EVENT_TYPE_VIBRATION = "VIBRATION";
 
     // Event types

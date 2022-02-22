@@ -848,7 +848,7 @@ Using 'sensorSleepTime' you could suppress motion events while leaving the room,
 ### Shelly TRV (thing-type: shellytrv)
 
 Note: You might need to reboot the device to enable the discovery mode for 3 minutes(use the Web UI). 
-As an alternativ you could press the reset button shortly (refer to the manual to locate the reset button).
+As an alternative you could press the reset button shortly (refer to the manual to locate the reset button).
 While the device is in low power mode (usual operation) it will not respond to discovery requests
 
 You should calibrate the valve using the device Web UI or Shelly App before starting to control it using openHAB.
@@ -856,13 +856,17 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
 |sensors   |temperature  |Number   |yes      |Current Temperature in °C                                              |
-|          |valve        |String   |yes      |Valve status                                                           |
+|          |state        |Contact  |yes      |Valve status: OPEN or CLOSED (position = 0)                            |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any sensor value changed)                |
 |control   |targetTemp   |Number   |no       |Temperature in °C: 4=Low/Min; 5..30=target temperature;31=Hi/Max       |
 |          |position     |Dimmer   |no       |Set valve to manual mode (0..100%) disables auto-temp)                 |
+|          |mode         |String   |no       |Switch between manual and automatic mode                               |
+|          |profile      |Number   |no       |Select profile: 0=disable, 1-n: profile index from Shelly Web App      |
+|          |boost        |Number   |no       |Enable/disable boost mode (full heating power)                         |
+|          |boostTimer   |Number   |no       |Number of minutes to heat at full power while boost mode is enabled    |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |batteryAlert |Switch   |yes      |Low battery alert                                                      |
-
+|device    |schedule     |Switch   |yes      |ON: Schedule is active                                                 |
 
 ### Shelly Button 1 or 2 (thing-type: shellybutton1 / shellybutton2)
 

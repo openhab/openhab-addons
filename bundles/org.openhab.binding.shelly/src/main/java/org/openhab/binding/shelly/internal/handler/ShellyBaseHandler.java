@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -349,17 +349,29 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                             : 0;
                     api.setSleepTime(value);
                     break;
-
-                case CHANNEL_SENSOR_MODE:
-                    logger.debug("{}: Set sensor mode to {}", thingName, command);
+                case CHANNEL_CONTROL_PROFILE:
+                    logger.debug("{}: Select profile {}", thingName, command);
+                    api.setProfile((int) getNumber(command));
                     break;
-
+                case CHANNEL_CONTROL_MODE:
+                    logger.debug("{}: Set mode to {}", thingName, command);
+                    api.setValveMode("automatic".equalsIgnoreCase(command.toString()));
+                    break;
                 case CHANNEL_CONTROL_SETTEMP:
                     logger.debug("{}: Set temperature to {}", thingName, command);
                     api.setTemperature((int) getNumber(command));
                     break;
                 case CHANNEL_CONTROL_POSITION:
+                    logger.debug("{}: Set position to {}", thingName, command);
                     api.setValvePosition(getNumber(command));
+                    break;
+                case CHANNEL_CONTROL_BCONTROL:
+                    logger.debug("{}: Set boost mode to {}", thingName, command);
+                    api.startBoost(command == OnOffType.ON ? -1 : 0);
+                    break;
+                case CHANNEL_CONTROL_BTIMER:
+                    logger.debug("{}: Set boost timer to {}", thingName, command);
+                    api.setBoostTime((int) getNumber(command));
                     break;
 
                 default:

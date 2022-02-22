@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,6 +87,46 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
         boolean processed = true;
         double value = getDouble(s.value);
         String reason = "";
+
+        if (profile.isTRV) {
+            // Special handling for TRV, because it uses duplicate ID values with different meanings
+            switch (sen.id) {
+                case "3101": // current temp
+                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
+                            toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                    break;
+                case "3103": // target temp in C. 4/31, 999=unknown
+                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
+                            toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                    break;
+                case "3116": // S, valveError, 0/1
+                    if (s.value == 1) {
+                        thingHandler.postEvent(ALARM_TYPE_VALVE_ERROR, false);
+                    }
+                    break;
+                case "3117": // S, mode, 0-5 (0=disabled)
+                    value = getDouble(s.value).intValue();
+                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE, getDecimal(value));
+                    updateChannel(updates, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_SCHEDULE, getOnOff(value > 0));
+                    break;
+                case "3118": // Valve state
+                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
+                            value != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                    break;
+                case "3121": // valvePos, Type=S, Range=0/100;
+                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_POSITION,
+                            s.value != -1 ? toQuantityType(getDouble(s.value), 0, Units.PERCENT) : UnDefType.UNDEF);
+                    break;
+                default:
+                    processed = false;
+            }
+        }
+
+        if (processed) {
+            return true;
+        }
+
+        processed = true;
         switch (sen.id) {
             case "3106": // L, luminosity, lux, U32, -1
             case "3110": // S, luminosityLevel, dark/twilight/bright, "unknown"=unknown
@@ -121,7 +161,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS,
                         toQuantityType((double) pos, Units.PERCENT));
                 break;
-            case "1105": // S, valvle, closed/opened/not_connected/failure/closing/opening/checking or unbknown
+            case "1105": // Gas: S, valve, closed/opened/not_connected/failure/closing/opening/checking or unknown
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VALVE, getStringType(s.valueStr));
                 break;
 
@@ -143,14 +183,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "2403": // EVC, inputEventCnt, U16
                 handleInputEvent(sen, "", getInteger((int) s.value), serial, updates);
                 break;
-            case "3101":
-                if (profile.isTRV) {
-                    // TRV: current temp
-                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
-                            toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
-                    break;
-                }
-                // sensor_0: T, extTemp, C, -55/125; unknown 999
+            case "3101": // sensor_0: T, extTemp, C, -55/125; unknown 999
             case "3201": // sensor_1: T, extTemp, C, -55/125; unknown 999
             case "3301": // sensor_2: T, extTemp, C, -55/125; unknown 999
                 int idx = getExtTempId(sen.id);
@@ -161,15 +194,6 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                             toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
                 } else {
                     logger.debug("{}: Unable to get extSensorId {} from {}/{}", thingName, sen.id, sen.type, sen.desc);
-                }
-                break;
-            case "3103":
-                // TRV: target temp in C. 4/31, 999=unknown
-                // general: H, humidity, 0-100 percent, unknown 999
-                if (profile.isTRV) {
-                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
-                            toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
-                    // toQuantityType(value, DIGITS_TEMP, Units.PERCENT));
                 }
                 break;
             case "3104": // T, deviceTemp, Celsius -40/300; 999=unknown
@@ -212,28 +236,9 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "3117": // S, extInput, 0/1
                 handleInput(sen, s, rGroup, updates);
                 break;
-
-            case "3116": // TRV: S, valveError, 0/1
-                if (s.value == 1) {
-                    logger.debug("{}: Device reported valve error, check calibration", thingName);
-                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VALVE, getStringType("failure"));
-                }
-                break; // currently not processed
             case "3118":
-                if (profile.isTRV) {
-                    // TRV: Valve state
-                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
-                            value != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-                } else {
-                    updateChannel(updates, mGroup, CHANNEL_SENSOR_VOLTAGE,
-                            toQuantityType(getDouble(s.value), 2, Units.VOLT));
-                }
-                break;
-            case "3121": // valvePos, Type=S, Range=0/100;
-                updateChannel(updates, mGroup, CHANNEL_CONTROL_POSITION,
-                        s.value != -1 ? toQuantityType(getDouble(s.value), 0, Units.PERCENT) : UnDefType.UNDEF);
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VALVE,
-                        getStringType(s.value == 0 ? "closed" : "opened"));
+                updateChannel(updates, mGroup, CHANNEL_SENSOR_VOLTAGE,
+                        toQuantityType(getDouble(s.value), 2, Units.VOLT));
                 break;
 
             case "4101": // relay_0/light_0: P, power, W

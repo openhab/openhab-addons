@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -240,6 +240,9 @@ public class ShellyApiJsonDTO {
     // TRV
     public static final int SHELLY_TRV_MIN_TEMP = 5; // < 5: means: lowest (valve fully closed)
     public static final int SHELLY_TRV_MAX_TEMP = 30; // > 30: means: highest (valve fully open)
+
+    public static final String SHELLY_TRV_MODE_MANUAL = "manual";
+    public static final String SHELLY_TRV_MODE_AUTO = "automatic";
 
     // CoIoT Multicast setting
     public static final String SHELLY_COIOT_MCAST = "mcast";
@@ -596,6 +599,8 @@ public class ShellyApiJsonDTO {
         public ArrayList<ShellySettingsEMeter> emeters;
         public ArrayList<ShellySettingsInput> inputs; // ix3
 
+        public ArrayList<ShellyThermnostat> thermostats; // TRV
+
         @SerializedName("temperature_units")
         public String temperatureUnits; // Either'C'or'F'
 
@@ -862,7 +867,14 @@ public class ShellyApiJsonDTO {
         public Double pos;
         @SerializedName("target_t")
         public ShellyThermTargetTemp targetTemp;
+        public Boolean schedule;
+        @SerializedName("schedule_profile")
+        public Integer profile;
+        @SerializedName("schedule_profile_names")
+        public String[] profileNames;
         public ShellyThermTemp tmp;
+        @SerializedName("boost_minutes")
+        public Integer boostMinutes;
     }
 
     public static class ShellyStatusSensor {

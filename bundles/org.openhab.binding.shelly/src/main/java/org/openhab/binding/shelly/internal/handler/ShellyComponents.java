@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -302,6 +302,19 @@ public class ShellyComponents {
             } else if (status.thermostats != null && status.thermostats.size() > 0) {
                 // Shelly TRV
                 ShellyThermnostat t = status.thermostats.get(0);
+                ShellyThermnostat ps = profile.settings.thermostats.get(0);
+                int bminutes = getInteger(t.boostMinutes) > 0 ? getInteger(t.boostMinutes)
+                        : getInteger(ps.boostMinutes);
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BCONTROL,
+                        getOnOff(getInteger(t.boostMinutes) > 0));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BTIMER,
+                        toQuantityType((double) bminutes, DIGITS_NONE, Units.MINUTE));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MODE,
+                        getStringType(getBool(t.targetTemp.enabled) ? SHELLY_TRV_MODE_AUTO : SHELLY_TRV_MODE_MANUAL));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE,
+                        getDecimal(getBool(t.schedule) ? t.profile + 1 : 0));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_SCHEDULE,
+                        getOnOff(t.schedule));
                 if (t.tmp != null) {
                     Double temp = convertToC(t.tmp.value, getString(t.tmp.units));
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
@@ -314,14 +327,12 @@ public class ShellyComponents {
                      * Units.PERCENT)
                      * : UnDefType.UNDEF
                      */);
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MODE,
-                            getStringType(t.targetTemp.enabled ? "automatic" : "manual"));
                 }
                 if (t.pos != null) {
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_POSITION,
                             t.pos != -1 ? toQuantityType(t.pos, DIGITS_NONE, Units.PERCENT) : UnDefType.UNDEF);
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VALVE,
-                            getStringType(t.pos == -1 ? "failure" : t.pos == 0 ? "closed" : "opened"));
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
+                            getDouble(t.pos) > 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 }
             }
             if (sdata.hum != null) {
