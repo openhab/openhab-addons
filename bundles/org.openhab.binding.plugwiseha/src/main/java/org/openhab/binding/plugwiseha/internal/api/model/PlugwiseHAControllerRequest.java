@@ -62,12 +62,14 @@ import com.thoughtworks.xstream.XStream;
  * PlugwiseHAController}.
  * 
  * @author B. van Wetten - Initial contribution
+ * @author Leo Siepel - Adjustments to timeout logic
  */
 @NonNullByDefault
 public class PlugwiseHAControllerRequest<T> {
 
     private static final String CONTENT_TYPE_TEXT_XML = MimeTypes.Type.TEXT_XML_8859_1.toString();
     private static final long TIMEOUT_SECONDS = 5;
+    private static final int REQUEST_MAX_RETRY_COUNT = 3;
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseHAControllerRequest.class);
     private final XStream xStream;
@@ -191,14 +193,7 @@ public class PlugwiseHAControllerRequest<T> {
 
     private String getContent() throws PlugwiseHAException {
         String content;
-        ContentResponse response;
-
-        try {
-            response = getContentResponse();
-        } catch (PlugwiseHATimeoutException e) {
-            // Retry
-            response = getContentResponse();
-        }
+        ContentResponse response = getContentResponse(REQUEST_MAX_RETRY_COUNT);
 
         int status = response.getStatus();
         switch (status) {
@@ -224,18 +219,25 @@ public class PlugwiseHAControllerRequest<T> {
         return content;
     }
 
-    private ContentResponse getContentResponse() throws PlugwiseHAException {
+    private ContentResponse getContentResponse(int retries) throws PlugwiseHAException {
         Request request = newRequest();
         ContentResponse response;
 
-        if (logger.isTraceEnabled()) {
-            logger.trace(">> {} {}", request.getMethod(), request.getURI());
-        }
+        this.logger.debug("Performing API request: {} {}", request.getMethod(), request.getURI());
 
         try {
             response = request.send();
-        } catch (TimeoutException | InterruptedException e) {
+        } catch (InterruptedException e) {
+            this.logger.trace("InterruptedException occured {} {}", e.getMessage(), e.getStackTrace());
+            Thread.currentThread().interrupt();
             throw new PlugwiseHATimeoutException(e);
+        } catch (TimeoutException e) {
+            if (retries > 0) {
+                this.logger.debug("TimeoutException occured, remaining retries {}", retries - 1);
+                return getContentResponse(retries - 1);
+            } else {
+                throw new PlugwiseHATimeoutException(e);
+            }
         } catch (ExecutionException e) {
             // Unwrap the cause and try to cleanly handle it
             Throwable cause = e.getCause();
