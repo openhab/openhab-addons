@@ -229,6 +229,7 @@ public class PlugwiseHAControllerRequest<T> {
             response = request.send();
         } catch (InterruptedException e) {
             this.logger.trace("InterruptedException occured {} {}", e.getMessage(), e.getStackTrace());
+            Thread.currentThread().interrupt();
             throw new PlugwiseHATimeoutException(e);
         } catch (TimeoutException e) {
             if (retries > 0) {
