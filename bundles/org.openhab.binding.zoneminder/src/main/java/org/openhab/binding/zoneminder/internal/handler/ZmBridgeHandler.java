@@ -146,7 +146,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
         host = config.host;
         useSSL = config.useSSL.booleanValue();
         portNumber = config.portNumber != null ? Integer.toString(config.portNumber) : null;
-        urlPath = config.urlPath;
+        urlPath = "/".equals(config.urlPath) ? "" : config.urlPath;
 
         // If user and password are configured, then use Zoneminder authentication
         if (config.user != null && config.pass != null) {
