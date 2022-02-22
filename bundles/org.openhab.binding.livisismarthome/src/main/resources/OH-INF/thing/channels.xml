@@ -160,7 +160,7 @@
 
 	<!-- EnergyConsumptionMonthKWh -->
 	<channel-type id="EnergyConsumptionMonthKWh">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Consumption (month)</label>
 		<description>The energy consumption per month in kWh</description>
 		<category>Energy</category>
@@ -169,7 +169,7 @@
 
 	<!-- AbsoluteEnergyConsumption -->
 	<channel-type id="AbsoluteEnergyConsumption">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Total Consumption</label>
 		<description>The absolute Energy consumption</description>
 		<category>Energy</category>
@@ -196,7 +196,7 @@
 
 	<!-- EnergyConsumptionDayKWh -->
 	<channel-type id="EnergyConsumptionDayKWh">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Consumption (day)</label>
 		<description>The energy consumption per day in kWh</description>
 		<category>Energy</category>
@@ -205,7 +205,7 @@
 
 	<!-- PowerConsumptionWatt -->
 	<channel-type id="PowerConsumptionWatt">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Current Power Consumption</label>
 		<description>The current power consumption in Watt</description>
 		<category>Energy</category>
@@ -214,7 +214,7 @@
 
 	<!-- EnergyGenerationMonthKWh -->
 	<channel-type id="EnergyGenerationMonthKWh">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Generation (month)</label>
 		<description>The energy generation per month in kWh</description>
 		<category>Energy</category>
@@ -223,7 +223,7 @@
 
 	<!-- TotalEnergyGeneration -->
 	<channel-type id="TotalEnergyGeneration">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Total Generation</label>
 		<description>The total Energy generation</description>
 		<category>Energy</category>
@@ -250,7 +250,7 @@
 
 	<!-- EnergyGenerationDayKWh -->
 	<channel-type id="EnergyGenerationDayKWh">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Generation (day)</label>
 		<description>The energy generation per day in kWh</description>
 		<category>Energy</category>
@@ -259,7 +259,7 @@
 
 	<!-- PowerGenerationWatt -->
 	<channel-type id="PowerGenerationWatt">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Current Power Generation</label>
 		<description>The current power generation in Watt</description>
 		<category>Energy</category>
@@ -268,7 +268,7 @@
 
 	<!-- TotalEnergyConsumption -->
 	<channel-type id="TotalEnergyConsumption">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Total Consumption</label>
 		<description>The total Energy consumption</description>
 		<category>Energy</category>
@@ -277,7 +277,7 @@
 
 	<!-- EnergyFeedMonthKWh -->
 	<channel-type id="EnergyFeedMonthKWh">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Feed (month)</label>
 		<description>The energy feed per month in kWh</description>
 		<category>Energy</category>
@@ -286,7 +286,7 @@
 
 	<!-- TotalEnergyFeed -->
 	<channel-type id="TotalEnergyFed">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Total Fed</label>
 		<description>The total Energy fed</description>
 		<category>Energy</category>
@@ -313,7 +313,7 @@
 
 	<!-- EnergyFeedDayKWh -->
 	<channel-type id="EnergyFeedDayKWh">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Feed (day)</label>
 		<description>The energy feed per day in kWh</description>
 		<category>Energy</category>
