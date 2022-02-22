@@ -125,6 +125,7 @@
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
     <module>org.openhab.binding.feican</module>
+    <module>org.openhab.binding.flicbutton</module>
     <module>org.openhab.binding.fmiweather</module>
     <module>org.openhab.binding.folderwatcher</module>
     <module>org.openhab.binding.folding</module>
@@ -401,6 +402,7 @@
     <module>org.openhab.voice.pollytts</module>
     <module>org.openhab.voice.porcupineks</module>
     <module>org.openhab.voice.voicerss</module>
+    <module>org.openhab.voice.voskstt</module>
     <module>org.openhab.voice.watsonstt</module>
   </modules>
 

@@ -14,15 +14,18 @@ package org.openhab.binding.network.internal.utils;
 
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Information about the ping result.
  *
  * @author Andreas Hirsch - Initial contribution
  */
+@NonNullByDefault
 public class PingResult {
 
     private boolean success;
-    private Double responseTimeInMS;
+    private Optional<Double> responseTimeInMS = Optional.empty();
     private double executionTimeInMS;
 
     /**
@@ -46,14 +49,14 @@ public class PingResult {
      *         by ping command is not available.
      */
     public Optional<Double> getResponseTimeInMS() {
-        return responseTimeInMS == null ? Optional.empty() : Optional.of(responseTimeInMS);
+        return responseTimeInMS;
     }
 
     /**
      * @param responseTimeInMS Response time in ms which was returned by the ping command.
      */
     public void setResponseTimeInMS(double responseTimeInMS) {
-        this.responseTimeInMS = responseTimeInMS;
+        this.responseTimeInMS = Optional.of(responseTimeInMS);
     }
 
     @Override

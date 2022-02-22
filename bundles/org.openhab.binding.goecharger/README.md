@@ -88,7 +88,7 @@ when
     Item availablePVCurrent received update
 then
     logInfo("Amps available: ", receivedCommand.state)
-    MaxAmpere.sendCommand(receivedCommand.state)
+    GoEChargerMaxCurrent.sendCommand(receivedCommand.state)
 end
 ```
 You can also define more advanced rules if you have multiple cars that charge with a different amount of phases.
