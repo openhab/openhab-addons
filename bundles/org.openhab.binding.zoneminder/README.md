@@ -48,7 +48,7 @@ The following configuration parameters are available on the Server thing:
 | Host                           | host                        | Required  | Host name or IP address of the ZoneMinder server. |
 | Use secure connection          | useSSL                      | Required  | Use http or https for connection to ZoneMinder. Default is http. |
 | Port Number                    | portNumber                  | Optional  | Port number if not on ZoneMinder default port 80. |
-| Url Path                       | urlPath                     | Required  | Path where Zoneminder is installed. Default is /zm. |
+| Url Path                       | urlPath                     | Required  | Path where Zoneminder is installed. Default is /zm. Enter / if Zoneminder is installed under root directory. |
 | Refresh Interval               | refreshInterval             | Required  | Frequency in seconds at which monitor status will be updated. |
 | Default Alarm Duration         | defaultAlarmDuration        | Required  | Can be used to set the default alarm duration on discovered monitors. |
 | Default Image Refresh Interval | defaultImageRefreshInterval | Optional  | Can be used to set the image refresh interval in seconds on discovered monitors. Leave empty to not set an image refresh interval. |
