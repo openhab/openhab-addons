@@ -40,6 +40,7 @@
 		<channels>
 			<channel id="state" typeId="state"/>
 			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="current-cleaning-mode" typeId="current-cleaning-mode"/>
 			<channel id="current-cleaning-time" typeId="current-cleaning-time"/>
 			<channel id="current-cleaned-area" typeId="current-cleaned-area"/>
 			<channel id="water-system-present" typeId="water-system-present"/>
@@ -100,12 +101,7 @@
 		<description>Current state</description>
 		<state readOnly="true">
 			<options>
-				<option value="auto">Automatic</option>
-				<option value="edge">Edge cleaning</option>
-				<option value="spot">Spot cleaning</option>
-				<option value="spotArea">Spot area cleaning</option>
-				<option value="customArea">Custom area cleaning</option>
-				<option value="singleRoom">Single room cleaning</option>
+				<option value="cleaning">Cleaning</option>
 				<option value="pause">Paused</option>
 				<option value="stop">Stopped</option>
 				<option value="returning">Going to charge station</option>
@@ -126,6 +122,22 @@
 				<option value="resume">Resume cleaning</option>
 				<option value="stop">Stop</option>
 				<option value="charge">Go to charge station</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="current-cleaning-mode">
+		<item-type>String</item-type>
+		<label>Current Cleaning Mode</label>
+		<description>Mode used in current clean cycle</description>
+		<state readOnly="true">
+			<options>
+				<option value="auto">@text/ecovacs.cleaning-mode.auto</option>
+				<option value="edge">@text/ecovacs.cleaning-mode.edge</option>
+				<option value="spot">@text/ecovacs.cleaning-mode.spot</option>
+				<option value="spotArea">@text/ecovacs.cleaning-mode.spotArea</option>
+				<option value="customArea">@text/ecovacs.cleaning-mode.customArea</option>
+				<option value="singleRoom">@text/ecovacs.cleaning-mode.singleRoom</option>
 			</options>
 		</state>
 	</channel-type>
@@ -192,12 +204,12 @@
 		<description>Operation mode used in last completed cleaning run</description>
 		<state readOnly="true">
 			<options>
-				<option value="auto">Automatic</option>
-				<option value="edge">Edge cleaning</option>
-				<option value="spot">Spot cleaning</option>
-				<option value="spotArea">Spot area cleaning</option>
-				<option value="customArea">Custom area cleaning</option>
-				<option value="singleRoom">Single room cleaning</option>
+				<option value="auto">@text/ecovacs.cleaning-mode.auto</option>
+				<option value="edge">@text/ecovacs.cleaning-mode.edge</option>
+				<option value="spot">@text/ecovacs.cleaning-mode.spot</option>
+				<option value="spotArea">@text/ecovacs.cleaning-mode.spotArea</option>
+				<option value="customArea">@text/ecovacs.cleaning-mode.customArea</option>
+				<option value="singleRoom">@text/ecovacs.cleaning-mode.singleRoom</option>
 			</options>
 		</state>
 	</channel-type>

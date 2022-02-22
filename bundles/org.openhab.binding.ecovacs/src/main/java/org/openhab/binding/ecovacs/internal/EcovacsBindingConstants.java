@@ -38,6 +38,7 @@ public class EcovacsBindingConstants {
 
     // List of all channel UIDs
     public static final String CHANNEL_ID_BATTERY_LEVEL = "status#battery";
+    public static final String CHANNEL_ID_CLEANING_MODE = "status#current-cleaning-mode";
     public static final String CHANNEL_ID_CLEANING_TIME = "status#current-cleaning-time";
     public static final String CHANNEL_ID_CLEANED_AREA = "status#current-cleaned-area";
     public static final String CHANNEL_ID_COMMAND = "actions#command";
@@ -60,6 +61,9 @@ public class EcovacsBindingConstants {
     public static final String CHANNEL_ID_WATER_PLATE_PRESENT = "status#water-system-present";
     public static final String CHANNEL_ID_WATER_AMOUNT = "settings#water-amount";
     public static final String CHANNEL_ID_WIFI_RSSI = "status#wifi-rssi";
+
+    public static final String CHANNEL_TYPE_ID_CLEAN_MODE = "current-cleaning-mode";
+    public static final String CHANNEL_TYPE_ID_LAST_CLEAN_MODE = "last-clean-mode";
 
     public static final String CMD_AUTO_CLEAN = "clean";
     public static final String CMD_PAUSE = "pause";

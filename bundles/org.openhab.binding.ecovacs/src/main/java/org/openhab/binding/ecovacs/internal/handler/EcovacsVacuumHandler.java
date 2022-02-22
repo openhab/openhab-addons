@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -78,6 +79,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
@@ -236,6 +238,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                     break;
                 case CHANNEL_ID_STATE:
                 case CHANNEL_ID_COMMAND:
+                case CHANNEL_ID_CLEANING_MODE:
                     fetchInitialStateAndCommandValues(device);
                     break;
                 case CHANNEL_ID_WATER_PLATE_PRESENT:
@@ -394,26 +397,31 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     }
 
     private void updateStateOptions(EcovacsDevice device) {
-        List<StateOption> stateChannelOptions = createChannelOptions(device, CleanMode.values(), CLEAN_MODE_MAPPING);
-        stateChannelOptions.add(new StateOption("charging", "charging"));
-        stateChannelOptions.add(new StateOption("idle", "idle"));
+        List<StateOption> modeChannelOptions = createChannelOptions(device, CleanMode.values(), CLEAN_MODE_MAPPING,
+                m -> m.enumValue.isActive());
+        ThingUID thingUID = getThing().getUID();
 
-        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ID_STATE),
-                stateChannelOptions);
-        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ID_SUCTION_POWER),
-                createChannelOptions(device, SuctionPower.values(), SUCTION_POWER_MAPPING));
-        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ID_WATER_AMOUNT),
-                createChannelOptions(device, MoppingWaterAmount.values(), WATER_AMOUNT_MAPPING));
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thingUID, CHANNEL_ID_CLEANING_MODE),
+                modeChannelOptions);
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thingUID, CHANNEL_ID_LAST_CLEAN_MODE),
+                modeChannelOptions);
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thingUID, CHANNEL_ID_SUCTION_POWER),
+                createChannelOptions(device, SuctionPower.values(), SUCTION_POWER_MAPPING, null));
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thingUID, CHANNEL_ID_WATER_AMOUNT),
+                createChannelOptions(device, MoppingWaterAmount.values(), WATER_AMOUNT_MAPPING, null));
     }
 
     private <T extends Enum<T>> List<StateOption> createChannelOptions(EcovacsDevice device, T[] values,
-            StateOptionMapping<T> mapping) {
+            StateOptionMapping<T> mapping, @Nullable Predicate<StateOptionEntry<T>> filter) {
         List<StateOption> options = new ArrayList<>();
         for (int i = 0; i < values.length; i++) {
             T value = values[i];
             @Nullable
             StateOptionEntry<T> mappedValue = mapping.get(value);
             if (mappedValue == null) {
+                continue;
+            }
+            if (filter != null && !filter.test(mappedValue)) {
                 continue;
             }
             @Nullable
@@ -497,7 +505,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                 updateState(CHANNEL_ID_LAST_CLEAN_DURATION, new QuantityType<>(record.cleaningDuration, Units.SECOND));
                 updateState(CHANNEL_ID_LAST_CLEAN_AREA, new QuantityType<>(record.cleanedArea, SIUnits.SQUARE_METRE));
                 StateOptionEntry<CleanMode> mode = CLEAN_MODE_MAPPING.get(record.mode);
-                updateState(CHANNEL_ID_LAST_CLEAN_MODE, mode != null ? new StringType(mode.value) : UnDefType.NULL);
+                updateState(CHANNEL_ID_LAST_CLEAN_MODE, mode != null ? new StringType(mode.value) : UnDefType.UNDEF);
 
                 if (device.hasCapability(DeviceCapability.MAPPING)
                         && !lastDownloadedCleanMapUrl.equals(record.mapImageUrl)) {
@@ -561,16 +569,26 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             return;
         }
         String commandState = determineCommandChannelValue(charging, cleanMode);
-        updateState(CHANNEL_ID_STATE, new StringType(determineStateChannelValue(charging, cleanMode)));
-        updateState(CHANNEL_ID_COMMAND, commandState != null ? new StringType(commandState) : UnDefType.NULL);
+        String currentMode = determineCleaningModeChannelValue(cleanMode.isActive() ? cleanMode : lastActiveCleanMode);
+        updateState(CHANNEL_ID_STATE, StringType.valueOf(determineStateChannelValue(charging, cleanMode)));
+        updateState(CHANNEL_ID_CLEANING_MODE, currentMode != null ? StringType.valueOf(currentMode) : UnDefType.UNDEF);
+        updateState(CHANNEL_ID_COMMAND, commandState != null ? StringType.valueOf(commandState) : UnDefType.UNDEF);
     }
 
     private String determineStateChannelValue(boolean charging, CleanMode cleanMode) {
         if (charging && cleanMode != CleanMode.RETURNING) {
             return "charging";
         }
+        if (cleanMode.isActive()) {
+            return "cleaning";
+        }
         StateOptionEntry<CleanMode> result = CLEAN_MODE_MAPPING.get(cleanMode);
         return result != null ? result.value : "idle";
+    }
+
+    private @Nullable String determineCleaningModeChannelValue(@Nullable CleanMode activeCleanMode) {
+        StateOptionEntry<CleanMode> result = activeCleanMode != null ? CLEAN_MODE_MAPPING.get(activeCleanMode) : null;
+        return result != null ? result.value : null;
     }
 
     private @Nullable String determineCommandChannelValue(boolean charging, CleanMode cleanMode) {
@@ -580,6 +598,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         switch (cleanMode) {
             case AUTO:
                 return CMD_AUTO_CLEAN;
+            case SPOT_AREA:
+                return CMD_SPOT_AREA;
             case PAUSE:
                 return CMD_PAUSE;
             case STOP:

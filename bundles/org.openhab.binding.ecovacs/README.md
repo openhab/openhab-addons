@@ -57,38 +57,39 @@ For the vacuum things, there is no required configuration. Optionally, you can t
 The list below lists all channels supported by the binding. In case a particular channel is not supported by a given device (see remarks),
 it is automatically removed from the given thing.
 
-| Channel                          | Type                 | Description                                               | Read Only | Updated By | Remarks |
-|----------------------------------|----------------------|-----------------------------------------------------------|-----------|------------|------   |
-| actions#command                  | String               | Command to execute                                        | No        | Event      | [1]     |
-| status#state                     | String               | Current operational state                                 | Yes       | Event      | [2]     |
-| status#current-cleaning-time     | Number:Time          | Time spent in current cleaning run                        | Yes       | Event      | [3]     |
-| status#current-cleaned-area      | Number:Area          | Area cleaned in current cleaning run                      | Yes       | Event      | [3]     |
-| status#water-system-present      | Switch               | Whether the device is currently ready for mopping         | Yes       | Event      | [4]     |
-| status#wifi-rssi                 | Number:Power         | The current Wi-Fi signal strength of the device           | Yes       | Polling    | [5]     |
-| consumables#main-brush-lifetime  | Number:Dimensionless | The remaining life time of the main brush in percent      | Yes       | Polling    | [6]     |
-| consumables#side-brush-lifetime  | Number:Dimensionless | The remaining life time of the side brush in percent      | Yes       | Polling    |         |
-| consumables#dust-filter-lifetime | Number:Dimensionless | The remaining life time of the dust bin filter in percent | Yes       | Polling    |         |
-| last-clean#last-clean-start      | DateTime             | The start time of the last completed cleaning run         | Yes       | Polling    |         |
-| last-clean#last-clean-duration   | Number:Time          | The duration of the last completed cleaning run           | Yes       | Polling    |         |
-| last-clean#last-clean-area       | Number:Area          | The area cleaned in the last completed cleaning run       | Yes       | Polling    |         |
-| last-clean#last-clean-mode       | String               | The mode used for the last completed cleaning run         | Yes       | Polling    | [7]     |
-| last-clean#last-clean-map        | Image                | The map image of the last completed cleaning run          | Yes       | Polling    |         |
-| total-stats#total-cleaning-time  | Number:Time          | The total time spent cleaning during the device life time | Yes       | Polling    |         |
-| total-stats#total-cleaned-area   | Number:Area          | The total area cleaned during the device life time        | Yes       | Polling    |         |
-| total-stats#total-clean-runs     | Number               | The total number of clean runs in the device life time    | Yes       | Polling    |         |
-| settings#suction-power           | String               | The power level used during cleaning                      | No        | Polling    | [8]     |
-| settings#voice-volume            | Dimmer               | The voice volume level in percent                         | No        | Polling    | [9]     |
-| settings#water-amount            | String               | The amount of water to be used when mopping               | No        | Polling    | [10]    |
+| Channel                          | Type                 | Description                                               | Read Only | Updated By | Remarks  |
+|----------------------------------|----------------------|-----------------------------------------------------------|-----------|------------|----------|
+| actions#command                  | String               | Command to execute                                        | No        | Event      | [1]      |
+| status#state                     | String               | Current operational state                                 | Yes       | Event      | [2]      |
+| status#current-cleaning-mode     | Number:Time          | Mode used in current cleaning run                         | Yes       | Event      | [3], [4] |
+| status#current-cleaning-time     | Number:Time          | Time spent in current cleaning run                        | Yes       | Event      | [4]      |
+| status#current-cleaned-area      | Number:Area          | Area cleaned in current cleaning run                      | Yes       | Event      | [4]      |
+| status#water-system-present      | Switch               | Whether the device is currently ready for mopping         | Yes       | Event      | [5]      |
+| status#wifi-rssi                 | Number:Power         | The current Wi-Fi signal strength of the device           | Yes       | Polling    | [6]      |
+| consumables#main-brush-lifetime  | Number:Dimensionless | The remaining life time of the main brush in percent      | Yes       | Polling    | [7]      |
+| consumables#side-brush-lifetime  | Number:Dimensionless | The remaining life time of the side brush in percent      | Yes       | Polling    |          |
+| consumables#dust-filter-lifetime | Number:Dimensionless | The remaining life time of the dust bin filter in percent | Yes       | Polling    |          |
+| last-clean#last-clean-start      | DateTime             | The start time of the last completed cleaning run         | Yes       | Polling    |          |
+| last-clean#last-clean-duration   | Number:Time          | The duration of the last completed cleaning run           | Yes       | Polling    |          |
+| last-clean#last-clean-area       | Number:Area          | The area cleaned in the last completed cleaning run       | Yes       | Polling    |          |
+| last-clean#last-clean-mode       | String               | The mode used for the last completed cleaning run         | Yes       | Polling    | [3]      |
+| last-clean#last-clean-map        | Image                | The map image of the last completed cleaning run          | Yes       | Polling    |          |
+| total-stats#total-cleaning-time  | Number:Time          | The total time spent cleaning during the device life time | Yes       | Polling    |          |
+| total-stats#total-cleaned-area   | Number:Area          | The total area cleaned during the device life time        | Yes       | Polling    |          |
+| total-stats#total-clean-runs     | Number               | The total number of clean runs in the device life time    | Yes       | Polling    |          |
+| settings#suction-power           | String               | The power level used during cleaning                      | No        | Polling    | [8]      |
+| settings#voice-volume            | Dimmer               | The voice volume level in percent                         | No        | Polling    | [9]      |
+| settings#water-amount            | String               | The amount of water to be used when mopping               | No        | Polling    | [10]     |
 
 Remarks:
 
 - [1] See [section below](#command-channel-actions)
-- [2] Possible states: 'auto', 'edge', 'spot', 'spotArea', 'customArea', 'singleRoom', 'pause', 'stop', 'returning' and 'charging'
-- [3] Current cleaning status is only valid if the device is currently cleaning
-- [4] Only present if device has a mopping system
-- [5] Only present on newer generation devices (Deebot OZMO 950 and newer)
-- [6] Only present if device has a main brush
-- [7] For possible modes, see list under [2]
+- [2] Possible states: 'cleaning', 'pause', 'stop', 'returning' and 'charging'
+- [3] Possible states: 'auto', 'edge', 'spot', 'spotArea', 'customArea', 'singleRoom' (some of which depend on device capabilities)
+- [4] Current cleaning status is only valid if the device is currently cleaning
+- [5] Only present if device has a mopping system
+- [6] Only present on newer generation devices (Deebot OZMO 950 and newer)
+- [7] Only present if device has a main brush
 - [8] Only present if device can control power level. Possible values vary by device: 'normal' and 'high' are always supported, 'silent' and 'higher' are supported for some models
 - [9] Only present if device has voice reporting
 - [10] Only present if device has a mopping system. Possible values include 'low', 'medium', 'high' and 'veryhigh'
@@ -100,7 +101,7 @@ The following actions are supported by the `command` channel:
 | Name       | Action                                    | Remarks                                              |
 |------------|-------------------------------------------|------------------------------------------------------|
 | `clean`    | Start cleaning in automatic mode.         |                                                      |
-| `spotArea` | Start cleaning specific rooms.            | <ul><li>Only if supported by device, which can be recognized by `spotArea` being present in the list of possible states of the `state` channel.</li><li>Format: `spotArea:<room IDs>`, where `room IDs` is a comma separated list of room letters as shown in Ecovacs' app, so a valid command could e.g. be `spotArea:A,D,E`.</li><li>If you want to run 2 clean passes, amend `:x2` to the command, e.g. `spotArea:A,C,B:x2`.</li></ul> |
+| `spotArea` | Start cleaning specific rooms.            | <ul><li>Only if supported by device, which can be recognized by `spotArea` being present in the list of possible states of the `current-cleaning-mode` channel.</li><li>Format: `spotArea:<room IDs>`, where `room IDs` is a comma separated list of room letters as shown in Ecovacs' app, so a valid command could e.g. be `spotArea:A,D,E`.</li><li>If you want to run 2 clean passes, amend `:x2` to the command, e.g. `spotArea:A,C,B:x2`.</li></ul> |
 | `pause`    | Pause cleaning if it's currently active.  | If the device is idle, the command is ignored.       |
 | `resume`   | Resume cleaning if it's currently paused. | If the device is not paused, the command is ignored. |
 | `stop`     | Stop cleaning immediately.                |                                                      |
