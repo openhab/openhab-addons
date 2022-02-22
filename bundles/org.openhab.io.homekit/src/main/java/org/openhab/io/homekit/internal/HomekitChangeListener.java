@@ -369,7 +369,6 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
                 accessoryTypes.stream().filter(aType -> !primaryAccessoryType.equals(aType.getKey()))
                         .forEach(additionalAccessoryType -> {
-                            logger.info("#### adding {}", additionalAccessoryType);
                             final HomekitTaggedItem additionalTaggedItem = new HomekitTaggedItem(itemProxy,
                                     additionalAccessoryType.getKey(),
                                     HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry));

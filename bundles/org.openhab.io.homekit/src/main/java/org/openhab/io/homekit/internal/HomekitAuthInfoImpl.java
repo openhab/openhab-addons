@@ -54,7 +54,6 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
         this.pin = pin;
         this.setupId = setupId;
         this.blockUserDeletion = blockUserDeletion;
-        logger.info("auth init");
         initializeStorage();
     }
 
@@ -152,8 +151,6 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     }
 
     private void initializeStorage() throws InvalidAlgorithmParameterException {
-        logger.info("initializeStorage {} user {}", storage, storage.getKeys());
-
         mac = storage.get(STORAGE_MAC);
         final @Nullable Object saltConfig = storage.get(STORAGE_SALT);
         final @Nullable Object privateKeyConfig = storage.get(STORAGE_PRIVATE_KEY);
