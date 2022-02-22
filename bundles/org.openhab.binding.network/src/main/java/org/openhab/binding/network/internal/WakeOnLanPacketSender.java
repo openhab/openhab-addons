@@ -13,13 +13,18 @@
 package org.openhab.binding.network.internal;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.net.NetUtil;
@@ -48,11 +53,8 @@ public class WakeOnLanPacketSender {
 
     private final String macAddress;
 
-    @Nullable
-    private final String hostname;
-
-    @Nullable
-    private final Integer port;
+    private final @Nullable String hostname;
+    private final @Nullable Integer port;
 
     private final Consumer<byte[]> magicPacketMacSender;
     private final Consumer<byte[]> magicPacketIpSender;
@@ -131,10 +133,10 @@ public class WakeOnLanPacketSender {
 
     private void sendMagicPacketViaIp(byte[] magicPacket) {
         try (DatagramSocket socket = new DatagramSocket()) {
-            if (!StringUtils.isEmpty(this.hostname)) {
+            if (hostname != null && !hostname.isBlank()) {
                 logger.debug("Sending Wake-on-LAN Packet via IP Address");
-                SocketAddress socketAddress = new InetSocketAddress(this.hostname,
-                        Objects.requireNonNullElse(this.port, WOL_UDP_PORT));
+                SocketAddress socketAddress = new InetSocketAddress(hostname,
+                        Objects.requireNonNullElse(port, WOL_UDP_PORT));
                 sendMagicPacketToIp(magicPacket, socket, socketAddress);
             } else {
                 throw new IllegalStateException("Hostname is not set!");

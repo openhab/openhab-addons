@@ -203,19 +203,19 @@ public class NetworkUtils {
     public ArpPingUtilEnum determineNativeARPpingMethod(String arpToolPath) {
         String result = ExecUtil.executeCommandLineAndWaitResponse(Duration.ofMillis(100), arpToolPath, "--help");
         if (result == null || result.isBlank()) {
-            return ArpPingUtilEnum.UNKNOWN_TOOL;
+            return ArpPingUtilEnum.DISABLED_UNKNOWN_TOOL;
         } else if (result.contains("Thomas Habets")) {
             if (result.matches("(?s)(.*)w sec Specify a timeout(.*)")) {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING;
             } else {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT;
             }
-        } else if (result.contains("-w timeout")) {
+        } else if (result.contains("-w timeout") || result.contains("-w <timeout>")) {
             return ArpPingUtilEnum.IPUTILS_ARPING;
         } else if (result.contains("Usage: arp-ping.exe")) {
             return ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS;
         }
-        return ArpPingUtilEnum.UNKNOWN_TOOL;
+        return ArpPingUtilEnum.DISABLED_UNKNOWN_TOOL;
     }
 
     public enum IpPingMethodEnum {
@@ -292,11 +292,21 @@ public class NetworkUtils {
     }
 
     public enum ArpPingUtilEnum {
-        UNKNOWN_TOOL,
-        IPUTILS_ARPING,
-        THOMAS_HABERT_ARPING,
-        THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT,
-        ELI_FULKERSON_ARP_PING_FOR_WINDOWS
+        DISABLED("Disabled", false),
+        DISABLED_INVALID_IP("Destination is not a valid IPv4 address", false),
+        DISABLED_UNKNOWN_TOOL("Unknown arping tool", false),
+        IPUTILS_ARPING("Iputils Arping", true),
+        THOMAS_HABERT_ARPING("Arping tool by Thomas Habets", true),
+        THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT("Arping tool by Thomas Habets (old version)", true),
+        ELI_FULKERSON_ARP_PING_FOR_WINDOWS("Eli Fulkerson ARPing tool for Windows", true);
+
+        public final String description;
+        public final boolean canProceed;
+
+        ArpPingUtilEnum(String description, boolean canProceed) {
+            this.description = description;
+            this.canProceed = canProceed;
+        }
     }
 
     /**
@@ -317,7 +327,7 @@ public class NetworkUtils {
             String interfaceName, String ipV4address, int timeoutInMS) throws IOException, InterruptedException {
         double execStartTimeInMS = System.currentTimeMillis();
 
-        if (arpUtilPath == null || arpingTool == null || arpingTool == ArpPingUtilEnum.UNKNOWN_TOOL) {
+        if (arpUtilPath == null || arpingTool == null || !arpingTool.canProceed) {
             return Optional.empty();
         }
         Process proc;
