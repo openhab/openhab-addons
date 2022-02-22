@@ -136,13 +136,13 @@ public class SungrowConstants {
     public static final String CHANNEL_BATTERY_TEMPERATURE = "battery-temperature";
 
     // Running State Bits
-    public static final Integer RS_PV_POWER_GENERATING = (1 << 0);
-    public static final Integer RS_BATTERY_CHARGING = (1 << 1);
-    public static final Integer RS_BATTERY_DISCHARGING = (1 << 2);
-    public static final Integer RS_POSITIV_POWER_LOAD = (1 << 3);
-    public static final Integer RS_POWER_FEED_IN_GRID = (1 << 4);
-    public static final Integer RS_IMPORT_POWER_FROM_GRID = (1 << 5);
-    public static final Integer RS_NEGATIV_LOAD_POWER = (1 << 7);
+    public static final int RS_PV_POWER_GENERATING = (1 << 0);
+    public static final int RS_BATTERY_CHARGING = (1 << 1);
+    public static final int RS_BATTERY_DISCHARGING = (1 << 2);
+    public static final int RS_POSITIV_POWER_LOAD = (1 << 3);
+    public static final int RS_POWER_FEED_IN_GRID = (1 << 4);
+    public static final int RS_IMPORT_POWER_FROM_GRID = (1 << 5);
+    public static final int RS_NEGATIV_LOAD_POWER = (1 << 7);
 
     // Expected Sungrow ID This is a magic constant to distinguish Sungrow compatible
     // devices from other modbus devices

@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.function.Consumer;
 
 import javax.measure.Unit;
@@ -412,6 +413,17 @@ public abstract class AbstractSungrowHandler extends BaseThingHandler {
      */
     protected State getScaled(Optional<? extends Number> value, Short scaleFactor, Unit<?> unit) {
         return getScaled(value, Optional.of(scaleFactor), unit);
+    }
+
+    /**
+     * Returns value multiplied by the 10 on the power of scaleFactory
+     *
+     * @param value the value to alter
+     * @param scaleFactor the scale factor to use (may be negative)
+     * @return the scaled value as a DecimalType
+     */
+    protected State getScaled(OptionalInt value, Short scaleFactor, Unit<?> unit) {
+        return getScaled(value, scaleFactor, unit);
     }
 
     /**

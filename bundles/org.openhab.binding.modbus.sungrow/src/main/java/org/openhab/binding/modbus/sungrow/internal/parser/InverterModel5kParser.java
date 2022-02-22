@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.modbus.sungrow.internal.parser;
 
-import java.util.Optional;
+import java.util.OptionalInt;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.sungrow.internal.dto.InverterModelBlock5k;
@@ -43,34 +43,34 @@ public class InverterModel5kParser extends AbstractBaseParser implements Sungrow
 
         block.mppt1Voltage = extractUInt16(raw, 11, 0);
         block.mppt1Current = extractUInt16(raw, 12, 0);
-        block.mppt1Power = Optional.of(block.mppt1Voltage * block.mppt1Current);
+        block.mppt1Power = OptionalInt.of(block.mppt1Voltage * block.mppt1Current);
         block.mppt2Voltage = extractUInt16(raw, 13, 0);
         block.mppt2Current = extractUInt16(raw, 14, 0);
-        block.mppt2Power = Optional.of(block.mppt2Voltage * block.mppt2Current);
+        block.mppt2Power = OptionalInt.of(block.mppt2Voltage * block.mppt2Current);
 
         block.totalDCPower = extractUInt32Swap(raw, 17, 0L);
 
         if ((block.outputType == 1) || (block.outputType == 2)) {
-            block.acVoltageAB = Optional.empty();
-            block.acVoltageBC = Optional.empty();
-            block.acVoltageCA = Optional.empty();
-            block.acVoltageAtoN = Optional.of(extractUInt16(raw, 19, 0));
-            block.acVoltageBtoN = Optional.of(extractUInt16(raw, 21, 0));
-            block.acVoltageCtoN = Optional.of(extractUInt16(raw, 21, 0));
+            block.acVoltageAB = OptionalInt.empty();
+            block.acVoltageBC = OptionalInt.empty();
+            block.acVoltageCA = OptionalInt.empty();
+            block.acVoltageAtoN = OptionalInt.of(extractUInt16(raw, 19, 0));
+            block.acVoltageBtoN = OptionalInt.of(extractUInt16(raw, 21, 0));
+            block.acVoltageCtoN = OptionalInt.of(extractUInt16(raw, 21, 0));
         } else if (block.outputType == 3) {
-            block.acVoltageAB = Optional.of(extractUInt16(raw, 19, 0));
-            block.acVoltageBC = Optional.of(extractUInt16(raw, 20, 0));
-            block.acVoltageCA = Optional.of(extractUInt16(raw, 21, 0));
-            block.acVoltageAtoN = Optional.empty();
-            block.acVoltageBtoN = Optional.empty();
-            block.acVoltageCtoN = Optional.empty();
+            block.acVoltageAB = OptionalInt.of(extractUInt16(raw, 19, 0));
+            block.acVoltageBC = OptionalInt.of(extractUInt16(raw, 20, 0));
+            block.acVoltageCA = OptionalInt.of(extractUInt16(raw, 21, 0));
+            block.acVoltageAtoN = OptionalInt.empty();
+            block.acVoltageBtoN = OptionalInt.empty();
+            block.acVoltageCtoN = OptionalInt.empty();
         } else {
-            block.acVoltageAB = Optional.empty();
-            block.acVoltageBC = Optional.empty();
-            block.acVoltageCA = Optional.empty();
-            block.acVoltageAtoN = Optional.empty();
-            block.acVoltageBtoN = Optional.empty();
-            block.acVoltageCtoN = Optional.empty();
+            block.acVoltageAB = OptionalInt.empty();
+            block.acVoltageBC = OptionalInt.empty();
+            block.acVoltageCA = OptionalInt.empty();
+            block.acVoltageAtoN = OptionalInt.empty();
+            block.acVoltageBtoN = OptionalInt.empty();
+            block.acVoltageCtoN = OptionalInt.empty();
         }
 
         block.acReactivePower = extractSInt32Swap(raw, 33, 0L);

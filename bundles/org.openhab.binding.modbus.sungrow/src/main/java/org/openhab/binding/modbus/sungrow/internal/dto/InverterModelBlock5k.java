@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.modbus.sungrow.internal.dto;
 
-import java.util.Optional;
+import java.util.OptionalInt;
 
 /**
  * Model for Sungrow compatible inverter data
@@ -65,7 +65,7 @@ public class InverterModelBlock5k {
     /**
      * MPPT1 Power value
      */
-    public Optional<Integer> mppt1Power;
+    public OptionalInt mppt1Power;
 
     /**
      * MPPT2 Voltage value
@@ -80,7 +80,7 @@ public class InverterModelBlock5k {
     /**
      * MPPT2 Power value
      */
-    public Optional<Integer> mppt2Power;
+    public OptionalInt mppt2Power;
 
     /**
      * Total DC power
@@ -90,32 +90,32 @@ public class InverterModelBlock5k {
     /**
      * AC Voltage Phase AB value
      */
-    public Optional<Integer> acVoltageAB;
+    public OptionalInt acVoltageAB;
 
     /**
      * AC Voltage Phase BC value
      */
-    public Optional<Integer> acVoltageBC;
+    public OptionalInt acVoltageBC;
 
     /**
      * AC Voltage Phase CA value
      */
-    public Optional<Integer> acVoltageCA;
+    public OptionalInt acVoltageCA;
 
     /**
      * AC Voltage Phase A to N value
      */
-    public Optional<Integer> acVoltageAtoN;
+    public OptionalInt acVoltageAtoN;
 
     /**
      * AC Voltage Phase B to N value
      */
-    public Optional<Integer> acVoltageBtoN;
+    public OptionalInt acVoltageBtoN;
 
     /**
      * AC Voltage Phase C to N value
      */
-    public Optional<Integer> acVoltageCtoN;
+    public OptionalInt acVoltageCtoN;
 
     /**
      * Reactive power
