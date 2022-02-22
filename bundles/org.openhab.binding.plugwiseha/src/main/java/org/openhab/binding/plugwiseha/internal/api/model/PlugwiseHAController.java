@@ -53,8 +53,7 @@ public class PlugwiseHAController {
 
     // Private member variables/constants
 
-    private static final int MAX_AGE_MINUTES_REFRESH = 10;
-    private static final int MAX_AGE_MINUTES_FULL_REFRESH = 30;
+    private static final int MAX_AGE_MINUTES_FULL_REFRESH = 15;
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.RFC_1123_DATE_TIME; // default Date format that
                                                                                           // will be used in conversion
 
@@ -68,18 +67,20 @@ public class PlugwiseHAController {
     private final int port;
     private final String username;
     private final String smileId;
+    private final int maxAgeSecondsRefresh;
 
     private @Nullable ZonedDateTime gatewayUpdateDateTime;
     private @Nullable ZonedDateTime gatewayFullUpdateDateTime;
     private @Nullable DomainObjects domainObjects;
 
-    public PlugwiseHAController(HttpClient httpClient, String host, int port, String username, String smileId)
-            throws PlugwiseHAException {
+    public PlugwiseHAController(HttpClient httpClient, String host, int port, String username, String smileId,
+            int maxAgeSecondsRefresh) throws PlugwiseHAException {
         this.httpClient = httpClient;
         this.host = host;
         this.port = port;
         this.username = username;
         this.smileId = smileId;
+        this.maxAgeSecondsRefresh = maxAgeSecondsRefresh;
 
         this.xStream = new PlugwiseHAXStream();
 
@@ -165,8 +166,12 @@ public class PlugwiseHAController {
         }
     }
 
-    public @Nullable Appliance getAppliance(String id, Boolean forceRefresh) throws PlugwiseHAException {
-        Appliances appliances = this.getAppliances(forceRefresh);
+    public @Nullable Appliance getAppliance(String id) throws PlugwiseHAException {
+        Appliances appliances = this.getAppliances(false);
+        if (!appliances.containsKey(id)) {
+            appliances = this.getAppliances(true);
+        }
+
         if (!appliances.containsKey(id)) {
             this.logger.debug("Plugwise Home Automation Appliance with id {} is not known", id);
             return null;
@@ -203,8 +208,11 @@ public class PlugwiseHAController {
         }
     }
 
-    public @Nullable Location getLocation(String id, Boolean forceRefresh) throws PlugwiseHAException {
-        Locations locations = this.getLocations(forceRefresh);
+    public @Nullable Location getLocation(String id) throws PlugwiseHAException {
+        Locations locations = this.getLocations(false);
+        if (!locations.containsKey(id)) {
+            locations = this.getLocations(true);
+        }
 
         if (!locations.containsKey(id)) {
             this.logger.debug("Plugwise Home Automation Zone with {} is not known", id);
@@ -221,10 +229,11 @@ public class PlugwiseHAController {
 
         request.setPath("/core/domain_objects");
         request.addPathParameter("@locale", "en-US");
-
         DomainObjects domainObjects = executeRequest(request);
-        this.gatewayUpdateDateTime = ZonedDateTime.parse(request.getServerDateTime(), PlugwiseHAController.FORMAT);
-        this.gatewayFullUpdateDateTime = this.gatewayUpdateDateTime;
+
+        ZonedDateTime serverTime = ZonedDateTime.parse(request.getServerDateTime(), PlugwiseHAController.FORMAT);
+        this.gatewayUpdateDateTime = serverTime;
+        this.gatewayFullUpdateDateTime = serverTime;
 
         return mergeDomainObjects(domainObjects);
     }
@@ -232,14 +241,16 @@ public class PlugwiseHAController {
     public @Nullable DomainObjects getUpdatedDomainObjects() throws PlugwiseHAException {
         ZonedDateTime localGatewayUpdateDateTime = this.gatewayUpdateDateTime;
         ZonedDateTime localGatewayFullUpdateDateTime = this.gatewayFullUpdateDateTime;
-        if (localGatewayUpdateDateTime == null
-                || localGatewayUpdateDateTime.isBefore(ZonedDateTime.now().minusMinutes(MAX_AGE_MINUTES_REFRESH))) {
+
+        if (localGatewayUpdateDateTime == null || localGatewayFullUpdateDateTime == null) {
             return getDomainObjects();
-        } else if (localGatewayFullUpdateDateTime == null || localGatewayFullUpdateDateTime
+        } else if (localGatewayUpdateDateTime.isBefore(ZonedDateTime.now().minusSeconds(maxAgeSecondsRefresh))) {
+            return getUpdatedDomainObjects(localGatewayUpdateDateTime);
+        } else if (localGatewayFullUpdateDateTime
                 .isBefore(ZonedDateTime.now().minusMinutes(MAX_AGE_MINUTES_FULL_REFRESH))) {
             return getDomainObjects();
         } else {
-            return getUpdatedDomainObjects(localGatewayUpdateDateTime);
+            return null;
         }
     }
 
@@ -428,6 +439,7 @@ public class PlugwiseHAController {
     private DomainObjects mergeDomainObjects(@Nullable DomainObjects updatedDomainObjects) {
         DomainObjects localDomainObjects = this.domainObjects;
         if (localDomainObjects == null && updatedDomainObjects != null) {
+            this.domainObjects = updatedDomainObjects;
             return updatedDomainObjects;
         } else if (localDomainObjects != null && updatedDomainObjects == null) {
             return localDomainObjects;
@@ -442,6 +454,7 @@ public class PlugwiseHAController {
             if (locations != null) {
                 localDomainObjects.mergeLocations(locations);
             }
+            this.domainObjects = localDomainObjects;
             return localDomainObjects;
         } else {
             return new DomainObjects();
