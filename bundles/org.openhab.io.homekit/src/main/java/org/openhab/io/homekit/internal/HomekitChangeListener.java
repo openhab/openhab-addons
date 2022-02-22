@@ -190,6 +190,13 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         for (Item accessoryGroup : HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry)) {
             pendingUpdates.add(accessoryGroup.getName());
         }
+
+        /*
+         * if metadata of a group item was changed, mark all group member as dirty.
+         */
+        if (item instanceof GroupItem) {
+            ((GroupItem) item).getMembers().forEach(groupMember -> pendingUpdates.add(groupMember.getName()));
+        }
         applyUpdatesDebouncer.call();
     }
 

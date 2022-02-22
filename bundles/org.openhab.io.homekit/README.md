@@ -504,6 +504,8 @@ Group           FanWithLight        "Fan with Light"                           {
 
 ![ui_fan_with_light_primary.png](doc/ui_fan_with_light_primary.png)
 
+However, home app does not support changing of tiles for already added accessory (it will show as "no response"). 
+You need either rename the group, if you use textual item configuration, or delete and create a new group with a different name, if you use UI for configuration.
 
 You can combine more than two accessories as well as accessories linked to different physical devices. 
 You can do also unusually combination, e.g. you can combine temperature sensor with blinds and light. 
