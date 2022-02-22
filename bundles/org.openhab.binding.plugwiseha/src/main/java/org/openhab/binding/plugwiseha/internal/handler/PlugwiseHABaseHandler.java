@@ -79,10 +79,8 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
      * Get the Plugwise Entity that belongs to this ThingHandler
      *
      * @param controller the controller for this ThingHandler
-     * @param forceRefresh indicated if the entity should be refreshed from the Plugwise API
      */
-    protected abstract @Nullable E getEntity(PlugwiseHAController controller, Boolean forceRefresh)
-            throws PlugwiseHAException;
+    protected abstract @Nullable E getEntity(PlugwiseHAController controller) throws PlugwiseHAException;
 
     /**
      * Handles a {@link RefreshType} command for a given channel.
@@ -139,7 +137,7 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
             if (controller != null) {
                 try {
                     @Nullable
-                    E entity = getEntity(controller, false);
+                    E entity = getEntity(controller);
                     if (entity != null) {
                         if (this.isLinked(channelUID)) {
                             if (command instanceof RefreshType) {
@@ -225,7 +223,7 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
                     @Nullable
                     E entity = null;
                     try {
-                        entity = getEntity(controller, false);
+                        entity = getEntity(controller);
                     } catch (PlugwiseHAException e) {
                         updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         setLinkedChannelsUndef();
