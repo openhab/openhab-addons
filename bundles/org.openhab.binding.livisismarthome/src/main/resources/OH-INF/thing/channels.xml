@@ -44,7 +44,7 @@
 
 	<!-- ThermostatActuator -->
 	<channel-type id="ThermostatActuator_PointTemperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Target Temperature</label>
 		<description>Thermostat target temperature</description>
 		<category>Temperature</category>
@@ -73,7 +73,7 @@
 
 	<!-- TemperatureSensor -->
 	<channel-type id="TemperatureSensor_Temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Actual Temperature</label>
 		<description>Actual measured room temperature</description>
 		<category>Temperature</category>
