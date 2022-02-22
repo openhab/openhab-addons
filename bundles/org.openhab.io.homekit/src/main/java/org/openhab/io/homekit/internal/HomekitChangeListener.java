@@ -282,13 +282,13 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     }
 
     /**
-     * select primary accessory type from list of type.
+     * select primary accessory type from list of types.
      * selection logic:
      * - if accessory has only one type, it is the primary type
      * - if accessory has no primary type defined per configuration, then the first type on the list is the primary type
-     * - if accessory has primary type defined per configuration and this type is on the list of type, then it is the
+     * - if accessory has primary type defined per configuration and this type is on the list of types, then it is the
      * primary
-     * - if accessory has primary type defined per configuration and this type is NOT on the list of type, then the
+     * - if accessory has primary type defined per configuration and this type is NOT on the list of types, then the
      * first type on the list is the primary type
      *
      * @param item openhab item
@@ -315,30 +315,32 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     /**
      * creates one or more HomeKit items for given openhab item.
-     * one OpenHAB item can linked to several HomeKit accessories or characteristics.
-     * OpenHAB item is a good candidate for HomeKit accessory
+     * one OpenHAB item can be linked to several HomeKit accessories.
+     * OpenHAB item is a good candidate for a HomeKit accessory
      * IF
      * - it has HomeKit accessory types defined using HomeKit accessory metadata
-     * - AND is not part of groups with HomeKit metadata
+     * - AND is not part of a group with HomeKit metadata
      * e.g.
      * Switch light "Light" {homekit="Lighting"}
      * Group gLight "Light Group" {homekit="Lighting"}
+     *
      * OR
      * - it has HomeKit accessory types defined using HomeKit accessory metadata
-     * - AND is part of groups with HomeKit metadata, but all groups are with baseItem, e.g. Group:Switch
+     * - AND is part of groups with HomeKit metadata, but all groups have baseItem
      * e.g.
      * Group:Switch:OR(ON,OFF) gLight "Light Group " {homekit="Lighting"}
      * Switch light "Light" (gLight) {homekit="Lighting.OnState"}
      *
      *
      * In contrast, items which are part of groups without BaseItem are additional HomeKit characteristics of the
-     * accessory defined by that group and dont need to be created as RootAccessory here.
+     * accessory defined by that group and dont need to be created as accessory here.
      * e.g.
+     * Group gLight "Light Group " {homekit="Lighting"}
      * Switch light "Light" (gLight) {homekit="Lighting.OnState"}
      * is not the root accessory but only a characteristic "OnState"
      *
      * Examples:
-     * // Single Line HomeKit Accessory
+     * // Single line HomeKit Accessory
      * Switch light "Light" {homekit="Lighting"}
      *
      * // One HomeKit accessory defined using group

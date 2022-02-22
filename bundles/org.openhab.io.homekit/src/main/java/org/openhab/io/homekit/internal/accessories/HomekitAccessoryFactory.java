@@ -399,7 +399,7 @@ public class HomekitAccessoryFactory {
 
     /**
      * check whether characteristic belongs to the specific accessory type.
-     * characteristic with no accessory type mentioned in metadata are considered candidates for all types.
+     * characteristic with no accessory type mentioned in metadata are considered as candidates for all types.
      *
      * @param accessoryType accessory type
      * @param characteristic characteristic
