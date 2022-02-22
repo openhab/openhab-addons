@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velbus.internal.VelbusClockAlarm;
@@ -40,7 +41,8 @@ import org.openhab.core.types.RefreshType;
  * sent to one of the channels.
  *
  * @author Cedric Boon - Initial contribution
- * @author Daniel Rosengarten - Add VMBELPIR support
+ * @author Daniel Rosengarten - Add VMBELPIR support, removes global alarm configuration from module (moved on bridge),
+ *         reduces bus flooding on alarm value update
  */
 @NonNullByDefault
 public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
@@ -112,6 +114,9 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
     private int clockAlarmConfigurationMemoryAddress;
     private VelbusClockAlarmConfiguration alarmClockConfiguration = new VelbusClockAlarmConfiguration();
 
+    private long lastUpdateAlarm1TimeMillis;
+    private long lastUpdateAlarm2TimeMillis;
+
     public VelbusSensorWithAlarmClockHandler(Thing thing) {
         this(thing, 0);
     }
@@ -148,14 +153,22 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
             byte alarmNumber = determineAlarmNumber(channelUID);
             VelbusClockAlarm alarmClock = alarmClockConfiguration.getAlarmClock(alarmNumber);
 
+            // If AlarmType is not read only, it's an old implementation of the module, discard the command and warn
+            // user
+            if ((channelUID.equals(clockAlarm1Type) || channelUID.equals(clockAlarm2Type))
+                    && command instanceof StringType) {
+                logger.warn(
+                        "Old implementation of thing '{}', still works, but it's better to remove and recreate the thing.",
+                        getThing().getUID());
+                return;
+            }
+
+            alarmClock.setLocal(true);
+
             if ((channelUID.equals(clockAlarm1Enabled) || channelUID.equals(clockAlarm2Enabled))
                     && command instanceof OnOffType) {
                 boolean enabled = command == OnOffType.ON;
                 alarmClock.setEnabled(enabled);
-            } else if ((channelUID.equals(clockAlarm1Type) || channelUID.equals(clockAlarm2Type))
-                    && command instanceof StringType) {
-                boolean isLocal = ((StringType) command).equals(ALARM_TYPE_LOCAL);
-                alarmClock.setLocal(isLocal);
             } else if (channelUID.equals(clockAlarm1WakeupHour)
                     || channelUID.equals(clockAlarm2WakeupHour) && command instanceof DecimalType) {
                 byte wakeupHour = ((DecimalType) command).byteValue();
@@ -174,14 +187,44 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
                 alarmClock.setBedtimeMinute(bedTimeMinute);
             }
 
-            byte address = alarmClock.isLocal() ? getModuleAddress().getAddress() : 0x00;
-            VelbusSetLocalClockAlarmPacket packet = new VelbusSetLocalClockAlarmPacket(address, alarmNumber,
-                    alarmClock);
+            if (alarmNumber == 1)
+                lastUpdateAlarm1TimeMillis = System.currentTimeMillis();
+            else
+                lastUpdateAlarm2TimeMillis = System.currentTimeMillis();
+
+            VelbusSetLocalClockAlarmPacket packet = new VelbusSetLocalClockAlarmPacket(getModuleAddress().getAddress(),
+                    alarmNumber, alarmClock);
             byte[] packetBytes = packet.getBytes();
-            velbusBridgeHandler.sendPacket(packetBytes);
+
+            // Schedule the send of the packet to see if there is another update in less than 10 secondes (reduce
+            // flooding of the bus)
+            scheduler.schedule(() -> {
+                sendAlarmPacket(alarmNumber, packetBytes);
+            }, 10000, TimeUnit.MILLISECONDS);
         } else {
             logger.debug("The command '{}' is not supported by this handler.", command.getClass());
         }
+    }
+
+    public synchronized void sendAlarmPacket(int alarmNumber, byte[] packetBytes) {
+        VelbusBridgeHandler velbusBridgeHandler = getVelbusBridgeHandler();
+        if (velbusBridgeHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return;
+        }
+
+        long timeSinceLastUpdate;
+
+        if (alarmNumber == 1)
+            timeSinceLastUpdate = System.currentTimeMillis() - lastUpdateAlarm1TimeMillis;
+        else
+            timeSinceLastUpdate = System.currentTimeMillis() - lastUpdateAlarm2TimeMillis;
+
+        // If a value of the alarm has been updated, discard this old update
+        if (timeSinceLastUpdate < 10000)
+            return;
+
+        velbusBridgeHandler.sendPacket(packetBytes);
     }
 
     @Override
