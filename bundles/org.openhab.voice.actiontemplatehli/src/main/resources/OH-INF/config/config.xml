@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="voice:actiontemplatehli">
+		<parameter-group name="nlp">
+			<label>Neural Language Processing</label>
+			<description>Configure natural language processing.</description>
+		</parameter-group>
+		<parameter-group name="messages">
+			<label>Response Messages</label>
+			<description>Configure interpreter responses.</description>
+		</parameter-group>
+		<parameter name="lowerText" type="boolean" groupName="nlp">
+			<label>Lower Text</label>
+			<description>Convert the input text to lowercase before processing</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="caseSensitive" type="boolean" groupName="nlp">
+			<label>Case Sensitive</label>
+			<description>Enable case sensitivity, do not apply to dictionaries and models.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="useSimpleTokenizer" type="boolean" groupName="nlp">
+			<label>Use Simple Tokenizer</label>
+			<description>Prefer simple tokenizer over white space tokenizer</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="optionalLanguageTags" type="text" groupName="nlp">
+			<label>Optional Language Tags</label>
+			<description>Comma separated POS language tags that will be optional when comparing</description>
+		</parameter>
+		<parameter name="fallbackHLI" type="text" groupName="nlp">
+			<label>Fallback Human Language Interpreter</label>
+			<description>Human language interpreter to use if text is unhandled.</description>
+		</parameter>
+		<parameter name="commandSentMessage" type="text" groupName="messages" required="true">
+			<label>Command Sent Message</label>
+			<description>Message for successful command</description>
+			<default>Done</default>
+		</parameter>
+		<parameter name="unhandledMessage" type="text" groupName="messages" required="true">
+			<label>Unhandled Message</label>
+			<description>Message for unsuccessful processing</description>
+			<default>I can not do that</default>
+		</parameter>
+		<parameter name="failMessage" type="text" groupName="messages" required="true">
+			<label>Fail Message</label>
+			<description>Message for error during processing</description>
+			<default>There was an error</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
