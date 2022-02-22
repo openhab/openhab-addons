@@ -96,7 +96,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             try {
                 PlugwiseHAController controller = bridgeHandler.getController();
                 if (controller != null) {
-                    this.appliance = getEntity(controller, true);
+                    this.appliance = getEntity(controller);
                     Appliance localAppliance = this.appliance;
                     if (localAppliance != null) {
                         if (localAppliance.isBatteryOperated()) {
@@ -117,10 +117,9 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
     }
 
     @Override
-    protected @Nullable Appliance getEntity(PlugwiseHAController controller, Boolean forceRefresh)
-            throws PlugwiseHAException {
+    protected @Nullable Appliance getEntity(PlugwiseHAController controller) throws PlugwiseHAException {
         PlugwiseHAThingConfig config = getPlugwiseThingConfig();
-        Appliance appliance = controller.getAppliance(config.getId(), forceRefresh);
+        Appliance appliance = controller.getAppliance(config.getId());
 
         return appliance;
     }

@@ -86,7 +86,7 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
             try {
                 PlugwiseHAController controller = bridgeHandler.getController();
                 if (controller != null) {
-                    this.location = getEntity(controller, true);
+                    this.location = getEntity(controller);
                     if (this.location != null) {
                         setLocationProperties();
                         updateStatus(ONLINE);
@@ -103,10 +103,9 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
     }
 
     @Override
-    protected @Nullable Location getEntity(PlugwiseHAController controller, Boolean forceRefresh)
-            throws PlugwiseHAException {
+    protected @Nullable Location getEntity(PlugwiseHAController controller) throws PlugwiseHAException {
         PlugwiseHAThingConfig config = getPlugwiseThingConfig();
-        Location location = controller.getLocation(config.getId(), forceRefresh);
+        Location location = controller.getLocation(config.getId());
 
         return location;
     }
