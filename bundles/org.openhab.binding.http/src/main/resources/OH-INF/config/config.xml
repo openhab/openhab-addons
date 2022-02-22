@@ -25,6 +25,13 @@
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="escapedUrl" type="boolean">
+			<label>Escaped URL</label>
+			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
+				stateExtension.</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
 			<description>Content for state request (only used if method is POST/PUT)</description>
@@ -63,6 +70,13 @@
 			<label>Command URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
+		</parameter>
+		<parameter name="escapedUrl" type="boolean">
+			<label>Escaped URL</label>
+			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
+				stateExtension.</description>
+			<advanced>true</advanced>
+			<default>false</default>
 		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
@@ -135,6 +149,13 @@
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="escapedUrl" type="boolean">
+			<label>Escaped URL</label>
+			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
+				stateExtension.</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
 			<description>Content for state request (only used if method is POST/PUT)</description>
@@ -182,6 +203,13 @@
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="escapedUrl" type="boolean">
+			<label>Escaped URL</label>
+			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
+				stateExtension.</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
 			<description>Content for state request (only used if method is POST/PUT)</description>
@@ -228,6 +256,12 @@
 			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="escapedUrl" type="boolean">
+			<label>Escaped URL</label>
+			<description>This specifies whether the URL is already escaped. Applies to the base URL and stateExtension.</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
 			<description>Content for state request (only used if method is POST/PUT)</description>
@@ -255,6 +289,13 @@
 			<label>Command URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
+		</parameter>
+		<parameter name="escapedUrl" type="boolean">
+			<label>Escaped URL</label>
+			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
+				stateExtension.</description>
+			<advanced>true</advanced>
+			<default>false</default>
 		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
@@ -299,6 +340,13 @@
 			<label>Command URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
+		</parameter>
+		<parameter name="escapedUrl" type="boolean">
+			<label>Escaped URL</label>
+			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
+				stateExtension.</description>
+			<advanced>true</advanced>
+			<default>false</default>
 		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
@@ -363,6 +411,13 @@
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="escapedUrl" type="boolean">
+			<label>Escaped URL</label>
+			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
+				stateExtension.</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
 			<description>Content for state request (only used if method is POST/PUT)</description>
@@ -417,6 +472,13 @@
 			<label>Command URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
+		</parameter>
+		<parameter name="escapedUrl" type="boolean">
+			<label>Escaped URL</label>
+			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
+				stateExtension.</description>
+			<advanced>true</advanced>
+			<default>false</default>
 		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>

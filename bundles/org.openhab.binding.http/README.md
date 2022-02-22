@@ -23,7 +23,7 @@ It can be extended with different channels.
 | `commandMethod`   | no       |   GET   | Method used for sending commands: `GET`, `PUT`, `POST`. |
 | `contentType`     | yes      |    -    | MIME content-type of the command requests. Only used for  `PUT` and `POST`. |
 | `encoding`        | yes      |    -    | Encoding to be used if no encoding is found in responses (advanced parameter). |
-| `headers`         | yes      |    -    | Additional headers that are sent along with the request. Format is "header=value". Multiple values can be stored as `headers="key1=value1", "key2=value2", "key3=value3",`|
+| `headers`         | yes      |    -    | Additional headers that are sent along with the request. Format is "header=value". Multiple values can be stored as `headers="key1=value1", "key2=value2", "key3=value3",`. When using text based configuration include at minimum 2 headers to avoid parsing errors.|
 | `ignoreSSLErrors` | no       |  false  | If set to true ignores invalid SSL certificate errors. This is potentially dangerous.|
 
 *Note:* Optional "no" means that you have to configure a value unless a default is provided and you are ok with that setting.
@@ -35,16 +35,18 @@ Authentication might fail if redirections are involved as headers are stripper p
 
 *Note:* If you rate-limit requests by using the `delay` parameter you have to make sure that the time between two refreshes is larger than the time needed for one refresh cycle.
 
-**Attention:** `baseUrl` (and `stateExtension`/`commandExtension`) should not use escaping (e.g. `%22` instead of `"` or `%2c` instead of `,`).
+**Attention:** `baseUrl` (and `stateExtension`/`commandExtension`) should not normally use escaping (e.g. `%22` instead of `"` or `%2c` instead of `,`).
 URLs are properly escaped by the binding itself before the request is sent.
 Using escaped strings in URL parameters may lead to problems with the formatting (see below).
+
+In certain scenarios you may need to manually escape your URL, for example if you need to include an escaped `=` (`%3D`) in this scenario include `%%3D` in the URL to preserve the `%` during formatting, and set the parameter `escapedUrl` to true on the channel.
 
 ## Channels
 
 Each item type has its own channel-type.
 Depending on the channel-type, channels have different configuration options.
 All channel-types (except `image`) have `stateExtension`, `commandExtension`, `stateTransformation`, `commandTransformation` and `mode` parameters.
-The `image` channel-type supports `stateExtension` only.
+The `image` channel-type supports `stateExtension`, `stateContent` and `escapedUrl` only.
 
 | parameter               | optional | default     | description |
 |-------------------------|----------|-------------|-------------|
@@ -52,6 +54,7 @@ The `image` channel-type supports `stateExtension` only.
 | `commandExtension`      | yes      |      -      | Appended to the `baseURL` for sending commands. If empty, same as `stateExtension`. |
 | `stateTransformation  ` | yes      |      -      | One or more transformation applied to received values before updating channel. |
 | `commandTransformation` | yes      |      -      | One or more transformation applied to channel value before sending to a remote. |
+| `escapedUrl`            | yes      |      -      | This specifies whether the URL is already escaped. |
 | `stateContent`          | yes      |      -      | Content for state requests (if method is `PUT` or `POST`) |
 | `mode`                  | no       | `READWRITE` | Mode this channel is allowed to operate. `READONLY` means receive state, `WRITEONLY` means send commands. |
 
