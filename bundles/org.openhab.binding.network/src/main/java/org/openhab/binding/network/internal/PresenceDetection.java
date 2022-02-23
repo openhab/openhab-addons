@@ -112,12 +112,13 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         this.destination = new ExpiringCache<>(DESTINATION_TTL, () -> {
             try {
                 InetAddress destinationAddress = InetAddress.getByName(hostname);
-                if (!destinationAddress.equals(cachedDestination)) {
+                InetAddress cached = cachedDestination;
+                if (!destinationAddress.equals(cached)) {
                     logger.trace("host name resolved to other address, (re-)setup presence detection");
                     setUseArpPing(true, destinationAddress);
                     if (useDHCPsniffing) {
-                        if (cachedDestination != null) {
-                            disableDHCPListen(cachedDestination);
+                        if (cached != null) {
+                            disableDHCPListen(cached);
                         }
                         enableDHCPListen(destinationAddress);
                     }
@@ -126,8 +127,9 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                 return destinationAddress;
             } catch (UnknownHostException e) {
                 logger.trace("hostname resolution failed");
-                if (cachedDestination != null) {
-                    disableDHCPListen(cachedDestination);
+                InetAddress cached = cachedDestination;
+                if (cached != null) {
+                    disableDHCPListen(cached);
                     cachedDestination = null;
                 }
                 return null;
@@ -594,8 +596,9 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             future.cancel(true);
             refreshJob = null;
         }
-        if (cachedDestination != null) {
-            disableDHCPListen(cachedDestination);
+        InetAddress cached = cachedDestination;
+        if (cached != null) {
+            disableDHCPListen(cached);
         }
     }
 
