@@ -73,9 +73,15 @@ public final class URLCreator {
         return createAddress(host) + "/message";
     }
 
-    public static String createEventsURL(String host, String token) {
-        String tokenURLEncoded = URLEncoder.encode(token, StandardCharsets.UTF_8);
-        return "ws://" + host + ":9090" + "/events?token=" + tokenURLEncoded;
+    public static String createEventsURL(String host, String token, boolean isClassicController) {
+        final String tokenURLEncoded = URLEncoder.encode(token, StandardCharsets.UTF_8);
+        final String webSocketPort;
+        if (isClassicController) {
+            webSocketPort = "8080";
+        } else {
+            webSocketPort = "9090";
+        }
+        return "ws://" + host + ':' + webSocketPort + "/events?token=" + tokenURLEncoded;
     }
 
     private static String createAddress(String host) {

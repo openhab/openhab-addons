@@ -445,7 +445,16 @@ public class Device {
      * @return
      */
     public boolean isController() {
-        return DEVICE_SHC.equals(type) || DEVICE_SHCA.equals(type);
+        return isClassicController() || DEVICE_SHCA.equals(type);
+    }
+
+    /**
+     * Returns true if the device is a classic controller (SHC, before Gen 2.).
+     *
+     * @return
+     */
+    public boolean isClassicController() {
+        return DEVICE_SHC.equals(type);
     }
 
     /**

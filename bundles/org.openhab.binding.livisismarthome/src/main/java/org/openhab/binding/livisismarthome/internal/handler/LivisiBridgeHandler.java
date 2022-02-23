@@ -215,15 +215,15 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         bridgeId = bridgeDevice.getId();
         onDeviceStateChanged(bridgeDevice); // initialize channels
 
-        startWebsocket();
+        startWebsocket(bridgeDevice);
     }
 
     /**
      * Start the websocket connection for receiving permanent update {@link Event}s from the LIVISI API.
      */
-    private void startWebsocket() {
+    private void startWebsocket(Device bridgeDevice) {
         try {
-            LivisiWebSocket localWebSocket = createWebSocket();
+            LivisiWebSocket localWebSocket = createWebSocket(bridgeDevice);
 
             if (this.webSocket != null && this.webSocket.isRunning()) {
                 this.webSocket.stop();
@@ -240,10 +240,10 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    LivisiWebSocket createWebSocket() throws IOException, AuthenticationException {
+    LivisiWebSocket createWebSocket(Device bridgeDevice) throws IOException, AuthenticationException {
         final AccessTokenResponse accessTokenResponse = client.getAccessTokenResponse();
         final String webSocketUrl = URLCreator.createEventsURL(bridgeConfiguration.host,
-                accessTokenResponse.getAccessToken());
+                accessTokenResponse.getAccessToken(), bridgeDevice.isClassicController());
 
         logger.debug("WebSocket URL: {}...{}", webSocketUrl.substring(0, 70),
                 webSocketUrl.substring(webSocketUrl.length() - 10));

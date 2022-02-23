@@ -219,7 +219,7 @@ public class LivisiBridgeHandlerTest {
 
         @Override
         @NonNull
-        LivisiWebSocket createWebSocket() {
+        LivisiWebSocket createWebSocket(Device bridgeDevice) {
             return webSocketMock;
         }
 

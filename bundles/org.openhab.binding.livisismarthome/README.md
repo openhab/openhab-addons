@@ -14,7 +14,6 @@ On your SHC you need a minimum Software Version of 1.2.XX.XXX with activated "Lo
 
 The LIVISI SmartHome Controller (SHC) is the bridge, that provides the central communication with the devices.
 Without the SHC, you cannot communicate with the devices.
-At this time, this binding supports only the SHC2 (with support for Bluetooth devices).
 
 ### Devices
 
