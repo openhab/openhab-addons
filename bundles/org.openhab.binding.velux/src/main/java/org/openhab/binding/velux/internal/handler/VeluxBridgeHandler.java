@@ -135,6 +135,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
     private VeluxBridge myJsonBridge = new JsonVeluxBridge(this);
     private VeluxBridge mySlipBridge = new SlipVeluxBridge(this);
+    private boolean disposing = false;
 
     /*
      * **************************************
@@ -279,6 +280,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         veluxBridgeConfiguration = new VeluxBinding(getConfigAs(VeluxBridgeConfiguration.class)).checked();
 
         scheduler.execute(() -> {
+            disposing = false;
             initializeSchedulerJob();
         });
     }
@@ -314,6 +316,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     @Override
     public void dispose() {
         scheduler.submit(() -> {
+            disposing = true;
             disposeSchedulerJob();
         });
     }
@@ -881,5 +884,14 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             threadFactory = new NamedThreadFactory(getThing().getUID().getAsString());
         }
         return threadFactory;
+    }
+
+    /**
+     * Indicates if the bridge thing is being disposed.
+     *
+     * @return true if the bridge thing is being disposed.
+     */
+    public boolean isDisposing() {
+        return disposing;
     }
 }
