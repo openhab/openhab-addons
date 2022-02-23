@@ -6,6 +6,17 @@ Vosk STT Service uses [vosk-api](https://github.com/alphacep/vosk-api) to perfor
 It enables speech recognition for 20+ languages and dialects - English, Indian English, German, French, Spanish, Portuguese, Chinese, Russian, Turkish, Vietnamese, Italian, Dutch, Catalan, Arabic, Greek, Farsi, Filipino, Ukrainian, Kazakh, Swedish, Japanese, Esperanto.
 More to come.
 
+## Supported platforms
+
+This add-on uses an underling binary to work.
+The following platforms are supported:
+
+* linux-aarch64
+* linux-armv7l
+* linux-x86_64
+* osx
+* win64
+
 ## Configuring the model
 
 Before you can use this service you should configure your language model.
@@ -37,7 +48,7 @@ In case you would like to setup the service via a text file, create a new file i
 Its contents should look similar to:
 
 ```
-org.openhab.voice.voskstt:preloadModel=true
+org.openhab.voice.voskstt:preloadModel=false
 org.openhab.voice.voskstt:singleUtteranceMode=true
 org.openhab.voice.voskstt:maxTranscriptionSeconds=60
 org.openhab.voice.voskstt:maxSilenceSeconds=5

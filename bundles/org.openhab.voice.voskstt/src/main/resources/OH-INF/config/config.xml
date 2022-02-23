@@ -34,7 +34,7 @@
 			<description>Keep language model loaded. If true model is just reload the model on config updates, if not model will
 				be loaded and offloaded on each execution. It will fallback to try to load the model when executed if it was not
 				able to load it before.</description>
-			<default>true</default>
+			<default>false</default>
 		</parameter>
 		<parameter name="noResultsMessage" type="text" groupName="messages">
 			<label>No Results Message</label>
