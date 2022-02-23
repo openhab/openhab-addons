@@ -10,18 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openthermgateway.internal;
+package org.openhab.binding.openthermgateway.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.Thing;
 
 /**
- * The {@link ByteType} enum specifies whether the upper, lower or both bytes are used
- * 
+ * The {@link BoilerHandler} represemts a boiler with thermostat.
+ *
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
-public enum ByteType {
-    HIGHBYTE,
-    LOWBYTE,
-    BOTH
+public class BoilerHandler extends BaseDeviceHandler {
+
+    public BoilerHandler(Thing thing) {
+        super(thing);
+    }
 }

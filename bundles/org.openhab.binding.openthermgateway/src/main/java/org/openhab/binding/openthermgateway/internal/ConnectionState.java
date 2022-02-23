@@ -15,13 +15,14 @@ package org.openhab.binding.openthermgateway.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ByteType} enum specifies whether the upper, lower or both bytes are used
+ * The {@link ConnectionState} is used to indicate changes in connection state.
  * 
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
-public enum ByteType {
-    HIGHBYTE,
-    LOWBYTE,
-    BOTH
+public enum ConnectionState {
+    INITIALIZING,
+    DISCONNECTED,
+    CONNECTING,
+    CONNECTED
 }

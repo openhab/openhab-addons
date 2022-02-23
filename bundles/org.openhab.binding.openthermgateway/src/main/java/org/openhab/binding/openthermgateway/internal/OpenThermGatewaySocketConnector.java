@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,9 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,55 +36,55 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnector {
-    private static final int COMMAND_RESPONSE_TIME_MILLISECONDS = 100;
-    private static final int COMMAND_TIMEOUT_MILLISECONDS = 5000;
+    private static final int COMMAND_RESPONSE_MIN_WAIT_TIME_MILLISECONDS = 100;
+    private static final int COMMAND_RESPONSE_MAX_WAIT_TIME_MILLISECONDS = 5000;
 
     private final Logger logger = LoggerFactory.getLogger(OpenThermGatewaySocketConnector.class);
 
     private final OpenThermGatewayCallback callback;
     private final String ipaddress;
     private final int port;
+    private final int connectTimeoutMilliseconds;
+    private final int readTimeoutMilliSeconds;
 
+    private @Nullable Socket socket;
     private @Nullable PrintWriter writer;
 
-    private volatile boolean stopping;
-    private boolean connected;
+    private volatile boolean stopping = false;
 
     private Map<String, Entry<Long, GatewayCommand>> pendingCommands = new ConcurrentHashMap<>();
 
-    public OpenThermGatewaySocketConnector(OpenThermGatewayCallback callback, String ipaddress, int port) {
+    public OpenThermGatewaySocketConnector(OpenThermGatewayCallback callback, OpenThermGatewayConfiguration config) {
         this.callback = callback;
-        this.ipaddress = ipaddress;
-        this.port = port;
+        ipaddress = config.ipaddress;
+        port = config.port;
+        connectTimeoutMilliseconds = config.connectTimeoutSeconds * 1000;
+        readTimeoutMilliSeconds = config.readTimeoutSeconds * 1000;
     }
 
     @Override
     public void run() {
-        stopping = false;
-        connected = false;
-
         logger.debug("Connecting OpenThermGatewaySocketConnector to {}:{}", this.ipaddress, this.port);
-
-        callback.connecting();
+        callback.connectionStateChanged(ConnectionState.CONNECTING);
 
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(this.ipaddress, this.port), COMMAND_TIMEOUT_MILLISECONDS);
-            socket.setSoTimeout(COMMAND_TIMEOUT_MILLISECONDS);
+            // Make socket accessible on class level
+            this.socket = socket;
 
-            connected = true;
-
-            callback.connected();
+            socket.connect(new InetSocketAddress(ipaddress, port), connectTimeoutMilliseconds);
+            socket.setSoTimeout(readTimeoutMilliSeconds);
 
             logger.debug("OpenThermGatewaySocketConnector connected");
+            callback.connectionStateChanged(ConnectionState.CONNECTED);
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     PrintWriter wrt = new PrintWriter(socket.getOutputStream(), true)) {
                 // Make writer accessible on class level
                 writer = wrt;
 
-                sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintReport, "A"));
+                sendCommand(GatewayCommand.parse(GatewayCommandCode.PRINTREPORT, "A"));
                 // Set the OTGW to report every message it receives and transmits
-                sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintSummary, "0"));
+                sendCommand(GatewayCommand.parse(GatewayCommandCode.PRINTSUMMARY, "0"));
 
                 while (!stopping && !Thread.currentThread().isInterrupted()) {
                     @Nullable
@@ -96,21 +93,23 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                     if (message != null) {
                         handleMessage(message);
                     } else {
-                        logger.debug("Connection closed by OpenTherm Gateway");
+                        logger.debug("Received NULL message from OpenTherm Gateway (EOF)");
                         break;
                     }
                 }
-
-                logger.debug("Stopping OpenThermGatewaySocketConnector");
+            } catch (IOException ex) {
+                logger.warn("Error communicating with OpenTherm Gateway: '{}'", ex.getMessage());
             } finally {
-                connected = false;
-
-                logger.debug("OpenThermGatewaySocketConnector disconnected");
-                callback.disconnected();
+                // local writer is being destroyed, so null the class level reference as well
+                writer = null;
             }
         } catch (IOException ex) {
-            logger.warn("Unable to connect to the OpenTherm Gateway.", ex);
-            callback.disconnected();
+            logger.warn("Unable to connect to the OpenTherm Gateway: '{}'", ex.getMessage());
+        } finally {
+            // local socket is being destroyed, so null the class level reference as well
+            socket = null;
+            logger.debug("OpenThermGatewaySocketConnector disconnected");
+            callback.connectionStateChanged(ConnectionState.DISCONNECTED);
         }
     }
 
@@ -118,28 +117,35 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     public void stop() {
         logger.debug("Stopping OpenThermGatewaySocketConnector");
         stopping = true;
+        Thread.currentThread().interrupt();
     }
 
     @Override
     public boolean isConnected() {
-        return connected;
+        Socket sck = socket;
+        return (sck != null && sck.isConnected());
     }
 
     @Override
-    public void sendCommand(GatewayCommand command) {
+    public synchronized void sendCommand(GatewayCommand command) {
         @Nullable
-        PrintWriter wrtr = writer;
+        PrintWriter wrt = writer;
 
-        String msg = command.toFullString();
+        @Nullable
+        Socket sck = socket;
 
         pendingCommands.put(command.getCode(),
                 new AbstractMap.SimpleImmutableEntry<>(System.currentTimeMillis(), command));
 
-        if (connected) {
+        String msg = command.toFullString();
+
+        if (sck != null && sck.isConnected() && wrt != null) {
             logger.debug("Sending message: {}", msg);
-            if (wrtr != null) {
-                wrtr.print(msg + "\r\n");
-                wrtr.flush();
+            wrt.print(msg + "\r\n");
+            wrt.flush();
+            if (wrt.checkError()) {
+                logger.warn("Error sending message to OpenTherm Gateway.");
+                stop();
             }
         } else {
             logger.debug("Unable to send message: {}. OpenThermGatewaySocketConnector is not connected.", msg);
@@ -159,8 +165,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         long currentTime = System.currentTimeMillis();
 
         for (Entry<Long, GatewayCommand> timeAndCommand : pendingCommands.values()) {
-            long responseTime = timeAndCommand.getKey() + COMMAND_RESPONSE_TIME_MILLISECONDS;
-            long timeoutTime = timeAndCommand.getKey() + COMMAND_TIMEOUT_MILLISECONDS;
+            long responseTime = timeAndCommand.getKey() + COMMAND_RESPONSE_MIN_WAIT_TIME_MILLISECONDS;
+            long timeoutTime = timeAndCommand.getKey() + COMMAND_RESPONSE_MAX_WAIT_TIME_MILLISECONDS;
 
             if (currentTime > responseTime && currentTime <= timeoutTime) {
                 logger.debug("Resending command: {}", timeAndCommand.getValue());
@@ -176,46 +182,13 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             logger.trace("Received message: {}, (unknown)", message);
             return;
         } else {
-            logger.trace("Received message: {}, {} {} {}", message, msg.getID(), msg.getCode(), msg.getMessageType());
-        }
-
-        if (DataItemGroup.dataItemGroups.containsKey(msg.getID())) {
-            DataItem[] dataItems = DataItemGroup.dataItemGroups.get(msg.getID());
-
-            for (DataItem dataItem : dataItems) {
-                State state = null;
-
-                switch (dataItem.getDataType()) {
-                    case FLAGS:
-                        state = OnOffType.from(msg.getBit(dataItem.getByteType(), dataItem.getBitPos()));
-                        break;
-                    case UINT8:
-                    case UINT16:
-                        state = new DecimalType(msg.getUInt(dataItem.getByteType()));
-                        break;
-                    case INT8:
-                    case INT16:
-                        state = new DecimalType(msg.getInt(dataItem.getByteType()));
-                        break;
-                    case FLOAT:
-                        state = new DecimalType(msg.getFloat());
-                        break;
-                    case DOWTOD:
-                        break;
-                }
-
-                logger.trace("  Data: {} {} {} {}", dataItem.getID(), dataItem.getSubject(), dataItem.getDataType(),
-                        state == null ? "" : state);
-            }
+            logger.trace("Received message: {}, {} {} {}", message, msg.getID(), msg.getCodeType(),
+                    msg.getMessageType());
         }
 
         if (msg.getMessageType() == MessageType.READACK || msg.getMessageType() == MessageType.WRITEDATA
                 || msg.getID() == 0 || msg.getID() == 1) {
-            receiveMessage(msg);
+            callback.receiveMessage(msg);
         }
-    }
-
-    private void receiveMessage(Message message) {
-        callback.receiveMessage(message);
     }
 }
