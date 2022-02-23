@@ -93,7 +93,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (webTargets == null) {
-            logger.error("webTargets is null. This is possibly a bug.");
+            logger.warn("webTargets is null. This is possibly a bug.");
             return;
         }
         try {
