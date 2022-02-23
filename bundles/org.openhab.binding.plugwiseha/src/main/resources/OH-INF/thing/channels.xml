@@ -199,7 +199,7 @@
 	<channel-type id="presetScene">
 		<item-type>String</item-type>
 		<label>Preset Scene</label>
-		<description>Gets the preset scene of the zone</description>
+		<description>Gets or sets the preset scene of the zone</description>
 		<category>heating</category>
 		<state>
 			<options>

@@ -85,7 +85,7 @@ public class PlugwiseHABindingConstants {
     public static final String LOCATION_PROPERTY_FUNCTIONALITIES = "functionalities";
 
     // List of all Channel IDs
-    public static final String ZONE_COOLING_CHANNEL = "allowCooling";
+    public static final String ZONE_COOLING_CHANNEL = "coolingAllowed";
     public static final String ZONE_SETPOINT_CHANNEL = "setpointTemperature";
     public static final String ZONE_TEMPERATURE_CHANNEL = "temperature";
     public static final String ZONE_PRESETSCENE_CHANNEL = "presetScene";

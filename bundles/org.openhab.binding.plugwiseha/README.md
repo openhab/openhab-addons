@@ -94,7 +94,7 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 | waterPressure        | Number:Pressure    | Yes        | The current water pressure of the boiler                                                                                                                                                             |
 | presetScene          | String             | No         | The current active scene for the zone                                                                                                                                                                |
 | regulationControl    | String             | No         | Toggle current regulation control (Active, Passive, Off) for the zone                                                                                                                                |
-| coolingAllowed       | Switch             | No         | Toggle the cfooling allowed of a zone ON/OFF                                                                                                                                                         |
+| coolingAllowed       | Switch             | No         | Toggle the cooling allowed of a zone ON/OFF                                                                                                                                                          |
 | valvePosition        | Number             | Yes        | The current position of the valve                                                                                                                                                                    |
 | preHeat              | Switch             | No         | Toggle the pre heating of a zone ON/OFF                                                                                                                                                              |
 | coolingState         | Switch             | Yes        | The current cooling state of the boiler                                                                                                                                                              |
@@ -133,7 +133,7 @@ Number:Temperature living_room_zone_temperature "Zone temperature" {channel="plu
 Number:Temperature living_room_zone_temperature_setpoint "Zone temperature setpoint" {channel="plugwiseha:zone:home:living_room_zone:setpointTemperature"}
 String living_room_zone_preset_scene "Zone preset scene" {channel="plugwiseha:zone:home:living_room_zone:presetScene"}
 Switch living_room_zone_preheat "Zone preheat enabled" {channel="plugwiseha:zone:home:living_room_zone:preHeat"}
-String living_room_zone_cooling "Zone cooling enabled" {channel="plugwiseha:zone:home:living_room_zone:coolingAllowd"}
+String living_room_zone_cooling "Zone cooling enabled" {channel="plugwiseha:zone:home:living_room_zone:coolingAllowed"}
 String living_room_zone_regulation_control "Zone regulation control" {channel="plugwiseha:zone:home:living_room_zone:regulationControl"}
 
 Number:Temperature living_room_radiator_temperature "Radiator valve temperature" {channel="plugwiseha:appliance_valve:home:living_room_radiator:temperature"}
