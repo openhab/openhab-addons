@@ -326,10 +326,26 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                     logUnsupportedDevice(device);
                 }
                 break;
+            case CLASS_HITACHI_HEATING_SYSTEM:
+                if ("HitachiAirToWaterHeatingZone".equals(device.getWidget())) {
+                    // widget: HitachiAirToWaterHeatingZone
+                    deviceDiscovered(device, THING_TYPE_HITACHI_ATWHZ, place);
+                } else if ("HitachiAirToWaterMainComponent".equals(device.getWidget())) {
+                    // widget: HitachiAirToWaterMainComponent
+                    deviceDiscovered(device, THING_TYPE_HITACHI_ATWMC, place);
+                } else if ("HitachiDHW".equals(device.getWidget())) {
+                    // widget: HitachiDHW
+                    deviceDiscovered(device, THING_TYPE_HITACHI_DHW, place);
+                } else {
+                    logUnsupportedDevice(device);
+                }
+                break;
             case THING_PROTOCOL_GATEWAY:
             case THING_REMOTE_CONTROLLER:
                 // widget: AlarmRemoteController
             case THING_NETWORK_COMPONENT:
+            case THING_GENERIC:
+                // widget: unknown
                 break;
 
             default:
