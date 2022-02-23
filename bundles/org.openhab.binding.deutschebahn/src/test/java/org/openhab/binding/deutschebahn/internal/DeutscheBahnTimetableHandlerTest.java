@@ -21,6 +21,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.deutschebahn.internal.timetable.TimeproviderStub;
 import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1ApiFactory;
@@ -42,10 +43,11 @@ import org.openhab.core.types.UnDefType;
 
 /**
  * Tests for {@link DeutscheBahnTimetableHandler}.
- * 
+ *
  * @author Sönke Küper - initial contribution.
  */
 @NonNullByDefault
+@Disabled("https://github.com/openhab/openhab-addons/issues/12235")
 public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHelper {
 
     private static Configuration createConfig() {
