@@ -31,6 +31,9 @@ import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaExteriorHeati
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaExternalAlarmHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaGateHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaGatewayHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaHitachiATWHZHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaHitachiATWMCHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaHitachiDHWHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaHumiditySensorHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaInternalAlarmHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaLightSensorHandler;
@@ -187,6 +190,12 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaThermostatHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_WATERHEATINGSYSTEM)) {
             return new SomfyTahomaWaterHeatingSystemHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_HITACHI_ATWHZ)) {
+            return new SomfyTahomaHitachiATWHZHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_HITACHI_DHW)) {
+            return new SomfyTahomaHitachiDHWHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_HITACHI_ATWMC)) {
+            return new SomfyTahomaHitachiATWMCHandler(thing);
         } else {
             return null;
         }
