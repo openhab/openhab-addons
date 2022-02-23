@@ -416,21 +416,20 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return placeholderValues;
     }
 
-    private Set<Item> getMembersByTypeRecursive(GroupItem group, String itemType, String[] requiredGroupTags,
-            String[] requiredMemberTags) {
-        Stream<Item> targetMembersStream = getMemberItemsByType(group, itemType, requiredMemberTags).stream();
-        var childGroups = getMemberItemsByType(group, "Group", requiredGroupTags);
+    private Set<Item> getMembersByTypeRecursive(GroupItem group, String itemType, String[] requiredMemberTags) {
+        Stream<Item> targetMembersStream = getMembersByType(group, itemType, requiredMemberTags).stream();
+        var childGroups = getMembersByType(group, "Group", new String[] {});
         for (var childGroup : childGroups) {
             targetMembersStream = Stream.concat(targetMembersStream,
-                    getMembersByTypeRecursive((GroupItem) childGroup, itemType, requiredGroupTags, requiredMemberTags)
-                            .stream());
+                    getMembersByTypeRecursive((GroupItem) childGroup, itemType, requiredMemberTags).stream());
         }
         return targetMembersStream.collect(Collectors.toUnmodifiableSet());
     }
 
-    private State mergeSwitchMembersState(GroupItem group, String[] requiredGroupTags, String[] requiredMemberTags) {
+    private State mergeSwitchMembersState(GroupItem group, String[] requiredMemberTags, boolean recursive) {
         var result = OnOffType.OFF;
-        var targetMembers = getMembersByTypeRecursive(group, "Switch", requiredGroupTags, requiredMemberTags);
+        var targetMembers = recursive ? getMembersByTypeRecursive(group, "Switch", requiredMemberTags)
+                : getMembersByType(group, "Switch", requiredMemberTags);
         for (var member : targetMembers) {
             if (UnDefType.NULL.equals(member.getState())) {
                 return UnDefType.NULL;
@@ -442,9 +441,10 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return result;
     }
 
-    private State mergeContactMembersState(GroupItem group, String[] requiredGroupTags, String[] requiredMemberTags) {
+    private State mergeContactMembersState(GroupItem group, String[] requiredMemberTags, boolean recursive) {
         var result = OpenClosedType.CLOSED;
-        var targetMembers = getMembersByTypeRecursive(group, "Switch", requiredGroupTags, requiredMemberTags);
+        var targetMembers = recursive ? getMembersByTypeRecursive(group, "Contact", requiredMemberTags)
+                : getMembersByType(group, "Contact", requiredMemberTags);
         for (var member : targetMembers) {
             if (UnDefType.NULL.equals(member.getState())) {
                 return UnDefType.NULL;
@@ -467,12 +467,12 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 // handle states that can be merged
                 switch (memberTargets.itemType) {
                     case "Switch":
-                        state = mergeSwitchMembersState((GroupItem) targetItem, actionConfigMatch.requiredItemTags,
-                                memberTargets.requiredItemTags).toFullString();
+                        state = mergeSwitchMembersState((GroupItem) targetItem, memberTargets.requiredItemTags,
+                                memberTargets.recursive).toFullString();
                         break;
                     case "Contact":
-                        state = mergeContactMembersState((GroupItem) targetItem, actionConfigMatch.requiredItemTags,
-                                memberTargets.requiredItemTags).toFullString();
+                        state = mergeContactMembersState((GroupItem) targetItem, memberTargets.requiredItemTags,
+                                memberTargets.recursive).toFullString();
                         break;
                     default:
                         logger.warn("state merge is not available for members of type {}", memberTargets.itemType);
@@ -480,8 +480,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 }
             }
             if (state == null) {
-                Set<Item> targetMembers = getTargetMembers((GroupItem) targetItem, actionConfigMatch.requiredItemTags,
-                        memberTargets);
+                Set<Item> targetMembers = getTargetMembers((GroupItem) targetItem, memberTargets);
                 if (!targetMembers.isEmpty()) {
                     if (targetMembers.size() > 1) {
                         logger.warn("read action matches {} item members inside a group, using the first one",
@@ -610,8 +609,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 var groupItem = (GroupItem) item;
                 var memberTargetsConfig = actionConfiguration.memberTargets;
                 if (memberTargetsConfig != null) {
-                    Set<Item> targetMembers = getTargetMembers(groupItem, actionConfiguration.requiredItemTags,
-                            memberTargetsConfig);
+                    Set<Item> targetMembers = getTargetMembers(groupItem, memberTargetsConfig);
                     logger.debug("{} target members were found in group {}", targetMembers.size(), groupItem.getName());
                     if (!targetMembers.isEmpty()) {
                         // swap the command target by the matched members
@@ -663,23 +661,23 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         }
     }
 
-    private Set<Item> getTargetMembers(GroupItem groupItem, String[] groupRequiredTags,
-            ActionTemplateConfiguration.ActionTemplateGroupTargets childTarget) {
-        var childName = childTarget.itemName;
+    private Set<Item> getTargetMembers(GroupItem groupItem,
+            ActionTemplateConfiguration.ActionTemplateGroupTargets memberTargets) {
+        var childName = memberTargets.itemName;
         if (!childName.isEmpty()) {
             return groupItem.getMembers(i -> i.getName().equals(childName));
         }
-        var itemType = childTarget.itemType;
-        var requiredItemTags = childTarget.requiredItemTags;
+        var itemType = memberTargets.itemType;
+        var requiredItemTags = memberTargets.requiredItemTags;
         if (!itemType.isEmpty()) {
-            return childTarget.recursive
-                    ? getMembersByTypeRecursive(groupItem, itemType, groupRequiredTags, childTarget.requiredItemTags)
-                    : getMemberItemsByType(groupItem, itemType, requiredItemTags);
+            return memberTargets.recursive
+                    ? getMembersByTypeRecursive(groupItem, itemType, memberTargets.requiredItemTags)
+                    : getMembersByType(groupItem, itemType, requiredItemTags);
         }
         return Set.of();
     }
 
-    private Set<Item> getMemberItemsByType(GroupItem groupItem, String itemType, String[] requiredItemTags) {
+    private Set<Item> getMembersByType(GroupItem groupItem, String itemType, String[] requiredItemTags) {
         Set<Item> childrenItems = groupItem.getMembers(i -> i.getType().equals(itemType)
                 && (requiredItemTags.length == 0 || Arrays.stream(requiredItemTags).allMatch(i.getTags()::contains)));
         return childrenItems;
