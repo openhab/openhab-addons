@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.network.internal.dhcp.DHCPListenService;
+import org.openhab.binding.network.internal.dhcp.DHCPPacketListenerServer;
 import org.openhab.binding.network.internal.dhcp.IPRequestReceivedCallback;
 import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
@@ -607,22 +608,18 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      */
     private void enableDHCPListen(InetAddress destinationAddress) {
         try {
-            if (DHCPListenService.register(destinationAddress.getHostAddress(), this).isUseUnprevilegedPort()) {
-                dhcpState = "No access right for port 67. Bound to port 6767 instead. Port forwarding necessary!";
-            } else {
-                dhcpState = "Running normally";
-            }
+            DHCPPacketListenerServer listener = DHCPListenService.register(destinationAddress.getHostAddress(), this);
+            dhcpState = String.format("Bound to port %d - %s", listener.getCurrentPort(),
+                    (listener.usingPrivilegedPort() ? "Running normally" : "Port forwarding necessary !"));
         } catch (SocketException e) {
-            logger.warn("Cannot use DHCP sniffing.", e);
+            dhcpState = String.format("Cannot use DHCP sniffing: %s", e.getLocalizedMessage());
+            logger.warn(dhcpState);
             useDHCPsniffing = false;
-            dhcpState = "Cannot use DHCP sniffing: " + e.getLocalizedMessage();
         }
     }
 
-    private void disableDHCPListen(@Nullable InetAddress destinationAddress) {
-        if (destinationAddress != null) {
-            DHCPListenService.unregister(destinationAddress.getHostAddress());
-            dhcpState = "off";
-        }
+    private void disableDHCPListen(InetAddress destinationAddress) {
+        DHCPListenService.unregister(destinationAddress.getHostAddress());
+        dhcpState = "off";
     }
 }

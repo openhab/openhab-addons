@@ -36,21 +36,23 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DHCPPacketListenerServer extends Thread {
+    private static final int PRIVILEGED_PORT = 67;
+    private static final int UNPRIVILEGED_PORT = 6767;
     private byte[] buffer = new byte[1024];
     private @Nullable DatagramSocket dsocket;
     private DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
     private final IPRequestReceivedCallback listener;
     private final Logger logger = LoggerFactory.getLogger(DHCPPacketListenerServer.class);
-    private boolean useUnprevilegedPort = false;
     private boolean willbeclosed = false;
+    private int currentPort = PRIVILEGED_PORT;
 
     DHCPPacketListenerServer(IPRequestReceivedCallback listener) throws SocketException, BindException {
         this.listener = listener;
         try {
-            bindSocketTo(67);
+            bindSocketTo(currentPort);
         } catch (SocketException e) {
-            useUnprevilegedPort = true;
-            bindSocketTo(6767);
+            currentPort = UNPRIVILEGED_PORT;
+            bindSocketTo(currentPort);
         }
     }
 
@@ -112,10 +114,9 @@ public class DHCPPacketListenerServer extends Thread {
         return dsocket;
     }
 
-    // Return true if the instance couldn't bind to port 67 and used port 6767 instead
-    // to listen to DHCP traffic (port forwarding necessary).
-    public boolean isUseUnprevilegedPort() {
-        return useUnprevilegedPort;
+    // Return true if the instance is using port 67 to listen to DHCP traffic (no port forwarding necessary).
+    public boolean usingPrivilegedPort() {
+        return currentPort == PRIVILEGED_PORT;
     }
 
     /**
@@ -137,4 +138,9 @@ public class DHCPPacketListenerServer extends Thread {
             dsocket = null;
         }
     }
+
+    public int getCurrentPort() {
+        return currentPort;
+    }
+
 }
