@@ -13,7 +13,6 @@
 package org.openhab.binding.network.internal.dhcp;
 
 import java.io.IOException;
-import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -46,7 +45,7 @@ public class DHCPPacketListenerServer extends Thread {
     private boolean willbeclosed = false;
     private int currentPort = PRIVILEGED_PORT;
 
-    DHCPPacketListenerServer(IPRequestReceivedCallback listener) throws SocketException, BindException {
+    DHCPPacketListenerServer(IPRequestReceivedCallback listener) throws SocketException {
         this.listener = listener;
         try {
             bindSocketTo(currentPort);
@@ -142,5 +141,4 @@ public class DHCPPacketListenerServer extends Thread {
     public int getCurrentPort() {
         return currentPort;
     }
-
 }

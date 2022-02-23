@@ -613,7 +613,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                     (listener.usingPrivilegedPort() ? "Running normally" : "Port forwarding necessary !"));
         } catch (SocketException e) {
             dhcpState = String.format("Cannot use DHCP sniffing: %s", e.getLocalizedMessage());
-            logger.warn(dhcpState);
+            logger.warn("{}", dhcpState);
             useDHCPsniffing = false;
         }
     }
