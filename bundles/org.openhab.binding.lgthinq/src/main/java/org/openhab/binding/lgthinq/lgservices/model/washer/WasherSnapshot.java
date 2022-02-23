@@ -39,6 +39,7 @@ public class WasherSnapshot implements Snapshot {
     private boolean online;
     private String course = "";
     private String smartCourse = "";
+    private String downloadedCourse = "";
     private String temperatureLevel = "";
     private String doorLock = "";
     private Double remainingHour = 0.00;
@@ -84,6 +85,16 @@ public class WasherSnapshot implements Snapshot {
     @JsonAlias({ "smartCourseFL24inchBaseTitan", "SmartCourse" })
     public String getSmartCourse() {
         return smartCourse;
+    }
+
+    @JsonProperty("downloadedCourseFL24inchBaseTitan")
+    @JsonAlias({ "downloadedCourseFLUpper25inchBaseUS" })
+    public String getDownloadedCourse() {
+        return downloadedCourse;
+    }
+
+    public void setDownloadedCourse(String downloadedCourse) {
+        this.downloadedCourse = downloadedCourse;
     }
 
     @JsonIgnore
