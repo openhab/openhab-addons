@@ -48,6 +48,7 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
     private final ChannelUID stateChannelUUID;
     private final ChannelUID courseChannelUUID;
     private final ChannelUID smartCourseChannelUUID;
+    private final ChannelUID downloadedCourseChannelUUID;
     private final ChannelUID temperatureChannelUUID;
     private final Logger logger = LoggerFactory.getLogger(LGThinQWasherHandler.class);
     @NonNullByDefault
@@ -67,6 +68,7 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
         stateChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_STATE_ID);
         courseChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_COURSE_ID);
         smartCourseChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_SMART_COURSE_ID);
+        downloadedCourseChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_DOWNLOADED_COURSE_ID);
         temperatureChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_TEMP_LEVEL_ID);
     }
 
@@ -105,6 +107,11 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
             wmCap.getSmartCourses().forEach((k, v) -> options.add(new StateOption(k, emptyIfNull(v))));
             stateDescriptionProvider.setStateOptions(smartCourseChannelUUID, options);
         }
+        if (isLinked(downloadedCourseChannelUUID)) {
+            List<StateOption> options = new ArrayList<>();
+            wmCap.getSmartCourses().forEach((k, v) -> options.add(new StateOption(k, emptyIfNull(v))));
+            stateDescriptionProvider.setStateOptions(downloadedCourseChannelUUID, options);
+        }
         if (isLinked(temperatureChannelUUID)) {
             List<StateOption> options = new ArrayList<>();
             wmCap.getTemperature()
@@ -133,6 +140,7 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
         updateState(WM_CHANNEL_TEMP_LEVEL_ID, new StringType(shot.getTemperatureLevel()));
         updateState(WM_CHANNEL_DOOR_LOCK_ID, new StringType(shot.getDoorLock()));
         updateState(WM_CHANNEL_REMAIN_TIME_ID, new StringType(shot.getRemainingTime()));
+        updateState(WM_CHANNEL_DOWNLOADED_COURSE_ID, new StringType(shot.getDownloadedCourse()));
     }
 
     @Override
@@ -170,19 +178,8 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
     }
 
     @Override
-    public String getDeviceModelName() {
-        return emptyIfNull(getThing().getProperties().get(MODEL_NAME));
-    }
-
-    @Override
     public String getDeviceUriJsonConfig() {
         return emptyIfNull(getThing().getProperties().get(MODEL_URL_INFO));
-    }
-
-    @Override
-    public boolean onDeviceStateChanged() {
-        // TODO - HANDLE IT, Think if it's needed
-        return false;
     }
 
     @Override
@@ -190,8 +187,18 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
         // TODO - HANDLE IT, Think if it's needed
     }
 
+    /**
+     * Put the channels in default state if the device is disconnected or gone.
+     */
     @Override
-    public void onDeviceGone() {
-        // TODO - HANDLE IT, Think if it's needed
+    public void onDeviceDisconnected() {
+        updateState(CHANNEL_POWER_ID, OnOffType.OFF);
+        updateState(WM_CHANNEL_STATE_ID, new StringType(WM_POWER_OFF_VALUE));
+        updateState(WM_CHANNEL_COURSE_ID, new StringType("NOT_SELECTED"));
+        updateState(WM_CHANNEL_SMART_COURSE_ID, new StringType("NOT_SELECTED"));
+        updateState(WM_CHANNEL_TEMP_LEVEL_ID, new StringType("NOT_SELECTED"));
+        updateState(WM_CHANNEL_DOOR_LOCK_ID, new StringType("DOOR_LOCK_OFF"));
+        updateState(WM_CHANNEL_REMAIN_TIME_ID, new StringType("00:00"));
+        updateState(WM_CHANNEL_DOWNLOADED_COURSE_ID, new StringType("NOT_SELECTED"));
     }
 }
