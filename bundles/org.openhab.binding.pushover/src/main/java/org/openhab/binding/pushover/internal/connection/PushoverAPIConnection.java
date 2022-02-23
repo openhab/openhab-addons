@@ -109,12 +109,14 @@ public class PushoverAPIConnection {
             final String content = get(
                     buildURL(SOUNDS_URL, Map.of(PushoverMessageBuilder.MESSAGE_KEY_TOKEN, localApikey)));
             final JsonObject json = JsonParser.parseString(content).getAsJsonObject();
-            final JsonObject sounds = json.has(JSON_VALUE_SOUNDS) ? json.get(JSON_VALUE_SOUNDS).getAsJsonObject()
+            final JsonObject jsonSounds = json.has(JSON_VALUE_SOUNDS) ? json.get(JSON_VALUE_SOUNDS).getAsJsonObject()
                     : null;
-            if (sounds != null) {
-                return sounds.entrySet().stream()
+            if (jsonSounds != null) {
+                List<Sound> sounds = jsonSounds.entrySet().stream()
                         .map(entry -> new Sound(entry.getKey(), entry.getValue().getAsString()))
-                        .collect(Collectors.toUnmodifiableList());
+                        .collect(Collectors.toList());
+                sounds.add(PushoverAccountConfiguration.SOUND_DEFAULT);
+                return sounds;
             }
         } catch (JsonSyntaxException e) {
             // do nothing

@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,9 +25,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andreas Hirsch - Initial contribution
  */
+@NonNullByDefault
 public class LatencyParser {
 
-    private static Pattern LATENCY_PATTERN = Pattern.compile(".*time=(.*) ?ms");
+    private static final Pattern LATENCY_PATTERN = Pattern.compile(".*time=(.*) ?ms");
     private final Logger logger = LoggerFactory.getLogger(LatencyParser.class);
 
     // This is how the input looks like on Mac and Linux:

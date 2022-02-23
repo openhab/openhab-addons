@@ -19,6 +19,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
+import java.util.Map;
 
 import org.openhab.core.automation.ModuleHandlerCallback;
 import org.openhab.core.automation.Trigger;
@@ -106,7 +107,7 @@ public class AbsoluteDateTimeTriggerHandler extends BaseTriggerModuleHandler imp
 
     @Override
     public void run() {
-        ((TriggerHandlerCallback) callback).triggered(module, null);
+        ((TriggerHandlerCallback) callback).triggered(module, Map.of());
         schedule = null;
     }
 }

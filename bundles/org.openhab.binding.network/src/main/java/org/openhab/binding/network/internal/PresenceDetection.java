@@ -57,10 +57,9 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
     /// Configuration variables
     private boolean useDHCPsniffing = false;
-    private String arpPingState = "Disabled";
     private String ipPingState = "Disabled";
     protected String arpPingUtilPath = "";
-    protected ArpPingUtilEnum arpPingMethod = ArpPingUtilEnum.UNKNOWN_TOOL;
+    protected ArpPingUtilEnum arpPingMethod = ArpPingUtilEnum.DISABLED;
     protected @Nullable IpPingMethodEnum pingMethod = null;
     private boolean iosDevice;
     private Set<Integer> tcpPorts = new HashSet<>();
@@ -184,40 +183,13 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      * it will be disabled as well.
      *
      * @param enable Enable or disable ARP ping
-     * @param arpPingUtilPath c
+     * @param destinationAddress target ip address
      */
     private void setUseArpPing(boolean enable, @Nullable InetAddress destinationAddress) {
         if (!enable || arpPingUtilPath.isEmpty()) {
-            arpPingState = "Disabled";
-            arpPingMethod = ArpPingUtilEnum.UNKNOWN_TOOL;
-            return;
-        } else if (destinationAddress == null || !(destinationAddress instanceof Inet4Address)) {
-            arpPingState = "Destination is not a valid IPv4 address";
-            arpPingMethod = ArpPingUtilEnum.UNKNOWN_TOOL;
-            return;
-        }
-
-        switch (arpPingMethod) {
-            case UNKNOWN_TOOL: {
-                arpPingState = "Unknown arping tool";
-                break;
-            }
-            case THOMAS_HABERT_ARPING: {
-                arpPingState = "Arping tool by Thomas Habets";
-                break;
-            }
-            case THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT: {
-                arpPingState = "Arping tool by Thomas Habets (old version)";
-                break;
-            }
-            case ELI_FULKERSON_ARP_PING_FOR_WINDOWS: {
-                arpPingState = "Eli Fulkerson ARPing tool for Windows";
-                break;
-            }
-            case IPUTILS_ARPING: {
-                arpPingState = "Ipuitls Arping";
-                break;
-            }
+            arpPingMethod = ArpPingUtilEnum.DISABLED;
+        } else if (!(destinationAddress instanceof Inet4Address)) {
+            arpPingMethod = ArpPingUtilEnum.DISABLED_INVALID_IP;
         }
     }
 
@@ -234,7 +206,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     }
 
     public String getArpPingState() {
-        return arpPingState;
+        return arpPingMethod.description;
     }
 
     public String getIPPingState() {
@@ -318,7 +290,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         if (pingMethod != null) {
             detectionChecks += 1;
         }
-        if (arpPingMethod != ArpPingUtilEnum.UNKNOWN_TOOL) {
+        if (arpPingMethod.canProceed) {
             interfaceNames = networkUtils.getInterfaceNames();
             detectionChecks += interfaceNames.size();
         }

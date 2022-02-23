@@ -20,13 +20,16 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
+import org.openhab.binding.hdpowerview.internal.api.Color;
 import org.openhab.binding.hdpowerview.internal.api.Firmware;
 import org.openhab.binding.hdpowerview.internal.api.responses.RepeaterData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewRepeaterConfiguration;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -79,12 +82,9 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
                     "@text/offline.conf-error.invalid-bridge-handler");
             return;
         }
-        ThingStatus bridgeStatus = bridge.getStatus();
-        if (bridgeStatus == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.UNKNOWN);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
+
+        updateStatus(ThingStatus.UNKNOWN);
+
         scheduleRefreshJob();
     }
 
@@ -112,11 +112,43 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
             RepeaterData repeaterData;
 
             switch (channelUID.getId()) {
+                case CHANNEL_REPEATER_COLOR:
+                    if (command instanceof HSBType) {
+                        Color currentColor = webTargets.getRepeater(repeaterId).color;
+                        if (currentColor != null) {
+                            HSBType hsbCommand = (HSBType) command;
+                            var color = new Color(currentColor.brightness, hsbCommand);
+                            repeaterData = webTargets.setRepeaterColor(repeaterId, color);
+                            scheduler.submit(() -> updatePropertyAndStates(repeaterData));
+                        }
+                    } else if (command instanceof OnOffType) {
+                        Color currentColor = webTargets.getRepeater(repeaterId).color;
+                        if (currentColor != null) {
+                            var color = command == OnOffType.ON
+                                    ? new Color(currentColor.brightness, java.awt.Color.WHITE)
+                                    : new Color(currentColor.brightness, java.awt.Color.BLACK);
+                            repeaterData = webTargets.setRepeaterColor(repeaterId, color);
+                            scheduler.submit(() -> updatePropertyAndStates(repeaterData));
+                        }
+                    }
+                    break;
+                case CHANNEL_REPEATER_BRIGHTNESS:
+                    if (command instanceof PercentType) {
+                        Color currentColor = webTargets.getRepeater(repeaterId).color;
+                        if (currentColor != null) {
+                            PercentType brightness = (PercentType) command;
+                            var color = new Color(brightness.intValue(), currentColor.red, currentColor.green,
+                                    currentColor.blue);
+                            repeaterData = webTargets.setRepeaterColor(repeaterId, color);
+                            scheduler.submit(() -> updatePropertyAndStates(repeaterData));
+                        }
+                    }
+                    break;
                 case CHANNEL_REPEATER_IDENTIFY:
                     if (command instanceof StringType) {
                         if (COMMAND_IDENTIFY.equals(((StringType) command).toString())) {
                             repeaterData = webTargets.identifyRepeater(repeaterId);
-                            scheduler.submit(() -> updatePropertyAndState(repeaterData));
+                            scheduler.submit(() -> updatePropertyAndStates(repeaterData));
                             cancelResetIdentifyStateJob();
                             resetIdentifyStateFuture = scheduler.schedule(() -> {
                                 updateState(CHANNEL_REPEATER_IDENTIFY, UnDefType.UNDEF);
@@ -129,7 +161,7 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
                     break;
                 case CHANNEL_REPEATER_BLINKING_ENABLED:
                     repeaterData = webTargets.enableRepeaterBlinking(repeaterId, OnOffType.ON == command);
-                    scheduler.submit(() -> updatePropertyAndState(repeaterData));
+                    scheduler.submit(() -> updatePropertyAndStates(repeaterData));
                     break;
             }
         } catch (HubInvalidResponseException e) {
@@ -185,7 +217,7 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
             logger.debug("Polling for status information");
 
             RepeaterData repeaterData = webTargets.getRepeater(repeaterId);
-            updatePropertyAndState(repeaterData);
+            updatePropertyAndStates(repeaterData);
 
         } catch (HubInvalidResponseException e) {
             Throwable cause = e.getCause();
@@ -201,7 +233,7 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
         }
     }
 
-    private void updatePropertyAndState(RepeaterData repeaterData) {
+    private void updatePropertyAndStates(RepeaterData repeaterData) {
         updateStatus(ThingStatus.ONLINE);
 
         Firmware firmware = repeaterData.firmware;
@@ -210,6 +242,13 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
             updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, firmware.toString());
         } else {
             logger.warn("Repeater firmware version missing in response");
+        }
+
+        Color color = repeaterData.color;
+        if (color != null) {
+            logger.debug("Repeater color data received: {}", color.toString());
+            updateState(CHANNEL_REPEATER_COLOR, HSBType.fromRGB(color.red, color.green, color.red));
+            updateState(CHANNEL_REPEATER_BRIGHTNESS, new PercentType(color.brightness));
         }
 
         updateState(CHANNEL_REPEATER_BLINKING_ENABLED, repeaterData.blinkEnabled ? OnOffType.ON : OnOffType.OFF);

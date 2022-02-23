@@ -13,6 +13,7 @@
 package org.openhab.io.hueemulation.internal.automation;
 
 import java.time.Duration;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * As soon as that time has run up, it will trigger.
  * <p>
  * A random factor and repeat times can also be configured.
- * 
+ *
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
@@ -114,7 +115,7 @@ public class TimerTriggerHandler extends BaseTriggerModuleHandler implements Cal
 
     @Override
     public Duration call() {
-        ((TriggerHandlerCallback) callback).triggered(module, null);
+        ((TriggerHandlerCallback) callback).triggered(module, Map.of());
         config.repeat -= 1;
         if (config.repeat == 0) {
             schedule = null;

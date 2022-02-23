@@ -30,7 +30,7 @@ import org.openhab.binding.daikin.internal.api.BasicInfo;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
 import org.openhab.binding.daikin.internal.api.EnergyInfoDayAndWeek;
 import org.openhab.binding.daikin.internal.api.EnergyInfoYear;
-import org.openhab.binding.daikin.internal.api.Enums.SpecialModeKind;
+import org.openhab.binding.daikin.internal.api.Enums.SpecialMode;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseBasicInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
@@ -137,12 +137,21 @@ public class DaikinWebTargets {
         return EnergyInfoDayAndWeek.parse(response);
     }
 
-    public boolean setSpecialMode(SpecialModeKind specialModeKind, boolean state) throws DaikinCommunicationException {
+    public void setSpecialMode(SpecialMode specialMode) throws DaikinCommunicationException {
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("spmode_kind", String.valueOf(specialModeKind.getValue()));
-        queryParams.put("set_spmode", state ? "1" : "0");
+        if (specialMode == SpecialMode.NORMAL) {
+            queryParams.put("set_spmode", "0");
+        } else {
+            queryParams.put("set_spmode", "1");
+            queryParams.put("spmode_kind", Integer.toString(specialMode.getValue()));
+        }
         String response = invoke(setSpecialModeUri, queryParams);
-        return !response.contains("ret=OK");
+    }
+
+    public void setStreamerMode(boolean state) throws DaikinCommunicationException {
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("en_streamer", state ? "1" : "0");
+        String response = invoke(setSpecialModeUri, queryParams);
     }
 
     // Daikin Airbase API

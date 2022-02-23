@@ -15,7 +15,6 @@ package org.openhab.binding.mielecloud.internal.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -78,29 +77,6 @@ public final class ReflectionUtil {
         Field field = object.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(object, value);
-    }
-
-    /**
-     * Sets an attribute declared as {@code private static final}.
-     *
-     * @param clazz The class owning the static attribute.
-     * @param fieldName The name of the attribute.
-     * @param value The new value.
-     * @throws NoSuchFieldException if no field with the given name exists.
-     * @throws SecurityException if the operation is not allowed.
-     * @throws IllegalArgumentException if one of the passed parameters is invalid.
-     * @throws IllegalAccessException if the field is enforcing Java language access control and is inaccessible.
-     */
-    public static void setPrivateStaticFinal(Class<?> clazz, String fieldName, @Nullable Object value)
-            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        Field field = clazz.getDeclaredField(fieldName);
-        field.setAccessible(true);
-
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-
-        field.set(null, value);
     }
 
     /**
