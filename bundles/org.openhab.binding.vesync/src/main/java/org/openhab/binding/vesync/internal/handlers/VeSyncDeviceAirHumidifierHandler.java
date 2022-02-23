@@ -173,25 +173,41 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                         break;
                     case DEVICE_CHANNEL_MIST_LEVEL:
                         int targetMistLevel = ((QuantityType<?>) command).intValue();
-                        if (targetMistLevel < 1) {
-                            logger.warn("Target Humidity less than 1 - adjusting to 1 as the valid API value");
-                            targetMistLevel = 1;
-                        } else if (targetMistLevel > 3) {
-                            logger.warn("Target Humidity greater than 3 - adjusting to 3 as the valid API value");
-                            targetMistLevel = 3;
-                        }
-                        // Re-map to what appears to be bitwise encoding of the states
-                        switch (targetMistLevel) {
-                            case 1:
+                        // If more devices have this the hope is it's those with the prefix LUH so the check can
+                        // be simplified, originally devices mapped 1/5/9 to 1/2/3.
+                        if (DEV_TYPE_CORE_301S.equals(deviceType)) {
+                            if (targetMistLevel < 1) {
+                                logger.warn("Target Mist Level less than 1 - adjusting to 1 as the valid API value");
                                 targetMistLevel = 1;
-                                break;
-                            case 2:
-                                targetMistLevel = 5;
-                                break;
-                            case 3:
-                                targetMistLevel = 9;
-                                break;
+                            } else if (targetMistLevel > 2) {
+                                logger.warn("Target Mist Level greater than 2 - adjusting to 2 as the valid API value");
+                                targetMistLevel = 2;
+                            }
+                        } else {
+                            if (targetMistLevel < 1) {
+                                logger.warn("Target Mist Level less than 1 - adjusting to 1 as the valid API value");
+                                targetMistLevel = 1;
+                            } else if (targetMistLevel > 3) {
+                                logger.warn("Target Mist Level greater than 3 - adjusting to 3 as the valid API value");
+                                targetMistLevel = 3;
+                            }
+                            // Re-map to what appears to be bitwise encoding of the states
+                            switch (targetMistLevel) {
+                                case 1:
+                                    targetMistLevel = 1;
+                                    break;
+                                case 2:
+                                    targetMistLevel = 5;
+                                    break;
+                                case 3:
+                                    targetMistLevel = 9;
+                                    break;
+                            }
                         }
+
+                        sendV2BypassControlCommand(DEVICE_SET_HUMIDITY_MODE,
+                                new VesyncRequestManagedDeviceBypassV2.SetMode(MODE_MANUAL), false);
+
                         sendV2BypassControlCommand(DEVICE_SET_VIRTUAL_LEVEL,
                                 new VesyncRequestManagedDeviceBypassV2.SetLevelPayload(0, DEVICE_LEVEL_TYPE_MIST,
                                         targetMistLevel));

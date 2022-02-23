@@ -5,12 +5,12 @@ It's current support is for the Air purifiers & Humidifer's branded as Levoit wh
 ### Verified Models
 
 Air Filtering models supported are Core300S, Core400S.
-Air Humidifier models supported are Classic 300S, 600S.
+Air Humidifier models supported are Dual 200S, Classic 300S, 600S.
 
 ### Awaiting User Verification Models
 
 Air Filtering models supported are Core200S and Core600S.
-Air Humidifier Classic 200S / Dual 200S (Same as 300S without the nightlight from initial checks)
+Air Humidifier Classic 200S (Same as 300S without the nightlight from initial checks)
 
 ### Restrictions / TODO
 
@@ -18,7 +18,7 @@ Air Humidifier Classic 200S / Dual 200S (Same as 300S without the nightlight fro
 2. Look at potentially other equipment supported by the VeSync API.
 3. Add remaining write commands to complete Humidifier 600S support, if warm mode is controllable.
 4. Adjust Filtering Core200S & Core600S support based on feedback, given initial conversion.
-5. Adjust Humidifier 200S & Dual200S support based on feedback, given initial conversion.
+5. Adjust Humidifier 200S support based on feedback, given initial conversion.
 
 ### Credits
 
@@ -91,7 +91,7 @@ Channel names in **bold** are read/write, everything else is read-only
 | waterTankLifted          | Switch                  | Indicator for whether the water tank is removed            | 200S, Dual200S, 300S, 600S |
 | **stopAtTargetLevel**    | Switch                  | Whether the unit is set to stop when the target is reached | 200S, Dual200S, 300S, 600S |
 | humidity                 | Number:Dimensionless    | Indicator for the currently measured humidity level        | 200S, Dual200S, 300S, 600S |
-| **mistLevel**            | Number:Dimensionless    | The current mist level set (1-3)                           | 200S, Dual200S, 300S, 600S |
+| **mistLevel**            | Number:Dimensionless    | The current mist level set (1-2) or (1-3)                  | 200S, Dual200S, 300S, 600S |
 | **humidifierMode**       | String                  | The current mode of operation [auto,sleep]                 | 200S, Dual200S, 300S, 600S |
 | **nightLightMode**       | String                  | The night light mode [on,dim,off]                          | 300S                       |
 | **configTargetHumidity** | Number:Dimensionless    | Config: What the target humidity is set to reach           | 200S, Dual200S, 300S, 600S |
