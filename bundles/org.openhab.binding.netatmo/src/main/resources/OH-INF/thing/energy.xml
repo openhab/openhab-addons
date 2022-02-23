@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="plug">
+		<label>Thermostat Plug</label>
+		<channels>
+			<channel id="boiler-status" typeId="boiler-status"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="th-temperature">
+		<label>Temperature</label>
+		<channels>
+			<channel id="value" typeId="temperature"/>
+			<channel id="timestamp" typeId="timestamp">
+				<label>Measurement Time</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="room-temperature">
+		<label>Room temperature</label>
+		<channels>
+			<channel id="value" typeId="temperature"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="room-properties">
+		<label>Room status</label>
+		<channels>
+			<channel id="window-open" typeId="contact">
+				<label>Window Status</label>
+			</channel>
+			<channel id="anticipating" typeId="contact">
+				<label>Anticipated heating</label>
+			</channel>
+			<channel id="heating-power-request" typeId="room-heating-percent">
+				<label>Current heating power</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="setpoint">
+		<label>Setpoint</label>
+		<channels>
+			<channel id="value" typeId="setpoint"/>
+			<channel id="mode" typeId="th-mode"/>
+			<channel id="start" typeId="timestamp">
+				<label>Setpoint Start</label>
+			</channel>
+			<channel id="end" typeId="timestamp">
+				<label>Setpoint End</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="th-properties">
+		<label>Thermostat</label>
+		<channels>
+			<channel id="relay-status" typeId="contact">
+				<label>Heating Status</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="energy">
+		<label>Home Energy</label>
+		<channels>
+			<channel id="setpoint-duration" typeId="setpoint-duration"/>
+			<channel id="planning" typeId="string-rw">
+				<label>Planning</label>
+			</channel>
+			<channel id="mode" typeId="energy-mode">
+				<label>Mode</label>
+			</channel>
+			<channel id="end" typeId="timestamp">
+				<label>Mode End</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

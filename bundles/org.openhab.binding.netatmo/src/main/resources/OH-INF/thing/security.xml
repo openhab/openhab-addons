@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="security">
+		<label>Home Security</label>
+		<channels>
+			<channel id="person-count" typeId="person-count"/>
+			<channel id="unknown-count" typeId="person-count">
+				<label>Unknown Persons</label>
+				<description>Total number of unknown persons that are at home.</description>
+			</channel>
+			<channel id="unknown-snapshot" typeId="snapshot">
+				<label>Unknown Snapshot</label>
+				<description>Snapshot of unknown person that is at home.</description>
+			</channel>
+			<channel id="home-event" typeId="home-event"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="status">
+		<label>Camera Status</label>
+		<channels>
+			<channel id="monitoring" typeId="switch-rw">
+				<label>Monitoring</label>
+				<description>Monitoring state of the camera</description>
+			</channel>
+			<channel id="sd-card" typeId="sd-card-status"/>
+			<channel id="alim" typeId="alim-status"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="live">
+		<label>Live Monitoring</label>
+		<channels>
+			<channel id="picture" typeId="snapshot">
+				<label>Live Snapshot</label>
+				<description>Camera Live Snapshot</description>
+			</channel>
+			<channel id="picture-url" typeId="live-picture-url"/>
+			<channel id="stream-url" typeId="live-stream-url"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="last-event">
+		<label>Last Event</label>
+		<channels>
+			<channel id="type" typeId="event-type"/>
+			<channel id="subtype" typeId="event-subtype"/>
+			<channel id="person-id" typeId="string-ro">
+				<label>Person ID</label>
+			</channel>
+			<channel id="video-status" typeId="video-status"/>
+			<channel id="message" typeId="string-ro">
+				<label>Message</label>
+			</channel>
+			<channel id="time" typeId="timestamp">
+				<label>Timestamp</label>
+			</channel>
+			<channel id="snapshot" typeId="snapshot">
+				<label>Picture</label>
+			</channel>
+			<channel id="snapshot-url" typeId="live-picture-url">
+				<label>Snapshot URL</label>
+			</channel>
+			<channel id="video-url" typeId="string-ro">
+				<label>Video URL</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="person-event">
+		<label>Last Event</label>
+		<channels>
+			<channel id="subtype" typeId="event-subtype"/>
+			<channel id="time" typeId="timestamp">
+				<label>Timestamp</label>
+			</channel>
+			<channel id="snapshot" typeId="snapshot">
+				<label>Picture</label>
+			</channel>
+			<channel id="snapshot-url" typeId="live-picture-url">
+				<label>Picture URL</label>
+			</channel>
+			<channel id="camera-id" typeId="string-ro">
+				<label>Camera ID</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="person">
+		<label>Person</label>
+		<channels>
+			<channel id="avatar-url" typeId="string-ro">
+				<label>Avatar URL</label>
+			</channel>
+			<channel id="avatar" typeId="snapshot">
+				<label>Avatar</label>
+			</channel>
+			<channel id="at-home" typeId="switch-rw">
+				<label>At Home</label>
+			</channel>
+			<channel id="last-seen" typeId="timestamp">
+				<label>Last Seen</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="presence">
+		<label>Presence Camera</label>
+		<channels>
+			<channel id="auto-mode" typeId="switch-rw">
+				<label>Floodlight Auto-Mode</label>
+				<description>State of the floodlight auto-mode</description>
+			</channel>
+			<channel id="floodlight" typeId="switch-rw">
+				<label>Floodlight</label>
+				<description>State of the floodlight</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
