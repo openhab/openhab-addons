@@ -212,7 +212,7 @@ public class NetworkUtils {
                 method = IpPingMethodEnum.WINDOWS_PING;
             } else if (os.indexOf("mac") >= 0) {
                 method = IpPingMethodEnum.MAC_OS_PING;
-            } else if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0 || os.indexOf("aix") > 0) {
+            } else if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0 || os.indexOf("aix") >= 0) {
                 method = IpPingMethodEnum.IPUTILS_LINUX_PING;
             } else {
                 // We cannot estimate the command line for any other operating system and just return false
