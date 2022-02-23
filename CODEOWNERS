@@ -106,6 +106,7 @@
 /bundles/org.openhab.binding.folding/ @fa2k
 /bundles/org.openhab.binding.foobot/ @airboxlab @Hilbrand
 /bundles/org.openhab.binding.freebox/ @lolodomo
+/bundles/org.openhab.binding.freeboxos/ @clinique
 /bundles/org.openhab.binding.fronius/ @trokohl
 /bundles/org.openhab.binding.fsinternetradio/ @paphko
 /bundles/org.openhab.binding.ftpupload/ @paulianttila
