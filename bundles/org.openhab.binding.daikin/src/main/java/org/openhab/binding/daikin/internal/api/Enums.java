@@ -148,7 +148,7 @@ public class Enums {
         OFF(""),
         UNKNOWN("??");
 
-        private static final Logger logger = LoggerFactory.getLogger(AdvancedMode.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(AdvancedMode.class);
         private final String value;
 
         AdvancedMode(String value) {
@@ -173,7 +173,7 @@ public class Enums {
                     return m;
                 }
             }
-            logger.debug("Unexpected AdvancedMode value of \"{}\"", value);
+            LOGGER.debug("Unexpected AdvancedMode value of \"{}\"", value);
 
             // Default to UNKNOWN
             return UNKNOWN;
