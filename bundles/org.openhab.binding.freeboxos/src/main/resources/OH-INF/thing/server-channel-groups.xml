@@ -8,6 +8,7 @@
 		<label>System Sensors</label>
 	</channel-group-type>
 
+<<<<<<< Upstream, based on origin/main
 	<channel-group-type id="fans">
 		<label>Fans</label>
 	</channel-group-type>
@@ -73,6 +74,50 @@
 			<channel id="bandwidth-down" typeId="transfer-rate">
 				<label>Bandwidth Down</label>
 				<description>Raw value of the download bandwidth currently used</description>
+=======
+	<channel-group-type id="sysinfo">
+		<label>System Informations</label>
+		<channels>
+			<channel id="uptime" typeId="uptime"/>
+			<channel id="box-event" typeId="box-event"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="actions">
+		<label>Server Settings</label>
+		<channels>
+			<channel id="wifi-status" typeId="wifi-status"/>
+			<channel id="upnpav-status" typeId="upnpav-status"/>
+			<channel id="airmedia-status" typeId="airmedia-status"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="file-sharing">
+		<label>File Sharing</label>
+		<channels>
+			<channel id="ftp-status" typeId="ftp-status"/>
+			<channel id="samba-file-status" typeId="samba-file-status"/>
+			<channel id="samba-printer-status" typeId="samba-printer-status"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="display">
+		<label>Front Display Panel</label>
+		<channels>
+			<channel id="lcd-brightness" typeId="lcd-brightness"/>
+			<channel id="lcd-orientation" typeId="lcd-orientation"/>
+			<channel id="lcd-forced" typeId="lcd-forced"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="connection-status">
+		<label>Connection Status Details</label>
+		<channels>
+			<channel id="line-status" typeId="line-status"/>
+			<channel id="ip-address" typeId="ip-address">
+				<label>Public IP</label>
+				<description>Public IP Address of the Freebox Server</description>
+>>>>>>> 46dadb1 SAT warnings handling
 			</channel>
 			<channel id="bandwidth-usage-up" typeId="bandwidth-usage">
 				<label>Bandwidth Usage Up</label>

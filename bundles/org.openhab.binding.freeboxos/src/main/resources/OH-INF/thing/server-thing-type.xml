@@ -15,6 +15,7 @@
 		<channel-groups>
 			<channel-group typeId="display" id="display"/>
 			<channel-group typeId="sensors" id="sensors"/>
+<<<<<<< Upstream, based on origin/main
 			<channel-group typeId="fans" id="fans"/>
 			<channel-group typeId="file-sharing" id="file-sharing"/>
 			<channel-group typeId="sysinfo" id="sysinfo"/>
@@ -40,6 +41,33 @@
 			<channel-group typeId="sysinfo" id="sysinfo"/>
 			<channel-group typeId="actions" id="actions"/>
 			<channel-group typeId="connection-status" id="connection-status"/>
+=======
+			<channel-group typeId="file-sharing" id="file-sharing"/>
+			<channel-group typeId="sysinfo" id="sysinfo"/>
+			<channel-group typeId="actions" id="actions"/>
+			<channel-group typeId="connection-status" id="connection-status"/>
+			<channel-group typeId="connectivity" id="connectivity"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:freeboxos:server"/>
+	</thing-type>
+
+	<thing-type id="delta">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Freebox Delta</label>
+		<description>Provides various informations regarding the status of the Freebox Delta Server</description>
+
+		<channel-groups>
+			<channel-group typeId="sensors" id="sensors"/>
+			<channel-group typeId="file-sharing" id="file-sharing"/>
+			<channel-group typeId="sysinfo" id="sysinfo"/>
+			<channel-group typeId="actions" id="actions"/>
+			<channel-group typeId="connection-status" id="connection-status"/>
+			<channel-group typeId="connectivity" id="connectivity"/>
+>>>>>>> 46dadb1 SAT warnings handling
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:freeboxos:server"/>

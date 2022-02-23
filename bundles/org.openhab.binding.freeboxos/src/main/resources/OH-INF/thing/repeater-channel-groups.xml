@@ -7,6 +7,7 @@
 	<channel-group-type id="repeater-misc">
 		<label>Repeater Settings</label>
 		<channels>
+<<<<<<< Upstream, based on origin/main
 			<channel id="uptime" typeId="uptime"/>
 			<channel id="led" typeId="led"/>
 			<channel id="connection-status" typeId="connection-status"/>
@@ -14,6 +15,14 @@
 			<channel id="box-event" typeId="box-event">
 				<label>Repeater Event</label>
 			</channel>
+=======
+			<channel id="start-timestamp" typeId="timestamp">
+				<label>Started Since</label>
+			</channel>
+			<channel id="led" typeId="led"/>
+			<channel id="connection-status" typeId="connection-status"/>
+			<channel id="host-count" typeId="host-count"/>
+>>>>>>> 46dadb1 SAT warnings handling
 		</channels>
 	</channel-group-type>
 

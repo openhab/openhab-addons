@@ -11,6 +11,7 @@
 			<channel id="wifi-quality" typeId="system.signal-strength"/>
 			<channel id="ssid" typeId="ssid"/>
 			<channel id="wifi-host" typeId="wifi-host"/>
+<<<<<<< Upstream, based on origin/main
 			<channel id="rate-up" typeId="transfer-rate-bps">
 				<label>Tx Rate</label>
 				<description>Current TX Rate</description>
@@ -19,6 +20,8 @@
 				<label>Rx Rate</label>
 				<description>Current RX rate</description>
 			</channel>
+=======
+>>>>>>> 46dadb1 SAT warnings handling
 		</channels>
 	</channel-group-type>
 

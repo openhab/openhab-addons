@@ -15,6 +15,7 @@
 		<label>Player Status</label>
 		<channels>
 			<channel id="player-status" typeId="player-status"/>
+<<<<<<< Upstream, based on origin/main
 			<channel id="package" typeId="package"/>
 		</channels>
 	</channel-group-type>
@@ -24,6 +25,8 @@
 		<channels>
 			<channel id="uptime" typeId="uptime"/>
 			<channel id="box-event" typeId="box-event"/>
+=======
+>>>>>>> 46dadb1 SAT warnings handling
 		</channels>
 	</channel-group-type>
 

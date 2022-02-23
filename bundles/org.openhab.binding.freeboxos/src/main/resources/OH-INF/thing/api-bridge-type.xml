@@ -8,7 +8,11 @@
 		<label>Freebox OS Api</label>
 		<description>Bridge between hosts and the API rest service</description>
 
+<<<<<<< Upstream, based on origin/main
 		<representation-property>apiDomain</representation-property>
+=======
+		<representation-property>api_domain</representation-property>
+>>>>>>> 46dadb1 SAT warnings handling
 
 		<config-description-ref uri="bridge-type:freeboxos:api"/>
 	</bridge-type>
