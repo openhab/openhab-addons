@@ -178,19 +178,8 @@ public class LGThinQDryerHandler extends LGThinQAbstractDeviceHandler<DryerCapab
     }
 
     @Override
-    public String getDeviceModelName() {
-        return emptyIfNull(getThing().getProperties().get(MODEL_NAME));
-    }
-
-    @Override
     public String getDeviceUriJsonConfig() {
         return emptyIfNull(getThing().getProperties().get(MODEL_URL_INFO));
-    }
-
-    @Override
-    public boolean onDeviceStateChanged() {
-        // TODO - HANDLE IT, Think if it's needed
-        return false;
     }
 
     @Override
@@ -199,7 +188,7 @@ public class LGThinQDryerHandler extends LGThinQAbstractDeviceHandler<DryerCapab
     }
 
     @Override
-    public void onDeviceGone() {
+    public void onDeviceDisconnected() {
         // TODO - HANDLE IT, Think if it's needed
     }
 }
