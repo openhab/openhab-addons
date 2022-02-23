@@ -75,7 +75,7 @@
 	</channel-type>
 	<channel-type id="ruuvitag_movementCounter" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Measurement Counter</label>
+		<label>Movement Counter</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_pressure">
