@@ -164,6 +164,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             return;
         }
 
+        updateStatus(ThingStatus.UNKNOWN);
         pendingShadeInitializations.clear();
         webTargets = new HDPowerViewWebTargets(httpClient, host);
         refreshInterval = config.refresh;

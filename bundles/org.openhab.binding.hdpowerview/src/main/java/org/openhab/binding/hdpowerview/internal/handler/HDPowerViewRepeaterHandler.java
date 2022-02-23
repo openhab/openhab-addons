@@ -82,12 +82,9 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
                     "@text/offline.conf-error.invalid-bridge-handler");
             return;
         }
-        ThingStatus bridgeStatus = bridge.getStatus();
-        if (bridgeStatus == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.UNKNOWN);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
+
+        updateStatus(ThingStatus.UNKNOWN);
+
         scheduleRefreshJob();
     }
 
