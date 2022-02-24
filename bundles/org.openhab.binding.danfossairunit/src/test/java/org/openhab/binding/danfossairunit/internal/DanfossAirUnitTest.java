@@ -20,8 +20,11 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -34,14 +37,11 @@ import org.openhab.core.test.java.JavaTest;
  * 
  * @author Jacob Laursen - Initial contribution
  */
+@NonNullByDefault
+@ExtendWith(MockitoExtension.class)
 public class DanfossAirUnitTest extends JavaTest {
 
-    private CommunicationController communicationController;
-
-    @BeforeEach
-    private void setUp() {
-        this.communicationController = mock(CommunicationController.class);
-    }
+    private @NonNullByDefault({}) @Mock CommunicationController communicationController;
 
     @Test
     public void getUnitNameIsReturned() throws IOException {
