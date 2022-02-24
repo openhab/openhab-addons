@@ -28,14 +28,14 @@ public interface EventListener {
      * This method is called, whenever a new event comes from the LIVISI SmartHome service (like a device change for
      * example).
      *
-     * @param msg
+     * @param msg message
      */
     void onEvent(String msg);
 
     /**
      * This method is called when the LIVISI SmartHome websocket services throws an onError.
      *
-     * @param cause
+     * @param cause cause / throwable
      */
     void onError(Throwable cause);
 

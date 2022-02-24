@@ -56,9 +56,8 @@ public class LivisiBridgeDiscoveryParticipant implements MDNSDiscoveryParticipan
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         ThingUID uid = getThingUID(service);
         if (uid != null) {
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid)
+            return DiscoveryResultBuilder.create(uid)
                     .withLabel("LIVISI SmartHome Controller (" + service.getName() + ")").build();
-            return result;
         }
         return null;
     }

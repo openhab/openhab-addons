@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.net.URI;
 import java.util.concurrent.Future;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
@@ -38,6 +39,7 @@ public class LivisiWebSocketTest {
     private Session sessionMock;
 
     @BeforeEach
+    @SuppressWarnings("unchecked")
     public void before() throws Exception {
         sessionMock = mock(Session.class);
 
@@ -50,7 +52,7 @@ public class LivisiWebSocketTest {
         HttpClient httpClientMock = mock(HttpClient.class);
 
         eventListener = new EventListenerDummy();
-        webSocket = new LivisiWebSocketAccessible(eventListener, new URI(""), 1000);
+        webSocket = new LivisiWebSocketAccessible(httpClientMock, eventListener, new URI(""), 1000);
     }
 
     @Test
@@ -199,10 +201,12 @@ public class LivisiWebSocketTest {
         webSocket.onConnect(sessionMock);
     }
 
+    @NonNullByDefault
     private class LivisiWebSocketAccessible extends LivisiWebSocket {
 
-        private LivisiWebSocketAccessible(EventListener eventListener, URI webSocketURI, int maxIdleTimeout) {
-            super(eventListener, webSocketURI, maxIdleTimeout);
+        private LivisiWebSocketAccessible(HttpClient httpClient, EventListener eventListener, URI webSocketURI,
+                int maxIdleTimeout) {
+            super(httpClient, eventListener, webSocketURI, maxIdleTimeout);
         }
 
         @Override
@@ -211,7 +215,8 @@ public class LivisiWebSocketTest {
         }
     }
 
-    private class EventListenerDummy implements EventListener {
+    @NonNullByDefault
+    private static class EventListenerDummy implements EventListener {
 
         private boolean isOnEventCalled;
         private boolean isOnErrorCalled;

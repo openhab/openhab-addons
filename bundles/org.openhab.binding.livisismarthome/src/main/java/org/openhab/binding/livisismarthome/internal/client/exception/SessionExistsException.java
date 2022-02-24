@@ -25,12 +25,6 @@ public class SessionExistsException extends ApiException {
 
     private static final long serialVersionUID = 1L;
 
-    public SessionExistsException() {
-    }
-
-    /**
-     * @param message
-     */
     public SessionExistsException(String message) {
         super(message);
     }

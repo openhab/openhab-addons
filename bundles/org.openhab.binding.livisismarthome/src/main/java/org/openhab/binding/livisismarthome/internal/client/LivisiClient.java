@@ -32,21 +32,21 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.livisismarthome.internal.LivisiBindingConstants;
-import org.openhab.binding.livisismarthome.internal.client.entity.StatusResponse;
-import org.openhab.binding.livisismarthome.internal.client.entity.action.Action;
-import org.openhab.binding.livisismarthome.internal.client.entity.action.ShutterAction;
-import org.openhab.binding.livisismarthome.internal.client.entity.action.StateActionSetter;
-import org.openhab.binding.livisismarthome.internal.client.entity.auth.LivisiAccessTokenRequest;
-import org.openhab.binding.livisismarthome.internal.client.entity.auth.LivisiAccessTokenResponse;
-import org.openhab.binding.livisismarthome.internal.client.entity.capability.Capability;
-import org.openhab.binding.livisismarthome.internal.client.entity.capability.CapabilityState;
-import org.openhab.binding.livisismarthome.internal.client.entity.device.Device;
-import org.openhab.binding.livisismarthome.internal.client.entity.device.DeviceState;
-import org.openhab.binding.livisismarthome.internal.client.entity.device.Gateway;
-import org.openhab.binding.livisismarthome.internal.client.entity.device.State;
-import org.openhab.binding.livisismarthome.internal.client.entity.error.ErrorResponse;
-import org.openhab.binding.livisismarthome.internal.client.entity.location.Location;
-import org.openhab.binding.livisismarthome.internal.client.entity.message.Message;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.StatusResponseDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.action.ActionDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.action.ShutterActionDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.action.ShutterActionType;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.action.StateActionSetterDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.auth.LivisiAccessTokenRequestDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.auth.LivisiAccessTokenResponseDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.capability.CapabilityDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.capability.CapabilityStateDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceStateDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.device.StateDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.error.ErrorResponseDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.location.LocationDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.message.MessageDTO;
 import org.openhab.binding.livisismarthome.internal.client.exception.ApiException;
 import org.openhab.binding.livisismarthome.internal.client.exception.AuthenticationException;
 import org.openhab.binding.livisismarthome.internal.client.exception.ControllerOfflineException;
@@ -94,7 +94,6 @@ public class LivisiClient {
     private final LivisiBridgeConfiguration bridgeConfiguration;
     private final OAuthClientService oAuthService;
     private final HttpClient httpClient;
-    private @Nullable Gateway bridgeDetails;
     private String configVersion = "";
 
     public LivisiClient(final LivisiBridgeConfiguration bridgeConfiguration, final OAuthClientService oAuthService,
@@ -107,18 +106,16 @@ public class LivisiClient {
     /**
      * Gets the status
      *
-     * As the API returns the details of the SmartHome controller (SHC), the data is saved in {@link #bridgeDetails} and
-     * the {@link #configVersion} is set.
+     * As the API returns the details of the SmartHome controller (SHC), the {@link #configVersion} is set.
      *
      * @throws SessionExistsException thrown, if a session already exists
      */
     public void refreshStatus() throws IOException, ApiException, AuthenticationException {
         logger.debug("Get LIVISI SmartHome status...");
-        final StatusResponse status = executeGet(URLCreator.createStatusURL(bridgeConfiguration.host),
-                StatusResponse.class);
+        final StatusResponseDTO status = executeGet(URLCreator.createStatusURL(bridgeConfiguration.host),
+                StatusResponseDTO.class);
 
-        bridgeDetails = status.gateway;
-        configVersion = bridgeDetails.getConfigVersion();
+        configVersion = status.getGatewayConfigVersion();
 
         logger.debug("LIVISI SmartHome status loaded. Configuration version is {}.", configVersion);
     }
@@ -150,12 +147,12 @@ public class LivisiClient {
     }
 
     /**
-     * Executes a HTTP POST request with the given {@link Action} as content.
+     * Executes a HTTP POST request with the given {@link ActionDTO} as content.
      *
      * @param url request URL
      * @param action action to execute
      */
-    private void executePost(final String url, final Action action)
+    private void executePost(final String url, final ActionDTO action)
             throws IOException, AuthenticationException, ApiException {
         final String json = gson.toJson(action);
         logger.debug("Action {} JSON: {}", action.getType(), json);
@@ -181,7 +178,7 @@ public class LivisiClient {
     }
 
     public AccessTokenResponse login() throws AuthenticationException, IOException, ApiException {
-        LivisiAccessTokenRequest requestBody = new LivisiAccessTokenRequest();
+        LivisiAccessTokenRequestDTO requestBody = new LivisiAccessTokenRequestDTO();
         requestBody.setUserName(LivisiBindingConstants.USERNAME);
         requestBody.setPassword(bridgeConfiguration.password);
         requestBody.setGrantType("password");
@@ -201,27 +198,23 @@ public class LivisiClient {
         }
         handleResponseErrors(response, request.getURI());
 
-        LivisiAccessTokenResponse tokenResponse = gson.fromJson(response.getContentAsString(),
-                LivisiAccessTokenResponse.class);
-        if (tokenResponse == null) {
-            throw new AuthenticationException("The access token response couldn't get parsed!");
-        }
+        LivisiAccessTokenResponseDTO tokenResponse = gson.fromJson(response.getContentAsString(),
+                LivisiAccessTokenResponseDTO.class);
         return tokenResponse.createAccessTokenResponse();
     }
 
     public AccessTokenResponse getAccessTokenResponse() throws AuthenticationException, IOException {
-        @Nullable
-        final AccessTokenResponse accessTokenResponse;
         try {
-            accessTokenResponse = oAuthService.getAccessTokenResponse();
+            @Nullable
+            final AccessTokenResponse accessTokenResponse = oAuthService.getAccessTokenResponse();
+            if (accessTokenResponse == null || accessTokenResponse.getAccessToken() == null
+                    || accessTokenResponse.getAccessToken().isBlank()) {
+                throw new AuthenticationException("No LIVISI SmartHome access token. Is this thing authorized?");
+            }
+            return accessTokenResponse;
         } catch (OAuthException | OAuthResponseException e) {
             throw new AuthenticationException("Error fetching access token: " + e.getMessage());
         }
-        if (accessTokenResponse == null || accessTokenResponse.getAccessToken() == null
-                || accessTokenResponse.getAccessToken().isBlank()) {
-            throw new AuthenticationException("No LIVISI SmartHome access token. Is this thing authorized?");
-        }
-        return accessTokenResponse;
     }
 
     /**
@@ -232,53 +225,43 @@ public class LivisiClient {
      * @throws ControllerOfflineException thrown, if the LIVISI SmartHome controller (SHC) is offline.
      */
     private void handleResponseErrors(final ContentResponse response, final URI uri) throws IOException, ApiException {
-        String content = "";
 
-        switch (response.getStatus()) {
-            case HttpStatus.OK_200:
-                logger.debug("Statuscode is OK: [{}]", uri);
-                return;
-            case HttpStatus.SERVICE_UNAVAILABLE_503:
-                logger.debug("LIVISI SmartHome service is unavailable (503).");
-                throw new ServiceUnavailableException("LIVISI SmartHome service is unavailable (503).");
-            default:
-                logger.debug("Statuscode {} is NOT OK: [{}]", response.getStatus(), uri);
-                try {
-                    content = response.getContentAsString();
-                    logger.trace("Response error content: {}", content);
-                    final ErrorResponse error = gson.fromJson(content, ErrorResponse.class);
-
-                    if (error == null) {
-                        logger.debug("Error without JSON message, code: {} / message: {}", response.getStatus(),
-                                response.getReason());
-                        throw new ApiException("Error code: " + response.getStatus());
-                    }
-
-                    switch (error.getCode()) {
-                        case ErrorResponse.ERR_SESSION_EXISTS:
-                            logger.debug("Session exists: {}", error);
-                            throw new SessionExistsException(error.getDescription());
-                        case ErrorResponse.ERR_SESSION_NOT_FOUND:
-                            logger.debug("Session not found: {}", error);
-                            throw new SessionNotFoundException(error.getDescription());
-                        case ErrorResponse.ERR_CONTROLLER_OFFLINE:
-                            logger.debug("Controller offline: {}", error);
-                            throw new ControllerOfflineException(error.getDescription());
-                        case ErrorResponse.ERR_REMOTE_ACCESS_NOT_ALLOWED:
-                            logger.debug(
-                                    "Remote access not allowed. Access is allowed only from the SHC device network.");
-                            throw new RemoteAccessNotAllowedException(
-                                    "Remote access not allowed. Access is allowed only from the SHC device network.");
-                        case ErrorResponse.ERR_INVALID_ACTION_TRIGGERED:
-                            logger.debug("Invalid action triggered. Message: {}", error.getMessages());
-                            throw new InvalidActionTriggeredException(error.getDescription());
-                        default:
-                            logger.debug("Unknown error: {}", error);
-                            throw new ApiException("Unknown error: " + error);
-                    }
-                } catch (final JsonSyntaxException e) {
-                    throw new ApiException("Invalid JSON syntax in error response: " + content);
+        final int status = response.getStatus();
+        if (HttpStatus.OK_200 == status) {
+            logger.debug("Statuscode is OK: [{}]", uri);
+        } else if (HttpStatus.SERVICE_UNAVAILABLE_503 == status) {
+            logger.debug("LIVISI SmartHome service is unavailable (503).");
+            throw new ServiceUnavailableException("LIVISI SmartHome service is unavailable (503).");
+        } else {
+            logger.debug("Statuscode {} is NOT OK: [{}]", status, uri);
+            String content = response.getContentAsString();
+            try {
+                logger.trace("Response error content: {}", content);
+                final ErrorResponseDTO error = gson.fromJson(content, ErrorResponseDTO.class);
+                switch (error.getCode()) {
+                    case ErrorResponseDTO.ERR_SESSION_EXISTS:
+                        logger.debug("Session exists: {}", error);
+                        throw new SessionExistsException(error.getDescription());
+                    case ErrorResponseDTO.ERR_SESSION_NOT_FOUND:
+                        logger.debug("Session not found: {}", error);
+                        throw new SessionNotFoundException(error.getDescription());
+                    case ErrorResponseDTO.ERR_CONTROLLER_OFFLINE:
+                        logger.debug("Controller offline: {}", error);
+                        throw new ControllerOfflineException(error.getDescription());
+                    case ErrorResponseDTO.ERR_REMOTE_ACCESS_NOT_ALLOWED:
+                        logger.debug("Remote access not allowed. Access is allowed only from the SHC device network.");
+                        throw new RemoteAccessNotAllowedException(
+                                "Remote access not allowed. Access is allowed only from the SHC device network.");
+                    case ErrorResponseDTO.ERR_INVALID_ACTION_TRIGGERED:
+                        logger.debug("Invalid action triggered. Message: {}", error.getMessages());
+                        throw new InvalidActionTriggeredException(error.getDescription());
+                    default:
+                        logger.debug("Unknown error: {}", error);
+                        throw new ApiException("Unknown error: " + error);
                 }
+            } catch (final JsonSyntaxException e) {
+                throw new ApiException("Invalid JSON syntax in error response: " + content);
+            }
         }
     }
 
@@ -287,7 +270,8 @@ public class LivisiClient {
      */
     public void setSwitchActuatorState(final String capabilityId, final boolean state)
             throws IOException, ApiException, AuthenticationException {
-        executePost(createActionURL(), new StateActionSetter(capabilityId, Capability.TYPE_SWITCHACTUATOR, state));
+        executePost(createActionURL(),
+                new StateActionSetterDTO(capabilityId, CapabilityDTO.TYPE_SWITCHACTUATOR, state));
     }
 
     /**
@@ -295,7 +279,8 @@ public class LivisiClient {
      */
     public void setDimmerActuatorState(final String capabilityId, final int dimLevel)
             throws IOException, ApiException, AuthenticationException {
-        executePost(createActionURL(), new StateActionSetter(capabilityId, Capability.TYPE_DIMMERACTUATOR, dimLevel));
+        executePost(createActionURL(),
+                new StateActionSetterDTO(capabilityId, CapabilityDTO.TYPE_DIMMERACTUATOR, dimLevel));
     }
 
     /**
@@ -304,16 +289,15 @@ public class LivisiClient {
     public void setRollerShutterActuatorState(final String capabilityId, final int rollerShutterLevel)
             throws IOException, ApiException, AuthenticationException {
         executePost(createActionURL(),
-                new StateActionSetter(capabilityId, Capability.TYPE_ROLLERSHUTTERACTUATOR, rollerShutterLevel));
+                new StateActionSetterDTO(capabilityId, CapabilityDTO.TYPE_ROLLERSHUTTERACTUATOR, rollerShutterLevel));
     }
 
     /**
      * Starts or stops moving a RollerShutterActuator
      */
-    public void setRollerShutterAction(final String capabilityId,
-            final ShutterAction.ShutterActions rollerShutterAction)
+    public void setRollerShutterAction(final String capabilityId, final ShutterActionType rollerShutterAction)
             throws IOException, ApiException, AuthenticationException {
-        executePost(createActionURL(), new ShutterAction(capabilityId, rollerShutterAction));
+        executePost(createActionURL(), new ShutterActionDTO(capabilityId, rollerShutterAction));
     }
 
     /**
@@ -321,7 +305,8 @@ public class LivisiClient {
      */
     public void setVariableActuatorState(final String capabilityId, final boolean state)
             throws IOException, ApiException, AuthenticationException {
-        executePost(createActionURL(), new StateActionSetter(capabilityId, Capability.TYPE_VARIABLEACTUATOR, state));
+        executePost(createActionURL(),
+                new StateActionSetterDTO(capabilityId, CapabilityDTO.TYPE_VARIABLEACTUATOR, state));
     }
 
     /**
@@ -330,18 +315,16 @@ public class LivisiClient {
     public void setPointTemperatureState(final String capabilityId, final double pointTemperature)
             throws IOException, ApiException, AuthenticationException {
         executePost(createActionURL(),
-                new StateActionSetter(capabilityId, Capability.TYPE_THERMOSTATACTUATOR, pointTemperature));
+                new StateActionSetterDTO(capabilityId, CapabilityDTO.TYPE_THERMOSTATACTUATOR, pointTemperature));
     }
 
     /**
      * Sets the operation mode to "Auto" or "Manu".
      */
-    public void setOperationMode(final String capabilityId, final boolean autoMode)
+    public void setOperationMode(final String capabilityId, final boolean isAutoMode)
             throws IOException, ApiException, AuthenticationException {
         executePost(createActionURL(),
-                new StateActionSetter(capabilityId, Capability.TYPE_THERMOSTATACTUATOR,
-                        autoMode ? CapabilityState.STATE_VALUE_OPERATION_MODE_AUTO
-                                : CapabilityState.STATE_VALUE_OPERATION_MODE_MANUAL));
+                new StateActionSetterDTO(capabilityId, CapabilityDTO.TYPE_THERMOSTATACTUATOR, isAutoMode));
     }
 
     /**
@@ -349,94 +332,97 @@ public class LivisiClient {
      */
     public void setAlarmActuatorState(final String capabilityId, final boolean alarmState)
             throws IOException, ApiException, AuthenticationException {
-        executePost(createActionURL(), new StateActionSetter(capabilityId, Capability.TYPE_ALARMACTUATOR, alarmState));
+        executePost(createActionURL(),
+                new StateActionSetterDTO(capabilityId, CapabilityDTO.TYPE_ALARMACTUATOR, alarmState));
     }
 
     /**
-     * Load the device and returns a {@link List} of {@link Device}s.
+     * Load the device and returns a {@link List} of {@link DeviceDTO}s.
      * VariableActuators are returned additionally (independent from the device ids),
      * because VariableActuators are everytime available and never have a device state.
      *
      * @param deviceIds Ids of the devices to return
      * @return List of Devices
      */
-    public List<Device> getDevices(Collection<String> deviceIds)
+    public List<DeviceDTO> getDevices(Collection<String> deviceIds)
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading LIVISI SmartHome devices...");
-        List<Device> devices = executeGetList(URLCreator.createDevicesURL(bridgeConfiguration.host), Device[].class);
+        List<DeviceDTO> devices = executeGetList(URLCreator.createDevicesURL(bridgeConfiguration.host),
+                DeviceDTO[].class);
         return devices.stream().filter(d -> isDeviceUsable(d, deviceIds)).collect(Collectors.toList());
     }
 
     /**
-     * Loads the {@link Device} with the given deviceId.
+     * Loads the {@link DeviceDTO} with the given deviceId.
      */
-    public Device getDeviceById(final String deviceId) throws IOException, ApiException, AuthenticationException {
+    public DeviceDTO getDeviceById(final String deviceId) throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device with id {}...", deviceId);
-        return executeGet(URLCreator.createDeviceURL(bridgeConfiguration.host, deviceId), Device.class);
+        return executeGet(URLCreator.createDeviceURL(bridgeConfiguration.host, deviceId), DeviceDTO.class);
     }
 
     /**
-     * Loads the states for all {@link Device}s.
+     * Loads the states for all {@link DeviceDTO}s.
      */
-    public List<DeviceState> getDeviceStates() throws IOException, ApiException, AuthenticationException {
+    public List<DeviceStateDTO> getDeviceStates() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device states...");
-        return executeGetList(URLCreator.createDeviceStatesURL(bridgeConfiguration.host), DeviceState[].class);
+        return executeGetList(URLCreator.createDeviceStatesURL(bridgeConfiguration.host), DeviceStateDTO[].class);
     }
 
     /**
      * Loads the device state for the given deviceId.
      */
-    public State getDeviceStateByDeviceId(final String deviceId)
+    public StateDTO getDeviceStateByDeviceId(final String deviceId)
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device states for device id {}...", deviceId);
-        return executeGet(URLCreator.createDeviceStateURL(bridgeConfiguration.host, deviceId), State.class);
+        return executeGet(URLCreator.createDeviceStateURL(bridgeConfiguration.host, deviceId), StateDTO.class);
     }
 
     /**
-     * Loads the locations and returns a {@link List} of {@link Location}s.
+     * Loads the locations and returns a {@link List} of {@link LocationDTO}s.
      *
      * @return a List of Devices
      */
-    public List<Location> getLocations() throws IOException, ApiException, AuthenticationException {
+    public List<LocationDTO> getLocations() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading locations...");
-        return executeGetList(URLCreator.createLocationURL(bridgeConfiguration.host), Location[].class);
+        return executeGetList(URLCreator.createLocationURL(bridgeConfiguration.host), LocationDTO[].class);
     }
 
     /**
-     * Loads and returns a {@link List} of {@link Capability}s for the given deviceId.
+     * Loads and returns a {@link List} of {@link CapabilityDTO}s for the given deviceId.
      *
-     * @param deviceId the id of the {@link Device}
+     * @param deviceId the id of the {@link DeviceDTO}
      * @return capabilities of the device
      */
-    public List<Capability> getCapabilitiesForDevice(final String deviceId)
+    public List<CapabilityDTO> getCapabilitiesForDevice(final String deviceId)
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading capabilities for device {}...", deviceId);
         return executeGetList(URLCreator.createDeviceCapabilitiesURL(bridgeConfiguration.host, deviceId),
-                Capability[].class);
+                CapabilityDTO[].class);
     }
 
     /**
-     * Loads and returns a {@link List} of all {@link Capability}s.
+     * Loads and returns a {@link List} of all {@link CapabilityDTO}s.
      */
-    public List<Capability> getCapabilities() throws IOException, ApiException, AuthenticationException {
+    public List<CapabilityDTO> getCapabilities() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading capabilities...");
-        return executeGetList(URLCreator.createCapabilityURL(bridgeConfiguration.host), Capability[].class);
+        return executeGetList(URLCreator.createCapabilityURL(bridgeConfiguration.host), CapabilityDTO[].class);
     }
 
     /**
-     * Loads and returns a {@link List} of all {@link Capability}States.
+     * Loads and returns a {@link List} of all {@link CapabilityDTO}States.
      */
-    public List<CapabilityState> getCapabilityStates() throws IOException, ApiException, AuthenticationException {
+    public List<CapabilityStateDTO> getCapabilityStates() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading capability states...");
-        return executeGetList(URLCreator.createCapabilityStatesURL(bridgeConfiguration.host), CapabilityState[].class);
+        return executeGetList(URLCreator.createCapabilityStatesURL(bridgeConfiguration.host),
+                CapabilityStateDTO[].class);
     }
 
     /**
-     * Returns a {@link List} of all {@link Message}s.
+     * Returns a {@link List} of all {@link MessageDTO}s.
      */
-    public List<Message> getMessages() throws IOException, ApiException, AuthenticationException {
+    public List<MessageDTO> getMessages() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading messages...");
-        return executeGetList(URLCreator.createMessageURL(bridgeConfiguration.host), Message[].class);
+        return executeGetList(URLCreator.createMessageURL(bridgeConfiguration.host), MessageDTO[].class);
     }
 
     /**
@@ -457,7 +443,7 @@ public class LivisiClient {
      * @param activeDeviceIds active device id (devices with an according available device state)
      * @return true when usable, otherwise false
      */
-    private static boolean isDeviceUsable(Device device, Collection<String> activeDeviceIds) {
+    private static boolean isDeviceUsable(DeviceDTO device, Collection<String> activeDeviceIds) {
         return activeDeviceIds.contains(device.getId())
                 || LivisiBindingConstants.DEVICE_VARIABLE_ACTUATOR.equals(device.getType());
     }

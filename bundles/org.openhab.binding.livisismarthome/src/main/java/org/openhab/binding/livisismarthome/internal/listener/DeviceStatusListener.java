@@ -13,11 +13,11 @@
 package org.openhab.binding.livisismarthome.internal.listener;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.livisismarthome.internal.client.entity.device.Device;
-import org.openhab.binding.livisismarthome.internal.client.entity.event.Event;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.event.EventDTO;
 
 /**
- * The {@link DeviceStatusListener} is called, when {@link Device}s are added, removed or changed.
+ * The {@link DeviceStatusListener} is called, when {@link DeviceDTO}s are added, removed or changed.
  *
  * @author Oliver Kuhl - Initial contribution
  */
@@ -25,19 +25,17 @@ import org.openhab.binding.livisismarthome.internal.client.entity.event.Event;
 public interface DeviceStatusListener {
 
     /**
-     * This method is called whenever the state of the given {@link Device} has changed.
+     * This method is called whenever the state of the given {@link DeviceDTO} has changed.
      *
-     * @param device
-     *            The device which received the state update.
+     * @param device The device which received the state update.
      */
-    public void onDeviceStateChanged(Device device);
+    void onDeviceStateChanged(DeviceDTO device);
 
     /**
-     * This method is called whenever the state of a {@link Device} is changed by the given {@link Event}.
+     * This method is called whenever the state of a {@link DeviceDTO} is changed by the given {@link EventDTO}.
      *
-     * @param device
-     * @param event
-     *
+     * @param device device
+     * @param event event
      */
-    public void onDeviceStateChanged(Device device, Event event);
+    void onDeviceStateChanged(DeviceDTO device, EventDTO event);
 }

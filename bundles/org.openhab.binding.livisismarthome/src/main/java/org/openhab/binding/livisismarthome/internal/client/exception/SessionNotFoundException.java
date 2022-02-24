@@ -25,9 +25,6 @@ public class SessionNotFoundException extends ApiException {
 
     private static final long serialVersionUID = 1L;
 
-    public SessionNotFoundException() {
-    }
-
     public SessionNotFoundException(String message) {
         super(message);
     }

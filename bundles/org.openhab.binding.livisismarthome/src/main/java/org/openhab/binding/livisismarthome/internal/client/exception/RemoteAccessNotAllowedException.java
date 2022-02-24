@@ -25,9 +25,6 @@ public class RemoteAccessNotAllowedException extends ApiException {
 
     private static final long serialVersionUID = 1L;
 
-    public RemoteAccessNotAllowedException() {
-    }
-
     public RemoteAccessNotAllowedException(String message) {
         super(message);
     }

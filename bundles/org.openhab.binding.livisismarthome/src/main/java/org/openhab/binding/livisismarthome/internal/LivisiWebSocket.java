@@ -16,7 +16,7 @@ import java.net.URI;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -42,6 +42,7 @@ public class LivisiWebSocket {
 
     private final Logger logger = LoggerFactory.getLogger(LivisiWebSocket.class);
 
+    private final HttpClient httpClient;
     private final EventListener eventListener;
     private final URI webSocketURI;
     private final int maxIdleTimeout;
@@ -56,9 +57,10 @@ public class LivisiWebSocket {
      * @param eventListener the responsible
      *            {@link org.openhab.binding.livisismarthome.internal.handler.LivisiBridgeHandler}
      * @param webSocketURI the {@link URI} of the websocket endpoint
-     * @param maxIdleTimeout
+     * @param maxIdleTimeout max idle timeout
      */
-    public LivisiWebSocket(EventListener eventListener, URI webSocketURI, int maxIdleTimeout) {
+    public LivisiWebSocket(HttpClient httpClient, EventListener eventListener, URI webSocketURI, int maxIdleTimeout) {
+        this.httpClient = httpClient;
         this.eventListener = eventListener;
         this.webSocketURI = webSocketURI;
         this.maxIdleTimeout = maxIdleTimeout;
@@ -66,8 +68,6 @@ public class LivisiWebSocket {
 
     /**
      * Starts the {@link LivisiWebSocket}.
-     *
-     * @throws Exception
      */
     public synchronized void start() throws Exception {
         if (client == null || client.isStopped()) {
@@ -109,7 +109,7 @@ public class LivisiWebSocket {
     /**
      * Return true, if the websocket is running.
      *
-     * @return
+     * @return true if the websocket is running, otherwise false
      */
     public synchronized boolean isRunning() {
         return session != null && session.isOpen();
@@ -151,7 +151,7 @@ public class LivisiWebSocket {
     }
 
     WebSocketClient startWebSocketClient() throws Exception {
-        WebSocketClient client = new WebSocketClient(new SslContextFactory.Client());
+        WebSocketClient client = new WebSocketClient(httpClient);
         client.setMaxIdleTimeout(this.maxIdleTimeout);
         client.start();
         return client;

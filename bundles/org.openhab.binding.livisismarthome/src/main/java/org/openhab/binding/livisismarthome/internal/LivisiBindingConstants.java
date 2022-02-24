@@ -133,6 +133,9 @@ public class LivisiBindingConstants {
                     THING_TYPE_ISR2, THING_TYPE_PSD, THING_TYPE_ANALOG_METER, THING_TYPE_GENERATION_METER,
                     THING_TYPE_SMART_METER, THING_TYPE_TWO_WAY_METER).collect(Collectors.toSet()));
 
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
+            .concat(Stream.of(THING_TYPE_BRIDGE), SUPPORTED_DEVICE_THING_TYPES.stream()).collect(Collectors.toSet());
+
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_SET_TEMPERATURE = "set_temperature";

@@ -13,28 +13,23 @@
 package org.openhab.binding.livisismarthome.internal.manager;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.livisismarthome.internal.LivisiBindingConstants;
-import org.openhab.binding.livisismarthome.internal.client.entity.capability.Capability;
-import org.openhab.binding.livisismarthome.internal.client.entity.device.Device;
-import org.openhab.binding.livisismarthome.internal.client.entity.link.Link;
-import org.openhab.binding.livisismarthome.internal.client.entity.message.Message;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.capability.CapabilityDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.link.LinkDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.message.MessageDTO;
 import org.openhab.binding.livisismarthome.internal.client.exception.ApiException;
 import org.openhab.binding.livisismarthome.internal.client.exception.AuthenticationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Manages the structure of the {@link Device}s and the calls to the
- * {@link org.openhab.binding.livisismarthome.internal.client.LivisiClient} to load the {@link Device}
+ * Manages the structure of the {@link DeviceDTO}s and the calls to the
+ * {@link org.openhab.binding.livisismarthome.internal.client.LivisiClient} to load the {@link DeviceDTO}
  * data from the LIVISI SmartHome web service.
  *
  * @author Oliver Kuhl - Initial contribution
@@ -46,8 +41,8 @@ public class DeviceStructureManager {
     private final Logger logger = LoggerFactory.getLogger(DeviceStructureManager.class);
 
     private final FullDeviceManager deviceManager;
-    private final Map<String, Device> deviceMap;
-    private final Map<String, Device> capabilityIdToDeviceMap;
+    private final Map<String, DeviceDTO> deviceMap;
+    private final Map<String, DeviceDTO> capabilityIdToDeviceMap;
     private String bridgeDeviceId = "";
 
     /**
@@ -64,172 +59,165 @@ public class DeviceStructureManager {
     /**
      * Returns the {@link #deviceMap}, a map with the device id and the device.
      *
-     * @return
+     * @return map of device id and device
      */
-    public Map<String, Device> getDeviceMap() {
+    public Map<String, DeviceDTO> getDeviceMap() {
         return deviceMap;
     }
 
     /**
-     * Loads all device data from the bridge and stores the {@link Device}s and their states in the
+     * Loads all device data from the bridge and stores the {@link DeviceDTO}s and their states in the
      * {@link DeviceStructureManager}.
-     *
-     * @throws IOException
-     * @throws ApiException
-     * @throws AuthenticationException
      */
     public void refreshDevices() throws IOException, ApiException, AuthenticationException {
         deviceMap.clear();
         capabilityIdToDeviceMap.clear();
-        List<Device> devices = deviceManager.getFullDevices();
-        for (Device d : devices) {
+        List<DeviceDTO> devices = deviceManager.getFullDevices();
+        for (DeviceDTO d : devices) {
             handleRefreshedDevice(d);
         }
     }
 
     /**
-     * Refreshs the {@link Device} with the given id and stores it in the {@link DeviceStructureManager}.
+     * Refreshs the {@link DeviceDTO} with the given id and stores it in the {@link DeviceStructureManager}.
      *
-     * @param deviceId
-     * @throws IOException
-     * @throws ApiException
-     * @throws AuthenticationException
+     * @param deviceId device id
      */
     public void refreshDevice(String deviceId) throws IOException, ApiException, AuthenticationException {
         logger.trace("Refreshing Device with id '{}'", deviceId);
-        Device d = deviceManager.getFullDeviceById(deviceId);
+        DeviceDTO d = deviceManager.getFullDeviceById(deviceId);
         handleRefreshedDevice(d);
     }
 
     /**
-     * Stores the newly refreshed {@link Device} in the {@link DeviceStructureManager} structure and logs the
-     * {@link Device}s details and state, if the debug logging is enabled.
+     * Stores the newly refreshed {@link DeviceDTO} in the {@link DeviceStructureManager} structure and logs the
+     * {@link DeviceDTO}s details and state, if the debug logging is enabled.
      *
-     * @param d the {@link Device}
+     * @param d the {@link DeviceDTO}
      */
-    private void handleRefreshedDevice(Device d) {
+    private void handleRefreshedDevice(DeviceDTO d) {
         if (LivisiBindingConstants.SUPPORTED_DEVICES.contains(d.getType())) {
             addDeviceToStructure(d);
+
+            if (d.isController()) {
+                bridgeDeviceId = d.getId();
+            }
         } else {
             logger.debug("Device {}:'{}' by {} ({}) ignored - UNSUPPORTED.", d.getType(), d.getConfig().getName(),
                     d.getManufacturer(), d.getId());
             logger.debug("====================================");
-            return;
-        }
-
-        if (d.isController()) {
-            bridgeDeviceId = d.getId();
-        }
-
-        if (logger.isDebugEnabled()) {
-            try {
-                logger.debug("Device {}:'{}@{}' by {} ({}) loaded.", d.getType(), d.getConfig().getName(),
-                        d.getLocation() != null ? d.getLocation().getName() : "<none>", d.getManufacturer(), d.getId());
-                for (Capability c : d.getCapabilityMap().values()) {
-                    logger.debug("> CAP: {}/{} ({})", c.getType(), c.getName(), c.getId());
-                    if (d.isRadioDevice() && !d.isReachable()) {
-                        logger.debug(">> CAP-State: unknown (device NOT REACHABLE).");
-                    } else {
-                        if (!c.hasState()) {
-                            logger.debug(">> CAP-State: unknown (NULL)");
-                        }
-                    }
-                }
-            } catch (RuntimeException e) {
-                logger.debug("Error during logging: ", e);
-            }
-            logger.debug("====================================");
         }
     }
 
     /**
-     * Adds the {@link Device} to the structure.
+     * Adds the {@link DeviceDTO} to the structure.
      *
-     * @param device
+     * @param device device
      */
-    public void addDeviceToStructure(Device device) {
+    private void addDeviceToStructure(DeviceDTO device) {
         if (device.getId() != null) {
             getDeviceMap().put(device.getId(), device);
         }
 
-        for (String cl : device.getCapabilities()) {
-            capabilityIdToDeviceMap.put(Link.getId(cl), device);
+        for (String capability : device.getCapabilities()) {
+            capabilityIdToDeviceMap.put(LinkDTO.getId(capability), device);
         }
+
+        logDeviceLoaded(device);
     }
 
     /**
-     * Returns the {@link Device} with the given id.
+     * Returns the {@link DeviceDTO} with the given id.
      *
-     * @param id
-     * @return the {@link Device} or null, if it does not exist
+     * @param id device id
+     * @return the {@link DeviceDTO} or null, if it does not exist
      */
-    public @Nullable Device getDeviceById(String id) {
+    public Optional<DeviceDTO> getDeviceById(String id) {
         logger.debug("getDeviceById {}:{}", id, getDeviceMap().containsKey(id));
-        return getDeviceMap().get(id);
+        return Optional.ofNullable(getDeviceMap().get(id));
     }
 
     /**
-     * Returns the {@link Device}, that provides the given capability.
+     * Returns the {@link DeviceDTO}, that provides the given capability.
      *
-     * @param capabilityId
-     * @return {@link Device} or null
+     * @param capabilityId capability id
+     * @return {@link DeviceDTO} or null
      */
-    public @Nullable Device getDeviceByCapabilityId(String capabilityId) {
-        return capabilityIdToDeviceMap.get(capabilityId);
+    public Optional<DeviceDTO> getDeviceByCapabilityId(String capabilityId) {
+        return Optional.ofNullable(capabilityIdToDeviceMap.get(capabilityId));
     }
 
     /**
-     * Returns the bridge {@link Device}.
+     * Returns the bridge {@link DeviceDTO}.
      *
-     * @return
+     * @return bridge device
      */
-    public @Nullable Device getBridgeDevice() {
-        return getDeviceMap().get(bridgeDeviceId);
+    public Optional<DeviceDTO> getBridgeDevice() {
+        return Optional.ofNullable(getDeviceMap().get(bridgeDeviceId));
     }
 
     /**
-     * Returns a {@link Collection} of all {@link Device}s handled by the {@link DeviceStructureManager}.
+     * Returns a {@link Collection} of all {@link DeviceDTO}s handled by the {@link DeviceStructureManager}.
      *
-     * @return
+     * @return devices
      */
-    public Collection<Device> getDeviceList() {
+    public Collection<DeviceDTO> getDeviceList() {
         return Collections.unmodifiableCollection(getDeviceMap().values());
     }
 
     /**
-     * Returns the {@link Device}, that has the {@link Message} with the given messageId.
+     * Returns the {@link DeviceDTO}, that has the {@link MessageDTO} with the given messageId.
      *
-     * @param messageId the id of the {@link Message}
-     * @return the {@link Device} or null if none found
+     * @param messageId the id of the {@link MessageDTO}
+     * @return the {@link DeviceDTO} or null if none found
      */
-    public @Nullable Device getDeviceWithMessageId(String messageId) {
+    public Optional<DeviceDTO> getDeviceWithMessageId(String messageId) {
         logger.trace("Getting Device with MessageId '{}'", messageId);
-        for (Device d : getDeviceMap().values()) {
+        for (DeviceDTO d : getDeviceMap().values()) {
             if (d.hasMessages()) {
-                for (Message m : d.getMessageList()) {
+                for (MessageDTO m : d.getMessageList()) {
                     if (messageId.equals(m.getId())) {
-                        return d;
+                        return Optional.of(d);
                     }
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
-     * Returns the id of the {@link Capability} for {@link Device} with the given id and the given capabilityType.
+     * Returns the id of the {@link CapabilityDTO} for {@link DeviceDTO} with the given id and the given capabilityType.
      *
-     * @param deviceId
-     * @param capabilityType
-     * @return the id of the found {@link Capability} or null
+     * @param deviceId device id
+     * @param capabilityType capability type
+     * @return the id of the found {@link CapabilityDTO} or null
      */
-    public @Nullable String getCapabilityId(String deviceId, String capabilityType) {
-        Device device = getDeviceMap().get(deviceId);
-        for (Capability c : device.getCapabilityMap().values()) {
+    public Optional<String> getCapabilityId(String deviceId, String capabilityType) {
+        DeviceDTO device = getDeviceMap().get(deviceId);
+        for (CapabilityDTO c : device.getCapabilityMap().values()) {
             if (c.getType().equals(capabilityType)) {
-                return c.getId();
+                return Optional.of(c.getId());
             }
         }
-        return null;
+        return Optional.empty();
+    }
+
+    private void logDeviceLoaded(DeviceDTO device) {
+        if (logger.isDebugEnabled()) {
+            String location = device.getLocationName();
+            logger.debug("Device {}:'{}@{}' by {} ({}) loaded.", device.getType(), device.getConfig().getName(),
+                    location, device.getManufacturer(), device.getId());
+            for (CapabilityDTO c : device.getCapabilityMap().values()) {
+                logger.debug("> CAP: {}/{} ({})", c.getType(), c.getName(), c.getId());
+                if (device.isRadioDevice() && !device.isReachable()) {
+                    logger.debug(">> CAP-State: unknown (device NOT REACHABLE).");
+                } else {
+                    if (!c.hasState()) {
+                        logger.debug(">> CAP-State: unknown (NULL)");
+                    }
+                }
+            }
+            logger.debug("====================================");
+        }
     }
 }

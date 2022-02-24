@@ -15,11 +15,14 @@ package org.openhab.binding.livisismarthome.internal.client;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link URLCreator} is responsible for creating all required URLs.
  *
- * @author Sven Strohschein - Renamed from Innogy to Livisi
+ * @author Sven Strohschein - Initial contribution
  */
+@NonNullByDefault
 public final class URLCreator {
 
     private URLCreator() {

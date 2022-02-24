@@ -27,10 +27,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public final class Util {
 
     private Util() {
-        // Util class.
     }
 
-    public static ZonedDateTime convertZuluTimeStringToDate(String timeString) {
-        return ZonedDateTime.parse(timeString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+    /**
+     * Converts an ISO offset date-time string to a {@link ZonedDateTime}
+     * 
+     * @param dateTimeString date-time string
+     * @return {@link ZonedDateTime}
+     */
+    public static ZonedDateTime timeStringToDate(String dateTimeString) {
+        return ZonedDateTime.parse(dateTimeString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     }
 }

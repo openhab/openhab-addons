@@ -27,9 +27,6 @@ public class ControllerOfflineException extends IOException {
 
     private static final long serialVersionUID = 1L;
 
-    public ControllerOfflineException() {
-    }
-
     public ControllerOfflineException(String message) {
         super(message);
     }

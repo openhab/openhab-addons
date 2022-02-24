@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.livisismarthome.internal;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -47,11 +43,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LivisiHandlerFactory extends BaseThingHandlerFactory implements ThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
-            .concat(LivisiBridgeHandler.SUPPORTED_THING_TYPES.stream(),
-                    LivisiDeviceHandler.SUPPORTED_THING_TYPES.stream())
-            .collect(Collectors.toSet());
-
     private final Logger logger = LoggerFactory.getLogger(LivisiHandlerFactory.class);
 
     private final OAuthFactory oAuthFactory;
@@ -65,14 +56,14 @@ public class LivisiHandlerFactory extends BaseThingHandlerFactory implements Thi
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES.contains(thingTypeUID);
+        return LivisiBindingConstants.SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (LivisiBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+        if (LivisiBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())) {
             return new LivisiBridgeHandler((Bridge) thing, oAuthFactory, httpClient);
-        } else if (LivisiDeviceHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+        } else if (LivisiBindingConstants.SUPPORTED_DEVICE_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new LivisiDeviceHandler(thing);
         } else {
             logger.debug("Unsupported thing {}.", thing.getThingTypeUID());

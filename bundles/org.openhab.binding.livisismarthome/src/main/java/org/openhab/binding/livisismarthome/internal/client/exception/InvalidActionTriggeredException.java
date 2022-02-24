@@ -25,9 +25,6 @@ public class InvalidActionTriggeredException extends ApiException {
 
     private static final long serialVersionUID = 1L;
 
-    public InvalidActionTriggeredException() {
-    }
-
     public InvalidActionTriggeredException(String message) {
         super(message);
     }

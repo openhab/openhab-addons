@@ -20,15 +20,15 @@ import java.util.Collections;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.livisismarthome.internal.LivisiBindingConstants;
 import org.openhab.binding.livisismarthome.internal.LivisiWebSocket;
 import org.openhab.binding.livisismarthome.internal.client.LivisiClient;
-import org.openhab.binding.livisismarthome.internal.client.entity.device.Device;
-import org.openhab.binding.livisismarthome.internal.client.entity.device.DeviceConfig;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceConfigDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceDTO;
 import org.openhab.binding.livisismarthome.internal.manager.FullDeviceManager;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -156,6 +156,7 @@ public class LivisiBridgeHandlerTest {
         assertEquals(1, bridgeHandler.getDirectExecutionCount());
     }
 
+    @NonNullByDefault
     private class LivisiBridgeHandlerAccessible extends LivisiBridgeHandler {
 
         private final LivisiClient livisiClientMock;
@@ -168,10 +169,10 @@ public class LivisiBridgeHandlerTest {
                 throws Exception {
             super(bridge, oAuthFactory, httpClient);
 
-            Device bridgeDevice = new Device();
+            DeviceDTO bridgeDevice = new DeviceDTO();
             bridgeDevice.setId("bridgeId");
             bridgeDevice.setType(LivisiBindingConstants.DEVICE_SHC);
-            bridgeDevice.setConfig(new DeviceConfig());
+            bridgeDevice.setConfig(new DeviceConfigDTO());
 
             livisiClientMock = mock(LivisiClient.class);
             fullDeviceManagerMock = mock(FullDeviceManager.class);
@@ -206,25 +207,21 @@ public class LivisiBridgeHandlerTest {
         }
 
         @Override
-        @NonNull
-        FullDeviceManager createFullDeviceManager(@NonNull LivisiClient client) {
+        FullDeviceManager createFullDeviceManager(LivisiClient client) {
             return fullDeviceManagerMock;
         }
 
         @Override
-        @NonNull
-        LivisiClient createClient(@NonNull OAuthClientService oAuthService, @NonNull HttpClient httpClient) {
+        LivisiClient createClient(OAuthClientService oAuthService, HttpClient httpClient) {
             return livisiClientMock;
         }
 
         @Override
-        @NonNull
-        LivisiWebSocket createWebSocket(Device bridgeDevice) {
+        LivisiWebSocket createWebSocket(DeviceDTO bridgeDevice) {
             return webSocketMock;
         }
 
         @Override
-        @NonNull
         ScheduledExecutorService getScheduler() {
             return schedulerMock;
         }
