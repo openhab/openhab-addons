@@ -220,6 +220,8 @@ public class EcovacsXmppDevice implements EcovacsDevice {
             conn.login();
             conn.setReplyTimeout(1000);
 
+            logger.trace("{}: XMPP connection established", getSerialNumber());
+
             listener.onFirmwareVersionChanged(this, sendCommand(new GetFirmwareVersionCommand()));
             pingHandler.start();
         } catch (EcovacsApiException e) {
@@ -230,22 +232,24 @@ public class EcovacsXmppDevice implements EcovacsDevice {
     }
 
     @Override
-    public void disconnect() {
-        XMPPTCPConnection conn = this.connection;
-        if (conn != null) {
-            conn.disconnect();
-        }
-        this.connection = null;
+    public void disconnect(ScheduledExecutorService scheduler) {
         PingHandler pingHandler = this.pingHandler;
         if (pingHandler != null) {
             pingHandler.stop();
         }
         this.pingHandler = null;
+
         IncomingMessageHandler handler = this.messageHandler;
         if (handler != null) {
             handler.dispose();
         }
         this.messageHandler = null;
+
+        final XMPPTCPConnection conn = this.connection;
+        if (conn != null) {
+            scheduler.execute(() -> conn.disconnect());
+        }
+        this.connection = null;
     }
 
     private class PingHandler {

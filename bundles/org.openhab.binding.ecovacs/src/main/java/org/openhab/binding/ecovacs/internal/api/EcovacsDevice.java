@@ -58,7 +58,7 @@ public interface EcovacsDevice {
     public void connect(EventListener listener, ScheduledExecutorService scheduler)
             throws EcovacsApiException, InterruptedException;
 
-    public void disconnect();
+    public void disconnect(ScheduledExecutorService scheduler);
 
     public <T> T sendCommand(IotDeviceCommand<T> command) throws EcovacsApiException, InterruptedException;
 

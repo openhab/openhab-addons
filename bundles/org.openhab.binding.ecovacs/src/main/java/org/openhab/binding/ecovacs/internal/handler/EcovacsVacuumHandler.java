@@ -215,7 +215,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         logger.debug("{}: Disposing handler", getDeviceSerial());
         EcovacsDevice device = this.device;
         if (device != null) {
-            device.disconnect();
+            device.disconnect(scheduler);
         }
         ScheduledFuture<?> reconnectFuture = this.reconnectFuture;
         if (reconnectFuture != null) {
@@ -463,7 +463,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     private synchronized void teardownAndScheduleReconnection() {
         EcovacsDevice device = this.device;
         if (device != null) {
-            device.disconnect();
+            device.disconnect(scheduler);
         }
         cancelNextPoll();
 

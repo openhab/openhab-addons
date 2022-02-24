@@ -139,6 +139,8 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
         final MqttClientDisconnectedListener disconnectListener = ctx -> {
             boolean expectedShutdown = ctx.getSource() == MqttDisconnectSource.USER
                     && ctx.getCause() instanceof Mqtt3DisconnectException;
+            // As the client already was disconnected, there's no need to do it again in disconnect() later
+            this.mqttClient = null;
             if (!expectedShutdown) {
                 logger.debug("{}: MQTT disconnected (source {}): {}", getSerialNumber(), ctx.getSource(),
                         ctx.getCause().getMessage());
@@ -180,14 +182,10 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
     }
 
     @Override
-    public void disconnect() {
+    public void disconnect(ScheduledExecutorService scheduler) {
         Mqtt3AsyncClient client = this.mqttClient;
         if (client != null) {
-            try {
-                client.disconnect().get();
-            } catch (InterruptedException | ExecutionException e) {
-                // ignored
-            }
+            client.disconnect();
         }
         this.mqttClient = null;
     }
