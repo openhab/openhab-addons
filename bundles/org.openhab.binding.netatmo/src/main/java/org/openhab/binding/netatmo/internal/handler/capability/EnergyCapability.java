@@ -15,6 +15,8 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.NetatmoCalendarUtils.setpointEndTimeFromNow;
 
+import java.util.stream.Collectors;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.EnergyApi;
@@ -27,8 +29,11 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NARoom;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
+import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,10 +49,13 @@ public class EnergyCapability extends Capability<EnergyApi> {
 
     private int setPointDefaultDuration = -1;
     private final String homeId;
+    private final NetatmoDescriptionProvider descriptionProvider;
 
-    public EnergyCapability(Bridge bridge, ApiBridge apiBridge, String homeId) {
+    public EnergyCapability(Bridge bridge, ApiBridge apiBridge, NetatmoDescriptionProvider descriptionProvider,
+            String homeId) {
         super(bridge, apiBridge.getRestManager(EnergyApi.class));
         this.homeId = homeId;
+        this.descriptionProvider = descriptionProvider;
     }
 
     public void updateHomeData(NAHomeData homeData) {
@@ -63,6 +71,10 @@ public class EnergyCapability extends Capability<EnergyApi> {
                 handler.setNewData(moduleData);
             }
         });
+        descriptionProvider.setStateOptions(new ChannelUID(bridge.getUID(), GROUP_HOME_ENERGY, CHANNEL_PLANNING),
+                homeData.getThermSchedules().stream().map(p -> new StateOption(p.getId(), p.getName()))
+                        .collect(Collectors.toList()));
+        setPointDefaultDuration = homeData.getThermSetpointDefaultDuration();
     }
 
     public void updateHomeStatus(HomeStatus homeStatus) {
@@ -84,11 +96,6 @@ public class EnergyCapability extends Capability<EnergyApi> {
         });
     }
 
-    // TODO : ensure this is called by HomeHandler
-    public void setNewData(NAHomeData home) {
-        setPointDefaultDuration = home.getThermSetpointDefaultDuration();
-    }
-
     public int getSetpointDefaultDuration() {
         return setPointDefaultDuration;
     }
@@ -96,7 +103,7 @@ public class EnergyCapability extends Capability<EnergyApi> {
     public void callSetRoomThermTemp(String roomId, double temperature) {
         try {
             api.setRoomThermpoint(homeId, roomId, SetpointMode.MANUAL, setpointEndTimeFromNow(setPointDefaultDuration),
-                    temperature);
+                    temperature > 30 ? 30 : temperature);
             expireData();
         } catch (NetatmoException e) {
             logger.warn("Error setting room target temperature '{}' : {}", roomId, e.getMessage());
@@ -122,8 +129,7 @@ public class EnergyCapability extends Capability<EnergyApi> {
         }
     }
 
-    // TODO from UCDetector: Method "EnergyCapability.handleCommand(String,Command)" has 0 references
-    public void handleCommand(String channelName, Command command) { // NO_UCD (unused code)
+    public void handleCommand(String channelName, Command command) {
         try {
             switch (channelName) {
                 case CHANNEL_PLANNING:

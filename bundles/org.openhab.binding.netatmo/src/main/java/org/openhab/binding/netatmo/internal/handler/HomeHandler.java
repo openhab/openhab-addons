@@ -124,7 +124,7 @@ public class HomeHandler extends NetatmoHandler {
             securityCap = Optional.of(new SecurityCapability(getThing(), apiBridge, getId()));
         }
         if (propHelper.hasFeature(FeatureArea.ENERGY) && energyCap.isEmpty()) {
-            energyCap = Optional.of(new EnergyCapability(getThing(), apiBridge, getId()));
+            energyCap = Optional.of(new EnergyCapability(getThing(), apiBridge, descriptionProvider, getId()));
         }
 
         List<Channel> channelsToRemove = new ArrayList<>();
@@ -142,10 +142,11 @@ public class HomeHandler extends NetatmoHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO : ce n'est pas super optimal parceque si la command a été traitée par l'un des cap il n'y a pas lieu de
-        // continuer.
-        energyCap.ifPresent(cap -> handleCommand(channelUID, command));
-        securityCap.ifPresent(cap -> handleCommand(channelUID, command));
+        // TODO : ce n'est pas super optimal : si command a été traitée par l'un des cap il n'y a pas lieu de continuer.
+        String channelID = channelUID.getIdWithoutGroup();
+        energyCap.ifPresent(cap -> cap.handleCommand(channelID, command));
+        // Security does not currently handle any command
+        // securityCap.ifPresent(cap -> cap.handleCommand(channelUID, command));
         super.handleCommand(channelUID, command);
     }
 

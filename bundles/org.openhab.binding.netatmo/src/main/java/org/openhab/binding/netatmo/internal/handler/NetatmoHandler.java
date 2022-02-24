@@ -69,6 +69,7 @@ public abstract class NetatmoHandler extends BaseBridgeHandler implements Connec
     protected final ApiBridge apiBridge;
     protected final PropertyHelper propertyHelper;
     protected NetatmoServlet webhookServlet;
+    protected final NetatmoDescriptionProvider descriptionProvider;
 
     public NetatmoHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider, NetatmoServlet webhookServlet) {
@@ -77,6 +78,7 @@ public abstract class NetatmoHandler extends BaseBridgeHandler implements Connec
         this.channelHelpers = channelHelpers;
         this.propertyHelper = getPropertyHelper();
         this.webhookServlet = webhookServlet;
+        this.descriptionProvider = descriptionProvider;
     }
 
     protected abstract PropertyHelper getPropertyHelper();

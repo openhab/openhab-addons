@@ -53,14 +53,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class CameraHandler extends NetatmoHandler {
     private final Logger logger = LoggerFactory.getLogger(CameraHandler.class);
-    private final NetatmoDescriptionProvider descriptionProvider;
     protected final CameraChannelHelper cameraHelper;
     private Optional<SecurityCapability> securityCap = Optional.empty();
 
     public CameraHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider, NetatmoServlet webhookServlet) {
         super(bridge, channelHelpers, apiBridge, descriptionProvider, webhookServlet);
-        this.descriptionProvider = descriptionProvider;
         this.cameraHelper = (CameraChannelHelper) channelHelpers.stream().filter(c -> c instanceof CameraChannelHelper)
                 .findFirst().orElseThrow(() -> new IllegalArgumentException(
                         "CameraHandler must have a CameraChannelHelper, file a bug."));

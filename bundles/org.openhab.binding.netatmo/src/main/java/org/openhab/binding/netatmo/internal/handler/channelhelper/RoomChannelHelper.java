@@ -21,7 +21,6 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureCla
 import org.openhab.binding.netatmo.internal.api.dto.NARoom;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
@@ -44,9 +43,9 @@ public class RoomChannelHelper extends AbstractChannelHelper {
             NARoom room = (NARoom) naThing;
             switch (channelId) {
                 case CHANNEL_ROOM_WINDOW_OPEN:
-                    return (room.isOpenWindow() ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                    return room.isOpenWindow();
                 case CHANNEL_ANTICIPATING:
-                    return (room.isAnticipating() ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                    return room.isAnticipating();
                 case CHANNEL_ROOM_HEATING_POWER:
                     return toQuantityType(room.getHeatingPowerRequest(), Units.PERCENT);
                 case CHANNEL_VALUE:

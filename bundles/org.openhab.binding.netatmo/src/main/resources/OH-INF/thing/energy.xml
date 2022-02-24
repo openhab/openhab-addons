@@ -31,10 +31,10 @@
 	<channel-group-type id="room-properties">
 		<label>Room status</label>
 		<channels>
-			<channel id="window-open" typeId="contact">
+			<channel id="window-open" typeId="switch-ro">
 				<label>Window Status</label>
 			</channel>
-			<channel id="anticipating" typeId="contact">
+			<channel id="anticipating" typeId="switch-ro">
 				<label>Anticipated heating</label>
 			</channel>
 			<channel id="heating-power-request" typeId="room-heating-percent">

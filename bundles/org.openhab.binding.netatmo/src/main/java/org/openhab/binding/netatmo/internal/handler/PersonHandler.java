@@ -50,13 +50,11 @@ import org.openhab.core.types.StateOption;
  */
 @NonNullByDefault
 public class PersonHandler extends NetatmoHandler {
-    private final NetatmoDescriptionProvider descriptionProvider;
     private Optional<SecurityCapability> securityCap = Optional.empty();
 
     public PersonHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider, NetatmoServlet webhookServlet) {
         super(bridge, channelHelpers, apiBridge, descriptionProvider, webhookServlet);
-        this.descriptionProvider = descriptionProvider;
     }
 
     @Override

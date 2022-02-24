@@ -18,6 +18,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link NARoom} holds temperature data for a given room.
@@ -27,8 +30,8 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMo
  */
 @NonNullByDefault
 public class NARoom extends NAThing implements NetatmoModule {
-    private boolean anticipating;
-    private boolean openWindow;
+    private @Nullable OnOffType anticipating;
+    private @Nullable OnOffType openWindow;
     private int heatingPowerRequest;
     private double thermMeasuredTemperature;
     private @Nullable ZonedDateTime thermSetpointStartTime;
@@ -39,8 +42,9 @@ public class NARoom extends NAThing implements NetatmoModule {
     /**
      * @return the anticipating
      */
-    public boolean isAnticipating() {
-        return anticipating;
+    public State isAnticipating() {
+        OnOffType status = anticipating;
+        return status != null ? status : UnDefType.NULL;
     }
 
     /**
@@ -53,8 +57,9 @@ public class NARoom extends NAThing implements NetatmoModule {
     /**
      * @return the openWindow
      */
-    public boolean isOpenWindow() {
-        return openWindow;
+    public State isOpenWindow() {
+        OnOffType status = openWindow;
+        return status != null ? status : UnDefType.NULL;
     }
 
     /**
