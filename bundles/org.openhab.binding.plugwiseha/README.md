@@ -19,7 +19,7 @@ The 'Adam' (from hereon called the gateway) needs to be accessible from the open
 | -                                                        | A Plugwise heating zone configured with at least 1 of the devices below                                            | zone                 |
 | [Adam](https://www.plugwise.com/en_US/products/adam-ha)  | The Plugwise Home Automation Bridge is needed to connect to the Adam boiler gateway                                | gateway              |
 | [Tom](https://www.plugwise.com/en_US/products/tom)       | A Plugwise Home Automation radiator valve                                                                          | appliance_valve      |
-| [Floor](https://www.plugwise.com/en_US/products/floor)   | A Plugwise Home Automation radiator valve specifically used for floor heating                                       | appliance_valve      |
+| [Floor](https://www.plugwise.com/en_US/products/floor)   | A Plugwise Home Automation radiator valve specifically used for floor heating                                      | appliance_valve      |
 | [Circle](https://www.plugwise.com/en_US/products/circle) | A power outlet plug that provides energy measurement and switching control of appliances (e.g. floor heating pump) | appliance_pump       |
 | [Lisa](https://www.plugwise.com/en_US/products/lisa)     | A room thermostat (also supports the 'Anna' room thermostat)                                                       | appliance_thermostat |
 | [Boiler]                                                 | A central boiler used for heating and/or domestic hot water                                                        | appliance_boiler     |
@@ -39,7 +39,7 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 #### Plugwise Home Automation gateway (Bridge):
 
 | Parameter | Description                                                             | Config   | Default |
-| --------- | ----------------------------------------------------------------------- | -------- | ------- |
+|-----------|-------------------------------------------------------------------------|----------|---------|
 | host      | The IP address or hostname of the Adam HA gateway                       | Required | 'adam'  |
 | username  | The username for the Adam HA gateway                                    | Optional | 'smile' |
 | smileID   | The 8 letter code on the sticker on the back of the Adam boiler gateway | Required | -       |
@@ -54,14 +54,14 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 #### Plugwise Home Automation appliance (`appliance_valve`):
 
 | Parameter            | Description                                                                                                        | Config   | Default |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------ | -------- | ------- |
+|----------------------|--------------------------------------------------------------------------------------------------------------------|----------|---------|
 | id                   | The unique ID of the radiator valve appliance                                                                      | Required | -       |
 | lowBatteryPercentage | Battery charge remaining at which to trigger battery low warning. (*Only applicable for battery operated devices*) | Optional | 15      |
 
 #### Plugwise Home Automation appliance (`appliance_thermostat`):
 
 | Parameter            | Description                                                                                                        | Config   | Default |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------ | -------- | ------- |
+|----------------------|--------------------------------------------------------------------------------------------------------------------|----------|---------|
 | id                   | The unique ID of the room thermostat appliance                                                                     | Required | -       |
 | lowBatteryPercentage | Battery charge remaining at which to trigger battery low warning. (*Only applicable for battery operated devices*) | Optional | 15      |
 
@@ -75,7 +75,7 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 #### Plugwise Home Automation boiler (`appliance_boiler`):
 
 | Parameter | Description                 | Config   | Default |
-| --------- | --------------------------- | -------- | ------- |
+|-----------|-----------------------------|----------|---------|
 | id        | The unique ID of the boiler | Required | -       |
 
 ## Channels
@@ -92,9 +92,11 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 | chState              | Switch             | Yes        | The current central heating state of the boiler                                                                                                                                                      |
 | dhwState             | Switch             | Yes        | The current domestic hot water state of the boiler                                                                                                                                                   |
 | waterPressure        | Number:Pressure    | Yes        | The current water pressure of the boiler                                                                                                                                                             |
-| presetScene          | String             | Yes        | The current active scene for the zone                                                                                                                                                                |
+| presetScene          | String             | No         | The current active scene for the zone                                                                                                                                                                |
+| regulationControl    | String             | No         | Toggle current regulation control (Active, Passive, Off) for the zone                                                                                                                                |
+| coolingAllowed       | Switch             | No         | Toggle the cooling allowed of a zone ON/OFF                                                                                                                                                          |
 | valvePosition        | Number             | Yes        | The current position of the valve                                                                                                                                                                    |
-| preHeat              | Switch             | Yes        | Toggle the pre heating of a zone ON/OFF                                                                                                                                                              |
+| preHeat              | Switch             | No         | Toggle the pre heating of a zone ON/OFF                                                                                                                                                              |
 | coolingState         | Switch             | Yes        | The current cooling state of the boiler                                                                                                                                                              |
 | intendedBoilerTemp   | Number:Temperature | Yes        | The intended boiler temperature                                                                                                                                                                      |
 | flameState           | Switch             | Yes        | The flame state of the boiler                                                                                                                                                                        |
@@ -107,8 +109,6 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 | dhwSetpoint          | Number:Temperature | Yes        | The domestic hot water setpoint                                                                                                                                                                      |
 | maxBoilerTemperature | Number:Temperature | Yes        | The maximum temperature of the boiler                                                                                                                                                                |
 | dhwComfortMode       | Switch             | Yes        | The domestic hot water confortmode                                                                                                                                                                   |
-                                                                                                                                                         |
-
 
 ## Full Example
 
@@ -131,8 +131,10 @@ Replace `$device_id` accordingly.
 ```
 Number:Temperature living_room_zone_temperature "Zone temperature" {channel="plugwiseha:zone:home:living_room_zone:temperature"}
 Number:Temperature living_room_zone_temperature_setpoint "Zone temperature setpoint" {channel="plugwiseha:zone:home:living_room_zone:setpointTemperature"}
-Number:Temperature living_room_zone_preset_scene "Zone preset scene" {channel="plugwiseha:zone:home:living_room_zone:presetScene"}
+String living_room_zone_preset_scene "Zone preset scene" {channel="plugwiseha:zone:home:living_room_zone:presetScene"}
 Switch living_room_zone_preheat "Zone preheat enabled" {channel="plugwiseha:zone:home:living_room_zone:preHeat"}
+String living_room_zone_cooling "Zone cooling enabled" {channel="plugwiseha:zone:home:living_room_zone:coolingAllowed"}
+String living_room_zone_regulation_control "Zone regulation control" {channel="plugwiseha:zone:home:living_room_zone:regulationControl"}
 
 Number:Temperature living_room_radiator_temperature "Radiator valve temperature" {channel="plugwiseha:appliance_valve:home:living_room_radiator:temperature"}
 Number:Temperature living_room_radiator_temperature_setpoint "Radiator valve temperature setpoint" {channel="plugwiseha:appliance_valve:home:living_room_radiator:setpointTemperature"}
@@ -181,6 +183,8 @@ sitemap plugwiseha label="PlugwiseHA Binding"
 		Setpoint item=living_room_zone_temperature_setpoint label="Living room [%.1f °C]" minValue=5.0 maxValue=25 step=0.5
 		Text item=living_room_zone_presetScene
 		Switch item=living_room_zone_preheat
+		Text item=living_room_zone_regulation_control
+		Switch item=living_room_zone_cooling
 
 		Text item=living_room_radiator_temperature
 		Setpoint item=living_room_radiator_temperature_setpoint label="Living room [%.1f °C]" minValue=5.0 maxValue=25 step=0.5
