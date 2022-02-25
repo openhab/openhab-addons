@@ -18,6 +18,7 @@
 				<context>serial-port</context>
 				<label>USB Port</label>
 				<description>USB port the device is connected to i.e. /dev/ttyUSB0</description>
+				<limitToOptions>false</limitToOptions>
 			</parameter>
 			<parameter name="reporting" type="boolean">
 				<default>true</default>
