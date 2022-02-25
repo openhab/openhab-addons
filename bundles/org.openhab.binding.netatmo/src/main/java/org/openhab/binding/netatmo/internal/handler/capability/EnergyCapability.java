@@ -103,7 +103,7 @@ public class EnergyCapability extends Capability<EnergyApi> {
     public void callSetRoomThermTemp(String roomId, double temperature) {
         try {
             api.setRoomThermpoint(homeId, roomId, SetpointMode.MANUAL, setpointEndTimeFromNow(setPointDefaultDuration),
-                    temperature > 30 ? 30 : temperature);
+                    temperature);
             expireData();
         } catch (NetatmoException e) {
             logger.warn("Error setting room target temperature '{}' : {}", roomId, e.getMessage());
