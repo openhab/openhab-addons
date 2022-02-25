@@ -10,12 +10,12 @@ This binding integrates with [Ubiquiti UniFi Networks](https://www.ubnt.com/prod
 * `wlan` - A wireless network thing. Control Wi-Fi network and easy access to access.
 * `wirelessClient` - Any wireless client connected to a UniFi wireless network
 * `wiredClient` - A wired client connected to the UniFi network
-* `poePort` - A PoE (Power Over Ethernet) port on a Unifi switch
+* `poePort` - A PoE (Power over Ethernet) port on a UniFi switch
 
 ## Discovery
 
-The binding supports manual discovery of things connected to a controller.
-To enable discovery configure the controller thing and manual start discovery.
+The binding supports discovery of things connected to a UniFi controller (Bridge).
+To discover things start the discovery process manually.
 
 ## Binding Configuration
 

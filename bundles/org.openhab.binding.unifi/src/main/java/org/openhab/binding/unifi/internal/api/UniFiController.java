@@ -21,16 +21,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
-import org.openhab.binding.unifi.internal.api.model.UnfiPortOverride;
-import org.openhab.binding.unifi.internal.api.model.UniFiClient;
-import org.openhab.binding.unifi.internal.api.model.UniFiControllerRequest;
-import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
-import org.openhab.binding.unifi.internal.api.model.UniFiPortTable;
-import org.openhab.binding.unifi.internal.api.model.UniFiSite;
-import org.openhab.binding.unifi.internal.api.model.UniFiUnknownClient;
-import org.openhab.binding.unifi.internal.api.model.UniFiWiredClient;
-import org.openhab.binding.unifi.internal.api.model.UniFiWirelessClient;
-import org.openhab.binding.unifi.internal.api.model.UniFiWlan;
+import org.openhab.binding.unifi.internal.api.dto.UnfiPortOverride;
+import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
+import org.openhab.binding.unifi.internal.api.dto.UniFiPortTable;
+import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
+import org.openhab.binding.unifi.internal.api.dto.UniFiUnknownClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiWiredClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiWirelessClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
 import org.openhab.binding.unifi.internal.api.util.UniFiClientDeserializer;
 import org.openhab.binding.unifi.internal.api.util.UniFiClientInstanceCreator;
 import org.openhab.binding.unifi.internal.api.util.UniFiDeviceInstanceCreator;
@@ -55,7 +54,7 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class UniFiController {
 
-    private static final int INSIGHT_WITH_HOURS = 7 * 24; // scurb: Changed to 7 days.
+    private static final int INSIGHT_WITHIN_HOURS = 7 * 24; // scurb: Changed to 7 days.
 
     private final Logger logger = LoggerFactory.getLogger(UniFiController.class);
 
@@ -275,7 +274,7 @@ public class UniFiController {
     private UniFiClient @Nullable [] getInsights(final UniFiSite site) throws UniFiException {
         final UniFiControllerRequest<UniFiClient[]> req = newRequest(UniFiClient[].class, HttpMethod.GET, gson);
         req.setAPIPath(String.format("/api/s/%s/stat/alluser", site.getName()));
-        req.setQueryParameter("within", INSIGHT_WITH_HOURS);
+        req.setQueryParameter("within", INSIGHT_WITHIN_HOURS);
         return executeRequest(req);
     }
 }

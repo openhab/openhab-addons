@@ -16,7 +16,7 @@ import java.lang.reflect.Type;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
-import org.openhab.binding.unifi.internal.api.model.UniFiWlan;
+import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
 
 import com.google.gson.InstanceCreator;
 

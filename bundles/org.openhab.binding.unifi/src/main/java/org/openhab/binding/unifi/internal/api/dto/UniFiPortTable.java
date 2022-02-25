@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.unifi.internal.api.model;
+package org.openhab.binding.unifi.internal.api.dto;
 
 /**
  * The {@link UniFiPortTable} represents the data model of UniFi port table, which is an extend of port override.

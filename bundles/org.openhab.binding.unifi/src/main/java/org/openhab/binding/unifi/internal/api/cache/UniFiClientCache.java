@@ -20,7 +20,7 @@ import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.MAC
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.unifi.internal.api.model.UniFiClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 
 /**
  * The {@link UniFiClientCache} is a specific implementation of {@link UniFiCache} for the purpose of caching

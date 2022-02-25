@@ -16,10 +16,10 @@ import java.lang.reflect.Type;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
-import org.openhab.binding.unifi.internal.api.model.UniFiClient;
-import org.openhab.binding.unifi.internal.api.model.UniFiUnknownClient;
-import org.openhab.binding.unifi.internal.api.model.UniFiWiredClient;
-import org.openhab.binding.unifi.internal.api.model.UniFiWirelessClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiUnknownClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiWiredClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiWirelessClient;
 
 import com.google.gson.InstanceCreator;
 

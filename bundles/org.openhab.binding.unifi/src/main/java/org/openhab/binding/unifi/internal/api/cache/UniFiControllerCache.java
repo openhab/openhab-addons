@@ -23,11 +23,11 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.unifi.internal.api.model.UniFiClient;
-import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
-import org.openhab.binding.unifi.internal.api.model.UniFiPortTable;
-import org.openhab.binding.unifi.internal.api.model.UniFiSite;
-import org.openhab.binding.unifi.internal.api.model.UniFiWlan;
+import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
+import org.openhab.binding.unifi.internal.api.dto.UniFiPortTable;
+import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
+import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

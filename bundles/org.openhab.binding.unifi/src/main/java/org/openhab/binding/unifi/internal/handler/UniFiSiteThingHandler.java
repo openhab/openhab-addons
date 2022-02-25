@@ -23,7 +23,7 @@ import org.openhab.binding.unifi.internal.UniFiSiteThingConfig;
 import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
-import org.openhab.binding.unifi.internal.api.model.UniFiSite;
+import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;

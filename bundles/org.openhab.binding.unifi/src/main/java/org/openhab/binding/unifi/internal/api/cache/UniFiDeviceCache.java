@@ -16,7 +16,7 @@ import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.MAC
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
+import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
 
 /**
  * The {@link UniFiDeviceCache} is a specific implementation of {@link UniFiCache} for the purpose of caching

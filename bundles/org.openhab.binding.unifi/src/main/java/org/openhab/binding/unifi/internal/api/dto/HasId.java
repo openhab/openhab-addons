@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.unifi.internal.api.model;
+package org.openhab.binding.unifi.internal.api.dto;
 
 /**
  * Data classes that have an id as identifier.

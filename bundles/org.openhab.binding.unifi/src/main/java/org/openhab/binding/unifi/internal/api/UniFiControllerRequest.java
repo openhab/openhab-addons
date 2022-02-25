@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.unifi.internal.api.model;
+package org.openhab.binding.unifi.internal.api;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -41,14 +41,6 @@ import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpURI;
 import org.eclipse.jetty.http.MimeTypes;
-import org.openhab.binding.unifi.internal.api.UniFiCommunicationException;
-import org.openhab.binding.unifi.internal.api.UniFiController;
-import org.openhab.binding.unifi.internal.api.UniFiException;
-import org.openhab.binding.unifi.internal.api.UniFiExpiredSessionException;
-import org.openhab.binding.unifi.internal.api.UniFiInvalidCredentialsException;
-import org.openhab.binding.unifi.internal.api.UniFiInvalidHostException;
-import org.openhab.binding.unifi.internal.api.UniFiNotAuthorizedException;
-import org.openhab.binding.unifi.internal.api.UniFiSSLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +57,7 @@ import com.google.gson.JsonParser;
  * @param <T> The response type expected as a result of the request's execution
  */
 @NonNullByDefault
-public class UniFiControllerRequest<T> {
+class UniFiControllerRequest<T> {
 
     private static final String CONTENT_TYPE_APPLICATION_JSON_UTF_8 = MimeTypes.Type.APPLICATION_JSON_UTF_8.asString();
 

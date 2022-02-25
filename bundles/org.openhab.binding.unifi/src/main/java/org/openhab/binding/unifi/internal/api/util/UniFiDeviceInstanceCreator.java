@@ -17,7 +17,7 @@ import java.lang.reflect.Type;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
-import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
+import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
 
 import com.google.gson.InstanceCreator;
 

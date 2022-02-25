@@ -17,7 +17,7 @@ import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.NAM
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.unifi.internal.api.model.UniFiWlan;
+import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
 
 /**
  * The {@link UniFiWlanCache} is a specific implementation of {@link UniFiCache} for the purpose of caching
