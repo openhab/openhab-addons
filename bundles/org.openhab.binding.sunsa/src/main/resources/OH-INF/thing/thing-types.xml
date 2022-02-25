@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sunsa"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="cloudBridge">
+		<label>Sunsa Bridge</label>
+		<description>Required to make network calls to the cloud service</description>
+		<config-description>
+			<parameter name="userId" type="text" required="true" pattern="^[0-9]+$">
+				<label>User ID</label>
+				<description>ID of the User. Can be retrieved form the Sunsa mobile app.</description>
+			</parameter>
+			<parameter name="apiKey" type="text" required="true">
+				<label>API Key</label>
+				<description>Public API key to authenticate with Sunsa. Can be retrieved from the Sunsa mobile app.</description>
+			</parameter>
+			<parameter name="baseUri" type="text" required="false" pattern="^https?:\/\/.+$">
+				<label>Sunsa Endpoint</label>
+				<description>If provided, this will be used as the sunsa base uri when making API calls to the cloud.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloudBridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Sunsa Device</label>
+		<description>Sunsa Device (i.e. Sunsa Wand)</description>
+
+		<channels>
+			<channel id="rawPosition" typeId="raw-position"/>
+			<channel id="configurablePosition" typeId="position"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+		<config-description>
+			<parameter-group name="configurablePositionGroup">
+				<label>Configurable position</label>
+				<description>
+					The configurable position channel can be customized according to user needs. For
+					example the closed and
+					open position can be set to the pair [-80, 80] to create a
+					channel where the Open state is set to close up position
+					at 80% and the Closed state
+					is set to closed down position at 80%. This can also be reversed to [80, -80] if
+					desired.
+				</description>
+			</parameter-group>
+
+			<parameter name="id" type="text" required="true">
+				<label>Device ID</label>
+				<description>ID of the device</description>
+			</parameter>
+			<parameter name="configurablePositionClosed" type="integer" required="false"
+				groupName="configurablePositionGroup" min="-100" max="100">
+				<default>-100</default>
+				<label>Configurable position closed</label>
+				<description>Closed position value for the configurablePosition channel. Value must be between [-100, 100].</description>
+			</parameter>
+			<parameter name="configurablePositionOpen" type="integer" required="false"
+				groupName="configurablePositionGroup" min="-100" max="100">
+				<default>0</default>
+				<label>Configurable position open</label>
+				<description>Open position value for configurablePosition channel. Value must be between [-100, 100].</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="position">
+		<item-type>Rollershutter</item-type>
+		<label>Position</label>
+		<description>Position of the device</description>
+		<category>Blinds</category>
+		<state min="0" max="100" step="10"></state>
+	</channel-type>
+	<channel-type id="raw-position">
+		<item-type>Number</item-type>
+		<label>Raw Position</label>
+		<description>Raw position of the device between -100 to 100</description>
+		<category>Blinds</category>
+		<state min="-100" max="100" step="10"></state>
+	</channel-type>
+</thing:thing-descriptions>
