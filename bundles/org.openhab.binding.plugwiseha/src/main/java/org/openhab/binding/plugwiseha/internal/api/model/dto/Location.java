@@ -109,8 +109,11 @@ public class Location extends PlugwiseBaseModel implements PlugwiseComparableDat
         return this.actuatorFunctionalities.getCoolingAllowed();
     }
 
-    public Optional<String> getRegulationControl() {
-        return this.actuatorFunctionalities.getRegulationControl();
+    public String getRegulationControl() {
+        if (this.actuatorFunctionalities != null) {
+            return this.actuatorFunctionalities.getRegulationControl();
+        }
+        return null;
     }
 
     public int applianceCount() {

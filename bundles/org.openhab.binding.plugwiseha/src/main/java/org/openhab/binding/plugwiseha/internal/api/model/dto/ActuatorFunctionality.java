@@ -81,8 +81,8 @@ public class ActuatorFunctionality extends PlugwiseBaseModel implements Plugwise
         return updatedDate;
     }
 
-    public Optional<String> getRegulationControl() {
-        return Optional.ofNullable(regulationControl);
+    public String getRegulationControl() {
+        return regulationControl;
     }
 
     public Optional<String> getCoolingAllowed() {

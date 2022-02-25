@@ -35,8 +35,12 @@ public class ActuatorFunctionalities extends PlugwiseHACollection<ActuatorFuncti
                 .map(Boolean::parseBoolean);
     }
 
-    public Optional<String> getRegulationControl() {
-        return this.getFunctionalityThermostat().flatMap(ActuatorFunctionality::getRegulationControl);
+    public String getRegulationControl() {
+        ActuatorFunctionality functionality = this.getFunctionalityThermostat().orElse(null);
+        if (functionality != null) {
+            return functionality.getRegulationControl();
+        }
+        return null;
     }
 
     public Optional<Boolean> getCoolingAllowed() {
