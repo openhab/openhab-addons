@@ -224,7 +224,10 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
                 }
                 break;
             case ZONE_REGULATION_CHANNEL:
-                state = new StringType(entity.getRegulationControl().orElse(null));
+                String value = entity.getRegulationControl();
+                if (value != null) {
+                    state = new StringType(entity.getRegulationControl());
+                }
                 break;
             case ZONE_TEMPERATURE_CHANNEL:
                 if (entity.getTemperature().isPresent()) {
