@@ -44,6 +44,7 @@ import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaOnOffHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaOnOffHeatingSystemHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaPergolaHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaPodHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaRainSensorHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaRollerShutterHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaSilentRollerShutterHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaSirenHandler;
@@ -196,6 +197,8 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaHitachiDHWHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_HITACHI_ATWMC)) {
             return new SomfyTahomaHitachiATWMCHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_RAINSENSOR)) {
+            return new SomfyTahomaRainSensorHandler(thing);
         } else {
             return null;
         }

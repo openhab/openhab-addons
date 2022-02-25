@@ -340,6 +340,13 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                     logUnsupportedDevice(device);
                 }
                 break;
+            case CLASS_RAIN_SENSOR:
+                if ("RainSensor".equals(device.getWidget())) {
+                    // widget: RainSensor
+                    deviceDiscovered(device, THING_TYPE_RAINSENSOR, place);
+                } else {
+                    logUnsupportedDevice(device);
+                }
             case THING_PROTOCOL_GATEWAY:
             case THING_REMOTE_CONTROLLER:
                 // widget: AlarmRemoteController

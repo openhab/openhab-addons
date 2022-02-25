@@ -28,6 +28,7 @@ Any home automation system based on the OverKiz API is potentially supported.
 - occupancy sensors (OPEN/CLOSE contact)
 - smoke sensors (OPEN/CLOSE contact, alarm check)
 - contact sensors (OPEN/CLOSE contact)
+- rain sensors (OPEN/CLOSE contact)
 - temperature sensors (get temperature)
 - electricity sensors (get energy consumption)
 - door locks (LOCK/UNLOCK, OPEN/CLOSE commands)
@@ -80,7 +81,7 @@ Please see the example below.
 | action group                                                                  | execute_action                  | switch which reacts to ON command and triggers the predefined Tahoma action                                                                                                                                                       |
 | onoff, light                                                                  | switch                          | reacts to standard ON/OFF commands                                                                                                                                                                                                |
 | dimmer light                                                                  | light_intensity                 | sets/gets intensity of the dimmer light or ON/OFF                                                                                                                                                                                 |
-| smoke sensor, occupancy sensor, contact sensor & water sensor                 | contact                         | normal value is CLOSE, changes to OPEN when detection triggered                                                                                                                                                                   |
+| smoke sensor, occupancy sensor, contact sensor, water sensor & rain sensor    | contact                         | normal value is CLOSE, changes to OPEN when detection triggered                                                                                                                                                                   |
 | smoke sensor, occupancy sensor, contact sensor & water sensor                 | sensor_defect                   | indicates the health of the sensor (dead, lowBatter, maintenanceRequired, noDefect)                                                                                                                                               |
 | smoke sensor                                                                  | radio_battery                   | maintenance radio part battery state (low, normal)                                                                                                                                                                                |
 | smoke sensor                                                                  | sensor_battery                  | maintenance sensor part battery state (absence, low, normal)                                                                                                                                                                      |

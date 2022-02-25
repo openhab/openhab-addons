@@ -172,6 +172,9 @@ public class SomfyTahomaBindingConstants {
     // HitachiAirToWaterMainComponent
     public static final ThingTypeUID THING_TYPE_HITACHI_ATWMC = new ThingTypeUID(BINDING_ID, "hitachiatwmc");
 
+    // RainSensor
+    public static final ThingTypeUID THING_TYPE_RAINSENSOR = new ThingTypeUID(BINDING_ID, "rainsensor");
+
     // List of all Channel ids
     public static final String RSSI = "rssi";
 
@@ -211,8 +214,10 @@ public class SomfyTahomaBindingConstants {
     public static final String LOCK = "lock";
     public static final String OPEN = "open";
 
-    // Smoke sensor, Occupancy sensor, Contact sensor, Water sensor
+    // Smoke sensor, Occupancy sensor, Contact sensor, Water sensor, Rain sensor
     public static final String CONTACT = "contact";
+
+    // Smoke sensor, Occupancy sensor, Contact sensor, Water sensor
     public static final String SENSOR_DEFECT = "sensor_defect";
 
     // Humidity sensor
@@ -469,6 +474,7 @@ public class SomfyTahomaBindingConstants {
     public static final String CLASS_CAMERA = "Camera";
     public static final String CLASS_WATER_HEATING_SYSTEM = "WaterHeatingSystem";
     public static final String CLASS_HITACHI_HEATING_SYSTEM = "HitachiHeatingSystem";
+    public static final String CLASS_RAIN_SENSOR = "RainSensor";
 
     // unsupported uiClasses
     public static final String THING_PROTOCOL_GATEWAY = "ProtocolGateway";
@@ -493,7 +499,7 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_WATERSENSOR, THING_TYPE_HUMIDITYSENSOR, THING_TYPE_MYFOX_ALARM, THING_TYPE_THERMOSTAT,
             THING_TYPE_DIMMER_LIGHT, THING_TYPE_EXTERIOR_HEATING_SYSTEM, THING_TYPE_VALVE_HEATING_SYSTEM,
             THING_TYPE_BIOCLIMATIC_PERGOLA, THING_TYPE_WATERHEATINGSYSTEM, THING_TYPE_HITACHI_ATWHZ,
-            THING_TYPE_HITACHI_DHW, THING_TYPE_HITACHI_ATWMC));
+            THING_TYPE_HITACHI_DHW, THING_TYPE_HITACHI_ATWMC, THING_TYPE_RAINSENSOR));
 
     // somfy gateways
     public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {
