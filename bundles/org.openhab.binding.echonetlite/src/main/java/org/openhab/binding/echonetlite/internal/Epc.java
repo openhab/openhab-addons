@@ -320,7 +320,7 @@ public interface Epc {
                 new Option("Automatic", 0x41),
                 new Option("Cooling", 0x42),
                 new Option("Heating", 0x43),
-                new Option("Dehumidification", 0x44),
+                new Option("Dry", 0x44),
                 new Option("Fan", 0x45),
                 new Option("Other", 0x40))),
 
