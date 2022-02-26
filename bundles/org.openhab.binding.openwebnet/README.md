@@ -123,13 +123,13 @@ Devices can be discovered automatically using an Inbox Scan after a gateway has 
 
 For any manually added device, you must configure:
 
-- the associated gateway (`Parent Bridge` menu)
-- the `where` configuration parameter (`OpenWebNet Address`):
-    - example for BUS/SCS:
-        - light device with WHERE address Point to Point `A=2 PL=4` --> `where="24"`
-        - light device with WHERE address Point to Point `A=03 PL=11` on local bus --> `where="0311#4#01"`
-        - CEN scenario with WHERE address Point to Point `A=05 PL=12` --> `where="0512"`
-        - CEN+ configured scenario `5`: add a `2` before --> `where="25"`
+- the associated gateway Thing (`Parent Bridge` menu)
+- the `where` configuration parameter (`OpenWebNet Address`): this is the OpenWebNet address configured for the device in the BTicino/Legrand system. This address can be found either on the device itself (Physical configuration, using jumpers in case of BUS) or through the MyHOME_Suite software (Virtual configuration). The address can have several formats depending on the device/system:
+    - example for BUS/SCS system, address Point-to-point with Area (A) and Light-point (PL):
+        - light device A=`2` (Area 2), PL=`4` (Light-point 4) --> `where="24"`
+        - light device A=`03`, PL=`11` on local bus --> `where="0311#4#01"`
+        - CEN scenario A=`05`, PL=`12` --> `where="0512"`
+        - CEN+ scenario `5`: add a `2` before --> `where="25"`
         - Dry Contact or IR Interface `99`: add a `3` before --> `where="399"`
     - example for ZigBee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
  
@@ -141,7 +141,7 @@ In BTicino MyHOME Thermoregulation (WHO=4) each **zone** has associated a thermo
 Thermo zones can be configured defining a `bus_thermo_zone` Thing for each zone with the following parameters:
 
 - the `where` configuration parameter (`OpenWebNet Address`):
-    - example BUS/SCS Thermo zone `1` --> `where="1"` 
+    - example BUS/SCS zone `1` --> `where="1"` 
 - the `standAlone` configuration parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4 or 99 zones). `standAlone=true` means no Central Unit is present in the system.
 
 Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with the following parameters:

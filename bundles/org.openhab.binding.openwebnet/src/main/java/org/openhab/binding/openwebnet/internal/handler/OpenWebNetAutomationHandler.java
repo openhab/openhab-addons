@@ -59,11 +59,9 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
 
     private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("ss.SSS");
 
-    private static long lastAllDevicesRefreshTS = -1; // timestamp when the last request for all device refresh was sent
-    protected static final int ALL_DEVICES_REFRESH_INTERVAL_MSEC = 60000; // interval in msec before sending another all
-                                                                          // devices refresh request
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.AUTOMATION_SUPPORTED_THING_TYPES;
+
+    private static long lastAllDevicesRefreshTS = 0; // ts when last all device refresh was sent for this handler
 
     // moving states
     public static final int MOVING_STATE_STOPPED = 0;
@@ -141,38 +139,36 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void requestChannelState(ChannelUID channel) {
-        logger.debug("requestChannelState() thingUID={} channel={}", thing.getUID(), channel.getId());
+        super.requestChannelState(channel);
         Where w = deviceWhere;
         if (w != null) {
             try {
                 send(Automation.requestStatus(w.value()));
             } catch (OWNException e) {
-                logger.debug("Exception while requesting channel {} state: {}", channel, e.getMessage(), e);
+                logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-        } else {
-            logger.warn("Could not requestChannelState(): deviceWhere is null");
         }
     }
 
     @Override
+    protected long getRefreshAllLastTS() {
+        return lastAllDevicesRefreshTS;
+    };
+
+    @Override
     protected void refreshDevice(boolean refreshAll) {
-        OpenWebNetBridgeHandler brH = bridgeHandler;
-        if (brH != null) {
-            if (brH.isBusGateway() && refreshAll) {
-                long now = System.currentTimeMillis();
-                if (now - lastAllDevicesRefreshTS > ALL_DEVICES_REFRESH_INTERVAL_MSEC) {
-                    try {
-                        send(Automation.requestStatus(WhereLightAutom.GENERAL.value()));
-                        lastAllDevicesRefreshTS = now;
-                    } catch (OWNException e) {
-                        logger.warn("Excpetion while requesting all devices refresh: {}", e.getMessage());
-                    }
-                } else {
-                    logger.debug("Refresh all devices just sent...");
-                }
-            } else {
-                requestChannelState(new ChannelUID("any")); // channel here does not make any difference
+        if (refreshAll) {
+            logger.debug("--- refreshDevice() : refreshing GENERAL... ({})", thing.getUID());
+            try {
+                send(Automation.requestStatus(WhereLightAutom.GENERAL.value()));
+                lastAllDevicesRefreshTS = System.currentTimeMillis();
+            } catch (OWNException e) {
+                logger.warn("Excpetion while requesting all devices refresh: {}", e.getMessage());
             }
+        } else {
+            logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
+            requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_SHUTTER));
         }
     }
 

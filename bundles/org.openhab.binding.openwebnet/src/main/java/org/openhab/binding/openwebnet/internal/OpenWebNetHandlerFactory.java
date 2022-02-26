@@ -54,25 +54,25 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (OpenWebNetBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("creating NEW BRIDGE Handler");
+            logger.debug("creating NEW BRIDGE Handler --- {}", thing.getUID());
             return new OpenWebNetBridgeHandler((Bridge) thing);
         } else if (OpenWebNetGenericHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("creating NEW GENERIC Handler");
+            logger.debug("creating NEW GENERIC Handler --- {}", thing.getUID());
             return new OpenWebNetGenericHandler(thing);
         } else if (OpenWebNetLightingHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("creating NEW LIGHTING Handler");
+            logger.debug("creating NEW LIGHTING Handler --- {}", thing.getUID());
             return new OpenWebNetLightingHandler(thing);
         } else if (OpenWebNetAutomationHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("creating NEW AUTOMATION Handler");
+            logger.debug("creating NEW AUTOMATION Handler --- {}", thing.getUID());
             return new OpenWebNetAutomationHandler(thing);
         } else if (OpenWebNetEnergyHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("creating NEW ENERGY Handler");
+            logger.debug("creating NEW ENERGY Handler --- {}", thing.getUID());
             return new OpenWebNetEnergyHandler(thing);
         } else if (OpenWebNetThermoregulationHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("creating NEW THERMO Handler");
+            logger.debug("creating NEW THERMO Handler --- {}", thing.getUID());
             return new OpenWebNetThermoregulationHandler(thing);
         } else if (OpenWebNetScenarioHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("creating NEW SCENARIO Handler");
+            logger.debug("creating NEW SCENARIO Handler --- {}", thing.getUID());
             return new OpenWebNetScenarioHandler(thing);
         }
         logger.warn("ThingType {} is not supported by this binding", thing.getThingTypeUID());
