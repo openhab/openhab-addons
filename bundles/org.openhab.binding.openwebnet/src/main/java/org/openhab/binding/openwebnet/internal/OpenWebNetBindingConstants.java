@@ -148,7 +148,7 @@ public class OpenWebNetBindingConstants {
     public static final String CONFIG_PROPERTY_SCENARIO_BUTTONS = "buttons";
     public static final String CONFIG_PROPERTY_STANDALONE = "standAlone";
 
-    // BUS gw config properties
+    // gw config properties
     public static final String CONFIG_PROPERTY_HOST = "host";
     public static final String CONFIG_PROPERTY_SERIAL_PORT = "serialPort";
     // properties
