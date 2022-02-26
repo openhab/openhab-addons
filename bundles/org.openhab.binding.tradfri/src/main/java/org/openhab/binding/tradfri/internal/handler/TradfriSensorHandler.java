@@ -15,6 +15,7 @@ package org.openhab.binding.tradfri.internal.handler;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.tradfri.internal.TradfriCoapClient;
 import org.openhab.binding.tradfri.internal.model.TradfriSensorData;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -71,8 +72,13 @@ public class TradfriSensorHandler extends TradfriThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (active) {
             if (command instanceof RefreshType) {
-                logger.debug("Refreshing channel {}", channelUID);
-                coapClient.asyncGet(this);
+                TradfriCoapClient coapClient = this.coapClient;
+                if (coapClient != null) {
+                    logger.debug("Refreshing channel {}", channelUID);
+                    coapClient.asyncGet(this);
+                } else {
+                    logger.debug("coapClient is null!");
+                }
                 return;
             }
 
