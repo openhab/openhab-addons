@@ -20,7 +20,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Tobias Bräutigam - Initial contribution
- * @author Miguel Álvarez - Register audio source and refactor
+ * @author Miguel Álvarez - Add new configuration options to sink and source
  */
 @NonNullByDefault
 public class PulseaudioBindingConstants {

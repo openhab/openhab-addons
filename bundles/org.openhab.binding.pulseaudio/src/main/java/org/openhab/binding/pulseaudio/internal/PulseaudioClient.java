@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * On the pulseaudio server the module-cli-protocol-tcp has to be loaded.
  *
  * @author Tobias Bräutigam - Initial contribution
- * @author Miguel Álvarez - Register audio source and refactor
+ * @author Miguel Álvarez - changes for loading audio source module and nullability annotations
  */
 @NonNullByDefault
 public class PulseaudioClient {
@@ -413,7 +413,7 @@ public class PulseaudioClient {
             } else {
                 String moduleOptions = itemType + "=" + item.getPaName() + " port=" + simpleTcpPortToTry;
                 if (item instanceof Source && format != null && rate != null && channels != null) {
-                    moduleOptions = moduleOptions + String.format(" record=true format=%s rate=%s channels=%s", format,
+                    moduleOptions = moduleOptions + String.format(" record=true format=%s rate=%d channels=%d", format,
                             rate.longValue(), channels.intValue());
                 }
                 sendRawCommand("load-module module-simple-protocol-tcp " + moduleOptions);

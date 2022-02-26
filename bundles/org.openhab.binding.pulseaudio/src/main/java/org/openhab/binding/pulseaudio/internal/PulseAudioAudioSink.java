@@ -38,7 +38,8 @@ import org.slf4j.LoggerFactory;
  * The audio sink for openhab, implemented by a connection to a pulseaudio sink
  *
  * @author Gwendal Roulleau - Initial contribution
- * @author Miguel Álvarez - Register audio source and refactor
+ * @author Miguel Álvarez - move some code to the PulseaudioSimpleProtocolStream class so sink and source can extend
+ *         from it.
  *
  */
 @NonNullByDefault
