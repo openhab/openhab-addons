@@ -37,7 +37,8 @@ public final class EcovacsApiUrlFactory {
     }
 
     public static String getAuthUrl(EcovacsApiConfiguration config) {
-        return String.format("https://gl-%1$s-openapi.ecovacs.com/v1/global/auth/getAuthCode", config.getCountry());
+        return String.format("https://gl-%1$s-openapi.ecovacs.%2$s/v1/global/auth/getAuthCode", config.getCountry(),
+                getApiUrlTld(config));
     }
 
     public static String getPortalUsersUrl(EcovacsApiConfiguration config) {
@@ -57,12 +58,17 @@ public final class EcovacsApiUrlFactory {
     }
 
     private static String getPortalUrl(EcovacsApiConfiguration config) {
-        return String.format("https://portal-%1$s.ecouser.net/api", config.getContinent());
+        String continentSuffix = "cn".equalsIgnoreCase(config.getCountry()) ? "" : "-" + config.getContinent();
+        return String.format("https://portal%1$s.ecouser.net/api", continentSuffix);
     }
 
     private static String getMainUrl(EcovacsApiConfiguration config) {
-        return String.format("https://gl-%1$s-api.ecovacs.com/v1/private/%1$s/%2$s/%3$s/%4$s/%5$s/%6$s/%7$s",
-                config.getCountry(), config.getLanguage(), config.getDeviceId(), config.getAppCode(),
-                config.getAppVersion(), config.getChannel(), config.getDeviceType());
+        return String.format("https://gl-%1$s-api.ecovacs.%2$s/v1/private/%1$s/%3$s/%4$s/%5$s/%6$s/%7$s/%8$s",
+                config.getCountry(), getApiUrlTld(config), config.getLanguage(), config.getDeviceId(),
+                config.getAppCode(), config.getAppVersion(), config.getChannel(), config.getDeviceType());
+    }
+
+    private static String getApiUrlTld(EcovacsApiConfiguration config) {
+        return "cn".equalsIgnoreCase(config.getCountry()) ? "cn" : "com";
     }
 }

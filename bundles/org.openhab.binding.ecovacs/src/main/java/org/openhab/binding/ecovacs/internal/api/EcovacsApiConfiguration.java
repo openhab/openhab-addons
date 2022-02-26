@@ -61,6 +61,11 @@ public final class EcovacsApiConfiguration {
     }
 
     public String getCountry() {
+        if ("gb".equalsIgnoreCase(country)) {
+            // United Kingdom's ISO 3166 abbreviation is 'gb', but Ecovacs wants the TLD instead, which is 'uk' for
+            // historical reasons
+            return "uk";
+        }
         return country;
     }
 

@@ -31,6 +31,7 @@
 					<option value="ww">World</option>
 					<option value="eu">Europe</option>
 					<option value="na">North America</option>
+					<option value="as">Asia</option>
 				</options>
 			</parameter>
 		</config-description>
