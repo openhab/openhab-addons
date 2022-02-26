@@ -93,8 +93,10 @@ public class EcovacsBindingConstants {
 
         public String getMappedValue(T key) {
             StateOptionEntry<T> entry = get(key);
-            assert entry != null;
-            return entry.value;
+            if (entry != null) {
+                return entry.value;
+            }
+            throw new IllegalArgumentException("No mapping for key " + key);
         }
 
         public @Nullable T findMappedEnumValue(String value) {

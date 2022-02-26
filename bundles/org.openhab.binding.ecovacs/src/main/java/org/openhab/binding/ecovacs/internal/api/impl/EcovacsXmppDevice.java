@@ -204,8 +204,8 @@ public class EcovacsXmppDevice implements EcovacsDevice {
                 }
             });
 
+            PingHandler pingHandler = new PingHandler(conn, scheduler, listener, targetAddress);
             messageHandler = new IncomingMessageHandler(listener);
-            pingHandler = new PingHandler(conn, scheduler, listener, targetAddress);
 
             Roster roster = Roster.getInstanceFor(conn);
             roster.setRosterLoadedAtLogin(false);
@@ -216,6 +216,7 @@ public class EcovacsXmppDevice implements EcovacsDevice {
             this.connection = conn;
             this.ownAddress = ownAddress;
             this.targetAddress = targetAddress;
+            this.pingHandler = pingHandler;
 
             conn.login();
             conn.setReplyTimeout(1000);
@@ -258,6 +259,7 @@ public class EcovacsXmppDevice implements EcovacsDevice {
         private static final long POST_FAILURE_INTERVAL = 5; // seconds
         private static final int MAX_FAILURES = 4;
 
+        private final XMPPTCPConnection connection;
         private final PingManager pingManager;
         private final ScheduledExecutorService scheduler;
         private final EventListener listener;
@@ -267,6 +269,7 @@ public class EcovacsXmppDevice implements EcovacsDevice {
         private int failedPings = 0;
 
         PingHandler(XMPPTCPConnection connection, ScheduledExecutorService scheduler, EventListener listener, Jid to) {
+            this.connection = connection;
             this.pingManager = PingManager.getInstanceFor(connection);
             this.scheduler = scheduler;
             this.listener = listener;

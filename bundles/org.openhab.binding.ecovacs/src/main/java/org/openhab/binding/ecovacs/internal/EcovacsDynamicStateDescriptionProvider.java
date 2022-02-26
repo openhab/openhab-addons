@@ -26,6 +26,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.openhab.core.types.StateOption;
 import org.osgi.framework.Bundle;
@@ -55,7 +56,9 @@ public class EcovacsDynamicStateDescriptionProvider extends BaseDynamicStateDesc
     @Override
     protected List<StateOption> localizedStateOptions(List<StateOption> options, Channel channel,
             @Nullable Locale locale) {
-        String channelTypeId = channel.getChannelTypeUID().getId();
+        @Nullable
+        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        String channelTypeId = channelTypeUID != null ? channelTypeUID.getId() : "";
         if (CHANNEL_TYPE_ID_CLEAN_MODE.equals(channelTypeId) || CHANNEL_TYPE_ID_LAST_CLEAN_MODE.equals(channelTypeId)) {
             final Bundle bundle = bundleContext.getBundle();
             return options.stream().map(opt -> {
