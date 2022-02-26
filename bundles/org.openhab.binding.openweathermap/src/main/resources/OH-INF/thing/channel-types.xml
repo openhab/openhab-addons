@@ -455,10 +455,6 @@
 		<label>Apparent Temperature</label>
 		<description>Current apparent temperature.</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -507,10 +503,6 @@
 		<label>Precipitation</label>
 		<description>Precipitation volume of the related timespan.</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 

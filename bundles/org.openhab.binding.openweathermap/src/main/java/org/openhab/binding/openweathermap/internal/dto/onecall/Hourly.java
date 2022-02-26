@@ -14,7 +14,6 @@ package org.openhab.binding.openweathermap.internal.dto.onecall;
 
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -28,52 +27,26 @@ import com.google.gson.annotations.SerializedName;
  * @author Wolfgang Klimt - Initial contribution
  */
 public class Hourly {
-
-    @SerializedName("dt")
-    @Expose
     private int dt;
-    @SerializedName("temp")
-    @Expose
     private double temp;
     @SerializedName("feels_like")
-    @Expose
     private double feelsLike;
-    @SerializedName("pressure")
-    @Expose
     private int pressure;
-    @SerializedName("humidity")
-    @Expose
     private int humidity;
     @SerializedName("dew_point")
-    @Expose
     private double dewPoint;
-    @SerializedName("clouds")
-    @Expose
     private int clouds;
-    @SerializedName("visibility")
-    @Expose
     private int visibility;
     @SerializedName("wind_speed")
-    @Expose
     private double windSpeed;
     @SerializedName("wind_deg")
-    @Expose
     private int windDeg;
     @SerializedName("wind_gust")
-    @Expose
     private double windGust;
-    @SerializedName("weather")
-    @Expose
     private List<Weather> weather = null;
-    @SerializedName("pop")
-    @Expose
     private double pop;
-    @SerializedName("rain")
-    @Expose
-    private Rain rain;
-    @SerializedName("snow")
-    @Expose
-    private Snow snow;
+    private Precipitation rain;
+    private Precipitation snow;
 
     public int getDt() {
         return dt;
@@ -179,19 +152,19 @@ public class Hourly {
         this.pop = pop;
     }
 
-    public Rain getRain() {
+    public Precipitation getRain() {
         return rain;
     }
 
-    public void setRain(Rain rain) {
+    public void setRain(Precipitation rain) {
         this.rain = rain;
     }
 
-    public Snow getSnow() {
+    public Precipitation getSnow() {
         return snow;
     }
 
-    public void setSnow(Snow snow) {
+    public void setSnow(Precipitation snow) {
         this.snow = snow;
     }
 }

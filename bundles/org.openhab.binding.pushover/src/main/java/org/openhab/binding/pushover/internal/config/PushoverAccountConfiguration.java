@@ -27,6 +27,7 @@ import org.openhab.binding.pushover.internal.dto.Sound;
  */
 @NonNullByDefault
 public class PushoverAccountConfiguration {
+    public static final Sound SOUND_DEFAULT = new Sound("default", "Default");
     public static final List<Sound> DEFAULT_SOUNDS = List.of(new Sound("alien", "Alien Alarm (long)"),
             new Sound("bike", "Bike"), new Sound("bugle", "Bugle"), new Sound("cashregister", "Cash Register"),
             new Sound("classical", "Classical"), new Sound("climb", "Climb (long)"), new Sound("cosmic", "Cosmic"),
@@ -36,7 +37,7 @@ public class PushoverAccountConfiguration {
             new Sound("persistent", "Persistent (long)"), new Sound("pianobar", "Piano Bar"),
             new Sound("pushover", "Pushover (default)"), new Sound("echo", "Pushover Echo (long)"),
             new Sound("siren", "Siren"), new Sound("spacealarm", "Space Alarm"), new Sound("tugboat", "Tug Boat"),
-            new Sound("updown", "Up Down (long)"), new Sound("vibrate", "Vibrate Only"));
+            new Sound("updown", "Up Down (long)"), new Sound("vibrate", "Vibrate Only"), SOUND_DEFAULT);
 
     public @Nullable String apikey;
     public @Nullable String user;

@@ -14,8 +14,7 @@ package org.openhab.binding.openweathermap.internal.dto.forecast.hourly;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openweathermap.internal.dto.base.Clouds;
-import org.openhab.binding.openweathermap.internal.dto.base.Rain;
-import org.openhab.binding.openweathermap.internal.dto.base.Snow;
+import org.openhab.binding.openweathermap.internal.dto.base.Precipitation;
 import org.openhab.binding.openweathermap.internal.dto.base.Weather;
 import org.openhab.binding.openweathermap.internal.dto.base.Wind;
 import org.openhab.binding.openweathermap.internal.dto.weather.Main;
@@ -33,8 +32,8 @@ public class List {
     private java.util.List<Weather> weather;
     private Clouds clouds;
     private Wind wind;
-    private @Nullable Rain rain;
-    private @Nullable Snow snow;
+    private @Nullable Precipitation rain;
+    private @Nullable Precipitation snow;
     private Sys sys;
     @SerializedName("dt_txt")
     private String dtTxt;
@@ -79,19 +78,19 @@ public class List {
         this.wind = wind;
     }
 
-    public @Nullable Rain getRain() {
+    public @Nullable Precipitation getRain() {
         return rain;
     }
 
-    public void setRain(Rain rain) {
+    public void setRain(Precipitation rain) {
         this.rain = rain;
     }
 
-    public @Nullable Snow getSnow() {
+    public @Nullable Precipitation getSnow() {
         return snow;
     }
 
-    public void setSnow(Snow snow) {
+    public void setSnow(Precipitation snow) {
         this.snow = snow;
     }
 

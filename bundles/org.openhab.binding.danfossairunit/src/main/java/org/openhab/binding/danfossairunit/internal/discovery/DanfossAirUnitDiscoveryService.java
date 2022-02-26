@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -82,6 +83,7 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
         try (DatagramSocket socket = new DatagramSocket()) {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
+                @Nullable
                 NetworkInterface networkInterface = interfaces.nextElement();
                 if (networkInterface.isLoopback() || !networkInterface.isUp()) {
                     continue;

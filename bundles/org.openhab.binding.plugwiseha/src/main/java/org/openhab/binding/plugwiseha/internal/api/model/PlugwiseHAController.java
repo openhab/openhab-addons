@@ -53,8 +53,7 @@ public class PlugwiseHAController {
 
     // Private member variables/constants
 
-    private static final int MAX_AGE_MINUTES_REFRESH = 10;
-    private static final int MAX_AGE_MINUTES_FULL_REFRESH = 30;
+    private static final int MAX_AGE_MINUTES_FULL_REFRESH = 15;
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.RFC_1123_DATE_TIME; // default Date format that
                                                                                           // will be used in conversion
 
@@ -68,18 +67,20 @@ public class PlugwiseHAController {
     private final int port;
     private final String username;
     private final String smileId;
+    private final int maxAgeSecondsRefresh;
 
     private @Nullable ZonedDateTime gatewayUpdateDateTime;
     private @Nullable ZonedDateTime gatewayFullUpdateDateTime;
     private @Nullable DomainObjects domainObjects;
 
-    public PlugwiseHAController(HttpClient httpClient, String host, int port, String username, String smileId)
-            throws PlugwiseHAException {
+    public PlugwiseHAController(HttpClient httpClient, String host, int port, String username, String smileId,
+            int maxAgeSecondsRefresh) throws PlugwiseHAException {
         this.httpClient = httpClient;
         this.host = host;
         this.port = port;
         this.username = username;
         this.smileId = smileId;
+        this.maxAgeSecondsRefresh = maxAgeSecondsRefresh;
 
         this.xStream = new PlugwiseHAXStream();
 
@@ -165,8 +166,12 @@ public class PlugwiseHAController {
         }
     }
 
-    public @Nullable Appliance getAppliance(String id, Boolean forceRefresh) throws PlugwiseHAException {
-        Appliances appliances = this.getAppliances(forceRefresh);
+    public @Nullable Appliance getAppliance(String id) throws PlugwiseHAException {
+        Appliances appliances = this.getAppliances(false);
+        if (!appliances.containsKey(id)) {
+            appliances = this.getAppliances(true);
+        }
+
         if (!appliances.containsKey(id)) {
             this.logger.debug("Plugwise Home Automation Appliance with id {} is not known", id);
             return null;
@@ -203,8 +208,11 @@ public class PlugwiseHAController {
         }
     }
 
-    public @Nullable Location getLocation(String id, Boolean forceRefresh) throws PlugwiseHAException {
-        Locations locations = this.getLocations(forceRefresh);
+    public @Nullable Location getLocation(String id) throws PlugwiseHAException {
+        Locations locations = this.getLocations(false);
+        if (!locations.containsKey(id)) {
+            locations = this.getLocations(true);
+        }
 
         if (!locations.containsKey(id)) {
             this.logger.debug("Plugwise Home Automation Zone with {} is not known", id);
@@ -221,10 +229,11 @@ public class PlugwiseHAController {
 
         request.setPath("/core/domain_objects");
         request.addPathParameter("@locale", "en-US");
-
         DomainObjects domainObjects = executeRequest(request);
-        this.gatewayUpdateDateTime = ZonedDateTime.parse(request.getServerDateTime(), PlugwiseHAController.FORMAT);
-        this.gatewayFullUpdateDateTime = this.gatewayUpdateDateTime;
+
+        ZonedDateTime serverTime = ZonedDateTime.parse(request.getServerDateTime(), PlugwiseHAController.FORMAT);
+        this.gatewayUpdateDateTime = serverTime;
+        this.gatewayFullUpdateDateTime = serverTime;
 
         return mergeDomainObjects(domainObjects);
     }
@@ -232,14 +241,16 @@ public class PlugwiseHAController {
     public @Nullable DomainObjects getUpdatedDomainObjects() throws PlugwiseHAException {
         ZonedDateTime localGatewayUpdateDateTime = this.gatewayUpdateDateTime;
         ZonedDateTime localGatewayFullUpdateDateTime = this.gatewayFullUpdateDateTime;
-        if (localGatewayUpdateDateTime == null
-                || localGatewayUpdateDateTime.isBefore(ZonedDateTime.now().minusMinutes(MAX_AGE_MINUTES_REFRESH))) {
+
+        if (localGatewayUpdateDateTime == null || localGatewayFullUpdateDateTime == null) {
             return getDomainObjects();
-        } else if (localGatewayFullUpdateDateTime == null || localGatewayFullUpdateDateTime
+        } else if (localGatewayUpdateDateTime.isBefore(ZonedDateTime.now().minusSeconds(maxAgeSecondsRefresh))) {
+            return getUpdatedDomainObjects(localGatewayUpdateDateTime);
+        } else if (localGatewayFullUpdateDateTime
                 .isBefore(ZonedDateTime.now().minusMinutes(MAX_AGE_MINUTES_FULL_REFRESH))) {
             return getDomainObjects();
         } else {
-            return getUpdatedDomainObjects(localGatewayUpdateDateTime);
+            return null;
         }
     }
 
@@ -311,17 +322,6 @@ public class PlugwiseHAController {
         }
     }
 
-    public void switchRelay(Appliance appliance, String state) throws PlugwiseHAException {
-        List<String> allowStates = Arrays.asList("on", "off");
-        if (allowStates.contains(state.toLowerCase())) {
-            if (state.toLowerCase().equals("on")) {
-                switchRelayOn(appliance);
-            } else {
-                switchRelayOff(appliance);
-            }
-        }
-    }
-
     public void setPreHeating(Location location, Boolean state) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
         Optional<ActuatorFunctionality> thermostat = location.getActuatorFunctionalities().getFunctionalityThermostat();
@@ -329,58 +329,73 @@ public class PlugwiseHAController {
         request.setPath("/core/locations");
         request.addPathParameter("id", String.format("%s/thermostat", location.getId()));
         request.addPathParameter("id", String.format("%s", thermostat.get().getId()));
-        request.setBodyParameter(new ActuatorFunctionalityThermostat(state));
+        request.setBodyParameter(new ActuatorFunctionalityThermostat(state, null, null));
 
         executeRequest(request);
     }
 
-    public void switchRelayOn(Appliance appliance) throws PlugwiseHAException {
+    public void setAllowCooling(Location location, Boolean state) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
+        Optional<ActuatorFunctionality> thermostat = location.getActuatorFunctionalities().getFunctionalityThermostat();
 
-        request.setPath("/core/appliances");
-        request.addPathParameter("id", String.format("%s/relay", appliance.getId()));
-        request.setBodyParameter(new ActuatorFunctionalityRelay("on"));
-
-        executeRequest(request);
-    }
-
-    public void switchRelayOff(Appliance appliance) throws PlugwiseHAException {
-        PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
-
-        request.setPath("/core/appliances");
-        request.addPathParameter("id", String.format("%s/relay", appliance.getId()));
-        request.setBodyParameter(new ActuatorFunctionalityRelay("off"));
+        request.setPath("/core/locations");
+        request.addPathParameter("id", String.format("%s/thermostat", location.getId()));
+        request.addPathParameter("id", String.format("%s", thermostat.get().getId()));
+        request.setBodyParameter(new ActuatorFunctionalityThermostat(null, state, null));
 
         executeRequest(request);
     }
 
-    public void switchRelayLock(Appliance appliance, String state) throws PlugwiseHAException {
-        List<String> allowStates = Arrays.asList("on", "off");
-        if (allowStates.contains(state.toLowerCase())) {
-            if (state.toLowerCase().equals("on")) {
-                switchRelayLockOn(appliance);
-            } else {
-                switchRelayLockOff(appliance);
-            }
+    public void setRegulationControl(Location location, String state) throws PlugwiseHAException {
+        List<String> allowStates = Arrays.asList("active", "passive", "off");
+        if (!allowStates.contains(state.toLowerCase())) {
+            this.logger.warn("Trying to set the regulation control to an invalid state");
+            return;
         }
-    }
 
-    public void switchRelayLockOff(Appliance appliance) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
+        Optional<ActuatorFunctionality> thermostat = location.getActuatorFunctionalities().getFunctionalityThermostat();
 
-        request.setPath("/core/appliances");
-        request.addPathParameter("id", String.format("%s/relay", appliance.getId()));
-        request.setBodyParameter(new ActuatorFunctionalityRelay(null, false));
+        request.setPath("/core/locations");
+        request.addPathParameter("id", String.format("%s/thermostat", location.getId()));
+        request.addPathParameter("id", String.format("%s", thermostat.get().getId()));
+        request.setBodyParameter(new ActuatorFunctionalityThermostat(null, null, state));
 
         executeRequest(request);
     }
 
-    public void switchRelayLockOn(Appliance appliance) throws PlugwiseHAException {
+    public void setRelay(Appliance appliance, Boolean state) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
 
         request.setPath("/core/appliances");
         request.addPathParameter("id", String.format("%s/relay", appliance.getId()));
-        request.setBodyParameter(new ActuatorFunctionalityRelay(null, true));
+        request.setBodyParameter(new ActuatorFunctionalityRelay(state ? "on" : "off"));
+
+        executeRequest(request);
+    }
+
+    public void setRelayLock(Appliance appliance, Boolean state) throws PlugwiseHAException {
+        PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
+
+        request.setPath("/core/appliances");
+        request.addPathParameter("id", String.format("%s/relay", appliance.getId()));
+        request.setBodyParameter(new ActuatorFunctionalityRelay(null, state));
+
+        executeRequest(request);
+    }
+
+    public void setPresetScene(Location location, String state) throws PlugwiseHAException {
+        List<String> allowStates = Arrays.asList("home", "asleep", "away", "vacation", "no_frost");
+        if (!allowStates.contains(state.toLowerCase())) {
+            this.logger.warn("Trying to set the preset scene to an invalid state");
+            return;
+        }
+
+        PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
+
+        request.setPath("/core/locations");
+        request.addPathParameter("id", String.format("%s", location.getId()));
+        request.setBodyParameter(new Location(state));
 
         executeRequest(request);
     }
@@ -428,6 +443,7 @@ public class PlugwiseHAController {
     private DomainObjects mergeDomainObjects(@Nullable DomainObjects updatedDomainObjects) {
         DomainObjects localDomainObjects = this.domainObjects;
         if (localDomainObjects == null && updatedDomainObjects != null) {
+            this.domainObjects = updatedDomainObjects;
             return updatedDomainObjects;
         } else if (localDomainObjects != null && updatedDomainObjects == null) {
             return localDomainObjects;
@@ -442,6 +458,7 @@ public class PlugwiseHAController {
             if (locations != null) {
                 localDomainObjects.mergeLocations(locations);
             }
+            this.domainObjects = localDomainObjects;
             return localDomainObjects;
         } else {
             return new DomainObjects();

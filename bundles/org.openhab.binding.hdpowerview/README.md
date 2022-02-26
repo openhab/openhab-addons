@@ -105,6 +105,8 @@ All of these channels appear in the binding, but only those which have a physica
 
 | Channel         | Item Type | Description                   |
 |-----------------|-----------|-------------------------------|
+| color           | Color     | Controls the color of the LED ring. A switch item can be linked: ON = white, OFF = turn off |
+| brightness      | Dimmer    | Controls the brightness of the LED ring. |
 | identify        | String    | Flash repeater to identify. Valid values are: `IDENTIFY` |
 | blinkingEnabled | Switch    | Blink during commands.        |
 
@@ -238,6 +240,8 @@ Number Living_Room_Shade_SignalStrength "Living Room Shade Signal Strength" {cha
 Repeater items:
 
 ```
+Color Bedroom_Repeater_Color "Bedroom Repeater Color" {channel="hdpowerview:repeater:home:r16384:color"}
+Dimmer Bedroom_Repeater_Brightness "Bedroom Repeater Brightness" {channel="hdpowerview:repeater:home:r16384:brightness"}
 String Bedroom_Repeater_Identify "Bedroom Repeater Identify" {channel="hdpowerview:repeater:home:r16384:identify"}
 Switch Bedroom_Repeater_BlinkingEnabled "Bedroom Repeater Blinking Enabled [%s]" {channel="hdpowerview:repeater:home:r16384:blinkingEnabled"}
 ```
@@ -272,6 +276,9 @@ Frame label="Living Room" {
     Text item=Living_Room_Shade_Battery_Voltage
 }
 Frame label="Bedroom" {
+    Colorpicker item=PowerViewRepeater_Color
+    Switch item=PowerViewRepeater_Color
+    Slider item=PowerViewRepeater_Brightness
     Switch item=Bedroom_Repeater_Identify mappings=[IDENTIFY="Identify"]
     Switch item=Bedroom_Repeater_BlinkingEnabled
 }

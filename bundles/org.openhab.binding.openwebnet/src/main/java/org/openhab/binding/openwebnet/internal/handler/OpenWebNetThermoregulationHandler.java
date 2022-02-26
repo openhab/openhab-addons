@@ -148,6 +148,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void requestChannelState(ChannelUID channel) {
+        super.requestChannelState(channel);
         refreshDevice(false);
     }
 
@@ -449,6 +450,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         }
 
         if (deviceWhere != null) {
+            logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
+
             String w = deviceWhere.value();
             try {
                 send(Thermoregulation.requestTemperature(w));
@@ -459,17 +462,21 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     send(Thermoregulation.requestMode(w));
 
                     // refresh ONLY subscribed channels
-                    if (channelExists(CHANNEL_FAN_SPEED))
+                    if (channelExists(CHANNEL_FAN_SPEED)) {
                         send(Thermoregulation.requestFanCoilSpeed(w));
+                    }
 
-                    if (channelExists(CHANNEL_CONDITIONING_VALVES) || channelExists(CHANNEL_HEATING_VALVES))
+                    if (channelExists(CHANNEL_CONDITIONING_VALVES) || channelExists(CHANNEL_HEATING_VALVES)) {
                         send(Thermoregulation.requestValvesStatus(w));
+                    }
 
-                    if (channelExists(CHANNEL_ACTUATORS))
+                    if (channelExists(CHANNEL_ACTUATORS)) {
                         send(Thermoregulation.requestActuatorsStatus(w));
+                    }
 
-                    if (channelExists(CHANNEL_LOCAL_OFFSET))
+                    if (channelExists(CHANNEL_LOCAL_OFFSET)) {
                         send(Thermoregulation.requestLocalOffset(w));
+                    }
                 }
             } catch (OWNException e) {
                 logger.warn("refreshDevice() where='{}' returned OWNException {}", w, e.getMessage());

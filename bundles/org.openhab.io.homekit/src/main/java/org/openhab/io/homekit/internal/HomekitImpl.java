@@ -37,6 +37,7 @@ import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.net.CidrAddress;
 import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
+import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.io.homekit.Homekit;
 import org.osgi.framework.Constants;
@@ -51,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.HomekitAccessory;
+import io.github.hapjava.server.HomekitAccessoryCategories;
 import io.github.hapjava.server.impl.HomekitRoot;
 import io.github.hapjava.server.impl.HomekitServer;
 import io.github.hapjava.server.impl.crypto.HAPSetupCodeUtils;
@@ -69,6 +71,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
 
     private final NetworkAddressService networkAddressService;
     private final ConfigurationAdmin configAdmin;
+    private final Storage<String> storage;
 
     private HomekitAuthInfoImpl authInfo;
     private HomekitSettings settings;
@@ -91,11 +94,11 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
         this.configAdmin = configAdmin;
         this.settings = processConfig(properties);
         this.mdnsClient = mdnsClient;
+        this.storage = storageService.getStorage(HomekitAuthInfoImpl.STORAGE_KEY);
         networkAddressService.addNetworkAddressChangeListener(this);
-        this.changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry, storageService);
+        this.changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry, storage);
         try {
-            authInfo = new HomekitAuthInfoImpl(storageService.getStorage(HomekitAuthInfoImpl.STORAGE_KEY), settings.pin,
-                    settings.setupId, settings.blockUserDeletion);
+            authInfo = new HomekitAuthInfoImpl(storage, settings.pin, settings.setupId, settings.blockUserDeletion);
             startHomekitServer();
         } catch (IOException | InvalidAlgorithmParameterException e) {
             logger.warn("cannot activate HomeKit binding. {}", e.getMessage());
@@ -175,9 +178,10 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
     private void startBridge() throws IOException {
         final @Nullable HomekitServer homekitServer = this.homekitServer;
         if (homekitServer != null && bridge == null) {
-            final HomekitRoot bridge = homekitServer.createBridge(authInfo, settings.name, HomekitSettings.MANUFACTURER,
-                    HomekitSettings.MODEL, HomekitSettings.SERIAL_NUMBER,
-                    FrameworkUtil.getBundle(getClass()).getVersion().toString(), HomekitSettings.HARDWARE_REVISION);
+            final HomekitRoot bridge = homekitServer.createBridge(authInfo, settings.name,
+                    HomekitAccessoryCategories.BRIDGES, HomekitSettings.MANUFACTURER, HomekitSettings.MODEL,
+                    HomekitSettings.SERIAL_NUMBER, FrameworkUtil.getBundle(getClass()).getVersion().toString(),
+                    HomekitSettings.HARDWARE_REVISION);
             changeListener.setBridge(bridge);
             this.bridge = bridge;
             bridge.setConfigurationIndex(changeListener.getConfigurationRevision());
@@ -297,7 +301,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
             logger.trace("removed interface {}", i.getAddress().toString());
             if (i.getAddress().equals(networkInterface)) {
                 final @Nullable HomekitRoot bridge = this.bridge;
-                if (this.bridge != null) {
+                if (bridge != null) {
                     bridge.stop();
                     this.bridge = null;
                 }

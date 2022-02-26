@@ -26,8 +26,10 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.hdpowerview.internal.api.Color;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.requests.RepeaterBlinking;
+import org.openhab.binding.hdpowerview.internal.api.requests.RepeaterColor;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeCalibrate;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeJog;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMove;
@@ -511,6 +513,22 @@ public class HDPowerViewWebTargets {
     }
 
     /**
+     * Sets color and brightness for a repeater
+     *
+     * @param repeaterId id of the repeater for which to set color and brightness
+     * @return RepeaterData class instance
+     * @throws HubInvalidResponseException if response is invalid
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public RepeaterData setRepeaterColor(int repeaterId, Color color)
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+        String jsonRequest = gson.toJson(new RepeaterColor(repeaterId, color));
+        String jsonResponse = invoke(HttpMethod.PUT, repeaters + repeaterId, null, jsonRequest);
+        return repeaterDataFromJson(jsonResponse);
+    }
+
+    /**
      * Invoke a call on the hub server to retrieve information or send a command
      *
      * @param method GET or PUT
@@ -543,7 +561,10 @@ public class HDPowerViewWebTargets {
         ContentResponse response;
         try {
             response = request.send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new HubProcessingException(String.format("%s: \"%s\"", e.getClass().getName(), e.getMessage()));
+        } catch (TimeoutException | ExecutionException e) {
             if (Instant.now().isBefore(maintenanceScheduledEnd)) {
                 // throw "softer" exception during maintenance window
                 logger.debug("Hub still undergoing maintenance");

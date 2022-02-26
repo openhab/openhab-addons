@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.daikin.internal.handler;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -68,7 +67,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     private boolean uuidRegistrationAttempted = false;
 
     // Abstract methods to be overridden by specific Daikin implementation class
-    protected abstract void pollStatus() throws IOException;
+    protected abstract void pollStatus() throws DaikinCommunicationException;
 
     protected abstract void changePower(boolean power) throws DaikinCommunicationException;
 
@@ -93,6 +92,10 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (webTargets == null) {
+            logger.warn("webTargets is null. This is possibly a bug.");
+            return;
+        }
         try {
             if (handleCommandInternal(channelUID, command)) {
                 return;
@@ -131,8 +134,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
             }
             logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command,
                     thing.getUID().getAsString(), channelUID.getId());
-        } catch (DaikinCommunicationException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+        } catch (DaikinCommunicationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -148,7 +151,6 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
             }
             webTargets = new DaikinWebTargets(httpClient, config.host, config.secure, config.uuid);
             refreshInterval = config.refresh;
-
             schedulePoll();
         }
     }
@@ -182,8 +184,11 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
 
     private synchronized void poll() {
         try {
-            logger.debug("Polling for state");
+            logger.trace("Polling for state");
             pollStatus();
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
         } catch (DaikinCommunicationForbiddenException e) {
             if (!uuidRegistrationAttempted && config.key != null && config.uuid != null) {
                 logger.debug("poll: Attempting to register uuid {} with key {}", config.uuid, config.key);
@@ -194,9 +199,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
                         "Access denied. Check uuid/key.");
                 logger.warn("{} access denied by adapter. Check uuid/key.", thing.getUID());
             }
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (RuntimeException e) {
+        } catch (DaikinCommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
