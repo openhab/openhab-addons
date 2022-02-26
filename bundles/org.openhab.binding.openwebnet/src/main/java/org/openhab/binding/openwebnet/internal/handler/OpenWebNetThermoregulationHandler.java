@@ -97,7 +97,29 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void requestChannelState(ChannelUID channel) {
+        super.requestChannelState(channel);
         refreshDevice(false);
+    }
+
+    @Override
+    protected void refreshDevice(boolean refreshAll) {
+        logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
+        if (deviceWhere != null) {
+            String w = deviceWhere.value();
+            try {
+                send(Thermoregulation.requestTemperature(w));
+                if (!this.isTempSensor) {
+                    // for bus_thermo_zone request also other single channels updates
+                    send(Thermoregulation.requestSetPointTemperature(w));
+                    send(Thermoregulation.requestFanCoilSpeed(w));
+                    send(Thermoregulation.requestMode(w));
+                    send(Thermoregulation.requestValvesStatus(w));
+                    send(Thermoregulation.requestActuatorsStatus(w));
+                }
+            } catch (OWNException e) {
+                logger.warn("refreshDevice() where='{}' returned OWNException {}", w, e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -233,17 +255,17 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
         Thermoregulation.WhatThermo w = Thermoregulation.WhatThermo.fromValue(tmsg.getWhat().value());
 
-        if (w.mode() == null) {
+        if (w.getMode() == null) {
             logger.debug("updateModeAndFunction() Could not parse Mode from: {}", tmsg.getFrameValue());
             return;
         }
-        if (w.function() == null) {
+        if (w.getFunction() == null) {
             logger.debug("updateModeAndFunction() Could not parse Function from: {}", tmsg.getFrameValue());
             return;
         }
 
-        Thermoregulation.OperationMode mode = w.mode();
-        Thermoregulation.Function function = w.function();
+        Thermoregulation.OperationMode mode = w.getMode();
+        Thermoregulation.Function function = w.getFunction();
 
         if (w == Thermoregulation.WhatThermo.HEATING) {
             function = Thermoregulation.Function.HEATING;
@@ -312,26 +334,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         } catch (FrameException e) {
             logger.warn("updateActuatorStatus() FrameException on frame {}: {}", tmsg, e.getMessage());
             updateState(CHANNEL_ACTUATORS, UnDefType.UNDEF);
-        }
-    }
-
-    @Override
-    protected void refreshDevice(boolean refreshAll) {
-        if (deviceWhere != null) {
-            String w = deviceWhere.value();
-            try {
-                send(Thermoregulation.requestTemperature(w));
-                if (!this.isTempSensor) {
-                    // for bus_thermo_zone request also other single channels updates
-                    send(Thermoregulation.requestSetPointTemperature(w));
-                    send(Thermoregulation.requestFanCoilSpeed(w));
-                    send(Thermoregulation.requestMode(w));
-                    send(Thermoregulation.requestValvesStatus(w));
-                    send(Thermoregulation.requestActuatorsStatus(w));
-                }
-            } catch (OWNException e) {
-                logger.warn("refreshDevice() where='{}' returned OWNException {}", w, e.getMessage());
-            }
         }
     }
 }
