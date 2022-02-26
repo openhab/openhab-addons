@@ -65,7 +65,7 @@ public abstract class PulseaudioSimpleProtocolStream {
             String host = pulseaudioHandler.getHost();
             int port = pulseaudioHandler.getSimpleTcpPort();
             clientSocket = new Socket(host, port);
-            clientSocket.setSoTimeout(500);
+            clientSocket.setSoTimeout(pulseaudioHandler.getBasicProtocolSOTimeout());
         }
     }
 

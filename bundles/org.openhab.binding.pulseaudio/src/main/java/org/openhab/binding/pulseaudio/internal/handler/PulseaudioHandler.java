@@ -220,7 +220,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
                 if (bridgeHandler != null) {
                     if (bridgeHandler.getDevice(name) == null) {
                         updateStatus(ThingStatus.OFFLINE);
-                        bridgeHandler = null;
+                        this.bridgeHandler = null;
                     } else {
                         updateStatus(ThingStatus.ONLINE);
                     }
@@ -230,7 +230,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
                 }
             } catch (Exception e) {
                 logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
-                bridgeHandler = null;
+                this.bridgeHandler = null;
             }
         };
 
@@ -415,6 +415,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
      * @throws InterruptedException when interrupted during the loading module wait
      */
     public int getSimpleTcpPort() throws InterruptedException {
+        var bridgeHandler = getPulseaudioBridgeHandler();
         AbstractAudioDeviceConfig device = bridgeHandler.getDevice(name);
         String simpleTcpPortPrefName = (device instanceof Source) ? DEVICE_PARAMETER_AUDIO_SOURCE_PORT
                 : DEVICE_PARAMETER_AUDIO_SINK_PORT;
@@ -464,11 +465,16 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
     }
 
     public int getIdleTimeout() {
-        AbstractAudioDeviceConfig device = bridgeHandler.getDevice(name);
+        AbstractAudioDeviceConfig device = getPulseaudioBridgeHandler().getDevice(name);
         String idleTimeoutPropName = (device instanceof Source) ? DEVICE_PARAMETER_AUDIO_SOURCE_IDLE_TIMEOUT
                 : DEVICE_PARAMETER_AUDIO_SINK_IDLE_TIMEOUT;
         var idleTimeout = (BigDecimal) getThing().getConfiguration().get(idleTimeoutPropName);
         return idleTimeout != null ? idleTimeout.intValue() : 30000;
+    }
+
+    public int getBasicProtocolSOTimeout() {
+        var soTimeout = (BigDecimal) getThing().getConfiguration().get(DEVICE_PARAMETER_AUDIO_SOCKET_SO_TIMEOUT);
+        return soTimeout != null ? soTimeout.intValue() : 500;
     }
 
     @Override

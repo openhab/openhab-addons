@@ -450,6 +450,11 @@ public class PulseaudioClient {
                     boolean nameMatch = extractArgumentFromLine(itemType, module.getArgument()) // extract sick|source
                             .map(name -> name.equals(item.getPaName())).orElse(false);
                     if (isSource && nameMatch) {
+                        boolean recordStream = extractArgumentFromLine("record", module.getArgument())
+                                .map("true"::equals).orElse(false);
+                        if (!recordStream) {
+                            return false;
+                        }
                         if (format != null) {
                             boolean rateMatch = extractArgumentFromLine("format", module.getArgument())
                                     .map(format::equals).orElse(false);
