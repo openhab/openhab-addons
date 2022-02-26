@@ -31,7 +31,7 @@ You can use the GUI on the bindings page (click on the pulseaudio binding then "
 
 ```
 binding.pulseaudio:sink=true
-binding.pulseaudio:source=false
+binding.pulseaudio:source=true
 binding.pulseaudio:sinkInput=false
 binding.pulseaudio:sourceOutput=false
 ```
@@ -58,6 +58,14 @@ All devices support some of the following channels:
 Sink things can register themselves as audio sink in openHAB. MP3 and WAV files are supported.
 Use the appropriate parameter in the sink thing to activate this possibility (activateSimpleProtocolSink).
 This requires the module **module-simple-protocol-tcp** to be present on the server which runs your openHAB instance. The binding will try to command (if not discovered first) the load of this module on the pulseaudio server.
+
+
+## Audio source
+
+Source things can register themselves as audio source in openHAB.
+WAV input format, rate and channels can be configured on the thing configuration. (defaults to pcm_signed,16000,1)
+Use the appropriate parameter in the source thing to activate this possibility (activateSimpleProtocolSource).
+This requires the module **module-simple-protocol-tcp** to be present on the target pulseaudio server. The binding will load this module on the pulseaudio server.
 
 ## Full Example
 
