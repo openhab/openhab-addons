@@ -79,6 +79,11 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     private String programNumber = "";
 
+    private static final String CU_REMOTE_CONTROL_ENABLED = "ENABLED";
+    private static final String CU_REMOTE_CONTROL_DISABLED = "DISABLED";
+    private static final String CU_BATTERY_OK = "OK";
+    private static final String CU_BATTERY_KO = "KO";
+
     public OpenWebNetThermoregulationHandler(Thing thing) {
         super(thing);
     }
@@ -92,8 +97,10 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
         if (!isCentralUnit) {
             Object standAloneConfig = getConfig().get(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE);
-            if (standAloneConfig != null) // null in case of thermo_sensor
+            if (standAloneConfig != null) {
+                // null in case of thermo_sensor
                 isStandAlone = Boolean.parseBoolean(standAloneConfig.toString());
+            }
         } else {
             // central unit must have WHERE=0
             if (!deviceWhere.value().equals("0")) {
@@ -175,7 +182,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     }
 
     private void handleSetProgramNumber(Command command) {
-        if (command instanceof StringType) {
+        if (command instanceof DecimalType) {
             if (!isCentralUnit) {
                 logger.warn("handleSetProgramNumber() This command can be sent only to a Central Unit. ");
                 return;
@@ -276,11 +283,11 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             }
 
             if (msg.getWhat() == Thermoregulation.WhatThermo.REMOTE_CONTROL_DISABLED) {
-                updateCURemoteControlStatus("DISABLED");
+                updateCURemoteControlStatus(CU_REMOTE_CONTROL_DISABLED);
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.REMOTE_CONTROL_ENABLED) {
-                updateCURemoteControlStatus("ENABLED");
+                updateCURemoteControlStatus(CU_REMOTE_CONTROL_ENABLED);
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.BATTERY_KO) {
-                updateCUBatteryStatus("KO");
+                updateCUBatteryStatus(CU_BATTERY_KO);
             }
 
             return;
@@ -431,7 +438,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             try {
                 // there isn't a message used for setting OK for battery status so let's assume
                 // it's OK and then change to KO if according message is received
-                updateCUBatteryStatus("OK");
+                updateCUBatteryStatus(CU_BATTERY_OK);
                 send(Thermoregulation.requestStatus("#0"));
             } catch (OWNException e) {
                 logger.warn("refreshDevice() central unit returned OWNException {}", e.getMessage());

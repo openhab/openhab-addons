@@ -205,7 +205,7 @@
 	</channel-type>
 
 	<channel-type id="weeklyProgramCentralUnit">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Weekly Program Number</label>
 		<description>Set program number in the central unit, valid only for Mode Central Unit = "WEEKLY"(read/write)</description>
 		<state>
@@ -218,7 +218,7 @@
 	</channel-type>
 
 	<channel-type id="scenarioProgramCentralUnit">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Scenario Program Number</label>
 		<description>Set program number in the central unit, valid only for Mode Central Unit = "SCENARIO"(read/write)</description>
 		<state>
