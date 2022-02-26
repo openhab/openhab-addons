@@ -270,7 +270,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                 refreshTimeout = scheduler.schedule(() -> {
                     if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
                         logger.debug(
-                                "--- refreshAllDevices() : schedule expired: --UNKNOWN-- status for {}. Rerfreshing it...",
+                                "--- refreshAllDevices() : schedule expired: --UNKNOWN-- status for {}. Refreshing it...",
                                 thing.getUID());
                         refreshDevice(false);
                     } else {

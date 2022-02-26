@@ -24,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
@@ -407,7 +406,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     private void refreshAllBridgeDevices() {
         logger.debug("--- --- ABOUT TO REFRESH ALL devices for bridge {}", thing.getUID());
         int howMany = 0;
-        final List<@NonNull Thing> things = getThing().getThings();
+        final List<Thing> things = getThing().getThings();
         int total = things.size();
         logger.debug("--- FOUND {} things by getThings()", total);
         if (total > 0) {
@@ -442,7 +441,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
     }
 
-    private void checkAllRefreshed(List<@NonNull Thing> things) {
+    private void checkAllRefreshed(List<Thing> things) {
         int howMany = 0;
         int total = things.size();
         boolean allOnline = true;
