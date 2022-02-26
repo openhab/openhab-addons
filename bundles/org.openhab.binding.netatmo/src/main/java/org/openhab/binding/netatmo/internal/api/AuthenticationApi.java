@@ -30,7 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.api.dto.NAAccessTokenResponse;
-import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration.NACredentials;
+import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration.Credentials;
 import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ class AuthenticationApi extends RestManager {
         super(bridge, FeatureArea.NONE);
     }
 
-    void authenticate(NACredentials credentials) throws NetatmoException {
+    void authenticate(Credentials credentials) throws NetatmoException {
         requestToken(credentials.clientId, credentials.clientSecret,
                 Map.of(SCOPE, FeatureArea.ALL_SCOPES, PASSWORD, credentials.password, USERNAME, credentials.username));
     }

@@ -59,7 +59,7 @@ public class HomeCapability extends Capability<HomeApi> {
                 result.add(homeStatus);
             }
         } catch (NetatmoException e) {
-            logger.warn("Error retreiving home detailed data : {}", e.getMessage());
+            logger.warn("Error retrieving home detailed data : {}", e.getMessage());
         }
         return result;
     }

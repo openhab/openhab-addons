@@ -138,8 +138,8 @@ public enum ModuleType {
     public final List<Class<? extends AbstractChannelHelper>> channelHelpers;
     public final @Nullable ModuleType bridgeType;
     public final @Nullable Class<?> handlerClass;
-    // TODO : à voir à la fin du refactoring, je pense que les notions de dto par défaut n'auront plus aucun intérêt
-    // sauf pour weather et aircare
+    // TODO : evaluate when refactoring toward new api is over if dto is still interesting here
+    // currently only weather station and aircare are using it
     public final @Nullable Class<?> dto;
     public final ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, name());
     public final RefreshPolicy refreshPolicy;

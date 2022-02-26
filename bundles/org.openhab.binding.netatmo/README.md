@@ -37,10 +37,10 @@ The binding has the following configuration options:
 Create a `<openHAB-conf>/services/netatmo.cfg` file and use the above options like this:
 
 ```
-binding.netatmo:clientId=ezezsdfdssfhdreytr
-binding.netatmo:clientSecret=dshfdkfdfkshdkj
-binding.netatmo:username=mail@mail.com
-binding.netatmo:password=dssdsdsd
+binding.netatmo:clientId=<CLIENT_ID>
+binding.netatmo:clientSecret=<CLIENT_SECRET>
+binding.netatmo:username=your.mail@address.something
+binding.netatmo:password=<PASSWORD>
 ```
 
 
@@ -130,11 +130,11 @@ Based on a standard update period of 10mn by Netatmo systems - it will auto adap
 | temperature         | min-time             | DateTime             | Timestamp of today's minimum temperature         |
 | temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
 | temperature         | trend                | String               | Temperature evolution trend over time            |
-| airquality          | co2                  | Number:Dimensionless | Air quality                                      |
+| airquality          | co2                  | Number:Dimensionless | CO2 level in ppm                                 |
 | timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
 | timestamp           | measures             | DateTime             | Timestamp of current measures                    |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
-| signal              | value                | Number:Power         | Signal strength in dB                            |
+| signal              | value                | Number:Power         | Signal strength in dBm                           |
 
 
 All these channels are read only.
@@ -161,7 +161,7 @@ All these channels are read only.
 | timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
 | timestamp           | measures             | DateTime             | Timestamp of current measures                    |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
-| signal              | value                | Number:Power         | Signal strength in dB                            |
+| signal              | value                | Number:Power         | Signal strength in dBm                           |
 | battery             | value                | Number               | Battery level                                    |
 | battery             | low-battery          | Switch               | Low battery                                      |
 
@@ -191,7 +191,7 @@ All these channels are read only.
 | timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
 | timestamp           | measures             | DateTime             | Timestamp of current measures                    |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
-| signal              | value                | Number:Power         | Signal strength in dB                            |
+| signal              | value                | Number:Power         | Signal strength in dBm                           |
 | battery             | value                | Number               | Battery level                                    |
 | battery             | low-battery          | Switch               | Low battery                                      |
 
@@ -211,7 +211,7 @@ All these channels are read only.
 | timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
 | timestamp           | measures             | DateTime             | Timestamp of current measures                    |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
-| signal              | value                | Number:Power         | Signal strength in dB                            |
+| signal              | value                | Number:Power         | Signal strength in dBm                           |
 | battery             | value                | Number               | Battery level                                    |
 | battery             | low-battery          | Switch               | Low battery                                      |
 
@@ -235,7 +235,7 @@ All these channels are read only.
 | timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
 | timestamp           | measures             | DateTime             | Timestamp of current measures                    |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
-| signal              | value                | Number:Power         | Signal strength in dB                            |
+| signal              | value                | Number:Power         | Signal strength in dBm                           |
 | battery             | value                | Number               | Battery level                                    |
 | battery             | low-battery          | Switch               | Low battery                                      |
 
@@ -269,7 +269,7 @@ All these channels are read only.
 | timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
 | timestamp           | measures             | DateTime             | Timestamp of current measures                    |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
-| signal              | value                | Number:Power         | Signal strength in dB                            |
+| signal              | value                | Number:Power         | Signal strength in dBm                           |
 
 
 (*) Health index values : 
@@ -290,7 +290,7 @@ All these channels are read only.
 | Channel Group       | Channel Id         | Item Type            | Description                                      |
 |---------------------|--------------------|----------------------|--------------------------------------------------|
 | signal              | strength           | Number               | Signal strength (0 for no signal, 1 for weak...) |
-| signal              | value              | Number:Power         | Signal strength in dB                            |
+| signal              | value              | Number:Power         | Signal strength in dBm                           |
 
 All these channels are read only.
 
@@ -303,14 +303,14 @@ All these channels are read only.
 |---------------------|--------------------|------------------------------------------------------------|
 | temperature         | Number:Temperature | Current temperature                                        |
 | setpoint            | Number:Temperature | Thermostat temperature setpoint                            |
-| setpoint-mode       | String             | Chosen setpoint_mode (program, away, hg, manual, off, max) |
+| setpoint-mode       | String             | Chosen setpoint mode (program, away, hg, manual, off, max) |
 | ThermRelayCmd       | Switch             | Indicates whether the furnace is heating or not            |
 | anticipating        | Switch             | Indicates is anticipating the schedule                     |
 | timestamp           | DateTime           | Timestamp when data was measured                           |
 | setpoint-end        | DateTime           | Thermostat goes back to schedule after that timestamp      |
 | last-message        | DateTime           | Last message emitted by the module                         |
 | signal              | strength           | Number               | Signal strength (0 for no signal, 1 for weak...) |
-| signal              | value              | Number:Power         | Signal strength in dB                            |
+| signal              | value              | Number:Power         | Signal strength in dBm                           |
 | battery             | value              | Number               | Battery level                                    |
 | battery             | low-battery        | Switch               | Low battery                                      |
 | battery             | status             | String               | Description of the battery status (*)            |
@@ -400,7 +400,7 @@ Warnings:
 | live           | picture-url    | String       | Read-only  | Url of the live snapshot for this camera         |
 | live           | stream-url (*) | String       | Read-only  | Url of the live stream for this camera           |
 | signal         | strength       | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...) |
-| signal         | value          | Number:Power | Read-only  | Signal strength in dB                            |
+| signal         | value          | Number:Power | Read-only  | Signal strength in dBm                           |
 
 (*) This channel is configurable : low, poor, high.
 
@@ -419,7 +419,7 @@ Warnings:
 | live           | picture-url    | String       | Read-only  | Url of the live snapshot for this camera                     |
 | live           | stream-url (*) | String       | Read-only  | Url of the live stream for this camera                       |
 | signal         | strength       | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)             |
-| signal         | value          | Number:Power | Read-only  | Signal strength in dB                                        |
+| signal         | value          | Number:Power | Read-only  | Signal strength in dBm                                       |
 | presence       | auto-mode      | Switch       | Read-write | When set the floodlight gets switched to auto instead of off |
 | presence       | floodlight     | Switch       | Read-write | Switch for the floodlight                                    |
 
@@ -598,9 +598,7 @@ sitemap netatmo label="Netatmo" {
 # Sample data
 
 If you want to evaluate this binding but have not got a Netatmo station yourself
-yet, you can add the Netatmo office in Paris to your account:
-
-http://www.netatmo.com/en-US/addguest/index/TIQ3797dtfOmgpqUcct3/70:ee:50:00:02:20
+yet, you can search on the web for a publicly shared weather station.
 
 
 # Icons

@@ -29,7 +29,6 @@ import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider
 import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -69,21 +68,20 @@ public class PresenceHandler extends CameraHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        switch (channelUID.getIdWithoutGroup()) {
-            case CHANNEL_CAMERA_FLOODLIGHT:
+    protected void internalHandleCommand(String channelName, Command command) {
+        switch (channelName) {
+            case CHANNEL_FLOODLIGHT:
                 if (command == OnOffType.ON) {
                     changeFloodlightMode(FloodLightMode.ON);
                 } else {
                     switchFloodlightAutoMode(autoMode == OnOffType.ON);
                 }
-                break;
-            case CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE:
+                return;
+            case CHANNEL_FLOODLIGHT_AUTO_MODE:
                 switchFloodlightAutoMode(command == OnOffType.ON);
-                break;
-            default:
-                super.handleCommand(channelUID, command);
+                return;
         }
+        super.internalHandleCommand(channelName, command);
     }
 
     private void switchFloodlightAutoMode(boolean isAutoMode) {

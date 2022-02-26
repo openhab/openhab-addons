@@ -58,7 +58,8 @@ public class EnergyCapability extends Capability<EnergyApi> {
         this.descriptionProvider = descriptionProvider;
     }
 
-    public void updateHomeData(NAHomeData homeData) {
+    @Override
+    protected void updateHomeData(NAHomeData homeData) {
         NAObjectMap<NAHomeDataRoom> rooms = homeData.getRooms();
         NAObjectMap<NAHomeDataModule> modules = homeData.getModules();
         getActiveChildren().forEach(handler -> {
@@ -77,21 +78,18 @@ public class EnergyCapability extends Capability<EnergyApi> {
         setPointDefaultDuration = homeData.getThermSetpointDefaultDuration();
     }
 
-    public void updateHomeStatus(HomeStatus homeStatus) {
+    @Override
+    protected void updateHomeStatus(HomeStatus homeStatus) {
         NAObjectMap<NARoom> rooms = homeStatus.getRooms();
         NAObjectMap<NAHomeStatusModule> modules = homeStatus.getModules();
         getActiveChildren().forEach(handler -> {
-            if (rooms != null) {
-                NARoom roomData = rooms.get(handler.getId());
-                if (roomData != null) {
-                    handler.setNewData(roomData);
-                }
+            NARoom roomData = rooms.get(handler.getId());
+            if (roomData != null) {
+                handler.setNewData(roomData);
             }
-            if (modules != null) {
-                NAHomeStatusModule data = modules.get(handler.getId());
-                if (data != null) {
-                    handler.setNewData(data);
-                }
+            NAHomeStatusModule data = modules.get(handler.getId());
+            if (data != null) {
+                handler.setNewData(data);
             }
         });
     }
@@ -100,7 +98,7 @@ public class EnergyCapability extends Capability<EnergyApi> {
         return setPointDefaultDuration;
     }
 
-    public void callSetRoomThermTemp(String roomId, double temperature) {
+    public void setRoomThermTemp(String roomId, double temperature) {
         try {
             api.setRoomThermpoint(homeId, roomId, SetpointMode.MANUAL, setpointEndTimeFromNow(setPointDefaultDuration),
                     temperature);
@@ -110,7 +108,7 @@ public class EnergyCapability extends Capability<EnergyApi> {
         }
     }
 
-    public void callSetRoomThermMode(String roomId, SetpointMode targetMode) {
+    public void setRoomThermMode(String roomId, SetpointMode targetMode) {
         try {
             api.setRoomThermpoint(homeId, roomId, targetMode,
                     targetMode == SetpointMode.MAX ? setpointEndTimeFromNow(setPointDefaultDuration) : 0, 0);
@@ -120,7 +118,7 @@ public class EnergyCapability extends Capability<EnergyApi> {
         }
     }
 
-    public void callSetRoomThermTemp(String roomId, double temperature, long endtime, SetpointMode mode) {
+    public void setRoomThermTemp(String roomId, double temperature, long endtime, SetpointMode mode) {
         try {
             api.setRoomThermpoint(homeId, roomId, mode, endtime, temperature);
             expireData();
@@ -129,7 +127,8 @@ public class EnergyCapability extends Capability<EnergyApi> {
         }
     }
 
-    public void handleCommand(String channelName, Command command) {
+    @Override
+    public void internalHandleCommand(String channelName, Command command) {
         try {
             switch (channelName) {
                 case CHANNEL_PLANNING:

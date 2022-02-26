@@ -44,7 +44,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
-import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration.NACredentials;
+import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration.Credentials;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.common.ThreadPoolManager;
@@ -95,8 +95,8 @@ public class ApiBridge {
             if (config != null) {
                 configuration.update(config);
             }
-            logger.debug("Updated binding configuration to {}", configuration);
-            NACredentials credentials = configuration.getCredentials();
+            Credentials credentials = configuration.getCredentials();
+            logger.debug("Updated binding configuration to {}", credentials);
             if (credentials != null) {
                 connectApi.authenticate(credentials);
                 notifyListeners();
@@ -182,6 +182,9 @@ public class ApiBridge {
                 throw exception;
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             throw new NetatmoException(e, "Exception while calling %s", uri.toString());
         }
     }

@@ -17,7 +17,6 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,6 +28,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
+import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.SecurityCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
@@ -54,45 +54,33 @@ import org.slf4j.LoggerFactory;
 public class CameraHandler extends NetatmoHandler {
     private final Logger logger = LoggerFactory.getLogger(CameraHandler.class);
     protected final CameraChannelHelper cameraHelper;
-    private Optional<SecurityCapability> securityCap = Optional.empty();
 
     public CameraHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider, NetatmoServlet webhookServlet) {
-        super(bridge, channelHelpers, apiBridge, descriptionProvider, webhookServlet);
+        super(bridge, channelHelpers, apiBridge, descriptionProvider, webhookServlet, new PropertyHelper(bridge));
         this.cameraHelper = (CameraChannelHelper) channelHelpers.stream().filter(c -> c instanceof CameraChannelHelper)
                 .findFirst().orElseThrow(() -> new IllegalArgumentException(
                         "CameraHandler must have a CameraChannelHelper, file a bug."));
     }
 
     @Override
-    protected PropertyHelper getPropertyHelper() {
-        return new PropertyHelper(getThing());
-    }
-
-    @Override
     public void initialize() {
         super.initialize();
 
-        NetatmoHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler instanceof HomeHandler) {
-            HomeHandler homeHandler = (HomeHandler) bridgeHandler;
-            securityCap = homeHandler.getSecurityCap();
-            homeHandler.getHomeCap().ifPresent(cap -> {
-                NAObjectMap<NAHomeDataPerson> persons = cap.getPersons();
-                updateStatus(ThingStatus.ONLINE);
-                descriptionProvider
-                        .setStateOptions(new ChannelUID(getThing().getUID(), GROUP_LAST_EVENT, CHANNEL_EVENT_PERSON_ID),
-                                persons.values().stream().filter(person -> person.isKnown())
-                                        .map(p -> new StateOption(p.getId(), p.getName()))
-                                        .collect(Collectors.toList()));
-            });
-        }
+        getHomeCapability(HomeCapability.class).ifPresent(cap -> {
+            NAObjectMap<NAHomeDataPerson> persons = cap.getPersons();
+            updateStatus(ThingStatus.ONLINE);
+            descriptionProvider.setStateOptions(
+                    new ChannelUID(getThing().getUID(), GROUP_LAST_EVENT, CHANNEL_EVENT_PERSON_ID),
+                    persons.values().stream().filter(person -> person.isKnown())
+                            .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
+        });
     }
 
     @Override
     protected List<NAObject> updateReadings() throws NetatmoException {
         List<NAObject> result = new ArrayList<>();
-        securityCap.ifPresent(cap -> {
+        getHomeCapability(SecurityCapability.class).ifPresent(cap -> {
             Collection<NAHomeEvent> events = cap.getCameraEvents(getId());
             if (!events.isEmpty()) {
                 result.add(events.iterator().next());
@@ -102,11 +90,10 @@ public class CameraHandler extends NetatmoHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof OnOffType && CHANNEL_MONITORING.equals(channelUID.getIdWithoutGroup())) {
-            securityCap.ifPresent(cap -> cap.changeStatus(cameraHelper.getLocalURL(), OnOffType.ON.equals(command)));
-        } else {
-            super.handleCommand(channelUID, command);
+    protected void internalHandleCommand(String channelName, Command command) {
+        if (command instanceof OnOffType && CHANNEL_MONITORING.equals(channelName)) {
+            getHomeCapability(SecurityCapability.class)
+                    .ifPresent(cap -> cap.changeStatus(cameraHelper.getLocalURL(), OnOffType.ON.equals(command)));
         }
     }
 

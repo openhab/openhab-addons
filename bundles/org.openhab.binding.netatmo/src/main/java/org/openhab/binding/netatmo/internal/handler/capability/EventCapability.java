@@ -15,12 +15,11 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.SecurityApi;
-import org.openhab.binding.netatmo.internal.handler.NetatmoHandler;
 import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 import org.openhab.core.thing.Bridge;
 
 /**
- * {@link EventListenerCapability} is the base class for handlers
+ * {@link EventCapability} is the base class for handlers
  * subject to receive event notifications. This class registers to webhookservlet so
  * it can be notified when an event arrives.
  *
@@ -28,19 +27,18 @@ import org.openhab.core.thing.Bridge;
  *
  */
 @NonNullByDefault
-public class EventListenerCapability extends Capability<SecurityApi> {
+public class EventCapability extends Capability<SecurityApi> {
     private final NetatmoServlet servlet;
 
-    public EventListenerCapability(Bridge bridge, ApiBridge apiBridge, NetatmoServlet webhookServlet) {
+    public EventCapability(Bridge bridge, ApiBridge apiBridge, NetatmoServlet webhookServlet) {
         super(bridge, apiBridge.getRestManager(SecurityApi.class));
         this.servlet = webhookServlet;
-        NetatmoHandler handler = getNAHandler();
-        if (handler != null) {
-            servlet.registerDataListener(handler.getId(), this);
-        }
+        getNAHandler().ifPresent(handler -> servlet.registerDataListener(handler.getId(), this));
     }
 
+    @Override
     public void dispose() {
         servlet.unregisterDataListener(this);
     }
+
 }

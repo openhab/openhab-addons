@@ -41,7 +41,7 @@ import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.dto.NAWebhookEvent;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
-import org.openhab.binding.netatmo.internal.handler.capability.EventListenerCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.EventCapability;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -64,7 +64,7 @@ public class NetatmoServlet extends HttpServlet {
     private static final String CALLBACK_URI = "/" + BINDING_ID;
 
     private final Logger logger = LoggerFactory.getLogger(NetatmoServlet.class);
-    private final Map<String, EventListenerCapability> dataListeners = new ConcurrentHashMap<>();
+    private final Map<String, EventCapability> dataListeners = new ConcurrentHashMap<>();
     private final HttpService httpService;
     private final NADeserializer deserializer;
     private final Optional<SecurityApi> securityApi;
@@ -133,7 +133,7 @@ public class NetatmoServlet extends HttpServlet {
                 NAWebhookEvent event = deserializer.deserialize(NAWebhookEvent.class, data);
                 List<String> tobeNotified = collectNotified(event);
                 dataListeners.keySet().stream().filter(tobeNotified::contains).forEach(id -> {
-                    EventListenerCapability module = dataListeners.get(id);
+                    EventCapability module = dataListeners.get(id);
                     if (module != null) {
                         // TODO : reactivate
                         // module.setNewData(event);
@@ -161,11 +161,11 @@ public class NetatmoServlet extends HttpServlet {
         return result.stream().distinct().collect(Collectors.toList());
     }
 
-    public void registerDataListener(String id, EventListenerCapability dataListener) {
+    public void registerDataListener(String id, EventCapability dataListener) {
         dataListeners.put(id, dataListener);
     }
 
-    public void unregisterDataListener(EventListenerCapability dataListener) {
+    public void unregisterDataListener(EventCapability dataListener) {
         dataListeners.entrySet().removeIf(entry -> entry.getValue().equals(dataListener));
     }
 

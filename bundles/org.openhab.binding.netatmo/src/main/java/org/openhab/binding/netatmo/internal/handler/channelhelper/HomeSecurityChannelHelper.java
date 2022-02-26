@@ -57,13 +57,11 @@ public class HomeSecurityChannelHelper extends AbstractChannelHelper {
         if (data instanceof HomeStatus) {
             HomeStatus status = (HomeStatus) data;
             NAObjectMap<NAHomeStatusPerson> allPersons = status.getPersons();
-            if (allPersons != null) {
-                List<NAHomeStatusPerson> present = allPersons.values().stream().filter(p -> !p.isOutOfSight())
-                        .collect(Collectors.toList());
+            List<NAHomeStatusPerson> present = allPersons.values().stream().filter(p -> !p.isOutOfSight())
+                    .collect(Collectors.toList());
 
-                persons = present.size();
-                unknowns = present.stream().filter(person -> !knownIds.contains(person.getId())).count();
-            }
+            persons = present.size();
+            unknowns = present.stream().filter(person -> !knownIds.contains(person.getId())).count();
         }
     }
 

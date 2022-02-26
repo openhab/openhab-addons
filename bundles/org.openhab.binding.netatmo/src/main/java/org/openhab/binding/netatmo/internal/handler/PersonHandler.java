@@ -17,7 +17,6 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,6 +29,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHomeDataModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
+import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.SecurityCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.propertyhelper.PropertyHelper;
@@ -50,41 +50,28 @@ import org.openhab.core.types.StateOption;
  */
 @NonNullByDefault
 public class PersonHandler extends NetatmoHandler {
-    private Optional<SecurityCapability> securityCap = Optional.empty();
-
     public PersonHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider, NetatmoServlet webhookServlet) {
-        super(bridge, channelHelpers, apiBridge, descriptionProvider, webhookServlet);
-    }
-
-    @Override
-    protected PropertyHelper getPropertyHelper() {
-        return new PropertyHelper(getThing());
+        super(bridge, channelHelpers, apiBridge, descriptionProvider, webhookServlet, new PropertyHelper(bridge));
     }
 
     @Override
     public void initialize() {
         super.initialize();
-
-        NetatmoHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler instanceof HomeHandler) {
-            HomeHandler homeHandler = (HomeHandler) bridgeHandler;
-            securityCap = homeHandler.getSecurityCap();
-            homeHandler.getHomeCap().ifPresent(cap -> {
-                NAObjectMap<NAHomeDataModule> modules = cap.getModules();
-                updateStatus(ThingStatus.ONLINE);
-                descriptionProvider.setStateOptions(
-                        new ChannelUID(getThing().getUID(), GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID),
-                        modules.values().stream().filter(module -> module.getType() == ModuleType.NACamera)
-                                .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
-            });
-        }
+        getHomeCapability(HomeCapability.class).ifPresent(cap -> {
+            NAObjectMap<NAHomeDataModule> modules = cap.getModules();
+            updateStatus(ThingStatus.ONLINE);
+            descriptionProvider.setStateOptions(
+                    new ChannelUID(getThing().getUID(), GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID),
+                    modules.values().stream().filter(module -> module.getType() == ModuleType.NACamera)
+                            .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
+        });
     }
 
     @Override
     protected List<NAObject> updateReadings() throws NetatmoException {
         List<NAObject> result = new ArrayList<>();
-        securityCap.ifPresent(cap -> {
+        getHomeCapability(SecurityCapability.class).ifPresent(cap -> {
             Collection<NAHomeEvent> events = cap.getPersonEvents(getId());
             if (!events.isEmpty()) {
                 result.add(events.iterator().next());
@@ -94,11 +81,10 @@ public class PersonHandler extends NetatmoHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if ((command instanceof OnOffType) && CHANNEL_PERSON_AT_HOME.equals(channelUID.getIdWithoutGroup())) {
-            securityCap.ifPresent(cap -> cap.setPersonAway(getId(), OnOffType.OFF.equals(command)));
-        } else {
-            super.handleCommand(channelUID, command);
+    protected void internalHandleCommand(String channelName, Command command) {
+        if ((command instanceof OnOffType) && CHANNEL_PERSON_AT_HOME.equals(channelName)) {
+            getHomeCapability(SecurityCapability.class)
+                    .ifPresent(cap -> cap.setPersonAway(getId(), OnOffType.OFF.equals(command)));
         }
     }
 
@@ -113,4 +99,5 @@ public class PersonHandler extends NetatmoHandler {
         }
         super.setNewData(newData);
     }
+
 }

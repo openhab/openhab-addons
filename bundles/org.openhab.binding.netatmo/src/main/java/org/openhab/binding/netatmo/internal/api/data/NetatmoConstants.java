@@ -155,6 +155,9 @@ public class NetatmoConstants {
     @Deprecated
     public static final String SUB_PATH_GETCAMERAPICTURE = "getcamerapicture";
 
+    // Global variables
+    public static final int THERM_MAX_SETPOINT = 30;
+
     // Token scopes
     public static enum Scope {
         @SerializedName("read_station")

@@ -29,7 +29,6 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMo
 
 @NonNullByDefault
 public class EnergyApi extends RestManager {
-
     public EnergyApi(ApiBridge apiClient) {
         super(apiClient, FeatureArea.ENERGY);
     }
@@ -88,7 +87,7 @@ public class EnergyApi extends RestManager {
         if (mode == SetpointMode.MANUAL || mode == SetpointMode.MAX) {
             uriBuilder.queryParam("endtime", endtime);
             if (mode == SetpointMode.MANUAL) {
-                uriBuilder.queryParam("temp", temp > 30 ? 30 : temp);
+                uriBuilder.queryParam("temp", temp > THERM_MAX_SETPOINT ? THERM_MAX_SETPOINT : temp);
             }
         }
         post(uriBuilder, ApiResponse.Ok.class, null);

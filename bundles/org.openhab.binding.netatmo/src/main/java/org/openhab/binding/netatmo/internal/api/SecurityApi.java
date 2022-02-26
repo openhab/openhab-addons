@@ -39,7 +39,6 @@ public class SecurityApi extends RestManager {
     }
 
     /**
-     *
      * Dissociates a webhook from a user.
      *
      * @return boolean Success
@@ -52,7 +51,6 @@ public class SecurityApi extends RestManager {
     }
 
     /**
-     *
      * Links a callback url to a user.
      *
      * @param uri Your webhook callback url (required)

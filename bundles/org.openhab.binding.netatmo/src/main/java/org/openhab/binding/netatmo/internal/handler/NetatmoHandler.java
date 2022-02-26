@@ -14,7 +14,9 @@ package org.openhab.binding.netatmo.internal.handler;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +34,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.config.NetatmoThingConfiguration;
 import org.openhab.binding.netatmo.internal.deserialization.NAThingMap;
+import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.MeasureCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.MeasuresChannelHelper;
@@ -65,23 +68,21 @@ public abstract class NetatmoHandler extends BaseBridgeHandler implements Connec
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private Optional<RefreshStrategy> refreshStrategy = Optional.empty();
-    private Optional<MeasureCapability> measureCap = Optional.empty();
+    private Map<Class<?>, Capability<?>> capabilities = new HashMap<>();
     protected final ApiBridge apiBridge;
     protected final PropertyHelper propertyHelper;
     protected NetatmoServlet webhookServlet;
     protected final NetatmoDescriptionProvider descriptionProvider;
 
     public NetatmoHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
-            NetatmoDescriptionProvider descriptionProvider, NetatmoServlet webhookServlet) {
+            NetatmoDescriptionProvider descriptionProvider, NetatmoServlet webhookServlet, PropertyHelper propHelper) {
         super(bridge);
         this.apiBridge = apiBridge;
         this.channelHelpers = channelHelpers;
-        this.propertyHelper = getPropertyHelper();
+        this.propertyHelper = propHelper;
         this.webhookServlet = webhookServlet;
         this.descriptionProvider = descriptionProvider;
     }
-
-    protected abstract PropertyHelper getPropertyHelper();
 
     @Override
     public void initialize() {
@@ -100,13 +101,34 @@ public abstract class NetatmoHandler extends BaseBridgeHandler implements Connec
 
         channelHelpers.stream().filter(c -> c instanceof MeasuresChannelHelper).findFirst()
                 .map(MeasuresChannelHelper.class::cast)
-                .ifPresent(helper -> measureCap = Optional.of(new MeasureCapability(getThing(), helper, apiBridge)));
+                .ifPresent(helper -> defineCapability(new MeasureCapability(getThing(), helper, apiBridge)));
+    }
+
+    protected void defineCapability(Capability<?> capability) {
+        capabilities.put(capability.getClass(), capability);
+    }
+
+    protected <T extends Capability<?>> Optional<T> getCapability(Class<T> clazz) {
+        @SuppressWarnings("unchecked")
+        T cap = (T) capabilities.get(clazz);
+        return Optional.ofNullable(cap);
+    }
+
+    protected List<NAObject> updateReadings() throws NetatmoException {
+        getCapability(MeasureCapability.class).ifPresent(cap -> {
+            String bridgeId = getBridgeId();
+            String deviceId = bridgeId != null ? bridgeId : getId();
+            String moduleId = bridgeId != null ? getId() : null;
+            cap.updateMeasurements(deviceId, moduleId);
+        });
+        return List.of();
     }
 
     @Override
     public void dispose() {
         freeRefreshJob();
         apiBridge.removeConnectionListener(this);
+        capabilities.values().forEach(cap -> cap.dispose());
         super.dispose();
     }
 
@@ -116,12 +138,12 @@ public abstract class NetatmoHandler extends BaseBridgeHandler implements Connec
             ThingStatus status = getThing().getStatus();
             if (status != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
-                // Wait a little bit before refreshing because a dispose maybe running in parallel
+                // Wait a little bit before refreshing because a dispose may be running in parallel
                 scheduler.schedule(() -> scheduleRefreshJob(), 2, TimeUnit.SECONDS);
             }
         } else {
             freeRefreshJob();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Not connected");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/status-bridge-offlilne");
         }
     }
 
@@ -149,8 +171,7 @@ public abstract class NetatmoHandler extends BaseBridgeHandler implements Connec
                         updateChilds(dataSet);
                     });
                 } catch (NetatmoException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Unable to connect Netatmo API : " + e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             } else {
                 logger.debug("Data still valid for device {}", getId());
@@ -170,10 +191,11 @@ public abstract class NetatmoHandler extends BaseBridgeHandler implements Connec
                                 handler.setNewData(data);
                             }
                         } catch (NetatmoException e) {
-                            logger.warn("Error updating child informations : {}", e.getMessage());
+                            logger.warn("Error updating child information : {}", e.getMessage());
                         }
                     });
         }
+        capabilities.values().forEach(cap -> cap.setNewData(newData));
     }
 
     public String getId() {
@@ -190,7 +212,7 @@ public abstract class NetatmoHandler extends BaseBridgeHandler implements Connec
             if (localNaThing.isReachable()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device is not connected");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/device-not-connected");
             }
         }
         propertyHelper.setNewData(newData);
@@ -210,8 +232,6 @@ public abstract class NetatmoHandler extends BaseBridgeHandler implements Connec
                             break;
                         }
                     }
-                    // TODO : voir l'impact de ne plus définir un résultat non trouvé en UNDEF
-                    // updateState(channelUID, state != null ? state : UnDefType.UNDEF);
                 });
     }
 
@@ -235,23 +255,30 @@ public abstract class NetatmoHandler extends BaseBridgeHandler implements Connec
         if (command == RefreshType.REFRESH) {
             logger.debug("Refreshing thing");
             expireData();
+        } else {
+            String channelName = channelUID.getIdWithoutGroup();
+            capabilities.values().forEach(cap -> cap.internalHandleCommand(channelName, command));
+            internalHandleCommand(channelName, command);
         }
     }
 
-    protected List<NAObject> updateReadings() throws NetatmoException {
-        measureCap.ifPresent(capability -> {
-            String bridgeId = getBridgeId();
-            String deviceId = bridgeId != null ? bridgeId : getId();
-            String moduleId = bridgeId != null ? getId() : null;
-            capability.updateMeasurements(deviceId, moduleId);
-        });
-        return List.of();
+    protected void internalHandleCommand(String channelName, Command command) {
     }
 
     protected @Nullable NetatmoHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         return bridge != null && bridge.getHandler() instanceof NetatmoHandler ? (NetatmoHandler) bridge.getHandler()
                 : null;
+    }
+
+    protected Optional<HomeHandler> getHomeHandler() {
+        NetatmoHandler bridgeHandler = getBridgeHandler();
+        return Optional.ofNullable(
+                bridgeHandler != null && bridgeHandler instanceof HomeHandler ? (HomeHandler) bridgeHandler : null);
+    }
+
+    protected <T extends Capability<?>> Optional<T> getHomeCapability(Class<T> clazz) {
+        return getHomeHandler().map(handler -> handler.getCapability(clazz)).orElse(Optional.empty());
     }
 
     private @Nullable String getBridgeId() {

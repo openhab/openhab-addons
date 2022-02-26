@@ -16,30 +16,23 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.handler.capability.EnergyCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.EventListenerCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.EventCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.SecurityCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AbstractChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.propertyhelper.NAHomePropertyHelper;
-import org.openhab.binding.netatmo.internal.handler.propertyhelper.PropertyHelper;
+import org.openhab.binding.netatmo.internal.handler.propertyhelper.HomePropertyHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
-import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,37 +46,23 @@ import org.slf4j.LoggerFactory;
 public class HomeHandler extends NetatmoHandler {
     private final Logger logger = LoggerFactory.getLogger(HomeHandler.class);
 
-    private Optional<SecurityCapability> securityCap = Optional.empty();
-    private Optional<EnergyCapability> energyCap = Optional.empty();
-    private HomeCapability homeCap;
-    private @NonNullByDefault({}) EventListenerCapability eventCap;
-
     public HomeHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider, NetatmoServlet webhookServlet) {
-        super(bridge, channelHelpers, apiBridge, descriptionProvider, webhookServlet);
-        homeCap = new HomeCapability(getThing(), apiBridge, getId());
-    }
-
-    @Override
-    protected PropertyHelper getPropertyHelper() {
-        return new NAHomePropertyHelper(getThing());
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        eventCap = new EventListenerCapability(getThing(), apiBridge, webhookServlet);
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        eventCap.dispose();
+        super(bridge, channelHelpers, apiBridge, descriptionProvider, webhookServlet, new HomePropertyHelper(bridge));
+        defineCapability(new HomeCapability(getThing(), apiBridge, getId()));
+        defineCapability(new EventCapability(getThing(), apiBridge, webhookServlet));
     }
 
     @Override
     protected List<NAObject> updateReadings() throws NetatmoException {
-        List<NAObject> result = homeCap.updateReadings();
+        List<NAObject> result = new ArrayList<>();
+        getCapability(HomeCapability.class).ifPresent(cap -> {
+            try {
+                result.addAll(cap.updateReadings());
+            } catch (NetatmoException e) {
+                logger.warn("Error updating child informations : {}", e.getMessage());
+            }
+        });
 
         getActiveChildren().forEach(handler -> {
             try {
@@ -97,41 +76,22 @@ public class HomeHandler extends NetatmoHandler {
     }
 
     @Override
-    protected void updateChilds(NAObject newData) {
-        super.updateChilds(newData);
-        if (newData instanceof NAHomeData) {
-            NAHomeData homeData = (NAHomeData) newData;
-            securityCap.ifPresent(cap -> cap.updateHomeData(homeData));
-            energyCap.ifPresent(cap -> cap.updateHomeData(homeData));
-        }
-        if (newData instanceof HomeStatus) {
-            HomeStatus homeStatus = (HomeStatus) newData;
-            securityCap.ifPresent(cap -> cap.updateHomeStatus(homeStatus));
-            energyCap.ifPresent(cap -> cap.updateHomeStatus(homeStatus));
-        }
-        if (newData instanceof NAHomeEvent) {
-            NAHomeEvent homeEvent = (NAHomeEvent) newData;
-            securityCap.ifPresent(cap -> cap.updateHomeEvent(homeEvent));
-        }
-    }
-
-    @Override
     public void setNewData(NAObject newData) {
         super.setNewData(newData);
 
-        NAHomePropertyHelper propHelper = (NAHomePropertyHelper) propertyHelper;
-        if (propHelper.hasFeature(FeatureArea.SECURITY) && securityCap.isEmpty()) {
-            securityCap = Optional.of(new SecurityCapability(getThing(), apiBridge, getId()));
+        HomePropertyHelper propHelper = (HomePropertyHelper) propertyHelper;
+        if (propHelper.hasFeature(FeatureArea.SECURITY) && (getCapability(SecurityCapability.class).isEmpty())) {
+            defineCapability(new SecurityCapability(getThing(), apiBridge, getId()));
         }
-        if (propHelper.hasFeature(FeatureArea.ENERGY) && energyCap.isEmpty()) {
-            energyCap = Optional.of(new EnergyCapability(getThing(), apiBridge, descriptionProvider, getId()));
+        if (propHelper.hasFeature(FeatureArea.ENERGY) && (getCapability(EnergyCapability.class).isEmpty())) {
+            defineCapability(new EnergyCapability(getThing(), apiBridge, descriptionProvider, getId()));
         }
 
         List<Channel> channelsToRemove = new ArrayList<>();
-        if (securityCap.isEmpty()) {
+        if (getCapability(SecurityCapability.class).isEmpty()) {
             channelsToRemove.addAll(getThing().getChannelsOfGroup(GROUP_HOME_SECURITY));
         }
-        if (energyCap.isEmpty()) {
+        if (getCapability(EnergyCapability.class).isEmpty()) {
             channelsToRemove.addAll(getThing().getChannelsOfGroup(GROUP_HOME_ENERGY));
         }
         if (!channelsToRemove.isEmpty()) {
@@ -140,25 +100,4 @@ public class HomeHandler extends NetatmoHandler {
         }
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO : ce n'est pas super optimal : si command a été traitée par l'un des cap il n'y a pas lieu de continuer.
-        String channelID = channelUID.getIdWithoutGroup();
-        energyCap.ifPresent(cap -> cap.handleCommand(channelID, command));
-        // Security does not currently handle any command
-        // securityCap.ifPresent(cap -> cap.handleCommand(channelUID, command));
-        super.handleCommand(channelUID, command);
-    }
-
-    public Optional<EnergyCapability> getEnergyCap() {
-        return energyCap;
-    }
-
-    public Optional<HomeCapability> getHomeCap() {
-        return Optional.of(homeCap);
-    }
-
-    public Optional<SecurityCapability> getSecurityCap() {
-        return securityCap;
-    }
 }

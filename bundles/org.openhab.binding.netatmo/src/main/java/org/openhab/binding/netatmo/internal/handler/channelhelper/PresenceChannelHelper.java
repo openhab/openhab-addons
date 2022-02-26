@@ -46,9 +46,9 @@ public class PresenceChannelHelper extends AbstractChannelHelper {
         if (naThing instanceof NAHomeStatusModule) {
             NAHomeStatusModule camera = (NAHomeStatusModule) naThing;
             switch (channelId) {
-                case CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE:
+                case CHANNEL_FLOODLIGHT_AUTO_MODE:
                     return autoMode;
-                case CHANNEL_CAMERA_FLOODLIGHT:
+                case CHANNEL_FLOODLIGHT:
                     return OnOffType.from(camera.getFloodlight() == FloodLightMode.ON);
             }
         }

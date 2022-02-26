@@ -34,12 +34,9 @@ import org.openhab.core.types.UnDefType;
 
 @NonNullByDefault
 public class NAHomeStatusModule extends NAThing {
-    // private ModuleType type = ModuleType.UNKNOWN;
-    // private int firmwareRevision = -1;
     private @Nullable String firmwareName;
     private @Nullable String wifiState;
     private @Nullable String status;
-    // private int wifiStrength;
     private @Nullable OnOffType monitoring;
     private FloodLightMode floodlight = FloodLightMode.UNKNOWN;
     private SdCardStatus sdStatus = SdCardStatus.UNKNOWN;
@@ -49,11 +46,6 @@ public class NAHomeStatusModule extends NAThing {
     private boolean isLocal;
     private BatteryState batteryState = BatteryState.UNKNOWN;
     private int batteryLevel;
-    // public int rfStrength;
-    // private @Nullable ZonedDateTime lastSeen;
-    // private @Nullable ZonedDateTime lastActivity;
-    // private @Nullable Boolean reachable;
-    // private @Nullable String bridge;
 
     private @Nullable OpenClosedType boilerStatus;
     private boolean boilerValveComfortBoost;
@@ -78,10 +70,6 @@ public class NAHomeStatusModule extends NAThing {
     public Optional<String> getStatus() {
         return Optional.ofNullable(status);
     }
-
-    // public int getWifiStrength() {
-    // return wifiStrength;
-    // }
 
     public State getMonitoring() {
         OnOffType localStatus = monitoring;
@@ -119,34 +107,4 @@ public class NAHomeStatusModule extends NAThing {
     public int getBatteryLevel() {
         return batteryLevel;
     }
-
-    // public int getRfStrength() {
-    // return rfStrength;
-    // }
-
-    // public Optional<ZonedDateTime> getLastSeen() {
-    // return Optional.ofNullable(lastSeen);
-    // }
-
-    // public Optional<ZonedDateTime> getLastActivity() {
-    // return Optional.ofNullable(lastActivity);
-    // }
-
-    // public boolean isReachable() {
-    // This is not implemented on all devices/modules, so if absent we consider it is reachable
-    // Boolean localReachable = this.reachable;
-    // return localReachable != null ? localReachable : true;
-    // }
-
-    // public Optional<String> getBridge() {
-    // return Optional.ofNullable(bridge);
-    // }
-
-    // public ModuleType getType() {
-    // return type;
-    // }
-
-    // public int getFirmwareRevision() {
-    // return firmwareRevision;
-    // }
 }

@@ -50,7 +50,8 @@ public class SecurityCapability extends Capability<SecurityApi> {
         this.homeId = homeId;
     }
 
-    public void updateHomeData(NAHomeData homeData) {
+    @Override
+    protected void updateHomeData(NAHomeData homeData) {
         NAObjectMap<NAHomeDataPerson> persons = homeData.getPersons();
         NAObjectMap<NAHomeDataModule> cameras = homeData.getModules();
         getActiveChildren().forEach(handler -> {
@@ -65,26 +66,24 @@ public class SecurityCapability extends Capability<SecurityApi> {
         });
     }
 
-    public void updateHomeStatus(HomeStatus homeStatus) {
+    @Override
+    protected void updateHomeStatus(HomeStatus homeStatus) {
         NAObjectMap<NAHomeStatusPerson> persons = homeStatus.getPersons();
         NAObjectMap<NAHomeStatusModule> cameras = homeStatus.getModules();
         getActiveChildren().forEach(handler -> {
-            if (persons != null) {
-                NAHomeStatusPerson dataPerson = persons.get(handler.getId());
-                if (dataPerson != null) {
-                    handler.setNewData(dataPerson);
-                }
+            NAHomeStatusPerson dataPerson = persons.get(handler.getId());
+            if (dataPerson != null) {
+                handler.setNewData(dataPerson);
             }
-            if (cameras != null) {
-                NAHomeStatusModule data = cameras.get(handler.getId());
-                if (data != null) {
-                    handler.setNewData(data);
-                }
+            NAHomeStatusModule dataCamera = cameras.get(handler.getId());
+            if (dataCamera != null) {
+                handler.setNewData(dataCamera);
             }
         });
     }
 
-    public void updateHomeEvent(NAHomeEvent homeEvent) {
+    @Override
+    protected void updateHomeEvent(NAHomeEvent homeEvent) {
         String personId = homeEvent.getPersonId();
         if (personId != null) {
             getActiveChildren().filter(handler -> personId.equals(handler.getId())).findFirst()
@@ -134,4 +133,5 @@ public class SecurityCapability extends Capability<SecurityApi> {
             logger.info("Monitoring can only be done on local camera.");
         }
     }
+
 }

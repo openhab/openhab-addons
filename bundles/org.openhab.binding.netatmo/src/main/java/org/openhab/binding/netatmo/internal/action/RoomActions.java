@@ -108,7 +108,7 @@ public class RoomActions implements ThingActions {
         }
 
         try {
-            roomHandler.thingActionCallSetRoomThermTemp(targetTemp != null ? targetTemp : 0,
+            roomHandler.setRoomThermTemp(targetTemp != null ? targetTemp : 0,
                     targetEndTime != null ? targetEndTime : 0L, SetpointMode.valueOf(targetMode));
         } catch (IllegalArgumentException e) {
             logger.debug("Ignoring setRoomThermpoint command due to illegal argument exception: {}", e.getMessage());

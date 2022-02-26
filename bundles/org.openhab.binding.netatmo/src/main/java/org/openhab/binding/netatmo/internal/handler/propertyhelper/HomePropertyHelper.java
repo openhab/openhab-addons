@@ -26,16 +26,16 @@ import org.openhab.binding.netatmo.internal.api.dto.NetatmoLocation;
 import org.openhab.core.thing.Bridge;
 
 /**
- * The {@link NAHomePropertyHelper} takes care of handling properties for things
+ * The {@link HomePropertyHelper} takes care of handling properties for things
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class NAHomePropertyHelper extends PropertyHelper {
+public class HomePropertyHelper extends PropertyHelper {
     private Set<FeatureArea> featuresArea = Set.of();
 
-    public NAHomePropertyHelper(Bridge bridge) {
+    public HomePropertyHelper(Bridge bridge) {
         super(bridge);
     }
 

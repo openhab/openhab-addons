@@ -23,15 +23,15 @@ import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.core.thing.Bridge;
 
 /**
- * The {@link NHCPropertyHelper} takes care of handling properties for things
+ * The {@link ModulePropertyHelper} takes care of handling properties for things
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class NHCPropertyHelper extends PropertyHelper {
+public class ModulePropertyHelper extends PropertyHelper {
 
-    public NHCPropertyHelper(Bridge bridge) {
+    public ModulePropertyHelper(Bridge bridge) {
         super(bridge);
     }
 
@@ -40,9 +40,9 @@ public class NHCPropertyHelper extends PropertyHelper {
         Map<String, String> properties = new HashMap<>(super.internalGetProperties(currentProperties, data));
         if (data instanceof NAMain && firstLaunch) {
             ((NAMain) data).getPlace().ifPresent(place -> {
-                properties.put(PROPERTY_CITY, place.getCity().orElse("undefined"));
-                properties.put(PROPERTY_COUNTRY, place.getCountry().orElse("undefined"));
-                properties.put(PROPERTY_TIMEZONE, place.getTimezone().orElse("undefined"));
+                place.getCity().map(city -> properties.put(PROPERTY_CITY, city));
+                place.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
+                place.getTimezone().map(tz -> properties.put(PROPERTY_TIMEZONE, tz));
             });
         }
         return properties;

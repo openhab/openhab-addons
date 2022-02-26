@@ -71,11 +71,12 @@ public class MeasureCapability extends Capability<WeatherApi> {
                                         measures.put(channel.getUID().getIdWithoutGroup(), data);
                                     });
                         } catch (NetatmoException e) {
-                            logger.warn("Error getting measures for channel {}, check configuration",
+                            logger.warn("Error getting measurements for channel {}, check configuration",
                                     channel.getLabel());
                         }
 
                     }
                 });
     }
+
 }

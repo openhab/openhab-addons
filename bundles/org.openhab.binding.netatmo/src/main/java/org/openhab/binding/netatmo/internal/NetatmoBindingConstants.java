@@ -131,6 +131,6 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_SETPOINT_DURATION = "setpoint-duration";
 
     // Presence outdoor camera specific channels
-    public static final String CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE = "auto-mode";
-    public static final String CHANNEL_CAMERA_FLOODLIGHT = "floodlight";
+    public static final String CHANNEL_FLOODLIGHT_AUTO_MODE = "auto-mode";
+    public static final String CHANNEL_FLOODLIGHT = "floodlight";
 }

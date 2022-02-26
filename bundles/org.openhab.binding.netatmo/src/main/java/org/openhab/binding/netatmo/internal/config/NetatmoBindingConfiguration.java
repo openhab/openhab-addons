@@ -26,20 +26,25 @@ import org.openhab.binding.netatmo.internal.api.NetatmoException;
  */
 @NonNullByDefault
 public class NetatmoBindingConfiguration {
-    public class NACredentials {
+    public class Credentials {
         public final String clientId, clientSecret, username, password;
 
-        NACredentials(String clientId, String clientSecret, String username, String password) {
+        Credentials(String clientId, String clientSecret, String username, String password) {
             this.clientSecret = clientSecret;
             this.username = username;
             this.password = password;
             this.clientId = clientId;
         }
+
+        @Override
+        public String toString() {
+            return "Credentials [clientId=" + clientId + ", username=" + username + "]";
+        }
     }
 
     public @Nullable String webHookUrl;
     public int reconnectInterval = 5400;
-    private @Nullable NACredentials credentials;
+    private @Nullable Credentials credentials;
 
     public void update(Map<String, Object> config) throws NetatmoException {
         this.webHookUrl = (String) config.get("webHookUrl");
@@ -51,7 +56,7 @@ public class NetatmoBindingConfiguration {
         String username = checkMandatory(config, "username", "@text/conf-error-no-username");
         String password = checkMandatory(config, "password", "@text/conf-error-no-password");
         String clientSecret = checkMandatory(config, "clientSecret", "@text/conf-error-no-client-secret");
-        credentials = new NACredentials(clientId, clientSecret, username, password);
+        credentials = new Credentials(clientId, clientSecret, username, password);
     }
 
     private String checkMandatory(Map<String, Object> config, String key, String error) throws NetatmoException {
@@ -66,7 +71,7 @@ public class NetatmoBindingConfiguration {
         return value;
     }
 
-    public @Nullable NACredentials getCredentials() {
+    public @Nullable Credentials getCredentials() {
         return credentials;
     }
 }

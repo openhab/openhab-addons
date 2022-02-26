@@ -21,8 +21,6 @@ import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AbstractChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.propertyhelper.NHCPropertyHelper;
-import org.openhab.binding.netatmo.internal.handler.propertyhelper.PropertyHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 import org.openhab.core.thing.Bridge;
@@ -34,15 +32,11 @@ import org.openhab.core.thing.Bridge;
  *
  */
 @NonNullByDefault
-public class NHCHandler extends NetatmoHandler {
+public class NHCHandler extends ModuleHandler {
+
     public NHCHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider, NetatmoServlet webhookServlet) {
         super(bridge, channelHelpers, apiBridge, descriptionProvider, webhookServlet);
-    }
-
-    @Override
-    protected PropertyHelper getPropertyHelper() {
-        return new NHCPropertyHelper(getThing());
     }
 
     @Override
