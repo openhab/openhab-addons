@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -75,15 +76,10 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                     }
                     setIdle(true);
                     // get raw audio from the pulse audio socket
-                    return new PulseAudioStream(clientSocketLocal.getInputStream(), sourceFormat, (idle) -> {
+                    return new PulseAudioStream(sourceFormat, this::getSourceInputStream, (idle) -> {
                         setIdle(idle);
                         if (idle) {
                             scheduleDisconnect();
-                        } else {
-                            try {
-                                connectIfNeeded();
-                            } catch (IOException | InterruptedException ignored) {
-                            }
                         }
                     });
                 } catch (IOException e) {
@@ -114,14 +110,27 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
         throw new AudioException("Unable to create input stream");
     }
 
+    private @Nullable InputStream getSourceInputStream() {
+        try {
+            connectIfNeeded();
+        } catch (IOException | InterruptedException ignored) {
+        }
+        try {
+            return (clientSocket != null) ? clientSocket.getInputStream() : null;
+        } catch (IOException ignored) {
+            return null;
+        }
+    }
+
     static class PulseAudioStream extends AudioStream {
         private final Logger logger = LoggerFactory.getLogger(PulseAudioAudioSource.class);
-        private final InputStream input;
         private final AudioFormat format;
+        private final Supplier<@Nullable InputStream> getInput;
         private final Consumer<Boolean> setIdle;
 
-        public PulseAudioStream(InputStream input, AudioFormat format, Consumer<Boolean> setIdle) {
-            this.input = input;
+        public PulseAudioStream(AudioFormat format, Supplier<@Nullable InputStream> getInput,
+                Consumer<Boolean> setIdle) {
+            this.getInput = getInput;
             this.format = format;
             this.setIdle = setIdle;
         }
@@ -136,13 +145,10 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
             logger.trace("reading from pulseaudio stream");
             setIdle.accept(false);
             byte[] b = new byte[1];
-
             int bytesRead = read(b);
-
             if (-1 == bytesRead) {
                 return bytesRead;
             }
-
             Byte bb = Byte.valueOf(b[0]);
             return bb.intValue();
         }
@@ -152,14 +158,22 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
         public int read(byte @Nullable [] b) throws IOException {
             logger.trace("reading from pulseaudio stream");
             setIdle.accept(false);
-            return input.read(b, 0, b.length);
+            return getInputStream().read(b, 0, b.length);
         }
 
         @Override
         public int read(byte @Nullable [] b, int off, int len) throws IOException {
             logger.trace("reading from pulseaudio stream");
             setIdle.accept(false);
-            return input.read(b, off, len);
+            return getInputStream().read(b, off, len);
+        }
+
+        private InputStream getInputStream() throws IOException {
+            var input = getInput.get();
+            if (input == null) {
+                throw new IOException("Unable to access to the source input stream");
+            }
+            return input;
         }
 
         @Override
