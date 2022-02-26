@@ -226,14 +226,14 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             Where w = deviceWhere;
             if (w != null) {
                 try {
-                    Thermoregulation.OperationMode mode = Thermoregulation.OperationMode.OFF;
+                    Thermoregulation.OperationMode new_mode = Thermoregulation.OperationMode.OFF;
 
                     if (isCentralUnit && WhatThermo.isComplex(command.toString()))
-                        mode = Thermoregulation.OperationMode.valueOf(command.toString() + "_" + programNumber);
+                        new_mode = Thermoregulation.OperationMode.valueOf(command.toString() + "_" + programNumber);
                     else
-                        mode = Thermoregulation.OperationMode.valueOf(command.toString());
+                        new_mode = Thermoregulation.OperationMode.valueOf(command.toString());
 
-                    send(Thermoregulation.requestWriteMode(getWhere(w.value()), mode, currentFunction,
+                    send(Thermoregulation.requestWriteMode(getWhere(w.value()), new_mode, currentFunction,
                             currentSetPointTemp));
                 } catch (OWNException e) {
                     logger.warn("handleMode() {}", e.getMessage());
@@ -278,6 +278,10 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         super.handleMessage(msg);
 
         if (isCentralUnit) {
+            // 26/2 TODO
+            // WEEKLY torna MANUAL se le seguenti righe sono attive
+            // se le commento funziona bene ma non vengono recepite le impostazini da CU
+            // se metto SETTIMANALE 2 su CU => arriva WEEKLY_2 sulla combo mode che ovviamente non esiste e quindi si torna a manual
             if (msg.isCommand()) {
                 updateModeAndFunction((Thermoregulation) msg);
             }
