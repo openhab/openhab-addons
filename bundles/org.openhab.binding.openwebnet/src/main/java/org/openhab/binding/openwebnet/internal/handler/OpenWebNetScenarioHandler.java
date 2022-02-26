@@ -30,6 +30,8 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -117,10 +119,8 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
 
     private boolean isDryContactIR = false;
     private boolean isCENPlus = false;
-    private static long lastAllDevicesRefreshTS = -1; // timestamp when the last request for all device refresh was sent
-    // for this handler
-    protected static final int ALL_DEVICES_REFRESH_INTERVAL_MSEC = 10000; // interval in msec before sending another all
-    // devices refresh request
+
+    private static long lastAllDevicesRefreshTS = 0; // ts when last all device refresh was sent for this handler
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.SCENARIO_SUPPORTED_THING_TYPES;
 
@@ -361,49 +361,50 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected void refreshDevice(boolean refreshAll) {
+    protected void requestChannelState(ChannelUID channel) {
         if (isDryContactIR) {
-            if (refreshAll) {
-                long now = System.currentTimeMillis();
-                if (now - lastAllDevicesRefreshTS > ALL_DEVICES_REFRESH_INTERVAL_MSEC) {
-                    try {
-                        send(CENPlusScenario.requestStatus("30"));
-                        lastAllDevicesRefreshTS = now;
-                    } catch (OWNException e) {
-                        logger.warn("Excpetion while requesting all DryContact/IR devices refresh: {}", e.getMessage());
-                    }
-                } else {
-                    logger.debug("Refresh all devices just sent...");
+            super.requestChannelState(channel);
+            Where w = deviceWhere;
+            if (w != null) {
+                try {
+                    send(CENPlusScenario.requestStatus(w.value()));
+                } catch (OWNException e) {
+                    logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
-            } else {
-                requestState();
             }
         } else {
-            logger.debug("CEN/CEN+ channels are trigger channels and do not have state");
+            logger.debug("requestChannelState() CEN/CEN+ channels are trigger channels and do not have state.");
         }
     }
 
     @Override
-    protected void requestChannelState(ChannelUID channel) {
-        if (isDryContactIR) {
-            requestState();
-        } else {
-            logger.debug("CEN/CEN+ channels are trigger channels and do not have state");
-        }
-    }
+    protected long getRefreshAllLastTS() {
+        return lastAllDevicesRefreshTS;
+    };
 
-    /* helper method to request DryContact/IR device state */
-    private void requestState() {
-        Where w = deviceWhere;
-        if (w != null) {
-            try {
-                send(CENPlusScenario.requestStatus(w.value()));
-            } catch (OWNException e) {
-                logger.warn("requestState() Exception while requesting device state: {} for thing {}", e.getMessage(),
-                        thing.getUID());
+    @Override
+    protected void refreshDevice(boolean refreshAll) {
+        if (isDryContactIR) {
+            if (refreshAll) {
+                logger.debug("--- refreshDevice() : refreshing GENERAL... ({})", thing.getUID());
+                try {
+                    send(CENPlusScenario.requestStatus("30"));
+                    lastAllDevicesRefreshTS = System.currentTimeMillis();
+                } catch (OWNException e) {
+                    logger.warn("Excpetion while requesting all devices refresh: {}", e.getMessage());
+                }
+            } else {
+                logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
+                requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_DRY_CONTACT_IR));
             }
         } else {
-            logger.warn("Could not requestState(): deviceWhere is null");
+            logger.debug("CEN/CEN+ channels are trigger channels and do not have state. Setting it ONLINE");
+            // put CEN/CEN+ scenario things to ONLINE automatically as they do not have state
+            ThingStatus ts = getThing().getStatus();
+            if (ThingStatus.ONLINE != ts && ThingStatus.REMOVING != ts && ThingStatus.REMOVED != ts) {
+                updateStatus(ThingStatus.ONLINE);
+            }
         }
     }
 
