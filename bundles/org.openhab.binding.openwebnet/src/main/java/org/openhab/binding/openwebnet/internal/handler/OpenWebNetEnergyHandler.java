@@ -28,6 +28,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
@@ -146,22 +147,22 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void requestChannelState(ChannelUID channel) {
-        logger.debug("requestChannelState() thingUID={} channel={}", thing.getUID(), channel.getId());
+        super.requestChannelState(channel);
         Where w = deviceWhere;
         if (w != null) {
             try {
                 send(EnergyManagement.requestActivePower(w.value()));
             } catch (OWNException e) {
-                logger.debug("Exception while requesting channel {} state: {}", channel, e.getMessage(), e);
+                logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-        } else {
-            logger.warn("Could not requestChannelState(): deviceWhere is null");
         }
     }
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
-        requestChannelState(new ChannelUID("any:any:any:any"));
+        logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
+        requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_POWER));
     }
 
     @Override

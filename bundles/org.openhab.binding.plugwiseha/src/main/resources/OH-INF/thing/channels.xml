@@ -35,6 +35,27 @@
 		<category>switch</category>
 	</channel-type>
 
+	<channel-type id="coolingAllowed">
+		<item-type>Switch</item-type>
+		<label>Cooling Allowed</label>
+		<description>Switch the cooling allowed of a zone ON or OFF</description>
+		<category>switch</category>
+	</channel-type>
+
+	<channel-type id="regulationControl">
+		<item-type>String</item-type>
+		<label>Regulation Control</label>
+		<description>Switch the regulation control of a zone to Active, Passive or Off</description>
+		<category>switch</category>
+		<state>
+			<options>
+				<option value="active">Active</option>
+				<option value="passive">Passive</option>
+				<option value="off">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power</label>
@@ -178,9 +199,17 @@
 	<channel-type id="presetScene">
 		<item-type>String</item-type>
 		<label>Preset Scene</label>
-		<description>Gets the preset scene of the zone</description>
+		<description>Gets or sets the preset scene of the zone</description>
 		<category>heating</category>
-		<state readOnly="true"/>
+		<state>
+			<options>
+				<option value="home">Home</option>
+				<option value="asleep">A Sleep</option>
+				<option value="away">Away</option>
+				<option value="vacation">Vacation</option>
+				<option value="no_frost">No Frost</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="valvePosition">

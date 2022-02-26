@@ -27,7 +27,6 @@ import org.openhab.binding.mielecloud.internal.handler.MieleBridgeHandler;
 import org.openhab.binding.mielecloud.internal.handler.MieleHandlerFactory;
 import org.openhab.binding.mielecloud.internal.util.AbstractConfigFlowTest;
 import org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants;
-import org.openhab.binding.mielecloud.internal.util.ReflectionUtil;
 import org.openhab.binding.mielecloud.internal.util.Website;
 import org.openhab.binding.mielecloud.internal.util.WebsiteCrawler;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebservice;
@@ -124,7 +123,7 @@ public class ConfigFlowTest extends AbstractConfigFlowTest {
     public void configFlowWaitTimeoutExpiresWhenBridgeDoesNotComeOnline() throws Exception {
         // given:
         setUpAuthorizationHandler();
-        ReflectionUtil.setPrivateStaticFinal(CreateBridgeServlet.class, "ONLINE_WAIT_TIMEOUT_IN_MILLISECONDS", 0);
+        getCreateBridgeServlet().setOnlineWaitTimeoutInMilliseconds(0);
 
         // when:
         configureBridgeWithConfigFlow();
