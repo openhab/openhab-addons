@@ -150,7 +150,7 @@ public class ShellyDeviceProfile {
             numMeters = inColor ? 1 : getInteger(settings.device.numOutputs);
         }
 
-        if (settings.sleepMode != null && !isTRV) {
+        if (settings.sleepMode != null) {
             // Sensor, usually 12h, H&T in USB mode 10min
             updatePeriod = getString(settings.sleepMode.unit).equalsIgnoreCase("m") ? settings.sleepMode.period * 60 // minutes
                     : settings.sleepMode.period * 3600; // hours

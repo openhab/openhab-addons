@@ -351,27 +351,32 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     break;
                 case CHANNEL_CONTROL_PROFILE:
                     logger.debug("{}: Select profile {}", thingName, command);
-                    api.setProfile((int) getNumber(command));
+                    int profile = (int) getNumber(command);
+                    if (profile < 0 || profile > 5) {
+                        logger.info("{}: Invalid profile Id {} requested", thingName, profile);
+                        break;
+                    }
+                    api.setProfile(0, profile);
                     break;
                 case CHANNEL_CONTROL_MODE:
                     logger.debug("{}: Set mode to {}", thingName, command);
-                    api.setValveMode("automatic".equalsIgnoreCase(command.toString()));
+                    api.setValveMode(0, SHELLY_TRV_MODE_AUTO.equalsIgnoreCase(command.toString()));
                     break;
                 case CHANNEL_CONTROL_SETTEMP:
                     logger.debug("{}: Set temperature to {}", thingName, command);
-                    api.setTemperature((int) getNumber(command));
+                    api.setTemperature(0, (int) getNumber(command));
                     break;
                 case CHANNEL_CONTROL_POSITION:
                     logger.debug("{}: Set position to {}", thingName, command);
-                    api.setValvePosition(getNumber(command));
+                    api.setValvePosition(0, getNumber(command));
                     break;
                 case CHANNEL_CONTROL_BCONTROL:
                     logger.debug("{}: Set boost mode to {}", thingName, command);
-                    api.startBoost(command == OnOffType.ON ? -1 : 0);
+                    api.startBoost(0, command == OnOffType.ON ? -1 : 0);
                     break;
                 case CHANNEL_CONTROL_BTIMER:
                     logger.debug("{}: Set boost timer to {}", thingName, command);
-                    api.setBoostTime((int) getNumber(command));
+                    api.setBoostTime(0, (int) getNumber(command));
                     break;
 
                 default:

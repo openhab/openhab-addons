@@ -116,6 +116,11 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 case "3121": // valvePos, Type=S, Range=0/100;
                     updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_POSITION,
                             s.value != -1 ? toQuantityType(getDouble(s.value), 0, Units.PERCENT) : UnDefType.UNDEF);
+                    if (s.value >= 0 && s.value != thingHandler.getChannelDouble(CHANNEL_GROUP_CONTROL,
+                            CHANNEL_CONTROL_POSITION)) {
+                        logger.debug("{}: Valve position changed, force update", thingName);
+                        thingHandler.requestUpdates(1, false);
+                    }
                     break;
                 default:
                     processed = false;

@@ -174,7 +174,7 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.shelly.controlProfile.label</label>
 		<description>@text/channel-type.shelly.controlProfile.description</description>
-		<state min="0" max="31" step="1" readOnly="false"></state>
+		<state min="0" max="5" step="1" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="targetTemp">
