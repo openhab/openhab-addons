@@ -29,40 +29,40 @@ import com.google.gson.annotations.SerializedName;
  */
 public abstract class UniFiClient implements HasId {
 
-    protected final transient UniFiControllerCache cache;
+    private final transient UniFiControllerCache cache;
 
     @SerializedName("_id")
-    protected String id;
+    private String id;
 
-    protected String siteId;
-
-    @JsonAdapter(UniFiTidyLowerCaseStringDeserializer.class)
-    protected String mac;
-
-    protected String ip;
+    private String siteId;
 
     @JsonAdapter(UniFiTidyLowerCaseStringDeserializer.class)
-    protected String hostname;
+    private String mac;
+
+    private String ip;
+
+    @JsonAdapter(UniFiTidyLowerCaseStringDeserializer.class)
+    private String hostname;
 
     @SerializedName("name")
     @JsonAdapter(UniFiTidyLowerCaseStringDeserializer.class)
-    protected String alias;
+    private String alias;
 
-    protected Integer uptime;
+    private Integer uptime;
 
     @JsonAdapter(UniFiTimestampDeserializer.class)
-    protected ZonedDateTime lastSeen;
+    private ZonedDateTime lastSeen;
 
-    protected boolean blocked;
+    private boolean blocked;
 
     @SerializedName("is_guest")
-    protected boolean guest;
+    private boolean guest;
 
     @SerializedName("fixed_ip")
-    protected String fixedIp;
+    private String fixedIp;
 
     @SerializedName("satisfaction")
-    protected Integer experience;
+    private Integer experience;
 
     protected UniFiClient(final UniFiControllerCache cache) {
         this.cache = cache;
