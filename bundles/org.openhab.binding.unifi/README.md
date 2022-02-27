@@ -160,9 +160,11 @@ The `wirelessClient` information that is retrieved is available as these channel
 | ap         | String    | Access point (AP) the client is connected to                         | Read        |
 | essid      | String    | Network name (ESSID) the client is connected to                      | Read        |
 | rssi       | Number    | Received signal strength indicator (RSSI) of the client              | Read        |
-| uptime     | Number    | Uptime of the wireless client (in seconds)                           | Read        |
-| lastSeen   | DateTime  | Date and Time the wireless client was last seen                      | Read        |
+| uptime     | Number    | Uptime of the client (in seconds)                                    | Read        |
+| lastSeen   | DateTime  | Date and Time the client was last seen                               | Read        |
+| experience | Number    | Experience of client                                                 | Read        |
 | blocked    | Switch    | Blocked status of the client                                         | Read, Write |
+| cmd        | String    | Command channel: `reconnect` to force the client to be reconnect     | Write       |
 | reconnect  | Switch    | Force the client to be reconnect                                     | Write       |
 
 _Note: All channels with the Write permission require administrator credentials as defined in the controller._
@@ -177,8 +179,9 @@ The `wiredClient` information that is retrieved is available as these channels:
 | site       | String    | Site name (from the controller web UI) the client is associated with | Read        |
 | macAddress | String    | MAC address of the client                                            | Read        |
 | ipAddress  | String    | IP address of the client                                             | Read        |
-| uptime     | Number    | Uptime of the wireless client (in seconds)                           | Read        |
-| lastSeen   | DateTime  | Date and Time the wireless client was last seen                      | Read        |
+| uptime     | Number    | Uptime of the client (in seconds)                                    | Read        |
+| lastSeen   | DateTime  | Date and Time the client was last seen                               | Read        |
+| experience | Number    | Experience of the client                                             | Read        |
 | blocked    | Switch    | Blocked status of the client                                         | Read, Write |
 
 ##### `blocked`
@@ -199,6 +202,7 @@ The `poePort` information that is retrieved is available as these channels:
 | online     | Switch                   | Online status of the port                          | Read        |
 | mode       | Selection                | Select the PoE mode: off, auto, 24v or passthrough | Read, Write |
 | enable     | Switch                   | Enable Power Over Ethernet                         | Read, Write |
+| cmd        | String                   | Command channel: `power-cycle`: Power Cycle port   | Write       |
 | power      | Number:Power             | Power consumption of the port in Watt              | Read        |
 | voltage    | Number:ElectricPotential | Voltage of the port in Volt                        | Read        |
 | current    | Number:ElectricCurrent   | Current used by the port in mA                     | Read        |
