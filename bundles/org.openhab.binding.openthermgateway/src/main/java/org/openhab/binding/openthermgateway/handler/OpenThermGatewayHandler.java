@@ -214,11 +214,8 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
 
             autoReconnect = true;
 
-            connector = new OpenThermGatewaySocketConnector(this, config);
-
-            Thread thread = new Thread(connector, "OpenTherm Gateway Binding - socket listener thread");
-            thread.setDaemon(true);
-            thread.start();
+            OpenThermGatewayConnector conn = connector = new OpenThermGatewaySocketConnector(this, config);
+            conn.start();
 
             logger.debug("OpenThermGateway connector started");
         }

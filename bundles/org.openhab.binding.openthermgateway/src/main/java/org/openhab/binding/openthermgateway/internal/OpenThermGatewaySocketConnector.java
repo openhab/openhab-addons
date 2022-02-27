@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
+import static org.openhab.binding.openthermgateway.internal.OpenThermGatewayBindingConstants.BINDING_ID;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.common.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,10 +50,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     private final int connectTimeoutMilliseconds;
     private final int readTimeoutMilliSeconds;
 
-    private @Nullable Socket socket;
-    private @Nullable PrintWriter writer;
-
-    private volatile boolean stopping = false;
+    private @Nullable volatile PrintWriter writer;
+    private @Nullable volatile Thread thread;
 
     private Map<String, Entry<Long, GatewayCommand>> pendingCommands = new ConcurrentHashMap<>();
 
@@ -64,12 +65,10 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
     @Override
     public void run() {
-        logger.debug("Connecting OpenThermGatewaySocketConnector to {}:{}", this.ipaddress, this.port);
-        callback.connectionStateChanged(ConnectionState.CONNECTING);
-
+        thread = Thread.currentThread();
         try (Socket socket = new Socket()) {
-            // Make socket accessible on class level
-            this.socket = socket;
+            logger.debug("Connecting OpenThermGatewaySocketConnector to {}:{}", this.ipaddress, this.port);
+            callback.connectionStateChanged(ConnectionState.CONNECTING);
 
             socket.connect(new InetSocketAddress(ipaddress, port), connectTimeoutMilliseconds);
             socket.setSoTimeout(readTimeoutMilliSeconds);
@@ -86,7 +85,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                 // Set the OTGW to report every message it receives and transmits
                 sendCommand(GatewayCommand.parse(GatewayCommandCode.PRINTSUMMARY, "0"));
 
-                while (!stopping && !Thread.currentThread().isInterrupted()) {
+                while (!Thread.currentThread().isInterrupted()) {
                     @Nullable
                     String message = reader.readLine();
 
@@ -99,15 +98,12 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                 }
             } catch (IOException ex) {
                 logger.warn("Error communicating with OpenTherm Gateway: '{}'", ex.getMessage());
-            } finally {
-                // local writer is being destroyed, so null the class level reference as well
-                writer = null;
             }
         } catch (IOException ex) {
             logger.warn("Unable to connect to the OpenTherm Gateway: '{}'", ex.getMessage());
         } finally {
-            // local socket is being destroyed, so null the class level reference as well
-            socket = null;
+            thread = null;
+            writer = null;
             logger.debug("OpenThermGatewaySocketConnector disconnected");
             callback.connectionStateChanged(ConnectionState.DISCONNECTED);
         }
@@ -116,30 +112,34 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     @Override
     public void stop() {
         logger.debug("Stopping OpenThermGatewaySocketConnector");
-        stopping = true;
-        Thread.currentThread().interrupt();
+        Thread thread = this.thread;
+        if ((thread != null) && thread.isAlive()) {
+            thread.interrupt();
+        }
     }
 
     @Override
-    public boolean isConnected() {
-        Socket sck = socket;
-        return (sck != null && sck.isConnected());
+    public void start() {
+        logger.debug("Starting OpenThermGatewaySocketConnector");
+        new NamedThreadFactory("binding-" + BINDING_ID).newThread(this).start();
+    }
+
+    @Override
+    public synchronized boolean isConnected() {
+        Thread thread = this.thread;
+        return (thread != null) && thread.isAlive();
     }
 
     @Override
     public synchronized void sendCommand(GatewayCommand command) {
-        @Nullable
         PrintWriter wrt = writer;
-
-        @Nullable
-        Socket sck = socket;
 
         pendingCommands.put(command.getCode(),
                 new AbstractMap.SimpleImmutableEntry<>(System.currentTimeMillis(), command));
 
         String msg = command.toFullString();
 
-        if (sck != null && sck.isConnected() && wrt != null) {
+        if (isConnected() && (wrt != null)) {
             logger.debug("Sending message: {}", msg);
             wrt.print(msg + "\r\n");
             wrt.flush();
