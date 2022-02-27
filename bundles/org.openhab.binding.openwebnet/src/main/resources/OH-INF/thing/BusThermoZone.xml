@@ -19,6 +19,7 @@
 			<channel id="conditioningValves" typeId="conditioningValves"/>
 			<channel id="heatingValves" typeId="heatingValves"/>
 			<channel id="actuators" typeId="actuators"/>
+			<channel id="localOffset" typeId="localOffset"/>
 			<!-- read/write -->
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
 			<channel id="function" typeId="function"/>
