@@ -21,14 +21,17 @@ import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ERROR;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.FIRMWARE;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.MAX_CURRENT;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.MAX_CURRENT_TEMPORARY;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.PHASES;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_ALL;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L1;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L2;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L3;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.PWM_SIGNAL;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.SESSION_CHARGE_CONSUMPTION;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.SESSION_CHARGE_CONSUMPTION_LIMIT;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.TEMPERATURE;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.TEMP_TMA1;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.TEMP_TMA2;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.TOTAL_CONSUMPTION;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.VOLTAGE_L1;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.VOLTAGE_L2;
@@ -108,6 +111,11 @@ public class GoEChargerHandler extends BaseThingHandler {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.maxCurrent, Units.AMPERE);
+            case MAX_CURRENT_TEMPORARY:
+                if (goeResponse.maxCurrentTemporary == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponse.maxCurrentTemporary, Units.AMPERE);
             case PWM_SIGNAL:
                 if (goeResponse.pwmSignal == null) {
                     return UnDefType.UNDEF;
@@ -198,11 +206,16 @@ public class GoEChargerHandler extends BaseThingHandler {
                     count++;
                 }
                 return new DecimalType(count);
-            case TEMPERATURE:
-                if (goeResponse.temperature == null) {
+            case TEMP_TMA1:
+                if ((goeResponse.tempTma == null) | (goeResponse.tempTma.length == 0)) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.temperature, SIUnits.CELSIUS);
+                return new QuantityType<>(goeResponse.tempTma[0], SIUnits.CELSIUS);
+            case TEMP_TMA2:
+                if ((goeResponse.tempTma == null) | (goeResponse.tempTma.length <= 1)) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponse.tempTma[1], SIUnits.CELSIUS);
             case SESSION_CHARGE_CONSUMPTION:
                 if (goeResponse.sessionChargeConsumption == null) {
                     return UnDefType.UNDEF;
@@ -272,6 +285,11 @@ public class GoEChargerHandler extends BaseThingHandler {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[9] * 100, Units.WATT);
+            case POWER_ALL:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponse.energy[11] * 10, Units.WATT);
         }
         return UnDefType.UNDEF;
     }
@@ -289,6 +307,14 @@ public class GoEChargerHandler extends BaseThingHandler {
         switch (channelUID.getId()) {
             case MAX_CURRENT:
                 key = "amp";
+                if (command instanceof DecimalType) {
+                    value = String.valueOf(((DecimalType) command).intValue());
+                } else if (command instanceof QuantityType<?>) {
+                    value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(Units.AMPERE).intValue());
+                }
+                break;
+            case MAX_CURRENT_TEMPORARY:
+                key = "amx";
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue());
                 } else if (command instanceof QuantityType<?>) {
@@ -344,9 +370,7 @@ public class GoEChargerHandler extends BaseThingHandler {
         config = getConfigAs(GoEChargerConfiguration.class);
         allChannels = getThing().getChannels().stream().map(channel -> channel.getUID().getId())
                 .collect(Collectors.toList());
-
         updateStatus(ThingStatus.UNKNOWN);
-
         startAutomaticRefresh();
         logger.debug("Finished initializing!");
     }
@@ -357,13 +381,10 @@ public class GoEChargerHandler extends BaseThingHandler {
 
     private void sendData(String key, String value) {
         String urlStr = getUrl(GoEChargerBindingConstants.MQTT_URL).replace("%KEY%", key).replace("%VALUE%", value);
-        logger.debug("POST URL = {}", urlStr);
-
         try {
-            ContentResponse contentResponse = httpClient.newRequest(urlStr).method(HttpMethod.POST)
+            ContentResponse contentResponse = httpClient.newRequest(urlStr).method(HttpMethod.GET)
                     .timeout(5, TimeUnit.SECONDS).send();
             String response = contentResponse.getContentAsString();
-            logger.debug("POST Response: {}", response);
             GoEStatusResponseDTO result = gson.fromJson(response, GoEStatusResponseDTO.class);
             updateChannelsAndStatus(result, null);
         } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
@@ -384,8 +405,6 @@ public class GoEChargerHandler extends BaseThingHandler {
     private GoEStatusResponseDTO getGoEData()
             throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
         String urlStr = getUrl(GoEChargerBindingConstants.API_URL);
-        logger.debug("GET URL = {}", urlStr);
-
         ContentResponse contentResponse = httpClient.newRequest(urlStr).method(HttpMethod.GET)
                 .timeout(5, TimeUnit.SECONDS).send();
 
