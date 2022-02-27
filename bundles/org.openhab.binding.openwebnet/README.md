@@ -229,7 +229,7 @@ See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-r
 
 ####  `mode` for values WEEKLY and SCENARIO (Central Unit)
 
-There are three WEEKLY and sixteen SCENARIO programs defined in the central unit.
+There are three WEEKLY and sixteen SCENARIO programs defined for the Central Unit.
 
 In order to activate one of them you have to use two different channels: 
 - with `mode` you can set the mode (`WEEKLY` or `SCENARIO`)
