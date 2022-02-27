@@ -185,7 +185,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     private void handleSetProgramNumber(Command command) {
         if (command instanceof DecimalType) {
             if (!isCentralUnit) {
-                logger.warn("handleSetProgramNumber() This command can be sent only to a Central Unit. ");
+                logger.warn("handleSetProgramNumber() This command can be sent only for a Central Unit.");
                 return;
             }
 
