@@ -193,7 +193,7 @@
 	<channel-type id="modeCentralUnit">
 		<item-type>String</item-type>
 		<label>Central Unit Mode</label>
-		<description>Set mode of the central unit (read/write)</description>
+		<description>Set mode of the Central Unit (read/write)</description>
 		<state>
 			<options>
 				<option value="MANUAL">Manual</option>
