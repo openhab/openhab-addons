@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Thermo Central Unit</label>
-		<description>A OpenWebNet BUS/SCS configured thermo central unit.</description>
+		<description>A OpenWebNet BUS/SCS configured thermo Central Unit.</description>
 
 		<channels>
 			<!-- read only -->
