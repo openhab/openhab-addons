@@ -138,8 +138,8 @@ class DataInputStreamWithTimeout implements Closeable {
      * Start the polling task
      */
     private void startPolling() {
-        logger.debug("startPolling() called");
         if (future == null) {
+            logger.debug("startPolling() called");
             slipMessageQueue.clear();
             poller = new Poller(inputStream, slipMessageQueue);
             executor = Executors.newSingleThreadExecutor(bridge.getThreadFactory());
