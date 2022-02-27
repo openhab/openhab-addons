@@ -48,7 +48,7 @@ public class UIntDataItem extends DataItem {
     public State createState(Message message) {
         @Nullable
         Unit<?> unit = getUnit();
-        Integer value = message.getUInt(super.getByteType());
+        int value = message.getUInt(super.getByteType());
         return (unit == null) ? new DecimalType(value) : new QuantityType<>(value, unit);
     }
 }
