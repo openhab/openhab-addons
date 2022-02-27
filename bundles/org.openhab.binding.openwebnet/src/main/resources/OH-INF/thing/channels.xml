@@ -208,7 +208,7 @@
 	<channel-type id="weeklyProgramCentralUnit">
 		<item-type>Number</item-type>
 		<label>Weekly Program Number</label>
-		<description>Set program number in the central unit, valid only for Mode Central Unit = "WEEKLY"(read/write)</description>
+		<description>Set weekly program number for the Central Unit, valid only with Central Unit mode = "WEEKLY" (read/write)</description>
 		<state>
 			<options>
 				<option value="1">Program 1</option>
