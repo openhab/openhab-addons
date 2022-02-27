@@ -14,12 +14,14 @@ package org.openhab.binding.pulseaudio.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,8 +43,10 @@ import org.slf4j.LoggerFactory;
 public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implements AudioSource {
 
     private final Logger logger = LoggerFactory.getLogger(PulseAudioAudioSource.class);
+    private final Set<PipedOutputStream> pipeOutputs = new HashSet<>();
 
     private HashSet<AudioFormat> supportedFormats = new HashSet<>();
+    private @Nullable Future<?> pipeWriteTask;
 
     public PulseAudioAudioSource(PulseaudioHandler pulseaudioHandler, ScheduledExecutorService scheduler) {
         super(pulseaudioHandler, scheduler);
@@ -75,22 +79,32 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                         throw new AudioException("Incompatible audio format requested");
                     }
                     setIdle(true);
+                    var pipeOutput = new PipedOutputStream();
+                    registerPipe(pipeOutput);
+                    var pipeInput = new PipedInputStream(pipeOutput, 1024 * 20) {
+                        @Override
+                        public void close() throws IOException {
+                            unregisterPipe(pipeOutput);
+                            super.close();
+                        }
+                    };
                     // get raw audio from the pulse audio socket
-                    return new PulseAudioStream(sourceFormat, this::getSourceInputStream, (idle) -> {
+                    return new PulseAudioStream(sourceFormat, pipeInput, (idle) -> {
                         setIdle(idle);
                         if (idle) {
                             scheduleDisconnect();
+                        } else {
+                            // ensure pipe is writing
+                            startPipeWrite();
                         }
                     });
                 } catch (IOException e) {
                     disconnect(); // disconnect force to clear connection in case of socket not cleanly shutdown
                     if (countAttempt == 2) { // we won't retry : log and quit
-                        if (logger.isWarnEnabled()) {
-                            String port = clientSocket != null ? Integer.toString(clientSocket.getPort()) : "unknown";
-                            logger.warn(
-                                    "Error while trying to get audio from pulseaudio audio source. Cannot connect to {}:{}, error: {}",
-                                    pulseaudioHandler.getHost(), port, e.getMessage());
-                        }
+                        String port = clientSocket != null ? Integer.toString(clientSocket.getPort()) : "unknown";
+                        logger.warn(
+                                "Error while trying to get audio from pulseaudio audio source. Cannot connect to {}:{}, error: {}",
+                                pulseaudioHandler.getHost(), port, e.getMessage());
                         setIdle(true);
                         throw e;
                     }
@@ -110,6 +124,55 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
         throw new AudioException("Unable to create input stream");
     }
 
+    private synchronized void registerPipe(PipedOutputStream pipeOutput) {
+        this.pipeOutputs.add(pipeOutput);
+        startPipeWrite();
+    }
+
+    private void startPipeWrite() {
+        if (pipeWriteTask == null) {
+            this.pipeWriteTask = scheduler.submit(() -> {
+                int lengthRead;
+                byte[] buffer = new byte[1024];
+                while (true) {
+                    var stream = getSourceInputStream();
+                    if (stream != null) {
+                        try {
+                            lengthRead = stream.read(buffer);
+                            for (var output : pipeOutputs) {
+                                output.write(buffer, 0, lengthRead);
+                                output.flush();
+                            }
+                        } catch (IOException e) {
+                            logger.warn("IOException while reading from pulse source: {}", e.getMessage());
+                        } catch (RuntimeException e) {
+                            logger.warn("RuntimeException while reading from pulse source: {}", e.getMessage());
+                        }
+                    } else {
+                        logger.warn("Unable to get source input stream");
+                    }
+                }
+            });
+        }
+    }
+
+    private synchronized void unregisterPipe(PipedOutputStream pipeOutput) {
+        this.pipeOutputs.remove(pipeOutput);
+        stopPipeWriteTask();
+        try {
+            pipeOutput.close();
+        } catch (IOException ignored) {
+        }
+    }
+
+    private void stopPipeWriteTask() {
+        var pipeWriteTask = this.pipeWriteTask;
+        if (pipeOutputs.isEmpty() && pipeWriteTask != null) {
+            pipeWriteTask.cancel(true);
+            this.pipeWriteTask = null;
+        }
+    }
+
     private @Nullable InputStream getSourceInputStream() {
         try {
             connectIfNeeded();
@@ -122,15 +185,21 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
         }
     }
 
+    @Override
+    public void disconnect() {
+        stopPipeWriteTask();
+        super.disconnect();
+    }
+
     static class PulseAudioStream extends AudioStream {
         private final Logger logger = LoggerFactory.getLogger(PulseAudioAudioSource.class);
         private final AudioFormat format;
-        private final Supplier<@Nullable InputStream> getInput;
+        private final InputStream input;
         private final Consumer<Boolean> setIdle;
+        private boolean closed = false;
 
-        public PulseAudioStream(AudioFormat format, Supplier<@Nullable InputStream> getInput,
-                Consumer<Boolean> setIdle) {
-            this.getInput = getInput;
+        public PulseAudioStream(AudioFormat format, InputStream input, Consumer<Boolean> setIdle) {
+            this.input = input;
             this.format = format;
             this.setIdle = setIdle;
         }
@@ -154,31 +223,24 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
         @SuppressWarnings("null")
         @Override
         public int read(byte @Nullable [] b) throws IOException {
-            logger.trace("reading from pulseaudio stream");
-            setIdle.accept(false);
-            return getInputStream().read(b, 0, b.length);
+            return read(b, 0, b.length);
         }
 
         @Override
         public int read(byte @Nullable [] b, int off, int len) throws IOException {
             logger.trace("reading from pulseaudio stream");
-            setIdle.accept(false);
-            return getInputStream().read(b, off, len);
-        }
-
-        private InputStream getInputStream() throws IOException {
-            var input = getInput.get();
-            if (input == null) {
-                throw new IOException("Unable to access to the source input stream");
+            if (closed) {
+                throw new IOException("Stream is closed");
             }
-            return input;
+            setIdle.accept(false);
+            return input.read(b, off, len);
         }
 
         @Override
         public void close() throws IOException {
-            logger.debug("set idle");
+            closed = true;
             setIdle.accept(true);
-            // input can not be closed as it's a shared instance
+            input.close();
         }
     };
 }
