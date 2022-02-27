@@ -191,7 +191,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         if (itemName != null) {
             try {
                 itemRegistry.getItem(itemName);
-                eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, Double.isFinite(value) ? new DecimalType(value) : UnDefType.UNDEF));
+                eventPublisher.post(ItemEventFactory.createStateEvent(itemName,
+                        Double.isFinite(value) ? new DecimalType(value) : UnDefType.UNDEF));
             } catch (ItemNotFoundException e) {
                 logger.warn("Item doesn't exist: {}", itemName);
             }
