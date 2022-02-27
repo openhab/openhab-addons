@@ -16,6 +16,8 @@ import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_E
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ENABLE_PARAMETER_MODE_AUTO;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ENABLE_PARAMETER_MODE_OFF;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ONLINE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_PORT_POE_CMD;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_PORT_POE_CMD_POWER_CYCLE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_PORT_POE_CURRENT;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_PORT_POE_ENABLE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_PORT_POE_MODE;
@@ -148,6 +150,10 @@ public class UniFiPoePortThingHandler
                     return handleModeCommand(controller, ports, getPort(ports), command.toFullString());
                 }
                 break;
+            case CHANNEL_PORT_POE_CMD:
+                if (command instanceof StringType) {
+                    return handleCmd(controller, getPort(ports), command.toFullString());
+                }
             default:
                 return false;
         }
@@ -173,6 +179,25 @@ public class UniFiPoePortThingHandler
             controller.poeMode(device, newMap);
             refresh();
             return true;
+        }
+    }
+
+    private boolean handleCmd(final UniFiController controller, @Nullable final UniFiPortTable portToUpdate,
+            final String command) throws UniFiException {
+        final UniFiDevice device = controller.getCache().getDevice(config.getMacAddress());
+        if (device == null || portToUpdate == null) {
+            logger.info("Could not change the PoE port state for thing '{}': device {} or portToUpdate {} null",
+                    getThing().getUID(), device, portToUpdate);
+            return false;
+        } else {
+            if (CHANNEL_PORT_POE_CMD_POWER_CYCLE.equalsIgnoreCase(command.replaceAll("[- ]", ""))) {
+                controller.poePowerCycle(device, portToUpdate.getPortIdx());
+                return true;
+            } else {
+                logger.info("Unknown command '{}' given to PoE port for thing '{}': device {} or portToUpdate {} null",
+                        command, getThing().getUID(), device, portToUpdate);
+                return false;
+            }
         }
     }
 }

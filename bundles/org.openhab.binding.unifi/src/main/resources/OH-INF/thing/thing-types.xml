@@ -106,6 +106,7 @@
 			<channel id="ap" typeId="ap"/>
 			<channel id="essid" typeId="essid"/>
 			<channel id="rssi" typeId="rssi"/>
+			<channel id="cmd" typeId="wirelessCmd"/>
 			<channel id="reconnect" typeId="reconnect"/>
 		</channels>
 
@@ -126,6 +127,7 @@
 			<channel id="online" typeId="portOnline"/>
 			<channel id="mode" typeId="poeMode"/>
 			<channel id="enable" typeId="poeEnable"/>
+			<channel id="cmd" typeId="poeCmd"/>
 			<channel id="power" typeId="poePower"/>
 			<channel id="voltage" typeId="poeVoltage"/>
 			<channel id="current" typeId="poeCurrent"/>
@@ -301,10 +303,21 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="reconnect">
+	<channel-type id="reconnect" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Reconnect</label>
 		<description>Forces a client to reconnect</description>
+	</channel-type>
+
+	<channel-type id="wirelessCmd">
+		<item-type>String</item-type>
+		<label>Wireless Command</label>
+		<description>Command that can be given to the wireless client</description>
+		<command>
+			<options>
+				<option value="reconnect">Reconnect</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="portOnline">
@@ -333,6 +346,17 @@
 				<option value="passthrough">Passthrough</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="poeCmd">
+		<item-type>String</item-type>
+		<label>PoE Command</label>
+		<description>Command that can be given to the PoE port</description>
+		<command>
+			<options>
+				<option value="power-cycle">Power Cycle</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="poePower" advanced="true">

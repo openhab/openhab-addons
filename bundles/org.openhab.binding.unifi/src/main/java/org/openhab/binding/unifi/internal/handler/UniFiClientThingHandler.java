@@ -14,6 +14,8 @@ package org.openhab.binding.unifi.internal.handler;
 
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_AP;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_BLOCKED;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_CMD;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_CMD_RECONNECT;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ESSID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_EXPERIENCE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_GUEST;
@@ -288,8 +290,10 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
         switch (channelID) {
             case CHANNEL_BLOCKED:
                 return handleBlockedCommand(controller, client, channelUID, command);
-            case CHANNEL_RECONNECT:
+            case CHANNEL_CMD:
                 return handleReconnectCommand(controller, client, channelUID, command);
+            case CHANNEL_RECONNECT:
+                return handleReconnectSwitch(controller, client, channelUID, command);
             default:
                 return false;
         }
@@ -306,6 +310,18 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
     }
 
     private boolean handleReconnectCommand(final UniFiController controller, final UniFiClient client,
+            final ChannelUID channelUID, final Command command) throws UniFiException {
+        if (command instanceof StringType && CHANNEL_CMD_RECONNECT.equalsIgnoreCase(command.toFullString())) {
+            controller.reconnect(client);
+            return true;
+        } else {
+            logger.info("Unknown command '{}' given to wireless client thing '{}': client {}", command,
+                    getThing().getUID(), client);
+            return false;
+        }
+    }
+
+    private boolean handleReconnectSwitch(final UniFiController controller, final UniFiClient client,
             final ChannelUID channelUID, final Command command) throws UniFiException {
         if (command instanceof OnOffType && command == OnOffType.ON) {
             controller.reconnect(client);

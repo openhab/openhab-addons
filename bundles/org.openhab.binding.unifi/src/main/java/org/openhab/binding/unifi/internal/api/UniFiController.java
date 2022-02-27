@@ -181,6 +181,16 @@ public class UniFiController {
         refresh();
     }
 
+    public void poePowerCycle(final UniFiDevice device, final Integer portIdx) throws UniFiException {
+        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.POST, gson);
+        req.setAPIPath(String.format("/api/s/%s/cmd/devmgr", device.getSite().getName()));
+        req.setBodyParameter("cmd", "power-cycle");
+        req.setBodyParameter("mac", device.getMac());
+        req.setBodyParameter("port_idx", portIdx);
+        executeRequest(req);
+        refresh();
+    }
+
     public void enableWifi(final UniFiWlan wlan, final boolean enable) throws UniFiException {
         final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, poeGson);
         req.setAPIPath(String.format("/api/s/%s/rest/wlanconf/%s", wlan.getSite().getName(), wlan.getId()));
