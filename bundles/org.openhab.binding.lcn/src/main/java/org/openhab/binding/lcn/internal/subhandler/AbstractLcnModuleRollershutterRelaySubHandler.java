@@ -18,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.lcn.internal.LcnBindingConstants;
 import org.openhab.binding.lcn.internal.LcnModuleHandler;
 import org.openhab.binding.lcn.internal.common.LcnChannelGroup;
 import org.openhab.binding.lcn.internal.common.LcnDefs;
@@ -25,6 +26,7 @@ import org.openhab.binding.lcn.internal.common.LcnDefs.RelayStateModifier;
 import org.openhab.binding.lcn.internal.common.LcnException;
 import org.openhab.binding.lcn.internal.common.PckGenerator;
 import org.openhab.binding.lcn.internal.connection.ModInfo;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
 
@@ -34,8 +36,13 @@ import org.openhab.core.library.types.UpDownType;
  * @author Fabian Wolter - Initial contribution
  */
 @NonNullByDefault
-public class LcnModuleRollershutterRelaySubHandler extends AbstractLcnModuleSubHandler {
-    public LcnModuleRollershutterRelaySubHandler(LcnModuleHandler handler, ModInfo info) {
+public abstract class AbstractLcnModuleRollershutterRelaySubHandler extends AbstractLcnModuleSubHandler {
+    private static final String POSITION = "P";
+    private static final String ANGLE = "W";
+    private static final Pattern PATTERN = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX + //
+            "(?<type>[" + POSITION + "|" + ANGLE + "])(?<shutterNumber>\\d)(?<percent>\\d{3})");
+
+    public AbstractLcnModuleRollershutterRelaySubHandler(LcnModuleHandler handler, ModInfo info) {
         super(handler, info);
     }
 
@@ -68,11 +75,21 @@ public class LcnModuleRollershutterRelaySubHandler extends AbstractLcnModuleSubH
 
     @Override
     public void handleStatusMessage(Matcher matcher) {
-        // status messages of roller shutters on relays are handled in the relay sub handler
+        int shutterNumber = Integer.parseInt(matcher.group("shutterNumber")) - 1;
+        int percent = Integer.parseInt(matcher.group("percent"));
+
+        LcnChannelGroup group;
+        if (POSITION.equals(matcher.group("type"))) {
+            group = LcnChannelGroup.ROLLERSHUTTERRELAY;
+        } else {
+            group = LcnChannelGroup.ROLLERSHUTTERRELAYSLAT;
+        }
+
+        fireUpdate(group, shutterNumber, new PercentType(percent));
     }
 
     @Override
     public Collection<Pattern> getPckStatusMessagePatterns() {
-        return Collections.emptyList();
+        return Collections.singleton(PATTERN);
     }
 }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lcn.internal.subhandler;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.lcn.internal.common.LcnChannelGroup;
 import org.openhab.binding.lcn.internal.common.LcnException;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
 
@@ -28,15 +30,16 @@ import org.openhab.core.library.types.UpDownType;
  * @author Fabian Wolter - Initial contribution
  */
 @NonNullByDefault
-public class LcnModuleRollershutterRelaySubHandlerTest extends AbstractTestLcnModuleSubHandler {
-    private @NonNullByDefault({}) LcnModuleRollershutterRelaySubHandler l;
+public class AbstractLcnModuleRollershutterRelaySubHandlerTest extends AbstractTestLcnModuleSubHandler {
+    private @NonNullByDefault({}) AbstractLcnModuleRollershutterRelaySubHandler l;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
 
-        l = new LcnModuleRollershutterRelaySubHandler(handler, info);
+        l = new AbstractLcnModuleRollershutterRelaySubHandler(handler, info) {
+        };
     }
 
     @Test
@@ -97,5 +100,33 @@ public class LcnModuleRollershutterRelaySubHandlerTest extends AbstractTestLcnMo
     public void testMove4() throws LcnException {
         l.handleCommandStopMove(StopMoveType.MOVE, LcnChannelGroup.ROLLERSHUTTERRELAY, 3);
         verify(handler).sendPck("R8------1-");
+    }
+
+    @Test
+    public void testShutter1Percent0Position() {
+        tryParseAllHandlers(":M000005P1000");
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAY, "1", new PercentType(0));
+        verify(handler).updateChannel(any(), any(), any());
+    }
+
+    @Test
+    public void testShutter4Percent100Position() {
+        tryParseAllHandlers(":M000005P4100");
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAY, "4", new PercentType(100));
+        verify(handler).updateChannel(any(), any(), any());
+    }
+
+    @Test
+    public void testShutter1Percent0Angle() {
+        tryParseAllHandlers(":M000005W1000");
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAYSLAT, "1", new PercentType(0));
+        verify(handler).updateChannel(any(), any(), any());
+    }
+
+    @Test
+    public void testShutter4Percent100Angle() {
+        tryParseAllHandlers(":M000005W4100");
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAYSLAT, "4", new PercentType(100));
+        verify(handler).updateChannel(any(), any(), any());
     }
 }

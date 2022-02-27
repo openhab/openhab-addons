@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.lcn.internal.subhandler;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,19 +28,15 @@ import org.openhab.core.library.types.OpenClosedType;
  */
 @NonNullByDefault
 public class LcnModuleBinarySensorSubHandlerTest extends AbstractTestLcnModuleSubHandler {
-    private @NonNullByDefault({}) LcnModuleBinarySensorSubHandler l;
-
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
-
-        l = new LcnModuleBinarySensorSubHandler(handler, info);
     }
 
     @Test
     public void testStatusAllClosed() {
-        l.tryParse("=M000005Bx000");
+        tryParseAllHandlers("=M000005Bx000");
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "1", OpenClosedType.CLOSED);
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "2", OpenClosedType.CLOSED);
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "3", OpenClosedType.CLOSED);
@@ -48,11 +45,12 @@ public class LcnModuleBinarySensorSubHandlerTest extends AbstractTestLcnModuleSu
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "6", OpenClosedType.CLOSED);
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "7", OpenClosedType.CLOSED);
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "8", OpenClosedType.CLOSED);
+        verify(handler, times(8)).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusAllOpen() {
-        l.tryParse("=M000005Bx255");
+        tryParseAllHandlers("=M000005Bx255");
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "1", OpenClosedType.OPEN);
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "2", OpenClosedType.OPEN);
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "3", OpenClosedType.OPEN);
@@ -60,11 +58,12 @@ public class LcnModuleBinarySensorSubHandlerTest extends AbstractTestLcnModuleSu
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "6", OpenClosedType.OPEN);
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "7", OpenClosedType.OPEN);
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "8", OpenClosedType.OPEN);
+        verify(handler, times(8)).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatus1And7Closed() {
-        l.tryParse("=M000005Bx065");
+        tryParseAllHandlers("=M000005Bx065");
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "1", OpenClosedType.OPEN);
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "2", OpenClosedType.CLOSED);
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "3", OpenClosedType.CLOSED);
@@ -73,5 +72,6 @@ public class LcnModuleBinarySensorSubHandlerTest extends AbstractTestLcnModuleSu
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "6", OpenClosedType.CLOSED);
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "7", OpenClosedType.OPEN);
         verify(handler).updateChannel(LcnChannelGroup.BINARYSENSOR, "8", OpenClosedType.CLOSED);
+        verify(handler, times(8)).updateChannel(any(), any(), any());
     }
 }

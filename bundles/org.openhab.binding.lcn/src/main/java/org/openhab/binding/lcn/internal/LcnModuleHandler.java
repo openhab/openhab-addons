@@ -218,7 +218,7 @@ public class LcnModuleHandler extends BaseThingHandler {
             } else if (command instanceof PercentType) {
                 subHandler.handleCommandPercent((PercentType) command, channelGroup, channelUid.getIdWithoutGroup());
             } else if (command instanceof StringType) {
-                subHandler.handleCommandString((StringType) command, number.get());
+                subHandler.handleCommandString((StringType) command, number.orElse(0));
             } else if (command instanceof DecimalType) {
                 DecimalType decimalType = (DecimalType) command;
                 DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(decimalType.doubleValue());
