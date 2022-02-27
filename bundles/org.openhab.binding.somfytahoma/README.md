@@ -53,7 +53,8 @@ To start a discovery, just
 - Add a new bridge thing.
 - Configure the bridge selecting your cloud portal (www.tahomalink.com by default) and setting your email (login) and password to the cloud portal.
 
-If the supplied credentials are correct, the automatic discovery can be used to scan and detect roller shutters, awnings, switches and action groups that will appear in your Inbox.
+If the supplied credentials are correct, the automatic discovery can be used to scan and detect your devices which will appear in your Inbox.
+If you are missing some device, check the debug log during the discovery and create an issue with the information about an unsupported thing from the log.
 
 ## Thing Configuration
 

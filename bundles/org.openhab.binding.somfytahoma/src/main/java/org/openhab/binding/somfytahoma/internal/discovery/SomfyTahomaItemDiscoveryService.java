@@ -378,16 +378,16 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
 
     private void logUnsupportedDevice(SomfyTahomaDevice device) {
         if (!isStateLess(device)) {
-            logger.info("Detected a new unsupported device: {} with widgetName: {}", device.getUiClass(),
+            logger.debug("Detected a new unsupported device: {} with widgetName: {}", device.getUiClass(),
                     device.getWidget());
-            logger.info("If you want to add the support, please create a new issue and attach the information below");
-            logger.info("Device definition:\n{}", device.getDefinition());
+            logger.debug("If you want to add the support, please create a new issue and attach the information below");
+            logger.debug("Device definition:\n{}", device.getDefinition());
 
             StringBuilder sb = new StringBuilder().append('\n');
             for (SomfyTahomaState state : device.getStates()) {
                 sb.append(state.toString()).append('\n');
             }
-            logger.info("Current device states: {}", sb);
+            logger.debug("Current device states: {}", sb);
         }
     }
 
