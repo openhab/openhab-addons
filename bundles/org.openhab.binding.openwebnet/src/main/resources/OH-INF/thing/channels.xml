@@ -221,7 +221,8 @@
 	<channel-type id="scenarioProgramCentralUnit">
 		<item-type>Number</item-type>
 		<label>Scenario Program Number</label>
-		<description>Set scenario program number for the Central Unit, valid only with Central Unit mode = "SCENARIO" (read/write)</description>
+		<description>Set scenario program number for the Central Unit, valid only with Central Unit mode = "SCENARIO"
+			(read/write)</description>
 		<state>
 			<options>
 				<option value="1">Program 1</option>
