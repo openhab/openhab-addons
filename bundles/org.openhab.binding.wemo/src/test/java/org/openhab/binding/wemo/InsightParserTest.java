@@ -15,6 +15,7 @@ package org.openhab.binding.wemo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.time.ZoneId;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,22 +42,44 @@ public class InsightParserTest {
      * 'InsightParams' for subscription 'insight1'.
      */
     @Test
-    public void parseInsightParams() {
+    public void parseUpnpInsightParams() {
         InsightParser parser = new InsightParser(
                 "1|1645800647|109676|80323|1196960|1209600|44|41400|30288361|483361410|8000");
         Map<String, State> result = parser.parse();
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_STATE), OnOffType.ON);
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_LASTCHANGEDAT),
-                DateTimeType.valueOf("2022-02-25T15:50:47.000+0100").toLocaleZone());
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_LASTONFOR), new DecimalType(109_676));
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_ONTODAY), new DecimalType(80_323));
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_ONTOTAL), new DecimalType(1_196_960));
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_TIMESPAN), new DecimalType(1_209_600));
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_AVERAGEPOWER), new QuantityType<>(44, Units.WATT));
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_CURRENTPOWER), new QuantityType<>(41, Units.WATT));
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_ENERGYTODAY), new QuantityType<>(505, Units.WATT_HOUR));
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_ENERGYTOTAL), new QuantityType<>(8056, Units.WATT_HOUR));
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_STANDBYLIMIT), new QuantityType<>(8, Units.WATT));
+        assertEquals(OnOffType.ON, result.get(WemoBindingConstants.CHANNEL_STATE));
+        assertEquals(DateTimeType.valueOf("2022-02-25T15:50:47.000+0100").toZone(ZoneId.systemDefault()),
+                result.get(WemoBindingConstants.CHANNEL_LASTCHANGEDAT));
+        assertEquals(new DecimalType(109_676), result.get(WemoBindingConstants.CHANNEL_LASTONFOR));
+        assertEquals(new DecimalType(80_323), result.get(WemoBindingConstants.CHANNEL_ONTODAY));
+        assertEquals(new DecimalType(1_196_960), result.get(WemoBindingConstants.CHANNEL_ONTOTAL));
+        assertEquals(new DecimalType(1_209_600), result.get(WemoBindingConstants.CHANNEL_TIMESPAN));
+        assertEquals(new QuantityType<>(44, Units.WATT), result.get(WemoBindingConstants.CHANNEL_AVERAGEPOWER));
+        assertEquals(new QuantityType<>(41, Units.WATT), result.get(WemoBindingConstants.CHANNEL_CURRENTPOWER));
+        assertEquals(new QuantityType<>(505, Units.WATT_HOUR), result.get(WemoBindingConstants.CHANNEL_ENERGYTODAY));
+        assertEquals(new QuantityType<>(8056, Units.WATT_HOUR), result.get(WemoBindingConstants.CHANNEL_ENERGYTOTAL));
+        assertEquals(new QuantityType<>(8, Units.WATT), result.get(WemoBindingConstants.CHANNEL_STANDBYLIMIT));
+    }
+
+    /**
+     * 'InsightParams' received from HTTP call. Format is a bit different: State can be non-binary,
+     * e.g. 8 for ON, and energy total is formatted with decimals.
+     */
+    @Test
+    public void parseHttpInsightParams() {
+        InsightParser parser = new InsightParser("8|1645967627|0|0|0|1209600|13|0|0|0.000000|8000");
+        Map<String, State> result = parser.parse();
+        assertEquals(OnOffType.ON, result.get(WemoBindingConstants.CHANNEL_STATE));
+        assertEquals(DateTimeType.valueOf("2022-02-27T14:13:47.000+0100").toZone(ZoneId.systemDefault()),
+                result.get(WemoBindingConstants.CHANNEL_LASTCHANGEDAT));
+        assertEquals(new DecimalType(0), result.get(WemoBindingConstants.CHANNEL_LASTONFOR));
+        assertEquals(new DecimalType(0), result.get(WemoBindingConstants.CHANNEL_ONTODAY));
+        assertEquals(new DecimalType(0), result.get(WemoBindingConstants.CHANNEL_ONTOTAL));
+        assertEquals(new DecimalType(1_209_600), result.get(WemoBindingConstants.CHANNEL_TIMESPAN));
+        assertEquals(new QuantityType<>(13, Units.WATT), result.get(WemoBindingConstants.CHANNEL_AVERAGEPOWER));
+        assertEquals(new QuantityType<>(0, Units.WATT), result.get(WemoBindingConstants.CHANNEL_CURRENTPOWER));
+        assertEquals(new QuantityType<>(0, Units.WATT_HOUR), result.get(WemoBindingConstants.CHANNEL_ENERGYTODAY));
+        assertEquals(new QuantityType<>(0, Units.WATT_HOUR), result.get(WemoBindingConstants.CHANNEL_ENERGYTOTAL));
+        assertEquals(new QuantityType<>(8, Units.WATT), result.get(WemoBindingConstants.CHANNEL_STANDBYLIMIT));
     }
 
     /**
@@ -64,21 +87,21 @@ public class InsightParserTest {
      * the same information as 'InsightParams' except last parameter (stand-by limit).
      */
     @Test
-    public void parseBinaryState() {
+    public void parseUpnpBinaryState() {
         InsightParser parser = new InsightParser(
                 "1|1645800647|109676|80323|1196960|1209600|44|41400|30288361|483361410");
         Map<String, State> result = parser.parse();
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_STATE), OnOffType.ON);
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_LASTCHANGEDAT),
-                DateTimeType.valueOf("2022-02-25T15:50:47.000+0100").toLocaleZone());
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_LASTONFOR), new DecimalType(109_676));
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_ONTODAY), new DecimalType(80_323));
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_ONTOTAL), new DecimalType(1_196_960));
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_TIMESPAN), new DecimalType(1_209_600));
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_AVERAGEPOWER), new QuantityType<>(44, Units.WATT));
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_CURRENTPOWER), new QuantityType<>(41, Units.WATT));
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_ENERGYTODAY), new QuantityType<>(505, Units.WATT_HOUR));
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_ENERGYTOTAL), new QuantityType<>(8056, Units.WATT_HOUR));
+        assertEquals(OnOffType.ON, result.get(WemoBindingConstants.CHANNEL_STATE));
+        assertEquals(DateTimeType.valueOf("2022-02-25T15:50:47.000+0100").toZone(ZoneId.systemDefault()),
+                result.get(WemoBindingConstants.CHANNEL_LASTCHANGEDAT));
+        assertEquals(new DecimalType(109_676), result.get(WemoBindingConstants.CHANNEL_LASTONFOR));
+        assertEquals(new DecimalType(80_323), result.get(WemoBindingConstants.CHANNEL_ONTODAY));
+        assertEquals(new DecimalType(1_196_960), result.get(WemoBindingConstants.CHANNEL_ONTOTAL));
+        assertEquals(new DecimalType(1_209_600), result.get(WemoBindingConstants.CHANNEL_TIMESPAN));
+        assertEquals(new QuantityType<>(44, Units.WATT), result.get(WemoBindingConstants.CHANNEL_AVERAGEPOWER));
+        assertEquals(new QuantityType<>(41, Units.WATT), result.get(WemoBindingConstants.CHANNEL_CURRENTPOWER));
+        assertEquals(new QuantityType<>(505, Units.WATT_HOUR), result.get(WemoBindingConstants.CHANNEL_ENERGYTODAY));
+        assertEquals(new QuantityType<>(8056, Units.WATT_HOUR), result.get(WemoBindingConstants.CHANNEL_ENERGYTOTAL));
         assertNull(result.get(WemoBindingConstants.CHANNEL_STANDBYLIMIT));
     }
 
@@ -86,13 +109,13 @@ public class InsightParserTest {
     public void parseInvalidLastChangedAt() {
         InsightParser parser = new InsightParser("1|A");
         Map<String, State> result = parser.parse();
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_LASTCHANGEDAT), UnDefType.UNDEF);
+        assertEquals(UnDefType.UNDEF, result.get(WemoBindingConstants.CHANNEL_LASTCHANGEDAT));
     }
 
     @Test
     public void parseInvalidLastOnFor() {
         InsightParser parser = new InsightParser("1|1645800647|A");
         Map<String, State> result = parser.parse();
-        assertEquals(result.get(WemoBindingConstants.CHANNEL_LASTONFOR), UnDefType.UNDEF);
+        assertEquals(UnDefType.UNDEF, result.get(WemoBindingConstants.CHANNEL_LASTONFOR));
     }
 }

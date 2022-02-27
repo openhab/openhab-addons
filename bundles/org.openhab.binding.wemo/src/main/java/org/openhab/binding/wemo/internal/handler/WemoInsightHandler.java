@@ -78,7 +78,7 @@ public class WemoInsightHandler extends WemoHandler {
                     var currentPower = (QuantityType<?>) results.get(WemoBindingConstants.CHANNEL_CURRENTPOWER);
                     if (currentPower != null) {
                         updateState(WemoBindingConstants.CHANNEL_ONSTANDBY,
-                                currentPower.intValue() > standByLimit.intValue() ? OnOffType.OFF : OnOffType.ON);
+                                OnOffType.from(currentPower.intValue() <= standByLimit.intValue()));
                     }
                 }
             }

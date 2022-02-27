@@ -15,10 +15,10 @@ package org.openhab.binding.wemo.internal;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DateTimeType;
@@ -115,10 +115,9 @@ public class InsightParser {
         } catch (NumberFormatException e) {
             return UnDefType.UNDEF;
         }
-        ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochSecond(lastChangedAt),
-                TimeZone.getDefault().toZoneId());
 
-        State lastChangedAtState = new DateTimeType(zoned);
+        State lastChangedAtState = new DateTimeType(
+                ZonedDateTime.ofInstant(Instant.ofEpochSecond(lastChangedAt), ZoneId.systemDefault()));
         if (lastChangedAt == 0) {
             return UnDefType.UNDEF;
         }
