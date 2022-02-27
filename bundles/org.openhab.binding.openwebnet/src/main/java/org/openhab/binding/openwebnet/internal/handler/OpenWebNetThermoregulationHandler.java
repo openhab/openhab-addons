@@ -451,7 +451,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         }
 
         if (deviceWhere != null) {
-            logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
 
             String w = deviceWhere.value();
             try {
