@@ -201,7 +201,7 @@ The `poePort` information that is retrieved is available as these channels:
 |------------|--------------------------|----------------------------------------------------|-------------|
 | online     | Switch                   | Online status of the port                          | Read        |
 | mode       | Selection                | Select the PoE mode: off, auto, 24v or passthrough | Read, Write |
-| enable     | Switch                   | Enable Power Over Ethernet                         | Read, Write |
+| enable     | Switch                   | Enable Power over Ethernet                         | Read, Write |
 | cmd        | String                   | Command channel: `power-cycle`: Power Cycle port   | Write       |
 | power      | Number:Power             | Power consumption of the port in Watt              | Read        |
 | voltage    | Number:ElectricPotential | Voltage of the port in Volt                        | Read        |
