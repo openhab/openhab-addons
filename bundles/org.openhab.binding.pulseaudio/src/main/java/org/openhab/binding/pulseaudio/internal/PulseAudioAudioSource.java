@@ -142,8 +142,6 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
 
         @Override
         public int read() throws IOException {
-            logger.trace("reading from pulseaudio stream");
-            setIdle.accept(false);
             byte[] b = new byte[1];
             int bytesRead = read(b);
             if (-1 == bytesRead) {

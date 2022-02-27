@@ -29,7 +29,7 @@
 			</parameter>
 			<parameter name="simpleProtocolSourcePort" type="integer" required="false">
 				<label>Simple Protocol Port</label>
-				<description>Default Port to allocate for use by module-simple-protocol-tcp on the pulseaudio server</description>
+				<description>Default Port to allocate to be used by module-simple-protocol-tcp on the pulseaudio server</description>
 				<default>4710</default>
 			</parameter>
 			<parameter name="simpleProtocolSourceIdleTimeout" type="integer" required="false">
@@ -39,9 +39,9 @@
 				</description>
 				<default>30000</default>
 			</parameter>
-			<parameter name="simpleProtocolSourceFormat" type="text" required="true">
+			<parameter name="simpleProtocolSourceFormat" type="text">
 				<label>Simple Protocol Format</label>
-				<description>The audio format for use by module-simple-protocol-tcp on the pulseaudio server</description>
+				<description>The audio format to be used by module-simple-protocol-tcp on the pulseaudio server</description>
 				<default>s16le</default>
 				<advanced>true</advanced>
 				<options>
@@ -54,19 +54,19 @@
 					<option value="s32be">PCM signed 32-bit big-endian</option>
 				</options>
 			</parameter>
-			<parameter name="simpleProtocolSourceRate" type="integer" required="true" min="0">
+			<parameter name="simpleProtocolSourceRate" type="integer" min="0">
 				<label>Simple Protocol Rate</label>
-				<description>The audio sample rate for use by module-simple-protocol-tcp on the pulseaudio server</description>
+				<description>The audio sample rate to be used by module-simple-protocol-tcp on the pulseaudio server</description>
 				<default>16000</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="simpleProtocolSourceChannels" type="integer" required="true" min="1">
+			<parameter name="simpleProtocolSourceChannels" type="integer" min="1">
 				<label>Simple Protocol Channels</label>
-				<description>The audio channel number for use by module-simple-protocol-tcp on the pulseaudio server</description>
+				<description>The audio channel number to be used by module-simple-protocol-tcp on the pulseaudio server</description>
 				<default>1</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="simpleProtocolSOTimeout" type="integer" required="true" min="500" max="2000">
+			<parameter name="simpleProtocolSOTimeout" type="integer" min="250" max="2000">
 				<label>Simple Protocol SO Timeout</label>
 				<description>Socket SO timeout when connecting to pulseaudio server though module-simple-protocol-tcp. You can tune
 					this option if the socket disconnect frequently.</description>

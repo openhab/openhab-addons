@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * A connection to a pulseaudio Simple TCP Protocol
  *
  * @author Gwendal Roulleau - Initial contribution
- * @author Miguel Álvarez - Register audio source and refactor
+ * @author Miguel Álvarez - Refactor some code from PulseAudioAudioSink here
  *
  */
 @NonNullByDefault
