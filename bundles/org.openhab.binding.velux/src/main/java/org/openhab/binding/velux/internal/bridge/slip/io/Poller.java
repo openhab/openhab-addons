@@ -20,6 +20,7 @@ import java.util.Queue;
 import java.util.concurrent.Callable;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,7 @@ public class Poller implements Callable<Boolean> {
     private final InputStream inputStream;
     private final Queue<byte[]> messageQueue;
 
-    private boolean interrupted = false;
+    private @Nullable volatile Thread thread;
 
     public Poller(InputStream stream, Queue<byte[]> queue) {
         logger.trace("Poller: created");
@@ -55,7 +56,10 @@ public class Poller implements Callable<Boolean> {
     }
 
     public void interrupt() {
-        interrupted = true;
+        Thread thread = this.thread;
+        if ((thread != null) && thread.isAlive()) {
+            thread.interrupt();
+        }
     }
 
     /**
@@ -66,12 +70,13 @@ public class Poller implements Callable<Boolean> {
      */
     @Override
     public Boolean call() throws IOException {
+        thread = Thread.currentThread();
         logger.trace("Poller.call(): started");
         byte[] buf = new byte[BUFFER_SIZE];
         int byt;
         int i = 0;
 
-        while ((!interrupted) && (!Thread.currentThread().isInterrupted())) {
+        while (!Thread.currentThread().isInterrupted()) {
             try {
                 byt = inputStream.read(); // throws IOException
                 // end of stream is OK => continue polling
