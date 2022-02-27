@@ -12,7 +12,19 @@
  */
 package org.openhab.binding.openwebnet.internal.handler;
 
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_ACTUATORS;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CONDITIONING_VALVES;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_BATTERY_STATUS;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_REMOTE_CONTROL;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_SCENARIO_PROGRAM_NUMBER;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_WEEKLY_PROGRAM_NUMBER;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_FAN_SPEED;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_FUNCTION;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_HEATING_VALVES;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_LOCAL_OFFSET;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_MODE;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_TEMPERATURE;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_TEMP_SETPOINT;
 
 import java.util.Set;
 
@@ -25,6 +37,7 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
@@ -34,6 +47,7 @@ import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.MalformedFrameException;
 import org.openwebnet4j.message.Thermoregulation;
+import org.openwebnet4j.message.Thermoregulation.WhatThermo;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereThermo;
 import org.openwebnet4j.message.Who;
@@ -55,14 +69,47 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.THERMOREGULATION_SUPPORTED_THING_TYPES;
 
-    private boolean isTempSensor = false; // is the thing a sensor ?
-
     private double currentSetPointTemp = 11.5d; // 11.5 is the default setTemp used in MyHomeUP mobile app
 
     private Thermoregulation.Function currentFunction = Thermoregulation.Function.GENERIC;
 
+    private boolean isStandAlone = false;
+
+    private boolean isCentralUnit = false;
+
+    private String programNumber = "";
+
+    private static final String CU_REMOTE_CONTROL_ENABLED = "ENABLED";
+    private static final String CU_REMOTE_CONTROL_DISABLED = "DISABLED";
+    private static final String CU_BATTERY_OK = "OK";
+    private static final String CU_BATTERY_KO = "KO";
+
     public OpenWebNetThermoregulationHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        ThingTypeUID thingType = thing.getThingTypeUID();
+        isCentralUnit = OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_CU.equals(thingType);
+
+        if (!isCentralUnit) {
+            Object standAloneConfig = getConfig().get(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE);
+            if (standAloneConfig != null) {
+                // null in case of thermo_sensor
+                isStandAlone = Boolean.parseBoolean(standAloneConfig.toString());
+            }
+        } else {
+            // central unit must have WHERE=0
+            if (!deviceWhere.value().equals("0")) {
+                logger.warn("initialize() Invalid WHERE={} for Central Unit.", deviceWhere.value());
+
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.conf-error-where");
+            }
+        }
     }
 
     @Override
@@ -89,6 +136,10 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             case CHANNEL_FAN_SPEED:
                 handleSetFanSpeed(command);
                 break;
+            case CHANNEL_CU_WEEKLY_PROGRAM_NUMBER:
+            case CHANNEL_CU_SCENARIO_PROGRAM_NUMBER:
+                handleSetProgramNumber(command);
+                break;
             default: {
                 logger.warn("handleChannelCommand() Unsupported ChannelUID {}", channel.getId());
             }
@@ -102,33 +153,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected void refreshDevice(boolean refreshAll) {
-        logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
-        if (deviceWhere != null) {
-            String w = deviceWhere.value();
-            try {
-                send(Thermoregulation.requestTemperature(w));
-                if (!this.isTempSensor) {
-                    // for bus_thermo_zone request also other single channels updates
-                    send(Thermoregulation.requestSetPointTemperature(w));
-                    send(Thermoregulation.requestFanCoilSpeed(w));
-                    send(Thermoregulation.requestMode(w));
-                    send(Thermoregulation.requestValvesStatus(w));
-                    send(Thermoregulation.requestActuatorsStatus(w));
-                }
-            } catch (OWNException e) {
-                logger.warn("refreshDevice() where='{}' returned OWNException {}", w, e.getMessage());
-            }
-        }
-    }
-
-    @Override
     protected Where buildBusWhere(String wStr) throws IllegalArgumentException {
-        WhereThermo wt = new WhereThermo(wStr);
-        if (wt.isProbe()) {
-            isTempSensor = true;
-        }
-        return wt;
+        return new WhereThermo(wStr);
     }
 
     @Override
@@ -156,6 +182,21 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         }
     }
 
+    private void handleSetProgramNumber(Command command) {
+        if (command instanceof DecimalType) {
+            if (!isCentralUnit) {
+                logger.warn("handleSetProgramNumber() This command can be sent only for a Central Unit.");
+                return;
+            }
+
+            programNumber = command.toString();
+            logger.debug("handleSetProgramNumber() Program number set to {}", programNumber);
+
+        } else {
+            logger.warn("handleSetProgramNumber() Unsupported command {} for thing {}", command, getThing().getUID());
+        }
+    }
+
     private void handleSetpoint(Command command) {
         if (command instanceof QuantityType || command instanceof DecimalType) {
             Where w = deviceWhere;
@@ -170,7 +211,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     newTemp = ((DecimalType) command).doubleValue();
                 }
                 try {
-                    send(Thermoregulation.requestWriteSetpointTemperature(w.value(), newTemp, currentFunction));
+                    send(Thermoregulation.requestWriteSetpointTemperature(getWhere(w.value()), newTemp,
+                            currentFunction));
                 } catch (MalformedFrameException | OWNException e) {
                     logger.warn("handleSetpoint() {}", e.getMessage());
                 }
@@ -185,8 +227,15 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             Where w = deviceWhere;
             if (w != null) {
                 try {
-                    Thermoregulation.OperationMode mode = Thermoregulation.OperationMode.valueOf(command.toString());
-                    send(Thermoregulation.requestWriteMode(w.value(), mode, currentFunction, currentSetPointTemp));
+                    Thermoregulation.OperationMode new_mode = Thermoregulation.OperationMode.OFF;
+
+                    if (isCentralUnit && WhatThermo.isComplex(command.toString()))
+                        new_mode = Thermoregulation.OperationMode.valueOf(command.toString() + "_" + programNumber);
+                    else
+                        new_mode = Thermoregulation.OperationMode.valueOf(command.toString());
+
+                    send(Thermoregulation.requestWriteMode(getWhere(w.value()), new_mode, currentFunction,
+                            currentSetPointTemp));
                 } catch (OWNException e) {
                     logger.warn("handleMode() {}", e.getMessage());
                 } catch (IllegalArgumentException e) {
@@ -196,6 +245,14 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             }
         } else {
             logger.warn("handleMode() Unsupported command {} for thing {}", command, getThing().getUID());
+        }
+    }
+
+    private String getWhere(String where) {
+        if (isCentralUnit) {
+            return "#0";
+        } else {
+            return isStandAlone ? where : "#" + where;
         }
     }
 
@@ -221,6 +278,23 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     @Override
     protected void handleMessage(BaseOpenMessage msg) {
         super.handleMessage(msg);
+
+        if (isCentralUnit) {
+            if (msg.isCommand()) {
+                updateModeAndFunction((Thermoregulation) msg);
+            }
+
+            if (msg.getWhat() == Thermoregulation.WhatThermo.REMOTE_CONTROL_DISABLED) {
+                updateCURemoteControlStatus(CU_REMOTE_CONTROL_DISABLED);
+            } else if (msg.getWhat() == Thermoregulation.WhatThermo.REMOTE_CONTROL_ENABLED) {
+                updateCURemoteControlStatus(CU_REMOTE_CONTROL_ENABLED);
+            } else if (msg.getWhat() == Thermoregulation.WhatThermo.BATTERY_KO) {
+                updateCUBatteryStatus(CU_BATTERY_KO);
+            }
+
+            return;
+        }
+
         if (msg.isCommand()) {
             updateModeAndFunction((Thermoregulation) msg);
         } else {
@@ -239,6 +313,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 updateActuatorStatus((Thermoregulation) msg);
             } else if (msg.getDim() == Thermoregulation.DimThermo.FAN_COIL_SPEED) {
                 updateFanCoilSpeed((Thermoregulation) msg);
+            } else if (msg.getDim() == Thermoregulation.DimThermo.OFFSET) {
+                updateLocalOffset((Thermoregulation) msg);
             } else {
                 logger.debug("handleMessage() Ignoring unsupported DIM {} for thing {}. Frame={}", msg.getDim(),
                         getThing().getUID(), msg);
@@ -252,7 +328,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     tmsg.getFrameValue());
             return;
         }
-
         Thermoregulation.WhatThermo w = Thermoregulation.WhatThermo.fromValue(tmsg.getWhat().value());
 
         if (w.getMode() == null) {
@@ -267,14 +342,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         Thermoregulation.OperationMode mode = w.getMode();
         Thermoregulation.Function function = w.getFunction();
 
-        if (w == Thermoregulation.WhatThermo.HEATING) {
-            function = Thermoregulation.Function.HEATING;
-        } else if (w == Thermoregulation.WhatThermo.CONDITIONING) {
-            function = Thermoregulation.Function.COOLING;
-        }
-
-        updateState(CHANNEL_MODE, new StringType(mode.toString()));
         updateState(CHANNEL_FUNCTION, new StringType(function.toString()));
+        updateState(CHANNEL_MODE, new StringType(mode.toString()));
 
         // store current function
         currentFunction = function;
@@ -334,6 +403,84 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         } catch (FrameException e) {
             logger.warn("updateActuatorStatus() FrameException on frame {}: {}", tmsg, e.getMessage());
             updateState(CHANNEL_ACTUATORS, UnDefType.UNDEF);
+        }
+    }
+
+    private void updateLocalOffset(Thermoregulation tmsg) {
+        try {
+            Thermoregulation.LocalOffset offset = Thermoregulation.parseLocalOffset(tmsg);
+            updateState(CHANNEL_LOCAL_OFFSET, new StringType(offset.toString()));
+            logger.debug("updateLocalOffset() {}: {}", tmsg, offset.toString());
+
+        } catch (FrameException e) {
+            logger.warn("updateLocalOffset() FrameException on frame {}: {}", tmsg, e.getMessage());
+            updateState(CHANNEL_LOCAL_OFFSET, UnDefType.UNDEF);
+        }
+    }
+
+    private void updateCURemoteControlStatus(String status) {
+        updateState(CHANNEL_CU_REMOTE_CONTROL, new StringType(status));
+        logger.debug("updateCURemoteControlStatus(): {}", status);
+    }
+
+    private void updateCUBatteryStatus(String status) {
+        updateState(CHANNEL_CU_BATTERY_STATUS, new StringType(status));
+        logger.debug("updateCUBatteryStatus(): {}", status);
+    }
+
+    private Boolean channelExists(String channelID) {
+        return thing.getChannel("openwebnet:" + channelID) != null;
+    }
+
+    @Override
+    protected void refreshDevice(boolean refreshAll) {
+        logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
+        if (isCentralUnit) {
+            // TODO: 4 zone central -> zone #0 CAN be also a zone with its temp.. with 99-zones central no!
+            // let's assume it's a 99 zone
+            try {
+                // there isn't a message used for setting OK for battery status so let's assume
+                // it's OK and then change to KO if according message is received
+                updateCUBatteryStatus(CU_BATTERY_OK);
+                send(Thermoregulation.requestStatus("#0"));
+            } catch (OWNException e) {
+                logger.warn("refreshDevice() central unit returned OWNException {}", e.getMessage());
+            }
+
+            return;
+        }
+
+        if (deviceWhere != null) {
+
+            String w = deviceWhere.value();
+            try {
+                send(Thermoregulation.requestTemperature(w));
+
+                if (!((WhereThermo) deviceWhere).isProbe()) {
+                    // for bus_thermo_zone request also other single channels updates
+                    send(Thermoregulation.requestSetPointTemperature(w));
+                    send(Thermoregulation.requestMode(w));
+
+                    // refresh ONLY subscribed channels
+                    if (channelExists(CHANNEL_FAN_SPEED)) {
+                        send(Thermoregulation.requestFanCoilSpeed(w));
+                    }
+
+                    if (channelExists(CHANNEL_CONDITIONING_VALVES) || channelExists(CHANNEL_HEATING_VALVES)) {
+                        send(Thermoregulation.requestValvesStatus(w));
+                    }
+
+                    if (channelExists(CHANNEL_ACTUATORS)) {
+                        send(Thermoregulation.requestActuatorsStatus(w));
+                    }
+
+                    if (channelExists(CHANNEL_LOCAL_OFFSET)) {
+                        send(Thermoregulation.requestLocalOffset(w));
+                    }
+                }
+            } catch (OWNException e) {
+                logger.warn("refreshDevice() where='{}' returned OWNException {}", w, e.getMessage());
+            }
         }
     }
 }
