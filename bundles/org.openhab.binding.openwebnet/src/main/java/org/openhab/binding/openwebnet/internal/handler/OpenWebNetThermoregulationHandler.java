@@ -434,6 +434,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
+        logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
         if (isCentralUnit) {
             // TODO: 4 zone central -> zone #0 CAN be also a zone with its temp.. with 99-zones central no!
             // let's assume it's a 99 zone
