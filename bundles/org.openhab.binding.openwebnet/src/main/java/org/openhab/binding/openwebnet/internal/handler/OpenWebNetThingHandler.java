@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.openwebnet.internal.handler;
 
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CONFIG_PROPERTY_WHERE;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.PROPERTY_OWNID;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.THING_STATE_REQ_TIMEOUT_SEC;
 
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
