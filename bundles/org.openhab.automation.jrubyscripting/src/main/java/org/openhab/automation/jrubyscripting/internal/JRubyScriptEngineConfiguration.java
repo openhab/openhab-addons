@@ -198,16 +198,16 @@ public class JRubyScriptEngineConfiguration {
             return;
         }
 
-        String[] scripts = requireConfigElement.getValue().get().split(",");
-        for (String script : scripts) {
-            final String requireStatement = String.format("require '%s'", script.trim());
-            try {
-                logger.trace("Injecting require statement: {}", requireStatement);
-                engine.eval(requireStatement);
-            } catch (ScriptException e) {
-                logger.warn("Error evaluating statement {}: {}", requireStatement, e.getMessage());
-            }
-        }
+        Stream.of(requireConfigElement.getValue().get().split(",")).map(s -> s.trim()).filter(s -> !s.isEmpty())
+                .forEach(script -> {
+                    final String requireStatement = String.format("require '%s'", script);
+                    try {
+                        logger.trace("Injecting require statement: {}", requireStatement);
+                        engine.eval(requireStatement);
+                    } catch (ScriptException e) {
+                        logger.warn("Error evaluating statement {}: {}", requireStatement, e.getMessage());
+                    }
+                });
     }
 
     /**
