@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -21,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
-public interface OpenThermGatewayConnector extends Runnable {
+public interface OpenThermGatewayConnector extends Callable<Boolean> {
     void sendCommand(GatewayCommand command);
 
     boolean isConnected();

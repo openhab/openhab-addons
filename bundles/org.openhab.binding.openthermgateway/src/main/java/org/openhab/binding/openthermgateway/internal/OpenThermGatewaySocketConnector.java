@@ -24,6 +24,12 @@ import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,6 +58,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
     private @Nullable volatile PrintWriter writer;
     private @Nullable volatile Thread thread;
+    private @Nullable Future<Boolean> future;
+    private @Nullable ExecutorService executor;
 
     private Map<String, Entry<Long, GatewayCommand>> pendingCommands = new ConcurrentHashMap<>();
 
@@ -64,7 +72,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     }
 
     @Override
-    public void run() {
+    public Boolean call() throws Exception {
         thread = Thread.currentThread();
         try (Socket socket = new Socket()) {
             logger.debug("Connecting OpenThermGatewaySocketConnector to {}:{}", this.ipaddress, this.port);
@@ -101,27 +109,49 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             }
         } catch (IOException ex) {
             logger.warn("Unable to connect to the OpenTherm Gateway: '{}'", ex.getMessage());
-        } finally {
-            thread = null;
-            writer = null;
-            logger.debug("OpenThermGatewaySocketConnector disconnected");
-            callback.connectionStateChanged(ConnectionState.DISCONNECTED);
         }
+        thread = null;
+        writer = null;
+        logger.debug("OpenThermGatewaySocketConnector disconnected");
+        callback.connectionStateChanged(ConnectionState.DISCONNECTED);
+        return true;
     }
 
     @Override
     public void stop() {
         logger.debug("Stopping OpenThermGatewaySocketConnector");
+
         Thread thread = this.thread;
+        Future<Boolean> future = this.future;
+        ExecutorService executor = this.executor;
+
+        if (executor != null) {
+            executor.shutdown();
+        }
         if ((thread != null) && thread.isAlive()) {
             thread.interrupt();
         }
+        if (future != null) {
+            try {
+                future.get(readTimeoutMilliSeconds, TimeUnit.MILLISECONDS);
+            } catch (ExecutionException e) {
+                // expected exception due to e.g. IOException on socket close
+            } catch (TimeoutException | InterruptedException e) {
+                // unexpected exception
+                logger.warn("stop() exception '{}' => PLEASE REPORT !!", e.getMessage());
+            }
+        }
+
+        this.thread = null;
+        this.future = null;
+        this.executor = null;
     }
 
     @Override
     public void start() {
         logger.debug("Starting OpenThermGatewaySocketConnector");
-        new NamedThreadFactory("binding-" + BINDING_ID).newThread(this).start();
+        executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("binding-" + BINDING_ID));
+        future = executor.submit(this);
     }
 
     @Override
@@ -144,7 +174,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             wrt.print(msg + "\r\n");
             wrt.flush();
             if (wrt.checkError()) {
-                logger.warn("Error sending message to OpenTherm Gateway.");
+                logger.warn("sendCommand() error sending message to OpenTherm Gateway => PLEASE REPORT !!");
                 stop();
             }
         } else {
