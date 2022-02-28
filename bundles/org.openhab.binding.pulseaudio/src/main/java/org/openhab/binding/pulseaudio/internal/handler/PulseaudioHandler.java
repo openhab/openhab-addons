@@ -419,13 +419,16 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
         AbstractAudioDeviceConfig device = bridgeHandler.getDevice(name);
         String simpleTcpPortPrefName = (device instanceof Source) ? DEVICE_PARAMETER_AUDIO_SOURCE_PORT
                 : DEVICE_PARAMETER_AUDIO_SINK_PORT;
-        Integer simpleTcpPortPref = ((BigDecimal) getThing().getConfiguration().get(simpleTcpPortPrefName)).intValue();
+        BigDecimal simpleTcpPortPref = ((BigDecimal) getThing().getConfiguration().get(simpleTcpPortPrefName));
+        int simpleTcpPort = simpleTcpPortPref != null ? simpleTcpPortPref.intValue()
+                : MODULE_SIMPLE_PROTOCOL_TCP_DEFAULT_PORT;
         String simpleFormat = ((String) getThing().getConfiguration().get(DEVICE_PARAMETER_AUDIO_SOURCE_FORMAT));
         BigDecimal simpleRate = (BigDecimal) getThing().getConfiguration().get(DEVICE_PARAMETER_AUDIO_SOURCE_RATE);
         BigDecimal simpleChannels = (BigDecimal) getThing().getConfiguration()
                 .get(DEVICE_PARAMETER_AUDIO_SOURCE_CHANNELS);
-        return getPulseaudioBridgeHandler().getClient().loadModuleSimpleProtocolTcpIfNeeded(device, simpleTcpPortPref,
-                simpleFormat, simpleRate, simpleChannels).orElse(simpleTcpPortPref);
+        return getPulseaudioBridgeHandler().getClient()
+                .loadModuleSimpleProtocolTcpIfNeeded(device, simpleTcpPort, simpleFormat, simpleRate, simpleChannels)
+                .orElse(simpleTcpPort);
     }
 
     public @Nullable AudioFormat getSourceAudioFormat() {

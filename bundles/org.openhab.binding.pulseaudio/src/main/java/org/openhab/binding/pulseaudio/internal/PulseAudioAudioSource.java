@@ -30,6 +30,7 @@ import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioSource;
 import org.openhab.core.audio.AudioStream;
+import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,20 +45,23 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
 
     private final Logger logger = LoggerFactory.getLogger(PulseAudioAudioSource.class);
     private final Set<PipedOutputStream> pipeOutputs = new HashSet<>();
+    private final ScheduledExecutorService executor = ThreadPoolManager
+            .getScheduledPool("OH-binding-pulseaudio-source");
 
-    private HashSet<AudioFormat> supportedFormats = new HashSet<>();
     private @Nullable Future<?> pipeWriteTask;
 
     public PulseAudioAudioSource(PulseaudioHandler pulseaudioHandler, ScheduledExecutorService scheduler) {
         super(pulseaudioHandler, scheduler);
-        var audioFormat = pulseaudioHandler.getSourceAudioFormat();
-        if (audioFormat != null) {
-            supportedFormats.add(audioFormat);
-        }
     }
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
+        var supportedFormats = new HashSet<AudioFormat>();
+        var audioFormat = pulseaudioHandler.getSourceAudioFormat();
+        if (audioFormat != null) {
+            supportedFormats.add(audioFormat);
+        }
+        ;
         return supportedFormats;
     }
 
@@ -131,7 +135,7 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
 
     private void startPipeWrite() {
         if (pipeWriteTask == null) {
-            this.pipeWriteTask = scheduler.submit(() -> {
+            this.pipeWriteTask = executor.submit(() -> {
                 int lengthRead;
                 byte[] buffer = new byte[1024];
                 while (true) {
