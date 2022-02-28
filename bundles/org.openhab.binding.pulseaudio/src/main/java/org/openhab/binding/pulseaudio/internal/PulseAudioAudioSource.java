@@ -45,13 +45,14 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
 
     private final Logger logger = LoggerFactory.getLogger(PulseAudioAudioSource.class);
     private final Set<PipedOutputStream> pipeOutputs = new HashSet<>();
-    private final ScheduledExecutorService executor = ThreadPoolManager
-            .getScheduledPool("OH-" + pulseaudioHandler.getThing().getUID() + "-source");
+    private final ScheduledExecutorService executor;
 
     private @Nullable Future<?> pipeWriteTask;
 
     public PulseAudioAudioSource(PulseaudioHandler pulseaudioHandler, ScheduledExecutorService scheduler) {
         super(pulseaudioHandler, scheduler);
+        executor = ThreadPoolManager
+                .getScheduledPool("OH-binding-" + pulseaudioHandler.getThing().getUID() + "-source");
     }
 
     @Override
