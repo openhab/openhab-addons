@@ -31,6 +31,7 @@ public class GoEChargerBindingConstants {
 
     // List of all Channel ids
     public static final String MAX_CURRENT = "maxCurrent";
+    public static final String MAX_CURRENT_TEMPORARY = "maxCurrentTemporary";
     public static final String ACCESS_CONFIGURATION = "accessConfiguration";
     public static final String PWM_SIGNAL = "pwmSignal";
     public static final String ERROR = "error";
@@ -43,15 +44,16 @@ public class GoEChargerBindingConstants {
     public static final String POWER_L1 = "powerL1";
     public static final String POWER_L2 = "powerL2";
     public static final String POWER_L3 = "powerL3";
+    public static final String POWER_ALL = "powerAll";
     public static final String ALLOW_CHARGING = "allowCharging";
     public static final String CABLE_ENCODING = "cableCurrent";
     public static final String PHASES = "phases";
-    public static final String TEMPERATURE = "temperature";
+    public static final String TEMP_TMA1 = "tempTma1";
+    public static final String TEMP_TMA2 = "tempTma2";
     public static final String SESSION_CHARGE_CONSUMPTION = "sessionChargedEnergy";
     public static final String SESSION_CHARGE_CONSUMPTION_LIMIT = "sessionChargeEnergyLimit";
     public static final String TOTAL_CONSUMPTION = "totalChargedEnergy";
     public static final String FIRMWARE = "firmware";
-
     public static final String API_URL = "http://%IP%/status";
     public static final String MQTT_URL = "http://%IP%/mqtt?payload=%KEY%=%VALUE%";
 }

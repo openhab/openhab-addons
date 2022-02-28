@@ -22,6 +22,7 @@ Currently available channels are
 | Channel ID               | Item Type                | Description                                                   |
 |--------------------------|--------------------------|---------------------------------------------------------------|
 | maxCurrent               | Number:ElectricCurrent   | Maximum current allowed to use for charging                   |
+| maxCurrTemp              | Number:ElectricCurrent   | Maximum current temporary (not written to EEPROM)             |
 | pwmSignal                | String                   | Signal status for PWM signal                                  |
 | error                    | String                   | Error code of charger                                         |
 | voltageL1                | Number:ElectricPotential | Voltage on L1                                                 |
@@ -33,15 +34,18 @@ Currently available channels are
 | powerL1                  | Number:Power             | Power on L1                                                   |
 | powerL2                  | Number:Power             | Power on L2                                                   |
 | powerL3                  | Number:Power             | Power on L2                                                   |
+| powerAll                 | Number:Power             | Power over all three phases                                   |
 | phases                   | Number                   | Amount of phases currently used for charging                  |
 | sessionChargeEnergyLimit | Number:Energy            | Wallbox stops charging after defined value, disable with 0    |
 | sessionChargedEnergy     | Number:Energy            | Amount of energy that has been charged in this session        |
 | totalChargedEnergy       | Number:Energy            | Amount of energy that has been charged since installation     |
 | allowCharging            | Switch                   | If `ON` charging is allowed                                   |
 | cableCurrent             | Number:ElectricCurrent   | Specifies the max current that can be charged with that cable |
-| temperature              | Number:Temperature       | Temperature of the Go-eCharger                                |
+| temptma1                 | Number:Temperature       | Temperature 1 of the Go-eCharger                              |
+| temptma1                 | Number:Temperature       | Temperature 2 of the Go-eCharger                              |
 | firmware                 | String                   | Firmware Version                                              |
 | accessConfiguration      | String                   | Access configuration, for example OPEN, RFID ...              |
+
 
 ## Full Example
 
@@ -55,6 +59,7 @@ demo.items
 
 ```
 Number:ElectricCurrent     GoEChargerMaxCurrent                 "Maximum current"                       {channel="goecharger:goe:garage:maxCurrent"}
+Number:ElectricCurrent     GoEChargerMaxCurrTemp                "Maximum current temporary"                       {channel="goecharger:goe:garage:maxCurrentTemp"}
 String                     GoEChargerPwmSignal                  "Pwm signal status"                     {channel="goecharger:goe:garage:pwmSignal"}
 String                     GoEChargerError                      "Error code"                            {channel="goecharger:goe:garage:error"}
 Number:ElectricPotential   GoEChargerVoltageL1                  "Voltage l1"                            {channel="goecharger:goe:garage:voltageL1"}
@@ -66,13 +71,15 @@ Number:ElectricCurrent     GoEChargerCurrentL3                  "Current l3"    
 Number:Power               GoEChargerPowerL1                    "Power l1"                              {channel="goecharger:goe:garage:powerL1"}
 Number:Power               GoEChargerPowerL2                    "Power l2"                              {channel="goecharger:goe:garage:powerL2"}
 Number:Power               GoEChargerPowerL3                    "Power l3"                              {channel="goecharger:goe:garage:powerL3"}
+Number:Power               GoEChargerPowerAll                   "Power over all"                       {channel="goecharger:goe:garage:powerAll"}
 Number                     GoEChargerPhases                     "Phases"                                {channel="goecharger:goe:garage:phases"}
 Number:Energy              GoEChargerSessionChargeEnergyLimit   "Current session charge energy limit"   {channel="goecharger:goe:garage:sessionChargeEnergyLimit"}
 Number:Energy              GoEChargerSessionChargedEnergy       "Current session charged energy"        {channel="goecharger:goe:garage:sessionChargedEnergy"}
 Number:Energy              GoEChargerTotalChargedEnergy         "Total charged energy"                  {channel="goecharger:goe:garage:totalChargedEnergy"}
 Switch                     GoEChargerAllowCharging              "Allow charging"                        {channel="goecharger:goe:garage:allowCharging"}
 Number:ElectricCurrent     GoEChargerCableCurrent               "Cable encoding"                        {channel="goecharger:goe:garage:cableCurrent"}
-Number:Temperature         GoEChargerTemperature                "Temperature"                           {channel="goecharger:goe:garage:temperature"}
+Number:Temperature         GoEChargertemptma1                   "Temperature_tma1"                      {channel="goecharger:goe:garage:temptma1"}
+Number:Temperature         GoEChargertemptma1                   "Temperature_tma2"                      {channel="goecharger:goe:garage:temptma2"}
 String                     GoEChargerFirmware                   "Firmware"                              {channel="goecharger:goe:garage:firmware"}
 String                     GoEChargerAccessConfiguration        "Access configuration"                  {channel="goecharger:goe:garage:accessConfiguration"}
 ```
@@ -88,8 +95,9 @@ when
     Item availablePVCurrent received update
 then
     logInfo("Amps available: ", receivedCommand.state)
-    GoEChargerMaxCurrent.sendCommand(receivedCommand.state)
+    MaxCurrTemp.sendCommand(receivedCommand.state)
 end
+
 ```
 You can also define more advanced rules if you have multiple cars that charge with a different amount of phases.
 For example if your car charges on one phase only, you can set maxAmps to output of PV power, if your car charges on two phases you can set maxAmps to `pv output / 2`, and for 3 phases `pv output / 3`.
