@@ -87,8 +87,6 @@ public class ShellyChannelCache {
                 } else {
                     channelData.replace(channelId, newValue);
                 }
-                logger.debug("{}: Channel {} updated with {} (type {}).", thingName, channelId, newValue,
-                        newValue.getClass());
                 return true;
             }
         } catch (IllegalArgumentException e) {

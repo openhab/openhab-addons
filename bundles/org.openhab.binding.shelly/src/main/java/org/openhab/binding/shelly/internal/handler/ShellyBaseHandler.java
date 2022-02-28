@@ -385,7 +385,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             }
 
             restartWatchdog();
-            if (update && !autoCoIoT) {
+            if (update && !autoCoIoT && !isUpdateScheduled()) {
+                logger.debug("{}: Command process, request status update", thingName);
                 requestUpdates(1, false);
             }
         } catch (ShellyApiException e) {
@@ -439,7 +440,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     initializeThing(); // may fire an exception if initialization failed
                 }
                 // Get profile, if refreshSettings == true reload settings from device
-                logger.trace("{}: Updating status (refreshSettings={})", thingName, refreshSettings);
+                logger.trace("{}: Updating status (scheduledUpdates={}, refreshSettings={})", thingName,
+                        scheduledUpdates, refreshSettings);
                 ShellySettingsStatus status = api.getStatus();
                 boolean restarted = checkRestarted(status);
                 profile = getProfile(refreshSettings || restarted);
@@ -528,6 +530,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             updateStatus(ThingStatus.ONLINE);
 
             // request 3 updates in a row (during the first 2+3*3 sec)
+            logger.debug("{}: Thing went online, request status update", thingName);
+            ;
             requestUpdates(profile.alwaysOn ? 3 : 1, !channelsCreated);
         }
         restartWatchdog();
@@ -642,6 +646,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 || (lastAlarm.equals(event) && now() > stats.lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC)) {
             switch (event) {
                 case "":
+                case "0": // DW2 1.8
                 case ALARM_TYPE_NONE:
                 case SHELLY_WAKEUPT_SENSOR:
                 case SHELLY_WAKEUPT_PERIODIC:
@@ -958,6 +963,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         return false;
     }
 
+    public boolean isUpdateScheduled() {
+        return scheduledUpdates > 0;
+    }
+
     /**
      * Map input states to channels
      *
@@ -1034,6 +1043,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         String id = channelId.contains("$") ? substringBefore(channelId, "$") : channelId;
         if (!stopping && isLinked(id)) {
             updateState(id, value);
+            logger.debug("{}: Channel {} updated with {} (type {}).", thingName, channelId, value, value.getClass());
         }
     }
 

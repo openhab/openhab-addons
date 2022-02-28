@@ -280,12 +280,13 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
                         getString(sdata.sensor.state).equalsIgnoreCase(SHELLY_API_DWSTATE_OPEN) ? OpenClosedType.OPEN
                                 : OpenClosedType.CLOSED);
+                String sensorError = sdata.sensorError;
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR,
-                        getStringType(sdata.sensorError));
-                if (changed) {
+                        getStringType(sensorError));
+                if (!"0".equals(sensorError) && changed) {
                     thingHandler.postEvent(getString(sdata.sensorError), true);
+                    updated |= changed;
                 }
-                updated |= changed;
             }
             if ((sdata.tmp != null) && getBool(sdata.tmp.isValid)) {
                 thingHandler.logger.trace("{}: Updating temperature", thingHandler.thingName);
