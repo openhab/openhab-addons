@@ -158,7 +158,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
     private PortalLoginResponse portalLogin(AuthCode authCode, AccessData accessData)
             throws EcovacsApiException, InterruptedException {
         PortalLoginRequest loginRequestData = new PortalLoginRequest(PortalTodo.LOGIN_BY_TOKEN,
-                configuration.getCountry(), "", configuration.getOrg(), configuration.getResource(),
+                configuration.getCountry().toUpperCase(), "", configuration.getOrg(), configuration.getResource(),
                 configuration.getRealm(), authCode.getAuthCode(), accessData.getUid(), configuration.getEdition());
         String json = gson.toJson(loginRequestData);
         String userUrl = EcovacsApiUrlFactory.getPortalUsersUrl(configuration);

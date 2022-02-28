@@ -66,7 +66,7 @@ public final class EcovacsApiConfiguration {
             // historical reasons
             return "uk";
         }
-        return country;
+        return country.toLowerCase();
     }
 
     public String getLanguage() {
