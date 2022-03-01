@@ -13,6 +13,7 @@
 package org.openhab.binding.ecovacs.internal;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -75,7 +76,7 @@ public class EcovacsBindingConstants {
     public static class StateOptionEntry<T extends Enum<T>> {
         public final T enumValue;
         public final String value;
-        public final @Nullable DeviceCapability capability;
+        public final Optional<DeviceCapability> capability;
 
         StateOptionEntry(T enumValue, String value) {
             this(enumValue, value, null);
@@ -84,7 +85,7 @@ public class EcovacsBindingConstants {
         StateOptionEntry(T enumValue, String value, @Nullable DeviceCapability capability) {
             this.enumValue = enumValue;
             this.value = value;
-            this.capability = capability;
+            this.capability = Optional.ofNullable(capability);
         }
     }
 

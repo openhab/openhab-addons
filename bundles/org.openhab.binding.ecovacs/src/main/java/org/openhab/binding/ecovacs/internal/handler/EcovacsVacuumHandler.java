@@ -16,12 +16,14 @@ import static org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.*;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -413,25 +415,15 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
 
     private <T extends Enum<T>> List<StateOption> createChannelOptions(EcovacsDevice device, T[] values,
             StateOptionMapping<T> mapping, @Nullable Predicate<StateOptionEntry<T>> filter) {
-        List<StateOption> options = new ArrayList<>();
-        for (int i = 0; i < values.length; i++) {
-            T value = values[i];
-            @Nullable
-            StateOptionEntry<T> mappedValue = mapping.get(value);
-            if (mappedValue == null) {
-                continue;
-            }
-            if (filter != null && !filter.test(mappedValue)) {
-                continue;
-            }
-            @Nullable
-            DeviceCapability cap = mappedValue.capability;
-            if (cap != null && !device.hasCapability(cap)) {
-                continue;
-            }
-            options.add(new StateOption(mappedValue.value, mappedValue.value));
-        }
-        return options;
+        return Arrays.stream(values).map(v -> Optional.ofNullable(mapping.get(v)))
+                // ensure we have a mapping (should always be the case)
+                .filter(Optional::isPresent).map(opt -> opt.get())
+                // apply supplied filter
+                .filter(mv -> filter == null || filter.test(mv))
+                // apply capability filter
+                .filter(mv -> mv.capability.isEmpty() || device.hasCapability(mv.capability.get()))
+                // map to actual option
+                .map(mv -> new StateOption(mv.value, mv.value)).collect(Collectors.toList());
     }
 
     private synchronized void scheduleNextPoll(long initialDelaySeconds) {
@@ -505,7 +497,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                 updateState(CHANNEL_ID_LAST_CLEAN_DURATION, new QuantityType<>(record.cleaningDuration, Units.SECOND));
                 updateState(CHANNEL_ID_LAST_CLEAN_AREA, new QuantityType<>(record.cleanedArea, SIUnits.SQUARE_METRE));
                 StateOptionEntry<CleanMode> mode = CLEAN_MODE_MAPPING.get(record.mode);
-                updateState(CHANNEL_ID_LAST_CLEAN_MODE, mode != null ? new StringType(mode.value) : UnDefType.UNDEF);
+                updateState(CHANNEL_ID_LAST_CLEAN_MODE, stringToState(mode != null ? mode.value : null));
 
                 if (device.hasCapability(DeviceCapability.MAPPING)
                         && !lastDownloadedCleanMapUrl.equals(record.mapImageUrl)) {
@@ -571,8 +563,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         String commandState = determineCommandChannelValue(charging, cleanMode);
         String currentMode = determineCleaningModeChannelValue(cleanMode.isActive() ? cleanMode : lastActiveCleanMode);
         updateState(CHANNEL_ID_STATE, StringType.valueOf(determineStateChannelValue(charging, cleanMode)));
-        updateState(CHANNEL_ID_CLEANING_MODE, currentMode != null ? StringType.valueOf(currentMode) : UnDefType.UNDEF);
-        updateState(CHANNEL_ID_COMMAND, commandState != null ? StringType.valueOf(commandState) : UnDefType.UNDEF);
+        updateState(CHANNEL_ID_CLEANING_MODE, stringToState(currentMode));
+        updateState(CHANNEL_ID_COMMAND, stringToState(commandState));
     }
 
     private String determineStateChannelValue(boolean charging, CleanMode cleanMode) {
@@ -610,6 +602,11 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                 break;
         }
         return null;
+    }
+
+    private State stringToState(@Nullable String value) {
+        Optional<State> stateOpt = Optional.ofNullable(value).map(v -> StringType.valueOf(v));
+        return stateOpt.orElse(UnDefType.UNDEF);
     }
 
     private @Nullable AbstractNoResponseCommand determineDeviceCommand(EcovacsDevice device, String command) {
