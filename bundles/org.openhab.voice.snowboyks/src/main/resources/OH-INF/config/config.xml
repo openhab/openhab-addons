@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="voice:snowboyks">
+		<parameter name="applyFrontend" type="boolean">
+			<label>Apply Frontend</label>
+			<description>Enhance speech signal.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="audioGain" type="decimal" step="0.1">
+			<label>Audio Gain</label>
+			<description>Change audio gain, values less than one decrease and higher increase.</description>
+			<default>1</default>
+		</parameter>
+		<parameter name="sensitivity" type="text">
+			<label>Sensitivities String</label>
+			<description>When sensitibity is higher, the hotword gets more easily triggered. But you might get more false alarms</description>
+			<default>0.5</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
