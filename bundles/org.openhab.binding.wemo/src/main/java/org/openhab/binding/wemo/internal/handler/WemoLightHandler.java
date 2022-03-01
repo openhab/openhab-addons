@@ -85,7 +85,6 @@ public class WemoLightHandler extends WemoBaseThingHandler {
         final Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
             addSubscription(BRIDGEEVENT);
-            host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, DEFAULT_REFRESH_INITIAL_DELAY,
                     DEFAULT_REFRESH_INTERVAL_SECONDS, TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
@@ -143,7 +142,6 @@ public class WemoLightHandler extends WemoBaseThingHandler {
             }
             try {
                 logger.debug("Polling job");
-                host = getHost();
                 // Check if the Wemo device is set in the UPnP service registry
                 // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
                 if (!isUpnpDeviceRegistered()) {
@@ -161,20 +159,10 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String localHost = getHost();
-        if (localHost.isEmpty()) {
-            logger.warn("Failed to send command '{}' for device '{}': IP address missing", command,
-                    getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
-        }
-        String wemoURL = getWemoURL(localHost, BASICACTION);
+        String wemoURL = getWemoURL(BASICACTION);
         if (wemoURL == null) {
             logger.debug("Failed to send command '{}' for device '{}': URL cannot be created", command,
                     getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-url");
             return;
         }
         if (command instanceof RefreshType) {
@@ -294,19 +282,10 @@ public class WemoLightHandler extends WemoBaseThingHandler {
      * channel states.
      */
     public void getDeviceState() {
-        String localHost = getHost();
-        if (localHost.isEmpty()) {
-            logger.warn("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
-        }
         logger.debug("Request actual state for LightID '{}'", wemoLightID);
-        String wemoURL = getWemoURL(localHost, BRIDGEACTION);
+        String wemoURL = getWemoURL(BRIDGEACTION);
         if (wemoURL == null) {
             logger.debug("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-url");
             return;
         }
         try {
