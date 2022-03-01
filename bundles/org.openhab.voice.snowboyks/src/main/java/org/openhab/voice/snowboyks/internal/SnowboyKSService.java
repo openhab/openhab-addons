@@ -172,15 +172,15 @@ public class SnowboyKSService implements KSService {
                 libraryName = "libsnowboy-detect-java.dylib";
                 libraryPath = Path.of("macos", libraryName).toString();
                 break;
-            case "linux":
+            case "debian":
                 libraryName = "libsnowboy-detect-java.so";
                 libraryPath = Path.of("debian", libraryName).toString();
                 break;
-            case "linux-arm":
+            case "debian-arm":
                 libraryName = "libsnowboy-detect-java.so";
                 libraryPath = Path.of("debian-arm", libraryName).toString();
                 break;
-            case "linux-arm64":
+            case "debian-arm64":
                 libraryName = "libsnowboy-detect-java.so";
                 libraryPath = Path.of("debian-arm64", libraryName).toString();
                 break;
@@ -226,12 +226,14 @@ public class SnowboyKSService implements KSService {
 
     private @Nullable String getPlatformName() {
         String os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
+        logger.debug("Checking OS {}", os);
         if (os.contains("mac") || os.contains("darwin")) {
             return "macos";
         }
         if (os.contains("linux")) {
             String arch = System.getProperty("os.arch");
-            if ("armv7l".equals(arch)) {
+            logger.debug("Checking arch {}", arch);
+            if ("arm".equals(arch)) {
                 return "debian-arm";
             } else if ("aarch64".equals(arch)) {
                 return "debian-arm64";
