@@ -20,7 +20,7 @@ The Pulseaudio bridge is discovered through mDNS in the local network.
 
 ## Binding Configuration (optional)
 
-The Pulseaudio binding can be customized to handle different devices. The Sink support is activated by default and you need no further action to use it. If you want to use another type of device, or disable the Sink type, you have to switch the corresponding binding property.
+The Pulseaudio binding can be customized to handle different devices. The Sink and Source support is activated by default and you need no further action to use it. If you want to use another type of device, or disable the Sink/Source type, you have to switch the corresponding binding property.
 
 -   **sink:** Allow the binding to parse sink devices from the pulseaudio server
 -   **source:** Allow the binding to parse source devices from the pulseaudio server
