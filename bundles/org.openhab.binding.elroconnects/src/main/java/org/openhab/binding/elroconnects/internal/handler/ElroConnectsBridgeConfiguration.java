@@ -23,5 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ElroConnectsBridgeConfiguration {
 
     public String connectorId = "";
+    public String ipAddress = "";
     public int refreshInterval = 60;
 }

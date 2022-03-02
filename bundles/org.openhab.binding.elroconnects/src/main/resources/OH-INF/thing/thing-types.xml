@@ -17,10 +17,17 @@
 				<description>ID of the ELRO Connects K1 Connector, should be ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC
 					address of the connector.</description>
 			</parameter>
+			<parameter name="ipAddress" type="text">
+				<label>IP Address</label>
+				<description>IP address of the ELRO Connects K1 Connector, not required if connector and openHAB server in same
+					subnet.</description>
+				<context>network-address</context>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="refreshInterval" type="integer">
 				<label>Refresh Interval</label>
 				<description>Heartbeat device refresh interval for communication with ELRO Connects K1 Connector in seconds, default
-					60s</description>
+					60s.</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>

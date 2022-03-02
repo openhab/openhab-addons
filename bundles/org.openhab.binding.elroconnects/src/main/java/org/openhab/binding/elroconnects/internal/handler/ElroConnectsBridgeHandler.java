@@ -164,6 +164,17 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
+        this.addr = null;
+        String ipAddress = config.ipAddress;
+        if (!ipAddress.isEmpty()) {
+            try {
+                InetAddress addr = InetAddress.getByName(ipAddress);
+                this.addr = addr;
+            } catch (UnknownHostException e) {
+                logger.warn("Unknown host for {}, trying to discover address", ipAddress);
+            }
+        }
+
         queryString = QUERY_BASE_STRING + connectorId;
 
         scheduler.submit(this::startCommunication);
@@ -175,9 +186,9 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     }
 
     private synchronized void startCommunication() {
-        InetAddress addr = null;
+        InetAddress addr = this.addr;
         try {
-            addr = getAddr();
+            addr = getAddr(addr == null);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error trying to find IP address for connector ID " + connectorId + ".");
@@ -243,12 +254,14 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
      * Get the IP address and ctrl key of the connector by broadcasting message with connectorId. This should be used
      * when initializing the connection. the ctrlKey field is set.
      *
+     * @param broadcast, if true find address by broadcast, otherwise simply send to configured address to retrieve key
+     *            only
      * @return IP address of connector
      * @throws IOException
      */
-    private @Nullable InetAddress getAddr() throws IOException {
+    private @Nullable InetAddress getAddr(boolean broadcast) throws IOException {
         try (DatagramSocket socket = createSocket(true)) {
-            String response = sendAndReceive(socket, queryString, true);
+            String response = sendAndReceive(socket, queryString, broadcast);
             Matcher keyMatcher = CTRL_KEY_PATTERN.matcher(response);
             ctrlKey = keyMatcher.find() ? keyMatcher.group(1) : "";
             logger.debug("Key: {}", ctrlKey);

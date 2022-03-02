@@ -36,7 +36,7 @@ Older versions of the firmware are known to have differences in the communicatio
 ## Discovery
 
 The K1 connector `connector` cannot be auto-discovered.
-Once the bridge thing representing the K1 connector is correctly set up and online, discovery will allow discovering all devices connected to the K1 connector.
+Once the bridge thing representing the K1 connector is correctly set up and online, discovery will allow discovering all devices connected to the K1 connector (as set up in the Elro Connects app).
 
 If devices are outside reliable RF range, devices known to the K1 hub will be discovered but may stay offline when added as a thing.
 Alarm devices can still trigger alarms and pass them between each other, even if the connection with the hub is lost.
@@ -46,10 +46,11 @@ It will not be possible to receive alarms and control them from openHAB in this 
 
 ### K1 connector hub
 
-| Parameter         | Description            |
-|--------------------|----------------------|
-| `connectorId` | Required parameter, should be set to ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector. This parameter can also be found in the ELRO Connects mobile application. |
-| `refreshInterval` | This parameter controls the connection refresh heartbeat interval. The default is 60s. |
+| Parameter         | Advanced | Description            |
+|-------------------|:--------:|------------------------|
+| `connectorId` |          | Required parameter, should be set to ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector. This parameter can also be found in the ELRO Connects mobile application. |
+| `ipAdress`     | Y        | IP address of the ELRO Connects K1 Connector, not required if connector and openHAB server in same subnet. |
+| `refreshInterval` | Y      |  This parameter controls the connection refresh heartbeat interval. The default is 60s. |
 
 ### Devices connected to K1 connected hub
 
@@ -64,7 +65,7 @@ It will not be possible to receive alarms and control them from openHAB in this 
 The `connector` bridge thing has only one channel:
 
 | Channel ID         | Item Type            | Access Mode | Description                                        |
-|--------------------|----------------------|-------------|----------------------------------------------------|
+|--------------------|----------------------|:-----------:|----------------------------------------------------|
 | `scene`            | String               | RW          | current scene                                      |
 
 The `scene` channel has a dynamic state options list with all possible scene choices available in the hub.
@@ -74,7 +75,7 @@ The `scene` channel has a dynamic state options list with all possible scene cho
 All these things have the same channels:
 
 | Channel ID         | Item Type            | Access Mode | Description                                        |
-|--------------------|----------------------|-------------|----------------------------------------------------|
+|--------------------|----------------------|:-----------:|----------------------------------------------------|
 | `muteAlarm`        | Switch               | RW          | mute alarm                                         |
 | `testAlarm`        | Switch               | RW          | test alarm                                         |
 | `battery`          | Number               | R           | battery level in %                                 |
@@ -88,7 +89,7 @@ The payload for these trigger channels is empty.
 The `entrysensor` thing has the following channels:
 
 | Channel ID         | Item Type            | Access Mode | Description                                        |
-|--------------------|----------------------|-------------|----------------------------------------------------|
+|--------------------|----------------------|:-----------:|----------------------------------------------------|
 | `entry`            | Contact              | R           | open/closed door/window                            |
 | `battery`          | Number               | R           | battery level in %                                 |
 | `lowBattery`       | Switch               | R           | on for low battery (below 15%)                     |
@@ -100,7 +101,7 @@ The `entrysensor` thing also has a trigger channel, `entryAlarm`.
 The `motionsensor` thing has the following channels:
 
 | Channel ID         | Item Type            | Access Mode | Description                                        |
-|--------------------|----------------------|-------------|----------------------------------------------------|
+|--------------------|----------------------|:-----------:|----------------------------------------------------|
 | `motion`           | Switch               | R           | on when motion detected                            |
 | `battery`          | Number               | R           | battery level in %                                 |
 | `lowBattery`       | Switch               | R           | on for low battery (below 15%)                     |
@@ -112,7 +113,7 @@ The `motionsensor` thing also has a trigger channel, `motionAlarm`.
 The `temperaturesensor` thing has the following channels:
 
 | Channel ID         | Item Type            | Access Mode | Description                                        |
-|--------------------|----------------------|-------------|----------------------------------------------------|
+|--------------------|----------------------|:-----------:|----------------------------------------------------|
 | `temperature`      | Number:Temperature   | R           | temperature                                        |
 | `humidity`         | Number:Dimensionless | R           | device status                                      |
 | `battery`          | Number               | R           | battery level in %                                 |
@@ -123,7 +124,7 @@ The `temperaturesensor` thing has the following channels:
 The `powersocket` thing has only one channel:
 
 | Channel ID         | Item Type            | Access Mode | Description                                        |
-|--------------------|----------------------|-------------|----------------------------------------------------|
+|--------------------|----------------------|:-----------:|----------------------------------------------------|
 | `powerState`       | Switch               | RW          | power on/off                                       |
 
 
