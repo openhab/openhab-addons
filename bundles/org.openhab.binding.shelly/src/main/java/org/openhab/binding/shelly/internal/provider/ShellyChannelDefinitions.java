@@ -35,6 +35,8 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsMe
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortLightStatus;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortStatusRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor;
@@ -295,11 +297,14 @@ public class ShellyChannelDefinitions {
         String group = profile.getControlGroup(idx);
 
         ShellySettingsRelay rs = profile.settings.relays.get(idx);
+        ShellyShortStatusRelay rstatus = relay.relays.get(idx);
+        boolean timer = rs.hasTimer != null || (rstatus != null && rstatus.hasTimer != null); // Dimmer 1/2 have
+                                                                                              // has_timer under /status
         addChannel(thing, add, rs.ison != null, group, CHANNEL_OUTPUT);
         addChannel(thing, add, rs.name != null, group, CHANNEL_OUTPUT_NAME);
         addChannel(thing, add, rs.autoOn != null, group, CHANNEL_TIMER_AUTOON);
         addChannel(thing, add, rs.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
-        addChannel(thing, add, rs.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+        addChannel(thing, add, timer, group, CHANNEL_TIMER_ACTIVE);
 
         // Shelly 1/1PM Addon
         if (relay.extTemperature != null) {
@@ -325,6 +330,9 @@ public class ShellyChannelDefinitions {
         ShellySettingsDimmer ds = profile.settings.dimmers.get(idx);
         addChannel(thing, add, ds.autoOn != null, group, CHANNEL_TIMER_AUTOON);
         addChannel(thing, add, ds.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
+
+        ShellyShortLightStatus dss = dstatus.dimmers.get(idx);
+        addChannel(thing, add, dss != null && dss.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
         return add;
     }
 

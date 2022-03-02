@@ -775,6 +775,9 @@ public class ShellyApiJsonDTO {
         public Boolean ison; // Whether output channel is on or off
         public String mode; // color or white - valid only for Bulb and RGBW2 even Dimmer returns it also
         public Integer brightness; // brightness: 0.100%
+
+        @SerializedName("has_timer")
+        public Boolean hasTimer;
     }
 
     public static class ShellyStatusRelay {

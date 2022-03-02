@@ -130,7 +130,7 @@
 	</thing-type>
 
 	<thing-type id="shellymotion">
-		<label>Shelly Motion (SHMOS-11/SHMOS-02)</label>
+		<label>Shelly Motion (SHMOS-01/SHMOS-02)</label>
 		<description>@text/thing-type.shelly.shellymotion.description</description>
 		<category>MotionDetector</category>
 		<channel-groups>

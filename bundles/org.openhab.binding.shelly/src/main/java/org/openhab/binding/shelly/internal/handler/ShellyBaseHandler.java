@@ -158,6 +158,9 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                         messages.get("status.unknown.initializing"));
                 start = initializeThing();
+
+                // Promote Shelly Manager usage
+                logger.info("{}: {}", thingName, messages.get("status.managerstarted", localIP, localPort));
             } catch (ShellyApiException e) {
                 ShellyApiResult res = e.getApiResult();
                 if (isAuthorizationFailed(res)) {
