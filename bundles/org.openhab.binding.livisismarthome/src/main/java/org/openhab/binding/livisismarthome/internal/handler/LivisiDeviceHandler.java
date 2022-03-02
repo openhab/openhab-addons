@@ -238,8 +238,17 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
             // note: this call implicitly registers our handler as a listener on the bridge
             if (getBridgeHandler().isPresent()) {
                 if (ThingStatus.ONLINE == bridgeStatus) {
-                    if (initializeProperties()) {
-                        updateStatus(ThingStatus.ONLINE);
+                    initializeProperties();
+
+                    Optional<DeviceDTO> deviceOptional = getDevice();
+                    if (deviceOptional.isPresent()) {
+                        DeviceDTO device = deviceOptional.get();
+                        if (device.isReachable() != null && !device.isReachable()) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "Device not reachable.");
+                        } else {
+                            updateStatus(ThingStatus.ONLINE);
+                        }
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
                                 "Device not found in LIVISI SmartHome config. Was it removed?");
@@ -258,7 +267,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     /**
      * Initializes all properties of the {@link DeviceDTO}, like vendor, serialnumber etc.
      */
-    private boolean initializeProperties() {
+    private void initializeProperties() {
         synchronized (this.lock) {
             final Optional<DeviceDTO> deviceOptional = getDevice();
             if (deviceOptional.isPresent()) {
@@ -315,10 +324,8 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                 updateProperties(properties);
 
                 onDeviceStateChanged(device);
-                return true;
             } else {
                 logger.warn("initializeProperties: The device with id {} isn't found", deviceId);
-                return false;
             }
         }
     }
@@ -575,14 +582,10 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     private boolean updateStatus(DeviceDTO device) {
-        if (device.hasDeviceState() && device.getDeviceState().hasIsReachableState()) {
-            Boolean reachable = device.getDeviceState().isReachable();
-            if (reachable != null) {
-                if (!reachable) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not reachable.");
-                    return false;
-                }
-            }
+        Boolean reachable = device.isReachable();
+        if (reachable != null && !reachable) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not reachable.");
+            return false;
         }
         return true;
     }

@@ -401,8 +401,11 @@ public class DeviceDTO {
      *
      * @return reachable (boolean)
      */
-    public boolean isReachable() {
-        return getDeviceState().getState().getIsReachable().getValue();
+    public Boolean isReachable() {
+        if (hasDeviceState() && getDeviceState().hasIsReachableState()) {
+            return getDeviceState().isReachable();
+        }
+        return null;
     }
 
     /**

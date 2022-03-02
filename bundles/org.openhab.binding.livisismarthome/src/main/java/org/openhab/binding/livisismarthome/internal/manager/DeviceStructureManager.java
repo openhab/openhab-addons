@@ -209,7 +209,7 @@ public class DeviceStructureManager {
                     location, device.getManufacturer(), device.getId());
             for (CapabilityDTO c : device.getCapabilityMap().values()) {
                 logger.debug("> CAP: {}/{} ({})", c.getType(), c.getName(), c.getId());
-                if (device.isRadioDevice() && !device.isReachable()) {
+                if (device.isRadioDevice() && device.isReachable() != null && !device.isReachable()) {
                     logger.debug(">> CAP-State: unknown (device NOT REACHABLE).");
                 } else {
                     if (!c.hasState()) {
