@@ -9,7 +9,7 @@
 		<description>Go-eCharger thing that represents the wallbox configuration and readings</description>
 
 		<channels>
-			<channel id="maxCurrent" typeId="maxCurr"/>
+			<channel id="maxCurrent" typeId="current"/>
 			<channel id="pwmSignal" typeId="pwm"/>
 			<channel id="error" typeId="err"/>
 			<channel id="voltageL1" typeId="vl1"/>
@@ -21,17 +21,21 @@
 			<channel id="powerL1" typeId="pl1"/>
 			<channel id="powerL2" typeId="pl2"/>
 			<channel id="powerL3" typeId="pl3"/>
+			<channel id="totalChargedEnergy" typeId="eto"/>
 			<channel id="allowCharging" typeId="alw"/>
-			<channel id="cableCurrent" typeId="cblCurr"/>
-			<channel id="firmware" typeId="fwv"/>
-			<channel id="accessConfiguration" typeId="accConf"/>
-			<channel id="phases" typeId="phs"/>
-			<channel id="forceState" typeId="fs"/>
-			<channel id="sessionChargedEnergy" typeId="sce"/>
-			<channel id="sessionChargeEnergyLimit" typeId="scel"/>
-			<channel id="totalChargedEnergy" typeId="tce"/>
-			<channel id="temperatureType2Port" typeId="tmpT2p"/>
-			<channel id="temperature" typeId="tmpCb"/>
+			<channel id="cableCurrent" typeId="cbl"/>
+			<channel id="firmware" typeId="fmv"/>
+			<channel id="accessConfiguration" typeId="ast"/>			
+			
+			<channel id="phases" typeId="pha"/>
+			<channel id="phases" typeId="psm"/>
+			<channel id="sessionChargeEnergyLimit" typeId="scl"/>
+			<channel id="sessionChargedEnergy" typeId="scs"/>
+			<channel id="sessionChargeEnergyLimit" typeId="dwo"/>
+			<channel id="sessionChargedEnergy" typeId="wh"/>
+			<channel id="temperature" typeId="tmp"/>
+			<channel id="temperature1" typeId="tma"/>
+			<channel id="temperature2" typeId="tma"/>
 		</channels>
 
 		<config-description>
@@ -39,10 +43,6 @@
 				<label>IP Address</label>
 				<description>The IP address of the Go-eCharger</description>
 				<context>network-address</context>
-			</parameter>
-			<parameter name="apiVersion" type="integer" required="true">
-				<label>API version</label>
-				<description>The API version of the Go-eCharger</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false" unit="s">
 				<label>Refresh Interval</label>
@@ -52,7 +52,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="accConf">
+	<channel-type id="ast">
 		<item-type>String</item-type>
 		<label>Access Configuration</label>
 		<description>Currently set access configuration of the Go-eCharger</description>
@@ -65,7 +65,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="maxCurr">
+	<channel-type id="current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Maximum Current</label>
 		<description>Maximum current per phase allowed to use for charging</description>
@@ -151,31 +151,25 @@
 		<description>Power on L3</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="phs">
+	<channel-type id="pha">
 		<item-type>Number</item-type>
 		<label>Phases</label>
 		<description>Amount of phases currently used for charging</description>
-		<state readOnly="false"/>
-	</channel-type>
-	<channel-type id="fs">
-		<item-type>Number</item-type>
-		<label>Force state</label>
-		<description>Force state (Neutral=0, Off=1, On=2)</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="scel">
+	<channel-type id="scl">
 		<item-type>Number:Energy</item-type>
 		<label>Current Session Charge Energy Limit</label>
 		<description>Wallbox stops charging after defined value, deactivate with value 0</description>
 		<state pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
-	<channel-type id="sce">
+	<channel-type id="scs">
 		<item-type>Number:Energy</item-type>
 		<label>Current Session Charged Energy</label>
 		<description>Amount of energy that has been charged in this session</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="tce">
+	<channel-type id="eto">
 		<item-type>Number:Energy</item-type>
 		<label>Total Charged Energy</label>
 		<description>Amount of energy that has been charged since installation</description>
@@ -187,25 +181,19 @@
 		<description>If true charging is allowed</description>
 		<state readOnly="false"/>
 	</channel-type>
-	<channel-type id="cblCurr">
+	<channel-type id="cbl">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Cable Encoding</label>
 		<description>Specifies the max amps that can be charged with that cable</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="tmpT2p">
+	<channel-type id="tmp">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature type 2 port</label>
-		<description>Temperature of the Go-eCharger on the type 2 port</description>
+		<label>Temperature</label>
+		<description>Temperature of the Go-eCharger</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="tmpCb">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature circuit board</label>
-		<description>Temperature of the Go-eCharger on circuit board</description>
-		<state pattern="%d %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="fwv">
+	<channel-type id="fmw">
 		<item-type>String</item-type>
 		<label>Firmware</label>
 		<description>Firmware Version</description>

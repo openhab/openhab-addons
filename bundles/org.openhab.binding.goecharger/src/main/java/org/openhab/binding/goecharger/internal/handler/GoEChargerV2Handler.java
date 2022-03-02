@@ -49,20 +49,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link GoEChargerHandler} is responsible for handling commands, which are
+ * The {@link GoEChargerV2Handler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Samuel Brucksch - Initial contribution
  * @author Reinhard Plaim - Adapt to use API version 2
  */
 @NonNullByDefault
-public class GoEChargerHandler extends GoEChargerBaseHandler {
+public class GoEChargerV2Handler extends GoEChargerBaseHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(GoEChargerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(GoEChargerV2Handler.class);
 
-    public GoEChargerHandler(Thing thing, HttpClient httpClient) {
+    private String filter = "";
+
+    public GoEChargerV2Handler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
     }
 
@@ -73,16 +76,27 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
             return state;
         }
 
-        var goeResponse = (GoEStatusResponseDTO) goeResponseBase;
+        var goeResponse = (GoEStatusResponseV2DTO) goeResponseBase;
         switch (channelId) {
+            case PHASES:
+                if (goeResponse.phases == null) {
+                    return UnDefType.UNDEF;
+                }
+                var phases = "1";
+                if (goeResponse.phases == 2) {
+                    phases = "3";
+                }
+                return new DecimalType(phases);
             case PWM_SIGNAL:
                 if (goeResponse.pwmSignal == null) {
                     return UnDefType.UNDEF;
                 }
                 String pwmSignal = null;
                 switch (goeResponse.pwmSignal) {
+                    case 0:
+                        pwmSignal = "UNKNOWN/ERROR";
                     case 1:
-                        pwmSignal = "READY_NO_CAR";
+                        pwmSignal = "IDLE";
                         break;
                     case 2:
                         pwmSignal = "CHARGING";
@@ -91,8 +105,10 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
                         pwmSignal = "WAITING_FOR_CAR";
                         break;
                     case 4:
-                        pwmSignal = "CHARGING_DONE_CAR_CONNECTED";
+                        pwmSignal = "COMPLETE";
                         break;
+                    case 5:
+                        pwmSignal = "ERROR";
                     default:
                 }
                 return new StringType(pwmSignal);
@@ -103,117 +119,87 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
                 String error = null;
                 switch (goeResponse.errorCode) {
                     case 0:
-                        error = "NONE";
-                        break;
+                        error = "UNKNOWN/ERROR";
                     case 1:
-                        error = "RCCB";
-                        break;
-                    case 3:
-                        error = "PHASE";
-                        break;
-                    case 8:
-                        error = "NO_GROUND";
-                        break;
-                    default:
-                        error = "INTERNAL";
-                        break;
-                }
-                return new StringType(error);
-            case ACCESS_CONFIGURATION:
-                if (goeResponse.accessConfiguration == null) {
-                    return UnDefType.UNDEF;
-                }
-                String accessConfiguration = null;
-                switch (goeResponse.accessConfiguration) {
-                    case 0:
-                        accessConfiguration = "OPEN";
-                        break;
-                    case 1:
-                        accessConfiguration = "RFID";
+                        error = "IDLE";
                         break;
                     case 2:
-                        accessConfiguration = "AWATTAR";
+                        error = "CHARGING";
                         break;
                     case 3:
-                        accessConfiguration = "TIMER";
+                        error = "WAITING_FOR_CAR";
                         break;
+                    case 4:
+                        error = "COMPLETE";
+                        break;
+                    case 5:
+                        error = "ERROR";
                     default:
                 }
-                return new StringType(accessConfiguration);
+                return new StringType(error);
             case ALLOW_CHARGING:
-                if (goeResponse.allowCharging == null) {
+                return goeResponse.allowCharging == true ? OnOffType.ON : OnOffType.OFF;
+            case TEMPERATURE_TYPE2_PORT:
+                if (goeResponse.temperatures == null) {
                     return UnDefType.UNDEF;
                 }
-                return goeResponse.allowCharging == 1 ? OnOffType.ON : OnOffType.OFF;
-            case PHASES:
-                if (goeResponse.energy == null) {
-                    return UnDefType.UNDEF;
-                }
-                int count = 0;
-                if (goeResponse.energy[4] > 0) { // current P1
-                    count++;
-                }
-                if (goeResponse.energy[5] > 0) { // current P2
-                    count++;
-                }
-                if (goeResponse.energy[6] > 0) { // current P3
-                    count++;
-                }
-                return new DecimalType(count);
+                return new QuantityType<>(goeResponse.temperatures[0], SIUnits.CELSIUS);
             case TEMPERATURE_CIRCUIT_BOARD:
-                if (goeResponse.temperature == null) {
+                if (goeResponse.temperatures == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.temperature, SIUnits.CELSIUS);
+                return new QuantityType<>(goeResponse.temperatures[1], SIUnits.CELSIUS);
             case SESSION_CHARGE_CONSUMPTION:
                 if (goeResponse.sessionChargeConsumption == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.sessionChargeConsumption / 360000d),
-                        Units.KILOWATT_HOUR);
+                return new QuantityType<>((Double) (goeResponse.sessionChargeConsumption / 1000d), Units.KILOWATT_HOUR);
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
                 if (goeResponse.sessionChargeConsumptionLimit == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.sessionChargeConsumptionLimit / 10d),
+                return new QuantityType<>((Double) (goeResponse.sessionChargeConsumptionLimit / 1000d),
                         Units.KILOWATT_HOUR);
             case TOTAL_CONSUMPTION:
                 if (goeResponse.totalChargeConsumption == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.totalChargeConsumption / 10d), Units.KILOWATT_HOUR);
+                return new QuantityType<>((Double) (goeResponse.totalChargeConsumption / 1000d), Units.KILOWATT_HOUR);
             case CURRENT_L1:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                // values come in as A*10, 41 means 4.1A
-                return new QuantityType<>((Double) (goeResponse.energy[4] / 10d), Units.AMPERE);
+                return new QuantityType<>((Double) (goeResponse.energy[4] / 1000d), Units.AMPERE);
             case CURRENT_L2:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.energy[5] / 10d), Units.AMPERE);
+                return new QuantityType<>((Double) (goeResponse.energy[5] / 1000d), Units.AMPERE);
             case CURRENT_L3:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.energy[6] / 10d), Units.AMPERE);
+                return new QuantityType<>((Double) (goeResponse.energy[6] / 1000d), Units.AMPERE);
             case POWER_L1:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                // values come in as kW*10, 41 means 4.1kW
-                return new QuantityType<>(goeResponse.energy[7] * 100, Units.WATT);
+                return new QuantityType<>(goeResponse.energy[7] * 1000, Units.WATT);
             case POWER_L2:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[8] * 100, Units.WATT);
+                return new QuantityType<>(goeResponse.energy[8] * 1000, Units.WATT);
             case POWER_L3:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[9] * 100, Units.WATT);
+                return new QuantityType<>(goeResponse.energy[9] * 1000, Units.WATT);
+            case FORCE_STATE:
+                if (goeResponse.forceState == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new DecimalType(goeResponse.forceState.toString());
         }
         return UnDefType.UNDEF;
     }
@@ -240,7 +226,7 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
                 break;
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
                 key = "dwo";
-                var multiplier = 10;
+                var multiplier = 1000;
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue() * multiplier);
                 } else if (command instanceof QuantityType<?>) {
@@ -248,32 +234,23 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
                             ((QuantityType<Energy>) command).toUnit(Units.KILOWATT_HOUR).intValue() * multiplier);
                 }
                 break;
-            case ALLOW_CHARGING:
-                key = "alw";
-                if (command instanceof OnOffType) {
-                    value = command == OnOffType.ON ? "1" : "0";
-                }
-                break;
-            case ACCESS_CONFIGURATION:
-                key = "ast";
-                if (command instanceof StringType) {
-                    switch (command.toString().toUpperCase()) {
-                        case "OPEN":
-                            value = "0";
-                            break;
-                        case "RFID":
-                            value = "1";
-                            break;
-                        case "AWATTAR":
-                            value = "2";
-                            break;
-                        case "TIMER":
-                            value = "3";
-                            break;
-                        default:
+            case PHASES:
+                key = "psm";
+                if (command instanceof DecimalType) {
+                    var phases = 1;
+                    var help = (DecimalType) command;
+                    if (help.intValue() == 3) {
+                        // set value 2 for 3 phases
+                        phases = 2;
                     }
+                    value = String.valueOf(phases);
                 }
                 break;
+            case FORCE_STATE:
+                key = "frc";
+                if (command instanceof DecimalType) {
+                    value = String.valueOf(((DecimalType) command).intValue());
+                }
         }
 
         if (key != null && value != null) {
@@ -285,15 +262,28 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
 
     @Override
     public void initialize() {
+        // only read needed parameters
+        filter = "?filter=";
+        var declaredFields = GoEStatusResponseV2DTO.class.getDeclaredFields();
+        var declaredFieldsBase = GoEStatusResponseV2DTO.class.getSuperclass().getDeclaredFields();
+
+        for (var field : declaredFields) {
+            filter += field.getAnnotation(SerializedName.class).value() + ",";
+        }
+        for (var field : declaredFieldsBase) {
+            filter += field.getAnnotation(SerializedName.class).value() + ",";
+        }
+        filter = filter.substring(0, filter.length() - 1);
+
         super.initialize();
     }
 
     private String getReadUrl() {
-        return GoEChargerBindingConstants.API_URL.replace("%IP%", StringUtils.trimToEmpty(config.ip));
+        return GoEChargerBindingConstants.API_URL_V2.replace("%IP%", StringUtils.trimToEmpty(config.ip)) + filter;
     }
 
     private String getWriteUrl(String key, String value) {
-        return GoEChargerBindingConstants.MQTT_URL.replace("%IP%", StringUtils.trimToEmpty(config.ip))
+        return GoEChargerBindingConstants.SET_URL_V2.replace("%IP%", StringUtils.trimToEmpty(config.ip))
                 .replace("%KEY%", key).replace("%VALUE%", value);
     }
 
@@ -302,7 +292,7 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
         logger.debug("POST URL = {}", urlStr);
 
         try {
-            HttpMethod httpMethod = HttpMethod.POST;
+            HttpMethod httpMethod = HttpMethod.GET;
             ContentResponse contentResponse = httpClient.newRequest(urlStr).method(httpMethod)
                     .timeout(5, TimeUnit.SECONDS).send();
             String response = contentResponse.getContentAsString();
@@ -346,14 +336,14 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
         return gson.fromJson(response, GoEStatusResponseV2DTO.class);
     }
 
-    @Override
     protected void updateChannelsAndStatus(@Nullable GoEStatusResponseBaseDTO goeResponse, @Nullable String message) {
         if (goeResponse == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
             allChannels.forEach(channel -> updateState(channel, UnDefType.UNDEF));
         } else {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-            allChannels.forEach(channel -> updateState(channel, getValue(channel, (GoEStatusResponseDTO) goeResponse)));
+            allChannels
+                    .forEach(channel -> updateState(channel, getValue(channel, (GoEStatusResponseV2DTO) goeResponse)));
         }
     }
 }

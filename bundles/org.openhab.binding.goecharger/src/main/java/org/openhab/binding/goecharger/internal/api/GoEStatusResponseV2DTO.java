@@ -15,31 +15,30 @@ package org.openhab.binding.goecharger.internal.api;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link GoEStatusResponse} class represents a json response from the
+ * The {@link GoEStatusResponseV2DTO} class represents a json response from the
  * charger.
  *
- * @author Samuel Brucksch - Initial contribution
- * @author Reinhard Plaim - move some properties to base DTO
+ * @author Reinhard Plaim - Initial contribution
  */
-public class GoEStatusResponseDTO extends GoEStatusResponseBaseDTO {
-    @SerializedName("version")
+public class GoEStatusResponseV2DTO extends GoEStatusResponseBaseDTO {
+    @SerializedName("mod")
     public String version;
 
-    @SerializedName("pha")
+    @SerializedName("psm")
     public Integer phases;
 
-    @SerializedName("ast")
-    public Integer accessConfiguration;
-
     @SerializedName("alw")
-    public Integer allowCharging;
+    public Boolean allowCharging;
 
-    @SerializedName("tmp")
-    public Integer temperature;
+    @SerializedName("tma")
+    public Double[] temperatures;
+
+    @SerializedName("wh")
+    public Long sessionChargeConsumption;
 
     @SerializedName("dwo")
-    public Integer sessionChargeConsumptionLimit;
+    public Double sessionChargeConsumptionLimit;
 
-    @SerializedName("dws")
-    public Long sessionChargeConsumption;
+    @SerializedName("frc")
+    public Integer forceState;
 }
