@@ -18,6 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
 import org.openhab.core.thing.ThingTypeUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Connor Petty - Initial contribution
@@ -42,6 +44,8 @@ public enum GoveeModel {
     private final String label;
     private final boolean supportsWarningBroadcast;
 
+    private final static Logger logger = LoggerFactory.getLogger(GoveeModel.class);
+
     private GoveeModel(ThingTypeUID thingTypeUID, String label, boolean supportsWarningBroadcast) {
         this.thingTypeUID = thingTypeUID;
         this.label = label;
@@ -63,15 +67,17 @@ public enum GoveeModel {
     public static @Nullable GoveeModel getGoveeModel(BluetoothDiscoveryDevice device) {
         String name = device.getName();
         if (name != null) {
-            if (name.startsWith("Govee") && name.length() >= 11) {
+            if ((name.startsWith("Govee") && name.length() >= 11) || name.startsWith("GVH")) {
                 String uname = name.toUpperCase();
                 for (GoveeModel model : GoveeModel.values()) {
                     if (uname.contains(model.name())) {
+                        logger.debug("detected model {}", model);
                         return model;
                     }
                 }
             }
         }
+        logger.debug("Device {} is no Govee", name);
         return null;
     }
 }

@@ -1042,14 +1042,14 @@
 	</channel-type>
 
 	<channel-type id="button">
-		<kind>trigger</kind>
+		<item-type>Switch</item-type>
 		<label>Button</label>
 		<description>Button to trigger something</description>
 		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="buttonReadOnly">
-		<kind>trigger</kind>
+		<item-type>Switch</item-type>
 		<label>Button</label>
 		<description>Button to trigger something</description>
 		<category>Switch</category>
@@ -1154,7 +1154,6 @@
 
 	<channel-type id="float6n">
 		<item-type>Number</item-type>
-		<kind>trigger</kind>
 		<label>Setpoint</label>
 		<description>Floating Point Input</description>
 		<category>Temperature</category>
@@ -1186,7 +1185,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="setpointTemperature" advanced="true">
+	<channel-type id="setpointTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Setpoint temperature</description>

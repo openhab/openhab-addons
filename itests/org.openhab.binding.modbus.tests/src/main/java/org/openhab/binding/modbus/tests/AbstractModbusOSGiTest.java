@@ -63,6 +63,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.link.ItemChannelLinkProvider;
 import org.openhab.core.thing.link.ManagedItemChannelLinkProvider;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -75,6 +76,14 @@ import org.slf4j.LoggerFactory;
 @MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
 public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
+
+    /**
+     * When Mockito is used for mocking {@link ThingHandler}s it has to be able to load the {@link ChannelTypeUID}
+     * class. Bnd will add the package to the generated manifest when the class is referenced here.
+     */
+    static void mockitoPackageImport() {
+        ChannelTypeUID.class.getClass();
+    }
 
     private static class StateSubscriber implements EventSubscriber {
 

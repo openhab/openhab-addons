@@ -167,10 +167,6 @@
 		<label>Wind Average Speed</label>
 		<description>Average Wind Speed</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="windSpeed" advanced="true">
@@ -189,10 +185,6 @@
 		<label>Wind Gust</label>
 		<description>Wind Gust</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="windMaxGust" advanced="true">
@@ -218,10 +210,6 @@
 		<label>Rain Today</label>
 		<description>Rain since Midnight</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainForWeek" advanced="true">
@@ -250,10 +238,6 @@
 		<label>Last Updated Time</label>
 		<description>Time of the last livedata scrape</description>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
