@@ -59,6 +59,7 @@ public class ElroConnectsBindingConstants {
     // List of all Channel ids
     public static final String SCENE = "scene";
 
+    public static final String SIGNAL_STRENGTH = "signal";
     public static final String BATTERY_LEVEL = "battery";
     public static final String LOW_BATTERY = "lowBattery";
     public static final String MUTE_ALARM = "muteAlarm";

@@ -82,6 +82,7 @@ All these things have the same channels:
 |--------------------|----------------------|:-----------:|----------------------------------------------------|
 | `muteAlarm`        | Switch               | RW          | mute alarm                                         |
 | `testAlarm`        | Switch               | RW          | test alarm                                         |
+| `signal`            | Number               | R           | signal strength between 0 and 4, higher is stronger |
 | `battery`          | Number               | R           | battery level in %                                 |
 | `lowBattery`       | Switch               | R           | on for low battery (below 15%)                     |
 
