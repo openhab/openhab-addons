@@ -9,6 +9,7 @@
 		<description>This bridge represents an ELRO Connects K1 Connector</description>
 		<channels>
 			<channel id="scene" typeId="scene"/>
+			<channel id="alarm" typeId="alarm"/>
 		</channels>
 		<representation-property>connectorId</representation-property>
 		<config-description>
@@ -207,6 +208,15 @@
 		<description>Scene selection from scenes configured in the ELRO Connects app, enables configuring alarm modes</description>
 	</channel-type>
 
+	<channel-type id="alarm">
+		<kind>trigger</kind>
+		<label>Alarm</label>
+		<description>Alarm triggered</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+	</channel-type>
 	<channel-type id="smokealarm">
 		<kind>trigger</kind>
 		<label>Smoke Alarm</label>

@@ -72,6 +72,7 @@ public class ElroConnectsBindingConstants {
     public static final String TEMPERATURE = "temperature";
     public static final String HUMIDITY = "humidity";
 
+    public static final String ALARM = "alarm";
     public static final String SMOKE_ALARM = "smokeAlarm";
     public static final String CO_ALARM = "coAlarm";
     public static final String HEAT_ALARM = "heatAlarm";

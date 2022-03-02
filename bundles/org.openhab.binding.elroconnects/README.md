@@ -70,6 +70,10 @@ The `connector` bridge thing has only one channel:
 
 The `scene` channel has a dynamic state options list with all possible scene choices available in the hub.
 
+The `connector` also has an `alarm` trigger channel that will get triggered when the alarm is triggered for any device connected to the hub.
+This will also trigger if an alarm on a device goes off and the thing corresponding to the device is not configured in openHAB.
+The payload for the trigger channel is empty.
+
 ## Smoke, carbon monoxide, heat and water alarms
 
 All these things have the same channels:

@@ -528,7 +528,21 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         if (handler != null) {
             handler.triggerAlarm();
         }
+        // Also trigger an alarm on the bridge, so the alarm also comes through when no thing for the device is
+        // configured
+        triggerChannel(ALARM);
         logger.debug("Device ID {} alarm", deviceId);
+
+        if (answerContent.length() < 22) {
+            logger.debug("Could not get device status from alarm message for device {}", deviceId);
+            return;
+        }
+        String deviceStatus = answerContent.substring(14, 22);
+        ElroConnectsDevice device = devices.get(deviceId);
+        if (device != null) {
+            device.setDeviceStatus(deviceStatus);
+            device.updateState();
+        }
     }
 
     private @Nullable ElroConnectsDevice addDevice(ElroConnectsMessage message) {
