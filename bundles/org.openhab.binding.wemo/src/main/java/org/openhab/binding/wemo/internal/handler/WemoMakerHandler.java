@@ -75,7 +75,6 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
         if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoMakerHandler for UDN '{}'", configuration.get(UDN));
-            host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
@@ -105,7 +104,6 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
             }
             try {
                 logger.debug("Polling job");
-                host = getHost();
                 // Check if the Wemo device is set in the UPnP service registry
                 // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
                 if (!isUpnpDeviceRegistered()) {
@@ -123,20 +121,10 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String localHost = getHost();
-        if (localHost.isEmpty()) {
-            logger.warn("Failed to send command '{}' for device '{}': IP address missing", command,
-                    getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
-        }
-        String wemoURL = getWemoURL(localHost, BASICACTION);
+        String wemoURL = getWemoURL(BASICACTION);
         if (wemoURL == null) {
             logger.debug("Failed to send command '{}' for device '{}': URL cannot be created", command,
                     getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-url");
             return;
         }
         if (command instanceof RefreshType) {
@@ -165,19 +153,10 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
      * The {@link updateWemoState} polls the actual state of a WeMo Maker.
      */
     protected void updateWemoState() {
-        String localHost = getHost();
-        if (localHost.isEmpty()) {
-            logger.warn("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
-        }
         String actionService = DEVICEACTION;
-        String wemoURL = getWemoURL(localHost, actionService);
+        String wemoURL = getWemoURL(actionService);
         if (wemoURL == null) {
             logger.debug("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-url");
             return;
         }
         try {
