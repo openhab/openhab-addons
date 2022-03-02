@@ -420,6 +420,7 @@ public class PulseaudioClient {
                 simpleTcpPortToTry = new Random().nextInt(64512) + 1024; // a random port above 1024
             }
             Thread.sleep(100);
+            update();
             currentTry++;
         } while (currentTry < 3);
 
@@ -437,7 +438,6 @@ public class PulseaudioClient {
      */
     private Optional<Integer> findSimpleProtocolTcpModule(AbstractAudioDeviceConfig item, @Nullable String format,
             @Nullable BigDecimal rate, @Nullable BigDecimal channels) {
-        update();
         String itemType = getItemCommandName(item);
         if (itemType == null) {
             return Optional.empty();
@@ -660,7 +660,7 @@ public class PulseaudioClient {
         update();
     }
 
-    private void sendRawCommand(String command) {
+    private synchronized void sendRawCommand(String command) {
         checkConnection();
         if (client != null && client.isConnected()) {
             try {
