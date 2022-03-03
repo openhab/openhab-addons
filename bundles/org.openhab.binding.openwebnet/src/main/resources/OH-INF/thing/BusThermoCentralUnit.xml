@@ -20,6 +20,7 @@
 			<!-- read/write -->
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
 			<channel id="mode" typeId="modeCentralUnit"/>
+			<channel id="function" typeId="functionCentralUnit"/>			
 			<channel id="weeklyProgram" typeId="weeklyProgramCentralUnit"/>
 			<channel id="scenarioProgram" typeId="scenarioProgramCentralUnit"/>
 		</channels>

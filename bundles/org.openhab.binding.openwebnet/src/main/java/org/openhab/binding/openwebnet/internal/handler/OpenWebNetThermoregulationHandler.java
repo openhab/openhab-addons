@@ -281,16 +281,40 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
         if (isCentralUnit) {
             if (msg.isCommand()) {
-                updateModeAndFunction((Thermoregulation) msg);
-                updateSetpoint((Thermoregulation) msg);
+                // updateModeAndFunction((Thermoregulation) msg);
+
+                // TODO: che sia da sposatare anche questo sotto? copo aver gestito batterie e compagni
+                // updateSetpoint((Thermoregulation) msg);
             }
+            
+            // there isn't a message used for setting OK for battery status so let's assume
+            // it's OK and then change to KO if according message is received
+            updateCUBatteryStatus(CU_BATTERY_OK);
 
             if (msg.getWhat() == Thermoregulation.WhatThermo.REMOTE_CONTROL_DISABLED) {
                 updateCURemoteControlStatus(CU_REMOTE_CONTROL_DISABLED);
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.REMOTE_CONTROL_ENABLED) {
                 updateCURemoteControlStatus(CU_REMOTE_CONTROL_ENABLED);
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.BATTERY_KO) {
-                updateCUBatteryStatus(CU_BATTERY_KO);
+                updateCUBatteryStatus(CU_BATTERY_KO);                
+            } else if (msg.getWhat() == Thermoregulation.WhatThermo.AT_LEAST_ONE_PROBE_OFF) {
+                logger.info("handleMessage() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
+            } else if (msg.getWhat() == Thermoregulation.WhatThermo.AT_LEAST_ONE_PROBE_ANTIFREEZE) {
+                logger.info("handleMessage() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
+            }
+            else if (msg.getWhat() == Thermoregulation.WhatThermo.AT_LEAST_ONE_PROBE_MANUAL) {
+                logger.info("handleMessage() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
+            }
+            else if (msg.getWhat() == Thermoregulation.WhatThermo.FAILURE_DISCOVERED) {
+                logger.info("handleMessage() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
+            }
+            else if (msg.getWhat() == Thermoregulation.WhatThermo.RELEASE_SENSOR_LOCAL_ADJUST) {
+                logger.info("handleMessage() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
+            }
+            else {
+                // check and eventually parse mode and function
+                updateModeAndFunction((Thermoregulation) msg);
+                updateSetpoint((Thermoregulation) msg);
             }
             return;
         }
@@ -339,11 +363,11 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             return;
         }
 
+        logger.debug("updateModeAndFunction() AC: mode: {} function: {}", w.getMode(), w.getFunction());
+
         Thermoregulation.OperationMode mode = w.getMode();
         Thermoregulation.Function function = w.getFunction();
 
-
-        // todo: default values??
         updateState(CHANNEL_FUNCTION, new StringType(function.toString()));
         updateState(CHANNEL_MODE, new StringType(mode.toString()));
 
@@ -375,7 +399,13 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 // TODO: use new getWhatParams() method when availlable
                 // https://github.com/mvalla/openwebnet4j/issues/30
                 int[] parameters = tmsg.getCommandParams();
-                temp = Thermoregulation.decodeTemperature(String.format("%1$4s", parameters[0]).replace(' ', '0'));
+                if (parameters.length == 0)
+                {
+                    logger.debug("updateSetpoint() parameters.lenght=0 ---> {}", tmsg.toStringVerbose());
+                    return;
+                }
+                else 
+                    temp = Thermoregulation.decodeTemperature(String.format("%1$4s", parameters[0]).replace(' ', '0'));
             }
             else {
                 temp = Thermoregulation.parseTemperature(tmsg);
@@ -428,7 +458,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         try {
             Thermoregulation.LocalOffset offset = Thermoregulation.parseLocalOffset(tmsg);
             updateState(CHANNEL_LOCAL_OFFSET, new StringType(offset.toString()));
-            logger.debug("updateLocalOffset() {}: {}", tmsg, offset.toString());
 
         } catch (FrameException e) {
             logger.warn("updateLocalOffset() FrameException on frame {}: {}", tmsg, e.getMessage());
@@ -457,9 +486,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             // TODO: 4 zone central -> zone #0 CAN be also a zone with its temp.. with 99-zones central no!
             // let's assume it's a 99 zone
             try {
-                // there isn't a message used for setting OK for battery status so let's assume
-                // it's OK and then change to KO if according message is received
-                updateCUBatteryStatus(CU_BATTERY_OK);
                 send(Thermoregulation.requestStatus("#0"));
             } catch (OWNException e) {
                 logger.warn("refreshDevice() central unit returned OWNException {}", e.getMessage());
