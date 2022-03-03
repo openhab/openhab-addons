@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.openthermgateway.handler;
 
-import static org.openhab.binding.openthermgateway.internal.OpenThermGatewayBindingConstants.*;
-
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -24,6 +22,7 @@ import org.openhab.binding.openthermgateway.internal.DataItemGroup;
 import org.openhab.binding.openthermgateway.internal.GatewayCommand;
 import org.openhab.binding.openthermgateway.internal.GatewayCommandCode;
 import org.openhab.binding.openthermgateway.internal.Message;
+import org.openhab.binding.openthermgateway.internal.OpenThermGatewayBindingConstants;
 import org.openhab.binding.openthermgateway.internal.OpenThermGatewayCallback;
 import org.openhab.binding.openthermgateway.internal.OpenThermGatewayConfiguration;
 import org.openhab.binding.openthermgateway.internal.OpenThermGatewayConnector;
@@ -70,7 +69,7 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
         logger.debug("Initializing OpenThermGateway handler for uid {}", getThing().getUID());
 
         configuration = getConfigAs(OpenThermGatewayConfiguration.class);
-        logger.info("Using configuration: {}", configuration);
+        logger.debug("Using configuration: {}", configuration);
 
         connect();
     }
@@ -106,15 +105,17 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
 
             if (GatewayCommandCode.CONTROLSETPOINT.equals(code)) {
                 if (gatewayCommand.getMessage().equals("0.0")) {
-                    updateState(CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT, UnDefType.UNDEF);
+                    updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT,
+                            UnDefType.UNDEF);
                 }
-                updateState(CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED,
+                updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED,
                         OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
             } else if (GatewayCommandCode.CONTROLSETPOINT2.equals(code)) {
                 if (gatewayCommand.getMessage().equals("0.0")) {
-                    updateState(CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT, UnDefType.UNDEF);
+                    updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT,
+                            UnDefType.UNDEF);
                 }
-                updateState(CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED,
+                updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED,
                         OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
             }
         }
@@ -260,25 +261,25 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
 
     private @Nullable String getGatewayCodeFromChannel(String channel) throws IllegalArgumentException {
         switch (channel) {
-            case CHANNEL_OVERRIDE_SETPOINT_TEMPORARY:
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT_TEMPORARY:
                 return GatewayCommandCode.TEMPERATURETEMPORARY;
-            case CHANNEL_OVERRIDE_SETPOINT_CONSTANT:
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT_CONSTANT:
                 return GatewayCommandCode.TEMPERATURECONSTANT;
-            case CHANNEL_OUTSIDE_TEMPERATURE:
+            case OpenThermGatewayBindingConstants.CHANNEL_OUTSIDE_TEMPERATURE:
                 return GatewayCommandCode.TEMPERATUREOUTSIDE;
-            case CHANNEL_OVERRIDE_DHW_SETPOINT:
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_DHW_SETPOINT:
                 return GatewayCommandCode.SETPOINTWATER;
-            case CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT:
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT:
                 return GatewayCommandCode.CONTROLSETPOINT;
-            case CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED:
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED:
                 return GatewayCommandCode.CENTRALHEATING;
-            case CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT:
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT:
                 return GatewayCommandCode.CONTROLSETPOINT2;
-            case CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED:
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED:
                 return GatewayCommandCode.CENTRALHEATING2;
-            case CHANNEL_OVERRIDE_VENTILATION_SETPOINT:
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_VENTILATION_SETPOINT:
                 return GatewayCommandCode.VENTILATIONSETPOINT;
-            case CHANNEL_SEND_COMMAND:
+            case OpenThermGatewayBindingConstants.CHANNEL_SEND_COMMAND:
                 return null;
             default:
                 throw new IllegalArgumentException(String.format("Unknown channel %s", channel));
