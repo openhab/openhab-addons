@@ -40,7 +40,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -161,7 +160,7 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
     }
 
     @Test
-    public void testUpdateTrainsToUndefinedIfNotEnoughDataWasProvided()  {
+    public void testUpdateTrainsToUndefinedIfNotEnoughDataWasProvided() {
         final Bridge bridge = mockBridge();
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
 
