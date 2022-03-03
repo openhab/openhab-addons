@@ -24,6 +24,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.events.ThingEventFactory;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateDescriptionFragment;
@@ -58,6 +59,7 @@ public class DeconzDynamicStateDescriptionProvider extends BaseDynamicStateDescr
         if (!stateDescriptionFragment.equals(oldStateDescriptionFragment)) {
             logger.trace("adding state description for channel {}", channelUID);
             stateDescriptionFragments.put(channelUID, stateDescriptionFragment);
+            ItemChannelLinkRegistry itemChannelLinkRegistry = this.itemChannelLinkRegistry;
             postEvent(ThingEventFactory.createChannelDescriptionChangedEvent(channelUID,
                     itemChannelLinkRegistry != null ? itemChannelLinkRegistry.getLinkedItemNames(channelUID) : Set.of(),
                     stateDescriptionFragment, oldStateDescriptionFragment));
