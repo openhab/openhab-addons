@@ -55,6 +55,7 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,8 +99,13 @@ public class PorcupineKSService implements KSService {
 
     @Activate
     protected void activate(ComponentContext componentContext, Map<String, Object> config) {
-        this.config = new Configuration(config).as(PorcupineKSConfiguration.class);
         this.bundleContext = componentContext.getBundleContext();
+        modified(config);
+    }
+
+    @Modified
+    protected void modified(Map<String, Object> config) {
+        this.config = new Configuration(config).as(PorcupineKSConfiguration.class);
         if (this.config.apiKey.isBlank()) {
             logger.warn("Missing pico voice api key to use Porcupine Keyword Spotter");
         }
@@ -288,8 +294,9 @@ public class PorcupineKSService implements KSService {
                                 + localKeywordPath);
             }
             String env = getPorcupineEnv();
-            String keywordPath = "porcupine/resources/keyword_files/" + env + "/" + keyWord.replace(" ", "_") + "_"
-                    + env + ".ppn";
+            String keywordPath = Path
+                    .of("porcupine", "resources", "keyword_files", env, keyWord.replace(" ", "_") + "_" + env + ".ppn")
+                    .toString();
             return prepareLib(bundleContext, keywordPath);
         } else {
             throw new IllegalArgumentException(
