@@ -150,7 +150,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     @Override
     public void start() {
         logger.debug("Starting OpenThermGatewaySocketConnector");
-        executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("binding-" + BINDING_ID));
+        ExecutorService executor = this.executor = Executors
+                .newSingleThreadExecutor(new NamedThreadFactory("binding-" + BINDING_ID));
         future = executor.submit(this);
     }
 
@@ -211,11 +212,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         if (msg == null) {
             logger.trace("Received message: {}, (unknown)", message);
             return;
-        } else {
-            logger.trace("Received message: {}, {} {} {}", message, msg.getID(), msg.getCodeType(),
-                    msg.getMessageType());
         }
-
+        logger.trace("Received message: {}, {} {} {}", message, msg.getID(), msg.getCodeType(), msg.getMessageType());
         if (msg.getMessageType() == MessageType.READACK || msg.getMessageType() == MessageType.WRITEDATA
                 || msg.getID() == 0 || msg.getID() == 1) {
             callback.receiveMessage(msg);
