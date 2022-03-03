@@ -21,7 +21,6 @@ import java.util.concurrent.TimeoutException;
 import javax.measure.quantity.ElectricCurrent;
 import javax.measure.quantity.Energy;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -279,12 +278,12 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
     }
 
     private String getReadUrl() {
-        return GoEChargerBindingConstants.API_URL_V2.replace("%IP%", StringUtils.trimToEmpty(config.ip)) + filter;
+        return GoEChargerBindingConstants.API_URL_V2.replace("%IP%", config.ip.toString()) + filter;
     }
 
     private String getWriteUrl(String key, String value) {
-        return GoEChargerBindingConstants.SET_URL_V2.replace("%IP%", StringUtils.trimToEmpty(config.ip))
-                .replace("%KEY%", key).replace("%VALUE%", value);
+        return GoEChargerBindingConstants.SET_URL_V2.replace("%IP%", config.ip.toString()).replace("%KEY%", key)
+                .replace("%VALUE%", value);
     }
 
     private void sendData(String key, String value) {
@@ -301,11 +300,12 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
 
             var statusCode = contentResponse.getStatus();
             if (!(statusCode == 200 || statusCode == 204)) {
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Request response was unsuccessful");
                 logger.debug("Could not send data, Response {}, StatusCode: {}", response, statusCode);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.warn("Could not send data: {}, {}", urlStr, e.toString());
         }
     }
