@@ -282,6 +282,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         if (isCentralUnit) {
             if (msg.isCommand()) {
                 updateModeAndFunction((Thermoregulation) msg);
+                updateSetpoint((Thermoregulation) msg);
             }
 
             if (msg.getWhat() == Thermoregulation.WhatThermo.REMOTE_CONTROL_DISABLED) {
@@ -291,7 +292,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.BATTERY_KO) {
                 updateCUBatteryStatus(CU_BATTERY_KO);
             }
-
             return;
         }
 
@@ -342,6 +342,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         Thermoregulation.OperationMode mode = w.getMode();
         Thermoregulation.Function function = w.getFunction();
 
+
+        // todo: default values??
         updateState(CHANNEL_FUNCTION, new StringType(function.toString()));
         updateState(CHANNEL_MODE, new StringType(mode.toString()));
 
@@ -361,7 +363,23 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     private void updateSetpoint(Thermoregulation tmsg) {
         try {
-            double temp = Thermoregulation.parseTemperature(tmsg);
+            double temp;
+            if (isCentralUnit) {
+                if (tmsg.getWhat() == null) {
+                    // it should be like *4*WHAT#TTTT*#0##
+                    logger.debug("updateSetpoint() Could not parse function from {} (what is null)",
+                            tmsg.getFrameValue());
+                    return;
+                }
+
+                // TODO: use new getWhatParams() method when availlable
+                // https://github.com/mvalla/openwebnet4j/issues/30
+                int[] parameters = tmsg.getCommandParams();
+                temp = Thermoregulation.decodeTemperature(String.format("%1$4s", parameters[0]).replace(' ', '0'));
+            }
+            else {
+                temp = Thermoregulation.parseTemperature(tmsg);
+            }
             updateState(CHANNEL_TEMP_SETPOINT, getAsQuantityTypeOrNull(temp, SIUnits.CELSIUS));
             currentSetPointTemp = temp;
         } catch (FrameException e) {
