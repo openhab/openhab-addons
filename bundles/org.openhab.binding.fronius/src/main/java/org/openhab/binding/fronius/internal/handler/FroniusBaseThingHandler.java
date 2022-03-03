@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.fronius.internal.handler;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.FroniusCommunicationException;
@@ -109,18 +107,14 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
         }
 
         State state = null;
-        if (value instanceof BigDecimal) {
-            state = new DecimalType((BigDecimal) value);
-        } else if (value instanceof Integer) {
-            state = new DecimalType(BigDecimal.valueOf(((Integer) value).longValue()));
-        } else if (value instanceof Double) {
-            state = new DecimalType((double) value);
+        if (value instanceof QuantityType) {
+            state = (QuantityType) value;
+        } else if (value instanceof Number) {
+            state = new DecimalType((Number) value);
         } else if (value instanceof ValueUnit) {
             state = new DecimalType(((ValueUnit) value).getValue());
         } else if (value instanceof String) {
             state = new StringType((String) value);
-        } else if (value instanceof QuantityType) {
-            state = (QuantityType) value;
         } else {
             logger.warn("Update channel {}: Unsupported value type {}", channelId, value.getClass().getSimpleName());
         }
