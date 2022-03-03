@@ -366,6 +366,10 @@
 		<label>Current Humidity</label>
 		<description>Shows the current humidity of a WeMo enabled Holmes Humidifier</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="desiredHumidity">
@@ -373,6 +377,10 @@
 		<label>Target Humidity</label>
 		<description>Shows the target humidity of a WeMo enabled Holmes Humidifier</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="45"></option>
@@ -417,6 +425,10 @@
 		<label>Current Temperature</label>
 		<description>Shows the current temperature measured by a WeMo enabled Heater</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="targetTemperature">
@@ -424,6 +436,10 @@
 		<label>Target Temperature</label>
 		<description>Shows the target temperature for a WeMo enabled Heater</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="autoOffTime">
