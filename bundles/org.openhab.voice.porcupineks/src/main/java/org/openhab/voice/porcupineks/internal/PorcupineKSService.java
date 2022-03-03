@@ -69,8 +69,8 @@ import ai.picovoice.porcupine.PorcupineException;
  */
 @NonNullByDefault
 @Component(configurationPid = SERVICE_PID, property = Constants.SERVICE_PID + "=" + SERVICE_PID)
-@ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME, description_uri = SERVICE_CATEGORY + ":"
-        + SERVICE_ID)
+@ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME
+        + " Keyword Spotter", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class PorcupineKSService implements KSService {
     private static final String PORCUPINE_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "porcupine").toString();
     private static final String EXTRACTION_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "porcupine", "extracted")
