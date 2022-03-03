@@ -530,7 +530,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         }
         // Also trigger an alarm on the bridge, so the alarm also comes through when no thing for the device is
         // configured
-        triggerChannel(ALARM);
+        triggerChannel(ALARM, Integer.toString(deviceId));
         logger.debug("Device ID {} alarm", deviceId);
 
         if (answerContent.length() < 22) {
