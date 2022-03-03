@@ -43,9 +43,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.goecharger", service = ThingHandlerFactory.class)
 public class GoEChargerHandlerFactory extends BaseThingHandlerFactory {
-
-    private final Logger logger = LoggerFactory.getLogger(GoEChargerHandlerFactory.class); // TODO: remove
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_GOE);
     private final HttpClient httpClient;
 
@@ -63,12 +60,12 @@ public class GoEChargerHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         var apiVersion = thing.getConfiguration().as(GoEChargerConfiguration.class).apiVersion;
-        logger.info("createHandler, apiVersion {}", apiVersion);
 
         if (THING_TYPE_GOE.equals(thingTypeUID)) {
             if (apiVersion == 1) {
                 return new GoEChargerHandler(thing, httpClient);
-            } else {
+            }
+            if (apiVersion == 2) {
                 return new GoEChargerV2Handler(thing, httpClient);
             }
         }

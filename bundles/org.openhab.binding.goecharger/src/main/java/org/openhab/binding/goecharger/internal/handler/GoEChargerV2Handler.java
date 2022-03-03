@@ -289,7 +289,7 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
 
     private void sendData(String key, String value) {
         String urlStr = getWriteUrl(key, value);
-        logger.debug("POST URL = {}", urlStr);
+        logger.trace("POST URL = {}", urlStr);
 
         try {
             HttpMethod httpMethod = HttpMethod.GET;
@@ -297,21 +297,23 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                     .timeout(5, TimeUnit.SECONDS).send();
             String response = contentResponse.getContentAsString();
 
-            logger.debug("{} Response: {}", httpMethod.toString(), response);
+            logger.trace("{} Response: {}", httpMethod.toString(), response);
 
             var statusCode = contentResponse.getStatus();
             if (!(statusCode == 200 || statusCode == 204)) {
-                logger.warn("Could not send data, Response {}, StatusCode: {}", response, statusCode);
+                updateStatus(ThingStatus.OFFLINE);
+                logger.debug("Could not send data, Response {}, StatusCode: {}", response, statusCode);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE);
             logger.warn("Could not send data: {}, {}", urlStr, e.toString());
         }
     }
 
     /**
-     * Request new data from Go-E charger
+     * Request new data from Go-eCharger
      *
-     * @return the Go-E charger object mapping the JSON response or null in case of
+     * @return the Go-eCharger object mapping the JSON response or null in case of
      *         error
      * @throws ExecutionException
      * @throws TimeoutException
@@ -322,13 +324,13 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
     protected GoEStatusResponseBaseDTO getGoEData()
             throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
         String urlStr = getReadUrl();
-        logger.debug("GET URL = {}", urlStr);
+        logger.trace("GET URL = {}", urlStr);
 
         ContentResponse contentResponse = httpClient.newRequest(urlStr).method(HttpMethod.GET)
                 .timeout(5, TimeUnit.SECONDS).send();
 
         String response = contentResponse.getContentAsString();
-        logger.debug("GET Response: {}", response);
+        logger.trace("GET Response: {}", response);
 
         if (config.apiVersion == 1) {
             return gson.fromJson(response, GoEStatusResponseDTO.class);

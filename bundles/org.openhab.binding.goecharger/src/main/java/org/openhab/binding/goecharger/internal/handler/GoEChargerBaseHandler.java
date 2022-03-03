@@ -158,7 +158,7 @@ public class GoEChargerBaseHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing the Go-E Charger handler.");
+        logger.debug("Disposing the Go-eCharger handler.");
 
         final ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null && !refreshJob.isCancelled()) {
