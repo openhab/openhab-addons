@@ -409,17 +409,19 @@ sitemap demo label="Main Menu" {
 Between openHAB v3.2 and v3.3 the structure of Things and Channels was changed.
 This means that Things and their respective Channels and Items that were created on v3.2 or earlier will no longer function on version v3.3 or later.
 To be specific the change is as follows..
+
 - **openHAB Versions v3.2 or earlier**: There was just one single `otgw` Thing that combined the functions that communicate with the OpenTherm Gateway together with the functions of the Channels that monitor/control the connected Boiler.
-- **openHAB Versions v3.3 or later**: The communication functions have been moved to a new `openthermgateway` Bridge Thing.
-The connected Boiler functions have been moved to a new `boiler` Thing.
-And in addition (if needed) new functions for a connected Ventilation / Heat-Recovery system have been added in a new `ventilationheatrecovery` Thing.
+
+- **openHAB Versions v3.3 or later**: The communication functions have been moved to a new `openthermgateway` Bridge Thing. The connected Boiler functions have been moved to a new `boiler` Thing. And in addition (if needed) new functions for a connected Ventilation / Heat-Recovery system have been added in a new `ventilationheatrecovery` Thing.
 
 So if you upgrade your system from openHAB v3.2 (or lower) to v3.3 (or higher), then your Thing and Item definitions must be migrated as shown below..
 
 - Divide the contents of your old `openthermgateway:otgw:yourGatewayId` Thing definition into two new parts, namely 1) a new `openthermgateway:openthermgateway:yourGatewayId` Bridge definition for the OpenTherm Gateway, and 2) a new `openthermgateway:boiler:yourGatewayId:yourBoilerId` Thing definition for the connected Boiler.
+
 - Change the `channel=".."` configuration entries of all your Items from referring to the ThingUID of the old `otgw` Thing to refer instead to the ThingUID of the respective newly created `boiler` Thing.
 
 **Old Thing Definition and respective Item Definition (example)**
+
 ```
 Thing openthermgateway:otgw:yourGatewayId [ ipaddress="192.168.1.100", port=8000, connectionRetryInterval=60 ]
 
@@ -427,7 +429,9 @@ e.g.
 Number:Temperature Boiler_DHW_Temperature "Boiler DHW Temperature [%.1f %unit%]" <temperature> {channel="openthermgateway:otgw:yourGatewayId:dhwtemp"}
 &c.
 ```
+
 **New Thing Definition and respective and Item Definition (example)**
+
 ```
 Bridge openthermgateway:openthermgateway:yourGatewayId "OpenTherm Gateway" @ "Kitchen" [ipaddress="192.168.1.100", port=20108, connectionRetryInterval=60] {
     Thing boiler remeha "Boiler" @ "Kitchen"
