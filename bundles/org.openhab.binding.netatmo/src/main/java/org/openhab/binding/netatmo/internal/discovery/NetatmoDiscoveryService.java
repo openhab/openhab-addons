@@ -113,7 +113,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                     });
                     home.getRooms().values().stream().forEach(room -> {
                         room.getModuleIds().stream().map(id -> home.getModules().get(id))
-                                .map(m -> m != null ? m.getType().features : FeatureArea.NONE)
+                                .map(m -> m != null ? m.getType().feature : FeatureArea.NONE)
                                 .filter(f -> FeatureArea.ENERGY.equals(f)).findAny()
                                 .ifPresent(f -> createThing(room, homeUID));
                     });

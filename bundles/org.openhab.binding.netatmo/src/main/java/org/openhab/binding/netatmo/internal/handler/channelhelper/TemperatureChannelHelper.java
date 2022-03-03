@@ -29,7 +29,7 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class TemperatureChannelHelper extends AbstractChannelHelper {
+public class TemperatureChannelHelper extends ChannelHelper {
 
     public TemperatureChannelHelper() {
         this(GROUP_TEMPERATURE);

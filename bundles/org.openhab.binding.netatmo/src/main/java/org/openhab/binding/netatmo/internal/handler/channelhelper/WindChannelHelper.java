@@ -28,7 +28,7 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class WindChannelHelper extends AbstractChannelHelper {
+public class WindChannelHelper extends ChannelHelper {
 
     public WindChannelHelper() {
         super(GROUP_WIND);

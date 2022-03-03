@@ -36,18 +36,18 @@ import org.openhab.core.types.UnDefType;
  *
  */
 @NonNullByDefault
-public class HomeSecurityChannelHelper extends AbstractChannelHelper {
+public class HomeSecurityChannelHelper extends ChannelHelper {
     private long persons = -1;
     private long unknowns = -1;
     private @Nullable String unknownSnapshot;
     private List<String> knownIds = List.of();
 
     public HomeSecurityChannelHelper() {
-        super(GROUP_HOME_SECURITY);
+        super(GROUP_SECURITY);
     }
 
     @Override
-    public void setNewData(NAObject data) {
+    public void setNewData(@Nullable NAObject data) {
         super.setNewData(data);
         if (data instanceof NAHomeData) {
             NAHomeData homeData = (NAHomeData) data;

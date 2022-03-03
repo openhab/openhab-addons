@@ -28,7 +28,7 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class PressureChannelHelper extends AbstractChannelHelper {
+public class PressureChannelHelper extends ChannelHelper {
 
     public PressureChannelHelper() {
         this(GROUP_PRESSURE);

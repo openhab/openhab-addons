@@ -62,6 +62,7 @@
 		<channels>
 			<channel id="relay-status" typeId="contact">
 				<label>Heating Status</label>
+				<description>Is the furnace currently heating ?</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -72,12 +73,14 @@
 			<channel id="setpoint-duration" typeId="setpoint-duration"/>
 			<channel id="planning" typeId="string-rw">
 				<label>Planning</label>
+				<description>Planning currently applied when following weekly schedule.</description>
 			</channel>
 			<channel id="mode" typeId="energy-mode">
 				<label>Mode</label>
 			</channel>
 			<channel id="end" typeId="timestamp">
 				<label>Mode End</label>
+				<description>End time of the currently applied setpoint.</description>
 			</channel>
 		</channels>
 	</channel-group-type>

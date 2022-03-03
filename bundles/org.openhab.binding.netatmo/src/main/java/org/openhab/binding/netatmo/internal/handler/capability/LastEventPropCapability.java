@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.netatmo.internal.handler.propertyhelper;
+package org.openhab.binding.netatmo.internal.handler.capability;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_LAST_EVENT;
 
@@ -20,27 +20,27 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.Bridge;
+import org.openhab.binding.netatmo.internal.handler.NABridgeHandler;
 
 /**
- * The {@link LastEventPropertyHelper} takes care of handling markup property of last event received
+ * The {@link LastEventPropCapability} takes care of handling markup property of last event received
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
 // TODO from UCDetector: Class "LastEventPropertyHelper" has 0 references
-public class LastEventPropertyHelper extends PropertyHelper { // NO_UCD (unused code)
+public class LastEventPropCapability extends Capability {
     private @Nullable ZonedDateTime maxEventTime;
 
-    public LastEventPropertyHelper(Bridge bridge) {
-        super(bridge);
+    public LastEventPropCapability(NABridgeHandler handler) {
+        super(handler);
     }
 
     public ZonedDateTime getMaxEvent() {
         ZonedDateTime eventTime = maxEventTime;
         if (eventTime == null) {
-            String lastEvent = bridge.getProperties().get(GROUP_LAST_EVENT);
+            String lastEvent = properties.get(GROUP_LAST_EVENT);
             eventTime = lastEvent != null ? ZonedDateTime.parse(lastEvent) : Instant.EPOCH.atZone(ZoneOffset.UTC);
             this.maxEventTime = eventTime;
         }
@@ -50,6 +50,6 @@ public class LastEventPropertyHelper extends PropertyHelper { // NO_UCD (unused 
     public void setMaxEvent(ZonedDateTime eventTime) {
         ZonedDateTime maxTime = eventTime.minusSeconds(1);
         this.maxEventTime = maxTime;
-        bridge.setProperty(GROUP_LAST_EVENT, maxTime.toString());
+        thing.setProperty(GROUP_LAST_EVENT, maxTime.toString());
     }
 }

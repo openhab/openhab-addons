@@ -29,7 +29,7 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-class TimestampChannelHelper extends AbstractChannelHelper {
+class TimestampChannelHelper extends ChannelHelper {
 
     public TimestampChannelHelper() {
         this(GROUP_TIMESTAMP);

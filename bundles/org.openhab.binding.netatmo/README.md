@@ -640,7 +640,7 @@ The following icons are used by original Netatmo web app:
 
 ## Rule Action
 
-This binding includes rule action reconnecting the API - this action is valid for each type of thing (NAMain, NHC, NAHome...).
+This binding includes rule action reconnecting the API - this action is valid for each type of bridge (NAMain, NHC, NAHome...).
 
 Example:
 
@@ -654,3 +654,4 @@ if(actions === null) {
 }
 
 ```
+

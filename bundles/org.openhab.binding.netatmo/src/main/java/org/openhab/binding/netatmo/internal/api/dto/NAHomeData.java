@@ -106,7 +106,7 @@ public class NAHomeData extends NAThing implements NetatmoModule, NetatmoLocatio
     }
 
     public Set<FeatureArea> getFeatures() {
-        return getModules().values().stream().map(m -> m.getType().features).collect(Collectors.toSet());
+        return getModules().values().stream().map(m -> m.getType().feature).collect(Collectors.toSet());
     }
 
     public List<NAThermProgram> getThermSchedules() {

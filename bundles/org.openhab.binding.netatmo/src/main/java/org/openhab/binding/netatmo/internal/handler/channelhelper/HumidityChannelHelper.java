@@ -30,7 +30,7 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class HumidityChannelHelper extends AbstractChannelHelper {
+public class HumidityChannelHelper extends ChannelHelper {
 
     public HumidityChannelHelper() {
         super(GROUP_HUMIDITY, MeasureClass.HUMIDITY);

@@ -16,7 +16,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.deserialization.NAThingMap;
+import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 
 /**
  * The {@link NADevice} holds common data for all Netatmo devices.
@@ -26,13 +26,14 @@ import org.openhab.binding.netatmo.internal.deserialization.NAThingMap;
  */
 @NonNullByDefault
 public class NADevice extends NAThing {
-    private NAThingMap modules = new NAThingMap();
+    private @Nullable NAObjectMap<NAModule> modules;
     private long dateSetup;
     private long lastUpgrade;
     private @Nullable NAPlace place;
 
-    public NAThingMap getModules() {
-        return modules;
+    public NAObjectMap<NAModule> getModules() {
+        NAObjectMap<NAModule> localModules = modules;
+        return localModules != null ? localModules : new NAObjectMap<>();
     }
 
     public long getDateSetup() {

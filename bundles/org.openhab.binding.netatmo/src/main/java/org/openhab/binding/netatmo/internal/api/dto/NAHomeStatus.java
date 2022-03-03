@@ -36,15 +36,18 @@ public class NAHomeStatus {
         private @Nullable NAObjectMap<NARoom> rooms;
 
         public NAObjectMap<NAHomeStatusModule> getModules() {
-            return modules != null ? modules : new NAObjectMap<>();
+            NAObjectMap<NAHomeStatusModule> localModules = modules;
+            return localModules != null ? localModules : new NAObjectMap<>();
         }
 
         public NAObjectMap<NAHomeStatusPerson> getPersons() {
-            return persons != null ? persons : new NAObjectMap<>();
+            NAObjectMap<NAHomeStatusPerson> localPersons = persons;
+            return localPersons != null ? localPersons : new NAObjectMap<>();
         }
 
         public NAObjectMap<NARoom> getRooms() {
-            return rooms != null ? rooms : new NAObjectMap<>();
+            NAObjectMap<NARoom> localRooms = rooms;
+            return localRooms != null ? localRooms : new NAObjectMap<>();
         }
     }
 

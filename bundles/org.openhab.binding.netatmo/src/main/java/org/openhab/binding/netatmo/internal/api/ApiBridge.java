@@ -118,6 +118,7 @@ public class ApiBridge {
     }
 
     private void prepareReconnection(NetatmoException e) {
+        connectApi.disconnect();
         notifyListeners();
         freeConnectJob();
         connectJob = Optional
@@ -175,6 +176,10 @@ public class ApiBridge {
                 if (statusCode == Code.BAD_REQUEST) {
                     ApiError error = deserializer.deserialize(ApiError.class, responseBody);
                     exception = new NetatmoException(error.getCode(), error.getMessage());
+                } else if (statusCode == Code.FORBIDDEN) {
+                    ApiError error = deserializer.deserialize(ApiError.class, responseBody);
+                    exception = new NetatmoException(error.getCode(), error.getMessage());
+                    prepareReconnection(exception);
                 } else {
                     exception = new NetatmoException(statusCode.getCode(), responseBody);
                     prepareReconnection(exception);

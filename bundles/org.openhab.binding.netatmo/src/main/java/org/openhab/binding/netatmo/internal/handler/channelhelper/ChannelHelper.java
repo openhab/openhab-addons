@@ -28,30 +28,30 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.types.State;
 
 /**
- * The {@link AbstractChannelHelper} is the base class for all channel helpers.
+ * The {@link ChannelHelper} is the base class for all channel helpers.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public abstract class AbstractChannelHelper {
+public abstract class ChannelHelper {
     private @Nullable NAObject data;
     private final Set<String> channelGroupTypes;
     private final Set<String> channelGroups = new HashSet<>();
     private Set<String> measureChannels = Set.of();
 
-    AbstractChannelHelper(String... providedGroups) {
+    ChannelHelper(String... providedGroups) {
         this.channelGroupTypes = Set.of(providedGroups);
         // Sets the list of served groups base on group type names minus '-extended'
         channelGroupTypes.forEach(groupType -> channelGroups.add(groupType.replace(GROUP_EXTENSION, "")));
     }
 
-    AbstractChannelHelper(String providedGroup, MeasureClass measureClass) {
+    ChannelHelper(String providedGroup, MeasureClass measureClass) {
         this(providedGroup);
         this.measureChannels = measureClass.channels.keySet();
     }
 
-    public void setNewData(NAObject data) {
+    public void setNewData(@Nullable NAObject data) {
         this.data = data;
     }
 

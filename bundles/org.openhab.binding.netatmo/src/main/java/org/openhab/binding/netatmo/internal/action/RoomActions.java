@@ -12,10 +12,14 @@
  */
 package org.openhab.binding.netatmo.internal.action;
 
+import java.util.Optional;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
-import org.openhab.binding.netatmo.internal.handler.RoomHandler;
+import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.capability.EnergyCapability;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
@@ -33,23 +37,28 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RoomActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(RoomActions.class);
+    private static final Set<SetpointMode> ALLOWED_MODES = Set.of(SetpointMode.MAX, SetpointMode.MANUAL,
+            SetpointMode.HOME);
 
-    private @Nullable RoomHandler handler;
+    private @Nullable NACommonInterface handler;
+    private Optional<EnergyCapability> energy = Optional.empty();
 
     public RoomActions() {
-        logger.trace("Netatmo room actions service created");
+        logger.debug("Netatmo RoomActions service created");
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof RoomHandler) {
-            this.handler = (RoomHandler) handler;
+        if (handler instanceof NACommonInterface) {
+            NACommonInterface commonHandler = (NACommonInterface) handler;
+            this.handler = commonHandler;
+            energy = commonHandler.getHomeCapability(EnergyCapability.class);
         }
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return handler;
+        return (ThingHandler) handler;
     }
 
     /**
@@ -59,7 +68,7 @@ public class RoomActions implements ThingActions {
     public void setRoomThermpoint(
             @ActionInput(name = "setpoint", label = "@text/actionInputSetpointLabel", description = "@text/actionInputSetpointDesc") @Nullable Double temp,
             @ActionInput(name = "endtime", label = "@text/actionInputEndtimeLabel", description = "@text/actionInputEndtimeDesc") @Nullable Long endTime) {
-        setRoomThermpoint(temp, endTime, null);
+        setRoomThermpoint(temp, endTime, "MANUAL");
     }
 
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
@@ -74,44 +83,52 @@ public class RoomActions implements ThingActions {
             @ActionInput(name = "setpoint", label = "@text/actionInputSetpointLabel", description = "@text/actionInputSetpointDesc") @Nullable Double temp,
             @ActionInput(name = "endtime", label = "@text/actionInputEndtimeLabel", description = "@text/actionInputEndtimeDesc") @Nullable Long endTime,
             @ActionInput(name = "mode", label = "@text/actionInputModeLabel", description = "@text/actionInputModeDesc") @Nullable String mode) {
-        RoomHandler roomHandler = handler;
-        if (roomHandler == null) {
-            logger.debug("Handler not set for room thing actions.");
-            return;
-        }
-
-        String targetMode = mode;
-        Long targetEndTime = endTime;
-        Double targetTemp = temp;
-        if (targetMode != null) {
-            if (!(targetMode.equals(SetpointMode.MAX.toString()) || targetMode.equals(SetpointMode.HOME.toString())
-                    || targetMode.equals(SetpointMode.MANUAL.toString()))) {
-                logger.debug("Mode can only be MAX, HOME or MANUAL for a room");
-                return;
+        NACommonInterface roomHandler = handler;
+        if (roomHandler != null) {
+            String roomId = roomHandler.getId();
+            SetpointMode targetMode = SetpointMode.UNKNOWN;
+            Long targetEndTime = endTime;
+            Double targetTemp = temp;
+            if (mode != null) {
+                try {
+                    targetMode = SetpointMode.valueOf(mode);
+                    if (!ALLOWED_MODES.contains(targetMode)) {
+                        logger.info("Mode can only be MAX, HOME or MANUAL for a room");
+                        return;
+                    }
+                } catch (IllegalArgumentException e) {
+                    logger.info("Invalid mode passed : {} - {}", mode, e.getMessage());
+                    return;
+                }
             }
-        }
-        if (temp != null) {
-            logger.debug("Temperature provided, mode forced to MANUAL.");
-            targetMode = SetpointMode.MANUAL.toString();
-            if (targetEndTime == null) {
-                logger.debug("Temperature provided but no endtime given, action ignored");
-                return;
+            if (temp != null) {
+                logger.debug("Temperature provided, mode forced to MANUAL.");
+                targetMode = SetpointMode.MANUAL;
+                if (targetEndTime == null) {
+                    logger.info("Temperature provided but no endtime given, action ignored");
+                    return;
+                }
+            } else {
+                if (SetpointMode.HOME.equals(targetMode)) {
+                    targetEndTime = 0L;
+                    targetTemp = 0.0;
+                } else {
+                    logger.info("mode is required if no temperature setpoint provided");
+                    return;
+                }
+            }
+
+            try {
+                double setpointTemp = targetTemp != null ? targetTemp : 0;
+                long setpointEnd = targetEndTime;
+                SetpointMode setpointMode = targetMode;
+                energy.ifPresent(cap -> cap.setRoomThermTemp(roomId, setpointTemp, setpointEnd, setpointMode));
+            } catch (IllegalArgumentException e) {
+                logger.debug("Ignoring setRoomThermpoint command due to illegal argument exception: {}",
+                        e.getMessage());
             }
         } else {
-            if (targetMode == null) {
-                logger.debug("mode is required if no temperature setpoint provided");
-                return;
-            } else if (targetMode.equalsIgnoreCase(SetpointMode.HOME.toString())) {
-                targetEndTime = 0L;
-                targetTemp = 0.0;
-            }
-        }
-
-        try {
-            roomHandler.setRoomThermTemp(targetTemp != null ? targetTemp : 0,
-                    targetEndTime != null ? targetEndTime : 0L, SetpointMode.valueOf(targetMode));
-        } catch (IllegalArgumentException e) {
-            logger.debug("Ignoring setRoomThermpoint command due to illegal argument exception: {}", e.getMessage());
+            logger.info("Handler not set for room thing actions.");
         }
     }
 

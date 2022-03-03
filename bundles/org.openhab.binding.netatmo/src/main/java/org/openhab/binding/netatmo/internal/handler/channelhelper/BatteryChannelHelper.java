@@ -31,7 +31,7 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class BatteryChannelHelper extends AbstractChannelHelper {
+public class BatteryChannelHelper extends ChannelHelper {
 
     public BatteryChannelHelper() {
         super(GROUP_BATTERY);

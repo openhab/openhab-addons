@@ -79,6 +79,10 @@ class AuthenticationApi extends RestManager {
         answer = Optional.of(response);
     }
 
+    public void disconnect() {
+        answer = Optional.empty();
+    }
+
     public void dispose() {
         freeTokenJob();
     }

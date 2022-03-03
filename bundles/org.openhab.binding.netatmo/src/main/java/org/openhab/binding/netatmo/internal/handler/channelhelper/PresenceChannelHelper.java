@@ -30,7 +30,7 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class PresenceChannelHelper extends AbstractChannelHelper {
+public class PresenceChannelHelper extends ChannelHelper {
     private @NonNullByDefault({}) State autoMode;
 
     public PresenceChannelHelper() {

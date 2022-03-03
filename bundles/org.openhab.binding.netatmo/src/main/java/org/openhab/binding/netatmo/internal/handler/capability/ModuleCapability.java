@@ -10,41 +10,35 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.netatmo.internal.handler.propertyhelper;
+package org.openhab.binding.netatmo.internal.handler.capability;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
-import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.core.thing.Bridge;
+import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
 
 /**
- * The {@link ModulePropertyHelper} takes care of handling properties for things
+ * The {@link ModuleCapability} takes care of handling properties for netatmo modules
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class ModulePropertyHelper extends PropertyHelper {
+public class ModuleCapability extends Capability {
 
-    public ModulePropertyHelper(Bridge bridge) {
-        super(bridge);
+    public ModuleCapability(NACommonInterface handler) {
+        super(handler);
     }
 
     @Override
-    protected Map<String, String> internalGetProperties(Map<String, String> currentProperties, NAObject data) {
-        Map<String, String> properties = new HashMap<>(super.internalGetProperties(currentProperties, data));
-        if (data instanceof NAMain && firstLaunch) {
-            ((NAMain) data).getPlace().ifPresent(place -> {
+    protected void updateNAMain(NAMain newData) {
+        if (firstLaunch) {
+            newData.getPlace().ifPresent(place -> {
                 place.getCity().map(city -> properties.put(PROPERTY_CITY, city));
                 place.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
                 place.getTimezone().map(tz -> properties.put(PROPERTY_TIMEZONE, tz));
             });
         }
-        return properties;
     }
 }

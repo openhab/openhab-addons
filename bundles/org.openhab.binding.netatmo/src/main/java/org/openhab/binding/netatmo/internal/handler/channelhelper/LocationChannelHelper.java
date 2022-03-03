@@ -30,7 +30,7 @@ import org.openhab.core.types.UnDefType;
  *
  */
 @NonNullByDefault
-public class LocationChannelHelper extends AbstractChannelHelper {
+public class LocationChannelHelper extends ChannelHelper {
 
     public LocationChannelHelper() {
         super(GROUP_LOCATION);

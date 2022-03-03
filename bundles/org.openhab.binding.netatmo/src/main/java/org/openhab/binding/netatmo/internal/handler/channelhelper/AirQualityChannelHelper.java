@@ -28,7 +28,7 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class AirQualityChannelHelper extends AbstractChannelHelper {
+public class AirQualityChannelHelper extends ChannelHelper {
 
     public AirQualityChannelHelper() {
         this(GROUP_AIR_QUALITY);

@@ -30,7 +30,7 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class SignalChannelHelper extends AbstractChannelHelper {
+public class SignalChannelHelper extends ChannelHelper {
 
     public SignalChannelHelper() {
         super(GROUP_SIGNAL);

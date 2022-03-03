@@ -14,7 +14,11 @@ package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
-import static org.openhab.binding.netatmo.internal.utils.NetatmoCalendarUtils.*;
+
+import java.time.DayOfWeek;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,10 +41,10 @@ import org.openhab.core.types.UnDefType;
  *
  */
 @NonNullByDefault
-public class HomeEnergyChannelHelper extends AbstractChannelHelper {
+public class HomeEnergyChannelHelper extends ChannelHelper {
 
     public HomeEnergyChannelHelper() {
-        super(GROUP_HOME_ENERGY);
+        super(GROUP_ENERGY);
     }
 
     @Override
@@ -59,7 +63,8 @@ public class HomeEnergyChannelHelper extends AbstractChannelHelper {
                         case PROGRAM:
                         case HOME:
                         case SCHEDULE:
-                            return toDateTimeType(nextProgramTime(currentProgram));
+                            return currentProgram != null ? toDateTimeType(nextProgramTime(currentProgram))
+                                    : UnDefType.UNDEF;
                         default:
                             return UnDefType.UNDEF;
                     }
@@ -89,5 +94,34 @@ public class HomeEnergyChannelHelper extends AbstractChannelHelper {
             }
         }
         return null;
+    }
+
+    private static ZonedDateTime programBaseTimeZdt() {
+        return ZonedDateTime.now().with(DayOfWeek.MONDAY).truncatedTo(ChronoUnit.DAYS);
+    }
+
+    private static long minutesSinceProgramBaseTime() {
+        return ChronoUnit.MINUTES.between(programBaseTimeZdt(), ZonedDateTime.now());
+    }
+
+    public static @Nullable NATimeTableItem currentProgramMode(NAThermProgram activeProgram) {
+        long diff = minutesSinceProgramBaseTime();
+        return activeProgram.getTimetable().stream().filter(t -> t.getMinuteOffset() < diff)
+                .reduce((first, second) -> second).orElse(null);
+    }
+
+    public static ZonedDateTime nextProgramTime(NAThermProgram activeProgram) {
+        long diff = minutesSinceProgramBaseTime();
+        // By default we'll use the first slot of next week - this case will be true if
+        // we are in the last schedule of the week so below loop will not exit by break
+        List<NATimeTableItem> timetable = activeProgram.getTimetable();
+        int next = timetable.get(0).getMinuteOffset() + (7 * 24 * 60);
+        for (NATimeTableItem timeTable : timetable) {
+            if (timeTable.getMinuteOffset() > diff) {
+                next = timeTable.getMinuteOffset();
+                break;
+            }
+        }
+        return programBaseTimeZdt().plusMinutes(next);
     }
 }

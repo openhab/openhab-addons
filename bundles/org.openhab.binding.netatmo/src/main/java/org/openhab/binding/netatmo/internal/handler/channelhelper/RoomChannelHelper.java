@@ -31,7 +31,7 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class RoomChannelHelper extends AbstractChannelHelper {
+public class RoomChannelHelper extends ChannelHelper {
 
     public RoomChannelHelper() {
         super(GROUP_ROOM_PROPERTIES, GROUP_ROOM_TEMPERATURE);
@@ -43,13 +43,13 @@ public class RoomChannelHelper extends AbstractChannelHelper {
             NARoom room = (NARoom) naThing;
             switch (channelId) {
                 case CHANNEL_ROOM_WINDOW_OPEN:
-                    return room.isOpenWindow();
+                    return room.hasOpenedWindows();
                 case CHANNEL_ANTICIPATING:
                     return room.isAnticipating();
                 case CHANNEL_ROOM_HEATING_POWER:
                     return toQuantityType(room.getHeatingPowerRequest(), Units.PERCENT);
                 case CHANNEL_VALUE:
-                    return toQuantityType(room.getThermMeasuredTemperature(), MeasureClass.INTERIOR_TEMPERATURE);
+                    return toQuantityType(room.getMeasuredTemp(), MeasureClass.INTERIOR_TEMPERATURE);
             }
         }
         return null;

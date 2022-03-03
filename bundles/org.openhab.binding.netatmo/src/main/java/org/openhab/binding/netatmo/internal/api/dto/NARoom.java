@@ -32,69 +32,51 @@ import org.openhab.core.types.UnDefType;
 public class NARoom extends NAThing implements NetatmoModule {
     private @Nullable OnOffType anticipating;
     private @Nullable OnOffType openWindow;
-    private int heatingPowerRequest;
-    private double thermMeasuredTemperature;
     private @Nullable ZonedDateTime thermSetpointStartTime;
     private @Nullable ZonedDateTime thermSetpointEndTime;
     private SetpointMode thermSetpointMode = SetpointMode.UNKNOWN;
+    private int heatingPowerRequest;
+    private double thermMeasuredTemperature;
     private double thermSetpointTemperature;
 
-    /**
-     * @return the anticipating
-     */
     public State isAnticipating() {
         OnOffType status = anticipating;
         return status != null ? status : UnDefType.NULL;
     }
 
-    /**
-     * @return the heatingPowerRequest
-     */
-    public int getHeatingPowerRequest() {
-        return heatingPowerRequest;
-    }
-
-    /**
-     * @return the openWindow
-     */
-    public State isOpenWindow() {
+    public State hasOpenedWindows() {
         OnOffType status = openWindow;
         return status != null ? status : UnDefType.NULL;
     }
 
-    /**
-     * @return the thermMeasuredTemperature
-     */
-    public Double getThermMeasuredTemperature() {
+    public int getHeatingPowerRequest() {
+        return heatingPowerRequest;
+    }
+
+    public Double getMeasuredTemp() {
         return thermMeasuredTemperature;
     }
 
-    /**
-     * @return the thermSetpointMode
-     */
-    public SetpointMode getThermSetpointMode() {
+    public SetpointMode getSetpointMode() {
         return thermSetpointMode;
     }
 
-    /**
-     * @return the thermSetpointTemperature
-     */
-    public double getThermSetpointTemperature() {
+    public double getSetpointTemp() {
         return thermSetpointTemperature;
     }
 
-    public @Nullable ZonedDateTime getThermSetpointStartTime() {
+    public @Nullable ZonedDateTime getSetpointBegin() {
         return thermSetpointStartTime;
     }
 
-    public @Nullable ZonedDateTime getThermSetpointEndTime() {
+    public @Nullable ZonedDateTime getSetpointEnd() {
         return thermSetpointEndTime;
     }
 
     @Override
     public ModuleType getType() {
         // In json api answer type for NARoom is used with words like kitchen, living...
-        // Maybe NARoom should not inherit from NAThing
+        // TODO : consider if Maybe NARoom should not inherit from NAThing
         return ModuleType.NARoom;
     }
 }

@@ -28,7 +28,7 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class NoiseChannelHelper extends AbstractChannelHelper {
+public class NoiseChannelHelper extends ChannelHelper {
 
     public NoiseChannelHelper() {
         super(GROUP_NOISE, MeasureClass.NOISE);

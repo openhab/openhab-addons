@@ -15,7 +15,6 @@ package org.openhab.binding.netatmo.internal.api.data;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.BINDING_ID;
 import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 
-import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -23,25 +22,23 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
-import org.openhab.binding.netatmo.internal.api.dto.NAModule;
-import org.openhab.binding.netatmo.internal.api.dto.NARoom;
-import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.handler.CameraHandler;
-import org.openhab.binding.netatmo.internal.handler.HomeHandler;
-import org.openhab.binding.netatmo.internal.handler.ModuleHandler;
-import org.openhab.binding.netatmo.internal.handler.NAMainHandler;
-import org.openhab.binding.netatmo.internal.handler.NHCHandler;
-import org.openhab.binding.netatmo.internal.handler.PersonHandler;
-import org.openhab.binding.netatmo.internal.handler.PresenceHandler;
-import org.openhab.binding.netatmo.internal.handler.RoomHandler;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.AbstractChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.capability.AirCareCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.CameraCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.Capability;
+import org.openhab.binding.netatmo.internal.handler.capability.EventCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.ModuleCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.PersonCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AirQualityChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AirQualityExtChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.BatteryChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.BatteryExtChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventPersonChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.HomeEnergyChannelHelper;
@@ -56,16 +53,13 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.PressureChanne
 import org.openhab.binding.netatmo.internal.handler.channelhelper.PressureExtChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.RainChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.RoomChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.RoomSetpointChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.channelhelper.SetpointChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.SignalChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.TemperatureChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.TemperatureExtChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.Therm1ChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.TimestampExtChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.WindChannelHelper;
-import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
-import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -75,88 +69,78 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public enum ModuleType {
-    UNKNOWN(null, RefreshPolicy.NONE, FeatureArea.NONE, null, null, List.of()),
-    NAHome(HomeHandler.class, RefreshPolicy.CONFIG, FeatureArea.NONE, null, null,
-            List.of(HomeSecurityChannelHelper.class, HomeEnergyChannelHelper.class)),
-
-    // Security Features
-    NAPerson(PersonHandler.class, RefreshPolicy.NONE, FeatureArea.SECURITY, NAHome, null,
-            List.of(PersonChannelHelper.class, EventPersonChannelHelper.class)),
-    NACamera(CameraHandler.class, RefreshPolicy.NONE, FeatureArea.SECURITY, NAHome, null,
-            List.of(CameraChannelHelper.class, SignalChannelHelper.class, EventChannelHelper.class)),
-    NOC(PresenceHandler.class, RefreshPolicy.NONE, FeatureArea.SECURITY, NAHome, null,
+    UNKNOWN(FeatureArea.NONE, null, List.of(), List.of()),
+    NAHome(FeatureArea.NONE, null, // Home hosting security or energy devices ==========================================
+            List.of(HomeSecurityChannelHelper.class, HomeEnergyChannelHelper.class),
+            List.of(ModuleCapability.class, EventCapability.class, HomeCapability.class)),
+    NAPerson(FeatureArea.SECURITY, NAHome, // Person identified by security modules ====================================
+            List.of(PersonChannelHelper.class, EventPersonChannelHelper.class),
+            List.of(EventCapability.class, PersonCapability.class)),
+    NACamera(FeatureArea.SECURITY, NAHome, // Welcome Camera ===========================================================
+            List.of(CameraChannelHelper.class, SignalChannelHelper.class, EventChannelHelper.class),
+            List.of(EventCapability.class, CameraCapability.class)),
+    NOC(FeatureArea.SECURITY, NAHome, // Netatmo Presence Camera =======================================================
             List.of(CameraChannelHelper.class, PresenceChannelHelper.class, SignalChannelHelper.class,
-                    EventChannelHelper.class)),
-    NDB(PresenceHandler.class, RefreshPolicy.NONE, FeatureArea.SECURITY, NAHome, null,
-            List.of(CameraChannelHelper.class, SignalChannelHelper.class)),
-
-    // Weather Features
-    NAMain(NAMainHandler.class, RefreshPolicy.AUTO, FeatureArea.WEATHER, null, NAThing.class,
+                    EventChannelHelper.class),
+            List.of(EventCapability.class, PresenceCapability.class)),
+    NDB(FeatureArea.SECURITY, NAHome, // Netatmo Doorbell ==============================================================
+            List.of(CameraChannelHelper.class, SignalChannelHelper.class, EventChannelHelper.class), List.of()),
+    NAMain(FeatureArea.WEATHER, null, // Main Weather Station ==========================================================
             List.of(PressureExtChannelHelper.class, NoiseChannelHelper.class, HumidityChannelHelper.class,
                     TemperatureExtChannelHelper.class, AirQualityChannelHelper.class, LocationChannelHelper.class,
-                    TimestampExtChannelHelper.class, MeasuresChannelHelper.class, SignalChannelHelper.class)),
-    NAModule1(ModuleHandler.class, RefreshPolicy.NONE, FeatureArea.WEATHER, NAMain, NAModule.class,
+                    TimestampExtChannelHelper.class, MeasuresChannelHelper.class, SignalChannelHelper.class),
+            List.of(ModuleCapability.class, WeatherCapability.class)),
+    NAModule1(FeatureArea.WEATHER, NAMain, // External Temperature & Humidity sensor ===================================
             List.of(HumidityChannelHelper.class, TemperatureExtChannelHelper.class, BatteryChannelHelper.class,
-                    MeasuresChannelHelper.class, TimestampExtChannelHelper.class, SignalChannelHelper.class)),
-    NAModule2(ModuleHandler.class, RefreshPolicy.NONE, FeatureArea.WEATHER, NAMain, NAModule.class,
+                    MeasuresChannelHelper.class, TimestampExtChannelHelper.class, SignalChannelHelper.class),
+            List.of(ModuleCapability.class)),
+    NAModule2(FeatureArea.WEATHER, NAMain, // Wind sensor ==============================================================
             List.of(WindChannelHelper.class, BatteryChannelHelper.class, TimestampExtChannelHelper.class,
-                    SignalChannelHelper.class)),
-    NAModule3(ModuleHandler.class, RefreshPolicy.NONE, FeatureArea.WEATHER, NAMain, NAModule.class,
+                    SignalChannelHelper.class),
+            List.of(ModuleCapability.class)),
+    NAModule3(FeatureArea.WEATHER, NAMain, // Rain sensor ==============================================================
             List.of(RainChannelHelper.class, BatteryChannelHelper.class, MeasuresChannelHelper.class,
-                    TimestampExtChannelHelper.class, SignalChannelHelper.class)),
-    NAModule4(ModuleHandler.class, RefreshPolicy.NONE, FeatureArea.WEATHER, NAMain, NAModule.class,
+                    TimestampExtChannelHelper.class, SignalChannelHelper.class),
+            List.of(ModuleCapability.class)),
+    NAModule4(FeatureArea.WEATHER, NAMain, // Additional indoor sensor =================================================
             List.of(HumidityChannelHelper.class, TemperatureExtChannelHelper.class, AirQualityChannelHelper.class,
                     BatteryChannelHelper.class, MeasuresChannelHelper.class, TimestampExtChannelHelper.class,
-                    SignalChannelHelper.class)),
-
-    // Aircare Features
-    NHC(NHCHandler.class, RefreshPolicy.AUTO, FeatureArea.AIR_CARE, null, NAThing.class,
+                    SignalChannelHelper.class),
+            List.of(ModuleCapability.class)),
+    NHC(FeatureArea.AIR_CARE, null, // Healty Home Coach ===============================================================
             List.of(NoiseChannelHelper.class, HumidityChannelHelper.class, AirQualityExtChannelHelper.class,
                     TemperatureChannelHelper.class, PressureChannelHelper.class, TimestampExtChannelHelper.class,
-                    SignalChannelHelper.class, MeasuresChannelHelper.class, LocationChannelHelper.class)),
-
-    // Energy Features
-    NAPlug(ModuleHandler.class, RefreshPolicy.NONE, FeatureArea.ENERGY, NAHome, null,
-            List.of(SignalChannelHelper.class)),
-    NATherm1(ModuleHandler.class, RefreshPolicy.NONE, FeatureArea.ENERGY, NAHome, null,
-            List.of(Therm1ChannelHelper.class, BatteryExtChannelHelper.class, SignalChannelHelper.class)),
-    NARoom(RoomHandler.class, RefreshPolicy.NONE, FeatureArea.ENERGY, NAHome, NARoom.class,
-            List.of(RoomChannelHelper.class, RoomSetpointChannelHelper.class)),
-    NRV(ModuleHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome, NAModule.class,
-            List.of(BatteryExtChannelHelper.class, SignalChannelHelper.class));
-
-    public enum RefreshPolicy {
-        AUTO,
-        CONFIG,
-        NONE;
-    }
+                    SignalChannelHelper.class, MeasuresChannelHelper.class, LocationChannelHelper.class),
+            List.of(ModuleCapability.class, AirCareCapability.class)),
+    NAPlug(FeatureArea.ENERGY, NAHome, // Boiler relay =================================================================
+            List.of(SignalChannelHelper.class), List.of(ModuleCapability.class)),
+    NATherm1(FeatureArea.ENERGY, NAHome, // Thermostat module ==========================================================
+            List.of(Therm1ChannelHelper.class, BatteryExtChannelHelper.class, SignalChannelHelper.class),
+            List.of(ModuleCapability.class)),
+    NARoom(FeatureArea.ENERGY, NAHome, // Room holding energy modules ==================================================
+            List.of(RoomChannelHelper.class, SetpointChannelHelper.class), List.of(RoomCapability.class)),
+    NRV(FeatureArea.ENERGY, NAHome, // Valve ===========================================================================
+            List.of(BatteryExtChannelHelper.class, SignalChannelHelper.class), List.of(ModuleCapability.class));
 
     public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);
 
     public final List<String> groups = new LinkedList<>();
     public final List<String> extensions = new LinkedList<>();
-    public final List<Class<? extends AbstractChannelHelper>> channelHelpers;
-    public final @Nullable ModuleType bridgeType;
-    public final @Nullable Class<?> handlerClass;
-    // TODO : evaluate when refactoring toward new api is over if dto is still interesting here
-    // currently only weather station and aircare are using it
-    public final @Nullable Class<?> dto;
+    public final List<Class<? extends ChannelHelper>> channelHelpers;
+    public final List<Class<? extends Capability>> capabilities;
+    private final @Nullable ModuleType bridgeType;
     public final ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, name());
-    public final RefreshPolicy refreshPolicy;
-    public final FeatureArea features;
+    public final FeatureArea feature;
 
-    ModuleType(@Nullable Class<?> handlerClass, RefreshPolicy refreshPolicy, FeatureArea features,
-            @Nullable ModuleType bridge, @Nullable Class<?> dto, List<Class<? extends AbstractChannelHelper>> helpers) {
-        this.handlerClass = handlerClass;
-        this.refreshPolicy = refreshPolicy;
+    ModuleType(FeatureArea feature, @Nullable ModuleType bridge, List<Class<? extends ChannelHelper>> helpers,
+            List<Class<? extends Capability>> capabilities) {
         this.channelHelpers = helpers;
         this.bridgeType = bridge;
-        this.dto = dto;
-        this.features = features;
-
+        this.feature = feature;
+        this.capabilities = capabilities;
         try {
-            for (Class<? extends AbstractChannelHelper> helperClass : helpers) {
-                AbstractChannelHelper helper = helperClass.getConstructor().newInstance();
+            for (Class<? extends ChannelHelper> helperClass : helpers) {
+                ChannelHelper helper = helperClass.getConstructor().newInstance();
                 groups.addAll(helper.getChannelGroupTypes());
                 extensions.addAll(helper.getMeasureChannels());
             }
@@ -167,6 +151,15 @@ public enum ModuleType {
 
     public boolean isLogical() {
         return !channelHelpers.contains(SignalChannelHelper.class);
+    }
+
+    public boolean isABridge() {
+        for (ModuleType mt : ModuleType.values()) {
+            if (this.equals(mt.bridgeType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int[] getSignalLevels() {
@@ -183,17 +176,8 @@ public enum ModuleType {
         return bridge != null ? bridge : ModuleType.UNKNOWN;
     }
 
-    public Constructor<?> getHandlerConstructor() throws NoSuchMethodException, SecurityException {
-        Class<?> handler = handlerClass;
-        if (handler != null) {
-            return handler.getConstructor(Bridge.class, List.class, ApiBridge.class, NetatmoDescriptionProvider.class,
-                    NetatmoServlet.class);
-        }
-        throw new IllegalArgumentException("This should not be called for module type : " + name() + ", file a bug.");
-    }
-
     public URI getConfigDescription() {
         return URI.create(BINDING_ID + ":"
-                + (isLogical() ? "virtual" : refreshPolicy == RefreshPolicy.CONFIG ? "configurable" : "device"));
+                + (isLogical() ? "virtual" : ModuleType.UNKNOWN.equals(getBridge()) ? "configurable" : "device"));
     }
 }

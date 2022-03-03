@@ -31,7 +31,7 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class PersonChannelHelper extends AbstractChannelHelper {
+public class PersonChannelHelper extends ChannelHelper {
 
     public PersonChannelHelper() {
         super(GROUP_PERSON);

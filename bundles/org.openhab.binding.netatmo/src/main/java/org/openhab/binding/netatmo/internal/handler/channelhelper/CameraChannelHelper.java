@@ -31,14 +31,14 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class CameraChannelHelper extends AbstractChannelHelper {
+public class CameraChannelHelper extends ChannelHelper {
     private static final String LIVE_PICTURE = "/live/snapshot_720.jpg";
     private boolean isLocal;
     private @Nullable String vpnUrl;
     private @Nullable String localUrl;
 
     public CameraChannelHelper() {
-        super(GROUP_CAM_STATUS, GROUP_CAM_LIVE, GROUP_LAST_EVENT);
+        super(GROUP_CAM_STATUS, GROUP_CAM_LIVE);
     }
 
     public void setUrls(String vpnUrl, @Nullable String localUrl) {
@@ -88,15 +88,16 @@ public class CameraChannelHelper extends AbstractChannelHelper {
                 : String.format("%s/vod/%s/index%s.m3u8", url, videoId, isLocal ? "_local" : "");
     }
 
-    private String getLivePictureURL() {
+    private @Nullable String getLivePictureURL() {
         String url = isLocal ? localUrl : vpnUrl;
-        return String.format("%s%s", url, LIVE_PICTURE);
+        return url == null ? null : String.format("%s%s", url, LIVE_PICTURE);
     }
 
-    private String getLiveStreamURL(@Nullable String configQual) {
+    private @Nullable String getLiveStreamURL(@Nullable String configQual) {
         String finalQual = configQual != null ? configQual : "poor";
         String url = isLocal ? localUrl : vpnUrl;
-        return String.format("%s/live/%s", url,
-                isLocal ? String.format("files/%s/index.m3u8", finalQual) : "index.m3u8");
+        return url == null ? null
+                : String.format("%s/live/%s", url,
+                        isLocal ? String.format("files/%s/index.m3u8", finalQual) : "index.m3u8");
     }
 }

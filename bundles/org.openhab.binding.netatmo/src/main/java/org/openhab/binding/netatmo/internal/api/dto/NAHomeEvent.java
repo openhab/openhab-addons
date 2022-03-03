@@ -89,10 +89,7 @@ public class NAHomeEvent extends NAEvent {
     @Override
     public @Nullable String getSnapshotUrl() {
         NASnapshot localSnap = snapshot;
-        if (localSnap != null) {
-            return localSnap.getUrl();
-        }
-        return null;
+        return localSnap != null ? localSnap.getUrl() : null;
     }
 
     public void setTime(ZonedDateTime eventTime) {

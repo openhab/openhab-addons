@@ -13,8 +13,8 @@
 package org.openhab.binding.netatmo.internal.handler.capability;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.utils.NetatmoCalendarUtils.setpointEndTimeFromNow;
 
+import java.time.ZonedDateTime;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,8 +29,8 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NARoom;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
+import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
@@ -44,17 +44,15 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class EnergyCapability extends Capability<EnergyApi> {
+public class EnergyCapability extends RestCapability<EnergyApi> {
     private final Logger logger = LoggerFactory.getLogger(EnergyCapability.class);
 
     private int setPointDefaultDuration = -1;
-    private final String homeId;
     private final NetatmoDescriptionProvider descriptionProvider;
 
-    public EnergyCapability(Bridge bridge, ApiBridge apiBridge, NetatmoDescriptionProvider descriptionProvider,
-            String homeId) {
-        super(bridge, apiBridge.getRestManager(EnergyApi.class));
-        this.homeId = homeId;
+    public EnergyCapability(NACommonInterface handler, ApiBridge apiBridge,
+            NetatmoDescriptionProvider descriptionProvider) {
+        super(handler, apiBridge.getRestManager(EnergyApi.class));
         this.descriptionProvider = descriptionProvider;
     }
 
@@ -62,7 +60,7 @@ public class EnergyCapability extends Capability<EnergyApi> {
     protected void updateHomeData(NAHomeData homeData) {
         NAObjectMap<NAHomeDataRoom> rooms = homeData.getRooms();
         NAObjectMap<NAHomeDataModule> modules = homeData.getModules();
-        getActiveChildren().forEach(handler -> {
+        handler.getActiveChildren().forEach(handler -> {
             NAHomeDataRoom roomData = rooms.get(handler.getId());
             if (roomData != null) {
                 handler.setNewData(roomData);
@@ -72,7 +70,7 @@ public class EnergyCapability extends Capability<EnergyApi> {
                 handler.setNewData(moduleData);
             }
         });
-        descriptionProvider.setStateOptions(new ChannelUID(bridge.getUID(), GROUP_HOME_ENERGY, CHANNEL_PLANNING),
+        descriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), GROUP_ENERGY, CHANNEL_PLANNING),
                 homeData.getThermSchedules().stream().map(p -> new StateOption(p.getId(), p.getName()))
                         .collect(Collectors.toList()));
         setPointDefaultDuration = homeData.getThermSetpointDefaultDuration();
@@ -82,7 +80,7 @@ public class EnergyCapability extends Capability<EnergyApi> {
     protected void updateHomeStatus(HomeStatus homeStatus) {
         NAObjectMap<NARoom> rooms = homeStatus.getRooms();
         NAObjectMap<NAHomeStatusModule> modules = homeStatus.getModules();
-        getActiveChildren().forEach(handler -> {
+        handler.getActiveChildren().forEach(handler -> {
             NARoom roomData = rooms.get(handler.getId());
             if (roomData != null) {
                 handler.setNewData(roomData);
@@ -98,21 +96,11 @@ public class EnergyCapability extends Capability<EnergyApi> {
         return setPointDefaultDuration;
     }
 
-    public void setRoomThermTemp(String roomId, double temperature) {
-        try {
-            api.setRoomThermpoint(homeId, roomId, SetpointMode.MANUAL, setpointEndTimeFromNow(setPointDefaultDuration),
-                    temperature);
-            expireData();
-        } catch (NetatmoException e) {
-            logger.warn("Error setting room target temperature '{}' : {}", roomId, e.getMessage());
-        }
-    }
-
     public void setRoomThermMode(String roomId, SetpointMode targetMode) {
         try {
-            api.setRoomThermpoint(homeId, roomId, targetMode,
+            api.setRoomThermpoint(handlerId, roomId, targetMode,
                     targetMode == SetpointMode.MAX ? setpointEndTimeFromNow(setPointDefaultDuration) : 0, 0);
-            expireData();
+            handler.expireData();
         } catch (NetatmoException e) {
             logger.warn("Error setting room thermostat mode '{}' : {}", roomId, e.getMessage());
         }
@@ -120,19 +108,23 @@ public class EnergyCapability extends Capability<EnergyApi> {
 
     public void setRoomThermTemp(String roomId, double temperature, long endtime, SetpointMode mode) {
         try {
-            api.setRoomThermpoint(homeId, roomId, mode, endtime, temperature);
-            expireData();
+            api.setRoomThermpoint(handlerId, roomId, mode, endtime, temperature);
+            handler.expireData();
         } catch (NetatmoException e) {
             logger.warn("Error setting room thermostat mode '{}' : {}", roomId, e.getMessage());
         }
     }
 
+    public void setRoomThermTemp(String roomId, double temperature) {
+        setRoomThermTemp(roomId, temperature, setpointEndTimeFromNow(setPointDefaultDuration), SetpointMode.MANUAL);
+    }
+
     @Override
-    public void internalHandleCommand(String channelName, Command command) {
+    public void handleCommand(String channelName, Command command) {
         try {
             switch (channelName) {
                 case CHANNEL_PLANNING:
-                    api.switchSchedule(homeId, command.toString());
+                    api.switchSchedule(handlerId, command.toString());
                     break;
                 case CHANNEL_SETPOINT_MODE:
                     SetpointMode targetMode = SetpointMode.valueOf(command.toString());
@@ -140,11 +132,15 @@ public class EnergyCapability extends Capability<EnergyApi> {
                         logger.info("Switch to 'Manual' is done by setting a setpoint temp, command ignored");
                         return;
                     }
-                    api.setThermMode(homeId, targetMode.apiDescriptor);
+                    api.setThermMode(handlerId, targetMode.apiDescriptor);
             }
-            expireData();
+            handler.expireData();
         } catch (NetatmoException e) {
             logger.warn("Error handling command '{}' : {}", command, e.getMessage());
         }
+    }
+
+    public static long setpointEndTimeFromNow(int duration_min) {
+        return ZonedDateTime.now().plusMinutes(duration_min).toEpochSecond();
     }
 }

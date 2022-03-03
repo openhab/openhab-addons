@@ -36,7 +36,7 @@ public class NAThing extends NAObject implements NetatmoModule {
             "last_message", "last_activity" })
     private @Nullable ZonedDateTime lastSeen;
     @SerializedName(value = "firmware", alternate = { "firmware_revision" })
-    private String firmware = "";
+    private @Nullable String firmware;
     private @Nullable Boolean reachable;
     private @Nullable NADashboard dashboardData;
 
@@ -59,7 +59,7 @@ public class NAThing extends NAObject implements NetatmoModule {
         return dashboardData;
     }
 
-    public String getFirmware() {
+    public @Nullable String getFirmware() {
         return firmware;
     }
 

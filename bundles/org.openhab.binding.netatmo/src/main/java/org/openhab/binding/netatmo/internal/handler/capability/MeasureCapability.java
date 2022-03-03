@@ -16,6 +16,7 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,9 +25,10 @@ import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
+import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.config.MeasureConfiguration;
+import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.MeasuresChannelHelper;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -40,18 +42,27 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class MeasureCapability extends Capability<WeatherApi> {
+public class MeasureCapability extends RestCapability<WeatherApi> {
     private final Logger logger = LoggerFactory.getLogger(MeasureCapability.class);
     private final Map<String, State> measures = new HashMap<>();
 
-    public MeasureCapability(Bridge bridge, MeasuresChannelHelper helper, ApiBridge apiBridge) {
-        super(bridge, apiBridge.getRestManager(WeatherApi.class));
+    public MeasureCapability(NACommonInterface handler, MeasuresChannelHelper helper, ApiBridge apiBridge) {
+        super(handler, apiBridge.getRestManager(WeatherApi.class));
         helper.setMeasures(measures);
+    }
+
+    @Override
+    public List<NAObject> updateReadings() {
+        String bridgeId = handler.getBridgeId();
+        String deviceId = bridgeId != null ? bridgeId : handlerId;
+        String moduleId = bridgeId != null ? handlerId : null;
+        updateMeasurements(deviceId, moduleId);
+        return List.of();
     }
 
     public void updateMeasurements(String deviceId, @Nullable String moduleId) {
         measures.clear();
-        bridge.getChannels().stream().filter(channel -> !channel.getConfiguration().getProperties().isEmpty())
+        thing.getChannels().stream().filter(channel -> !channel.getConfiguration().getProperties().isEmpty())
                 .forEach(channel -> {
                     ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
                     if (channelTypeUID != null) {
@@ -74,9 +85,7 @@ public class MeasureCapability extends Capability<WeatherApi> {
                             logger.warn("Error getting measurements for channel {}, check configuration",
                                     channel.getLabel());
                         }
-
                     }
                 });
     }
-
 }

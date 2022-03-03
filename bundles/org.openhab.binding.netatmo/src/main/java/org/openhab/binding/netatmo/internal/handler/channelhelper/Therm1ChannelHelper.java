@@ -28,7 +28,7 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class Therm1ChannelHelper extends AbstractChannelHelper {
+public class Therm1ChannelHelper extends ChannelHelper {
 
     public Therm1ChannelHelper() {
         super(GROUP_TH_PROPERTIES);

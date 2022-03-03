@@ -26,7 +26,7 @@ import org.openhab.core.types.State;
  */
 
 @NonNullByDefault
-public class MeasuresChannelHelper extends AbstractChannelHelper {
+public class MeasuresChannelHelper extends ChannelHelper {
     private @Nullable Map<String, State> measures;
 
     public void setMeasures(Map<String, State> measures) {

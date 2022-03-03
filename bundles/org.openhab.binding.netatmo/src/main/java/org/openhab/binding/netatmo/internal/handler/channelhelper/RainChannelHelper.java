@@ -28,7 +28,7 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class RainChannelHelper extends AbstractChannelHelper {
+public class RainChannelHelper extends ChannelHelper {
 
     public RainChannelHelper() {
         super(GROUP_RAIN, MeasureClass.RAIN_QUANTITY);

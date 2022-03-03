@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +19,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.AbstractChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.NABridgeHandler;
+import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.NAThingHandler;
+import org.openhab.binding.netatmo.internal.handler.capability.AirCareCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.CameraCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.Capability;
+import org.openhab.binding.netatmo.internal.handler.capability.ChannelHelperCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.EventCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.MeasureCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.ModuleCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.PersonCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
+import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.channelhelper.MeasuresChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -68,28 +83,59 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        Bridge bridge = (Bridge) thing;
-        BaseThingHandler handler = ModuleType.AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID))
-                .findFirst().map(mt -> buildThing(bridge, mt)).orElse(null);
-        return handler;
+        return ModuleType.AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
+                .map(mt -> buildNAHandler(thing, mt)).orElse(null);
     }
 
-    private @Nullable BaseThingHandler buildThing(Bridge bridge, ModuleType moduleType) {
-        List<AbstractChannelHelper> helpers = new ArrayList<>();
-        try {
-            Constructor<?> handlerConstructor = moduleType.getHandlerConstructor();
-            for (Class<?> helperClass : moduleType.channelHelpers) {
-                Constructor<?> helperConstructor = helperClass.getConstructor();
-                Object helper = helperConstructor.newInstance();
-                if (helper instanceof AbstractChannelHelper) {
-                    helpers.add((AbstractChannelHelper) helper);
+    private BaseThingHandler buildNAHandler(Thing thing, ModuleType moduleType) {
+        NACommonInterface handler = moduleType.isABridge() ? new NABridgeHandler((Bridge) thing, apiBridge)
+                : new NAThingHandler(thing, apiBridge);
+
+        List<ChannelHelper> helpers = new ArrayList<>();
+        moduleType.channelHelpers.forEach(helperClass -> {
+            try {
+                ChannelHelper helper = helperClass.getConstructor().newInstance();
+                helpers.add(helper);
+                if (helper instanceof MeasuresChannelHelper) {
+                    handler.getCapabilities()
+                            .put(new MeasureCapability(handler, (MeasuresChannelHelper) helper, apiBridge));
                 }
+            } catch (ReflectiveOperationException e) {
+                logger.warn("Error creating or initializing helper class : {}", e.getMessage());
             }
-            return (BaseThingHandler) handlerConstructor.newInstance(bridge, helpers, apiBridge,
-                    stateDescriptionProvider, webhookServlet);
-        } catch (ReflectiveOperationException | IllegalArgumentException e) {
-            logger.warn("Error creating or initializing constructor : {}", e.getMessage());
+        });
+        if (!helpers.isEmpty()) {
+            handler.getCapabilities().put(new ChannelHelperCapability(handler, apiBridge, helpers));
         }
-        return null;
+
+        moduleType.capabilities.forEach(capability -> {
+            Capability newCap = null;
+            if (capability == ModuleCapability.class) {
+                newCap = new ModuleCapability(handler);
+            } else if (capability == AirCareCapability.class) {
+                newCap = new AirCareCapability(handler, apiBridge);
+            } else if (capability == EventCapability.class) {
+                newCap = new EventCapability(handler, apiBridge, webhookServlet);
+            } else if (capability == HomeCapability.class) {
+                newCap = new HomeCapability(handler, apiBridge, stateDescriptionProvider);
+            } else if (capability == WeatherCapability.class) {
+                newCap = new WeatherCapability(handler, apiBridge);
+            } else if (capability == RoomCapability.class) {
+                newCap = new RoomCapability(handler);
+            } else if (capability == PersonCapability.class) {
+                newCap = new PersonCapability(handler, stateDescriptionProvider);
+            } else if (capability == CameraCapability.class) {
+                newCap = new CameraCapability(handler, stateDescriptionProvider, helpers);
+            } else if (capability == PresenceCapability.class) {
+                newCap = new PresenceCapability(handler, stateDescriptionProvider, helpers);
+            }
+            if (newCap != null) {
+                handler.getCapabilities().put(newCap);
+            } else {
+                logger.warn("No factory entry defined to create Capability : {}", capability);
+            }
+        });
+
+        return (BaseThingHandler) handler;
     }
 }

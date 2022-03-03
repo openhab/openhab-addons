@@ -46,7 +46,6 @@ public class NADeserializer {
         gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory())
                 .registerTypeAdapter(NAObjectMap.class, new NAObjectMapDeserializer())
-                .registerTypeAdapter(NAThingMap.class, new NAThingMapDeserializer())
                 .registerTypeAdapter(NAPushType.class, new NAPushTypeDeserializer())
                 .registerTypeAdapter(ZonedDateTime.class,
                         (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> {

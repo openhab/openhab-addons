@@ -30,7 +30,7 @@ import org.openhab.core.types.UnDefType;
  *
  */
 @NonNullByDefault
-public class EventChannelHelper extends AbstractChannelHelper {
+public class EventChannelHelper extends ChannelHelper {
     public EventChannelHelper() {
         this(GROUP_LAST_EVENT);
     }

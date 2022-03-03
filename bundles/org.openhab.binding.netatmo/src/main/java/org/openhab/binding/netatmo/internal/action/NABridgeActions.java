@@ -14,7 +14,7 @@ package org.openhab.binding.netatmo.internal.action;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.handler.NetatmoHandler;
+import org.openhab.binding.netatmo.internal.handler.NABridgeHandler;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -23,25 +23,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DeviceActions} defines thing actions for each Netatmo thing.
+ * The {@link NABridgeActions} defines thing actions for each Netatmo bridge.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @ThingActionsScope(name = "netatmo")
 @NonNullByDefault
-public class DeviceActions implements ThingActions {
-    private final Logger logger = LoggerFactory.getLogger(DeviceActions.class);
+public class NABridgeActions implements ThingActions {
+    private final Logger logger = LoggerFactory.getLogger(NABridgeActions.class);
 
-    private @Nullable NetatmoHandler handler;
+    private @Nullable NABridgeHandler handler;
 
-    public DeviceActions() {
-        logger.trace("Netatmo Device actions service created");
+    public NABridgeActions() {
+        logger.trace("NABridgeActions service created");
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof NetatmoHandler) {
-            this.handler = (NetatmoHandler) handler;
+        if (handler instanceof NABridgeHandler) {
+            this.handler = (NABridgeHandler) handler;
         }
     }
 
@@ -50,9 +50,9 @@ public class DeviceActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "@text/reconnectApiLabel", description = "@text/reconnectApiDesc")
+    @RuleAction(label = "Reconnect API", description = "Reopens the Netatmo API session.")
     public void reconnectApi() {
-        NetatmoHandler localHandler = handler;
+        NABridgeHandler localHandler = handler;
         if (localHandler == null) {
             logger.debug("Handler not set for device thing actions.");
             return;
@@ -65,6 +65,6 @@ public class DeviceActions implements ThingActions {
      * Static setLevel method for Rules DSL backward compatibility
      */
     public static void reconnectApi(ThingActions actions) {
-        ((DeviceActions) actions).reconnectApi();
+        ((NABridgeActions) actions).reconnectApi();
     }
 }
