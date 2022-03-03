@@ -15,7 +15,7 @@
 		<item-type>Switch</item-type>
 		<label>Motion Status</label>
 		<description>Indicates whether motion is detected or not</description>
-		<category>Switch</category>
+		<category>Motion</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -23,12 +23,14 @@
 		<item-type>DateTime</item-type>
 		<label>Last Activity (Date/Time)</label>
 		<description>Date/time when last motion was detected</description>
+		<category>Time</category>
 	</channel-type>
 
 	<channel-type id="lastChangedAt" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Activity (Date/Time)</label>
 		<description>Date/time when the state last changed</description>
+		<category>Time</category>
 	</channel-type>
 
 	<channel-type id="lastOnFor" advanced="true">
@@ -42,6 +44,7 @@
 		<item-type>Number</item-type>
 		<label>Today's Activity (s)</label>
 		<description>How long has the device been switched on today</description>
+		<category>Time</category>
 		<state pattern="%.1f s"/>
 	</channel-type>
 
@@ -49,6 +52,7 @@
 		<item-type>Number</item-type>
 		<label>Total Activity (s)</label>
 		<description>How long has the device been switched on totally</description>
+		<category>Time</category>
 		<state pattern="%.1f s"/>
 	</channel-type>
 
@@ -56,6 +60,7 @@
 		<item-type>Number</item-type>
 		<label>Usage Timespan (s)</label>
 		<description>Time used to measure average usage</description>
+		<category>Time</category>
 		<state pattern="%.1f s"/>
 	</channel-type>
 
@@ -155,12 +160,14 @@
 		<item-type>Number</item-type>
 		<label>ModeTime</label>
 		<description>Shows the current amount of time, in minutes, that the Coffee Maker has been in the current mode</description>
+		<category>Time</category>
 	</channel-type>
 
 	<channel-type id="timeRemaining">
 		<item-type>Number</item-type>
 		<label>TimeRemaining</label>
 		<description>Shows the remaining brewing time of a WeMo Coffee Maker</description>
+		<category>Time</category>
 	</channel-type>
 
 	<channel-type id="waterLevelReached" advanced="true">
@@ -188,18 +195,21 @@
 		<item-type>DateTime</item-type>
 		<label>Brewed</label>
 		<description>Date/time the coffee maker last completed brewing coffee</description>
+		<category>Time</category>
 	</channel-type>
 
 	<channel-type id="lastCleaned" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>LastCleaned</label>
 		<description>Date/time the coffee maker last completed cleaning</description>
+		<category>Time</category>
 	</channel-type>
 
 	<channel-type id="faderCountDownTime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Fader CountDown Time</label>
 		<description>The fading duration time in minutes</description>
+		<category>Time</category>
 		<state min="1" max="30" step="1.0" pattern="%d min" readOnly="false"/>
 	</channel-type>
 
@@ -225,6 +235,7 @@
 		<item-type>DateTime</item-type>
 		<label>NightMode Start Time</label>
 		<description>Time when the Night Mode starts</description>
+		<category>Time</category>
 		<state pattern="%1$tR" readOnly="true"/>
 	</channel-type>
 
@@ -232,6 +243,7 @@
 		<item-type>DateTime</item-type>
 		<label>NightMode End Time</label>
 		<description>Time when the Night Mode ends</description>
+		<category>Time</category>
 		<state pattern="%1$tR" readOnly="true"/>
 	</channel-type>
 
@@ -353,12 +365,14 @@
 		<item-type>Number</item-type>
 		<label>Current Humidity</label>
 		<description>Shows the current humidity of a WeMo enabled Holmes Humidifier</description>
+		<category>Humidity</category>
 	</channel-type>
 
 	<channel-type id="desiredHumidity">
 		<item-type>Number</item-type>
 		<label>Target Humidity</label>
 		<description>Shows the target humidity of a WeMo enabled Holmes Humidifier</description>
+		<category>Humidity</category>
 		<state readOnly="false">
 			<options>
 				<option value="45"></option>
@@ -402,18 +416,21 @@
 		<item-type>Number</item-type>
 		<label>Current Temperature</label>
 		<description>Shows the current temperature measured by a WeMo enabled Heater</description>
+		<category>Temperature</category>
 	</channel-type>
 
 	<channel-type id="targetTemperature">
 		<item-type>Number</item-type>
 		<label>Target Temperature</label>
 		<description>Shows the target temperature for a WeMo enabled Heater</description>
+		<category>Temperature</category>
 	</channel-type>
 
 	<channel-type id="autoOffTime">
 		<item-type>DateTime</item-type>
 		<label>Auto OFF Time</label>
 		<description>Time when a WeMo enabled Heater should switch off</description>
+		<category>Time</category>
 		<state pattern="%1$tR" readOnly="false"/>
 	</channel-type>
 
