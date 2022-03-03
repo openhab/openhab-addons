@@ -32,6 +32,25 @@ public class ACCapability extends Capability {
 
     private List<String> supportedOpMode = Collections.emptyList();
     private List<String> supportedFanSpeed = Collections.emptyList();
+    private boolean isJetModeAvailable;
+    private String coolJetModeCommandOn = "";
+    private String coolJetModeCommandOff = "";
+
+    public String getCoolJetModeCommandOff() {
+        return coolJetModeCommandOff;
+    }
+
+    public void setCoolJetModeCommandOff(String coolJetModeCommandOff) {
+        this.coolJetModeCommandOff = coolJetModeCommandOff;
+    }
+
+    public String getCoolJetModeCommandOn() {
+        return coolJetModeCommandOn;
+    }
+
+    public void setCoolJetModeCommandOn(String coolJetModeCommandOn) {
+        this.coolJetModeCommandOn = coolJetModeCommandOn;
+    }
 
     public Map<String, String> getOpMod() {
         return opMod;
@@ -63,5 +82,13 @@ public class ACCapability extends Capability {
 
     public void setSupportedFanSpeed(List<String> supportedFanSpeed) {
         this.supportedFanSpeed = supportedFanSpeed;
+    }
+
+    public void setJetModeAvailable(boolean jetModeAvailable) {
+        this.isJetModeAvailable = jetModeAvailable;
+    }
+
+    public boolean isJetModeAvailable() {
+        return this.isJetModeAvailable;
     }
 }
