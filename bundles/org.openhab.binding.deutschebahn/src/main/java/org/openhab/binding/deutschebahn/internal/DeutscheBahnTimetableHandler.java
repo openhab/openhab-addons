@@ -129,13 +129,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
         this.executorService = executorService == null ? this.scheduler : executorService;
     }
 
-    private List<TimetableStop> loadTimetable() {
-        final TimetableLoader currentLoader = this.loader;
-        if (currentLoader == null) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
-            return Collections.emptyList();
-        }
-
+    private List<TimetableStop> loadTimetable(TimetableLoader currentLoader) {
         try {
             final List<TimetableStop> stops = currentLoader.getTimetableStops();
             this.updateStatus(ThingStatus.ONLINE);
@@ -171,7 +165,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
             }
 
             final EventType eventSelection = stopFilter == TimetableStopFilter.ARRIVALS ? EventType.ARRIVAL
-                    : EventType.ARRIVAL;
+                    : EventType.DEPARTURE;
 
             this.loader = new TimetableLoader( //
                     api, //
@@ -247,7 +241,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
         }
         final GroupedThings groupedThings = this.groupThingsPerPosition();
         currentLoader.setStopCount(groupedThings.getMaxPosition());
-        final List<TimetableStop> timetableStops = this.loadTimetable();
+        final List<TimetableStop> timetableStops = this.loadTimetable(currentLoader);
         if (timetableStops.isEmpty()) {
             updateThingsToUndefined(groupedThings);
             return;
