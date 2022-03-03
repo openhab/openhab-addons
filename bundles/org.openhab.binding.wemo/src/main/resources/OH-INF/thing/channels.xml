@@ -395,7 +395,7 @@
 	<channel-type id="waterLevel">
 		<item-type>String</item-type>
 		<label>Water Level</label>
-		<description>Shows the water levele of a WeMo enabled Holmes Humidifier</description>
+		<description>Shows the water level of a WeMo enabled Holmes Humidifier</description>
 		<state readOnly="true">
 			<options>
 				<option value="EMPTY"></option>
