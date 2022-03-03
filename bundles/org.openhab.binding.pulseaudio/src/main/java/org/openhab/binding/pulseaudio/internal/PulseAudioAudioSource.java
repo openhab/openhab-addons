@@ -224,7 +224,6 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
             return bb.intValue();
         }
 
-        @SuppressWarnings("null")
         @Override
         public int read(byte @Nullable [] b) throws IOException {
             return read(b, 0, b.length);

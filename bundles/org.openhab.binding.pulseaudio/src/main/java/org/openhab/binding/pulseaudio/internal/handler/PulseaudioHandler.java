@@ -472,7 +472,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
         if (handler == null) {
             return 30000;
         }
-        AbstractAudioDeviceConfig device = getPulseaudioBridgeHandler().getDevice(name);
+        AbstractAudioDeviceConfig device = handler.getDevice(name);
         String idleTimeoutPropName = (device instanceof Source) ? DEVICE_PARAMETER_AUDIO_SOURCE_IDLE_TIMEOUT
                 : DEVICE_PARAMETER_AUDIO_SINK_IDLE_TIMEOUT;
         var idleTimeout = (BigDecimal) getThing().getConfiguration().get(idleTimeoutPropName);
