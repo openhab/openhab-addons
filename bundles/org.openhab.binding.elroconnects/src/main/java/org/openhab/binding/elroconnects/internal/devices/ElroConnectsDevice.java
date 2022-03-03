@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.elroconnects.internal.devices;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -19,6 +20,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.ElroDeviceStatus;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsBridgeHandler;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsDeviceHandler;
+import org.openhab.binding.elroconnects.internal.util.ElroConnectsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ElroConnectsDevice} is an abstract class representing all basic properties for ELRO Connects devices.
@@ -28,6 +32,8 @@ import org.openhab.binding.elroconnects.internal.handler.ElroConnectsDeviceHandl
  */
 @NonNullByDefault
 public abstract class ElroConnectsDevice {
+
+    private final Logger logger = LoggerFactory.getLogger(ElroConnectsDevice.class);
 
     // minimum data to create an instance of the class
     protected int deviceId;
@@ -70,6 +76,17 @@ public abstract class ElroConnectsDevice {
 
     public void setDeviceName(String deviceName) {
         this.deviceName = deviceName;
+    }
+
+    public void updateDeviceName(String deviceName) {
+        try {
+            if (!ElroConnectsUtil.equals(getDeviceName(), deviceName, 15)) {
+                bridge.renameDevice(deviceId, deviceName);
+                setDeviceName(deviceName);
+            }
+        } catch (IOException e) {
+            logger.debug("Failed to update device name: {}", e.getMessage());
+        }
     }
 
     public void setDeviceType(String deviceType) {

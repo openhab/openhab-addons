@@ -95,6 +95,8 @@ public class ElroConnectsBindingConstants {
     public static final int ELRO_REC_DEVICE_STATUS = 19;
     public static final int ELRO_SYNC_DEVICES = 29;
 
+    public static final int ELRO_DEVICE_RENAME = 105;
+
     public static final int ELRO_SELECT_SCENE = 106;
     public static final int ELRO_GET_SCENE = 18;
     public static final int ELRO_REC_SCENE = 28;

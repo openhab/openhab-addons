@@ -53,6 +53,7 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
         if (bridgeHandler != null) {
             bridgeHandler.setDeviceHandler(deviceId, this);
             updateProperties(bridgeHandler);
+            updateDeviceName(bridgeHandler);
             refreshChannels(bridgeHandler);
         }
     }
@@ -110,6 +111,14 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
             Map<String, String> properties = new HashMap<>();
             properties.put("deviceType", ElroConnectsUtil.stringOrEmpty(device.getDeviceType()));
             thing.setProperties(properties);
+        }
+    }
+
+    protected void updateDeviceName(ElroConnectsBridgeHandler bridgeHandler) {
+        ElroConnectsDevice device = bridgeHandler.getDevice(deviceId);
+        String deviceName = thing.getLabel();
+        if ((device != null) && (deviceName != null)) {
+            device.updateDeviceName(deviceName);
         }
     }
 

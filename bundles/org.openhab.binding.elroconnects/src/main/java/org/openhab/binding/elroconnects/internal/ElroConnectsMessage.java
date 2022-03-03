@@ -90,6 +90,11 @@ public class ElroConnectsMessage {
         return this;
     }
 
+    public ElroConnectsMessage withDeviceName(String deviceName) {
+        params.data.deviceName = deviceName;
+        return this;
+    }
+
     public ElroConnectsMessage withSceneGroup(int sceneGroup) {
         params.data.sceneGroup = sceneGroup;
         return this;

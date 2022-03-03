@@ -50,7 +50,6 @@ import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDeviceTempe
 import org.openhab.binding.elroconnects.internal.discovery.ElroConnectsDiscoveryService;
 import org.openhab.binding.elroconnects.internal.util.ElroConnectsUtil;
 import org.openhab.core.common.NamedThreadFactory;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -65,7 +64,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
-import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -360,7 +358,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 byte[] buffer = new byte[4096];
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 while (!Thread.interrupted()) {
-                    String response = receive(socket, buffer, packet);
+                    String response = receive(socket, packet);
                     processMessage(socket, response);
                 }
             } catch (IOException e) {
@@ -474,7 +472,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         }
 
         int deviceId = Integer.parseInt(answerContent.substring(0, 4), 16);
-        String deviceName = (new String(HexUtils.hexToBytes(answerContent.substring(4)))).replaceAll("[@$]*", "");
+        String deviceName = ElroConnectsUtil.decode(answerContent.substring(4));
         ElroConnectsDevice device = devices.get(deviceId);
         if (device != null) {
             device.setDeviceName(deviceName);
@@ -491,7 +489,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Could not decode answer {}", answerContent);
                 return;
             }
-            sceneName = (new String(HexUtils.hexToBytes(answerContent.substring(6, 38)))).replaceAll("[@$]*", "");
+            sceneName = ElroConnectsUtil.decode(answerContent.substring(6, 38));
             scenes.put(sceneId, sceneName);
             logger.debug("Scene ID {} name: {}", sceneId, sceneName);
         }
@@ -623,7 +621,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         send(socket, query, broadcast);
         byte[] buffer = new byte[4096];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-        return receive(socket, buffer, packet);
+        return receive(socket, packet);
     }
 
     private void send(DatagramSocket socket, String query, boolean broadcast) throws IOException {
@@ -644,9 +642,9 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         socket.send(queryPacket);
     }
 
-    private String receive(DatagramSocket socket, byte[] buffer, DatagramPacket packet) throws IOException {
+    private String receive(DatagramSocket socket, DatagramPacket packet) throws IOException {
         socket.receive(packet);
-        String response = new String(packet.getData(), packet.getOffset(), packet.getLength());
+        String response = new String(packet.getData(), packet.getOffset(), packet.getLength(), StandardCharsets.UTF_8);
         logger.debug("Received: {}", response);
         addr = packet.getAddress();
         return response;
@@ -685,6 +683,17 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         logger.debug("Device control {}, status {}", deviceId, deviceCommand);
         ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
                 ELRO_DEVICE_CONTROL).withDeviceId(ElroConnectsUtil.encode(deviceId)).withDeviceStatus(deviceCommand);
+        sendElroMessage(elroMessage, false);
+    }
+
+    public void renameDevice(int deviceId, String deviceName) throws IOException {
+        String connectorId = this.connectorId;
+        String ctrlKey = this.ctrlKey;
+        String encodedName = ElroConnectsUtil.encode(deviceName, 15);
+        encodedName = encodedName + ElroConnectsUtil.crc16(encodedName);
+        logger.debug("Rename device {} to {}", deviceId, deviceName);
+        ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
+                ELRO_DEVICE_RENAME).withDeviceId(ElroConnectsUtil.encode(deviceId)).withDeviceName(encodedName);
         sendElroMessage(elroMessage, false);
     }
 
@@ -779,9 +788,11 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         if (SCENE.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 updateState(SCENE, new StringType(String.valueOf(currentScene)));
-            } else if (command instanceof DecimalType) {
+            } else if (command instanceof StringType) {
                 try {
-                    selectScene(((DecimalType) command).intValue());
+                    selectScene(Integer.valueOf(((StringType) command).toString()));
+                } catch (NumberFormatException nfe) {
+                    logger.debug("Cannot interpret scene command {}", command);
                 } catch (IOException e) {
                     restartCommunication("Error in communication while setting scene: " + e.getMessage());
                     return;
