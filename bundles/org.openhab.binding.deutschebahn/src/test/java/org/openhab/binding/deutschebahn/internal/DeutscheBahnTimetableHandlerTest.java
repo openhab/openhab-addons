@@ -110,8 +110,7 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
 
         try {
             verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
-            verify(callback, timeout(1000)).statusUpdated(eq(bridge),
-                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+            verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
 
             verifyThingUpdated(bridge, 0, "-5296516961807204721-2108160906-5");
             verifyThingUpdated(bridge, 1, "-8364795265993682073-2108160911-6");
@@ -124,8 +123,7 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
     private void verifyThingUpdated(final Bridge bridge, int offset, String stopId) {
         final Thing train = bridge.getThings().get(offset);
         final DeutscheBahnTrainHandler childHandler = (DeutscheBahnTrainHandler) train.getHandler();
-        verify(childHandler, timeout(1000))
-                .updateChannels(argThat((TimetableStop stop) -> stop.getId().equals(stopId)));
+        verify(childHandler).updateChannels(argThat((TimetableStop stop) -> stop.getId().equals(stopId)));
     }
 
     @Test
@@ -140,8 +138,7 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
 
         try {
             verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
-            verify(callback, timeout(1000)).statusUpdated(eq(bridge),
-                    argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)));
+            verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)));
 
             verifyChannelsUpdatedToUndef(bridge, 0, callback);
             verifyChannelsUpdatedToUndef(bridge, 1, callback);
@@ -181,8 +178,7 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
 
         try {
             verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
-            verify(callback, timeout(1000)).statusUpdated(eq(bridge),
-                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+            verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
 
             verifyThingUpdated(bridge, 0, stop01.getId());
             verifyChannelsUpdatedToUndef(bridge, 1, callback);
