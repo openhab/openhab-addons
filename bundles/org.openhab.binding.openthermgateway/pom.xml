@@ -14,4 +14,5 @@
 
   <name>openHAB Add-ons :: Bundles :: OpenTherm Gateway Binding</name>
 
+  <description>This binding integrates OpenTherm capable devices via an OpenThermGateway bridge.</description>
 </project>
