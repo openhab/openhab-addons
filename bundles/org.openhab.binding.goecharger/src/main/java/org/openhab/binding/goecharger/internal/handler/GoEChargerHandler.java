@@ -316,7 +316,7 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
             }
         } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            logger.warn("Could not send data: {}, {}", urlStr, e.toString());
+            logger.debug("Could not send data: {}, {}", urlStr, e.toString());
         }
     }
 
