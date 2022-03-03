@@ -91,11 +91,9 @@ public class GatewayCommand {
                 }
 
                 return new GatewayCommand(codeUpperCase, message, validateSet);
-            } else {
-                throw new IllegalArgumentException(String.format("Unsupported gateway code '%s'", code.toUpperCase()));
             }
+            throw new IllegalArgumentException(String.format("Unsupported gateway code '%s'", code.toUpperCase()));
         }
-
         throw new IllegalArgumentException(
                 String.format("Unable to parse gateway command with code '%s' and message '%s'", code, message));
     }
