@@ -25,7 +25,7 @@ public class PorcupineKSConstants {
     /**
      * Service name
      */
-    public static final String SERVICE_NAME = "Porcupine Keyword Spotter";
+    public static final String SERVICE_NAME = "Porcupine";
 
     /**
      * Service id
