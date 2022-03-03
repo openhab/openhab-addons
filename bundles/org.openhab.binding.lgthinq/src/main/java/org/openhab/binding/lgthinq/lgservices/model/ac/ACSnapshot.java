@@ -37,6 +37,10 @@ public class ACSnapshot implements Snapshot {
 
     private double currentTemperature;
 
+    private boolean coolJetModeOn;
+
+    private double coolJetMode;
+
     private int operationMode;
     @Nullable
     private Integer operation;
@@ -62,6 +66,16 @@ public class ACSnapshot implements Snapshot {
     @JsonAlias("WindStrength")
     public Integer getAirWindStrength() {
         return airWindStrength;
+    }
+
+    @JsonProperty("airState.wMode.jet")
+    @JsonAlias("Jet")
+    public Double getCoolJetMode() {
+        return coolJetMode;
+    }
+
+    public void setCoolJetMode(Double coolJetMode) {
+        this.coolJetMode = coolJetMode;
     }
 
     public void setAirWindStrength(Integer airWindStrength) {
