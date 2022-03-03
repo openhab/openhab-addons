@@ -60,7 +60,10 @@ public abstract class DataItem {
         return (code == null || code == message.getCodeType());
     }
 
-    @SuppressWarnings("unused")
+    /**
+     * @param message unused in this default implementation
+     * @return the channel id
+     */
     public String getChannelId(Message message) {
         // Default implementation
         return subject;
