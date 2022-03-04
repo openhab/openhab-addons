@@ -281,6 +281,10 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
                     // refresh to get the current volume level
                     bridge.getClient().update();
                     device = bridge.getDevice(name);
+                    if (device == null) {
+                        logger.warn("missing device info, aborting");
+                        return;
+                    }
                     int oldVolume = device.getVolume();
                     int newVolume = oldVolume;
                     if (command.equals(IncreaseDecreaseType.INCREASE)) {
@@ -358,11 +362,12 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
     public int getLastVolume() {
         if (savedVolume == null) {
             PulseaudioBridgeHandler bridge = getPulseaudioBridgeHandler();
-            AbstractAudioDeviceConfig device = bridge.getDevice(name);
             // refresh to get the current volume level
             bridge.getClient().update();
-            device = bridge.getDevice(name);
-            savedVolume = device.getVolume();
+            AbstractAudioDeviceConfig device = bridge.getDevice(name);
+            if (device != null) {
+                savedVolume = device.getVolume();
+            }
         }
         return savedVolume == null ? 50 : savedVolume;
     }
@@ -370,6 +375,10 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
     public void setVolume(int volume) {
         PulseaudioBridgeHandler bridge = getPulseaudioBridgeHandler();
         AbstractAudioDeviceConfig device = bridge.getDevice(name);
+        if (device == null) {
+            logger.warn("missing device info, aborting");
+            return;
+        }
         bridge.getClient().setVolumePercent(device, volume);
         updateState(VOLUME_CHANNEL, new PercentType(volume));
         savedVolume = volume;
@@ -412,11 +421,15 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
      * If no module is listening, then it will command the module to load on the pulse audio server,
      *
      * @return the port on which the pulseaudio server is listening for this sink
+     * @throws IOException when device info is not available
      * @throws InterruptedException when interrupted during the loading module wait
      */
-    public int getSimpleTcpPort() throws InterruptedException {
+    public int getSimpleTcpPort() throws IOException, InterruptedException {
         var bridgeHandler = getPulseaudioBridgeHandler();
         AbstractAudioDeviceConfig device = bridgeHandler.getDevice(name);
+        if (device == null) {
+            throw new IOException("missing device info, device appears to be offline");
+        }
         String simpleTcpPortPrefName = (device instanceof Source) ? DEVICE_PARAMETER_AUDIO_SOURCE_PORT
                 : DEVICE_PARAMETER_AUDIO_SINK_PORT;
         BigDecimal simpleTcpPortPref = ((BigDecimal) getThing().getConfiguration().get(simpleTcpPortPrefName));
