@@ -176,8 +176,10 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
                 logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
                 this.onValueReceived(variable, value, actionService + "1");
             }
+            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.warn("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }
