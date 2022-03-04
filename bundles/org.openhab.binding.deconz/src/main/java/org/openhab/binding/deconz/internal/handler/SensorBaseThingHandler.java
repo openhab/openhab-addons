@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.deconz.internal.handler;
 
-import static org.openhab.binding.deconz.internal.BindingConstants.*;
+import static org.openhab.binding.deconz.internal.BindingConstants.CHANNEL_BATTERY_LEVEL;
+import static org.openhab.binding.deconz.internal.BindingConstants.CHANNEL_BATTERY_LOW;
+import static org.openhab.binding.deconz.internal.BindingConstants.CHANNEL_LAST_SEEN;
+import static org.openhab.binding.deconz.internal.BindingConstants.CHANNEL_LAST_UPDATED;
+import static org.openhab.binding.deconz.internal.BindingConstants.UNIQUE_ID;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +25,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
+
+import com.google.gson.Gson;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,8 +49,6 @@ import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * This sensor Thing doesn't establish any connections, that is done by the bridge Thing.
@@ -138,6 +142,10 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
             createChannel(CHANNEL_BATTERY_LOW, ChannelKind.STATE);
         }
 
+        if (sensorState.lowbattery != null) {
+            createChannel(CHANNEL_BATTERY_LOW, ChannelKind.STATE);
+        }
+
         createTypeSpecificChannels(sensorConfig, sensorState);
 
         ignoreConfigurationUpdate = false;
@@ -208,6 +216,12 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
                 String lastUpdated = newState.lastupdated;
                 if (lastUpdated != null && !"none".equals(lastUpdated)) {
                     updateState(channelUID, Util.convertTimestampToDateTime(lastUpdated));
+                }
+                break;
+            case CHANNEL_BATTERY_LOW:
+                Boolean lowBattery = newState.lowbattery;
+                if (lowBattery != null) {
+                    updateState(channelUID, OnOffType.from(lowBattery));
                 }
                 break;
             default:
