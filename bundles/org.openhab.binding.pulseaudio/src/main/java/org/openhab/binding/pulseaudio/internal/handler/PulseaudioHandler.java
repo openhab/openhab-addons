@@ -421,6 +421,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
      * If no module is listening, then it will command the module to load on the pulse audio server,
      *
      * @return the port on which the pulseaudio server is listening for this sink
+     * @throws IOException when device info is not available
      * @throws InterruptedException when interrupted during the loading module wait
      */
     public int getSimpleTcpPort() throws IOException, InterruptedException {
