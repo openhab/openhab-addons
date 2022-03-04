@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -108,9 +109,11 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(DeutscheBahnTimetableHandler.class);
     private @Nullable TimetableLoader loader;
 
-    private TimetablesV1ApiFactory timetablesV1ApiFactory;
+    private final TimetablesV1ApiFactory timetablesV1ApiFactory;
 
-    private Supplier<Date> currentTimeProvider;
+    private final Supplier<Date> currentTimeProvider;
+
+    private final ScheduledExecutorService executorService;
 
     /**
      * Creates an new {@link DeutscheBahnTimetableHandler}.
@@ -118,10 +121,12 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
     public DeutscheBahnTimetableHandler( //
             final Bridge bridge, //
             final TimetablesV1ApiFactory timetablesV1ApiFactory, //
-            final Supplier<Date> currentTimeProvider) {
+            final Supplier<Date> currentTimeProvider, //
+            @Nullable final ScheduledExecutorService executorService) {
         super(bridge);
         this.timetablesV1ApiFactory = timetablesV1ApiFactory;
         this.currentTimeProvider = currentTimeProvider;
+        this.executorService = executorService == null ? this.scheduler : executorService;
     }
 
     private List<TimetableStop> loadTimetable() {
@@ -178,7 +183,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
 
             this.updateStatus(ThingStatus.UNKNOWN);
 
-            this.scheduler.execute(() -> {
+            this.executorService.execute(() -> {
                 this.updateChannels();
                 this.restartJob();
             });
@@ -204,7 +209,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
         try {
             this.stopUpdateJob();
             if (this.getThing().getStatus() == ThingStatus.ONLINE) {
-                this.updateJob = this.scheduler.scheduleWithFixedDelay(//
+                this.updateJob = this.executorService.scheduleWithFixedDelay(//
                         this::updateChannels, //
                         0L, //
                         UPDATE_INTERVAL_SECONDS, //
