@@ -138,7 +138,7 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
             this.pipeWriteTask = executor.submit(() -> {
                 int lengthRead;
                 byte[] buffer = new byte[1024];
-                while (true) {
+                while (!pipeOutputs.isEmpty()) {
                     var stream = getSourceInputStream();
                     if (stream != null) {
                         try {
@@ -156,6 +156,7 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                         logger.warn("Unable to get source input stream");
                     }
                 }
+                this.pipeWriteTask = null;
             });
         }
     }
