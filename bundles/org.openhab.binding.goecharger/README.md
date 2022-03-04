@@ -25,7 +25,7 @@ The apiVersion 2 is only available for Go-eCharger with new hardware revision (C
 
 Currently available channels are 
 | Channel ID               | Item Type                | Description                                                   | API version       |
-|--------------------------|--------------------------|---------------------------------------------------------------|                   |
+|--------------------------|--------------------------|---------------------------------------------------------------|-------------------|
 | maxCurrent               | Number:ElectricCurrent   | Maximum current allowed to use for charging                   | 1 (r/w), 2 (r/w)  |
 | pwmSignal                | String                   | Signal status for PWM signal                                  | 1 (r), 2 (r)      |
 | error                    | String                   | Error code of charger                                         | 1 (r), 2 (r)      |
