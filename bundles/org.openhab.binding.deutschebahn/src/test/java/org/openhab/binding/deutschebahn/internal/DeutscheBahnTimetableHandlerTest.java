@@ -50,18 +50,18 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHelper {
 
-    private static Configuration createConfig() {
+    private static Configuration createConfig(String trainFilter) {
         final Configuration config = new Configuration();
         config.put("accessToken", "letMeIn");
         config.put("evaNo", "8000226");
-        config.put("trainFilter", "all");
+        config.put("trainFilter", trainFilter);
         return config;
     }
 
-    private static Bridge mockBridge() {
+    private static Bridge mockBridge(String trainFilter) {
         final Bridge bridge = mock(Bridge.class);
         when(bridge.getUID()).thenReturn(new ThingUID(DeutscheBahnBindingConstants.TIMETABLE_TYPE, "timetable"));
-        when(bridge.getConfiguration()).thenReturn(createConfig());
+        when(bridge.getConfiguration()).thenReturn(createConfig(trainFilter));
 
         final List<Thing> things = new ArrayList<>();
         things.add(DeutscheBahnTrainHandlerTest.mockThing(1));
@@ -76,9 +76,9 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
         return bridge;
     }
 
-    private DeutscheBahnTimetableHandler createAndInitHandler(final ThingHandlerCallback callback, final Bridge bridge)
-            throws Exception {
-        return createAndInitHandler(callback, bridge, createApiWithTestdata().getApiFactory());
+    private DeutscheBahnTimetableHandler createAndInitHandler(final ThingHandlerCallback callback, final Bridge bridge,
+            String dataDirectory) throws Exception {
+        return createAndInitHandler(callback, bridge, createApiWithTestdata(dataDirectory).getApiFactory());
     }
 
     private DeutscheBahnTimetableHandler createAndInitHandler( //
@@ -103,10 +103,10 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
 
     @Test
     public void testUpdateChannels() throws Exception {
-        final Bridge bridge = mockBridge();
+        final Bridge bridge = mockBridge("all");
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
 
-        final DeutscheBahnTimetableHandler handler = createAndInitHandler(callback, bridge);
+        final DeutscheBahnTimetableHandler handler = createAndInitHandler(callback, bridge, "/timetablesData");
 
         try {
             verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
@@ -120,6 +120,44 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
         }
     }
 
+    @Test
+    public void testStopsAreOrderedByDeparture() throws Exception {
+        final Bridge bridge = mockBridge("departures");
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+
+        final DeutscheBahnTimetableHandler handler = createAndInitHandler(callback, bridge,
+                "/timetablesDataDifferentOrder");
+
+        try {
+            verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
+            verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+
+            verifyThingUpdated(bridge, 0, "-5296516961807204721-2108160906-5");
+            verifyThingUpdated(bridge, 1, "-8364795265993682073-2108160911-6");
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testStopsAreOrderedByArrival() throws Exception {
+        final Bridge bridge = mockBridge("arrivals");
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+
+        final DeutscheBahnTimetableHandler handler = createAndInitHandler(callback, bridge,
+                "/timetablesDataDifferentOrder");
+
+        try {
+            verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
+            verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+
+            verifyThingUpdated(bridge, 0, "-8364795265993682073-2108160911-6");
+            verifyThingUpdated(bridge, 1, "-5296516961807204721-2108160906-5");
+        } finally {
+            handler.dispose();
+        }
+    }
+
     private void verifyThingUpdated(final Bridge bridge, int offset, String stopId) {
         final Thing train = bridge.getThings().get(offset);
         final DeutscheBahnTrainHandler childHandler = (DeutscheBahnTrainHandler) train.getHandler();
@@ -128,7 +166,7 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
 
     @Test
     public void testUpdateTrainsToUndefinedIfNoDataWasProvided() {
-        final Bridge bridge = mockBridge();
+        final Bridge bridge = mockBridge("all");
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
 
         final TimetablesV1ApiStub stubWithError = TimetablesV1ApiStub.createWithException();
@@ -158,7 +196,7 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
 
     @Test
     public void testUpdateTrainsToUndefinedIfNotEnoughDataWasProvided() {
-        final Bridge bridge = mockBridge();
+        final Bridge bridge = mockBridge("all");
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
 
         // Bridge contains 3 trains, but Timetable contains only 1 items, so two trains has to be updated to undef
