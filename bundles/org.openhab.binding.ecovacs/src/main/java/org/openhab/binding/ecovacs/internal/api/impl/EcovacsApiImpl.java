@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -231,7 +232,8 @@ public final class EcovacsApiImpl implements EcovacsApi {
         Request deviceRequest = httpClient.newRequest(userUrl).method(HttpMethod.POST)
                 .header(HttpHeader.CONTENT_TYPE, "application/json").content(new StringContentProvider(json));
         ContentResponse deviceResponse = executeRequest(deviceRequest);
-        return handleResponse(deviceResponse, PortalDeviceResponse.class).getDevices();
+        List<Device> devices = handleResponse(deviceResponse, PortalDeviceResponse.class).getDevices();
+        return devices != null ? devices : Collections.emptyList();
     }
 
     private List<IotProduct> getIotProductMap() throws EcovacsApiException, InterruptedException {
@@ -241,7 +243,8 @@ public final class EcovacsApiImpl implements EcovacsApi {
         Request deviceRequest = httpClient.newRequest(url).method(HttpMethod.POST)
                 .header(HttpHeader.CONTENT_TYPE, "application/json").content(new StringContentProvider(json));
         ContentResponse deviceResponse = executeRequest(deviceRequest);
-        return handleResponse(deviceResponse, PortalIotProductResponse.class).getProducts();
+        List<IotProduct> products = handleResponse(deviceResponse, PortalIotProductResponse.class).getProducts();
+        return products != null ? products : Collections.emptyList();
     }
 
     public <T> T sendIotCommand(Device device, DeviceDescription desc, IotDeviceCommand<T> command)
