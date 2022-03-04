@@ -38,6 +38,7 @@ import org.jivesoftware.smack.packet.StanzaError;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.sasl.SASLErrorException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smack.util.PacketParserUtils;
@@ -227,6 +228,8 @@ public class EcovacsXmppDevice implements EcovacsDevice {
             pingHandler.start();
         } catch (EcovacsApiException e) {
             throw e;
+        } catch (SASLErrorException e) {
+            throw new EcovacsApiException(e, true);
         } catch (XMPPException | SmackException | InterruptedException | IOException e) {
             throw new EcovacsApiException(e);
         }

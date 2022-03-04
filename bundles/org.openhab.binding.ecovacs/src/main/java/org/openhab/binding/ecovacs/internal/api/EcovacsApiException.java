@@ -23,16 +23,24 @@ import org.eclipse.jetty.client.api.Response;
 @NonNullByDefault
 public class EcovacsApiException extends IOException {
     private static final long serialVersionUID = -5903398729974682356L;
+    public final boolean isAuthFailure;
 
     public EcovacsApiException(String reason) {
         super(reason);
+        isAuthFailure = false;
     }
 
     public EcovacsApiException(Response response) {
         super("HTTP status " + response.getStatus());
+        isAuthFailure = response.getStatus() == 401;
     }
 
     public EcovacsApiException(Throwable cause) {
+        this(cause, false);
+    }
+
+    public EcovacsApiException(Throwable cause, boolean isAuthFailure) {
         super(cause);
+        this.isAuthFailure = isAuthFailure;
     }
 }

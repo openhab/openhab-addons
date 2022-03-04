@@ -48,8 +48,10 @@ import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
 import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
+import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3ConnAckException;
 import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3DisconnectException;
 import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth;
+import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 
 import io.netty.handler.ssl.util.SimpleTrustManagerFactory;
@@ -180,7 +182,10 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
             client.subscribeWith().topicFilter(topic).callback(eventCallback).send().get();
             logger.debug("Established MQTT connection to device {}", getSerialNumber());
         } catch (ExecutionException e) {
-            throw new EcovacsApiException(e);
+            Throwable cause = e.getCause();
+            boolean isAuthFailure = cause instanceof Mqtt3ConnAckException && ((Mqtt3ConnAckException) cause)
+                    .getMqttMessage().getReturnCode() == Mqtt3ConnAckReturnCode.NOT_AUTHORIZED;
+            throw new EcovacsApiException(e, isAuthFailure);
         }
     }
 

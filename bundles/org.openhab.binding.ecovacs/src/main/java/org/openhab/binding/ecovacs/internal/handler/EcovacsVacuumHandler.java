@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -81,6 +82,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -108,6 +110,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     private final EcovacsDynamicStateDescriptionProvider stateDescriptionProvider;
     private final Bundle bundle;
 
+    private @Nullable Future<?> initFuture;
     private @Nullable ScheduledFuture<?> reconnectFuture;
     private @Nullable ScheduledFuture<?> pollFuture;
     private @Nullable EcovacsDevice device;
@@ -179,51 +182,13 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         }
 
         logger.debug("{}: Initializing handler", serial);
-        scheduler.execute(() -> {
-            final Bridge bridge = getBridge();
-            final EcovacsApiHandler handler = bridge != null ? (EcovacsApiHandler) bridge.getHandler() : null;
-            final EcovacsApi api = handler != null ? handler.getApi() : null;
-
-            if (api == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-                return;
-            }
-
-            try {
-                Optional<EcovacsDevice> deviceOpt = api.getDevices().stream()
-                        .filter(d -> serial.equals(d.getSerialNumber())).findFirst();
-                if (deviceOpt.isPresent()) {
-                    EcovacsDevice device = deviceOpt.get();
-                    this.device = device;
-                    updateProperty(Thing.PROPERTY_MODEL_ID, device.getModelName());
-                    updateProperty(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber());
-                    updateStateOptions(device);
-                    removeUnsupportedChannels(device);
-                    connectToDevice();
-                } else {
-                    logger.info("{}: Device not found in device list, setting offline", serial);
-                    updateStatus(ThingStatus.OFFLINE);
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } catch (EcovacsApiException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
-        });
+        initDevice(serial);
     }
 
     @Override
     public void dispose() {
         logger.debug("{}: Disposing handler", getDeviceSerial());
-        EcovacsDevice device = this.device;
-        if (device != null) {
-            device.disconnect(scheduler);
-        }
-        ScheduledFuture<?> reconnectFuture = this.reconnectFuture;
-        if (reconnectFuture != null) {
-            reconnectFuture.cancel(true);
-        }
-        cancelNextPoll();
+        teardown(false);
     }
 
     @Override
@@ -257,6 +222,20 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             Thread.currentThread().interrupt();
         } catch (EcovacsApiException e) {
             logger.debug("{}: Fetching initial data for channel {} failed", getDeviceSerial(), channelUID.getId(), e);
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("{}: Bridge status changed to {}", getDeviceSerial(), bridgeStatusInfo);
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            String serial = getThing().getProperties().getOrDefault(Thing.PROPERTY_SERIAL_NUMBER, "");
+            if (!serial.isEmpty()) {
+                initDevice(serial);
+            }
+        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+            teardown(false);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -452,14 +431,69 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         }
     }
 
-    private synchronized void teardownAndScheduleReconnection() {
+    private synchronized void initDevice(final String serial) {
+        final EcovacsApiHandler handler = getApiHandler();
+        final EcovacsApi api = handler != null ? handler.getApi() : null;
+
+        if (api == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            return;
+        }
+
+        Future<?> initFuture = this.initFuture;
+        if (initFuture != null && !initFuture.isDone()) {
+            return;
+        }
+
+        this.initFuture = scheduler.submit(() -> {
+            try {
+                Optional<EcovacsDevice> deviceOpt = api.getDevices().stream()
+                        .filter(d -> serial.equals(d.getSerialNumber())).findFirst();
+                if (deviceOpt.isPresent()) {
+                    EcovacsDevice device = deviceOpt.get();
+                    this.device = device;
+                    updateProperty(Thing.PROPERTY_MODEL_ID, device.getModelName());
+                    updateProperty(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber());
+                    updateStateOptions(device);
+                    removeUnsupportedChannels(device);
+                    connectToDevice();
+                } else {
+                    logger.info("{}: Device not found in device list, setting offline", serial);
+                    updateStatus(ThingStatus.OFFLINE);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (EcovacsApiException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        });
+    }
+
+    private void teardownAndScheduleReconnection() {
+        teardown(true);
+    }
+
+    private synchronized void teardown(boolean scheduleReconnection) {
         EcovacsDevice device = this.device;
         if (device != null) {
             device.disconnect(scheduler);
         }
+        this.device = null;
+
         cancelNextPoll();
 
-        if (reconnectFuture == null) {
+        if (!scheduleReconnection) {
+            ScheduledFuture<?> reconnectFuture = this.reconnectFuture;
+            if (reconnectFuture != null) {
+                reconnectFuture.cancel(true);
+            }
+            this.reconnectFuture = null;
+            Future<?> initFuture = this.initFuture;
+            if (initFuture != null) {
+                initFuture.cancel(true);
+            }
+            this.initFuture = null;
+        } else if (reconnectFuture == null) {
             reconnectFuture = scheduler.schedule(() -> {
                 reconnectFuture = null;
                 connectToDevice();
@@ -671,11 +705,22 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         } catch (EcovacsApiException e) {
             logger.debug("{}: Failed communicating to device, reconnecting", getDeviceSerial(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (e.isAuthFailure) {
+                EcovacsApiHandler apiHandler = getApiHandler();
+                if (apiHandler != null) {
+                    apiHandler.onLoginExpired();
+                }
+            }
             teardownAndScheduleReconnection();
         }
     }
 
     private String getDeviceSerial() {
         return getThing().getProperties().getOrDefault(Thing.PROPERTY_SERIAL_NUMBER, "<unknown>");
+    }
+
+    private @Nullable EcovacsApiHandler getApiHandler() {
+        final Bridge bridge = getBridge();
+        return bridge != null ? (EcovacsApiHandler) bridge.getHandler() : null;
     }
 }
