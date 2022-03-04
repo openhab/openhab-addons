@@ -31,12 +31,12 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class ExpiringCacheAsync<V> {
-    final long expiry;
-    ExpiringCacheUpdate cacheUpdater;
+    private final long expiry;
+    private ExpiringCacheUpdate cacheUpdater;
     long expiresAt = 0;
-    boolean refreshRequested = false;
-    V value;
-    final List<Consumer<V>> waitingCacheCallbacks = new LinkedList<>();
+    private boolean refreshRequested = false;
+    private V value;
+    private final List<Consumer<V>> waitingCacheCallbacks = new LinkedList<>();
 
     /**
      * Implement the requestCacheUpdate method which will be called when the cache
@@ -114,7 +114,7 @@ public class ExpiringCacheAsync<V> {
      *
      * @return the new value
      */
-    public void refreshValue(Consumer<V> callback) {
+    private void refreshValue(Consumer<V> callback) {
         waitingCacheCallbacks.add(callback);
         if (refreshRequested) {
             return;
