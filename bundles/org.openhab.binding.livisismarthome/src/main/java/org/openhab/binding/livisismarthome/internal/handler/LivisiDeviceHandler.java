@@ -583,9 +583,13 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
 
     private boolean updateStatus(DeviceDTO device) {
         Boolean reachable = device.isReachable();
-        if (reachable != null && !reachable) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not reachable.");
-            return false;
+        if (reachable != null) {
+            if (reachable) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not reachable.");
+                return false;
+            }
         }
         return true;
     }

@@ -44,6 +44,7 @@ public class EventPropertiesDTO {
     private Double energyPerMonthInKWh;
     private Boolean frostWarning;
     private Double humidity;
+    private Boolean isReachable;
     private Boolean isOpen;
     private Boolean isSmokeAlarm;
     private Integer keyPressCounter;
@@ -341,6 +342,20 @@ public class EventPropertiesDTO {
      */
     public void setHumidity(final Double humidity) {
         this.humidity = humidity;
+    }
+
+    /**
+     * @return if the device is reachable
+     */
+    public Boolean getReachable() {
+        return isReachable;
+    }
+
+    /**
+     * @param reachable if the device is reachable
+     */
+    public void setReachable(Boolean reachable) {
+        isReachable = reachable;
     }
 
     /**
