@@ -24,6 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pulseaudio.internal.PulseAudioBindingConfiguration;
 import org.openhab.binding.pulseaudio.internal.PulseAudioBindingConfigurationListener;
 import org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants;
@@ -115,7 +116,7 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
         }
     }
 
-    public AbstractAudioDeviceConfig getDevice(String name) {
+    public @Nullable AbstractAudioDeviceConfig getDevice(String name) {
         return client.getGenericAudioItem(name);
     }
 
