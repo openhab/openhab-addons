@@ -615,7 +615,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             dhcpState = String.format("Bound to port %d - %s", listener.getCurrentPort(),
                     (listener.usingPrivilegedPort() ? "Running normally" : "Port forwarding necessary !"));
         } catch (SocketException e) {
-            dhcpState = String.format("Cannot use DHCP sniffing: %s", e.getLocalizedMessage());
+            dhcpState = String.format("Cannot use DHCP sniffing: %s", e.getMessage());
             logger.warn("{}", dhcpState);
             useDHCPsniffing = false;
         }
