@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.network.internal.dhcp.DHCPListenService;
+import org.openhab.binding.network.internal.dhcp.DHCPPacketListenerServer;
 import org.openhab.binding.network.internal.dhcp.IPRequestReceivedCallback;
 import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
@@ -49,8 +50,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PresenceDetection implements IPRequestReceivedCallback {
 
-    public static final double NOT_REACHABLE = -1;
-    public static final int DESTINATION_TTL = 300 * 1000; // in ms, 300 s
+    private static final int DESTINATION_TTL = 300 * 1000; // in ms, 300 s
 
     NetworkUtils networkUtils = new NetworkUtils();
     private final Logger logger = LoggerFactory.getLogger(PresenceDetection.class);
@@ -59,7 +59,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private boolean useDHCPsniffing = false;
     private String ipPingState = "Disabled";
     protected String arpPingUtilPath = "";
-    protected ArpPingUtilEnum arpPingMethod = ArpPingUtilEnum.DISABLED;
+    private ArpPingUtilEnum arpPingMethod = ArpPingUtilEnum.DISABLED;
     protected @Nullable IpPingMethodEnum pingMethod = null;
     private boolean iosDevice;
     private Set<Integer> tcpPorts = new HashSet<>();
@@ -72,7 +72,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private @NonNullByDefault({}) ExpiringCache<@Nullable InetAddress> destination;
     private @Nullable InetAddress cachedDestination = null;
 
-    public boolean preferResponseTimeAsLatency;
+    private boolean preferResponseTimeAsLatency;
 
     /// State variables (cannot be final because of test dependency injections)
     ExpiringCacheAsync<PresenceDetectionValue> cache;
@@ -80,7 +80,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private @Nullable ScheduledFuture<?> refreshJob;
     protected @Nullable ExecutorService executorService;
     private String dhcpState = "off";
-    Integer currentCheck = 0;
+    private Integer currentCheck = 0;
     int detectionChecks;
 
     public PresenceDetection(final PresenceDetectionListener updateListener, int cacheDeviceStateTimeInMS)
@@ -112,12 +112,13 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         this.destination = new ExpiringCache<>(DESTINATION_TTL, () -> {
             try {
                 InetAddress destinationAddress = InetAddress.getByName(hostname);
-                if (!destinationAddress.equals(cachedDestination)) {
+                InetAddress cached = cachedDestination;
+                if (!destinationAddress.equals(cached)) {
                     logger.trace("host name resolved to other address, (re-)setup presence detection");
                     setUseArpPing(true, destinationAddress);
                     if (useDHCPsniffing) {
-                        if (cachedDestination != null) {
-                            disableDHCPListen(cachedDestination);
+                        if (cached != null) {
+                            disableDHCPListen(cached);
                         }
                         enableDHCPListen(destinationAddress);
                     }
@@ -126,8 +127,9 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                 return destinationAddress;
             } catch (UnknownHostException e) {
                 logger.trace("hostname resolution failed");
-                if (cachedDestination != null) {
-                    disableDHCPListen(cachedDestination);
+                InetAddress cached = cachedDestination;
+                if (cached != null) {
+                    disableDHCPListen(cached);
                     cachedDestination = null;
                 }
                 return null;
@@ -594,8 +596,9 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             future.cancel(true);
             refreshJob = null;
         }
-        if (cachedDestination != null) {
-            disableDHCPListen(cachedDestination);
+        InetAddress cached = cachedDestination;
+        if (cached != null) {
+            disableDHCPListen(cached);
         }
     }
 
@@ -608,22 +611,18 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      */
     private void enableDHCPListen(InetAddress destinationAddress) {
         try {
-            if (DHCPListenService.register(destinationAddress.getHostAddress(), this).isUseUnprevilegedPort()) {
-                dhcpState = "No access right for port 67. Bound to port 6767 instead. Port forwarding necessary!";
-            } else {
-                dhcpState = "Running normally";
-            }
+            DHCPPacketListenerServer listener = DHCPListenService.register(destinationAddress.getHostAddress(), this);
+            dhcpState = String.format("Bound to port %d - %s", listener.getCurrentPort(),
+                    (listener.usingPrivilegedPort() ? "Running normally" : "Port forwarding necessary !"));
         } catch (SocketException e) {
-            logger.warn("Cannot use DHCP sniffing.", e);
+            dhcpState = String.format("Cannot use DHCP sniffing: %s", e.getMessage());
+            logger.warn("{}", dhcpState);
             useDHCPsniffing = false;
-            dhcpState = "Cannot use DHCP sniffing: " + e.getLocalizedMessage();
         }
     }
 
-    private void disableDHCPListen(@Nullable InetAddress destinationAddress) {
-        if (destinationAddress != null) {
-            DHCPListenService.unregister(destinationAddress.getHostAddress());
-            dhcpState = "off";
-        }
+    private void disableDHCPListen(InetAddress destinationAddress) {
+        DHCPListenService.unregister(destinationAddress.getHostAddress());
+        dhcpState = "off";
     }
 }
