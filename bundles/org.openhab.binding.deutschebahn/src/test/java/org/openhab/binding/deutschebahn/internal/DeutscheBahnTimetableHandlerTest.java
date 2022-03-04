@@ -130,8 +130,7 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
 
         try {
             verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
-            verify(callback, timeout(1000)).statusUpdated(eq(bridge),
-                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+            verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
 
             verifyThingUpdated(bridge, 0, "-5296516961807204721-2108160906-5");
             verifyThingUpdated(bridge, 1, "-8364795265993682073-2108160911-6");
@@ -150,8 +149,7 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
 
         try {
             verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
-            verify(callback, timeout(1000)).statusUpdated(eq(bridge),
-                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+            verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
 
             verifyThingUpdated(bridge, 0, "-8364795265993682073-2108160911-6");
             verifyThingUpdated(bridge, 1, "-5296516961807204721-2108160906-5");
