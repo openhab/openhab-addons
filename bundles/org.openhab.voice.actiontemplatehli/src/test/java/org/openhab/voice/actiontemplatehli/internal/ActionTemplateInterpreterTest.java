@@ -118,7 +118,7 @@ public class ActionTemplateInterpreterTest {
         var stringNPLWriteAction = new ActionTemplateConfiguration();
         stringNPLWriteAction.template = "send message $* to $contact";
         stringNPLWriteAction.value = "$contact:$*";
-        stringNPLWriteAction.ruleMode = true;
+        stringNPLWriteAction.silence = true;
         var contactPlaceholder = new ActionTemplateConfiguration.ActionTemplatePlaceholder();
         contactPlaceholder.label = "contact";
         contactPlaceholder.nerStaticValues = new String[] { "Mark", "Andrea" };
@@ -209,7 +209,7 @@ public class ActionTemplateInterpreterTest {
     @Test
     public void messageTest() throws InterpretationException {
         var response = interpreter.interpret(Locale.ENGLISH, "send message please turn off the bedroom light to mark");
-        // rule mode is enabled so no response
+        // silence mode is enabled so no response
         assertThat(response, is(""));
         Mockito.verify(eventPublisherMock).post(ItemEventFactory.createCommandEvent("testString",
                 new StringType("+34000000000:please turn off the bedroom light")));

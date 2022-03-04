@@ -41,11 +41,11 @@ This is defined by the boolean field read which is 'false' by default.
 When read is false:
 
 * template: action template. (Required)
-* value: value to by send. It can be used to capture the transformed placeholder values. (Required unless if the target item type is String in that case rule mode is assumed true and the whole text is passed to item).
+* value: value to by send. It can be used to capture the transformed placeholder values. (Required unless if the target item type is String in that case silence mode is assumed true and the whole text is passed to item).
 * type: action template type.
 * requiredTags: allow to restrict the item targets by its tags.
 * placeholders: defined placeholders that can be used on the template and replaced on the value.
-* ruleMode: boolean used to avoid confirmation message.
+* silence: boolean used to avoid confirmation message.
 * targetMembers: when targeting a Group item, can be used to send the command to its member items instead.
 
 When read is true:
@@ -321,7 +321,7 @@ config:
         - Andrea
         - Jacob
         - Raquel
-  ruleMode: true
+  silence: true
   template: send message $* to $contact
   type: tokens
   value: $contact:$*

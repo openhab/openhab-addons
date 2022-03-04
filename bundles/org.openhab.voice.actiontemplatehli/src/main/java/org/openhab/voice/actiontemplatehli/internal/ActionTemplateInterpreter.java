@@ -187,7 +187,16 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
 
     @Override
     public Set<Locale> getSupportedLocales() {
-        return Set.of(localeService.getLocale(null));
+        if (!config.fallbackHLI.isBlank()) {
+            var fallbackInterpreter = humanLanguageInterpreters.get(config.fallbackHLI);
+            if (fallbackInterpreter != null) {
+                logger.debug("fallback interpreter '{}' is configured, assuming its supported locales",
+                        config.fallbackHLI);
+                return fallbackInterpreter.getSupportedLocales();
+            }
+        }
+        // all are supported
+        return Set.of();
     }
 
     @Override
@@ -211,7 +220,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             }
             String response = processAction(words, checkActionConfigs(words, info.tokens, info.tags, info.lemmas));
             if (response == null) {
-                logger.debug("rule mode; no response");
+                logger.debug("silence mode; no response");
                 return "";
             }
             if (!config.fallbackHLI.isBlank() && config.unhandledMessage.equals(response)) {
@@ -584,7 +593,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     private @Nullable String sendItemCommand(Item item, String text, ActionTemplateConfiguration actionConfiguration,
             Map<String, String> placeholderValues) throws IOException {
         Object valueTemplate = actionConfiguration.value;
-        boolean ruleMode = actionConfiguration.ruleMode;
+        boolean silence = actionConfiguration.silence;
         String replacedValue = null;
         Command command = null;
         // Special type handling
@@ -614,17 +623,17 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                     if (!targetMembers.isEmpty()) {
                         // swap the command target by the matched members
                         boolean ok = true;
-                        boolean groupRuleMode = true;
+                        boolean groupsilence = true;
                         for (var targetMember : targetMembers) {
                             var response = sendItemCommand(targetMember, text, actionConfiguration, placeholderValues);
                             if (config.failMessage.equals(response)) {
                                 ok = false;
                             }
                             if (response != null) {
-                                groupRuleMode = false;
+                                groupsilence = false;
                             }
                         }
-                        return ok ? (groupRuleMode ? null : config.commandSentMessage) : config.failMessage;
+                        return ok ? (groupsilence ? null : config.commandSentMessage) : config.failMessage;
                     } else {
                         logger.warn("configured targetMembers were not found in group '{}'", groupItem.getName());
                         return config.failMessage;
@@ -644,7 +653,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), replacedValue);
             } else if ("String".equals(item.getType())) {
                 // We interpret processing will continue in a rule
-                ruleMode = true;
+                silence = true;
                 command = new StringType(text);
             }
         }
@@ -653,8 +662,8 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             return config.failMessage;
         }
         eventPublisher.post(ItemEventFactory.createCommandEvent(item.getName(), command));
-        if (ruleMode) {
-            // when rule mode give no result
+        if (silence) {
+            // when silence mode give no result
             return null;
         } else {
             return config.commandSentMessage;
