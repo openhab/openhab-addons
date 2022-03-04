@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wemo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Standard WeMo Bulb with E27 socket -->
+	<thing-type id="MZ100">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>WeMo LED Light</label>
+		<description>This is a standard WeMo light bulb with E27 socket </description>
+
+		<channels>
+			<channel id="state" typeId="state"/>
+			<channel id="brightness" typeId="brightness"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">MRVL</property>
+			<property name="modelId">MZ100</property>
+		</properties>
+
+		<config-description>
+			<parameter name="deviceID" type="text" required="true">
+				<label>Device ID</label>
+				<description>The device ID identifies one certain WeMo light.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
