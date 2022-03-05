@@ -48,6 +48,8 @@ import io.socket.client.Manager;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import io.socket.engineio.client.Transport;
+import io.socket.parser.Packet;
+import io.socket.parser.Parser;
 import io.socket.thread.EventThread;
 import okhttp3.OkHttpClient.Builder;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -167,7 +169,9 @@ public class CloudClient {
             loggingInterceptor.setLevel(Level.BASIC);
             okHttpBuilder.addInterceptor(loggingInterceptor);
             okHttpBuilder.addNetworkInterceptor(loggingInterceptor);
+            // okHttpBuilder.pingInterval(60, TimeUnit.SECONDS); // Can this hurt?
             options.callFactory = okHttpBuilder.build();
+            options.webSocketFactory = okHttpBuilder.build();
             socket = IO.socket(baseURL, options);
             URL parsed = new URL(baseURL);
             protocol = parsed.getProtocol();
@@ -214,7 +218,22 @@ public class CloudClient {
                     }
                 })//
                 .on(Manager.EVENT_OPEN, args -> logger.debug("Socket.IO OPEN"))//
-                .on(Manager.EVENT_CLOSE, args -> logger.debug("Socket.IO CLOSE: {}", args[0]));
+                .on(Manager.EVENT_CLOSE, args -> logger.debug("Socket.IO CLOSE: {}", args[0]))//
+                .on(Manager.EVENT_PACKET, args -> {
+                    int packetTypeIndex = -1;
+                    String type = "<unexpected packet type>";
+                    if (args.length == 1 && args[0] instanceof Packet<?>) {
+                        packetTypeIndex = ((Packet<?>) args[0]).type;
+
+                        if (packetTypeIndex < Parser.types.length) {
+                            type = Parser.types[packetTypeIndex];
+                        } else {
+                            type = "<unknown type>";
+                        }
+                    }
+                    logger.debug("Socket.IO Packet: {} ({})", type, packetTypeIndex);
+                })//
+        ;
 
         //
         // socket events
