@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.math.BigDecimal;
-import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -129,20 +128,18 @@ public class PulseaudioClient {
      */
     private static final String MODULE_COMBINE_SINK = "module-combine-sink";
 
-    public PulseaudioClient(String host, int port, PulseAudioBindingConfiguration configuration) throws IOException {
+    public PulseaudioClient(String host, int port, PulseAudioBindingConfiguration configuration) {
         this.host = host;
         this.port = port;
         this.configuration = configuration;
 
         items = new ArrayList<>();
         modules = new ArrayList<>();
-
-        connect();
-        update();
     }
 
     public boolean isConnected() {
-        return client != null ? client.isConnected() : false;
+        Socket clientSocket = client;
+        return clientSocket != null ? clientSocket.isConnected() : false;
     }
 
     /**
@@ -378,9 +375,6 @@ public class PulseaudioClient {
      *            0 - 65536)
      */
     public void setVolume(AbstractAudioDeviceConfig item, int vol) {
-        if (item == null) {
-            return;
-        }
         String itemCommandName = getItemCommandName(item);
         if (itemCommandName == null) {
             return;
@@ -485,7 +479,7 @@ public class PulseaudioClient {
                 .map(portS -> Integer.parseInt(portS));
     }
 
-    private @NonNull Optional<@NonNull String> extractArgumentFromLine(String argumentWanted, String argumentLine) {
+    private Optional<@NonNull String> extractArgumentFromLine(String argumentWanted, String argumentLine) {
         String argument = null;
         int startPortIndex = argumentLine.indexOf(argumentWanted + "=");
         if (startPortIndex != -1) {
@@ -525,11 +519,8 @@ public class PulseaudioClient {
      * @param vol the new volume percent value the {@link AbstractAudioDeviceConfig} should be changed to (possible
      *            values from 0 - 100)
      */
-    public void setVolumePercent(@Nullable AbstractAudioDeviceConfig item, int vol) {
+    public void setVolumePercent(AbstractAudioDeviceConfig item, int vol) {
         int volumeToSet = vol;
-        if (item == null) {
-            return;
-        }
         if (volumeToSet <= 100) {
             volumeToSet = toAbsoluteVolume(volumeToSet);
         }
@@ -662,15 +653,16 @@ public class PulseaudioClient {
 
     private synchronized void sendRawCommand(String command) {
         checkConnection();
-        if (client != null && client.isConnected()) {
+        Socket clientSocket = client;
+        if (clientSocket != null && clientSocket.isConnected()) {
             try {
-                PrintStream out = new PrintStream(client.getOutputStream(), true);
+                PrintStream out = new PrintStream(clientSocket.getOutputStream(), true);
                 logger.trace("sending command {} to pa-server {}", command, host);
                 out.print(command + "\r\n");
                 out.close();
-                client.close();
+                clientSocket.close();
             } catch (IOException e) {
-                logger.error("{}", e.getLocalizedMessage(), e);
+                logger.warn("{}", e.getMessage(), e);
             }
         }
     }
@@ -679,12 +671,13 @@ public class PulseaudioClient {
         logger.trace("_sendRawRequest({})", command);
         checkConnection();
         String result = "";
-        if (client != null && client.isConnected()) {
+        Socket clientSocket = client;
+        if (clientSocket != null && clientSocket.isConnected()) {
             try {
-                PrintStream out = new PrintStream(client.getOutputStream(), true);
+                PrintStream out = new PrintStream(clientSocket.getOutputStream(), true);
                 out.print(command + "\r\n");
 
-                InputStream instr = client.getInputStream();
+                InputStream instr = clientSocket.getInputStream();
 
                 try {
                     byte[] buff = new byte[1024];
@@ -709,42 +702,52 @@ public class PulseaudioClient {
                 } catch (SocketException e) {
                     logger.warn("Socket exception while sending pulseaudio command: {}", e.getMessage());
                 } catch (IOException e) {
-                    logger.error("Exception while reading socket: {}", e.getMessage());
+                    logger.warn("Exception while reading socket: {}", e.getMessage());
                 }
                 instr.close();
                 out.close();
-                client.close();
+                clientSocket.close();
                 return result;
             } catch (IOException e) {
-                logger.error("{}", e.getLocalizedMessage(), e);
+                logger.warn("{}", e.getMessage(), e);
             }
         }
         return result;
     }
 
     private void checkConnection() {
-        if (client == null || client.isClosed() || !client.isConnected()) {
-            try {
-                connect();
-            } catch (IOException e) {
-                logger.error("{}", e.getLocalizedMessage(), e);
-            }
+        try {
+            connect();
+        } catch (IOException e) {
+            logger.debug("{}", e.getMessage(), e);
         }
     }
 
     /**
      * Connects to the pulseaudio server (timeout 500ms)
      */
-    private void connect() throws IOException {
-        try {
-            client = new Socket(host, port);
-            client.setSoTimeout(500);
-        } catch (UnknownHostException e) {
-            logger.error("unknown socket host {}", host);
-        } catch (NoRouteToHostException e) {
-            logger.error("no route to host {}", host);
-        } catch (SocketException e) {
-            logger.error("cannot connect to host {} : {}", host, e.getMessage());
+    public void connect() throws IOException {
+        Socket clientSocket = client;
+        if (clientSocket == null || clientSocket.isClosed() || !clientSocket.isConnected()) {
+            logger.trace("Try to connect...");
+            try {
+                client = new Socket(host, port);
+                client.setSoTimeout(500);
+                logger.trace("connected");
+            } catch (UnknownHostException e) {
+                client = null;
+                throw new IOException("Unknown host", e);
+            } catch (IllegalArgumentException e) {
+                client = null;
+                throw new IOException("Invalid port", e);
+            } catch (SecurityException | SocketException e) {
+                client = null;
+                throw new IOException(
+                        String.format("Cannot connect socket: %s", e.getMessage() != null ? e.getMessage() : ""), e);
+            } catch (IOException e) {
+                client = null;
+                throw e;
+            }
         }
     }
 
@@ -752,11 +755,12 @@ public class PulseaudioClient {
      * Disconnects from the pulseaudio server
      */
     public void disconnect() {
-        if (client != null) {
+        Socket clientSocket = client;
+        if (clientSocket != null) {
             try {
-                client.close();
+                clientSocket.close();
             } catch (IOException e) {
-                logger.error("{}", e.getLocalizedMessage(), e);
+                logger.debug("{}", e.getMessage(), e);
             }
         }
     }
