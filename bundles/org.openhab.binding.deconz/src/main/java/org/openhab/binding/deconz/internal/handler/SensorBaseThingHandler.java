@@ -12,11 +12,7 @@
  */
 package org.openhab.binding.deconz.internal.handler;
 
-import static org.openhab.binding.deconz.internal.BindingConstants.CHANNEL_BATTERY_LEVEL;
-import static org.openhab.binding.deconz.internal.BindingConstants.CHANNEL_BATTERY_LOW;
-import static org.openhab.binding.deconz.internal.BindingConstants.CHANNEL_LAST_SEEN;
-import static org.openhab.binding.deconz.internal.BindingConstants.CHANNEL_LAST_UPDATED;
-import static org.openhab.binding.deconz.internal.BindingConstants.UNIQUE_ID;
+import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
 import java.util.List;
 import java.util.Map;
@@ -25,8 +21,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
-
-import com.google.gson.Gson;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -49,6 +43,8 @@ import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * This sensor Thing doesn't establish any connections, that is done by the bridge Thing.
