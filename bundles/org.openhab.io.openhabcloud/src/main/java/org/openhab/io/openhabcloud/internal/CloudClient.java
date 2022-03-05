@@ -294,7 +294,7 @@ public class CloudClient {
                 .on("cancel", args -> onEvent("cancel", (JSONObject) args[0]))//
                 .on("command", args -> onEvent("command", (JSONObject) args[0]))//
                 .on(Socket.EVENT_PING, args -> logger.debug("Socket.IO ping"))//
-                .on(Socket.EVENT_PONG, args -> logger.debug("Socket.IO pong"))//
+                .on(Socket.EVENT_PONG, args -> logger.debug("Socket.IO pong: {} ms", args[0]))//
         ;
         socket.connect();
     }
