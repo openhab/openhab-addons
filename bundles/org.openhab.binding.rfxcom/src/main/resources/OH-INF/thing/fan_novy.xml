@@ -17,6 +17,8 @@
 
 		<channels>
 			<channel id="commandString" typeId="commandString"/>
+			<channel id="fanSpeedControl" typeId="fanspeedcontrol"/>
+			<!-- Deprecated fanSpeed should only be used for the numeric channel fanspeed -->
 			<channel id="fanSpeed" typeId="fanspeedcontrol"/>
 			<channel id="fanLight" typeId="command"/>
 			<channel id="signalLevel" typeId="system.signal-strength"/>
