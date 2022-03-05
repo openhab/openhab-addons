@@ -160,7 +160,7 @@ Number Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflow
 Number Battery_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpakku" }
 Number:Power Production_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelppv" }
 Number:Power Inverter1_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowinverter1power" }
-Number Inverter1_SOC { channel="fronius:powerinverter:mybridge:myinverter:powerflowinverter1soc" }
+Number:Dimensionless Inverter1_SOC { channel="fronius:powerinverter:mybridge:myinverter:powerflowinverter1soc" }
 
 Number Meter_Enable { channel="fronius:meter:mybridge:mymeter:enable" }
 Number Meter_Location { channel="fronius:meter:mybridge:mymeter:location" }
