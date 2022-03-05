@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt;
+package org.openhab.binding.mqtt.homeassistant;
 
 import static org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants.HOMEASSISTANT_MQTT_THING;
 
@@ -25,5 +25,5 @@ import org.openhab.core.thing.ThingUID;
 @NonNullByDefault
 public class ThingChannelConstants {
     // Common ThingUID and ChannelUIDs
-    public static final ThingUID testHomeAssistantThing = new ThingUID(HOMEASSISTANT_MQTT_THING, "device234");
+    public static final ThingUID TEST_HOME_ASSISTANT_THING = new ThingUID(HOMEASSISTANT_MQTT_THING, "device234");
 }
