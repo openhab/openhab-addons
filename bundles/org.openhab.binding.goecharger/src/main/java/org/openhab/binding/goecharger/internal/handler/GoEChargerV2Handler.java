@@ -304,7 +304,11 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                         "@text/unsuccessful.communication-error");
                 logger.debug("Could not send data, Response {}, StatusCode: {}", response, statusCode);
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ie.toString());
+            logger.debug("Could not send data: {}, {}", urlStr, ie.toString());
+        } catch (TimeoutException | ExecutionException | JsonSyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
             logger.debug("Could not send data: {}, {}", urlStr, e.toString());
         }
