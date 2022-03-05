@@ -228,7 +228,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             }
         }
 
-        logger.debug("UUID = {}, secret = {}", InstanceUUID.get(), getSecret());
+        logger.debug("UUID = {}, secret = {}", sensored(InstanceUUID.get()), sensored(getSecret()));
 
         if (cloudClient != null) {
             cloudClient.shutdown();
@@ -249,6 +249,10 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         cloudClient.connect();
         cloudClient.setListener(this);
         NotificationAction.cloudService = this;
+    }
+
+    private static String sensored(String secret) {
+        return secret.substring(0, 2) + "..." + secret.substring(secret.length() - 2, secret.length());
     }
 
     @Override
