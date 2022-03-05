@@ -51,7 +51,7 @@ public abstract class TradfriThingHandler extends BaseThingHandler implements Co
     // used to check whether we have already been disposed when receiving data asynchronously
     protected volatile boolean active;
 
-    protected @NonNullByDefault({}) TradfriCoapClient coapClient;
+    protected @Nullable TradfriCoapClient coapClient;
 
     private @Nullable CoapObserveRelation observeRelation;
 
@@ -135,8 +135,13 @@ public abstract class TradfriThingHandler extends BaseThingHandler implements Co
     }
 
     protected void set(String payload) {
-        logger.debug("Sending payload: {}", payload);
-        coapClient.asyncPut(payload, this, scheduler);
+        TradfriCoapClient coapClient = this.coapClient;
+        if (coapClient != null) {
+            logger.debug("Sending payload: {}", payload);
+            coapClient.asyncPut(payload, this, scheduler);
+        } else {
+            logger.debug("coapClient is null!");
+        }
     }
 
     protected void updateDeviceProperties(TradfriDeviceData state) {

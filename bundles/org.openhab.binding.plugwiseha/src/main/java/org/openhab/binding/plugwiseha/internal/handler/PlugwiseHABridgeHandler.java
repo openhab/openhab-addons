@@ -175,12 +175,16 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
         } catch (PlugwiseHAUnauthorizedException | PlugwiseHANotAuthorizedException e) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_CREDENTIALS);
         } catch (PlugwiseHACommunicationException e) {
+            this.logger.trace("Bridge encountered an error {}", e.getMessage(), e);
             updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR);
         } catch (PlugwiseHATimeoutException e) {
+            this.logger.trace("Bridge encountered an error {}", e.getMessage(), e);
             updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_TIMEOUT);
         } catch (PlugwiseHAException e) {
+            this.logger.trace("Bridge encountered an error {}", e.getMessage(), e);
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
         } catch (RuntimeException e) {
+            this.logger.trace("Bridge encountered an error {}", e.getMessage(), e);
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
         }
     }

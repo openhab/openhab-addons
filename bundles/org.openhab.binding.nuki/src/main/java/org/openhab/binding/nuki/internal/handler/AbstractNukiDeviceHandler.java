@@ -32,6 +32,7 @@ import org.openhab.binding.nuki.internal.dataexchange.NukiBaseResponse;
 import org.openhab.binding.nuki.internal.dataexchange.NukiHttpClient;
 import org.openhab.binding.nuki.internal.dto.BridgeApiDeviceStateDto;
 import org.openhab.binding.nuki.internal.dto.BridgeApiListDeviceDto;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -70,6 +71,11 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
     @Nullable
     private NukiHttpClient nukiHttpClient;
 
+    public AbstractNukiDeviceHandler(Thing thing) {
+        super(thing);
+        this.configuration = getConfigAs(getConfigurationClass());
+    }
+
     private static String hexToDecimal(String hexString) {
         return String.valueOf(Integer.parseInt(hexString, 16));
     }
@@ -92,23 +98,34 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
         }
     }
 
-    public AbstractNukiDeviceHandler(Thing thing) {
-        super(thing);
-        this.configuration = getConfigAs(getConfigurationClass());
+    /**
+     * Performs migration of old device configuration
+     * 
+     * @return true if configuration was change and reload is needed
+     */
+    protected boolean migrateConfiguration() {
+        String nukiId = getConfig().get(NukiBindingConstants.PROPERTY_NUKI_ID).toString();
         // legacy support - check if nukiId is hexadecimal (which might have been set by previous binding version)
         // and convert it to decimal
-        if (NUKI_ID_HEX_PATTERN.matcher(this.configuration.nukiId).matches()) {
+        if (NUKI_ID_HEX_PATTERN.matcher(nukiId).matches()) {
             logger.warn(
                     "SmartLock '{}' was created by old version of binding. It is recommended to delete it and discover again",
                     thing.getUID());
-            this.thing.getConfiguration().put(NukiBindingConstants.PROPERTY_NUKI_ID,
-                    hexToDecimal(configuration.nukiId));
-            this.configuration = getConfigAs(getConfigurationClass());
+            Configuration newConfig = editConfiguration();
+            newConfig.put(NukiBindingConstants.PROPERTY_NUKI_ID, hexToDecimal(nukiId));
+            updateConfiguration(newConfig);
+            return true;
+        } else {
+            return false;
         }
     }
 
     @Override
     public void initialize() {
+        this.configuration = getConfigAs(getConfigurationClass());
+        if (migrateConfiguration()) {
+            this.configuration = getConfigAs(getConfigurationClass());
+        }
         scheduler.execute(this::initializeHandler);
     }
 

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wemo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="dimmer">
+		<label>WeMo DimmerSwitch</label>
+		<description>This is a WeMo DimmerSwitch</description>
+
+		<channels>
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="faderCountDownTime" typeId="faderCountDownTime"/>
+			<channel id="faderEnabled" typeId="faderEnabled"/>
+			<channel id="timerStart" typeId="timerStart"/>
+			<channel id="nightMode" typeId="nightMode"/>
+			<channel id="startTime" typeId="startTime"/>
+			<channel id="endTime" typeId="endTime"/>
+			<channel id="nightModeBrightness" typeId="nightModeBrightness"/>
+		</channels>
+
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

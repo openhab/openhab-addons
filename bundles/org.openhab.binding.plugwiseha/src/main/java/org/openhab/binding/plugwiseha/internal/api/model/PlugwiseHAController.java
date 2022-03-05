@@ -322,17 +322,6 @@ public class PlugwiseHAController {
         }
     }
 
-    public void switchRelay(Appliance appliance, String state) throws PlugwiseHAException {
-        List<String> allowStates = Arrays.asList("on", "off");
-        if (allowStates.contains(state.toLowerCase())) {
-            if (state.toLowerCase().equals("on")) {
-                switchRelayOn(appliance);
-            } else {
-                switchRelayOff(appliance);
-            }
-        }
-    }
-
     public void setPreHeating(Location location, Boolean state) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
         Optional<ActuatorFunctionality> thermostat = location.getActuatorFunctionalities().getFunctionalityThermostat();
@@ -340,58 +329,73 @@ public class PlugwiseHAController {
         request.setPath("/core/locations");
         request.addPathParameter("id", String.format("%s/thermostat", location.getId()));
         request.addPathParameter("id", String.format("%s", thermostat.get().getId()));
-        request.setBodyParameter(new ActuatorFunctionalityThermostat(state));
+        request.setBodyParameter(new ActuatorFunctionalityThermostat(state, null, null));
 
         executeRequest(request);
     }
 
-    public void switchRelayOn(Appliance appliance) throws PlugwiseHAException {
+    public void setAllowCooling(Location location, Boolean state) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
+        Optional<ActuatorFunctionality> thermostat = location.getActuatorFunctionalities().getFunctionalityThermostat();
 
-        request.setPath("/core/appliances");
-        request.addPathParameter("id", String.format("%s/relay", appliance.getId()));
-        request.setBodyParameter(new ActuatorFunctionalityRelay("on"));
-
-        executeRequest(request);
-    }
-
-    public void switchRelayOff(Appliance appliance) throws PlugwiseHAException {
-        PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
-
-        request.setPath("/core/appliances");
-        request.addPathParameter("id", String.format("%s/relay", appliance.getId()));
-        request.setBodyParameter(new ActuatorFunctionalityRelay("off"));
+        request.setPath("/core/locations");
+        request.addPathParameter("id", String.format("%s/thermostat", location.getId()));
+        request.addPathParameter("id", String.format("%s", thermostat.get().getId()));
+        request.setBodyParameter(new ActuatorFunctionalityThermostat(null, state, null));
 
         executeRequest(request);
     }
 
-    public void switchRelayLock(Appliance appliance, String state) throws PlugwiseHAException {
-        List<String> allowStates = Arrays.asList("on", "off");
-        if (allowStates.contains(state.toLowerCase())) {
-            if (state.toLowerCase().equals("on")) {
-                switchRelayLockOn(appliance);
-            } else {
-                switchRelayLockOff(appliance);
-            }
+    public void setRegulationControl(Location location, String state) throws PlugwiseHAException {
+        List<String> allowStates = Arrays.asList("active", "passive", "off");
+        if (!allowStates.contains(state.toLowerCase())) {
+            this.logger.warn("Trying to set the regulation control to an invalid state");
+            return;
         }
-    }
 
-    public void switchRelayLockOff(Appliance appliance) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
+        Optional<ActuatorFunctionality> thermostat = location.getActuatorFunctionalities().getFunctionalityThermostat();
 
-        request.setPath("/core/appliances");
-        request.addPathParameter("id", String.format("%s/relay", appliance.getId()));
-        request.setBodyParameter(new ActuatorFunctionalityRelay(null, false));
+        request.setPath("/core/locations");
+        request.addPathParameter("id", String.format("%s/thermostat", location.getId()));
+        request.addPathParameter("id", String.format("%s", thermostat.get().getId()));
+        request.setBodyParameter(new ActuatorFunctionalityThermostat(null, null, state));
 
         executeRequest(request);
     }
 
-    public void switchRelayLockOn(Appliance appliance) throws PlugwiseHAException {
+    public void setRelay(Appliance appliance, Boolean state) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
 
         request.setPath("/core/appliances");
         request.addPathParameter("id", String.format("%s/relay", appliance.getId()));
-        request.setBodyParameter(new ActuatorFunctionalityRelay(null, true));
+        request.setBodyParameter(new ActuatorFunctionalityRelay(state ? "on" : "off"));
+
+        executeRequest(request);
+    }
+
+    public void setRelayLock(Appliance appliance, Boolean state) throws PlugwiseHAException {
+        PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
+
+        request.setPath("/core/appliances");
+        request.addPathParameter("id", String.format("%s/relay", appliance.getId()));
+        request.setBodyParameter(new ActuatorFunctionalityRelay(null, state));
+
+        executeRequest(request);
+    }
+
+    public void setPresetScene(Location location, String state) throws PlugwiseHAException {
+        List<String> allowStates = Arrays.asList("home", "asleep", "away", "vacation", "no_frost");
+        if (!allowStates.contains(state.toLowerCase())) {
+            this.logger.warn("Trying to set the preset scene to an invalid state");
+            return;
+        }
+
+        PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
+
+        request.setPath("/core/locations");
+        request.addPathParameter("id", String.format("%s", location.getId()));
+        request.setBodyParameter(new Location(state));
 
         executeRequest(request);
     }

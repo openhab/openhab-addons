@@ -171,6 +171,104 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="localOffset" advanced="true">
+		<item-type>String</item-type>
+		<label>Local Offset</label>
+		<description>Local knob status (read only)</description>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">OFF</option>
+				<option value="PROTECTION">PROTECTION</option>
+				<option value="PLUS_3">+3</option>
+				<option value="PLUS_2">+2</option>
+				<option value="PLUS_1">+1</option>
+				<option value="NORMAL">0</option>
+				<option value="MINUS_1">-1</option>
+				<option value="MINUS_2">-2</option>
+				<option value="MINUS_3">-3</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="modeCentralUnit">
+		<item-type>String</item-type>
+		<label>Central Unit Mode</label>
+		<description>Set mode of the Central Unit (read/write)</description>
+		<state>
+			<options>
+				<option value="MANUAL">Manual</option>
+				<option value="PROTECTION">Protection</option>
+				<option value="OFF">Off</option>
+				<option value="WEEKLY">Weekly</option>
+				<option value="SCENARIO">Scenario</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="weeklyProgramCentralUnit">
+		<item-type>Number</item-type>
+		<label>Weekly Program Number</label>
+		<description>Set weekly program number for the Central Unit, valid only with Central Unit mode = "WEEKLY" (read/write)</description>
+		<state>
+			<options>
+				<option value="1">Program 1</option>
+				<option value="2">Program 2</option>
+				<option value="3">Program 3</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="scenarioProgramCentralUnit">
+		<item-type>Number</item-type>
+		<label>Scenario Program Number</label>
+		<description>Set scenario program number for the Central Unit, valid only with Central Unit mode = "SCENARIO"
+			(read/write)</description>
+		<state>
+			<options>
+				<option value="1">Program 1</option>
+				<option value="2">Program 2</option>
+				<option value="3">Program 3</option>
+				<option value="4">Program 4</option>
+				<option value="5">Program 5</option>
+				<option value="6">Program 6</option>
+				<option value="7">Program 7</option>
+				<option value="8">Program 8</option>
+				<option value="9">Program 9</option>
+				<option value="10">Program 10</option>
+				<option value="11">Program 11</option>
+				<option value="12">Program 12</option>
+				<option value="13">Program 13</option>
+				<option value="14">Program 14</option>
+				<option value="15">Program 15</option>
+				<option value="16">Program 16</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="remoteControl" advanced="true">
+		<item-type>String</item-type>
+		<label>Remote Control</label>
+		<description>Central Unit Remote Control status (read only)</description>
+		<state readOnly="true">
+			<options>
+				<option value="DISABLED">DISABLED</option>
+				<option value="ENABLED">ENABLED</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="batteryStatus" advanced="true">
+		<item-type>String</item-type>
+		<label>Battery Status</label>
+		<description>Central Unit Battery status (read only)</description>
+		<state readOnly="true">
+			<options>
+				<option value="OK">OK</option>
+				<option value="KO">KO</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<!-- Energy channels -->
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>

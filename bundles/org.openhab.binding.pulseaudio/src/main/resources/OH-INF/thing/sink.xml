@@ -40,6 +40,13 @@
 				</description>
 				<default>30000</default>
 			</parameter>
+			<parameter name="simpleProtocolSOTimeout" type="integer" min="250" max="2000">
+				<label>Simple Protocol SO Timeout</label>
+				<description>Socket SO timeout when connecting to pulseaudio server though module-simple-protocol-tcp. You can tune
+					this option if the socket disconnect frequently.</description>
+				<default>500</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 

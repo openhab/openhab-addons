@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hdpowerview"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="repeater">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="hub"/>
+		</supported-bridge-type-refs>
+		<label>PowerView Repeater</label>
+		<description>Hunter Douglas (Luxaflex) PowerView Repeater</description>
+
+		<channels>
+			<channel id="color" typeId="system.color">
+				<description>Controls the color of the LED ring</description>
+			</channel>
+			<channel id="brightness" typeId="system.brightness">
+				<description>Controls the brightness of the LED ring</description>
+			</channel>
+			<channel id="identify" typeId="repeater-identify"/>
+			<channel id="blinkingEnabled" typeId="repeater-blinking-enabled"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Hunter Douglas (Luxaflex)</property>
+			<property name="modelId">PowerView Repeater</property>
+		</properties>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:hdpowerview:repeater"/>
+	</thing-type>
+
+</thing:thing-descriptions>
