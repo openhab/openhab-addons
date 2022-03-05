@@ -16,7 +16,7 @@ The thing has two configuration parameters:
 | Parameter       | Description                                   | Required |
 |-----------------|-----------------------------------------------|----------|
 | ip              | The IP-address of your Go-eCharger            | yes      |
-| apiVersion      | The API version to use (1 or 2)               | yes      |
+| apiVersion      | The API version to use (1=default or 2)       | no       |
 | refreshInterval | Interval to read data, default 5 (in seconds) | no       |
 
 The apiVersion 2 is only available for Go-eCharger with new hardware revision (CM-03).

@@ -51,7 +51,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Reinhard Plaim - Adapt to use API version 2
  */
 @NonNullByDefault
-public class GoEChargerBaseHandler extends BaseThingHandler {
+public abstract class GoEChargerBaseHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(GoEChargerBaseHandler.class);
 

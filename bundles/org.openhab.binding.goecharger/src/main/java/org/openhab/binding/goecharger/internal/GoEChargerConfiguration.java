@@ -26,5 +26,5 @@ public class GoEChargerConfiguration {
 
     public @Nullable String ip;
     public Integer refreshInterval = 5;
-    public Integer apiVersion = 2;
+    public Integer apiVersion = 1;
 }

@@ -311,11 +311,11 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
             var statusCode = contentResponse.getStatus();
             if (!(statusCode == 200 || statusCode == 204)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Request response was unsuccessful");
+                        "@text/unsuccessful.communication-error");
                 logger.debug("Could not send data, Response {}, StatusCode: {}", response, statusCode);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
             logger.debug("Could not send data: {}, {}", urlStr, e.toString());
         }
     }
