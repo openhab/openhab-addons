@@ -70,9 +70,9 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `inverterdatachanneludc`             | Number               | DC voltage                                                                                                        |
 | `inverterdatadevicestatuserrorcode`  | Number               | Device error code                                                                                                 |
 | `inverterdatadevicestatusstatuscode` | Number               | Device status code<br />`0` - `6` Startup<br />`7` Running <br />`8` Standby<br />`9` Bootloading<br />`10` Error |
-| `powerflowchannelpgrid`              | Number               | Power (+ from grid, - to grid)                                                                                    |
-| `powerflowchannelpload`              | Number               | Power (+ generator, - consumer)                                                                                   |
-| `powerflowchannelpakku`              | Number               | Power (+ charge, - discharge)                                                                                     |
+| `powerflowchannelpgrid`              | Number:Power         | Power (+ from grid, - to grid)                                                                                    |
+| `powerflowchannelpload`              | Number:Power         | Power (+ generator, - consumer)                                                                                   |
+| `powerflowchannelpakku`              | Number:Power         | Power (+ charge, - discharge)                                                                                     |
 | `powerflowchannelppv`                | Number:Power         | Power (+ production)                                                                                              |
 | `powerflowinverter1power`            | Number:Power         | Current power of inverter 1, null if not running (+ produce/export, - consume/import)                             |
 | `powerflowinverter1soc`              | Number:Dimensionless | Current state of charge of inverter 1 in percent                                                                  |
@@ -155,9 +155,9 @@ Number UAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachan
 Number UDC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneludc" }
 Number ErrorCode { channel="fronius:powerinverter:mybridge:myinverter:inverterdatadevicestatuserrorcode" }
 Number StatusCode { channel="fronius:powerinverter:mybridge:myinverter:inverterdatadevicestatusstatuscode" }
-Number Grid_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpgrid" }
-Number Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpload" }
-Number Battery_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpakku" }
+Number:Power Grid_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpgrid" }
+Number:Power Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpload" }
+Number:Power Battery_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpakku" }
 Number:Power Production_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelppv" }
 Number:Power Inverter1_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowinverter1power" }
 Number:Dimensionless Inverter1_SOC { channel="fronius:powerinverter:mybridge:myinverter:powerflowinverter1soc" }
