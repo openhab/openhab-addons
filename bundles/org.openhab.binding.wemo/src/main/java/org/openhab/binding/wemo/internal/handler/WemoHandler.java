@@ -72,11 +72,10 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
             }
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
-            updateStatus(ThingStatus.ONLINE);
+            updateStatus(ThingStatus.UNKNOWN);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/config-status.error.missing-udn");
-            logger.debug("Cannot initalize WemoHandler. UDN not set.");
         }
     }
 
@@ -100,10 +99,9 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
             try {
                 logger.debug("Polling job");
                 // Check if the Wemo device is set in the UPnP service registry
-                // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                             "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     return;
                 }
@@ -178,8 +176,10 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
                 logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
                 this.onValueReceived(variable, value, actionService + "1");
             }
+            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.warn("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }
