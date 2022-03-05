@@ -311,6 +311,9 @@ public class CloudClient {
     }
 
     private static String sensored(String secret) {
+        if (secret.length() < 4) {
+            return "*******";
+        }
         return secret.substring(0, 2) + "..." + secret.substring(secret.length() - 2, secret.length());
     }
 
