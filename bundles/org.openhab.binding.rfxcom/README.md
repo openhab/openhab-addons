@@ -499,12 +499,13 @@ A Lucci Air DC fan device
 
 ##### Channels
 
-| Name         | Channel Type                        | Item Type     | Remarks                                                       |
-|--------------|-------------------------------------|---------------|---------------------------------------------------------------|
-| commandString| [commandString](#channels)          | String        | Options: POWER, UP, DOWN, LIGHT, REVERSE, NATURAL_FLOW, PAIR  |
-| fanSpeed     | [fanspeedcontrol](#channels)        | RollerShutter | Options: UP / DOWN                                            |
-| fanLight     | [fanlight](#channels)               | Switch        |                                                               |
-| signalLevel  | [system.signal-strength](#channels) | Number        |                                                               |
+| Name            | Channel Type                        | Item Type     | Remarks                                                      |
+|-----------------|-------------------------------------|---------------|--------------------------------------------------------------|
+| commandString   | [commandString](#channels)          | String        | Options: POWER, UP, DOWN, LIGHT, REVERSE, NATURAL_FLOW, PAIR |
+| fanSpeedControl | [fanspeedcontrol](#channels)        | RollerShutter | Options: UP / DOWN                                           |
+| fanSpeed        | [fanspeed](#channels)               | Number        | Options: 1,2,3,4,5,6                                         |
+| fanLight        | [fanlight](#channels)               | Switch        |                                                              |
+| signalLevel     | [system.signal-strength](#channels) | Number        |                                                              |
 
 ##### Configuration Options
 
@@ -542,13 +543,13 @@ A Novy extractor fan.
 
 ##### Channels
 
-| Name         | Channel Type                        | Item Type     | Remarks                  |
-|--------------|-------------------------------------|---------------|--------------------------|
-| command      | [command](#channels)                | Switch        |                          |
-| commandString| [commandString](#channels)          | String        | Options: POWER, UP, DOWN, LIGHT, LEARN, RESET_FILTER |
-| fanSpeed     | [fanspeedcontrol](#channels)        | RollerShutter | Options: UP / DOWN       |
-| fanLight     | [fanlight](#channels)               | Switch        |                          |
-| signalLevel  | [system.signal-strength](#channels) | Number        |                          |
+| Name            | Channel Type                        | Item Type     | Remarks                  |
+|-----------------|-------------------------------------|---------------|--------------------------|
+| command         | [command](#channels)                | Switch        |                          |
+| commandString   | [commandString](#channels)          | String        | Options: POWER, UP, DOWN, LIGHT, LEARN, RESET_FILTER |
+| fanSpeedControl | [fanspeedcontrol](#channels)        | RollerShutter | Options: UP / DOWN       |
+| fanLight        | [fanlight](#channels)               | Switch        |                          |
+| signalLevel     | [system.signal-strength](#channels) | Number        |                          |
 
 ##### Configuration Options
 
