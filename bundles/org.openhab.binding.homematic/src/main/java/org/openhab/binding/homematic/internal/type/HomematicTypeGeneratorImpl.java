@@ -342,6 +342,33 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                                     }
                                 });
                         builder.withOptions(options);
+                        if (dp.isEnumType()) {
+                            logger.trace("Checking if default option {} is valid",
+                                    Objects.toString(dp.getDefaultValue(), ""));
+                            boolean needsChange = true;
+                            for (ParameterOption option : options) {
+                                if (option.getValue().equals(Objects.toString(dp.getDefaultValue(), ""))) {
+                                    needsChange = false;
+                                    break;
+                                }
+                            }
+                            if (needsChange) {
+                                String defStr = Objects.toString(dp.getDefaultValue(), "0");
+                                if (defStr == null) {
+                                    defStr = "0";
+                                }
+                                int offset = Integer.parseInt(defStr);
+                                if (offset >= 0 && offset < options.size()) {
+                                    ParameterOption defaultOption = options.get(offset);
+                                    logger.trace("Changing default option to {} (offset {})", defaultOption, defStr);
+                                    builder.withDefault(defaultOption.getValue());
+                                } else if (options.size() > 0) {
+                                    ParameterOption defaultOption = options.get(0);
+                                    logger.trace("Changing default option to {} (first value)", defaultOption);
+                                    builder.withDefault(defaultOption.getValue());
+                                }
+                            }
+                        }
                     }
 
                     if (dp.isNumberType()) {
