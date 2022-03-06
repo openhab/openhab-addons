@@ -73,6 +73,7 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
         logger.debug("Using configuration: {}", configuration);
 
         disposing = false;
+        updateStatus(ThingStatus.UNKNOWN);
         connect();
     }
 
@@ -175,9 +176,7 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                         autoReconnect();
                     }
-                    break;
                 default:
-                    updateStatus(ThingStatus.UNKNOWN);
             }
         }
     }
