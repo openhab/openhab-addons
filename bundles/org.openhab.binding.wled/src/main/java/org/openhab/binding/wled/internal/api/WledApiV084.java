@@ -77,6 +77,7 @@ public class WledApiV084 implements WledApi {
     @Override
     public void initialize() throws ApiException {
         state.jsonResponse = getJson();
+        state.infoResponse = getInfo();
         @Nullable
         LedInfo localLedInfo = gson.fromJson(state.infoResponse.leds.toString(), LedInfo.class);
         if (localLedInfo != null) {
@@ -179,6 +180,7 @@ public class WledApiV084 implements WledApi {
             if (response == null) {
                 throw new ApiException("Could not GET:/json/info");
             }
+            logger.trace("/json/info:{}", returnContent);
             return response;
         } catch (JsonSyntaxException e) {
             throw new ApiException("JsonSyntaxException:{}", e);
