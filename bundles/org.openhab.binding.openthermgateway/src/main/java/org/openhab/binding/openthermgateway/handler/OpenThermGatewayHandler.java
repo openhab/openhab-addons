@@ -164,20 +164,17 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
             this.state = state;
 
             switch (state) {
-                case INITIALIZING:
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing");
-                    break;
-                case DISCONNECTED:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Disconnected");
-                    autoReconnect();
-                    break;
-                case CONNECTING:
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Connecting");
-                    break;
                 case CONNECTED:
                     updateStatus(ThingStatus.ONLINE);
                     cancelAutoReconnect();
                     break;
+                case DISCONNECTED:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    autoReconnect();
+                    break;
+                case CONNECTING:
+                case INITIALIZING:
+                    updateStatus(ThingStatus.INITIALIZING);
             }
         }
     }
