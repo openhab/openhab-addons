@@ -14,8 +14,10 @@ package org.openhab.binding.openthermgateway.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openthermgateway.OpenThermGatewayBindingConstants;
+import org.openhab.binding.openthermgateway.handler.BoilerHandler;
 import org.openhab.binding.openthermgateway.handler.OpenThermGatewayHandler;
+import org.openhab.binding.openthermgateway.handler.VentilationHeatRecoveryHandler;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -35,15 +37,19 @@ public class OpenThermGatewayHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return thingTypeUID.equals(OpenThermGatewayBindingConstants.MAIN_THING_TYPE);
+        return OpenThermGatewayBindingConstants.SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(OpenThermGatewayBindingConstants.MAIN_THING_TYPE)) {
-            return new OpenThermGatewayHandler(thing);
+        if (thingTypeUID.equals(OpenThermGatewayBindingConstants.OPENTHERM_GATEWAY_THING_TYPE_UID)) {
+            return new OpenThermGatewayHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(OpenThermGatewayBindingConstants.BOILER_THING_TYPE_UID)) {
+            return new BoilerHandler(thing);
+        } else if (thingTypeUID.equals(OpenThermGatewayBindingConstants.VENTILATION_HEATRECOVERY_THING_TYPE_UID)) {
+            return new VentilationHeatRecoveryHandler(thing);
         }
 
         return null;

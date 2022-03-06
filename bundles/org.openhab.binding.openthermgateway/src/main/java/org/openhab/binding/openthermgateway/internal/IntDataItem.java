@@ -13,19 +13,23 @@
 package org.openhab.binding.openthermgateway.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.types.State;
 
 /**
- * The {@link DataType} enum indicates the type of data from a DataItem.
+ * The {@link IntDataItem} represents an 8 or 16 bit signed integer.
  *
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
-public enum DataType {
-    FLAGS,
-    UINT8,
-    INT8,
-    FLOAT,
-    UINT16,
-    INT16,
-    DOWTOD
+public class IntDataItem extends DataItem {
+
+    public IntDataItem(Msg msg, ByteType byteType, String subject) {
+        super(msg, byteType, subject, null);
+    }
+
+    @Override
+    public State createState(Message message) {
+        return new DecimalType(message.getInt(super.getByteType()));
+    }
 }
