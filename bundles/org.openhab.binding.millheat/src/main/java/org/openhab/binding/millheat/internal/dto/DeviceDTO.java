@@ -24,7 +24,7 @@ public class DeviceDTO {
     public int subDomainId;
     public int controlType;
     public double currentTemp;
-    public boolean canChangeTemp = false;
+    public boolean canChangeTemp;
     public long deviceId;
     public String deviceName;
     @SerializedName("mac")
