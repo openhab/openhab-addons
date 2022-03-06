@@ -291,7 +291,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         file.getParentFile().mkdirs();
         try {
             Files.writeString(file.toPath(), content, StandardCharsets.UTF_8);
-            logger.debug("Created file '{}' with content '{}'", file.getAbsolutePath(), content);
+            logger.debug("Created file '{}' with content '{}'", file.getAbsolutePath(), sensored(content));
         } catch (FileNotFoundException e) {
             logger.error("Couldn't create file '{}'.", file.getPath(), e);
         } catch (IOException e) {
@@ -318,11 +318,11 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
         if (!file.exists()) {
             newSecretString = randomString(20);
-            logger.debug("New secret = {}", newSecretString);
+            logger.debug("New secret = {}", sensored(newSecretString));
             writeFile(file, newSecretString);
         } else {
             newSecretString = readFirstLine(file);
-            logger.debug("Using secret at '{}' with content '{}'", file.getAbsolutePath(), newSecretString);
+            logger.debug("Using secret at '{}' with content '{}'", file.getAbsolutePath(), sensored(newSecretString));
         }
 
         return newSecretString;
