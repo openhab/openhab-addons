@@ -10,7 +10,7 @@
 			<channel id="sendcommand" typeId="sendcommand"/>
 		</channels>
 		<properties>
-			<property name="version">2.1.4</property>
+			<property name="version">2.2.0</property>
 		</properties>
 		<config-description-ref uri="thing-type:openthermgateway:openthermgateway"/>
 	</bridge-type>
