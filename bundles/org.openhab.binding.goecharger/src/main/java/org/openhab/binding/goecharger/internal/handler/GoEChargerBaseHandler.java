@@ -139,7 +139,10 @@ public abstract class GoEChargerBaseHandler extends BaseThingHandler {
             try {
                 GoEStatusResponseBaseDTO goeResponse = getGoEData();
                 updateChannelsAndStatus(goeResponse, null);
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                updateChannelsAndStatus(null, ie.getMessage());
+            } catch (TimeoutException | ExecutionException e) {
                 updateChannelsAndStatus(null, e.getMessage());
             }
         }
