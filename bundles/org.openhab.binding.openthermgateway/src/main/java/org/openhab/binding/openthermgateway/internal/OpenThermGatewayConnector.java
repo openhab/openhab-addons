@@ -12,19 +12,23 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link OpenThermGatewayConnector} interface is used to allow multiple types of connectors
  * to be implemented and used to connect to the OpenTherm Gateway.
- * 
+ *
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
-public interface OpenThermGatewayConnector extends Runnable {
+public interface OpenThermGatewayConnector extends Callable<Boolean> {
     void sendCommand(GatewayCommand command);
 
     boolean isConnected();
 
     void stop();
+
+    void start();
 }
