@@ -28,6 +28,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.type.ChannelKind;
@@ -53,8 +54,12 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // the framework handles configuration and bridge offline errors
-        updateStatus(ThingStatus.ONLINE);
+        if (getBridge() == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        } else {
+            // note: the framework handles bridge configuration resp. offline errors
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     @Override
