@@ -150,7 +150,6 @@ public class CcuGateway extends AbstractHomematicGateway {
 
     @Override
     protected void setVariable(HmDatapoint dp, Object value) throws IOException {
-        // If Double then anders umwandeln
         String strValue;
         if (value instanceof Double) {
             strValue = new BigDecimal((Double) value).stripTrailingZeros().toPlainString();
