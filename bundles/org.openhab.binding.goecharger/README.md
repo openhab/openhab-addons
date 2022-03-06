@@ -27,6 +27,7 @@ Currently available channels are
 | Channel ID               | Item Type                | Description                                                   | API version       |
 |--------------------------|--------------------------|---------------------------------------------------------------|-------------------|
 | maxCurrent               | Number:ElectricCurrent   | Maximum current allowed to use for charging                   | 1 (r/w), 2 (r/w)  |
+| maxCurrentTemp           | Number:ElectricCurrent   | Maximum current temporary (not written to EEPROM)             | 1 (r)             |
 | pwmSignal                | String                   | Signal status for PWM signal                                  | 1 (r), 2 (r)      |
 | error                    | String                   | Error code of charger                                         | 1 (r), 2 (r)      |
 | voltageL1                | Number:ElectricPotential | Voltage on L1                                                 | 1 (r), 2 (r)      |
@@ -38,6 +39,7 @@ Currently available channels are
 | powerL1                  | Number:Power             | Power on L1                                                   | 1 (r), 2 (r)      |
 | powerL2                  | Number:Power             | Power on L2                                                   | 1 (r), 2 (r)      |
 | powerL3                  | Number:Power             | Power on L2                                                   | 1 (r), 2 (r)      |
+| powerAll                 | Number:Power             | Power over all three phases                                   | 1 (r), 2 (r)      |
 | phases                   | Number                   | Amount of phases currently used for charging                  | 1 (r), 2 (r/w)    |
 | sessionChargeEnergyLimit | Number:Energy            | Wallbox stops charging after defined value, disable with 0    | 1 (r/w), 2 (r/w)  |
 | sessionChargedEnergy     | Number:Energy            | Amount of energy that has been charged in this session        | 1 (r), 2 (r)      |
@@ -62,6 +64,7 @@ demo.items
 
 ```
 Number:ElectricCurrent     GoEChargerMaxCurrent                 "Maximum current"                       {channel="goecharger:goe:garage:maxCurrent"}
+Number:ElectricCurrent     GoEChargerMaxCurrentTemp             "Maximum current temporary"             {channel="goecharger:goe:garage:maxCurrentTemp"}
 Number                     GoEChargerForceState                 "Force state"                           {channel="goecharger:goe:garage:forceState"}
 Number                     GoEChargerPhases                     "Phases"                                {channel="goecharger:goe:garage:phases"}
 String                     GoEChargerPwmSignal                  "Pwm signal status"                     {channel="goecharger:goe:garage:pwmSignal"}
@@ -75,6 +78,7 @@ Number:ElectricCurrent     GoEChargerCurrentL3                  "Current l3"    
 Number:Power               GoEChargerPowerL1                    "Power l1"                              {channel="goecharger:goe:garage:powerL1"}
 Number:Power               GoEChargerPowerL2                    "Power l2"                              {channel="goecharger:goe:garage:powerL2"}
 Number:Power               GoEChargerPowerL3                    "Power l3"                              {channel="goecharger:goe:garage:powerL3"}
+Number:Power               GoEChargerPowerAll                   "Power over All"                        {channel="goecharger:goe:garage:powerAll"}
 Number:Energy              GoEChargerSessionChargeEnergyLimit   "Current session charge energy limit"   {channel="goecharger:goe:garage:sessionChargeEnergyLimit"}
 Number:Energy              GoEChargerSessionChargedEnergy       "Current session charged energy"        {channel="goecharger:goe:garage:sessionChargedEnergy"}
 Number:Energy              GoEChargerTotalChargedEnergy         "Total charged energy"                  {channel="goecharger:goe:garage:totalChargedEnergy"}
@@ -97,7 +101,7 @@ when
     Item availablePVCurrent received update
 then
     logInfo("Amps available: ", receivedCommand.state)
-    GoEChargerMaxCurrent.sendCommand(receivedCommand.state)
+    GoEChargerMaxCurrentTemp.sendCommand(receivedCommand.state)
 end
 ```
 

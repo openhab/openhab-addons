@@ -74,6 +74,11 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
 
         var goeResponse = (GoEStatusResponseDTO) goeResponseBase;
         switch (channelId) {
+            case MAX_CURRENT_TEMPORARY:
+                if (goeResponse.maxCurrentTemporary == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponse.maxCurrentTemporary, Units.AMPERE);
             case PWM_SIGNAL:
                 if (goeResponse.pwmSignal == null) {
                     return UnDefType.UNDEF;
@@ -213,6 +218,11 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[9] * 100, Units.WATT);
+            case POWER_ALL:
+                if (goeResponseBase.energy == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponseBase.energy[11] * 10, Units.WATT);
         }
         return UnDefType.UNDEF;
     }
@@ -231,6 +241,14 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
         switch (channelUID.getId()) {
             case MAX_CURRENT:
                 key = "amp";
+                if (command instanceof DecimalType) {
+                    value = String.valueOf(((DecimalType) command).intValue());
+                } else if (command instanceof QuantityType<?>) {
+                    value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(Units.AMPERE).intValue());
+                }
+                break;
+            case MAX_CURRENT_TEMPORARY:
+                key = "amx";
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue());
                 } else if (command instanceof QuantityType<?>) {
@@ -298,10 +316,10 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
 
     private void sendData(String key, String value) {
         String urlStr = getWriteUrl(key, value);
-        logger.trace("POST URL = {}", urlStr);
+        logger.trace("GET URL = {}", urlStr);
 
         try {
-            HttpMethod httpMethod = HttpMethod.POST;
+            HttpMethod httpMethod = HttpMethod.GET;
             ContentResponse contentResponse = httpClient.newRequest(urlStr).method(httpMethod)
                     .timeout(5, TimeUnit.SECONDS).send();
             String response = contentResponse.getContentAsString();

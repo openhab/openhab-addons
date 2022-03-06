@@ -42,4 +42,7 @@ public class GoEStatusResponseDTO extends GoEStatusResponseBaseDTO {
 
     @SerializedName("dws")
     public Long sessionChargeConsumption;
+
+    @SerializedName("amx")
+    public Integer maxCurrentTemporary;
 }
