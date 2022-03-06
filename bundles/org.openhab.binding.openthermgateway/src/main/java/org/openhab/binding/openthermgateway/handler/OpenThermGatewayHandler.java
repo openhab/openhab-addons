@@ -59,6 +59,7 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
 
     private @Nullable ConnectionState state;
     private boolean autoReconnect = true;
+    private boolean disposing = false;
 
     public OpenThermGatewayHandler(Bridge bridge) {
         super(bridge);
@@ -71,6 +72,7 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
         configuration = getConfigAs(OpenThermGatewayConfiguration.class);
         logger.debug("Using configuration: {}", configuration);
 
+        disposing = false;
         connect();
     }
 
@@ -169,12 +171,13 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
                     cancelAutoReconnect();
                     break;
                 case DISCONNECTED:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                    autoReconnect();
+                    if (!disposing) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        autoReconnect();
+                    }
                     break;
-                case CONNECTING:
-                case INITIALIZING:
-                    updateStatus(ThingStatus.INITIALIZING);
+                default:
+                    updateStatus(ThingStatus.UNKNOWN);
             }
         }
     }
@@ -189,6 +192,7 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
     @Override
     public void dispose() {
         logger.debug("Disposing OpenThermGateway handler");
+        disposing = true;
         disconnect();
         super.dispose();
     }
