@@ -15,17 +15,14 @@ package org.openhab.binding.openthermgateway.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link DataType} enum indicates the type of data from a DataItem.
- *
+ * The {@link ConnectionState} is used to indicate changes in connection state.
+ * 
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
-public enum DataType {
-    FLAGS,
-    UINT8,
-    INT8,
-    FLOAT,
-    UINT16,
-    INT16,
-    DOWTOD
+public enum ConnectionState {
+    INITIALIZING,
+    DISCONNECTED,
+    CONNECTING,
+    CONNECTED
 }

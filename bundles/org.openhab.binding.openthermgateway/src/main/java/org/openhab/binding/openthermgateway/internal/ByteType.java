@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ByteType} enum specifies whether the upper, lower or both bytes are used
  * 
  * @author Arjen Korevaar - Initial contribution
  */
+@NonNullByDefault
 public enum ByteType {
     HIGHBYTE,
     LOWBYTE,
