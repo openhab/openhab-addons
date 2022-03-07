@@ -24,7 +24,7 @@
 			<channel id="powerL3" typeId="pl3"/>
 			<channel id="allowCharging" typeId="alw"/>
 			<channel id="cableCurrent" typeId="cbl"/>
-			<channel id="firmware" typeId="fwv"/>
+			<channel id="firmware" typeId="fmw"/>
 			<channel id="accessConfiguration" typeId="ast"/>
 			<channel id="phases" typeId="pha"/>
 			<channel id="forceState" typeId="fs"/>
@@ -214,7 +214,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 		<category>Temperature</category>
 	</channel-type>
-	<channel-type id="fwv">
+	<channel-type id="fmw">
 		<item-type>String</item-type>
 		<label>Firmware</label>
 		<description>Firmware Version</description>
