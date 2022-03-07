@@ -4,7 +4,7 @@ This binding integrates the Samsung Smartthings Hub into openHAB.
 
 ## Supported things
 
-This binding supports most of the Smartthings devices that are defined in the [Smartthings Capabilities list](https://docs.smartthings.com/en/latest/capabilities-reference.html). If you find a device that doesn't work [follow these instructions](doc/Troubleshooting.md) to collect the required data so it can be added in a future release.
+This binding supports most of the Smartthings devices that are defined in the [Smartthings Capabilities list](https://developer-preview.smartthings.com/docs/devices/capabilities/capabilities-reference/). If you find a device that doesn't work [follow these instructions](doc/Troubleshooting.md) to collect the required data so it can be added in a future release. 
 
 ## Discovery
 
@@ -43,7 +43,7 @@ Each attached thing must specify the type of device and it's Smartthings device 
 
 where:
 
-* **[thingTypeId](https://docs.smartthings.com/en/latest/capabilities-reference.html)** corresponds to the "Preferences Reference" in the Smartthings Capabilities document but without the capability. prefix. i.e. A dimmer switch in the Capabilities document has a Preferences reference of capability.switchLevel, therefore the &lt;thingTypeId&gt; is switchLevel.
+* **[thingTypeId](https://developer-preview.smartthings.com/docs/devices/capabilities/capabilities-reference/)** corresponds to the "Preferences Reference" in the Smartthings Capabilities document but without the capability. prefix. i.e. A dimmer switch in the Capabilities document has a Preferences reference of capability.switchLevel, therefore the &lt;thingTypeId&gt; is switchLevel.
 * **name** is what you want to call this thing and is used in defining the items that use this thing.
 * **deviceName** is the name you assigned to the device when you discovered and connected to it in the Smartthings App
 * Optional: **timeout** is how long openHAB will wait for a response to the request before throwing a timeout exception. The default is 3 seconds.
