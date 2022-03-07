@@ -19,6 +19,7 @@ import java.io.PipedOutputStream;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implements AudioSource {
 
     private final Logger logger = LoggerFactory.getLogger(PulseAudioAudioSource.class);
-    private final Set<PipedOutputStream> pipeOutputs = new HashSet<>();
+    private final ConcurrentLinkedQueue<PipedOutputStream> pipeOutputs = new ConcurrentLinkedQueue<>();
     private final ScheduledExecutorService executor;
 
     private @Nullable Future<?> pipeWriteTask;
@@ -85,7 +86,7 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                     setIdle(true);
                     var pipeOutput = new PipedOutputStream();
                     registerPipe(pipeOutput);
-                    var pipeInput = new PipedInputStream(pipeOutput, 1024 * 20) {
+                    var pipeInput = new PipedInputStream(pipeOutput, 1024 * 10) {
                         @Override
                         public void close() throws IOException {
                             unregisterPipe(pipeOutput);
@@ -103,7 +104,7 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                         }
                     });
                 } catch (IOException e) {
-                    disconnect(); // disconnect force to clear connection in case of socket not cleanly shutdown
+                    disconnect(); // disconnect to force clear connection in case of socket not cleanly shutdown
                     if (countAttempt == 2) { // we won't retry : log and quit
                         String port = clientSocket != null ? Integer.toString(clientSocket.getPort()) : "unknown";
                         logger.warn(
@@ -133,22 +134,40 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
         startPipeWrite();
     }
 
-    private void startPipeWrite() {
-        if (pipeWriteTask == null) {
+    private synchronized void startPipeWrite() {
+        if (this.pipeWriteTask == null) {
             this.pipeWriteTask = executor.submit(() -> {
                 int lengthRead;
                 byte[] buffer = new byte[1024];
+                int readRetries = 3;
                 while (!pipeOutputs.isEmpty()) {
                     var stream = getSourceInputStream();
                     if (stream != null) {
                         try {
                             lengthRead = stream.read(buffer);
+                            readRetries = 3;
                             for (var output : pipeOutputs) {
-                                output.write(buffer, 0, lengthRead);
-                                output.flush();
+                                try {
+                                    output.write(buffer, 0, lengthRead);
+                                    if (pipeOutputs.contains(output)) {
+                                        output.flush();
+                                    }
+                                } catch (IOException e) {
+                                    logger.warn("IOException while writing to from pulse source pipe: {}",
+                                            e.getMessage());
+                                } catch (RuntimeException e) {
+                                    logger.warn("RuntimeException while writing to pulse source pipe: {}",
+                                            e.getMessage());
+                                }
                             }
                         } catch (IOException e) {
                             logger.warn("IOException while reading from pulse source: {}", e.getMessage());
+                            if (readRetries == 0) {
+                                // force reconnection on persistent IOException
+                                super.disconnect();
+                            } else {
+                                readRetries--;
+                            }
                         } catch (RuntimeException e) {
                             logger.warn("RuntimeException while reading from pulse source: {}", e.getMessage());
                         }
@@ -156,7 +175,6 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                         logger.warn("Unable to get source input stream");
                     }
                 }
-                this.pipeWriteTask = null;
             });
         }
     }
@@ -165,12 +183,16 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
         this.pipeOutputs.remove(pipeOutput);
         stopPipeWriteTask();
         try {
+            Thread.sleep(0);
+        } catch (InterruptedException ignored) {
+        }
+        try {
             pipeOutput.close();
         } catch (IOException ignored) {
         }
     }
 
-    private void stopPipeWriteTask() {
+    private synchronized void stopPipeWriteTask() {
         var pipeWriteTask = this.pipeWriteTask;
         if (pipeOutputs.isEmpty() && pipeWriteTask != null) {
             pipeWriteTask.cancel(true);
