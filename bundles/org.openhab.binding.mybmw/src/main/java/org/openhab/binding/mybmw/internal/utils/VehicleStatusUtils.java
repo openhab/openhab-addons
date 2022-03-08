@@ -98,9 +98,10 @@ public class VehicleStatusUtils {
             }
         } else if (Constants.PHEV.equals(driveTrain)) {
             return VehicleType.PLUGIN_HYBRID;
-        } else if (Constants.CONV.equals(driveTrain)) {
+        } else if (Constants.CONV.equals(driveTrain) || Constants.HYBRID.equals(driveTrain)) {
             return VehicleType.CONVENTIONAL;
         }
+        LOGGER.warn("Unknown Vehicle Type: {} | {}", model, driveTrain);
         return VehicleType.UNKNOWN;
     }
 

@@ -39,6 +39,7 @@ public class MyBMWConstants {
     public enum VehicleType {
         CONVENTIONAL("conv"),
         PLUGIN_HYBRID("phev"),
+        MILD_HYBRID("hybrid"),
         ELECTRIC_REX("bev_rex"),
         ELECTRIC("bev"),
         UNKNOWN("unknown");

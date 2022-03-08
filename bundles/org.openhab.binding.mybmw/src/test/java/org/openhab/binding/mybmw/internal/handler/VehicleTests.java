@@ -47,8 +47,8 @@ import org.slf4j.LoggerFactory;
 public class VehicleTests {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
-    private static final int STATUS_ELECTRIC = 13;
-    private static final int STATUS_CONV = 10;
+    private static final int STATUS_ELECTRIC = 12;
+    private static final int STATUS_CONV = 9;
     private static final int RANGE_HYBRID = 9;
     private static final int RANGE_CONV = 4;
     private static final int RANGE_ELECTRIC = 4;
@@ -57,7 +57,7 @@ public class VehicleTests {
     private static final int CHECK_AVAILABLE = 3;
     private static final int SERVICE_AVAILABLE = 3;
     private static final int SERVICE_EMPTY = 3;
-    private static final int POSITION = 2;
+    private static final int LOCATION = 3;
     private static final int CHARGE_PROFILE = 44;
     private static final int TIRES = 8;
 
@@ -212,7 +212,7 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC_REX.toString(), Constants.ANONYMOUS);
         String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/vehicles.json");
-        assertTrue(testVehicle(content, STATUS_ELECTRIC + RANGE_HYBRID + DOORS + POSITION + SERVICE_AVAILABLE
+        assertTrue(testVehicle(content, STATUS_ELECTRIC + RANGE_HYBRID + DOORS + LOCATION + SERVICE_AVAILABLE
                 + CHECK_EMPTY + CHARGE_PROFILE + TIRES, Optional.empty()));
     }
 
@@ -222,7 +222,7 @@ public class VehicleTests {
         setup(VehicleType.CONVENTIONAL.toString(), "some_vin_F11");
         String content = FileReader.readFileInString("src/test/resources/responses/F11/vehicles_v2_bmw_0.json");
         assertTrue(testVehicle(content,
-                STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION + TIRES,
+                STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + LOCATION + TIRES,
                 Optional.empty()));
     }
 
@@ -232,7 +232,7 @@ public class VehicleTests {
         setup(VehicleType.CONVENTIONAL.toString(), "some_vin_F31");
         String content = FileReader.readFileInString("src/test/resources/responses/F31/vehicles_v2_bmw_0.json");
         assertTrue(testVehicle(content,
-                STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION + TIRES,
+                STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + LOCATION + TIRES,
                 Optional.empty()));
     }
 
@@ -242,7 +242,7 @@ public class VehicleTests {
         setup(VehicleType.CONVENTIONAL.toString(), "some_vin_F44");
         String content = FileReader.readFileInString("src/test/resources/responses/F44/vehicles_v2_bmw_0.json");
         assertTrue(testVehicle(content,
-                STATUS_CONV + DOORS + RANGE_CONV + POSITION + SERVICE_EMPTY + CHECK_EMPTY + TIRES, Optional.empty()));
+                STATUS_CONV + DOORS + RANGE_CONV + LOCATION + SERVICE_EMPTY + CHECK_EMPTY + TIRES, Optional.empty()));
     }
 
     @Test
@@ -251,7 +251,7 @@ public class VehicleTests {
         setup(VehicleType.PLUGIN_HYBRID.toString(), "some_vin_F45");
         String content = FileReader.readFileInString("src/test/resources/responses/F45/vehicles_v2_bmw_0.json");
         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY
-                + POSITION + CHARGE_PROFILE + TIRES, Optional.empty()));
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
     }
 
     @Test
@@ -260,7 +260,7 @@ public class VehicleTests {
         setup(VehicleType.CONVENTIONAL.toString(), "some_vin_F48");
         String content = FileReader.readFileInString("src/test/resources/responses/F48/vehicles_v2_bmw_0.json");
         assertTrue(testVehicle(content,
-                STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_AVAILABLE + POSITION + TIRES,
+                STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_AVAILABLE + LOCATION + TIRES,
                 Optional.empty()));
     }
 
@@ -270,7 +270,7 @@ public class VehicleTests {
         setup(VehicleType.PLUGIN_HYBRID.toString(), "some_vin_G01");
         String content = FileReader.readFileInString("src/test/resources/responses/G01/vehicles_v2_bmw_0.json");
         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY
-                + POSITION + CHARGE_PROFILE + TIRES, Optional.empty()));
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
     }
 
     @Test
@@ -279,7 +279,7 @@ public class VehicleTests {
         setup(VehicleType.PLUGIN_HYBRID.toString(), "some_vin_G05");
         String content = FileReader.readFileInString("src/test/resources/responses/G05/vehicles_v2_bmw_0.json");
         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY
-                + POSITION + CHARGE_PROFILE + TIRES, Optional.empty()));
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
     }
 
     @Test
@@ -288,7 +288,7 @@ public class VehicleTests {
         setup(VehicleType.ELECTRIC.toString(), "some_vin_G08");
         String content = FileReader.readFileInString("src/test/resources/responses/G08/vehicles_v2_bmw_0.json");
         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY
-                + POSITION + CHARGE_PROFILE + TIRES, Optional.empty()));
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
     }
 
     @Test
@@ -297,7 +297,7 @@ public class VehicleTests {
         setup(VehicleType.PLUGIN_HYBRID.toString(), "some_vin_G21");
         String content = FileReader.readFileInString("src/test/resources/responses/G21/vehicles_v2_bmw_0.json");
         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY
-                + POSITION + CHARGE_PROFILE + TIRES, Optional.empty()));
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
     }
 
     @Test
@@ -306,7 +306,7 @@ public class VehicleTests {
         setup(VehicleType.PLUGIN_HYBRID.toString(), "some_vin_G30");
         String content = FileReader.readFileInString("src/test/resources/responses/G30/vehicles_v2_bmw_0.json");
         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY
-                + POSITION + CHARGE_PROFILE + TIRES, Optional.empty()));
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
     }
 
     @Test
@@ -315,7 +315,7 @@ public class VehicleTests {
         setup(VehicleType.ELECTRIC.toString(), "some_vin_I01_NOREX");
         String content = FileReader.readFileInString("src/test/resources/responses/I01_NOREX/vehicles_v2_bmw_0.json");
         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY
-                + POSITION + CHARGE_PROFILE + TIRES, Optional.empty()));
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
     }
 
     @Test
@@ -324,6 +324,17 @@ public class VehicleTests {
         setup(VehicleType.PLUGIN_HYBRID.toString(), "anonymous");
         String content = FileReader.readFileInString("src/test/resources/responses/530e/vehicles.json");
         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY
-                + POSITION + CHARGE_PROFILE + TIRES, Optional.empty()));
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
+    }
+
+    @Test
+    public void test340i() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.MILD_HYBRID.toString(), "anonymous");
+        String content = FileReader.readFileInString("src/test/resources/responses/G21/340i.json");
+        assertTrue(testVehicle(content, 38, Optional.empty()));
+        // assertTrue(testVehicle(content,
+        // STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + LOCATION + TIRES,
+        // Optional.empty()));
     }
 }
