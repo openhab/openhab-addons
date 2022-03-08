@@ -32,7 +32,7 @@ import com.google.gson.JsonParseException;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class NAObjectMapDeserializer implements JsonDeserializer<NAObjectMap<?>> {
+class NAObjectMapDeserializer implements JsonDeserializer<NAObjectMap<?>> {
     @Override
     public @Nullable NAObjectMap<?> deserialize(JsonElement json, Type clazz, JsonDeserializationContext context)
             throws JsonParseException {

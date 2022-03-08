@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,18 +34,25 @@ import org.slf4j.LoggerFactory;
 public class WeatherCapability extends RestCapability<WeatherApi> {
     private final Logger logger = LoggerFactory.getLogger(WeatherCapability.class);
 
-    public WeatherCapability(NACommonInterface handler, ApiBridge apiBridge) {
-        super(handler, apiBridge.getRestManager(WeatherApi.class));
+    public WeatherCapability(NACommonInterface handler) {
+        super(handler);
     }
 
     @Override
-    public List<NAObject> updateReadings() {
-        List<NAObject> result = new ArrayList<>();
+    public void initialize() {
+        ApiBridgeHandler bridgeApi = handler.getRootBridge();
+        if (bridgeApi != null) {
+            api = Optional.ofNullable(bridgeApi.getRestManager(WeatherApi.class));
+        }
+    }
+
+    @Override
+    protected List<NAObject> updateReadings(WeatherApi api) {
         try {
-            result.add(api.getStationData(handlerId));
+            List.of(api.getStationData(handler.getId()));
         } catch (NetatmoException e) {
             logger.warn("Error retrieving weather data '{}' : {}", handler.getId(), e.getMessage());
         }
-        return result;
+        return List.of();
     }
 }

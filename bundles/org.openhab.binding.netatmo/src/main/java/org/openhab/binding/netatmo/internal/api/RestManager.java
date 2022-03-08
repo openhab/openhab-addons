@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 
 /**
  * Base class for all various rest managers
@@ -40,9 +41,9 @@ public abstract class RestManager {
     private static final UriBuilder API_URI_BUILDER = getApiBaseBuilder().path(PATH_API);
 
     private final Set<Scope> requiredScopes;
-    private final ApiBridge apiBridge;
+    private final ApiBridgeHandler apiBridge;
 
-    public RestManager(ApiBridge apiBridge, FeatureArea features) {
+    public RestManager(ApiBridgeHandler apiBridge, FeatureArea features) {
         this.requiredScopes = features.scopes;
         this.apiBridge = apiBridge;
     }
@@ -62,7 +63,7 @@ public abstract class RestManager {
 
     private <T extends ApiResponse<?>> T executeUri(UriBuilder uriBuilder, HttpMethod method, Class<T> clazz,
             @Nullable String payload) throws NetatmoException {
-        if (apiBridge.matchesScopes(requiredScopes)) {
+        if (apiBridge.isConnected()) {
             URI uri = uriBuilder.build();
             T response = apiBridge.executeUri(uri, method, clazz, payload);
             if (response instanceof ApiResponse.Ok && ((ApiResponse.Ok) response).failed()) {
@@ -105,5 +106,9 @@ public abstract class RestManager {
 
     private String toRequest(Map<String, String> entries) {
         return entries.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining("&"));
+    }
+
+    public Set<Scope> getRequiredScopes() {
+        return requiredScopes;
     }
 }

@@ -14,13 +14,13 @@ package org.openhab.binding.netatmo.internal.discovery;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.EQUIPMENT_ID;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.AircareApi;
-import org.openhab.binding.netatmo.internal.api.ApiBridge;
-import org.openhab.binding.netatmo.internal.api.ConnectionListener;
 import org.openhab.binding.netatmo.internal.api.HomeApi;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
@@ -28,100 +28,85 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NetatmoModule;
+import org.openhab.binding.netatmo.internal.config.BindingConfiguration;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NetatmoDiscoveryService} searches for available Netatmo devices and modules
+ * The {@link NetatmoDiscoveryService} searches for available Netatmo things
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
-@Component(service = DiscoveryService.class, configurationPid = "binding.netatmo")
 @NonNullByDefault
-public class NetatmoDiscoveryService extends AbstractDiscoveryService implements ConnectionListener {
+public class NetatmoDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService, DiscoveryService {
+    private static final Set<ModuleType> SKIPPED_TYPES = Set.of(ModuleType.UNKNOWN, ModuleType.NABridge);
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
     private final Logger logger = LoggerFactory.getLogger(NetatmoDiscoveryService.class);
-    private final ApiBridge apiBridge;
+    private @Nullable ApiBridgeHandler handler;
+    private @Nullable BindingConfiguration config;
 
-    @Activate
-    public NetatmoDiscoveryService(@Reference ApiBridge apiBridge, @Reference LocaleProvider localeProvider,
-            @Reference TranslationProvider translationProvider) {
-        super(ModuleType.AS_SET.stream().filter(mt -> mt != ModuleType.UNKNOWN).map(mt -> mt.thingTypeUID)
+    public NetatmoDiscoveryService() {
+        super(ModuleType.AS_SET.stream().filter(mt -> !SKIPPED_TYPES.contains(mt)).map(mt -> mt.thingTypeUID)
                 .collect(Collectors.toSet()), DISCOVER_TIMEOUT_SECONDS);
-        this.apiBridge = apiBridge;
-        this.localeProvider = localeProvider;
-        this.i18nProvider = translationProvider;
-        apiBridge.addConnectionListener(this);
-    }
-
-    @Override
-    @Deactivate
-    protected void deactivate() {
-        apiBridge.removeConnectionListener(this);
-        super.deactivate();
-    }
-
-    @Override
-    public void connectionEvent(boolean connected) {
-        if (connected) {
-            super.activate(null);
-        } else {
-            deactivate();
-        }
     }
 
     @Override
     public void startScan() {
-        try {
-            AircareApi airCareApi = apiBridge.getRestManager(AircareApi.class);
-            if (airCareApi != null) { // Search Healthy Home Coaches
-                airCareApi.getHomeCoachData(null).getBody().getElements().stream()
-                        .forEach(homeCoach -> createThing(homeCoach, null));
-            }
-            WeatherApi weatherApi = apiBridge.getRestManager(WeatherApi.class);
-            if (weatherApi != null) { // Search favorite stations
-                weatherApi.getStationsData(null, true).getBody().getElements().stream().filter(NAMain::isReadOnly)
-                        .forEach(station -> {
-                            ThingUID bridgeUID = createThing(station, null);
-                            station.getModules().values().stream().forEach(module -> createThing(module, bridgeUID));
+        BindingConfiguration localConf = config;
+        ApiBridgeHandler localHandler = handler;
+        if (localHandler != null && localConf != null) {
+            ThingUID apiBridgeUID = localHandler.getThing().getUID();
+            try {
+                AircareApi airCareApi = localHandler.getRestManager(AircareApi.class);
+                if (airCareApi != null) { // Search Healthy Home Coaches
+                    airCareApi.getHomeCoachData(null).getBody().getElements().stream()
+                            .forEach(homeCoach -> createThing(homeCoach, apiBridgeUID));
+                }
+                if (localConf.readFriends) {
+                    WeatherApi weatherApi = localHandler.getRestManager(WeatherApi.class);
+                    if (weatherApi != null) { // Search favorite stations
+                        weatherApi.getStationsData(null, true).getBody().getElements().stream()
+                                .filter(NAMain::isReadOnly).forEach(station -> {
+                                    ThingUID bridgeUID = createThing(station, apiBridgeUID);
+                                    station.getModules().values().stream()
+                                            .forEach(module -> createThing(module, bridgeUID));
+                                });
+                    }
+                }
+                HomeApi homeApi = localHandler.getRestManager(HomeApi.class);
+                if (homeApi != null) { // Search all the rest
+                    homeApi.getHomesData(null, null).stream().filter(h -> !h.getFeatures().isEmpty()).forEach(home -> {
+                        ThingUID homeUID = createThing(home, apiBridgeUID);
+                        home.getKnownPersons().forEach(person -> createThing(person, homeUID));
+                        home.getModules().values().stream().forEach(device -> {
+                            ModuleType deviceType = device.getType();
+                            String deviceBridge = device.getBridge();
+                            ThingUID bridgeUID = deviceBridge != null && deviceType.getBridge() != ModuleType.NAHome
+                                    ? findThingUID(deviceType.getBridge(), deviceBridge, apiBridgeUID)
+                                    : deviceType.getBridge() == ModuleType.NAHome ? homeUID : apiBridgeUID;
+                            createThing(device, bridgeUID);
                         });
-            }
-            HomeApi homeApi = apiBridge.getRestManager(HomeApi.class);
-            if (homeApi != null) { // Search all the rest
-                homeApi.getHomesData(null, null).stream().filter(h -> !h.getFeatures().isEmpty()).forEach(home -> {
-                    ThingUID homeUID = createThing(home, null);
-                    home.getKnownPersons().forEach(person -> createThing(person, homeUID));
-                    home.getModules().values().stream().forEach(device -> {
-                        ModuleType deviceType = device.getType();
-                        String deviceBridge = device.getBridge();
-                        ThingUID bridgeUID = deviceBridge != null && deviceType.getBridge() != ModuleType.NAHome
-                                ? findThingUID(deviceType.getBridge(), deviceBridge, null)
-                                : deviceType.getBridge() == ModuleType.NAHome ? homeUID : null;
-                        createThing(device, bridgeUID);
+                        home.getRooms().values().stream().forEach(room -> {
+                            room.getModuleIds().stream().map(id -> home.getModules().get(id))
+                                    .map(m -> m != null ? m.getType().feature : FeatureArea.NONE)
+                                    .filter(f -> FeatureArea.ENERGY.equals(f)).findAny()
+                                    .ifPresent(f -> createThing(room, homeUID));
+                        });
                     });
-                    home.getRooms().values().stream().forEach(room -> {
-                        room.getModuleIds().stream().map(id -> home.getModules().get(id))
-                                .map(m -> m != null ? m.getType().feature : FeatureArea.NONE)
-                                .filter(f -> FeatureArea.ENERGY.equals(f)).findAny()
-                                .ifPresent(f -> createThing(room, homeUID));
-                    });
-                });
 
+                }
+            } catch (NetatmoException e) {
+                logger.warn("Error getting Home List", e);
             }
-        } catch (NetatmoException e) {
-            logger.warn("Error getting Home List", e);
         }
     }
 
@@ -149,5 +134,28 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
         }
         thingDiscovered(resultBuilder.build());
         return moduleUID;
+    }
+
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        if (handler instanceof ApiBridgeHandler) {
+            this.handler = (ApiBridgeHandler) handler;
+            this.config = ((ApiBridgeHandler) handler).getConfiguration();
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return handler;
+    }
+
+    @Override
+    public void activate(@Nullable Map<String, Object> configProperties) {
+        super.activate(configProperties);
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
     }
 }

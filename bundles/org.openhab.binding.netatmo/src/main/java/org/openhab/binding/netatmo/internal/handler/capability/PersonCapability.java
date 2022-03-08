@@ -66,7 +66,7 @@ public class PersonCapability extends Capability {
     public void handleCommand(String channelName, Command command) {
         if ((command instanceof OnOffType) && CHANNEL_PERSON_AT_HOME.equals(channelName)) {
             handler.getHomeCapability(SecurityCapability.class)
-                    .ifPresent(cap -> cap.setPersonAway(handlerId, OnOffType.OFF.equals(command)));
+                    .ifPresent(cap -> cap.setPersonAway(handler.getId(), OnOffType.OFF.equals(command)));
         }
     }
 
@@ -83,7 +83,7 @@ public class PersonCapability extends Capability {
     public List<NAObject> updateReadings() {
         List<NAObject> result = new ArrayList<>();
         handler.getHomeCapability(SecurityCapability.class).ifPresent(cap -> {
-            Collection<NAHomeEvent> events = cap.getPersonEvents(handlerId);
+            Collection<NAHomeEvent> events = cap.getPersonEvents(handler.getId());
             if (!events.isEmpty()) {
                 result.add(events.iterator().next());
             }

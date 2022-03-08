@@ -10,18 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.netatmo.internal.api;
+package org.openhab.binding.netatmo.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ConnectionListener} is the interface for objects listener to API connection status
+ * The {@link NAThingConfiguration} is responsible for holding
+ * configuration information for any Netatmo thing module or device
  *
  * @author Gaël L'hopital - Initial contribution
- *
  */
 @NonNullByDefault
-public interface ConnectionListener {
-
-    void connectionEvent(boolean connected);
+public class NAThingConfiguration {
+    public String id = "";
+    public int refreshInterval = -1;
 }

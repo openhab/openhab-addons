@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceError;
 
 /**
  * An exception that occurred while communicating with Netatmo server or related processes.
@@ -25,30 +26,26 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class NetatmoException extends IOException {
     private static final long serialVersionUID = 1513549973502021727L;
-    private int statusCode = -1;
-
-    public NetatmoException(int statusCode, String message) {
-        super(message);
-        this.statusCode = statusCode;
-    }
+    private ServiceError statusCode = ServiceError.UNKNOWN;
 
     public NetatmoException(String format, Object... args) {
         super(String.format(format, args));
     }
 
-    public NetatmoException(Exception e, String message) {
-        super(message, e);
-    }
-
     public NetatmoException(Exception e, String format, Object... args) {
-        this(e, String.format(format, args));
+        super(String.format(format, args), e);
     }
 
     public NetatmoException(String message) {
         super(message);
     }
 
-    public int getStatusCode() {
+    public NetatmoException(ApiError error) {
+        super(error.getCode().name());
+        this.statusCode = error.getCode();
+    }
+
+    public ServiceError getStatusCode() {
         return statusCode;
     }
 
@@ -56,6 +53,6 @@ public class NetatmoException extends IOException {
     public @Nullable String getMessage() {
         String message = super.getMessage();
         return message == null ? null
-                : String.format("Rest call failed: statusCode=%d, message=%s", statusCode, message);
+                : String.format("Rest call failed: statusCode=%s, message=%s", statusCode, message);
     }
 }

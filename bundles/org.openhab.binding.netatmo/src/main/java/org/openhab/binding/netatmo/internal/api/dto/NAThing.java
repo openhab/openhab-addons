@@ -31,7 +31,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class NAThing extends NAObject implements NetatmoModule {
     @SerializedName(value = "rf_status", alternate = { "wifi_status", "rf_strength", "wifi_strength" })
-    public int radioStatus = -1;
+    private int radioStatus = -1;
     @SerializedName(value = "last_seen", alternate = { "last_therm_seen", "last_status_store", "last_plug_seen",
             "last_message", "last_activity" })
     private @Nullable ZonedDateTime lastSeen;

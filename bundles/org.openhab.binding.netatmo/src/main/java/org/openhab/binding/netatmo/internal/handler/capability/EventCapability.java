@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.ApiBridge;
-import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
 import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 
@@ -27,17 +27,21 @@ import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
  *
  */
 @NonNullByDefault
-public class EventCapability extends RestCapability<SecurityApi> {
-    private final NetatmoServlet servlet;
+public class EventCapability extends Capability {
+    private Optional<NetatmoServlet> servlet = Optional.empty();
 
-    public EventCapability(NACommonInterface handler, ApiBridge apiBridge, NetatmoServlet webhookServlet) {
-        super(handler, apiBridge.getRestManager(SecurityApi.class));
-        this.servlet = webhookServlet;
-        servlet.registerDataListener(handlerId, this);
+    public EventCapability(NACommonInterface handler) {
+        super(handler);
+    }
+
+    @Override
+    public void initialize() {
+        servlet = handler.getServlet();
+        servlet.ifPresent(s -> s.registerDataListener(handler.getId(), this));
     }
 
     @Override
     public void dispose() {
-        servlet.unregisterDataListener(this);
+        servlet.ifPresent(s -> s.unregisterDataListener(this));
     }
 }

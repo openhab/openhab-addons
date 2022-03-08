@@ -9,38 +9,26 @@
 
 
 	<config-description>
-		<parameter name="clientId" type="text" required="true">
-			<label>Client ID</label>
-			<description>Client ID provided for the application you created on http://dev.netatmo.com/createapp</description>
+		<parameter name="features" type="text" required="true" multiple="true">
+			<label>Feature Area</label>
+			<description>Defines the set of capabilities you want to operate on.</description>
+			<options>
+				<option value="AIR_CARE">Air Care</option>
+				<option value="WEATHER">Weather</option>
+				<option value="ENERGY">Energy</option>
+				<option value="SECURITY">Security</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<default>WEATHER</default>
 		</parameter>
 
-		<parameter name="clientSecret" type="text" required="true">
-			<label>Client Secret</label>
-			<description>Client Secret provided for the application you created.</description>
-			<context>password</context>
+		<parameter name="readFriends" type="boolean">
+			<label>Access Guests</label>
+			<description>For Weather Stations : A friend gave you access to their Netatmo Weather Station.</description>
+			<default>false</default>
 		</parameter>
 
-		<parameter name="username" type="text" required="true">
-			<label>Username</label>
-			<description>Your Netatmo API username (email).</description>
-		</parameter>
 
-		<parameter name="password" type="text" required="true">
-			<label>Password</label>
-			<description>Your Netatmo API password.</description>
-			<context>password</context>
-		</parameter>
-
-		<parameter name="webHookUrl" type="text" required="false">
-			<label>Webhook Address</label>
-			<description>Protocol, public IP and port to access openHAB server from Internet.</description>
-		</parameter>
-
-		<parameter name="reconnectInterval" type="integer" unit="s">
-			<label>Reconnect Interval</label>
-			<description>The reconnection interval to Netatmo API (in s).</description>
-			<default>5400</default>
-		</parameter>
 	</config-description>
 
 </binding:binding>

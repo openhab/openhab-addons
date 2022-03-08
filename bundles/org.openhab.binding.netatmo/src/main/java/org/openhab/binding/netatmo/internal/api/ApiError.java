@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceError;
 
 /**
  * The {@link ApiError} models an errored response from API
@@ -21,14 +22,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ApiError {
-    private String message = "";
-    private int code;
-
-    public String getMessage() {
-        return message;
+    private class Body {
+        private String message = "";
+        private int code;
     }
 
-    public int getCode() {
-        return code;
+    private Body error = new Body();
+
+    public String getMessage() {
+        return error.message;
+    }
+
+    public ServiceError getCode() {
+        return ServiceError.fromCode(error.code);
     }
 }

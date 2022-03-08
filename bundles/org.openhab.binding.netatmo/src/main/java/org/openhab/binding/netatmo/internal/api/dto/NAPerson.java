@@ -27,7 +27,7 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 @NonNullByDefault
 public class NAPerson extends NAThing {
     // Provided by events
-    private boolean outOfSight;
+    // TODO : not 100% sure this is still used since new API.
     private @Nullable NASnapshot face;
 
     // Provided by webhooks
@@ -38,10 +38,6 @@ public class NAPerson extends NAThing {
     @Override
     public ModuleType getType() {
         return ModuleType.NAPerson;
-    }
-
-    public boolean atHome() {
-        return !outOfSight;
     }
 
     public @Nullable String getFaceUrl() {

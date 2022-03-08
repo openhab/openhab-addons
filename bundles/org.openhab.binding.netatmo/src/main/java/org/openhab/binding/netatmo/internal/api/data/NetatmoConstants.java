@@ -131,7 +131,6 @@ public class NetatmoConstants {
     public static final String SUB_PATH_SETROOMTHERMPOINT = "setroomthermpoint";
     public static final String SUB_PATH_SETTHERMMODE = "setthermmode";
     public static final String SUB_PATH_SWITCHSCHEDULE = "switchschedule";
-    public static final String SUB_PATH_GETTHERMOSTAT = "getthermostatsdata";
     public static final String SUB_PATH_GETSTATION = "getstationsdata";
     public static final String SUB_PATH_GETMEASURE = "getmeasure";
     public static final String SUB_PATH_HOMESTATUS = "homestatus";
@@ -146,7 +145,6 @@ public class NetatmoConstants {
     public static final String PARAM_ROOMID = "room_id";
     public static final String PARAM_PERSONID = "person_id";
     public static final String PARAM_SCHEDULEID = "schedule_id";
-    public static final String PARAM_DEVICETYPE = "device_types";
     public static final String PARAM_GATEWAYTYPE = "gateway_types";
     public static final String PARAM_MODE = "mode";
     public static final String PARAM_URL = "url";
@@ -191,12 +189,10 @@ public class NetatmoConstants {
         UNKNOWN;
     }
 
-    private static final Set<Scope> SMOKE_SCOPES = Set.of(Scope.READ_SMOKEDETECTOR);
-    private static final Set<Scope> WELCOME_SCOPES = Set.of(Scope.READ_CAMERA, Scope.WRITE_CAMERA, Scope.ACCESS_CAMERA);
-    private static final Set<Scope> DOORBELL_SCOPES = Set.of(Scope.READ_DOORBELL, Scope.WRITE_DOORBELL,
-            Scope.ACCESS_DOORBELL);
-    private static final Set<Scope> PRESENCE_SCOPES = Set.of(Scope.READ_PRESENCE, Scope.WRITE_PRESENCE,
-            Scope.ACCESS_PRESENCE);
+    private static final Set<Scope> SMOKE = Set.of(Scope.READ_SMOKEDETECTOR);
+    private static final Set<Scope> WELCOME = Set.of(Scope.READ_CAMERA, Scope.WRITE_CAMERA, Scope.ACCESS_CAMERA);
+    private static final Set<Scope> DOORBELL = Set.of(Scope.READ_DOORBELL, Scope.WRITE_DOORBELL, Scope.ACCESS_DOORBELL);
+    private static final Set<Scope> PRESENCE = Set.of(Scope.READ_PRESENCE, Scope.WRITE_PRESENCE, Scope.ACCESS_PRESENCE);
 
     // Radio signal quality thresholds
     static final int[] WIFI_SIGNAL_LEVELS = new int[] { 99, 84, 69, 54 }; // Resp : bad, average, good, full
@@ -206,13 +202,15 @@ public class NetatmoConstants {
         AIR_CARE(Scope.READ_HOMECOACH),
         WEATHER(Scope.READ_STATION),
         ENERGY(Scope.READ_THERMOSTAT, Scope.WRITE_THERMOSTAT),
-        SECURITY(Stream.of(WELCOME_SCOPES, PRESENCE_SCOPES, SMOKE_SCOPES, DOORBELL_SCOPES).flatMap(Set::stream)
-                .toArray(Scope[]::new)),
+        SECURITY(Stream.of(WELCOME, PRESENCE, SMOKE, DOORBELL).flatMap(Set::stream).toArray(Scope[]::new)),
         NONE();
 
-        public static final EnumSet<FeatureArea> AS_SET = EnumSet.allOf(FeatureArea.class);
-        public static final String ALL_SCOPES = AS_SET.stream().map(fa -> fa.scopes).flatMap(Set::stream)
-                .map(s -> s.name().toLowerCase()).collect(Collectors.joining(" "));
+        public static final Set<FeatureArea> AS_SET = EnumSet.allOf(FeatureArea.class);
+
+        public static String toScopeString(Set<FeatureArea> featureSet) {
+            return featureSet.stream().map(fa -> fa.scopes).flatMap(Set::stream).map(s -> s.name().toLowerCase())
+                    .collect(Collectors.joining(" "));
+        }
 
         public final Set<Scope> scopes;
 
@@ -356,6 +354,43 @@ public class NetatmoConstants {
 
         BatteryState(int i) {
             this.level = i;
+        }
+    }
+
+    public enum ServiceError {
+        UNKNOWN(99),
+        UNKNOWN_ERROR_IN_OAUTH(-2),
+        GRANT_IS_INVALID(-1),
+        ACCESS_TOKEN_MISSING(1),
+        INVALID_TOKEN_MISSING(2),
+        ACCESS_TOKEN_EXPIRED(3),
+        APPLICATION_DEACTIVATED(5),
+        NOTHING_TO_MODIFY(7),
+        DEVICE_NOT_FOUND(9),
+        MISSING_ARGUMENTS(10),
+        OPERATION_FORBIDDEN(13),
+        IP_NOT_FOUND(19),
+        INVALID_ARGUMENT(21),
+        APPLICATION_NOT_FOUND(22),
+        USER_NOT_FOUND(23),
+        INVALID_DATE(25),
+        MAXIMUM_USAGE_REACHED(26),
+        INVALID_REFRESH_TOKEN(30),
+        METHOD_NOT_FOUND(31),
+        UNABLE_TO_EXECUTE(35),
+        PROHIBITED_STRING(36),
+        NO_MORE_SPACE_AVAILABLE_ON_THE_CAMERA(37),
+        JSON_GIVEN_HAS_AN_INVALID_ENCODING(40),
+        DEVICE_IS_UNREACHABLE(41);
+
+        public final int code;
+
+        ServiceError(int i) {
+            this.code = i;
+        }
+
+        public static ServiceError fromCode(int id) {
+            return Arrays.stream(values()).filter(value -> value.code == id).findFirst().orElse(UNKNOWN);
         }
     }
 }

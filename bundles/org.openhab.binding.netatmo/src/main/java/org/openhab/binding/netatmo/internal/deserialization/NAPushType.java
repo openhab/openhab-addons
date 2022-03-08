@@ -26,7 +26,7 @@ public class NAPushType {
     private final ModuleType moduleType;
     private final EventType event;
 
-    public NAPushType(ModuleType moduleType, EventType event) {
+    NAPushType(ModuleType moduleType, EventType event) {
         this.moduleType = moduleType;
         this.event = event;
     }

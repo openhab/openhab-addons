@@ -26,6 +26,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent.NAEventsDataResponse;
 import org.openhab.binding.netatmo.internal.api.dto.NAPing;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 
 /**
  * Base class for all Security related endpoints
@@ -34,39 +35,34 @@ import org.openhab.binding.netatmo.internal.api.dto.NAPing;
  */
 @NonNullByDefault
 public class SecurityApi extends RestManager {
-    public SecurityApi(ApiBridge apiClient) {
+    public SecurityApi(ApiBridgeHandler apiClient) {
         super(apiClient, FeatureArea.SECURITY);
     }
 
     /**
      * Dissociates a webhook from a user.
      *
-     * @return boolean Success
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
-    public boolean dropWebhook() throws NetatmoException {
+    public void dropWebhook() throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_DROPWEBHOOK);
         post(uriBuilder, ApiResponse.Ok.class, null);
-        return true;
     }
 
     /**
      * Links a callback url to a user.
      *
      * @param uri Your webhook callback url (required)
-     * @return boolean Success
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
-    public boolean addwebhook(URI uri) throws NetatmoException {
+    public void addwebhook(URI uri) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_ADDWEBHOOK, PARAM_URL, uri.toString());
         post(uriBuilder, ApiResponse.Ok.class, null);
-        return true;
     }
 
     public Collection<NAHomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {
-        // Note : the contract of the API is not respected. It only retrieves the last event and return empty if
-        // not the same person. Adding offset parameter gives a chance to get it but how to guess how many must
-        // be retrieved ???
+        // Note : the contract of the API is not respected. It only retrieves the last event and return empty if not the
+        // same person. Adding offset parameter gives a chance to get it but how to guess how many must be retrieved ???
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GETEVENTS, PARAM_HOMEID, homeId, PARAM_PERSONID, personId);
         NAEventsDataResponse response = get(uriBuilder, NAEventsDataResponse.class);
         NAHome home = response.getBody().getElement();

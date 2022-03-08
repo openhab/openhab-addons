@@ -30,7 +30,7 @@ import com.google.gson.JsonParseException;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
+class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
 
     @Override
     public @Nullable NAPushType deserialize(JsonElement json, Type clazz, JsonDeserializationContext context)

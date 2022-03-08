@@ -18,15 +18,16 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.config.MeasureConfiguration;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.MeasuresChannelHelper;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -46,21 +47,29 @@ public class MeasureCapability extends RestCapability<WeatherApi> {
     private final Logger logger = LoggerFactory.getLogger(MeasureCapability.class);
     private final Map<String, State> measures = new HashMap<>();
 
-    public MeasureCapability(NACommonInterface handler, MeasuresChannelHelper helper, ApiBridge apiBridge) {
-        super(handler, apiBridge.getRestManager(WeatherApi.class));
+    public MeasureCapability(NACommonInterface handler, MeasuresChannelHelper helper) {
+        super(handler);
         helper.setMeasures(measures);
     }
 
     @Override
-    public List<NAObject> updateReadings() {
+    public void initialize() {
+        ApiBridgeHandler bridgeApi = handler.getRootBridge();
+        if (bridgeApi != null) {
+            api = Optional.ofNullable(bridgeApi.getRestManager(WeatherApi.class));
+        }
+    }
+
+    @Override
+    public List<NAObject> updateReadings(WeatherApi api) {
         String bridgeId = handler.getBridgeId();
-        String deviceId = bridgeId != null ? bridgeId : handlerId;
-        String moduleId = bridgeId != null ? handlerId : null;
-        updateMeasurements(deviceId, moduleId);
+        String deviceId = bridgeId != null ? bridgeId : handler.getId();
+        String moduleId = bridgeId != null ? handler.getId() : null;
+        updateMeasurements(api, deviceId, moduleId);
         return List.of();
     }
 
-    public void updateMeasurements(String deviceId, @Nullable String moduleId) {
+    private void updateMeasurements(WeatherApi api, String deviceId, @Nullable String moduleId) {
         measures.clear();
         thing.getChannels().stream().filter(channel -> !channel.getConfiguration().getProperties().isEmpty())
                 .forEach(channel -> {

@@ -52,13 +52,13 @@ public class RoomCapability extends Capability {
                 logger.info("Switch to 'Manual' is done by setting a setpoint temp, command ignored");
             } else {
                 handler.getHomeCapability(EnergyCapability.class)
-                        .ifPresent(cap -> cap.setRoomThermMode(handlerId, targetMode));
+                        .ifPresent(cap -> cap.setRoomThermMode(handler.getId(), targetMode));
             }
         } else if (CHANNEL_VALUE.equals(channelName)) {
             QuantityType<?> quantity = commandToQuantity(command, MeasureClass.INTERIOR_TEMPERATURE);
             if (quantity != null) {
                 handler.getHomeCapability(EnergyCapability.class)
-                        .ifPresent(cap -> cap.setRoomThermTemp(handlerId, quantity.doubleValue()));
+                        .ifPresent(cap -> cap.setRoomThermTemp(handler.getId(), quantity.doubleValue()));
             } else {
                 logger.warn("Incorrect command '{}' on channel '{}'", command, channelName);
             }

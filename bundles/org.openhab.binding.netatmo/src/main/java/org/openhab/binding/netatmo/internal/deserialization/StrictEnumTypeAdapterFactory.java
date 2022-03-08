@@ -32,7 +32,7 @@ import com.google.gson.stream.JsonWriter;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class StrictEnumTypeAdapterFactory implements TypeAdapterFactory {
+class StrictEnumTypeAdapterFactory implements TypeAdapterFactory {
     private static final StringReader UNKNOWN = new StringReader("\"UNKNOWN\"");
 
     @Override

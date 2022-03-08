@@ -20,19 +20,22 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.config.NetatmoThingConfiguration;
+import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RestCapability;
+import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -48,6 +51,8 @@ import org.openhab.core.types.State;
 public interface NACommonInterface {
     Thing getThing();
 
+    ThingBuilder editThing();
+
     CapabilityMap getCapabilities();
 
     boolean isLinked(ChannelUID channelUID);
@@ -56,9 +61,9 @@ public interface NACommonInterface {
 
     void setThingStatus(ThingStatus thingStatus, @Nullable String thingStatusReason);
 
-    void removeChannels(List<Channel> channels);
-
     void triggerChannel(String channelID, String event);
+
+    void updateThing(Thing thing);
 
     @Nullable
     Bridge getBridge();
@@ -67,6 +72,36 @@ public interface NACommonInterface {
         Bridge bridge = getBridge();
         return bridge != null && bridge.getHandler() instanceof NABridgeHandler ? (NABridgeHandler) bridge.getHandler()
                 : null;
+    }
+
+    default @Nullable ApiBridgeHandler getRootBridge() {
+        Bridge bridge = getBridge();
+        BridgeHandler bridgeHandler = null;
+        if (bridge != null) {
+            bridgeHandler = bridge.getHandler();
+            while (bridgeHandler != null && !(bridgeHandler instanceof ApiBridgeHandler)) {
+                bridge = ((NACommonInterface) bridgeHandler).getBridge();
+                bridgeHandler = bridge != null ? bridge.getHandler() : null;
+            }
+        }
+        return (ApiBridgeHandler) bridgeHandler;
+    }
+
+    default Optional<NetatmoServlet> getServlet() {
+        ThingHandler handler = getThing().getHandler();
+        Bridge root = null;
+        if (handler instanceof NAThingHandler) {
+            NACommonInterface bridgeHandler = ((NAThingHandler) handler).getBridgeHandler();
+            if (bridgeHandler != null) {
+                root = bridgeHandler.getBridge();
+            }
+        } else if (handler instanceof NABridgeHandler) {
+            root = ((NABridgeHandler) handler).getBridge();
+        }
+        if (root instanceof ApiBridgeHandler) {
+            return ((ApiBridgeHandler) root).getServlet();
+        }
+        return Optional.empty();
     }
 
     default @Nullable String getBridgeId() {
@@ -134,16 +169,25 @@ public interface NACommonInterface {
         return result;
     }
 
-    default void commonInitialize(ApiBridge apiBridge, ScheduledExecutorService scheduler) {
+    default void commonInitialize(ScheduledExecutorService scheduler) {
         ModuleType moduleType = ModuleType.valueOf(getThing().getThingTypeUID().getId());
-        if (ModuleType.UNKNOWN.equals(moduleType.getBridge())) {
-            NetatmoThingConfiguration config = getThing().getConfiguration().as(NetatmoThingConfiguration.class);
-            getCapabilities().put(new RefreshCapability(this, apiBridge, scheduler, config.refreshInterval));
+        if (ModuleType.NABridge.equals(moduleType.getBridge())) {
+            NAThingConfiguration config = getThing().getConfiguration().as(NAThingConfiguration.class);
+            getCapabilities().put(new RefreshCapability(this, scheduler, config.refreshInterval));
         }
         getCapabilities().values().forEach(cap -> cap.initialize());
         NACommonInterface bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             bridgeHandler.expireData();
         }
+    }
+
+    default void commonDispose() {
+        getCapabilities().values().forEach(cap -> cap.dispose());
+    }
+
+    default void removeChannels(List<Channel> channels) {
+        ThingBuilder builder = editThing().withoutChannels(channels);
+        updateThing(builder.build());
     }
 }

@@ -25,6 +25,7 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureAre
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.NAHomeStatusResponse;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 
 /**
  * The {@link HomeApi} handles general API endpoints not requiring specific scope area
@@ -36,7 +37,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.NAHomeStatusRes
 @NonNullByDefault
 public class HomeApi extends RestManager {
 
-    public HomeApi(ApiBridge apiClient) {
+    public HomeApi(ApiBridgeHandler apiClient) {
         super(apiClient, FeatureArea.NONE);
     }
 

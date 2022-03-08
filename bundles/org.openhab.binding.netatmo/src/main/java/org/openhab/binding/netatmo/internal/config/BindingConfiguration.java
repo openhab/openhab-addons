@@ -12,16 +12,23 @@
  */
 package org.openhab.binding.netatmo.internal.config;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 
 /**
- * The {@link NetatmoThingConfiguration} is responsible for holding
- * configuration information for any Netatmo thing module or device
+ * The {@link BindingConfiguration} is responsible for holding configuration of the binding itself.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class NetatmoThingConfiguration {
-    public String id = "";
-    public int refreshInterval = -1;
+public class BindingConfiguration {
+    public Set<FeatureArea> features = Set.of();
+    public boolean readFriends = false;
+
+    public void update(BindingConfiguration newConfig) {
+        this.features = newConfig.features;
+        this.readFriends = newConfig.readFriends;
+    }
 }

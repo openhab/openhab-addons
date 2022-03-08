@@ -23,8 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.ApiBridge;
-import org.openhab.binding.netatmo.internal.api.ConnectionListener;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
 import org.openhab.core.thing.ThingStatus;
@@ -38,12 +36,12 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class RefreshCapability extends Capability implements ConnectionListener {
+public class RefreshCapability extends Capability {
     private static final Duration DEFAULT_DELAY = Duration.of(20, SECONDS);
     private static final Duration PROBING_INTERVAL = Duration.of(120, SECONDS);
 
     private final Logger logger = LoggerFactory.getLogger(RefreshCapability.class);
-    private final ApiBridge apiBridge;
+    // private final ApiBridgeHandler apiBridge;
     private final ScheduledExecutorService scheduler;
 
     private Duration dataValidity;
@@ -51,10 +49,10 @@ public class RefreshCapability extends Capability implements ConnectionListener 
     private @Nullable ZonedDateTime dataTimeStamp0;
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
-    public RefreshCapability(NACommonInterface handler, ApiBridge apiBridge, ScheduledExecutorService scheduler,
-            int refreshInterval) {
+    public RefreshCapability(NACommonInterface handler /* , ApiBridgeHandler apiBridge, */,
+            ScheduledExecutorService scheduler, int refreshInterval) {
         super(handler);
-        this.apiBridge = apiBridge;
+        // this.apiBridge = apiBridge;
         this.scheduler = scheduler;
         this.dataValidity = Duration.ofMillis(Math.max(0, refreshInterval));
     }
@@ -63,20 +61,20 @@ public class RefreshCapability extends Capability implements ConnectionListener 
     public void initialize() {
         super.initialize();
         // When setting the connection listener the apiBridge will trigger connectionEvent
-        apiBridge.addConnectionListener(this);
+        // apiBridge.addConnectionListener(this);
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        apiBridge.removeConnectionListener(this);
+        // apiBridge.removeConnectionListener(this);
         freeJobAndReschedule(0);
     }
 
-    @Override
+    // TODO : clean this now that connection listener has disappeared
     public void connectionEvent(boolean connected) {
         if (!connected) {
-            handler.setThingStatus(ThingStatus.OFFLINE, "@text/status-bridge-offlilne");
+            handler.setThingStatus(ThingStatus.OFFLINE, "@text/status-bridge-offline");
             freeJobAndReschedule(0);
         } else if (!ThingStatus.ONLINE.equals(thing.getStatus())) {
             handler.setThingStatus(ThingStatus.ONLINE, null);

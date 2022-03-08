@@ -27,7 +27,8 @@ import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 public class NAObjectMap<T extends NAObject> extends HashMap<String, T> {
     private static final long serialVersionUID = 7635233672795516649L;
 
-    public @Nullable T put(T thing) {
+    @Nullable
+    T put(T thing) {
         return super.put(thing.getId(), thing);
     }
 }

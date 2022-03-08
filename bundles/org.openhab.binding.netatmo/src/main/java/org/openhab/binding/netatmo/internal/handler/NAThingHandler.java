@@ -18,10 +18,8 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -43,35 +41,27 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NAThingHandler extends BaseThingHandler implements NACommonInterface {
     private final Logger logger = LoggerFactory.getLogger(NAThingHandler.class);
-    public CapabilityMap capabilities = new CapabilityMap();
-    protected final ApiBridge apiBridge;
+    private CapabilityMap capabilities = new CapabilityMap();
 
-    public NAThingHandler(Thing thing, ApiBridge apiBridge) {
+    public NAThingHandler(Thing thing) {
         super(thing);
-        this.apiBridge = apiBridge;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing handler for thing {}", getThing().getUID());
-        commonInitialize(apiBridge, scheduler);
+        commonInitialize(scheduler);
     }
 
     @Override
     public void dispose() {
-        capabilities.values().forEach(cap -> cap.dispose());
+        commonDispose();
         super.dispose();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         commonHandleCommand(channelUID, command);
-    }
-
-    @Override
-    public void removeChannels(List<Channel> channels) {
-        ThingBuilder builder = editThing().withoutChannels(channels);
-        updateThing(builder.build());
     }
 
     @Override
@@ -82,6 +72,16 @@ public class NAThingHandler extends BaseThingHandler implements NACommonInterfac
     @Override
     public CapabilityMap getCapabilities() {
         return capabilities;
+    }
+
+    @Override
+    public ThingBuilder editThing() {
+        return super.editThing();
+    }
+
+    @Override
+    public void updateThing(Thing thing) {
+        super.updateThing(thing);
     }
 
     @Override

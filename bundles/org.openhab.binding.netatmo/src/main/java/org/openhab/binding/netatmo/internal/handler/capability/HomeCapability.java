@@ -16,11 +16,11 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.HomeApi;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
@@ -31,6 +31,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NetatmoLocation;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.slf4j.Logger;
@@ -46,7 +47,6 @@ import org.slf4j.LoggerFactory;
 public class HomeCapability extends RestCapability<HomeApi> {
     private final Logger logger = LoggerFactory.getLogger(HomeCapability.class);
 
-    private final ApiBridge apiBridge;
     private final NetatmoDescriptionProvider descriptionProvider;
 
     private NAObjectMap<NAHomeDataPerson> persons = new NAObjectMap<>();
@@ -54,21 +54,27 @@ public class HomeCapability extends RestCapability<HomeApi> {
 
     private Set<FeatureArea> featuresArea = Set.of();
 
-    public HomeCapability(NACommonInterface handler, ApiBridge apiBridge,
-            NetatmoDescriptionProvider descriptionProvider) {
-        super(handler, apiBridge.getRestManager(HomeApi.class));
-        this.apiBridge = apiBridge;
+    public HomeCapability(NACommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
+        super(handler);
         this.descriptionProvider = descriptionProvider;
+    }
+
+    @Override
+    public void initialize() {
+        ApiBridgeHandler bridgeApi = handler.getRootBridge();
+        if (bridgeApi != null) {
+            api = Optional.ofNullable(bridgeApi.getRestManager(HomeApi.class));
+        }
     }
 
     @Override
     protected void updateHomeData(NAHomeData home) {
         featuresArea = home.getFeatures();
         if (hasFeature(FeatureArea.SECURITY) && !handler.getCapabilities().containsKey(SecurityCapability.class)) {
-            handler.getCapabilities().put(new SecurityCapability(handler, apiBridge));
+            handler.getCapabilities().put(new SecurityCapability(handler));
         }
         if (hasFeature(FeatureArea.ENERGY) && !handler.getCapabilities().containsKey(EnergyCapability.class)) {
-            handler.getCapabilities().put(new EnergyCapability(handler, apiBridge, descriptionProvider));
+            handler.getCapabilities().put(new EnergyCapability(handler, descriptionProvider));
         }
         if (firstLaunch) {
             home.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
@@ -90,28 +96,7 @@ public class HomeCapability extends RestCapability<HomeApi> {
         }
     }
 
-    @Override
-    public List<NAObject> updateReadings() {
-        List<NAObject> result = new ArrayList<>();
-        try {
-            NAHomeData homeData = api.getHomeData(handlerId);
-            if (homeData != null) {
-                result.add(homeData);
-                persons = homeData.getPersons();
-                modules = homeData.getModules();
-            }
-            HomeStatus homeStatus = api.getHomeStatus(handlerId);
-            if (homeStatus != null) {
-                result.add(homeStatus);
-            }
-        } catch (NetatmoException e) {
-            logger.warn("Error gettting Home informations : {}", e.getMessage());
-        }
-        handler.getActiveChildren().forEach(handler -> result.addAll(handler.updateReadings()));
-        return result;
-    }
-
-    public boolean hasFeature(FeatureArea seeked) {
+    private boolean hasFeature(FeatureArea seeked) {
         return featuresArea.contains(seeked);
     }
 
@@ -121,5 +106,26 @@ public class HomeCapability extends RestCapability<HomeApi> {
 
     public NAObjectMap<NAHomeDataModule> getModules() {
         return modules;
+    }
+
+    @Override
+    protected List<NAObject> updateReadings(HomeApi api) {
+        List<NAObject> result = new ArrayList<>();
+        try {
+            NAHomeData homeData = api.getHomeData(handler.getId());
+            if (homeData != null) {
+                result.add(homeData);
+                persons = homeData.getPersons();
+                modules = homeData.getModules();
+            }
+            HomeStatus homeStatus = api.getHomeStatus(handler.getId());
+            if (homeStatus != null) {
+                result.add(homeStatus);
+            }
+        } catch (NetatmoException e) {
+            logger.warn("Error gettting Home informations : {}", e.getMessage());
+        }
+        handler.getActiveChildren().forEach(handler -> result.addAll(handler.updateReadings()));
+        return result;
     }
 }

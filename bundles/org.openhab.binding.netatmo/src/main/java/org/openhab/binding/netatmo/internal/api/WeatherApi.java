@@ -25,6 +25,7 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureAre
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain.NAStationDataResponse;
 import org.openhab.binding.netatmo.internal.api.dto.NAMeasureBodyElem;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 
 /**
  * Base class for all Weather related endpoints
@@ -33,13 +34,13 @@ import org.openhab.binding.netatmo.internal.api.dto.NAMeasureBodyElem;
  */
 @NonNullByDefault
 public class WeatherApi extends RestManager {
-    public class NAMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<Double>>> {
+    private class NAMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<Double>>> {
     }
 
-    public class NADateMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<ZonedDateTime>>> {
+    private class NADateMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<ZonedDateTime>>> {
     }
 
-    public WeatherApi(ApiBridge apiClient) {
+    public WeatherApi(ApiBridgeHandler apiClient) {
         super(apiClient, FeatureArea.WEATHER);
     }
 

@@ -19,6 +19,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 
 /**
  * The {@link EnergyApi} handles API endpoints related to Energy feature area
@@ -29,7 +30,7 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMo
 
 @NonNullByDefault
 public class EnergyApi extends RestManager {
-    public EnergyApi(ApiBridge apiClient) {
+    public EnergyApi(ApiBridgeHandler apiClient) {
         super(apiClient, FeatureArea.ENERGY);
     }
 
@@ -80,7 +81,7 @@ public class EnergyApi extends RestManager {
      * @return ApiResponse.Ok
      * @throws NetatmoCommunicationException when call failed, e.g. server error or cannot deserialize
      */
-    public void setRoomThermpoint(String homeId, String roomId, SetpointMode mode, long endtime, double temp)
+    public void setThermpoint(String homeId, String roomId, SetpointMode mode, long endtime, double temp)
             throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_SETROOMTHERMPOINT, PARAM_HOMEID, homeId, PARAM_ROOMID, roomId,
                 PARAM_MODE, mode.apiDescriptor);

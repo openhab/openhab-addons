@@ -33,7 +33,8 @@ public class ListBodyResponse<T extends NAObject> {
     @SerializedName(value = "devices", alternate = { "homes", "events_list", "events" })
     private NAObjectMap<T> elements = new NAObjectMap<>();
 
-    public @Nullable T getElement(String id) {
+    @Nullable
+    T getElement(String id) {
         return elements.get(id);
     }
 

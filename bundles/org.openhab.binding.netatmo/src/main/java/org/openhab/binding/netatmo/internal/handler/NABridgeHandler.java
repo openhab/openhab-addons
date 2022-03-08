@@ -12,22 +12,16 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.action.NABridgeActions;
-import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -42,35 +36,27 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NABridgeHandler extends BaseBridgeHandler implements NACommonInterface {
     private final Logger logger = LoggerFactory.getLogger(NABridgeHandler.class);
-    public CapabilityMap capabilities = new CapabilityMap();
-    protected final ApiBridge apiBridge;
+    private CapabilityMap capabilities = new CapabilityMap();
 
-    public NABridgeHandler(Bridge bridge, ApiBridge apiBridge) {
+    public NABridgeHandler(Bridge bridge) {
         super(bridge);
-        this.apiBridge = apiBridge;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing handler for bridge {}", getThing().getUID());
-        commonInitialize(apiBridge, scheduler);
+        commonInitialize(scheduler);
     }
 
     @Override
     public void dispose() {
-        capabilities.values().forEach(cap -> cap.dispose());
+        commonDispose();
         super.dispose();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         commonHandleCommand(channelUID, command);
-    }
-
-    @Override
-    public void removeChannels(List<Channel> channels) {
-        ThingBuilder builder = editThing().withoutChannels(channels);
-        updateThing(builder.build());
     }
 
     @Override
@@ -81,6 +67,16 @@ public class NABridgeHandler extends BaseBridgeHandler implements NACommonInterf
     @Override
     public CapabilityMap getCapabilities() {
         return capabilities;
+    }
+
+    @Override
+    public BridgeBuilder editThing() {
+        return super.editThing();
+    }
+
+    @Override
+    public void updateThing(Thing thing) {
+        super.updateThing(thing);
     }
 
     @Override
@@ -101,14 +97,5 @@ public class NABridgeHandler extends BaseBridgeHandler implements NACommonInterf
     @Override
     public void triggerChannel(String channelID, String event) {
         super.triggerChannel(channelID, event);
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(NABridgeActions.class);
-    }
-
-    public void reconnectApi() {
-        apiBridge.openConnection(null);
     }
 }

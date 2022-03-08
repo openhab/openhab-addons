@@ -47,8 +47,6 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class Capability {
     protected final Thing thing;
-    protected final ModuleType moduleType;
-    protected final String handlerId;
     protected final NACommonInterface handler;
 
     protected boolean firstLaunch;
@@ -56,11 +54,9 @@ public class Capability {
     protected ThingStatus thingStatus = ThingStatus.UNKNOWN;
     protected @Nullable String thingStatusReason = "";
 
-    public Capability(NACommonInterface handler) {
+    Capability(NACommonInterface handler) {
         this.handler = handler;
-        this.handlerId = handler.getId();
         this.thing = handler.getThing();
-        this.moduleType = ModuleType.valueOf(thing.getThingTypeUID().getId());
     }
 
     // Data consumer functions
@@ -98,6 +94,7 @@ public class Capability {
     protected void beforeNewData() {
         properties = new HashMap<>(thing.getProperties());
         firstLaunch = properties.isEmpty();
+        ModuleType moduleType = ModuleType.valueOf(thing.getThingTypeUID().getId());
         if (firstLaunch && !moduleType.isLogical()) {
             properties.put(PROPERTY_VENDOR, VENDOR);
             properties.put(PROPERTY_MODEL_ID, moduleType.name());

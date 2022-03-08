@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain.NAStationDataResponse;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 
 /**
  * Base class for all Air Care related endpoints
@@ -30,7 +31,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAMain.NAStationDataResponse
 @NonNullByDefault
 public class AircareApi extends RestManager {
 
-    public AircareApi(ApiBridge apiClient) {
+    public AircareApi(ApiBridgeHandler apiClient) {
         super(apiClient, FeatureArea.AIR_CARE);
     }
 

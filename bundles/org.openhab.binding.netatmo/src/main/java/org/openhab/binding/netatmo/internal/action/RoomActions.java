@@ -62,24 +62,24 @@ public class RoomActions implements ThingActions {
     }
 
     /**
-     * The setRoomThermpoint room thing action
+     * The setThermpoint room thing action
      */
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
-    public void setRoomThermpoint(
+    public void setThermpoint(
             @ActionInput(name = "setpoint", label = "@text/actionInputSetpointLabel", description = "@text/actionInputSetpointDesc") @Nullable Double temp,
             @ActionInput(name = "endtime", label = "@text/actionInputEndtimeLabel", description = "@text/actionInputEndtimeDesc") @Nullable Long endTime) {
-        setRoomThermpoint(temp, endTime, "MANUAL");
+        setThermpoint(temp, endTime, "MANUAL");
     }
 
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
-    public void setRoomThermpoint(
+    public void seThermpoint(
             @ActionInput(name = "mode", label = "@text/actionInputModeLabel", description = "@text/actionInputModeDesc") @Nullable String mode,
             @ActionInput(name = "endtime", label = "@text/actionInputEndtimeLabel", description = "@text/actionInputEndtimeDesc") @Nullable Long endTime) {
-        setRoomThermpoint(null, endTime, mode);
+        setThermpoint(null, endTime, mode);
     }
 
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
-    public void setRoomThermpoint(
+    public void setThermpoint(
             @ActionInput(name = "setpoint", label = "@text/actionInputSetpointLabel", description = "@text/actionInputSetpointDesc") @Nullable Double temp,
             @ActionInput(name = "endtime", label = "@text/actionInputEndtimeLabel", description = "@text/actionInputEndtimeDesc") @Nullable Long endTime,
             @ActionInput(name = "mode", label = "@text/actionInputModeLabel", description = "@text/actionInputModeDesc") @Nullable String mode) {
@@ -135,16 +135,16 @@ public class RoomActions implements ThingActions {
     /**
      * Static setLevel method for Rules DSL backward compatibility
      */
-    public static void setRoomThermpoint(ThingActions actions, @Nullable Double temp, @Nullable Long endTime,
+    public static void setThermpoint(ThingActions actions, @Nullable Double temp, @Nullable Long endTime,
             @Nullable String mode) {
-        ((RoomActions) actions).setRoomThermpoint(temp, endTime, mode);
+        ((RoomActions) actions).setThermpoint(temp, endTime, mode);
     }
 
-    public static void setRoomThermpoint(ThingActions actions, @Nullable Double temp, @Nullable Long endTime) {
-        setRoomThermpoint(actions, temp, endTime, null);
+    public static void setThermpoint(ThingActions actions, @Nullable Double temp, @Nullable Long endTime) {
+        setThermpoint(actions, temp, endTime, null);
     }
 
-    public static void setRoomThermpoint(ThingActions actions, @Nullable String mode, @Nullable Long endTime) {
-        setRoomThermpoint(actions, null, endTime, mode);
+    public static void setThermpoint(ThingActions actions, @Nullable String mode, @Nullable Long endTime) {
+        setThermpoint(actions, null, endTime, mode);
     }
 }

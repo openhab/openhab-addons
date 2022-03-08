@@ -30,7 +30,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.api.dto.NAAccessTokenResponse;
-import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration.Credentials;
+import org.openhab.binding.netatmo.internal.config.ApiHandlerConfiguration.Credentials;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-class AuthenticationApi extends RestManager {
+public class AuthenticationApi extends RestManager {
     private static final URI OAUTH_URI = getApiBaseBuilder().path(PATH_OAUTH).build();
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(SERVICE_PID);
@@ -49,14 +50,17 @@ class AuthenticationApi extends RestManager {
 
     private Optional<ScheduledFuture<?>> refreshTokenJob = Optional.empty();
     private Optional<NAAccessTokenResponse> answer = Optional.empty();
+    private String scope = "";
 
-    AuthenticationApi(ApiBridge bridge) {
+    public AuthenticationApi(ApiBridgeHandler bridge) {
         super(bridge, FeatureArea.NONE);
     }
 
-    void authenticate(Credentials credentials) throws NetatmoException {
+    public void authenticate(Credentials credentials, Set<FeatureArea> features) throws NetatmoException {
+        Set<FeatureArea> requestedFeatures = !features.isEmpty() ? features : FeatureArea.AS_SET;
+        scope = FeatureArea.toScopeString(requestedFeatures);
         requestToken(credentials.clientId, credentials.clientSecret,
-                Map.of(SCOPE, FeatureArea.ALL_SCOPES, PASSWORD, credentials.password, USERNAME, credentials.username));
+                Map.of(SCOPE, scope, PASSWORD, credentials.password, USERNAME, credentials.username));
     }
 
     private void requestToken(String clientId, String clientSecret, Map<String, String> entries)
@@ -92,11 +96,17 @@ class AuthenticationApi extends RestManager {
         refreshTokenJob = Optional.empty();
     }
 
-    public boolean hasScopes(Set<Scope> requiredScopes) {
-        return answer.map(at -> at.getScope().containsAll(requiredScopes)).orElse(false);
-    }
-
     public @Nullable String getAuthorization() {
         return answer.map(at -> String.format("Bearer %s", at.getAccessToken())).orElse(null);
+    }
+
+    public boolean matchesScopes(Set<Scope> requiredScopes) {
+        // either we do not require any scope, either connected and all scopes available
+        return requiredScopes.isEmpty()
+                || (isConnected() && answer.map(at -> at.getScope().containsAll(requiredScopes)).orElse(false));
+    }
+
+    public boolean isConnected() {
+        return getAuthorization() != null;
     }
 }

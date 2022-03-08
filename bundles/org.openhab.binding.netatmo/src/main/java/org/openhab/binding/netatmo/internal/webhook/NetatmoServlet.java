@@ -17,7 +17,6 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.BINDI
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,31 +32,27 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriBuilderException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.dto.NAWebhookEvent;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.capability.EventCapability;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * OSGi service and HTTP servlet for Netatmo Welcome Webhook.
+ * HTTP servlet for Netatmo Webhook.
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@Component(service = NetatmoServlet.class, configurationPid = "binding.netatmo")
 @NonNullByDefault
 public class NetatmoServlet extends HttpServlet {
     private static final long serialVersionUID = -354583910860541214L;
@@ -70,48 +65,31 @@ public class NetatmoServlet extends HttpServlet {
     private final Optional<SecurityApi> securityApi;
     private boolean hookSet = false;
 
-    @Activate
-    public NetatmoServlet(@Reference HttpService httpService, @Reference ApiBridge apiBridge,
-            @Reference NADeserializer deserializer, Map<String, Object> config) {
+    public NetatmoServlet(HttpService httpService, ApiBridgeHandler apiBridge, String webHookUrl) {
         this.httpService = httpService;
-        this.deserializer = deserializer;
+        this.deserializer = apiBridge.getDeserializer();
         this.securityApi = Optional.ofNullable(apiBridge.getRestManager(SecurityApi.class));
-        try {
-            httpService.registerServlet(CALLBACK_URI, this, null, httpService.createDefaultHttpContext());
-            logger.debug("Started Netatmo Webhook Servlet at '{}'", CALLBACK_URI);
-            modified(config);
-        } catch (ServletException | NamespaceException e) {
-            logger.error("Could not start Netatmo Webhook Servlet : {}", e.getMessage());
-        }
-    }
-
-    @Deactivate
-    protected void deactivate() {
-        releaseWebHook();
-        httpService.unregister(CALLBACK_URI);
-        logger.debug("Netatmo Webhook Servlet stopped");
-    }
-
-    @Modified
-    protected void modified(Map<String, Object> config) {
         securityApi.ifPresent(api -> {
-            String url = (String) config.get("webHookUrl");
-            if (url != null && !url.isEmpty()) {
-                url += CALLBACK_URI;
+            try {
+                httpService.registerServlet(CALLBACK_URI, this, null, httpService.createDefaultHttpContext());
+                logger.debug("Started Netatmo Webhook Servlet at '{}'", CALLBACK_URI);
+                URI uri = UriBuilder.fromUri(webHookUrl).path(BINDING_ID).build();
                 try {
-                    URI webhookURI = new URI(url);
-                    logger.info("Setting Netatmo Welcome WebHook to {}", webhookURI.toString());
-                    hookSet = api.addwebhook(webhookURI);
-                } catch (URISyntaxException e) {
-                    logger.warn("webhookUrl is not a valid URI '{}' : {}", url, e.getMessage());
+                    logger.info("Setting Netatmo Welcome WebHook to {}", uri.toString());
+                    api.addwebhook(uri);
+                    hookSet = true;
+                } catch (UriBuilderException e) {
+                    logger.info("webhookUrl is not a valid URI '{}' : {}", uri, e.getMessage());
                 } catch (NetatmoException e) {
-                    logger.warn("Error setting webhook : {}", e.getMessage());
+                    logger.info("Error setting webhook : {}", e.getMessage());
                 }
+            } catch (ServletException | NamespaceException e) {
+                logger.warn("Could not start Netatmo Webhook Servlet : {}", e.getMessage());
             }
         });
     }
 
-    private void releaseWebHook() {
+    public void dispose() {
         securityApi.ifPresent(api -> {
             if (hookSet) {
                 logger.info("Releasing Netatmo Welcome WebHook");
@@ -122,6 +100,8 @@ public class NetatmoServlet extends HttpServlet {
                 }
             }
         });
+        httpService.unregister(CALLBACK_URI);
+        logger.debug("Netatmo Webhook Servlet stopped");
     }
 
     @Override
@@ -135,8 +115,7 @@ public class NetatmoServlet extends HttpServlet {
                 dataListeners.keySet().stream().filter(tobeNotified::contains).forEach(id -> {
                     EventCapability module = dataListeners.get(id);
                     if (module != null) {
-                        // TODO : reactivate
-                        // module.setNewData(event);
+                        module.setNewData(event);
                     }
                 });
             }

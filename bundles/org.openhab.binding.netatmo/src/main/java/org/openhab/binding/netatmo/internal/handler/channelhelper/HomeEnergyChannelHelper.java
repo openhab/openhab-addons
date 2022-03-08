@@ -104,13 +104,13 @@ public class HomeEnergyChannelHelper extends ChannelHelper {
         return ChronoUnit.MINUTES.between(programBaseTimeZdt(), ZonedDateTime.now());
     }
 
-    public static @Nullable NATimeTableItem currentProgramMode(NAThermProgram activeProgram) {
+    private static @Nullable NATimeTableItem currentProgramMode(NAThermProgram activeProgram) {
         long diff = minutesSinceProgramBaseTime();
         return activeProgram.getTimetable().stream().filter(t -> t.getMinuteOffset() < diff)
                 .reduce((first, second) -> second).orElse(null);
     }
 
-    public static ZonedDateTime nextProgramTime(NAThermProgram activeProgram) {
+    private static ZonedDateTime nextProgramTime(NAThermProgram activeProgram) {
         long diff = minutesSinceProgramBaseTime();
         // By default we'll use the first slot of next week - this case will be true if
         // we are in the last schedule of the week so below loop will not exit by break
