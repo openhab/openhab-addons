@@ -64,7 +64,7 @@ public enum RotelModel {
             42, 5, true, RotelFlagsMapping.MAPPING5),
     A11("A11", 115200, 4, 96, true, 10, false, -1, false, true, 6, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
     A12("A12", 115200, 5, 96, true, 10, false, -1, true, true, 6, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
-    A14("A14", 115200, 5, 96, true, 10, false, -1, true, true, 6, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
+    A14("A14", 115200, 5, 96, true, 10, 15, false, -1, true, true, true, 6, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
     CD11("CD11", 57600, 0, null, false, null, true, -1, false, true, 6, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
     CD14("CD14", 57600, 0, null, false, null, true, -1, false, true, 6, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
     RA11("RA-11", 115200, 6, 96, true, 10, true, -1, true, false, 6, 0, RotelConnector.SPECIAL_CHARACTERS),
@@ -118,6 +118,8 @@ public enum RotelModel {
     private boolean charsBeforeFlags;
     private RotelFlagsMapping flagsMapping;
     private byte[][] specialCharacters;
+    private @Nullable Integer balanceLevelMax;
+    private boolean getSpeakerGroupsAvailable;
 
     /**
      * Constructor
@@ -144,8 +146,8 @@ public enum RotelModel {
             @Nullable RotelCommand zoneSelectCmd, int dspCategory, byte deviceId, int respNbChars, int respNbFlags,
             boolean charsBeforeFlags, RotelFlagsMapping flagsMapping) {
         this(name, baudRate, RotelCommand.DISPLAY_REFRESH, sourceCategory, nbAdditionalZones, additionalCommands,
-                volumeMax, directVolume, toneLevelMax, playControl, zoneSelectCmd, dspCategory, false, false, null,
-                null, deviceId, respNbChars, respNbFlags, charsBeforeFlags, flagsMapping,
+                volumeMax, directVolume, toneLevelMax, null, playControl, zoneSelectCmd, dspCategory, false, false,
+                false, null, null, deviceId, respNbChars, respNbFlags, charsBeforeFlags, flagsMapping,
                 RotelConnector.NO_SPECIAL_CHARACTERS);
     }
 
@@ -170,9 +172,38 @@ public enum RotelModel {
             @Nullable Integer toneLevelMax, boolean playControl, int dspCategory, boolean getFrequencyAvailable,
             boolean getDimmerLevelAvailable, @Nullable Integer diummerLevelMin, @Nullable Integer diummerLevelMax,
             byte[][] specialCharacters) {
-        this(name, baudRate, RotelCommand.POWER, sourceCategory, 0, false, volumeMax, directVolume, toneLevelMax,
-                playControl, null, dspCategory, getFrequencyAvailable, getDimmerLevelAvailable, diummerLevelMin,
+        this(name, baudRate, RotelCommand.POWER, sourceCategory, 0, false, volumeMax, directVolume, toneLevelMax, null,
+                playControl, null, dspCategory, getFrequencyAvailable, false, getDimmerLevelAvailable, diummerLevelMin,
                 diummerLevelMax, (byte) 0, 0, 0, false, RotelFlagsMapping.NO_MAPPING, specialCharacters);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param name the model name
+     * @param baudRate the baud rate to be used for the RS232 communication
+     * @param sourceCategory the category from {@link RotelSource}
+     * @param volumeMax the maximum volume or null if no volume management is available
+     * @param directVolume true if a command to set the volume with a value is available
+     * @param toneLevelMax the maximum tone level or null if no bass/treble management is available
+     * @param balanceLevelMax the maximum balance level or null if no balance management is available
+     * @param playControl true if control of source playback is available
+     * @param dspCategory the category from {@link RotelDsp}
+     * @param getFrequencyAvailable true if the command to get the frequency for digital source input is available
+     * @param getSpeakerGroupsAvailable true if the command to switch speaker groups is available
+     * @param getDimmerLevelAvailable true if the command to get the front display dimmer level is available
+     * @param diummerLevelMin the minimum front display dimmer level or null if dimmer control is unavailable
+     * @param diummerLevelMax the maximum front display dimmer level or null if dimmer control is unavailable
+     * @param specialCharacters the table of special characters that can be found in the standard response message
+     */
+    private RotelModel(String name, int baudRate, int sourceCategory, @Nullable Integer volumeMax, boolean directVolume,
+            @Nullable Integer toneLevelMax, @Nullable Integer balanceLevelMax, boolean playControl, int dspCategory,
+            boolean getFrequencyAvailable, boolean getSpeakerGroupsAvailable, boolean getDimmerLevelAvailable,
+            @Nullable Integer diummerLevelMin, @Nullable Integer diummerLevelMax, byte[][] specialCharacters) {
+        this(name, baudRate, RotelCommand.POWER, sourceCategory, 0, false, volumeMax, directVolume, toneLevelMax,
+                balanceLevelMax, playControl, null, dspCategory, getFrequencyAvailable, getSpeakerGroupsAvailable,
+                getDimmerLevelAvailable, diummerLevelMin, diummerLevelMax, (byte) 0, 0, 0, false,
+                RotelFlagsMapping.NO_MAPPING, specialCharacters);
     }
 
     /**
@@ -187,10 +218,12 @@ public enum RotelModel {
      * @param volumeMax the maximum volume or null if no volume management is available
      * @param directVolume true if a command to set the volume with a value is available
      * @param toneLevelMax the maximum tone level or null if no bass/treble management is available
+     * @param balanceLevelMax the maximum balance level or null if no balance management is available
      * @param playControl true if control of source playback is available
      * @param zoneSelectCmd the command to be used to select a zone
      * @param dspCategory the category from {@link RotelDsp}
      * @param getFrequencyAvailable true if the command to get the frequency for digital source input is available
+     * @param getSpeakerGroupsAvailable true if the command to switch speaker groups is available
      * @param getDimmerLevelAvailable true if the command to get the front display dimmer level is available
      * @param diummerLevelMin the minimum front display dimmer level or null if dimmer control is unavailable
      * @param diummerLevelMax the maximum front display dimmer level or null if dimmer control is unavailable
@@ -203,8 +236,9 @@ public enum RotelModel {
      */
     private RotelModel(String name, int baudRate, RotelCommand powerStateCmd, int sourceCategory, int nbAdditionalZones,
             boolean additionalCommands, @Nullable Integer volumeMax, boolean directVolume,
-            @Nullable Integer toneLevelMax, boolean playControl, @Nullable RotelCommand zoneSelectCmd, int dspCategory,
-            boolean getFrequencyAvailable, boolean getDimmerLevelAvailable, @Nullable Integer diummerLevelMin,
+            @Nullable Integer toneLevelMax, @Nullable Integer balanceLevelMax, boolean playControl,
+            @Nullable RotelCommand zoneSelectCmd, int dspCategory, boolean getFrequencyAvailable,
+            boolean getSpeakerGroupsAvailable, boolean getDimmerLevelAvailable, @Nullable Integer diummerLevelMin,
             @Nullable Integer diummerLevelMax, byte deviceId, int respNbChars, int respNbFlags,
             boolean charsBeforeFlags, RotelFlagsMapping flagsMapping, byte[][] specialCharacters) {
         this.name = name;
@@ -216,10 +250,12 @@ public enum RotelModel {
         this.volumeMax = volumeMax;
         this.directVolume = directVolume;
         this.toneLevelMax = toneLevelMax;
+        this.balanceLevelMax = balanceLevelMax;
         this.playControl = playControl;
         this.zoneSelectCmd = zoneSelectCmd;
         this.dspCategory = dspCategory;
         this.getFrequencyAvailable = getFrequencyAvailable;
+        this.getSpeakerGroupsAvailable = getSpeakerGroupsAvailable;
         this.getDimmerLevelAvailable = getDimmerLevelAvailable;
         this.diummerLevelMin = diummerLevelMin;
         this.diummerLevelMax = diummerLevelMax;
@@ -384,6 +420,25 @@ public enum RotelModel {
     public int getToneLevelMax() {
         Integer toneLevelMax = this.toneLevelMax;
         return toneLevelMax != null ? toneLevelMax.intValue() : 0;
+    }
+
+    /**
+     * Get the maximum balance level
+     *
+     * @return the maximum balance level or 0
+     */
+    public int getBalanceLevelMax() {
+        Integer balanceLevelMax = this.balanceLevelMax;
+        return balanceLevelMax != null ? balanceLevelMax.intValue() : 0;
+    }
+
+    /**
+     * Inform whether the command to switch speaker groups is available
+     *
+     * @return true if the command is available
+     */
+    public boolean hasSpeakerGroups() {
+        return getSpeakerGroupsAvailable;
     }
 
     /**

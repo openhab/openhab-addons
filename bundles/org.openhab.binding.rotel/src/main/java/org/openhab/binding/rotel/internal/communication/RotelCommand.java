@@ -227,12 +227,27 @@ public enum RotelCommand {
     TRACK_FORWARD("Track Forward", RotelConnector.PRIMARY_CMD, (byte) 0x09, "track_fwd", "trkf"),
     TRACK_BACKWORD("Track Backward", RotelConnector.PRIMARY_CMD, (byte) 0x08, "track_back", "trkb"),
     TRACK("Request current CD track number", null, "track"),
-    FREQUENCY("Request current frequency for digital source input", "get_current_freq", "freq"),
+    FREQUENCY("Request current frequency for digital source input", "get_current_freq", "freq?"),
     DISPLAY_REFRESH("Display Refresh", RotelConnector.PRIMARY_CMD, (byte) 0xFF),
-    DIMMER_LEVEL_GET("Request current front display dimmer level", "get_current_dimmer", "dimmer"),
+    DIMMER_LEVEL_GET("Request current front display dimmer level", "get_current_dimmer", "dimmer?"),
     DIMMER_LEVEL_SET("Set front display dimmer to level", "dimmer_", "dimmer_"),
     UPDATE_AUTO("Set Update to Auto", "display_update_auto", "rs232_update_on"),
-    UPDATE_MANUAL("Set Update to Manual", "display_update_manual", "rs232_update_off");
+    UPDATE_MANUAL("Set Update to Manual", "display_update_manual", "rs232_update_off"),
+    BYPASSx_TOGGLE("Mute Toggle", RotelConnector.PRIMARY_CMD, (byte) 0x00, "bypass", "bypass"),
+    BYPASSx_ON("Bypass On", "bypass_on", "bypass_on"),
+    BYPASSx_OFF("Bypass Off", "bypass_off", "bypass_off"),
+    BYPASSx("Request current tone bypass state", "get_bypass_status", "bypass?"),
+    BALANCE_RIGHT("Balance Right", RotelConnector.PRIMARY_CMD, (byte) 0x00, "balance_r", "balance_r"),
+    BALANCE_LEFT("Balance Left", RotelConnector.PRIMARY_CMD, (byte) 0x00, "balance_l", "balance_l"),
+    BALANCE_SET("Set Balance to level", "balance_", "balance_"),
+    BALANCE("Request current balance setting", "get_current_balance", "balance?"),
+    SPEAKER_A_TOGGLE("Toggle Speaker A Output", RotelConnector.PRIMARY_CMD, (byte) 0x00, "speaker_a", "speaker_a"),
+    SPEAKER_A_ON("Set Speaker A Output", RotelConnector.PRIMARY_CMD, (byte) 0x00, "speaker_a_on", "speaker_a_on"),
+    SPEAKER_A_OFF("Unset Speaker A Output", RotelConnector.PRIMARY_CMD, (byte) 0x00, "speaker_a_off", "speaker_a_off"),
+    SPEAKER_B_TOGGLE("Toggle Speaker B Output", RotelConnector.PRIMARY_CMD, (byte) 0x00, "speaker_b", "speaker_b"),
+    SPEAKER_B_ON("Set Speaker B Output", RotelConnector.PRIMARY_CMD, (byte) 0x00, "speaker_b_on", "speaker_b_on"),
+    SPEAKER_B_OFF("Unset Speaker B Output", RotelConnector.PRIMARY_CMD, (byte) 0x00, "speaker_b_off", "speaker_b_off"),
+    SPEAKER("Request current active speaker outputs", "get_current_speaker", "speaker?");
 
     public static final byte PRIMARY_COMMAND = (byte) 0x10;
 

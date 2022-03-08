@@ -18,12 +18,15 @@
 			<channel id="treble" typeId="treble"/>
 			<channel id="frequency" typeId="frequency"/>
 			<channel id="brightness" typeId="brightness"/>
+			<channel id="bypassx" typeId="bypassx"/>
+			<channel id="balance" typeId="balance"/>
+			<channel id="speakera" typeId="speakera"/>
+			<channel id="speakerb" typeId="speakerb"/>
 		</channels>
 
 		<properties>
 			<property name="protocol">ASCII_V2</property>
 		</properties>
-
 		<config-description-ref uri="thing-type:rotel:serialandip"/>
 	</thing-type>
 
