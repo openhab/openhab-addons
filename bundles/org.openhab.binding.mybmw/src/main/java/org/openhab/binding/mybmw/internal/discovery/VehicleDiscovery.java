@@ -212,7 +212,6 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
             try {
                 Object value = field.get(dto);
                 if (compare.equals(value)) {
-                    // buf.append(Converter.capitalizeFirst(field.getName()) + Constants.SPACE);
                     l.add(field.getName());
                 }
             } catch (IllegalArgumentException | IllegalAccessException e) {

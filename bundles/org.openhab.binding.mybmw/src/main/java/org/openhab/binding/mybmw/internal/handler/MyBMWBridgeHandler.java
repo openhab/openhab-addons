@@ -31,11 +31,9 @@ import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -80,21 +78,7 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler implements StringRespo
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
             proxy = Optional.of(new MyBMWProxy(httpClientFactory, config));
-            // give the system some time to create all predefined Vehicles
-            // check with API call if bridge is online
             initializerJob = Optional.of(scheduler.schedule(this::requestVehicles, 2, TimeUnit.SECONDS));
-            Bridge b = super.getThing();
-            List<Thing> children = b.getThings();
-            logger.debug("Update {} things", children.size());
-            children.forEach(entry -> {
-                ThingHandler th = entry.getHandler();
-                if (th != null) {
-                    th.dispose();
-                    th.initialize();
-                } else {
-                    logger.debug("Handler is null");
-                }
-            });
         }
     }
 

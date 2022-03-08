@@ -327,7 +327,7 @@ If more than one service is scheduled in the future the channel _name_ contains 
 |--------------------------------|---------------------|----------------|------------|
 | Service Name                   | name                | String         | Read/Write |
 | Service Details                | details             | String         | Read       |
-| Service Date                   | date                | Number         | Read       |
+| Service Date                   | date                | DateTime       | Read       |
 | Mileage till Service           | mileage             | Number:Length  | Read       |
 
 
@@ -536,14 +536,7 @@ log:set DEBUG org.openhab.binding.mybmw
 ```
 
 The debug fingerprint is generated every time the discovery is executed.
-To force a new fingerprint perform the following steps in the UI
-
-1) Go to settings
-2) Select Things entry
-3) Press "+" sign bottom right
-4) Choose the _MyBMW_ binding
-5) Press the _Scan_ button on top
-
+To force a new fingerprint perform a _Scan_ for MyBMW things.
 Personal data is eliminated from the log entries so it should be possible to share them in public.
 Data like
 
