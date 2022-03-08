@@ -48,15 +48,16 @@ It will not be possible to receive alarms and control them from openHAB in this 
 
 | Parameter         | Advanced | Description            |
 |-------------------|:--------:|------------------------|
-| `connectorId` |          | Required parameter, should be set to ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector. This parameter can also be found in the ELRO Connects mobile application. |
-| `ipAdress`     | Y        | IP address of the ELRO Connects K1 Connector, not required if connector and openHAB server in same subnet. |
-| `refreshInterval` | Y      |  This parameter controls the connection refresh heartbeat interval. The default is 60s. |
+| `connectorId` |          | Required parameter, should be set to ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector. This parameter can also be found in the ELRO Connects mobile application |
+| `ipAdress`     | Y        | IP address of the ELRO Connects K1 Connector, not required if connector and openHAB server in same subnet |
+| `refreshInterval` | Y      |  This parameter controls the connection refresh heartbeat interval. The default is 60s |
+| `deviceConfigDuration` | Y      |  Duration for the ELRO Connects K1 Connector to remain in mode that allows configuring devices in seconds, default 60s |
 
 ### Devices connected to K1 connected hub
 
 | Parameter         | Description            |
 |--------------------|----------------------|
-| `deviceId` | Required parameter, set by discovery and cannot easily be found manually. It should be a number. |
+| `deviceId` | Required parameter, set by discovery and cannot easily be found manually. It should be a number |
 
 ## Channels
 
@@ -64,9 +65,12 @@ It will not be possible to receive alarms and control them from openHAB in this 
 
 The `connector` bridge thing has only one channel:
 
-| Channel ID         | Item Type            | Access Mode | Description                                        |
-|--------------------|----------------------|:-----------:|----------------------------------------------------|
-| `scene`            | String               | RW          | current scene                                      |
+| Channel ID         | Item Type      | Access Mode | Advanced | Description                                        |
+|--------------------|----------------|:-----------:|:--------:|----------------------------------------------------|
+| `scene`            | String         | RW          |         | current scene                                      |
+| `joindevice`      | Switch         | RW          |    Y    | put the ELRO K1 hub in device join mode: 3 short presses on the physical device button will then link the
+            device to the hub and make it available for configuration in openHAB. Device join mode will automatically time out
+            after the refresh interval |
 
 The `scene` channel has a dynamic state options list with all possible scene choices available in the hub.
 

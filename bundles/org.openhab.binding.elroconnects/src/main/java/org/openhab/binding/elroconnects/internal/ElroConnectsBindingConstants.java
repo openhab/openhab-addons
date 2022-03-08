@@ -58,6 +58,7 @@ public class ElroConnectsBindingConstants {
 
     // List of all Channel ids
     public static final String SCENE = "scene";
+    public static final String JOIN_DEVICE = "joindevice";
 
     public static final String SIGNAL_STRENGTH = "signal";
     public static final String BATTERY_LEVEL = "battery";
@@ -95,6 +96,8 @@ public class ElroConnectsBindingConstants {
     public static final int ELRO_REC_DEVICE_STATUS = 19;
     public static final int ELRO_SYNC_DEVICES = 29;
 
+    public static final int ELRO_DEVICE_JOIN = 2;
+    public static final int ELRO_DEVICE_CANCEL_JOIN = 7;
     public static final int ELRO_DEVICE_RENAME = 105;
 
     public static final int ELRO_SELECT_SCENE = 106;

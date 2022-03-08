@@ -50,6 +50,7 @@ import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDeviceTempe
 import org.openhab.binding.elroconnects.internal.discovery.ElroConnectsDiscoveryService;
 import org.openhab.binding.elroconnects.internal.util.ElroConnectsUtil;
 import org.openhab.core.common.NamedThreadFactory;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -117,6 +118,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     private static final Pattern CTRL_KEY_PATTERN = Pattern.compile("KEY:([0-9a-f]*)");
 
     private int refreshInterval = 60;
+    private int deviceConfigDuration = 60;
     private volatile @Nullable InetAddress addr;
     private volatile String ctrlKey = "";
 
@@ -124,6 +126,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     private volatile @Nullable DatagramPacket ackPacket;
 
     private volatile @Nullable ScheduledFuture<?> syncFuture;
+    private volatile @Nullable ScheduledFuture<?> cancelJoinDeviceFuture;
     private volatile @Nullable CompletableFuture<Boolean> awaitResponse;
 
     private ElroConnectsDynamicStateDescriptionProvider stateDescriptionProvider;
@@ -152,6 +155,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         ElroConnectsBridgeConfiguration config = getConfigAs(ElroConnectsBridgeConfiguration.class);
         connectorId = config.connectorId;
         refreshInterval = config.refreshInterval;
+        deviceConfigDuration = config.deviceConfigDuration;
 
         if (connectorId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device ID not set");
@@ -697,6 +701,24 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         sendElroMessage(elroMessage, false);
     }
 
+    private void joinDevice() throws IOException {
+        String connectorId = this.connectorId;
+        String ctrlKey = this.ctrlKey;
+        logger.debug("Put hub in join device mode");
+        ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
+                ELRO_DEVICE_JOIN);
+        sendElroMessage(elroMessage, false);
+    }
+
+    private void cancelJoinDevice() throws IOException {
+        String connectorId = this.connectorId;
+        String ctrlKey = this.ctrlKey;
+        logger.debug("Cancel hub in join device mode");
+        ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
+                ELRO_DEVICE_CANCEL_JOIN);
+        sendElroMessage(elroMessage, false);
+    }
+
     /**
      * Send request to receive all device names.
      *
@@ -785,20 +807,39 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Channel {}, command {}, type {}", channelUID, command, command.getClass());
-        if (SCENE.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                updateState(SCENE, new StringType(String.valueOf(currentScene)));
-            } else if (command instanceof StringType) {
-                try {
-                    selectScene(Integer.valueOf(((StringType) command).toString()));
-                } catch (NumberFormatException nfe) {
-                    logger.debug("Cannot interpret scene command {}", command);
-                } catch (IOException e) {
-                    restartCommunication("Error in communication while setting scene: " + e.getMessage());
-                    return;
+        try {
+            if (SCENE.equals(channelUID.getId())) {
+                if (command instanceof RefreshType) {
+                    updateState(SCENE, new StringType(String.valueOf(currentScene)));
+                } else if (command instanceof StringType) {
+                    try {
+                        selectScene(Integer.valueOf(((StringType) command).toString()));
+                    } catch (NumberFormatException nfe) {
+                        logger.debug("Cannot interpret scene command {}", command);
+                    }
+                }
+            } else if (JOIN_DEVICE.equals(channelUID.getId())) {
+                if (OnOffType.ON.equals(command)) {
+                    joinDevice();
+                    updateState(JOIN_DEVICE, OnOffType.ON);
+                    scheduleCancelJoinDevice(channelUID);
+                } else {
+                    cancelJoinDevice();
+                    updateState(JOIN_DEVICE, OnOffType.OFF);
                 }
             }
+        } catch (IOException e) {
+            restartCommunication("Error in communication when handling command: " + e.getMessage());
         }
+    }
+
+    private void scheduleCancelJoinDevice(ChannelUID channelUID) {
+        ScheduledFuture<?> future = cancelJoinDeviceFuture;
+        if (future != null) {
+            future.cancel(false);
+        }
+        cancelJoinDeviceFuture = scheduler.schedule(() -> handleCommand(channelUID, OnOffType.OFF),
+                deviceConfigDuration, TimeUnit.SECONDS);
     }
 
     /**
