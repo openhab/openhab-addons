@@ -41,7 +41,7 @@
 				<description>The IP address of the Go-eCharger</description>
 				<context>network-address</context>
 			</parameter>
-			<parameter name="apiVersion" type="integer" required="true" min="1" max="2">
+			<parameter name="apiVersion" type="integer" required="false" min="1" max="2">
 				<label>API version</label>
 				<description>The API version of the Go-eCharger</description>
 			</parameter>
