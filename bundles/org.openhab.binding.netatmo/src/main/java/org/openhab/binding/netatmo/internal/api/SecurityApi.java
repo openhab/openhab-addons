@@ -65,9 +65,12 @@ public class SecurityApi extends RestManager {
         // same person. Adding offset parameter gives a chance to get it but how to guess how many must be retrieved ???
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GETEVENTS, PARAM_HOMEID, homeId, PARAM_PERSONID, personId);
         NAEventsDataResponse response = get(uriBuilder, NAEventsDataResponse.class);
-        NAHome home = response.getBody().getElement();
-        if (home != null) {
-            return home.getEvents();
+        BodyResponse<NAHome> body = response.getBody();
+        if (body != null) {
+            NAHome home = body.getElement();
+            if (home != null) {
+                return home.getEvents();
+            }
         }
         throw new NetatmoException("home should not be null");
     }
@@ -75,9 +78,12 @@ public class SecurityApi extends RestManager {
     public Collection<NAHomeEvent> getCameraEvents(String homeId, String cameraId) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GETEVENTS, PARAM_HOMEID, homeId, PARAM_DEVICEID, cameraId);
         NAEventsDataResponse response = get(uriBuilder, NAEventsDataResponse.class);
-        NAHome home = response.getBody().getElement();
-        if (home != null) {
-            return home.getEvents();
+        BodyResponse<NAHome> body = response.getBody();
+        if (body != null) {
+            NAHome home = body.getElement();
+            if (home != null) {
+                return home.getEvents();
+            }
         }
         throw new NetatmoException("home should not be null");
     }

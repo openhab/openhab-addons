@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ApiResponse} models a response returned by API call
@@ -33,13 +34,13 @@ public class ApiResponse<T> {
     }
 
     private String status = "";
-    private @NonNullByDefault({}) T body;
+    private @Nullable T body;
 
     public String getStatus() {
         return status;
     }
 
-    public T getBody() {
+    public @Nullable T getBody() {
         return body;
     }
 }

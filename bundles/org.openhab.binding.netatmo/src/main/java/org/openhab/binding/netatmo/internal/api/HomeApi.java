@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.api;
 import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 
 import java.util.Collection;
+import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -23,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.NAHomeStatusResponse;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
@@ -45,7 +47,8 @@ public class HomeApi extends RestManager {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_HOMESTATUS, PARAM_HOMEID, homeId);
 
         NAHomeStatusResponse response = get(uriBuilder, NAHomeStatusResponse.class);
-        return response.getBody().getHomeStatus().orElse(null);
+        NAHomeStatus body = response.getBody();
+        return body != null ? body.getHomeStatus().orElse(null) : null;
     }
 
     public @Nullable NAHomeData getHomeData(String homeId) throws NetatmoException {
@@ -62,6 +65,7 @@ public class HomeApi extends RestManager {
         }
 
         NAHomeData.NAHomesDataResponse response = get(uriBuilder, NAHomeData.NAHomesDataResponse.class);
-        return response.getBody().getElements();
+        ListBodyResponse<NAHomeData> body = response.getBody();
+        return body != null ? body.getElements() : Set.of();
     }
 }

@@ -63,9 +63,6 @@ public class CameraCapability extends Capability {
         super.updateHomeStatusModule(newData);
         String vpnUrl = newData.getVpnUrl();
         boolean isLocal = newData.isLocal();
-        // TODO : j'ai un problème de séquence d'exécution ici. Le channel helper est appelé avant
-        // que les valeurs de vpnUrl et localUrl lui soient fournies, donc Live Snapshot et LiveStream url sont undef au
-        // début.
         if (vpnUrl != null) {
             localUrl = isLocal
                     ? handler.getHomeCapability(SecurityCapability.class).map(cap -> cap.ping(vpnUrl)).orElse(null)

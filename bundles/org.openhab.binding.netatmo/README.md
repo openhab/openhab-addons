@@ -23,8 +23,19 @@ The variables you will need to get to setup the binding are:
 * `<USERNAME>` The username you use to connect to the Netatmo API (usually your mail address).
 * `<PASSWORD>` The password attached to the above username.
 
-
 The binding has the following configuration options:
+
+| Parameter    | Type          | Description                                                                                |
+|--------------|---------------|--------------------------------------------------------------------------------------------|
+| features     | String        | The perimeter of functionnalities given to the binding WEATHER, AIR_CARE, ENERGY, SECURITY |
+| readFriends  | Boolean       | Enables or diables the discovery of guest weather stations.                                |
+
+
+## Bridge Configuration
+
+You will have to create at first a bridge to handle communication with your Netatmo Application.
+
+The Netatmo Api bridge has the following configuration options:
 
 -   **clientId:** Client ID provided for the application you created on http://dev.netatmo.com/createapp.
 -   **clientSecret:**  Client Secret provided for the application you created.
@@ -32,16 +43,6 @@ The binding has the following configuration options:
 -   **password:** Your Netatmo API password.
 -   **webHookUrl:** Protocol, public IP and port to access openHAB server from Internet.
 -   **reconnectInterval:** The reconnection interval to Netatmo API (in s).
-
-
-Create a `<openHAB-conf>/services/netatmo.cfg` file and use the above options like this:
-
-```
-binding.netatmo:clientId=<CLIENT_ID>
-binding.netatmo:clientSecret=<CLIENT_SECRET>
-binding.netatmo:username=your.mail@address.something
-binding.netatmo:password=<PASSWORD>
-```
 
 
 ### 2. Things Configuration
@@ -638,20 +639,4 @@ The following icons are used by original Netatmo web app:
 - https://my.netatmo.com/images/my/app/wifi_high.png
 - https://my.netatmo.com/images/my/app/wifi_full.png
 
-## Rule Action
-
-This binding includes rule action reconnecting the API - this action is valid for each type of bridge (NAMain, NHC, NAHome...).
-
-Example:
-
-```
-val actions = getActions("netatmo","netatmo:NHC:xxyyddffvv")
-if(actions === null) {
-    logInfo("actions", "Actions is null")
-} else {
-    actions.reconnectApi()
-    logInfo("actions","Reconnecting")
-}
-
-```
 

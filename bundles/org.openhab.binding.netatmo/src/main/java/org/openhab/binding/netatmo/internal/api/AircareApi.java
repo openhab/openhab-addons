@@ -49,9 +49,11 @@ public class AircareApi extends RestManager {
 
     public NAMain getHomeCoach(String deviceId) throws NetatmoException {
         ListBodyResponse<NAMain> answer = getHomeCoachData(deviceId).getBody();
-        NAMain station = answer.getElement(deviceId);
-        if (station != null) {
-            return station;
+        if (answer != null) {
+            NAMain station = answer.getElement(deviceId);
+            if (station != null) {
+                return station;
+            }
         }
         throw new NetatmoException("Unexpected answer querying device '%s' : not found.", deviceId);
     }

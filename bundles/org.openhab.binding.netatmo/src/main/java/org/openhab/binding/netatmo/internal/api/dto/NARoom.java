@@ -29,7 +29,8 @@ import org.openhab.core.types.UnDefType;
  *
  */
 @NonNullByDefault
-public class NARoom extends NAThing implements NetatmoModule {
+public class NARoom extends NAObject implements NetatmoModule {
+    private @Nullable String type;
     private @Nullable OnOffType anticipating;
     private @Nullable OnOffType openWindow;
     private @Nullable ZonedDateTime thermSetpointStartTime;
@@ -75,8 +76,11 @@ public class NARoom extends NAThing implements NetatmoModule {
 
     @Override
     public ModuleType getType() {
-        // In json api answer type for NARoom is used with words like kitchen, living...
-        // TODO : consider if Maybe NARoom should not inherit from NAThing
+        // Note: In json api answer type for NARoom is used with words like kitchen, living...
         return ModuleType.NARoom;
+    }
+
+    public @Nullable String getLocation() {
+        return type;
     }
 }

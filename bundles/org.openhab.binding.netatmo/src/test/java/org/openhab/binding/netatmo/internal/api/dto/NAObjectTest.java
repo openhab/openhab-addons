@@ -20,6 +20,7 @@ import java.time.ZoneId;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
+import org.openhab.binding.netatmo.internal.api.data.EventType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.TrendDescription;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -56,6 +57,7 @@ public class NAObjectTest {
                 + "  \"message\": \"Boulogne Billan: Movement detected by Indoor Camera\","
                 + "  \"push_type\": \"NACamera-movement\"" + "}";
         NAWebhookEvent object = gson.deserialize(NAWebhookEvent.class, event);
+        assertEquals(object.getEventType(), EventType.MOVEMENT);
     }
 
     @Test

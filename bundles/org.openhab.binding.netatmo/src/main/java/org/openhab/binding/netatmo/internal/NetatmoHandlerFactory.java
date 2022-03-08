@@ -125,9 +125,6 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
                 logger.warn("Error creating or initializing helper class : {}", e.getMessage());
             }
         });
-        if (!helpers.isEmpty()) {
-            handler.getCapabilities().put(new ChannelHelperCapability(handler, helpers));
-        }
 
         moduleType.capabilities.forEach(capability -> {
             Capability newCap = null;
@@ -154,6 +151,10 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
                 handler.getCapabilities().put(newCap);
             } else {
                 logger.warn("No factory entry defined to create Capability : {}", capability);
+            }
+
+            if (!helpers.isEmpty()) {
+                handler.getCapabilities().put(new ChannelHelperCapability(handler, helpers));
             }
         });
 

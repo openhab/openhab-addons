@@ -49,7 +49,7 @@ public class WeatherCapability extends RestCapability<WeatherApi> {
     @Override
     protected List<NAObject> updateReadings(WeatherApi api) {
         try {
-            List.of(api.getStationData(handler.getId()));
+            return List.of(api.getStationData(handler.getId()));
         } catch (NetatmoException e) {
             logger.warn("Error retrieving weather data '{}' : {}", handler.getId(), e.getMessage());
         }

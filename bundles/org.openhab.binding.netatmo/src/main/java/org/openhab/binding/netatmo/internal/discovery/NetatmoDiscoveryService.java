@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.AircareApi;
 import org.openhab.binding.netatmo.internal.api.HomeApi;
+import org.openhab.binding.netatmo.internal.api.ListBodyResponse;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
@@ -68,18 +69,22 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
             try {
                 AircareApi airCareApi = localHandler.getRestManager(AircareApi.class);
                 if (airCareApi != null) { // Search Healthy Home Coaches
-                    airCareApi.getHomeCoachData(null).getBody().getElements().stream()
-                            .forEach(homeCoach -> createThing(homeCoach, apiBridgeUID));
+                    ListBodyResponse<NAMain> body = airCareApi.getHomeCoachData(null).getBody();
+                    if (body != null) {
+                        body.getElements().stream().forEach(homeCoach -> createThing(homeCoach, apiBridgeUID));
+                    }
                 }
                 if (localConf.readFriends) {
                     WeatherApi weatherApi = localHandler.getRestManager(WeatherApi.class);
                     if (weatherApi != null) { // Search favorite stations
-                        weatherApi.getStationsData(null, true).getBody().getElements().stream()
-                                .filter(NAMain::isReadOnly).forEach(station -> {
-                                    ThingUID bridgeUID = createThing(station, apiBridgeUID);
-                                    station.getModules().values().stream()
-                                            .forEach(module -> createThing(module, bridgeUID));
-                                });
+                        ListBodyResponse<NAMain> body = weatherApi.getStationsData(null, true).getBody();
+                        if (body != null) {
+                            body.getElements().stream().filter(NAMain::isReadOnly).forEach(station -> {
+                                ThingUID bridgeUID = createThing(station, apiBridgeUID);
+                                station.getModules().values().stream()
+                                        .forEach(module -> createThing(module, bridgeUID));
+                            });
+                        }
                     }
                 }
                 HomeApi homeApi = localHandler.getRestManager(HomeApi.class);

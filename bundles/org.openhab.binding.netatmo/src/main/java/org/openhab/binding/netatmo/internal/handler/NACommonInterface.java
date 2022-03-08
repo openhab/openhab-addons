@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
+import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
@@ -183,7 +184,7 @@ public interface NACommonInterface {
     }
 
     default void commonDispose() {
-        getCapabilities().values().forEach(cap -> cap.dispose());
+        getCapabilities().values().forEach(Capability::dispose);
     }
 
     default void removeChannels(List<Channel> channels) {

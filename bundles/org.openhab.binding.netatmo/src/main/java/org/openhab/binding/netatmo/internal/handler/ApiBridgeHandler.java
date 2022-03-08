@@ -232,18 +232,4 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public boolean isConnected() {
         return connectApi.isConnected();
     }
-
-    // public void addConnectionListener(ConnectionListener listener) {
-    // listeners.add(listener);
-    // listener.connectionEvent(isConnected());
-    // }
-
-    // public void removeConnectionListener(ConnectionListener listener) {
-    // listeners.remove(listener);
-    // }
-
-    // private void notifyListeners() {
-    // logger.debug("Connection status changed : {}", isConnected());
-    // listeners.forEach(l -> l.connectionEvent(isConnected()));
-    // }
 }

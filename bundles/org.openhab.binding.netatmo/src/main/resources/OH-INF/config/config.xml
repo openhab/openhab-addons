@@ -38,11 +38,6 @@
 			<description>The reconnection interval to Netatmo API (in s).</description>
 			<default>5400</default>
 		</parameter>
-
-		<parameter name="webHookUrl" type="text" required="false">
-			<label>Webhook Address</label>
-			<description>Protocol, public IP and port to access openHAB server from Internet.</description>
-		</parameter>
 	</config-description>
 
 	<config-description uri="netatmo:sum_rain:config">

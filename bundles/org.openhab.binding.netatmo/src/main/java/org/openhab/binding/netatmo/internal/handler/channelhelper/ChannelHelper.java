@@ -79,9 +79,19 @@ public abstract class ChannelHelper {
                     }
                 }
             }
+            if (localData instanceof NAObject) {
+                result = internalGetObject(channelId, localData);
+                if (result != null) {
+                    return result;
+                }
+            }
             result = internalGetOther(channelId);
         }
         return result;
+    }
+
+    protected @Nullable State internalGetObject(String channelId, NAObject localData) {
+        return null;
     }
 
     protected @Nullable State internalGetOther(String channelId) {

@@ -64,9 +64,11 @@ public class WeatherApi extends RestManager {
 
     public NAMain getStationData(String deviceId) throws NetatmoException {
         ListBodyResponse<NAMain> answer = getStationsData(deviceId, true).getBody();
-        NAMain station = answer.getElement(deviceId);
-        if (station != null) {
-            return station;
+        if (answer != null) {
+            NAMain station = answer.getElement(deviceId);
+            if (station != null) {
+                return station;
+            }
         }
         throw new NetatmoException("Unexpected answer searching device '%s' : not found.", deviceId);
     }
@@ -99,13 +101,15 @@ public class WeatherApi extends RestManager {
         }
         if (measureType.startsWith("date")) {
             NADateMeasuresResponse response = get(uriBuilder, NADateMeasuresResponse.class);
-            if (!response.getBody().isEmpty()) {
-                return response.getBody().get(0);
+            List<NAMeasureBodyElem<ZonedDateTime>> body = response.getBody();
+            if (body != null && !body.isEmpty()) {
+                return body.get(0);
             }
         } else {
             NAMeasuresResponse response = get(uriBuilder, NAMeasuresResponse.class);
-            if (!response.getBody().isEmpty()) {
-                return response.getBody().get(0);
+            List<NAMeasureBodyElem<Double>> body = response.getBody();
+            if (body != null && !body.isEmpty()) {
+                return body.get(0);
             }
         }
         throw new NetatmoException("Empty response while getting measurements");

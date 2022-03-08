@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -80,8 +81,7 @@ public class HomeCapability extends RestCapability<HomeApi> {
             home.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
             home.getTimezone().map(tz -> properties.put(PROPERTY_TIMEZONE, tz));
             properties.put(GROUP_LOCATION, ((NetatmoLocation) home).getLocation().toString());
-            FeatureArea.AS_SET.stream().filter(area -> area != FeatureArea.NONE)
-                    .forEach(area -> properties.put(area.name(), Boolean.toString(featuresArea.contains(area))));
+            properties.put(PROPERTY_FEATURE, featuresArea.stream().map(f -> f.name()).collect(Collectors.joining(",")));
         }
     }
 

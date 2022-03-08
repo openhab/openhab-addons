@@ -41,7 +41,6 @@ public class RefreshCapability extends Capability {
     private static final Duration PROBING_INTERVAL = Duration.of(120, SECONDS);
 
     private final Logger logger = LoggerFactory.getLogger(RefreshCapability.class);
-    // private final ApiBridgeHandler apiBridge;
     private final ScheduledExecutorService scheduler;
 
     private Duration dataValidity;
@@ -49,38 +48,18 @@ public class RefreshCapability extends Capability {
     private @Nullable ZonedDateTime dataTimeStamp0;
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
-    public RefreshCapability(NACommonInterface handler /* , ApiBridgeHandler apiBridge, */,
-            ScheduledExecutorService scheduler, int refreshInterval) {
+    public RefreshCapability(NACommonInterface handler, ScheduledExecutorService scheduler, int refreshInterval) {
         super(handler);
-        // this.apiBridge = apiBridge;
         this.scheduler = scheduler;
         this.dataValidity = Duration.ofMillis(Math.max(0, refreshInterval));
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        // When setting the connection listener the apiBridge will trigger connectionEvent
-        // apiBridge.addConnectionListener(this);
+        handler.setThingStatus(ThingStatus.ONLINE, null);
+        freeJobAndReschedule(2);
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        // apiBridge.removeConnectionListener(this);
         freeJobAndReschedule(0);
-    }
-
-    // TODO : clean this now that connection listener has disappeared
-    public void connectionEvent(boolean connected) {
-        if (!connected) {
-            handler.setThingStatus(ThingStatus.OFFLINE, "@text/status-bridge-offline");
-            freeJobAndReschedule(0);
-        } else if (!ThingStatus.ONLINE.equals(thing.getStatus())) {
-            handler.setThingStatus(ThingStatus.ONLINE, null);
-            // Wait a little bit before refreshing because a dispose could be running in parallel
-            freeJobAndReschedule(2);
-        }
     }
 
     @Override

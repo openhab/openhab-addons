@@ -59,7 +59,6 @@ public class Capability {
         this.thing = handler.getThing();
     }
 
-    // Data consumer functions
     public final void setNewData(@Nullable NAObject newData) {
         if (newData != null) {
             beforeNewData();
@@ -154,10 +153,9 @@ public class Capability {
     }
 
     public void updateHomeStatusModule(NAHomeStatusModule newData) {
-        // TODO Auto-generated method stub
+        // do nothing by default, can be overridden by subclasses
     }
 
-    // Command handling capability
     public void handleCommand(String channelName, Command command) {
         // do nothing by default, can be overridden by subclasses
     }

@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.ApiResponse;
 
 /**
@@ -24,7 +25,7 @@ import org.openhab.binding.netatmo.internal.api.ApiResponse;
 @NonNullByDefault
 public class NAPing extends ApiResponse<String> {
     private String localUrl = "";
-    private String productName = "";
+    private @Nullable String productName;
 
     @Override
     public String getStatus() {
@@ -32,7 +33,7 @@ public class NAPing extends ApiResponse<String> {
     }
 
     @Override
-    public String getBody() {
+    public @Nullable String getBody() {
         return productName;
     }
 }

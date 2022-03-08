@@ -53,11 +53,7 @@ public abstract class RestCapability<T extends RestManager> extends ModuleCapabi
     protected void updateNADevice(NADevice newData) {
         super.updateNADevice(newData);
         NAObjectMap<NAModule> modules = newData.getModules();
-        handler.getActiveChildren().forEach(handler -> {
-            // TODO : is updateReadings really needed here ???
-            handler.updateReadings();
-            handler.setNewData(modules.get(handler.getId()));
-        });
+        handler.getActiveChildren().forEach(child -> child.setNewData(modules.get(child.getId())));
     }
 
     @Override
