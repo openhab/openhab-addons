@@ -105,6 +105,82 @@ then
 end
 ```
 
+Advanced example:
+```
+rule "Set charging limit for go-eCharger"
+when
+    Time cron "*/10 * * ? * *" // Trigger every 10 seconds
+then
+    if (GoEChargerExcessCharge.state == ON) {
+        var totalPowerOutputInWatt = Total_power_fast.state as DecimalType * 1000
+        if (totalPowerOutputInWatt > 0) {
+            totalPowerOutputInWatt = 0
+        }
+
+        totalPowerOutputInWatt = totalPowerOutputInWatt * -1
+
+        var maxAmp3Phases = (totalPowerOutputInWatt / 3) / 230
+        if (maxAmp3Phases > 16.0) {
+            maxAmp3Phases = 16.0
+        }
+        var maxAmp1Phase = totalPowerOutputInWatt / 230;
+
+        if (maxAmp3Phases.intValue >= 6) {
+            // set force state to neutral (Neutral=0, Off=1, On=2)
+            if (GoEChargerForceState.state != 0) {
+                GoEChargerForceState.sendCommand(0);
+            }
+
+            // 3 phases
+            if ((GoEChargerPhases.state as Number) != 3) {
+                GoEChargerPhases.sendCommand(3);
+            }
+
+            if ((GoEChargerMaxCurrent.state as Number).intValue != maxAmp3Phases.intValue) {
+                GoEChargerMaxCurrent.sendCommand(maxAmp3Phases.intValue)
+                // logInfo("eCharger", "Set charging limit 3 Phases: " + maxAmp3Phases.intValue + " A")
+            }
+        } else {
+            if (maxAmp1Phase.intValue >= 6 ) {
+                // set force state to neutral (Neutral=0, Off=1, On=2)
+                if (GoEChargerForceState.state != 0) {
+                    GoEChargerForceState.sendCommand(0);
+                }
+
+                // switch to 1 phase -> check if this is useful
+                if ((GoEChargerPhases.state as Number) != 1) {
+                    GoEChargerPhases.sendCommand(1)
+                }
+
+                if ((GoEChargerMaxCurrent.state as Number).intValue != maxAmp1Phase.intValue) {
+                    GoEChargerMaxCurrent.sendCommand(maxAmp1Phase.intValue)
+                    // logInfo("eCharger", "Set charging limit 1 Phase: " + maxAmp1Phase.intValue + " A")
+                }
+            } else {
+                // switch off
+                if (GoEChargerForceState.state != 1) {
+                    GoEChargerForceState.sendCommand(1);
+                    // logInfo("eCharger", "Switch charging off")
+                }
+            }
+        }
+    } else {
+        // set force state to neutral (Neutral=0, Off=1, On=2)
+        if (GoEChargerForceState.state != 0) {
+            GoEChargerForceState.sendCommand(0);
+        }
+
+        if ((GoEChargerPhases.state as Number) != 3) {
+            GoEChargerPhases.sendCommand(3);
+        }
+
+        if ((GoEChargerMaxCurrent.state as Number).intValue != 16) {
+            GoEChargerMaxCurrent.sendCommand(16)
+        }
+    }
+end
+```
+
 You can also define more advanced rules if you have multiple cars that charge with a different amount of phases.
 For example if your car charges on one phase only, you can set maxAmps to output of PV power, if your car charges on two phases you can set maxAmps to `pv output / 2`, and for 3 phases `pv output / 3`.
 In general the calculation would be ´maxAmps = pvOutput / phases`.
