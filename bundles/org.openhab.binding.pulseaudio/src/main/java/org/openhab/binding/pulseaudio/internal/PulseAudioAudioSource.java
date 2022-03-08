@@ -85,7 +85,6 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                     }
                     setIdle(true);
                     var pipeOutput = new PipedOutputStream();
-                    registerPipe(pipeOutput);
                     var pipeInput = new PipedInputStream(pipeOutput, 1024 * 10) {
                         @Override
                         public void close() throws IOException {
@@ -93,6 +92,7 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                             super.close();
                         }
                     };
+                    registerPipe(pipeOutput);
                     // get raw audio from the pulse audio socket
                     return new PulseAudioStream(sourceFormat, pipeInput, (idle) -> {
                         setIdle(idle);
