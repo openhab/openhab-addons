@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Massimo Valla - Initial contribution
  * @author Andrea Conte - Energy management, Thermoregulation
  * @author Gilberto Cocchi - Thermoregulation
- *  @author Giovanni Fabiani - Auxiliary support
+ * @author Giovanni Fabiani - Auxiliary support
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.openwebnet", service = ThingHandlerFactory.class)
