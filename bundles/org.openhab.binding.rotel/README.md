@@ -162,6 +162,10 @@ The following channels are available:
 | mainZone#line2 | Front Panel Line 2             | String    | The second line displayed on the device front panel      |                                    |
 | frequency      | Current Frequency              | Number    | The current frequency (in kHz) for digital source input  |                                    |
 | brightness     | Front Panel Display Brightness | Dimmer    | The backlight brightness level (in %) of the device front panel |                             |
+| bypassx        | Bypass Adjustment              | Switch    | Bass and Treble adjustments are bypassed                 | ON, OFF                            |
+| balance        | Stereo Balance Adjustment      | Number    | Adjust the balnce                                        | value                              |
+| speakera       | Speaker Group A                | Switch    | Switch speaker group A                                   | ON, OFF                            |
+| speakerb       | Speaker Group B                | Switch    | Switch speaker group B                                   | ON, OFF                            |
 
 Here are the list of channels available for each thing type:
 
@@ -169,7 +173,7 @@ Here are the list of channels available for each thing type:
 |------------|---------------------------------------------------------------------------------------|
 | a11        | power, source, volume, mute, bass, treble, brightness                                 |
 | a12        | power, source, volume, mute, bass, treble, frequency, brightness                      |
-| a14        | power, source, volume, mute, bass, treble, frequency, brightness                      |
+| a14        | power, source, volume, mute, bass, treble, frequency, brightness, bypassx, balance, speakera, speakerb |
 | cd11       | power, playControl, track, brightness                                                 |
 | cd14       | power, playControl, track, brightness                                                 |
 | ra11       | power, source, volume, mute, bass, treble, playControl, frequency, brightness         |
@@ -221,6 +225,8 @@ Thing rotel:rsp1570:preamp "RSP-1570" [ serialPort="COM2" ]
 Thing rotel:ra1592:preamp "RA-1592" [ serialPort="COM3" ]
 
 Thing rotel:cd14:cd "CD14" [ serialPort="COM4" ]
+
+Thing rotel:a14:amp "A14" [ serialPort="ttyUSB0" ]
 ```
 
 example.things using serial over IP connection:
@@ -281,6 +287,11 @@ Switch amp_mute "Mute" { channel="rotel:ra1592:preamp:mute" }
 Number amp_bass "Bass Adjustment [%d]" { channel="rotel:ra1592:preamp:bass" }
 Number amp_treble "Treble Adjustment [%d]" { channel="rotel:ra1592:preamp:treble" }
 Dimmer amp_brightness "Display brightness" { channel="rotel:ra1592:preamp:brightness" }
+
+Switch amp_bypass "Bypass" { channel="rotel:a14:amp:bypassx" }
+Number amp_balance "Balance Adjustment [%d]" { channel="rotel:a14:amp:balance" }
+Switch amp_speakera "Speaker A" { channel="rotel:a14:amp:speakera" }
+Switch amp_speakerb "Speaker B" { channel="rotel:a14:amp:speakerb" }
 
 Switch cd_power "Power" { channel="rotel:cd14:cd:power" }
 Player cd_control "Playback" { channel="rotel:cd14:cd:power" }
