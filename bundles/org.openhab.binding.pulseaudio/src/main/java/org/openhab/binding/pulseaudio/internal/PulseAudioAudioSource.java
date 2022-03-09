@@ -154,14 +154,14 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                                     }
                                 } catch (IOException e) {
                                     logger.warn("IOException while writing to from pulse source pipe: {}",
-                                            e.getMessage());
+                                            getExceptionMessage(e));
                                 } catch (RuntimeException e) {
                                     logger.warn("RuntimeException while writing to pulse source pipe: {}",
-                                            e.getMessage());
+                                            getExceptionMessage(e));
                                 }
                             }
                         } catch (IOException e) {
-                            logger.warn("IOException while reading from pulse source: {}", e.getMessage());
+                            logger.warn("IOException while reading from pulse source: {}", getExceptionMessage(e));
                             if (readRetries == 0) {
                                 // force reconnection on persistent IOException
                                 super.disconnect();
@@ -169,7 +169,7 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                                 readRetries--;
                             }
                         } catch (RuntimeException e) {
-                            logger.warn("RuntimeException while reading from pulse source: {}", e.getMessage());
+                            logger.warn("RuntimeException while reading from pulse source: {}", getExceptionMessage(e));
                         }
                     } else {
                         logger.warn("Unable to get source input stream");
@@ -198,6 +198,15 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
             pipeWriteTask.cancel(true);
             this.pipeWriteTask = null;
         }
+    }
+
+    private @Nullable String getExceptionMessage(Exception e) {
+        String message = e.getMessage();
+        var cause = e.getCause();
+        if (message == null && cause != null) {
+            message = cause.getMessage();
+        }
+        return message;
     }
 
     private @Nullable InputStream getSourceInputStream() {
