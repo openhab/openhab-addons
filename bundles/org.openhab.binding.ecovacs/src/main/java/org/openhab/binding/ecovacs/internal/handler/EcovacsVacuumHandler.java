@@ -467,15 +467,15 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         if (device != null) {
             device.disconnect(scheduler);
         }
-        this.device = null;
 
         pollTask.cancel();
 
+        reconnectTask.cancel();
+        initTask.cancel();
+
         if (scheduleReconnection) {
-            reconnectTask.schedule(5);
-        } else {
-            reconnectTask.cancel();
-            initTask.cancel();
+            SchedulerTask connectTask = device != null ? reconnectTask : initTask;
+            connectTask.schedule(5);
         }
     }
 
