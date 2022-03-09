@@ -29,8 +29,7 @@
         "capabilities": [
             "mopping_system",
             "main_brush",
-            "single_room_cleaning",
-            "clean_speed_control"
+            "single_room_cleaning"
         ]
     },
 
