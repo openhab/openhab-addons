@@ -89,11 +89,6 @@ public class EcovacsXmppDevice implements EcovacsDevice {
     }
 
     @Override
-    public String getId() {
-        return device.getDid();
-    }
-
-    @Override
     public String getSerialNumber() {
         return device.getName();
     }

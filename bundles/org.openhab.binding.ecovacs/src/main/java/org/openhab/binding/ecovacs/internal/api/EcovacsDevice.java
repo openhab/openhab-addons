@@ -47,8 +47,6 @@ public interface EcovacsDevice {
         void onEventStreamFailure(EcovacsDevice device, Throwable error);
     }
 
-    public String getId();
-
     public String getSerialNumber();
 
     public String getModelName();

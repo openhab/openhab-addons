@@ -78,11 +78,6 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
     }
 
     @Override
-    public String getId() {
-        return device.getDid();
-    }
-
-    @Override
     public String getSerialNumber() {
         return device.getName();
     }
