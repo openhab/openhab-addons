@@ -694,33 +694,29 @@ public class HomekitCharacteristicFactory {
 
     private static CoolingThresholdTemperatureCharacteristic createCoolingThresholdCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new CoolingThresholdTemperatureCharacteristic(
-                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
-                        CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE),
-                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MAX_VALUE,
-                        CoolingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE),
+        double minValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
+                HomekitTaggedItem.MIN_VALUE, CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE));
+        double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
+                HomekitTaggedItem.MAX_VALUE, CoolingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE));
+        return new CoolingThresholdTemperatureCharacteristic(minValue, maxValue,
                 taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP,
                         CoolingThresholdTemperatureCharacteristic.DEFAULT_STEP),
-                getTemperatureSupplier(taggedItem,
-                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
-                                CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE)),
-                setTemperatureConsumer(taggedItem), getSubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater),
+                getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
+                getSubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater));
     }
 
     private static HeatingThresholdTemperatureCharacteristic createHeatingThresholdCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new HeatingThresholdTemperatureCharacteristic(
-                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
-                        HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE),
-                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MAX_VALUE,
-                        HeatingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE),
+        double minValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
+                HomekitTaggedItem.MIN_VALUE, HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE));
+        double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
+                HomekitTaggedItem.MAX_VALUE, HeatingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE));
+        return new HeatingThresholdTemperatureCharacteristic(minValue, maxValue,
                 taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP,
                         HeatingThresholdTemperatureCharacteristic.DEFAULT_STEP),
-                getTemperatureSupplier(taggedItem,
-                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
-                                HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE)),
-                setTemperatureConsumer(taggedItem), getSubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater),
+                getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
+                getSubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater));
     }
 
