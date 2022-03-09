@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tplinkrouter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="wifiGroupType">
+		<label>Wifi</label>
+		<description>Wifi channels</description>
+		<channels>
+			<channel id="Status" typeId="switch-type">
+				<label>Wifi Status</label>
+				<description>Wifi status</description>
+			</channel>
+			<channel id="SSID" typeId="string-type">
+				<label>Wifi SSID</label>
+				<description>Wifi SSID</description>
+			</channel>
+			<channel id="bandWidth" typeId="string-type">
+				<label>Wifi BandWidth</label>
+				<description>Wifi bandwidth</description>
+			</channel>
+			<channel id="QSS" typeId="string-type">
+				<label>Wifi QSS</label>
+				<description>Wifi QSS</description>
+			</channel>
+			<channel id="SecMode" typeId="string-type">
+				<label>Wifi SecMode</label>
+				<description>Wifi SecMode</description>
+			</channel>
+			<channel id="Key" typeId="string-type">
+				<label>Wifi Key</label>
+				<description>Wifi Key</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="switch-type">
+		<item-type>Switch</item-type>
+		<label>TpLink Switch Type</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<description>Switch Type for TpLinkrRouter Binding</description>
+	</channel-type>
+	<channel-type id="string-type">
+		<item-type>String</item-type>
+		<label>TpLink String Type</label>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>
