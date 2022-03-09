@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
@@ -344,6 +345,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
     }
 
     private ContentResponse executeRequest(Request request) throws EcovacsApiException, InterruptedException {
+        request.timeout(10, TimeUnit.SECONDS);
         try {
             ContentResponse response = request.send();
             if (response.getStatus() != HttpStatus.OK_200) {
