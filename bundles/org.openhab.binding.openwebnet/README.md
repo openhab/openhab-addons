@@ -44,10 +44,12 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Lighting                      |     `1`     |             `bus_on_off_switch`, `bus_dimmer`              | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)                                                                                           |
 | Automation                    |     `2`     |                      `bus_automation`                      | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2                                                                                                                                                                              |
 | Temperature Control           |     `4`     |  `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`   | Thermo zones management and temperature sensors (probes).        | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455; Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details |
-| Auxiliary (AUX)               |     `9`     |                         `bus_aux`                          | AUX commands                                                     | Successfully tested: AUX configured for bulgrar-alarm unit 3486. **Only sending AUX commands is supported**                                                                                                    |
-| Basic, CEN & CEN+ Scenarios          | `0`, `15`, `25` | `bus_scenario_control`, `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | Basic and CEN/CEN+ Scenarios events and virtual activation                 | Successfully tested: CEN/CEN+ scenario control: HC/HD/HS/L/N/NT4680 and basic scenario modules F420/IR3456 + L4680 (WHO=0)                                                                                                                                                              |
-| Dry Contact and IR Interfaces |    `25`     |                    `bus_dry_contact_ir`                    | Dry Contacts and IR Interfaces                                   | Successfully tested: contact interfaces F428 and 3477; IR sensors: HC/HD/HS/L/N/NT4610                                                                                                                     |
-| Energy Management             |    `18`     |                     `bus_energy_meter`                     | Energy Management                                                | Successfully tested: F520, F521. Partially tested: F522, F523                                                                                                                                                                            |
+| Alarm                         |     `5`     |  `bus_alarm_zone`, `bus_alarm_cu`                          | BUS alarm system                                                 | TO BE TESTED                                                                                                                
+| Auxiliary (AUX)               |     `9`     |                         `bus_aux`                          | AUX commands                                                     | Successfully tested: AUX configured for bulgrar-alarm unit 3486. **Only sending AUX commands is supported**    |
+| Basic, CEN & CEN+ Scenarios   | `0`, `15`, `25` | `bus_scenario_control`, `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | Basic and CEN/CEN+ Scenarios events and virtual activation                 | Successfully tested: CEN/CEN+ scenario control: HC/HD/HS/L/N/NT4680 and basic scenario modules F420/IR3456 + L4680 (WHO=0)      |
+| Dry Contact and IR Interfaces |    `25`     |                    `bus_dry_contact_ir`                    | Dry Contacts and IR Interfaces                                   | Successfully tested: contact interfaces F428 and 3477; IR sensors: HC/HD/HS/L/N/NT4610      |
+| Energy Management             |    `18`     |                     `bus_energy_meter`                     | Energy Management                                                | Successfully tested: F520, F521. Partially tested: F522, F523                               |
+
 
 ### For ZigBee (Radio)
 
@@ -136,6 +138,7 @@ For any manually added device, you must configure:
         - Dry Contact or IR Interface `99`: add `3` before --> `where="399"`
         - Energy meter F520/F521 numbered `1`: add `5` before  --> `where="51"`
         - Energy meter F522/F523 numbered `4` add `7` before and `#0` after --> `where="74#0"`
+        - alarm zone `2` --> `where="2"`
     - example for ZigBee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
  
 
@@ -198,7 +201,7 @@ With this configuration when AUX `where=1` goes OFF, the Alarm will execute the 
 
 ## Channels 
 
-### Lighting, Automation, Power meter, Basic/CEN/CEN+ Scenario Events, Dry Contact / IR Interfaces channels and Alarm channels
+### Lighting, Automation, Power meter, Basic/CEN/CEN+ Scenario Events, Dry Contact / IR Interfaces and Alarm channels
 
 | Channel Type ID (channel ID)            | Applies to Thing Type IDs                                     | Item Type     | Description                                                                                                                                     | Read/Write  |
 |-----------------------------------------|---------------------------------------------------------------|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------|:-----------:|

@@ -72,7 +72,7 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL = "CEN+ Scenario Control";
     public static final ThingTypeUID THING_TYPE_BUS_SCENARIO = new ThingTypeUID(BINDING_ID, "bus_scenario_control");
     public static final String THING_LABEL_BUS_SCENARIO = "Scenario Control";
-    public static final ThingTypeUID THING_TYPE_BUS_ALARM_CENTRAL_UNIT = new ThingTypeUID(BINDING_ID, "bus_alarm");
+    public static final ThingTypeUID THING_TYPE_BUS_ALARM_CENTRAL_UNIT = new ThingTypeUID(BINDING_ID, "bus_alarm_cu");
     public static final String THING_LABEL_BUS_ALARM_CENTRAL_UNIT = "Alarm Central Unit";
     public static final ThingTypeUID THING_TYPE_BUS_ALARM_ZONE = new ThingTypeUID(BINDING_ID, "bus_alarm_zone");
     public static final String THING_LABEL_BUS_ALARM_ZONE = "Alarm Zone";

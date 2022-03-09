@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Thing for BUS Alarm Central Unit -->
-	<thing-type id="bus_alarm">
+	<thing-type id="bus_alarm_cu">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bus_gateway"/>
 		</supported-bridge-type-refs>
@@ -27,11 +27,12 @@
 		<representation-property>ownId</representation-property>
 
 		<config-description>
-			<parameter name="where" type="text" required="true">
+			<parameter name="where" type="text" readOnly="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>Use where=0</description>
-			</parameter>
-		</config-description>
+                <description>The Central Unit can only assume where=0</description>
+                <default>0</default>
+			</parameter>            
+   		</config-description>
 
 	</thing-type>
 </thing:thing-descriptions>

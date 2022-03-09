@@ -21,7 +21,7 @@
 
 		<properties>
 			<property name="vendor">BTicino/Legrand</property>
-			<property name="model">Alarm Zone as configure in Alarm Central Unit</property>
+			<property name="model">Alarm Zone as configured in Alarm Central Unit</property>
 			<property name="ownDeviceType">5200</property>
 		</properties>
 
@@ -30,7 +30,7 @@
 		<config-description>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>Example: zone 2 --> where=2</description>
+				<description>Example: alarm zone 2 --> where=2</description>
 			</parameter>
 		</config-description>
 

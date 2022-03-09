@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.openwebnet.internal.handler;
 
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
+
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -19,10 +21,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.message.Alarm;
+import org.openwebnet4j.message.Alarm.WhatAlarm;
+import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereAlarm;
 import org.openwebnet4j.message.Who;
@@ -42,11 +48,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.ALARM_SUPPORTED_THING_TYPES;
 
-    private static long lastAllDevicesRefreshTS = -1; // timestamp when the last request for all device refresh was sent
-    // for this handler
-
-    protected static final int ALL_DEVICES_REFRESH_INTERVAL_MSEC = 5000; // interval in msec before sending another all
-    // devices refresh request
+    private static long lastAllDevicesRefreshTS = 0; // ts when last all device refresh was sent for this handler
 
     public OpenWebNetAlarmHandler(Thing thing) {
         super(thing);
@@ -54,42 +56,90 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void handleChannelCommand(@NonNull ChannelUID channel, @NonNull Command command) {
-        // TODO Auto-generated method stub
+        logger.warn("handleChannelCommand() Read only channel, unsupported command {}", command);
     }
 
     @Override
     protected void requestChannelState(@NonNull ChannelUID channel) {
-        // TODO Auto-generated method stub
+        super.requestChannelState(channel);
+        Where w = deviceWhere;
+        ThingTypeUID thingType = thing.getThingTypeUID();
+        try {
+            if (THING_TYPE_BUS_ALARM_CENTRAL_UNIT.equals(thingType)) {
+                send(Alarm.requestSystemStatus());
+                lastAllDevicesRefreshTS = System.currentTimeMillis();
+            } else {
+                send(Alarm.requestZoneStatus(w.value()));
+            }
+        } catch (OWNException e) {
+            logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
     }
 
     @Override
-    protected void refreshDevice(boolean refreshAll) {
-        OpenWebNetBridgeHandler brH = bridgeHandler;
-        if (brH != null) {
-            if (brH.isBusGateway() && refreshAll) {
-                long now = System.currentTimeMillis();
-                if (now - lastAllDevicesRefreshTS > ALL_DEVICES_REFRESH_INTERVAL_MSEC) {
-                    try {
-                        send(Alarm.requestSystemStatus());
-                        lastAllDevicesRefreshTS = now;
-                    } catch (OWNException e) {
-                        logger.warn("Excpetion while requesting all devices refresh: {}", e.getMessage());
-                    }
-                } else {
-                    logger.debug("Refresh all devices just sent...");
-                }
-            } else { // single device
-                if (deviceWhere != null) {
-                    String w = deviceWhere.value();
-                    try {
-                        send(Alarm.requestZoneStatus(w));
-                    } catch (OWNException e) {
-                        logger.warn("refreshDevice() where='{}' returned OWNException {}", w, e.getMessage());
-                    }
-                }
+    protected long getRefreshAllLastTS() {
+        return lastAllDevicesRefreshTS;
+    };
 
+    @Override
+    protected void refreshDevice(boolean refreshAll) {
+        if (refreshAll) {
+            logger.debug("--- refreshDevice() : refreshing via ALARM CENTRAL UNIT... ({})", thing.getUID());
+            try {
+                send(Alarm.requestSystemStatus());
+                lastAllDevicesRefreshTS = System.currentTimeMillis();
+            } catch (OWNException e) {
+                logger.warn("Excpetion while requesting alarm system status: {}", e.getMessage());
             }
+        } else {
+            logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
+            requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_ALARM));
         }
+    }
+
+    @Override
+    protected void handleMessage(BaseOpenMessage msg) {
+        logger.debug("handleMessage({}) for thing: {}", msg, thing.getUID());
+        super.handleMessage(msg);
+        ThingTypeUID thingType = thing.getThingTypeUID();
+        if (THING_TYPE_BUS_ALARM_CENTRAL_UNIT.equals(thingType)) {
+            updateCU((Alarm) msg);
+        } else {
+            updateZone((Alarm) msg);
+        }
+    }
+
+    private void updateCU(Alarm msg) {
+        WhatAlarm w = (WhatAlarm) msg.getWhat();
+        switch (w) {
+            case START_PROGRAMMING:
+            case STOP_PROGRAMMING:
+                break;
+            case SYSTEM_ACTIVE:
+            case SYSTEM_INACTIVE:
+            case SYSTEM_MAINTENANCE:
+                break;
+            case SYSTEM_BATTERY_FAULT:
+                break;
+            case SYSTEM_BATTERY_OK:
+            case SYSTEM_BATTERY_UNLOADED:
+                break;
+            case SYSTEM_DISENGAGED:
+            case SYSTEM_ENGAGED:
+                break;
+            case SYSTEM_NETWORK_ERROR:
+            case SYSTEM_NETWORK_OK:
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    private void updateZone(Alarm msg) {
+        // TODO Auto-generated method stub
+
     }
 
     @Override
