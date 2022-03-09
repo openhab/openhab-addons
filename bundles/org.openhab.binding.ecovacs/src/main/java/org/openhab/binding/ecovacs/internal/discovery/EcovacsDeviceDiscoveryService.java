@@ -16,14 +16,13 @@ import static org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.*;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApi;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
 import org.openhab.binding.ecovacs.internal.api.EcovacsDevice;
+import org.openhab.binding.ecovacs.internal.api.util.SchedulerTask;
 import org.openhab.binding.ecovacs.internal.handler.EcovacsApiHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -50,8 +49,10 @@ public class EcovacsDeviceDiscoveryService extends AbstractDiscoveryService impl
     private static final int DISCOVER_TIMEOUT_SECONDS = 10;
 
     private @NonNullByDefault({}) EcovacsApiHandler apiHandler;
-    private @Nullable Future<?> onDemandScanFuture;
-    private @Nullable Future<?> backgroundScanFuture;
+    private final SchedulerTask onDemandScanTask = new SchedulerTask(scheduler, logger, "OnDemandScan",
+            this::scanForDevices);
+    private final SchedulerTask backgroundScanTask = new SchedulerTask(scheduler, logger, "BackgroundScan",
+            this::scanForDevices);
 
     public EcovacsDeviceDiscoveryService() {
         super(Collections.singleton(THING_TYPE_VACUUM), DISCOVER_TIMEOUT_SECONDS, true);
@@ -83,38 +84,24 @@ public class EcovacsDeviceDiscoveryService extends AbstractDiscoveryService impl
     @Override
     protected synchronized void startBackgroundDiscovery() {
         stopBackgroundDiscovery();
-        backgroundScanFuture = scheduler.scheduleWithFixedDelay(this::scanForDevices, 0, 60, TimeUnit.SECONDS);
+        backgroundScanTask.scheduleRecurring(60);
     }
 
     @Override
     protected synchronized void stopBackgroundDiscovery() {
-        Future<?> backgroundScanFuture = this.backgroundScanFuture;
-        if (backgroundScanFuture != null) {
-            backgroundScanFuture.cancel(true);
-        }
-        this.backgroundScanFuture = null;
+        backgroundScanTask.cancel();
     }
 
     @Override
     public synchronized void startScan() {
-        Future<?> onDemandScanFuture = this.onDemandScanFuture;
-        if (onDemandScanFuture != null && !onDemandScanFuture.isDone()) {
-            logger.debug("Ecovacs device discovery scan already in progress");
-            return;
-        }
-
         logger.debug("Starting Ecovacs discovery scan");
-        this.onDemandScanFuture = scheduler.submit(this::scanForDevices);
+        onDemandScanTask.submit();
     }
 
     @Override
     public synchronized void stopScan() {
         logger.debug("Stopping Ecovacs discovery scan");
-        Future<?> onDemandScanFuture = this.onDemandScanFuture;
-        if (onDemandScanFuture != null) {
-            onDemandScanFuture.cancel(true);
-        }
-        this.onDemandScanFuture = null;
+        onDemandScanTask.cancel();
         super.stopScan();
     }
 

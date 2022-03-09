@@ -20,9 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -64,6 +61,7 @@ import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
 import org.openhab.binding.ecovacs.internal.api.model.MoppingWaterAmount;
 import org.openhab.binding.ecovacs.internal.api.model.NetworkInfo;
 import org.openhab.binding.ecovacs.internal.api.model.SuctionPower;
+import org.openhab.binding.ecovacs.internal.api.util.SchedulerTask;
 import org.openhab.binding.ecovacs.internal.config.EcovacsVacuumConfiguration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -110,9 +108,9 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     private final EcovacsDynamicStateDescriptionProvider stateDescriptionProvider;
     private final Bundle bundle;
 
-    private @Nullable Future<?> initFuture;
-    private @Nullable ScheduledFuture<?> reconnectFuture;
-    private @Nullable ScheduledFuture<?> pollFuture;
+    private final SchedulerTask initTask;
+    private final SchedulerTask reconnectTask;
+    private final SchedulerTask pollTask;
     private @Nullable EcovacsDevice device;
 
     private @Nullable Boolean lastWasCharging;
@@ -128,6 +126,11 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         this.localeProvider = localeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         bundle = FrameworkUtil.getBundle(getClass());
+
+        final String serial = getDeviceSerial();
+        initTask = new SchedulerTask(scheduler, logger, serial + ": Init", this::initDevice);
+        reconnectTask = new SchedulerTask(scheduler, logger, serial + ": Connection", this::connectToDevice);
+        pollTask = new SchedulerTask(scheduler, logger, serial + ": Poll", this::pollData);
     }
 
     @Override
@@ -182,7 +185,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         }
 
         logger.debug("{}: Initializing handler", serial);
-        initDevice(serial);
+        initTask.submit();
     }
 
     @Override
@@ -229,10 +232,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("{}: Bridge status changed to {}", getDeviceSerial(), bridgeStatusInfo);
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            String serial = getThing().getProperties().getOrDefault(Thing.PROPERTY_SERIAL_NUMBER, "");
-            if (!serial.isEmpty()) {
-                initDevice(serial);
-            }
+            initTask.submit();
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             teardown(false);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -406,8 +406,6 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     }
 
     private synchronized void scheduleNextPoll(long initialDelaySeconds) {
-        cancelNextPoll();
-
         final EcovacsVacuumConfiguration config = getConfigAs(EcovacsVacuumConfiguration.class);
         final long delayUntilNextPoll;
         if (initialDelaySeconds < 0) {
@@ -420,18 +418,11 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         }
         logger.debug("{}: Scheduling next poll in {}s, refresh interval {}min", getDeviceSerial(), delayUntilNextPoll,
                 config.refresh);
-        pollFuture = scheduler.schedule(this::pollData, delayUntilNextPoll, TimeUnit.SECONDS);
+        pollTask.cancel();
+        pollTask.schedule(delayUntilNextPoll);
     }
 
-    private synchronized void cancelNextPoll() {
-        final ScheduledFuture<?> pollFuture = this.pollFuture;
-        if (pollFuture != null) {
-            pollFuture.cancel(true);
-            this.pollFuture = null;
-        }
-    }
-
-    private synchronized void initDevice(final String serial) {
+    private void initDevice() {
         final EcovacsApiHandler handler = getApiHandler();
         final EcovacsApi api = handler != null ? handler.getApi() : null;
 
@@ -440,33 +431,31 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             return;
         }
 
-        Future<?> initFuture = this.initFuture;
-        if (initFuture != null && !initFuture.isDone()) {
+        final String serial = getDeviceSerial();
+        if (serial.isEmpty()) {
             return;
         }
 
-        this.initFuture = scheduler.submit(() -> {
-            try {
-                Optional<EcovacsDevice> deviceOpt = api.getDevices().stream()
-                        .filter(d -> serial.equals(d.getSerialNumber())).findFirst();
-                if (deviceOpt.isPresent()) {
-                    EcovacsDevice device = deviceOpt.get();
-                    this.device = device;
-                    updateProperty(Thing.PROPERTY_MODEL_ID, device.getModelName());
-                    updateProperty(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber());
-                    updateStateOptions(device);
-                    removeUnsupportedChannels(device);
-                    connectToDevice();
-                } else {
-                    logger.info("{}: Device not found in device list, setting offline", serial);
-                    updateStatus(ThingStatus.OFFLINE);
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } catch (EcovacsApiException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        try {
+            Optional<EcovacsDevice> deviceOpt = api.getDevices().stream()
+                    .filter(d -> serial.equals(d.getSerialNumber())).findFirst();
+            if (deviceOpt.isPresent()) {
+                EcovacsDevice device = deviceOpt.get();
+                this.device = device;
+                updateProperty(Thing.PROPERTY_MODEL_ID, device.getModelName());
+                updateProperty(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber());
+                updateStateOptions(device);
+                removeUnsupportedChannels(device);
+                connectToDevice();
+            } else {
+                logger.info("{}: Device not found in device list, setting offline", serial);
+                updateStatus(ThingStatus.OFFLINE);
             }
-        });
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (EcovacsApiException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        }
     }
 
     private void teardownAndScheduleReconnection() {
@@ -480,24 +469,13 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         }
         this.device = null;
 
-        cancelNextPoll();
+        pollTask.cancel();
 
-        if (!scheduleReconnection) {
-            ScheduledFuture<?> reconnectFuture = this.reconnectFuture;
-            if (reconnectFuture != null) {
-                reconnectFuture.cancel(true);
-            }
-            this.reconnectFuture = null;
-            Future<?> initFuture = this.initFuture;
-            if (initFuture != null) {
-                initFuture.cancel(true);
-            }
-            this.initFuture = null;
-        } else if (reconnectFuture == null) {
-            reconnectFuture = scheduler.schedule(() -> {
-                reconnectFuture = null;
-                connectToDevice();
-            }, 5, TimeUnit.SECONDS);
+        if (scheduleReconnection) {
+            reconnectTask.schedule(5);
+        } else {
+            reconnectTask.cancel();
+            initTask.cancel();
         }
     }
 
@@ -716,7 +694,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     }
 
     private String getDeviceSerial() {
-        return getThing().getProperties().getOrDefault(Thing.PROPERTY_SERIAL_NUMBER, "<unknown>");
+        final String serialProp = getThing().getProperties().getOrDefault(Thing.PROPERTY_SERIAL_NUMBER, "");
+        return serialProp.isEmpty() ? getConfigAs(EcovacsVacuumConfiguration.class).serialNumber : serialProp;
     }
 
     private @Nullable EcovacsApiHandler getApiHandler() {

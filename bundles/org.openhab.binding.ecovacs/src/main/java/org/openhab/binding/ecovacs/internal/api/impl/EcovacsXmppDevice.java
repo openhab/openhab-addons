@@ -17,9 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -57,6 +55,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalL
 import org.openhab.binding.ecovacs.internal.api.model.CleanLogRecord;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
 import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
+import org.openhab.binding.ecovacs.internal.api.util.SchedulerTask;
 import org.openhab.binding.ecovacs.internal.api.util.XPathUtils;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.slf4j.Logger;
@@ -264,17 +263,16 @@ public class EcovacsXmppDevice implements EcovacsDevice {
 
         private final XMPPTCPConnection connection;
         private final PingManager pingManager;
-        private final ScheduledExecutorService scheduler;
         private final EventListener listener;
         private final Jid toAddress;
-        private @Nullable Future<?> nextPing;
+        private final SchedulerTask pingTask;
         private boolean started = false;
         private int failedPings = 0;
 
         PingHandler(XMPPTCPConnection connection, ScheduledExecutorService scheduler, EventListener listener, Jid to) {
             this.connection = connection;
             this.pingManager = PingManager.getInstanceFor(connection);
-            this.scheduler = scheduler;
+            this.pingTask = new SchedulerTask(scheduler, logger, getSerialNumber() + ": Ping", this::sendPing);
             this.listener = listener;
             this.toAddress = to;
         }
@@ -286,10 +284,7 @@ public class EcovacsXmppDevice implements EcovacsDevice {
 
         public void stop() {
             started = false;
-            Future<?> nextPing = this.nextPing;
-            if (nextPing != null) {
-                nextPing.cancel(true);
-            }
+            pingTask.cancel();
         }
 
         private void sendPing() {
@@ -317,12 +312,9 @@ public class EcovacsXmppDevice implements EcovacsDevice {
         }
 
         private synchronized void scheduleNextPing(long delta) {
-            Future<?> oldFuture = this.nextPing;
-            if (oldFuture != null) {
-                oldFuture.cancel(true);
-            }
+            pingTask.cancel();
             if (started) {
-                this.nextPing = scheduler.schedule(this::sendPing, currentPingInterval() - delta, TimeUnit.SECONDS);
+                pingTask.schedule(currentPingInterval() - delta);
             }
         }
 
