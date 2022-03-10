@@ -14,7 +14,7 @@ This binding was tested on :
 |--------------------|-----------------|----------------------------|
 | Fire TV Stick      | 7.1.2           | Volume control not working |
 | Nexus5x            | 8.1.0           | Everything works nice      |
-| Freebox Pop Player | 9               |                            |
+| Freebox Pop Player | 9               | Everything works nice      |
 
 Please update this document if you tested it with other android versions to reflect the compatibility of the binding. 
 
