@@ -104,7 +104,7 @@ public class OmnilinkBindingConstants {
     public static final String CHANNEL_ROOM_SCENE_D = "scene_d";
     public static final String CHANNEL_ROOM_STATE = "state";
 
-    public static final String CHANNEL_SYSTEMDATE = "system_date";
+    public static final String CHANNEL_SYSTEM_DATE = "system_date";
     public static final String CHANNEL_EVENT_LOG = "last_log";
 
     // buttons

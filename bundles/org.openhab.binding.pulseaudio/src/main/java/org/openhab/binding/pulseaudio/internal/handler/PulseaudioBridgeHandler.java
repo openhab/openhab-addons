@@ -34,6 +34,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
@@ -67,11 +68,22 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
     private HashSet<String> lastActiveDevices = new HashSet<>();
 
     private ScheduledFuture<?> pollingJob;
-    private Runnable pollingRunnable = () -> {
-        update();
-    };
 
     private synchronized void update() {
+        try {
+            client.connect();
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+                logger.debug("Established connection to Pulseaudio server on Host '{}':'{}'.", host, port);
+            }
+        } catch (IOException e) {
+            logger.debug("{}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    String.format("Couldn't connect to Pulsaudio server [Host '%s':'%d']: %s", host, port,
+                            e.getMessage() != null ? e.getMessage() : ""));
+            return;
+        }
+
         client.update();
         for (AbstractAudioDeviceConfig device : client.getItems()) {
             if (lastActiveDevices != null && lastActiveDevices.contains(device.getPaName())) {
@@ -79,7 +91,7 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
                     try {
                         deviceStatusListener.onDeviceStateChanged(getThing().getUID(), device);
                     } catch (Exception e) {
-                        logger.error("An exception occurred while calling the DeviceStatusListener", e);
+                        logger.warn("An exception occurred while calling the DeviceStatusListener", e);
                     }
                 }
             } else {
@@ -88,7 +100,7 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
                         deviceStatusListener.onDeviceAdded(getThing(), device);
                         deviceStatusListener.onDeviceStateChanged(getThing().getUID(), device);
                     } catch (Exception e) {
-                        logger.error("An exception occurred while calling the DeviceStatusListener", e);
+                        logger.warn("An exception occurred while calling the DeviceStatusListener", e);
                     }
                     lastActiveDevices.add(device.getPaName());
                 }
@@ -106,13 +118,7 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
         if (command instanceof RefreshType) {
             client.update();
         } else {
-            logger.warn("received invalid command for pulseaudio bridge '{}'.", host);
-        }
-    }
-
-    private synchronized void startAutomaticRefresh() {
-        if (pollingJob == null || pollingJob.isCancelled()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
+            logger.debug("received unexpected command for pulseaudio bridge '{}'.", host);
         }
     }
 
@@ -140,26 +146,15 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
         }
 
         if (host != null && !host.isEmpty()) {
-            Runnable connectRunnable = () -> {
-                try {
-                    client = new PulseaudioClient(host, port, configuration);
-                    if (client.isConnected()) {
-                        updateStatus(ThingStatus.ONLINE);
-                        logger.info("Established connection to Pulseaudio server on Host '{}':'{}'.", host, port);
-                        startAutomaticRefresh();
-                    }
-                } catch (IOException e) {
-                    logger.error("Couldn't connect to Pulsaudio server [Host '{}':'{}']: {}", host, port,
-                            e.getLocalizedMessage());
-                    updateStatus(ThingStatus.OFFLINE);
-                }
-            };
-            scheduler.schedule(connectRunnable, 0, TimeUnit.SECONDS);
+            client = new PulseaudioClient(host, port, configuration);
+            updateStatus(ThingStatus.UNKNOWN);
+            if (pollingJob == null || pollingJob.isCancelled()) {
+                pollingJob = scheduler.scheduleWithFixedDelay(this::update, 0, refreshInterval, TimeUnit.MILLISECONDS);
+            }
         } else {
-            logger.warn(
-                    "Couldn't connect to Pulseaudio server because of missing connection parameters [Host '{}':'{}'].",
-                    host, port);
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+                    "Couldn't connect to Pulseaudio server because of missing connection parameters [Host '%s':'%d']",
+                    host, port));
         }
 
         this.configuration.addPulseAudioBindingConfigurationListener(this);
@@ -168,8 +163,10 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
     @Override
     public void dispose() {
         this.configuration.removePulseAudioBindingConfigurationListener(this);
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
+        ScheduledFuture<?> job = pollingJob;
+        if (job != null) {
+            job.cancel(true);
+            pollingJob = null;
         }
         if (client != null) {
             client.disconnect();
