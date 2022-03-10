@@ -8,7 +8,15 @@ If you are not familiar with adb I suggest you to search "How to enable adb over
 
 ## Supported Things
 
-This binding was tested on the Fire TV Stick (android version 7.1.2, volume control not working) and Nexus5x (android version 8.1.0, everything works nice), please update this document if you tested it with other android versions to reflect the compatibility of the binding. 
+This binding was tested on :
+
+| Device             | Android version | Comments                   |
+|--------------------|-----------------|----------------------------|
+| Fire TV Stick      | 7.1.2           | Volume control not working |
+| Nexus5x            | 8.1.0           | Everything works nice      |
+| Freebox Pop Player | 9               | Everything works nice      |
+
+Please update this document if you tested it with other android versions to reflect the compatibility of the binding. 
 
 ## Discovery
 
