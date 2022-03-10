@@ -175,17 +175,18 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                         logger.warn("Unable to get source input stream");
                     }
                 }
+                this.pipeWriteTask = null;
             });
         }
     }
 
     private synchronized void unregisterPipe(PipedOutputStream pipeOutput) {
         this.pipeOutputs.remove(pipeOutput);
-        stopPipeWriteTask();
         try {
             Thread.sleep(0);
         } catch (InterruptedException ignored) {
         }
+        stopPipeWriteTask();
         try {
             pipeOutput.close();
         } catch (IOException ignored) {
