@@ -14,6 +14,7 @@ package org.openhab.binding.pulseaudio.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.Socket;
@@ -153,6 +154,10 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                                         output.flush();
                                     }
                                 } catch (IOException e) {
+                                    if (e instanceof InterruptedIOException && pipeOutputs.isEmpty()) {
+                                        // task has been ended while writing
+                                        return;
+                                    }
                                     logger.warn("IOException while writing to from pulse source pipe: {}",
                                             getExceptionMessage(e));
                                 } catch (RuntimeException e) {
