@@ -50,6 +50,9 @@ public class SomfyTahomaBindingConstants {
     // Uno Roller Shutter
     public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER_UNO = new ThingTypeUID(BINDING_ID, "rollershutter_uno");
 
+    // Shutter
+    public static final ThingTypeUID THING_TYPE_SHUTTER = new ThingTypeUID(BINDING_ID, "shutter");
+
     // Screen
     public static final ThingTypeUID THING_TYPE_SCREEN = new ThingTypeUID(BINDING_ID, "screen");
 
@@ -182,7 +185,7 @@ public class SomfyTahomaBindingConstants {
     public static final String STATUS = "status";
     public static final String SCENARIOS = "scenarios";
 
-    // Roller shutter, Awning, Screen, Blind, Garage door, Window, Curtain
+    // Roller shutter, Shutter, Awning, Screen, Blind, Garage door, Window, Curtain
     public static final String CONTROL = "control";
 
     // Adjustable slats roller shutter
@@ -445,6 +448,7 @@ public class SomfyTahomaBindingConstants {
 
     // supported uiClasses
     public static final String CLASS_ROLLER_SHUTTER = "RollerShutter";
+    public static final String CLASS_SHUTTER = "Shutter";
     public static final String CLASS_SCREEN = "Screen";
     public static final String CLASS_VENETIAN_BLIND = "VenetianBlind";
     public static final String CLASS_EXTERIOR_SCREEN = "ExteriorScreen";
@@ -501,7 +505,7 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_WATERSENSOR, THING_TYPE_HUMIDITYSENSOR, THING_TYPE_MYFOX_ALARM, THING_TYPE_THERMOSTAT,
             THING_TYPE_DIMMER_LIGHT, THING_TYPE_EXTERIOR_HEATING_SYSTEM, THING_TYPE_VALVE_HEATING_SYSTEM,
             THING_TYPE_BIOCLIMATIC_PERGOLA, THING_TYPE_WATERHEATINGSYSTEM, THING_TYPE_HITACHI_ATWHZ,
-            THING_TYPE_HITACHI_DHW, THING_TYPE_HITACHI_ATWMC, THING_TYPE_RAINSENSOR));
+            THING_TYPE_HITACHI_DHW, THING_TYPE_HITACHI_ATWMC, THING_TYPE_RAINSENSOR, THING_TYPE_SHUTTER));
 
     // somfy gateways
     public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {
