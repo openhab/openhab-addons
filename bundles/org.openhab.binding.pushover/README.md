@@ -11,7 +11,7 @@ There is only one Thing available - the `pushover-account`.
 You are able to create multiple instances of this Thing to broadcast to different users, groups or devices.
 
 openHAB is listed as a *featured application* on the [Pushover homepage](https://pushover.net/apps).
-It provides a clone function to directly add a *prefilled* application to your pushover account and retrieve an api key.
+It provides a clone function to directly add a *prefilled* application to your Pushover account and retrieve an API key.
 You can reach it via [https://pushover.net/apps/clone/openHAB](https://pushover.net/apps/clone/openHAB)
 
 ## Thing Configuration
