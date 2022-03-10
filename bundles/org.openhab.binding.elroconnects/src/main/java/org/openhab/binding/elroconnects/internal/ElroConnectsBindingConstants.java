@@ -98,6 +98,8 @@ public class ElroConnectsBindingConstants {
 
     public static final int ELRO_DEVICE_JOIN = 2;
     public static final int ELRO_DEVICE_CANCEL_JOIN = 7;
+    public static final int ELRO_DEVICE_REPLACE = 103;
+    public static final int ELRO_DEVICE_REMOVE = 104;
     public static final int ELRO_DEVICE_RENAME = 105;
 
     public static final int ELRO_SELECT_SCENE = 106;
@@ -135,6 +137,15 @@ public class ElroConnectsBindingConstants {
             Map.entry(ElroDeviceType.WT_ALARM, THING_TYPE_WATERALARM),
             Map.entry(ElroDeviceType.TH_SENSOR, THING_TYPE_THSENSOR),
             Map.entry(ElroDeviceType.POWERSOCKET, THING_TYPE_POWERSOCKET));
+
+    public static final Map<ElroDeviceType, String> TYPE_NAMES = Map.ofEntries(
+            Map.entry(ElroDeviceType.ENTRY_SENSOR, TYPE_ENTRYSENSOR), Map.entry(ElroDeviceType.CO_ALARM, TYPE_COALARM),
+            Map.entry(ElroDeviceType.CXSM_ALARM, TYPE_SMOKEALARM),
+            Map.entry(ElroDeviceType.MOTION_SENSOR, TYPE_MOTIONSENSOR),
+            Map.entry(ElroDeviceType.SM_ALARM, TYPE_SMOKEALARM),
+            Map.entry(ElroDeviceType.THERMAL_ALARM, TYPE_HEATALARM),
+            Map.entry(ElroDeviceType.WT_ALARM, TYPE_WATERALARM), Map.entry(ElroDeviceType.TH_SENSOR, TYPE_THSENSOR),
+            Map.entry(ElroDeviceType.POWERSOCKET, TYPE_POWERSOCKET));
 
     public static final Set<String> T_ENTRY_SENSOR = Set.of("0101", "1101", "2101");
     public static final Set<String> T_POWERSOCKET = Set.of("0200", "1200", "2200");

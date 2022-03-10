@@ -7,7 +7,8 @@ The devices communicate with the hub using 868MHz RF.
 The binding only communicates with the ELRO Connects system and K1 Connector using UDP in the local network.
 
 The binding exposes the devices' status and controls to openHAB.
-The K1 connector itself allows setting up scenes through a mobile application.
+Console commands support adding and configuring devices on the hub.
+The K1 connector allows setting up scenes through a mobile application.
 The binding supports selecting a specific scene.
 
 Many of the sensor devices are battery powered.
@@ -68,9 +69,7 @@ The `connector` bridge thing has only one channel:
 | Channel ID         | Item Type      | Access Mode | Advanced | Description                                        |
 |--------------------|----------------|:-----------:|:--------:|----------------------------------------------------|
 | `scene`            | String         | RW          |         | current scene                                      |
-| `joindevice`      | Switch         | RW          |    Y    | put the ELRO K1 hub in device join mode: 3 short presses on the physical device button will then link the
-            device to the hub and make it available for configuration in openHAB. Device join mode will automatically time out
-            after the refresh interval |
+| `joindevice`      | Switch         | RW          |    Y    | put the ELRO K1 hub in device join mode: 3 short presses on the physical device button will then link the device to the hub and make it available for configuration in openHAB. Device join mode will automatically time out after the refresh interval |
 
 The `scene` channel has a dynamic state options list with all possible scene choices available in the hub.
 
@@ -78,7 +77,7 @@ The `connector` also has an `alarm` trigger channel that will get triggered when
 This will also trigger if an alarm on a device goes off and the thing corresponding to the device is not configured in openHAB.
 The payload for the trigger channel is the `deviceId` for the device triggering the alarm.
 
-## Smoke, carbon monoxide, heat and water alarms
+### Smoke, carbon monoxide, heat and water alarms
 
 All these things have the same channels:
 
@@ -93,7 +92,7 @@ All these things have the same channels:
 Each also has a trigger channel, resp. `smokeAlarm`, `coAlarm`, `heatAlarm` and `waterAlarm`.
 The payload for these trigger channels is empty.
 
-## Door/window contact
+### Door/window contact
 
 The `entrysensor` thing has the following channels:
 
@@ -105,7 +104,7 @@ The `entrysensor` thing has the following channels:
 
 The `entrysensor` thing also has a trigger channel, `entryAlarm`.
 
-## Motion sensor
+### Motion sensor
 
 The `motionsensor` thing has the following channels:
 
@@ -117,7 +116,7 @@ The `motionsensor` thing has the following channels:
 
 The `motionsensor` thing also has a trigger channel, `motionAlarm`.
 
-## Temperature and humidity monitor
+### Temperature and humidity monitor
 
 The `temperaturesensor` thing has the following channels:
 
@@ -128,7 +127,7 @@ The `temperaturesensor` thing has the following channels:
 | `battery`          | Number               | R           | battery level in %                                 |
 | `lowBattery`       | Switch               | R           | on for low battery (below 15%)                     |
 
-## Plug-in switch
+### Plug-in switch
 
 The `powersocket` thing has only one channel:
 
@@ -136,6 +135,11 @@ The `powersocket` thing has only one channel:
 |--------------------|----------------------|:-----------:|----------------------------------------------------|
 | `powerState`       | Switch               | RW          | power on/off                                       |
 
+## Console Commands
+
+A number of console commands allow management of the Elro Connects K1 hub and devices.
+This makes it possible to add new devices to the hub, remove, rename or replace devices, without a need to use the Elro Connects mobile application.
+The full syntax and help text is available in the console using the `elroconnects` command.
 
 ## Full Example
 

@@ -34,12 +34,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.ElroDeviceType;
 import org.openhab.binding.elroconnects.internal.ElroConnectsDynamicStateDescriptionProvider;
 import org.openhab.binding.elroconnects.internal.ElroConnectsMessage;
+import org.openhab.binding.elroconnects.internal.console.ElroConnectsCommandExtension;
 import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDevice;
 import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDeviceCxsmAlarm;
 import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDeviceEntrySensor;
@@ -50,6 +52,7 @@ import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDeviceTempe
 import org.openhab.binding.elroconnects.internal.discovery.ElroConnectsDiscoveryService;
 import org.openhab.binding.elroconnects.internal.util.ElroConnectsUtil;
 import org.openhab.core.common.NamedThreadFactory;
+import org.openhab.core.io.console.Console;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.net.NetworkAddressService;
@@ -59,6 +62,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -158,11 +162,10 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         deviceConfigDuration = config.deviceConfigDuration;
 
         if (connectorId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device ID not set");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.no-device-id");
             return;
         } else if (!CONNECTOR_ID_PATTERN.matcher(connectorId).matches()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Device ID not of format ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.invalid-device-id");
             return;
         }
 
@@ -195,13 +198,13 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             addr = getAddr(addr == null);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error trying to find IP address for connector ID " + connectorId + ".");
+                    "@text/offline.find-ip-fail" + ": " + connectorId);
             stopCommunication();
             return;
         }
         if (addr == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error trying to find IP address for connector ID " + connectorId + ".");
+                    "@text/offline.find-ip-fail" + ": " + connectorId);
             stopCommunication();
             return;
         }
@@ -209,7 +212,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         String ctrlKey = this.ctrlKey;
         if (ctrlKey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication data error while starting communication.");
+                    "@text/offline.communication-data-error");
             stopCommunication();
             return;
         }
@@ -220,7 +223,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             this.socket = socket;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Socket error while starting communication: " + e.getMessage());
+                    "@text/offline.communication-error" + ": " + e.getMessage());
             stopCommunication();
             return;
         }
@@ -247,7 +250,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
             updateState(SCENE, new StringType(String.valueOf(currentScene)));
         } catch (IOException e) {
-            restartCommunication("Error in communication getting initial data: " + e.getMessage());
+            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
             return;
         }
 
@@ -287,6 +290,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             awaitResponse(true);
             send(socket, queryString, false);
         } else {
+            restartCommunication("@text/offline.no-socket");
             restartCommunication("Error in communication, no socket to send keep alive");
         }
     }
@@ -366,10 +370,10 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                     processMessage(socket, response);
                 }
             } catch (IOException e) {
-                restartCommunication("Communication error in listener: " + e.getMessage());
+                restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
             }
         } else {
-            restartCommunication("Error in communication, no socket to start listener");
+            restartCommunication("@text/offline.no-socket");
         }
     }
 
@@ -384,7 +388,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 syncScenes();
                 getCurrentScene();
             } catch (IOException e) {
-                restartCommunication("Error in communication refreshing device status: " + e.getMessage());
+                restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
             }
         }, refreshInterval, refreshInterval, TimeUnit.SECONDS);
     }
@@ -634,9 +638,9 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 : addr;
         if (address == null) {
             if (broadcast) {
-                restartCommunication("No broadcast address, check network configuration");
+                restartCommunication("@text/offline.no-broadcast-address");
             } else {
-                restartCommunication("Failed sending, hub address was not set");
+                restartCommunication("@text/offline.no-hub-address");
             }
             return;
         }
@@ -716,6 +720,36 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         logger.debug("Cancel hub in join device mode");
         ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
                 ELRO_DEVICE_CANCEL_JOIN);
+        sendElroMessage(elroMessage, false);
+    }
+
+    private void removeDevice(int deviceId) throws IOException {
+        if (devices.remove(deviceId) == null) {
+            logger.debug("Device {} not known, cannot remove", deviceId);
+            return;
+        }
+        ThingHandler handler = getDeviceHandler(deviceId);
+        if (handler != null) {
+            handler.dispose();
+        }
+        String connectorId = this.connectorId;
+        String ctrlKey = this.ctrlKey;
+        logger.debug("Remove device {} from hub", deviceId);
+        ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
+                ELRO_DEVICE_REMOVE).withDeviceId(ElroConnectsUtil.encode(deviceId));
+        sendElroMessage(elroMessage, false);
+    }
+
+    private void replaceDevice(int deviceId) throws IOException {
+        if (getDevice(deviceId) == null) {
+            logger.debug("Device {} not known, cannot replace", deviceId);
+            return;
+        }
+        String connectorId = this.connectorId;
+        String ctrlKey = this.ctrlKey;
+        logger.debug("Replace device {} in hub", deviceId);
+        ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
+                ELRO_DEVICE_REPLACE).withDeviceId(ElroConnectsUtil.encode(deviceId));
         sendElroMessage(elroMessage, false);
     }
 
@@ -822,24 +856,40 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 if (OnOffType.ON.equals(command)) {
                     joinDevice();
                     updateState(JOIN_DEVICE, OnOffType.ON);
-                    scheduleCancelJoinDevice(channelUID);
+                    scheduleCancelJoinDevice();
                 } else {
                     cancelJoinDevice();
                     updateState(JOIN_DEVICE, OnOffType.OFF);
                 }
             }
         } catch (IOException e) {
-            restartCommunication("Error in communication when handling command: " + e.getMessage());
+            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
         }
     }
 
-    private void scheduleCancelJoinDevice(ChannelUID channelUID) {
+    private void scheduleCancelJoinDevice() {
+        scheduleCancelJoinDevice(null, null);
+    }
+
+    private void scheduleCancelJoinDevice(@Nullable ElroConnectsCommandExtension commandExtension,
+            @Nullable Console console) {
         ScheduledFuture<?> future = cancelJoinDeviceFuture;
         if (future != null) {
             future.cancel(false);
         }
-        cancelJoinDeviceFuture = scheduler.schedule(() -> handleCommand(channelUID, OnOffType.OFF),
-                deviceConfigDuration, TimeUnit.SECONDS);
+        cancelJoinDeviceFuture = scheduler.schedule(() -> {
+            try {
+                cancelJoinDevice();
+                getDeviceStatuses();
+                getDeviceNames();
+                if ((commandExtension != null) && (console != null)) {
+                    commandExtension.joinDeviceCancelled(console);
+                }
+            } catch (IOException e) {
+                restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+            }
+            updateState(JOIN_DEVICE, OnOffType.OFF);
+        }, deviceConfigDuration, TimeUnit.SECONDS);
     }
 
     /**
@@ -909,6 +959,10 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         return deviceHandlers.get(deviceId);
     }
 
+    public String getConnectorId() {
+        return connectorId;
+    }
+
     public @Nullable ElroConnectsDevice getDevice(int deviceId) {
         return devices.get(deviceId);
     }
@@ -926,5 +980,75 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(ElroConnectsDiscoveryService.class);
+    }
+
+    public Map<Integer, String> listDevicesFromConsole() {
+        return devices.entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getDeviceName()));
+    }
+
+    public void refreshFromConsole() {
+        try {
+            keepAlive();
+            getDeviceStatuses();
+            getDeviceNames();
+        } catch (IOException e) {
+            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+        }
+    }
+
+    public void joinDeviceFromConsole(ElroConnectsCommandExtension commandExtension, Console console) {
+        try {
+            joinDevice();
+            updateState(JOIN_DEVICE, OnOffType.ON);
+            scheduleCancelJoinDevice(commandExtension, console);
+        } catch (IOException e) {
+            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+        }
+    }
+
+    public void cancelJoinDeviceFromConsole() {
+        try {
+            cancelJoinDevice();
+            updateState(JOIN_DEVICE, OnOffType.OFF);
+        } catch (IOException e) {
+            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+        }
+    }
+
+    public boolean renameDeviceFromConsole(int deviceId, String deviceName) {
+        if (getDevice(deviceId) == null) {
+            return false;
+        }
+        try {
+            renameDevice(deviceId, deviceName);
+        } catch (IOException e) {
+            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+        }
+        return true;
+    }
+
+    public boolean removeDeviceFromConsole(int deviceId) {
+        if (getDevice(deviceId) == null) {
+            return false;
+        }
+        try {
+            removeDevice(deviceId);
+        } catch (IOException e) {
+            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+        }
+        return true;
+    }
+
+    public boolean replaceDeviceFromConsole(int deviceId) {
+        if (getDevice(deviceId) == null) {
+            return false;
+        }
+        try {
+            replaceDevice(deviceId);
+        } catch (IOException e) {
+            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+        }
+        return true;
     }
 }

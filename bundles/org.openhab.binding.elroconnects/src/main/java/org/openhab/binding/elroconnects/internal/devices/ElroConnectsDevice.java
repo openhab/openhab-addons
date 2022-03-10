@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.elroconnects.internal.devices;
 
+import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.*;
+
 import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.ElroDeviceStatus;
+import org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.ElroDeviceType;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsBridgeHandler;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsDeviceHandler;
 import org.openhab.binding.elroconnects.internal.util.ElroConnectsUtil;
@@ -98,7 +101,16 @@ public abstract class ElroConnectsDevice {
     }
 
     public String getDeviceName() {
-        return deviceName;
+        String typeName = null;
+        ElroDeviceType type = TYPE_MAP.get(getDeviceType());
+        if (type != null) {
+            typeName = TYPE_NAMES.get(type);
+        }
+        if (typeName == null) {
+            typeName = getDeviceType();
+        }
+
+        return deviceName.isEmpty() ? typeName + "-" + String.valueOf(deviceId) : deviceName;
     }
 
     public String getDeviceType() {
