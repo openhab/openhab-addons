@@ -1030,6 +1030,28 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
+    public void testOnDeviceStateChanged_Event_RollerShutter_PushButtonSensor() {
+        DeviceDTO device = createDevice();
+        addCapabilityToDevice(CapabilityDTO.TYPE_ROLLERSHUTTERACTUATOR, null, device);
+        addCapabilityToDevice(CapabilityDTO.TYPE_PUSHBUTTONSENSOR, null, device);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+
+        EventDTO event = createCapabilityEvent(c -> {
+            c.setKeyPressCounter(10);
+            c.setKeyPressButtonIndex(0);
+            c.setKeyPressType("ShortPress");
+        });
+        event.setType("ButtonPressed");
+        event.setNamespace("CosipDevices.RWE");
+
+        deviceHandler.onDeviceStateChanged(device, event);
+        assertTrue(isChannelUpdated("button1_count", new DecimalType(10)));
+        assertTrue(isChannelTriggered("button1", CommonTriggerEvents.SHORT_PRESSED));
+        assertFalse(isChannelTriggered("button1", CommonTriggerEvents.LONG_PRESSED));
+    }
+
+    @Test
     public void testOnDeviceStateChanged_Event_TemperatureSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_TEMPERATURESENSOR, null, device);

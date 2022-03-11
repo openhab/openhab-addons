@@ -88,10 +88,11 @@ public class DeviceStructureManager {
      *
      * @param deviceId device id
      */
-    public void refreshDevice(String deviceId) throws IOException, ApiException, AuthenticationException {
+    public DeviceDTO refreshDevice(String deviceId) throws IOException, ApiException, AuthenticationException {
         logger.trace("Refreshing Device with id '{}'", deviceId);
         DeviceDTO d = deviceManager.getFullDeviceById(deviceId);
         handleRefreshedDevice(d);
+        return d;
     }
 
     /**

@@ -24,8 +24,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -100,7 +99,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private final Logger logger = LoggerFactory.getLogger(LivisiBridgeHandler.class);
     private final Gson gson = new Gson();
     private final Object lock = new Object();
-    private final Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
+    private final Map<String, DeviceStatusListener> deviceStatusListeners;
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
 
@@ -123,6 +122,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         super(bridge);
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
+        deviceStatusListeners = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -154,8 +154,6 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         this.client = clientNonNullable;
         deviceStructMan = new DeviceStructureManager(createFullDeviceManager(clientNonNullable));
 
-        registerDeviceStatusListener(LivisiBridgeHandler.this);
-
         oAuthServiceNonNullable.addAccessTokenRefreshListener(this);
         try {
             AccessTokenResponse tokenResponse = clientNonNullable.login();
@@ -184,6 +182,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
                 setBridgeProperties(bridgeDevice);
                 bridgeId = bridgeDevice.getId();
+                registerDeviceStatusListener(bridgeId, this);
                 onDeviceStateChanged(bridgeDevice); // initialize channels
 
                 startWebSocket(bridgeDevice);
@@ -316,7 +315,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     @Override
     public void dispose() {
         logger.debug("Disposing LIVISI SmartHome bridge handler '{}'", getThing().getUID().getId());
-        unregisterDeviceStatusListener(this);
+        unregisterDeviceStatusListener(bridgeId);
         cancelReInitJob();
         stopWebSocket();
         client = null;
@@ -340,17 +339,17 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      *
      * @param deviceStatusListener listener
      */
-    public void registerDeviceStatusListener(final DeviceStatusListener deviceStatusListener) {
-        deviceStatusListeners.add(deviceStatusListener);
+    public void registerDeviceStatusListener(final String deviceId, final DeviceStatusListener deviceStatusListener) {
+        deviceStatusListeners.putIfAbsent(deviceId, deviceStatusListener);
     }
 
     /**
      * Unregisters a {@link DeviceStatusListener}.
      *
-     * @param deviceStatusListener listener
+     * @param deviceId id of the device to which the listener is registered
      */
-    public void unregisterDeviceStatusListener(final DeviceStatusListener deviceStatusListener) {
-        deviceStatusListeners.remove(deviceStatusListener);
+    public void unregisterDeviceStatusListener(final String deviceId) {
+        deviceStatusListeners.remove(deviceId);
     }
 
     /**
@@ -399,36 +398,28 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     @Override
     public void onDeviceStateChanged(final DeviceDTO device) {
         synchronized (this.lock) {
-            if (bridgeId != null && bridgeId.equals(device.getId())) {
-                logger.debug("onDeviceStateChanged called with device {}/{}", device.getConfig().getName(),
-                        device.getId());
-
-                // DEVICE STATES
-                if (device.hasDeviceState()) {
-                    final Double cpuUsage = device.getDeviceState().getState().getCpuUsage().getValue();
-                    if (cpuUsage != null) {
-                        logger.debug("-> CPU usage state: {}", cpuUsage);
-                        updateState(CHANNEL_CPU, new DecimalType(cpuUsage));
-                    }
-                    final Double diskUsage = device.getDeviceState().getState().getDiskUsage().getValue();
-                    if (diskUsage != null) {
-                        logger.debug("-> Disk usage state: {}", diskUsage);
-                        updateState(CHANNEL_DISK, new DecimalType(diskUsage));
-                    }
-                    final Double memoryUsage = device.getDeviceState().getState().getMemoryUsage().getValue();
-                    if (memoryUsage != null) {
-                        logger.debug("-> Memory usage state: {}", memoryUsage);
-                        updateState(CHANNEL_MEMORY, new DecimalType(memoryUsage));
-                    }
-                    String operationStatus = device.getDeviceState().getState().getOperationStatus().getValue();
-                    if (operationStatus != null) {
-                        logger.debug("-> Operation status: {}", operationStatus);
-                        updateState(CHANNEL_OPERATION_STATUS, new StringType(operationStatus.toUpperCase()));
-                    }
+            // DEVICE STATES
+            if (device.hasDeviceState()) {
+                final Double cpuUsage = device.getDeviceState().getState().getCpuUsage().getValue();
+                if (cpuUsage != null) {
+                    logger.debug("-> CPU usage state: {}", cpuUsage);
+                    updateState(CHANNEL_CPU, new DecimalType(cpuUsage));
                 }
-            } else {
-                logger.trace("DeviceId {} not relevant for this handler (responsible for id {})", device.getId(),
-                        bridgeId);
+                final Double diskUsage = device.getDeviceState().getState().getDiskUsage().getValue();
+                if (diskUsage != null) {
+                    logger.debug("-> Disk usage state: {}", diskUsage);
+                    updateState(CHANNEL_DISK, new DecimalType(diskUsage));
+                }
+                final Double memoryUsage = device.getDeviceState().getState().getMemoryUsage().getValue();
+                if (memoryUsage != null) {
+                    logger.debug("-> Memory usage state: {}", memoryUsage);
+                    updateState(CHANNEL_MEMORY, new DecimalType(memoryUsage));
+                }
+                String operationStatus = device.getDeviceState().getState().getOperationStatus().getValue();
+                if (operationStatus != null) {
+                    logger.debug("-> Operation status: {}", operationStatus);
+                    updateState(CHANNEL_OPERATION_STATUS, new StringType(operationStatus.toUpperCase()));
+                }
             }
         }
     }
@@ -436,21 +427,14 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     @Override
     public void onDeviceStateChanged(final DeviceDTO device, final EventDTO event) {
         synchronized (this.lock) {
-            if (bridgeId != null && bridgeId.equals(device.getId())) {
-                logger.trace("DeviceId {} relevant for this handler.", device.getId());
-
-                if (event.isLinkedtoDevice() && DEVICE_SHCA.equals(device.getType())) {
-                    device.getDeviceState().getState().getOperationStatus()
-                            .setValue(event.getProperties().getOperationStatus());
-                    device.getDeviceState().getState().getCpuUsage().setValue(event.getProperties().getCpuUsage());
-                    device.getDeviceState().getState().getDiskUsage().setValue(event.getProperties().getDiskUsage());
-                    device.getDeviceState().getState().getMemoryUsage()
-                            .setValue(event.getProperties().getMemoryUsage());
-                    onDeviceStateChanged(device);
-                }
-            } else {
-                logger.trace("DeviceId {} not relevant for this handler (responsible for id {})", device.getId(),
-                        bridgeId);
+            if (event.isLinkedtoDevice() && DEVICE_SHCA.equals(device.getType())) {
+                device.getDeviceState().getState().getOperationStatus()
+                        .setValue(event.getProperties().getOperationStatus());
+                device.getDeviceState().getState().getCpuUsage().setValue(event.getProperties().getCpuUsage());
+                device.getDeviceState().getState().getDiskUsage().setValue(event.getProperties().getDiskUsage());
+                device.getDeviceState().getState().getMemoryUsage()
+                        .setValue(event.getProperties().getMemoryUsage());
+                onDeviceStateChanged(device);
             }
         }
     }
@@ -522,13 +506,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             if (event.isLinkedtoCapability()) {
                 logger.trace("Event is linked to capability");
                 final Optional<DeviceDTO> device = deviceStructMan.getDeviceByCapabilityId(event.getSourceId());
-                if (device.isPresent()) {
-                    for (final DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
-                        deviceStatusListener.onDeviceStateChanged(device.get(), event);
-                    }
-                } else {
-                    logger.debug("Unknown/unsupported device for capability {}.", event.getSource());
-                }
+                notifyDeviceStatusListeners(device, event);
 
                 // DEVICE
             } else if (event.isLinkedtoDevice()) {
@@ -539,13 +517,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                     deviceStructMan.refreshDevice(event.getSourceId());
                 }
                 final Optional<DeviceDTO> device = deviceStructMan.getDeviceById(event.getSourceId());
-                if (device.isPresent()) {
-                    for (final DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
-                        deviceStatusListener.onDeviceStateChanged(device.get(), event);
-                    }
-                } else {
-                    logger.debug("Unknown/unsupported device {}.", event.getSourceId());
-                }
+                notifyDeviceStatusListeners(device, event);
 
             } else {
                 logger.debug("link type {} not supported (yet?)", event.getSourceLinkType());
@@ -594,13 +566,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 for (final String link : message.getDevices()) {
                     deviceStructMan.refreshDevice(LinkDTO.getId(link));
                     final Optional<DeviceDTO> device = deviceStructMan.getDeviceById(LinkDTO.getId(link));
-                    if (device.isPresent()) {
-                        for (final DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
-                            deviceStatusListener.onDeviceStateChanged(device.get());
-                        }
-                    } else {
-                        logger.debug("Unknown/unsupported device {}.", event.getSourceId());
-                    }
+                    notifyDeviceStatusListener(event.getSourceId(), device);
                 }
             } else {
                 logger.debug("Message received event not yet implemented for Messagetype {}.", message.getType());
@@ -625,15 +591,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             Optional<DeviceDTO> device = deviceStructMan.getDeviceWithMessageId(messageId);
             if (device.isPresent()) {
                 String id = device.get().getId();
-                deviceStructMan.refreshDevice(id);
-                device = deviceStructMan.getDeviceById(id);
-                if (device.isPresent()) {
-                    for (final DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
-                        deviceStatusListener.onDeviceStateChanged(device.get());
-                    }
-                } else {
-                    logger.debug("No device with id {} found after refresh.", id);
-                }
+                DeviceDTO deviceRefreshed = deviceStructMan.refreshDevice(id);
+                notifyDeviceStatusListener(event.getSourceId(), Optional.of(deviceRefreshed));
             } else {
                 logger.debug("No device found with message id {}.", messageId);
             }
@@ -648,6 +607,32 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             logger.info("Configuration changed from version {} to {}. Restarting LIVISI SmartHome binding...",
                     client.getConfigVersion(), event.getConfigurationVersion());
             scheduleRestartClient(false);
+        }
+    }
+
+    private void notifyDeviceStatusListener(String deviceId, Optional<DeviceDTO> device) {
+        if (device.isPresent()) {
+            DeviceStatusListener deviceStatusListener = deviceStatusListeners.get(device.get().getId());
+            if(deviceStatusListener != null) {
+                deviceStatusListener.onDeviceStateChanged(device.get());
+            } else {
+                logger.debug("No device status listener registered for device {}.", deviceId);
+            }
+        } else {
+            logger.debug("Unknown/unsupported device {}.", deviceId);
+        }
+    }
+
+    private void notifyDeviceStatusListeners(Optional<DeviceDTO> device, EventDTO event) {
+        if (device.isPresent()) {
+            DeviceStatusListener deviceStatusListener = deviceStatusListeners.get(device.get().getId());
+            if(deviceStatusListener != null) {
+                deviceStatusListener.onDeviceStateChanged(device.get(), event);
+            } else {
+                logger.debug("No device status listener registered for device / capability {}.", event.getSourceId());
+            }
+        } else {
+            logger.debug("Unknown/unsupported device / capability {}.", event.getSourceId());
         }
     }
 

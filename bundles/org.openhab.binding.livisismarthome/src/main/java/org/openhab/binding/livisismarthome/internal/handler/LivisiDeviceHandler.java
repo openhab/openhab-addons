@@ -211,7 +211,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     @Override
     public void dispose() {
         if (bridgeHandler != null) {
-            bridgeHandler.unregisterDeviceStatusListener(this);
+            bridgeHandler.unregisterDeviceStatusListener(deviceId);
         }
     }
 
@@ -231,8 +231,9 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         final String configDeviceId = (String) getConfig().get(PROPERTY_ID);
         if (configDeviceId != null) {
             deviceId = configDeviceId;
-            // note: this call implicitly registers our handler as a listener on the bridge
-            if (getBridgeHandler().isPresent()) {
+
+            Optional<LivisiBridgeHandler> bridgeHandler = registerAtBridgeHandler();
+            if (bridgeHandler.isPresent()) {
                 if (ThingStatus.ONLINE == bridgeStatus) {
                     initializeProperties();
 
@@ -329,56 +330,45 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     @Override
     public void onDeviceStateChanged(final DeviceDTO device) {
         synchronized (this.lock) {
-            if (deviceId.equals(device.getId())) {
-                logger.debug("onDeviceStateChanged called with device {}/{}", device.getConfig().getName(),
-                        device.getId());
-
-                updateChannels(device);
-            } else {
-                logger.trace("DeviceId {} not relevant for this handler (responsible for id {})", device.getId(),
-                        deviceId);
-            }
+            updateChannels(device);
         }
     }
 
     @Override
     public void onDeviceStateChanged(final DeviceDTO device, final EventDTO event) {
         synchronized (this.lock) {
-            if (deviceId.equals(device.getId())) {
-                logger.trace("DeviceId {} relevant for this handler.", device.getId());
+            if (event.isLinkedtoCapability()) {
+                final String linkedCapabilityId = event.getSourceId();
 
-                if (event.isLinkedtoCapability()) {
-                    final String linkedCapabilityId = event.getSourceId();
+                CapabilityDTO capability = device.getCapabilityMap().get(linkedCapabilityId);
+                logger.trace("Loaded Capability {}, {} with id {}, device {} from device id {}",
+                        capability.getType(), capability.getName(), capability.getId(), capability.getDeviceLink(),
+                        device.getId());
 
-                    CapabilityDTO capability = device.getCapabilityMap().get(linkedCapabilityId);
-                    logger.trace("Loaded Capability {}, {} with id {}, device {} from device id {}",
-                            capability.getType(), capability.getName(), capability.getId(), capability.getDeviceLink(),
-                            device.getId());
-
-                    if (capability.hasState()) {
-                        boolean deviceChanged = updateDevice(event, capability);
-                        if (deviceChanged) {
-                            updateChannels(device);
-                        }
-                    } else {
-                        logger.debug("Capability {} has no state (yet?) - refreshing device.", capability.getName());
-
-                        Optional<DeviceDTO> deviceOptional = refreshDevice(linkedCapabilityId);
-                        deviceOptional.ifPresent(this::updateChannels);
-                    }
-                } else if (event.isLinkedtoDevice()) {
-                    if (device.hasDeviceState()) {
+                if (capability.hasState()) {
+                    boolean deviceChanged = updateDevice(event, capability);
+                    if (deviceChanged) {
                         updateChannels(device);
-                    } else {
-                        logger.debug("Device {}/{} has no state.", device.getConfig().getName(), device.getId());
                     }
+                } else {
+                    logger.debug("Capability {} has no state (yet?) - refreshing device.", capability.getName());
+
+                    Optional<DeviceDTO> deviceOptional = refreshDevice(linkedCapabilityId);
+                    deviceOptional.ifPresent(this::updateChannels);
+                }
+            } else if (event.isLinkedtoDevice()) {
+                if (device.hasDeviceState()) {
+                    updateChannels(device);
+                } else {
+                    logger.debug("Device {}/{} has no state.", device.getConfig().getName(), device.getId());
                 }
             }
         }
     }
 
     private Optional<DeviceDTO> refreshDevice(String linkedCapabilityId) {
-        Optional<DeviceDTO> deviceOptional = getBridgeHandler().flatMap(bh -> bh.refreshDevice(deviceId));
+        Optional<LivisiBridgeHandler> bridgeHandler = registerAtBridgeHandler();
+        Optional<DeviceDTO> deviceOptional = bridgeHandler.flatMap(bh -> bh.refreshDevice(deviceId));
         if (deviceOptional.isPresent()) {
             DeviceDTO device = deviceOptional.get();
             CapabilityDTO capability = device.getCapabilityMap().get(linkedCapabilityId);
@@ -952,12 +942,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         return getBridgeHandler().flatMap(bridgeHandler -> bridgeHandler.getDeviceById(deviceId));
     }
 
-    /**
-     * Returns the LIVISI bridge handler.
-     *
-     * @return the {@link LivisiBridgeHandler} or null
-     */
-    private Optional<LivisiBridgeHandler> getBridgeHandler() {
+    private Optional<LivisiBridgeHandler> registerAtBridgeHandler() {
         synchronized (this.lock) {
             if (this.bridgeHandler == null) {
                 @Nullable
@@ -969,13 +954,22 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                 final ThingHandler handler = bridge.getHandler();
                 if (handler instanceof LivisiBridgeHandler) {
                     this.bridgeHandler = (LivisiBridgeHandler) handler;
-                    this.bridgeHandler.registerDeviceStatusListener(this);
+                    this.bridgeHandler.registerDeviceStatusListener(deviceId, this);
                 } else {
                     return Optional.empty(); // also called when the handler is NULL
                 }
             }
-            return Optional.ofNullable(this.bridgeHandler);
+            return getBridgeHandler();
         }
+    }
+
+    /**
+     * Returns the LIVISI bridge handler.
+     *
+     * @return the {@link LivisiBridgeHandler} or null
+     */
+    private Optional<LivisiBridgeHandler> getBridgeHandler() {
+        return Optional.ofNullable(this.bridgeHandler);
     }
 
     private @Nullable ThingStatus getBridgeStatus() {
