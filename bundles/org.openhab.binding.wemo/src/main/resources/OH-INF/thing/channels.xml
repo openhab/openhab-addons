@@ -80,6 +80,14 @@
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
+	<channel-type id="currentPowerAccurate" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description>The current power consumption with full precision</description>
+		<category>Energy</category>
+		<state pattern="%.3f %unit%"/>
+	</channel-type>
+
 	<channel-type id="energyToday" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Today</label>

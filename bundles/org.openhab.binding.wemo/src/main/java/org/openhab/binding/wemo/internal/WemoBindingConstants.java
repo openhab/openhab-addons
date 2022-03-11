@@ -57,7 +57,8 @@ public class WemoBindingConstants {
     public static final String CHANNEL_ONTOTAL = "onTotal";
     public static final String CHANNEL_TIMESPAN = "timespan";
     public static final String CHANNEL_AVERAGEPOWER = "averagePower";
-    public static final String CHANNEL_CURRENTPOWER = "currentPower";
+    public static final String CHANNEL_CURRENT_POWER = "currentPower";
+    public static final String CHANNEL_CURRENT_POWER_ACCURATE = "currentPowerAccurate";
     public static final String CHANNEL_ENERGYTODAY = "energyToday";
     public static final String CHANNEL_ENERGYTOTAL = "energyTotal";
     public static final String CHANNEL_STANDBYLIMIT = "standByLimit";

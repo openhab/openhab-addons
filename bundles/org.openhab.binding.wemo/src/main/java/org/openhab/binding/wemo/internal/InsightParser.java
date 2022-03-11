@@ -88,7 +88,7 @@ public class InsightParser {
                     result.put(WemoBindingConstants.CHANNEL_AVERAGEPOWER, getPowerFromWatt(value));
                     break;
                 case INSIGHT_POSITION_CURRENTPOWER:
-                    result.put(WemoBindingConstants.CHANNEL_CURRENTPOWER, getPowerFromMilliWatt(value));
+                    result.put(WemoBindingConstants.CHANNEL_CURRENT_POWER_ACCURATE, getPowerFromMilliWatt(value));
                     break;
                 case INSIGHT_POSITION_ENERGYTODAY:
                     result.put(WemoBindingConstants.CHANNEL_ENERGYTODAY, getEnergy(value));
@@ -137,7 +137,7 @@ public class InsightParser {
     }
 
     private State getPowerFromMilliWatt(String value) {
-        return new QuantityType<>(new BigDecimal(value).divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP),
+        return new QuantityType<>(new BigDecimal(value).divide(new BigDecimal(1000), 3, RoundingMode.HALF_UP),
                 Units.WATT);
     }
 
