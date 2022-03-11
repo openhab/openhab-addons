@@ -136,7 +136,7 @@ public abstract class RotelConnector {
     public static final String KEY_DSP_MODE = "dsp_mode";
     public static final String KEY_DIMMER = "dimmer";
     public static final String KEY_FREQ = "freq";
-    public static final String KEY_BYPASSx = "bypass";
+    public static final String KEY_TCBYPASS = "bypass";
     public static final String KEY_BALANCE = "balance";
     public static final String KEY_SPEAKER = "speaker";
 

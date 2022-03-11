@@ -148,7 +148,7 @@ public class RotelBindingConstants {
     public static final String CHANNEL_ZONE4_SOURCE = "zone4#source";
     public static final String CHANNEL_ZONE4_VOLUME = "zone4#volume";
     public static final String CHANNEL_ZONE4_MUTE = "zone4#mute";
-    public static final String CHANNEL_BYPASSx = "bypassx";
+    public static final String CHANNEL_TCBYPASS = "tcbypass";
     public static final String CHANNEL_BALANCE = "balance";
     public static final String CHANNEL_SPEAKER_A = "speakera";
     public static final String CHANNEL_SPEAKER_B = "speakerb";

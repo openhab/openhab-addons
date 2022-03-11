@@ -126,7 +126,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private String frontPanelLine1 = "";
     private String frontPanelLine2 = "";
     private int brightness;
-    private @Nullable Boolean bypassx;
+    private @Nullable Boolean tcbypass;
     private int balance;
     private int minBalanceLevel;
     private int maxBalanceLevel;
@@ -867,13 +867,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
                         }
                         break;
-                    case CHANNEL_BYPASSx:
+                    case CHANNEL_TCBYPASS:
                         if (!isPowerOn()) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
                         } else {
-                            handleBypassxCmd(connector.getProtocol() == RotelProtocol.HEX, channel, command,
-                                    getBypassxOnCommand(), getBypassxOffCommand(), getBypassxToggleCommand());
+                            handleTcbypassCmd(connector.getProtocol() == RotelProtocol.HEX, channel, command,
+                                    getTcbypassOnCommand(), getTcbypassOffCommand(), getTcbypassToggleCommand());
                         }
                         break;
                     case CHANNEL_BALANCE:
@@ -1051,7 +1051,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     }
 
     /**
-     * Handle a bypassx command
+     * Handle a tcbypass command
      *
      * @param onlyToggle true if only the toggle command must be used
      * @param channel the channel
@@ -1062,7 +1062,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      *
      * @throws RotelException in case of communication error with the device
      */
-    private void handleBypassxCmd(boolean onlyToggle, String channel, Command command, RotelCommand onCmd,
+    private void handleTcbypassCmd(boolean onlyToggle, String channel, Command command, RotelCommand onCmd,
             RotelCommand offCmd, RotelCommand toggleCmd) throws RotelException, InterruptedException {
         if (command instanceof OnOffType) {
             if (onlyToggle) {
@@ -1158,16 +1158,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * @throws InterruptedException in case of interruption during a thread sleep
      */
     private void selectToneControl(int nbSelect) throws RotelException, InterruptedException {
-        switch (connector.getModel().getName()) {
-            case "A14":
-            case "RSX1065":
-                // No tone control select command for this models
-                break;
-            default:
-                if (connector.getProtocol() == RotelProtocol.HEX) {
-                    selectFeature(nbSelect, RotelCommand.RECORD_FONCTION_SELECT, RotelCommand.TONE_CONTROL_SELECT);
-                }
-                break;
+        // No tone control select command for RSX-1065
+        if (connector.getProtocol() == RotelProtocol.HEX && connector.getModel() != RotelModel.RSX1065) {
+            selectFeature(nbSelect, RotelCommand.RECORD_FONCTION_SELECT, RotelCommand.TONE_CONTROL_SELECT);
         }
     }
 
@@ -1541,13 +1534,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 case RotelConnector.KEY_UPDATE_MODE:
                 case RotelConnector.KEY_DISPLAY_UPDATE:
                     break;
-                case RotelConnector.KEY_BYPASSx:
+                case RotelConnector.KEY_TCBYPASS:
                     if (RotelConnector.MSG_VALUE_ON.equalsIgnoreCase(value)) {
-                        bypassx = true;
-                        updateChannelState(CHANNEL_BYPASSx);
+                        tcbypass = true;
+                        updateChannelState(CHANNEL_TCBYPASS);
                     } else if (RotelConnector.MSG_VALUE_OFF.equalsIgnoreCase(value)) {
-                        bypassx = false;
-                        updateChannelState(CHANNEL_BYPASSx);
+                        tcbypass = false;
+                        updateChannelState(CHANNEL_TCBYPASS);
                     } else {
                         throw new RotelException("Invalid value");
                     }
@@ -1636,7 +1629,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         updateChannelState(CHANNEL_TRACK);
         updateChannelState(CHANNEL_FREQUENCY);
         updateChannelState(CHANNEL_BRIGHTNESS);
-        updateChannelState(CHANNEL_BYPASSx);
+        updateChannelState(CHANNEL_TCBYPASS);
         updateChannelState(CHANNEL_BALANCE);
         updateChannelState(CHANNEL_SPEAKER_A);
         updateChannelState(CHANNEL_SPEAKER_B);
@@ -1879,7 +1872,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 Thread.sleep(SLEEP_INTV);
                                 connector.sendCommand(RotelCommand.TREBLE);
                                 Thread.sleep(SLEEP_INTV);
-                                connector.sendCommand(RotelCommand.BYPASSx);
+                                connector.sendCommand(RotelCommand.TCBYPASS);
                                 Thread.sleep(SLEEP_INTV);
                                 connector.sendCommand(RotelCommand.BALANCE);
                                 Thread.sleep(SLEEP_INTV);
@@ -2289,9 +2282,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     state = new PercentType(BigDecimal.valueOf(dimmerPct));
                 }
                 break;
-            case CHANNEL_BYPASSx:
+            case CHANNEL_TCBYPASS:
                 if (isPowerOn()) {
-                    state = isBypassxOn() ? OnOffType.ON : OnOffType.OFF;
+                    state = isTcbypassOn() ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case CHANNEL_BALANCE:
@@ -2396,41 +2389,42 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     }
 
     /**
-     * Inform about bypassx state
+     * Inform about tcbypass state
      *
-     * @return true if bypassx state is known and known as ON
+     * @return true if tcbypass state is known and known as ON
      */
-    private boolean isBypassxOn() {
-        Boolean bypassx = this.bypassx;
-        return bypassx != null && bypassx.booleanValue();
+    private boolean isTcbypassOn() {
+        Boolean tcbypass = this.tcbypass;
+        return tcbypass != null && tcbypass.booleanValue();
     }
 
     /**
-     * Get the command to be used for BYPASSx ON
+     * Get the command to be used for TCBYPASS ON
      *
      * @return the command
      */
-    private RotelCommand getBypassxOnCommand() {
-        return connector.getModel().hasOtherThanPrimaryCommands() ? RotelCommand.BYPASSx_ON : RotelCommand.BYPASSx_ON;
+    private RotelCommand getTcbypassOnCommand() {
+        return connector.getModel().hasOtherThanPrimaryCommands() ? RotelCommand.TCBYPASS_ON : RotelCommand.TCBYPASS_ON;
     }
 
     /**
-     * Get the command to be used for main zone BYPASSx OFF
+     * Get the command to be used for main zone TCBYPASS OFF
      *
      * @return the command
      */
-    private RotelCommand getBypassxOffCommand() {
-        return connector.getModel().hasOtherThanPrimaryCommands() ? RotelCommand.BYPASSx_OFF : RotelCommand.BYPASSx_OFF;
+    private RotelCommand getTcbypassOffCommand() {
+        return connector.getModel().hasOtherThanPrimaryCommands() ? RotelCommand.TCBYPASS_OFF
+                : RotelCommand.TCBYPASS_OFF;
     }
 
     /**
-     * Get the command to be used for main zone BYPASSx TOGGLE
+     * Get the command to be used for main zone TCBYPASS TOGGLE
      *
      * @return the command
      */
-    private RotelCommand getBypassxToggleCommand() {
-        return connector.getModel().hasOtherThanPrimaryCommands() ? RotelCommand.BYPASSx_TOGGLE
-                : RotelCommand.BYPASSx_TOGGLE;
+    private RotelCommand getTcbypassToggleCommand() {
+        return connector.getModel().hasOtherThanPrimaryCommands() ? RotelCommand.TCBYPASS_TOGGLE
+                : RotelCommand.TCBYPASS_TOGGLE;
     }
 
     /**
