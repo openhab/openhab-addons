@@ -100,19 +100,19 @@ public class WemoPowerBank {
     }
 
     public double getCalculatedAverage(double currentValue) {
-        double historyWattSeconds = 0;
-        long historySeconds = 0;
+        double historyWattMillis = 0;
+        long historyMillis = 0;
         for (CacheItem item : slidingCache) {
             Instant end = item.end;
             if (end != null) {
-                long seconds = item.start.until(end, ChronoUnit.SECONDS);
-                historyWattSeconds += item.power * seconds;
-                historySeconds += seconds;
+                long millis = item.start.until(end, ChronoUnit.MILLIS);
+                historyWattMillis += item.power * millis;
+                historyMillis += millis;
             }
         }
         double average;
-        if (historySeconds > 0) {
-            average = historyWattSeconds / historySeconds;
+        if (historyMillis > 0) {
+            average = historyWattMillis / historyMillis;
         } else {
             average = currentValue;
         }
