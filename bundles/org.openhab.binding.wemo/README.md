@@ -41,7 +41,7 @@ The WeMo Insight Switch has some additional parameters for controlling the behav
 This channel reports the current power consumption in Watt. The internal theoretical accuracy is 5 mW, i.e.
 three decimals. These raw values are reported with high frequency, often multiple updates can occur within
 a single second. For example, the sequence of 40.440 W, 40.500 W and 40.485 W would result in the channel
-being updated with the rounded values, respectively 40 W, 41 W and 40 W.
+being updated with values rounded to nearest integer, respectively 40 W, 41 W and 40 W.
 
 When persisting items linked to this channel, this can result in a significant amount of data being stored.
 To mitigate this issue, a sliding window with a moving average calculation has been introduced. This window
