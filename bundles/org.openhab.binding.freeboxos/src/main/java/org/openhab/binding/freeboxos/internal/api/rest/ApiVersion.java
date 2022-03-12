@@ -24,14 +24,14 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class ApiVersion {
-    private String apiBaseUrl = "/api/";
+    private static final String API_BASE_URL = "/api/";
     @SerializedName(value = "api_version", alternate = { "api_ver" })
-    private @NonNullByDefault({}) String apiVersion;
+    private String apiVersion = "0.0";
 
     /**
      * @return a string like eg : '/api/v8'
      */
     public String baseUrl() {
-        return String.format("%sv%s", apiBaseUrl, apiVersion.split("\\.")[0]);
+        return String.format("%sv%s", API_BASE_URL, apiVersion.split("\\.")[0]);
     }
 }
