@@ -14,6 +14,7 @@ package org.openhab.binding.wemo.internal;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
@@ -29,7 +30,7 @@ import org.openhab.core.library.types.QuantityType;
 @NonNullByDefault
 public class WemoPowerBank {
 
-    private final ConcurrentLinkedDeque<CacheItem> slidingCache = new ConcurrentLinkedDeque<CacheItem>();
+    private final Deque<CacheItem> slidingCache = new ConcurrentLinkedDeque<CacheItem>();
 
     @Nullable
     private QuantityType<?> previousCurrentPower = null;
