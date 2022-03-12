@@ -96,7 +96,7 @@ public class TradfriDiscoveryParticipant implements MDNSDiscoveryParticipant {
                         .withLabel("@text/discovery.gateway.label").withRepresentationProperty(PROPERTY_SERIAL_NUMBER)
                         .build();
             } else {
-                logger.warn("Discovered Tradfri gateway doesn't have an IP address: {}", service);
+                logger.debug("Discovered Tradfri gateway doesn't have an IP address: {}", service);
             }
         }
         return null;
