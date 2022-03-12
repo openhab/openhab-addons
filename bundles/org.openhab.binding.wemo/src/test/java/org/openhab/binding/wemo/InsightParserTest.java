@@ -54,8 +54,7 @@ public class InsightParserTest {
         assertEquals(new DecimalType(1_196_960), result.get(WemoBindingConstants.CHANNEL_ONTOTAL));
         assertEquals(new DecimalType(1_209_600), result.get(WemoBindingConstants.CHANNEL_TIMESPAN));
         assertEquals(new QuantityType<>(44, Units.WATT), result.get(WemoBindingConstants.CHANNEL_AVERAGEPOWER));
-        assertEquals(new QuantityType<>(41.4, Units.WATT),
-                result.get(WemoBindingConstants.CHANNEL_CURRENT_POWER_ACCURATE));
+        assertEquals(new QuantityType<>(41.4, Units.WATT), result.get(WemoBindingConstants.CHANNEL_CURRENT_POWER_RAW));
         assertEquals(new QuantityType<>(505, Units.WATT_HOUR), result.get(WemoBindingConstants.CHANNEL_ENERGYTODAY));
         assertEquals(new QuantityType<>(8056, Units.WATT_HOUR), result.get(WemoBindingConstants.CHANNEL_ENERGYTOTAL));
         assertEquals(new QuantityType<>(8, Units.WATT), result.get(WemoBindingConstants.CHANNEL_STANDBYLIMIT));
@@ -77,8 +76,7 @@ public class InsightParserTest {
         assertEquals(new DecimalType(0), result.get(WemoBindingConstants.CHANNEL_ONTOTAL));
         assertEquals(new DecimalType(1_209_600), result.get(WemoBindingConstants.CHANNEL_TIMESPAN));
         assertEquals(new QuantityType<>(13, Units.WATT), result.get(WemoBindingConstants.CHANNEL_AVERAGEPOWER));
-        assertEquals(new QuantityType<>(0, Units.WATT),
-                result.get(WemoBindingConstants.CHANNEL_CURRENT_POWER_ACCURATE));
+        assertEquals(new QuantityType<>(0, Units.WATT), result.get(WemoBindingConstants.CHANNEL_CURRENT_POWER_RAW));
         assertEquals(new QuantityType<>(0, Units.WATT_HOUR), result.get(WemoBindingConstants.CHANNEL_ENERGYTODAY));
         assertEquals(new QuantityType<>(0, Units.WATT_HOUR), result.get(WemoBindingConstants.CHANNEL_ENERGYTOTAL));
         assertEquals(new QuantityType<>(8, Units.WATT), result.get(WemoBindingConstants.CHANNEL_STANDBYLIMIT));
@@ -101,8 +99,7 @@ public class InsightParserTest {
         assertEquals(new DecimalType(1_196_960), result.get(WemoBindingConstants.CHANNEL_ONTOTAL));
         assertEquals(new DecimalType(1_209_600), result.get(WemoBindingConstants.CHANNEL_TIMESPAN));
         assertEquals(new QuantityType<>(44, Units.WATT), result.get(WemoBindingConstants.CHANNEL_AVERAGEPOWER));
-        assertEquals(new QuantityType<>(41.4, Units.WATT),
-                result.get(WemoBindingConstants.CHANNEL_CURRENT_POWER_ACCURATE));
+        assertEquals(new QuantityType<>(41.4, Units.WATT), result.get(WemoBindingConstants.CHANNEL_CURRENT_POWER_RAW));
         assertEquals(new QuantityType<>(505, Units.WATT_HOUR), result.get(WemoBindingConstants.CHANNEL_ENERGYTODAY));
         assertEquals(new QuantityType<>(8056, Units.WATT_HOUR), result.get(WemoBindingConstants.CHANNEL_ENERGYTOTAL));
         assertNull(result.get(WemoBindingConstants.CHANNEL_STANDBYLIMIT));

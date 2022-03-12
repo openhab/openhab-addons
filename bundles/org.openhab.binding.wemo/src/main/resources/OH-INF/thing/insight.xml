@@ -17,7 +17,7 @@
 			<channel id="timespan" typeId="timespan"/>
 			<channel id="averagePower" typeId="averagePower"/>
 			<channel id="currentPower" typeId="currentPower"/>
-			<channel id="currentPowerAccurate" typeId="currentPowerAccurate"/>
+			<channel id="currentPowerRaw" typeId="currentPowerRaw"/>
 			<channel id="energyToday" typeId="energyToday"/>
 			<channel id="energyTotal" typeId="energyTotal"/>
 			<channel id="standByLimit" typeId="standByLimit"/>

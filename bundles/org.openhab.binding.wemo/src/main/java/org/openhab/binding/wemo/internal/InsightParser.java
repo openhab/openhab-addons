@@ -88,7 +88,7 @@ public class InsightParser {
                     result.put(WemoBindingConstants.CHANNEL_AVERAGEPOWER, getPowerFromWatt(value));
                     break;
                 case INSIGHT_POSITION_CURRENTPOWER:
-                    result.put(WemoBindingConstants.CHANNEL_CURRENT_POWER_ACCURATE, getPowerFromMilliWatt(value));
+                    result.put(WemoBindingConstants.CHANNEL_CURRENT_POWER_RAW, getPowerFromMilliWatt(value));
                     break;
                 case INSIGHT_POSITION_ENERGYTODAY:
                     result.put(WemoBindingConstants.CHANNEL_ENERGYTODAY, getEnergy(value));

@@ -102,7 +102,7 @@ public class WemoInsightHandler extends WemoHandler {
                     logger.trace("New InsightParam {} '{}' for device '{}' received", channel, state,
                             getThing().getUID());
                     updateState(channel, state);
-                    if (channel.equals(WemoBindingConstants.CHANNEL_CURRENT_POWER_ACCURATE)
+                    if (channel.equals(WemoBindingConstants.CHANNEL_CURRENT_POWER_RAW)
                             && state instanceof QuantityType) {
                         QuantityType<?> power = state.as(QuantityType.class);
                         if (power != null) {
