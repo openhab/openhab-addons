@@ -150,7 +150,6 @@ DateTime MotionDetected      { channel="wemo:Motion:Sensor1:lastMotionDetected" 
 // Insight
 Switch InsightSwitch         { channel="wemo:insight:Insight-1_0-xxxxxxxxxxxxxx:state" }
 Number:Power InsightPower    { channel="wemo:insight:Insight-1_0-xxxxxxxxxxxxxx:currentPower" }
-Number:Power InsightPower    { channel="wemo:insight:Insight-1_0-xxxxxxxxxxxxxx:currentPower" }
 Number InsightLastOn         { channel="wemo:insight:Insight-1_0-xxxxxxxxxxxxxx:lastOnFor" }
 Number InsightToday          { channel="wemo:insight:Insight-1_0-xxxxxxxxxxxxxx:onToday" }
 Number InsightTotal          { channel="wemo:insight:Insight-1_0-xxxxxxxxxxxxxx:onTotal" }
