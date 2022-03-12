@@ -81,7 +81,6 @@ public class LivisiClient {
     private static final String BEARER = "Bearer ";
     private static final String CONTENT_TYPE = "application/json";
     private static final int HTTP_REQUEST_TIMEOUT_SECONDS = 10;
-    private static final int HTTP_REQUEST_IDLE_TIMEOUT_SECONDS = 20;
 
     private final Logger logger = LoggerFactory.getLogger(LivisiClient.class);
 
@@ -168,7 +167,6 @@ public class LivisiClient {
 
             response = request.header(HttpHeader.ACCEPT, CONTENT_TYPE)
                     .header(HttpHeader.AUTHORIZATION, BEARER + accessTokenResponse.getAccessToken())
-                    .idleTimeout(HTTP_REQUEST_IDLE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                     .timeout(HTTP_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new IOException(e);
@@ -191,7 +189,6 @@ public class LivisiClient {
         try {
             response = request.header(HttpHeader.ACCEPT, CONTENT_TYPE)
                     .header(HttpHeader.AUTHORIZATION, BASIC + LivisiBindingConstants.AUTH_HEADER_VALUE)
-                    .idleTimeout(HTTP_REQUEST_IDLE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                     .timeout(HTTP_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new AuthenticationException("Authentication failed: " + e.getMessage());
