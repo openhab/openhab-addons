@@ -185,5 +185,6 @@ Number:Power Ohmpilot_PowerSum { channel="fronius:ohmpilot:mybridge:myohmpilot:p
 Number:Temperature Ohmpilot_Temperature { channel="fronius:ohmpilot:mybridge:myohmpilot:temperaturechannel1" }
 Number Ohmpilot_State { channel="fronius:ohmpilot:mybridge:myohmpilot:statecode" }
 Number Ohmpilot_Errorcode { channel="fronius:ohmpilot:mybridge:myohmpilot:errorcode" }
-
 ```
+
+Note: Make sure to turn on the **Night Mode** in the Display Settings on the Fronius inverter to keep it from going offline at night.
