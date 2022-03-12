@@ -56,7 +56,7 @@ Fragment-Host: org.openhab.binding.systeminfo
 	net.bytebuddy.byte-buddy-agent;version='[1.12.1,1.12.2)',\
 	org.mockito.mockito-core;version='[4.1.0,4.1.1)',\
 	org.objenesis;version='[3.2.0,3.2.1)',\
-	biz.aQute.tester.junit-platform;version='[6.1.0,6.1.1)',\
+	biz.aQute.tester.junit-platform;version='[6.2.0,6.2.1)',\
 	org.apache.felix.scr;version='[2.1.30,2.1.31)',\
 	org.osgi.util.function;version='[1.2.0,1.2.1)',\
 	org.osgi.util.promise;version='[1.2.0,1.2.1)',\
