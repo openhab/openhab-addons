@@ -276,7 +276,7 @@ public class WatsonSTTService implements STTService {
             if (!aborted.getAndSet(true)) {
                 sttListener.sttEventReceived(new RecognitionStopEvent());
                 float averageConfidence = confidenceSum / (float) responseCount;
-                String transcript = transcriptBuilder.toString();
+                String transcript = transcriptBuilder.toString().trim();
                 if (!transcript.isBlank()) {
                     sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, averageConfidence));
                 } else {
