@@ -48,17 +48,17 @@ To mitigate this issue, a sliding window with a moving average calculation has b
 is defined with a one minute default period. This is combined with a delta trigger value, which is defaulted
 to 1 W. This means that the channel is only updated when one of the following conditions are met:
 
-1. The rounded value received is equal to the rounded average for the past minute, i.e. this value has
-   stabilized. This introduces a delay for very small changes in consumption, but on the other hand it
-   prevents excessive logging and persistence caused by temporary small changes and rounding.
-2. The rounded value received is more than 1 W from the previous value. So when changes are happening fast,
-   the channel will also be updated fast.
+1. The rounded value received is equal to the rounded average for the past minute, i.e. this value has stabilized. This introduces a delay for very small changes in consumption, but on the other hand it prevents excessive logging and persistence caused by temporary small changes and rounding.
+2. The rounded value received is more than 1 W from the previous value. So when changes are happening fast, the channel will also be updated fast.
 
 | Configuration Parameter    | Description                                                                           |
 |----------------------------|---------------------------------------------------------------------------------------|
 | udn                        | The UDN identifies the WeMo Insight Switch                                            |
 | currentPowerSlidingSeconds | Sliding window in seconds for which moving average power is calculated (0 = disabled) |
 | currentPowerDeltaTrigger   | Delta triggering immediate channel update (in Watt)                                   |
+
+The moving average calculation can be disabled by setting either `currentPowerSlidingSeconds` or `currentPowerDeltaTrigger`
+to 0. This will cause the channel to be updated the same way as in openHAB versions prior to 3.3.
 
 ## Channels
 

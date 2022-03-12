@@ -128,7 +128,7 @@ public class WemoInsightHandler extends WemoHandler {
         double value = power.doubleValue();
         var roundedValueState = new QuantityType<>(new BigDecimal(value).setScale(0, RoundingMode.HALF_UP),
                 power.getUnit());
-        if (currentPowerSlidingSeconds == 0) {
+        if (currentPowerSlidingSeconds == 0 || currentPowerDeltaTrigger == 0) {
             updateState(WemoBindingConstants.CHANNEL_CURRENT_POWER, roundedValueState);
             return true;
         }
