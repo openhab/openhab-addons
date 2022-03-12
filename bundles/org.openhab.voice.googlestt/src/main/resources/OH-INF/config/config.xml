@@ -46,7 +46,7 @@
 			<label>Max Silence Seconds</label>
 			<description>Only works when singleUtteranceMode is disabled, max seconds without getting new transcriptions to stop
 				listening.</description>
-			<default>5</default>
+			<default>3</default>
 		</parameter>
 		<parameter name="refreshSupportedLocales" type="boolean" groupName="stt">
 			<label>Refresh Supported Locales</label>

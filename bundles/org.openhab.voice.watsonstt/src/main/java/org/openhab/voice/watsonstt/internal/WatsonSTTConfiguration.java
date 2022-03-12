@@ -48,9 +48,13 @@ public class WatsonSTTConfiguration {
      */
     public boolean redaction = false;
     /**
-     * The time in seconds after which, if only silence (no speech) is detected in the audio, the connection is closed.
+     * Single phrase mode.
      */
-    public int inactivityTimeout = 3;
+    public boolean singleUtteranceMode = true;
+    /**
+     * max seconds without getting new transcriptions to stop listening.
+     */
+    public int maxSilenceSeconds = 3;
     /**
      * Message to be told when no results
      */
