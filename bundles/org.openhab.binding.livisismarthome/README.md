@@ -94,7 +94,7 @@ However, only devices will appear that are added in the LIVISI SmartHome app bef
 | motion_count            | Number        | Number of detected motions, increases with each detected motion       | WMD, WMDO                                             |
 | operation_mode          | String        | The mode of a thermostat (auto/manual)                                | RST                                                   |
 | rollershutter*          | Rollershutter | Controls a roller shutter                                             | ISR2                                                  |
-| set_temperature         | Number        | Sets the target temperature in °C                                     | RST, WRT                                              |
+| set_temperature         | Number        | Sets the target temperature in °C (min 6 °C, max 30 °C)               | RST, WRT                                              |
 | smoke                   | Switch        | Indicates, if smoke was detected (ON/OFF)                             | WSD, WSD2                                             |
 | status                  | String        | Status of the SHC (ACTIVE, INITIALIZING or SHUTTINGDOWN)              |                                                       |
 | switch                  | Switch        | A switch to turn the device or variable on/off (ON/OFF)               | ISS2, PSS, PSSO, VariableActuator                     |

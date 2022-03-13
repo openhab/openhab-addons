@@ -169,12 +169,20 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
 
     private void commandUpdatePointTemperature(Command command, LivisiBridgeHandler bridgeHandler) {
         if (command instanceof QuantityType) {
-            final QuantityType<?> pointTemperature = (QuantityType<?>)command;
-            if (pointTemperature.doubleValue() >= MIN_TEMPERATURE && pointTemperature.doubleValue() <= MAX_TEMPERATURE) {
-                bridgeHandler.commandUpdatePointTemperature(deviceId, pointTemperature.doubleValue());
-            } else {
-                logger.warn("Could not set pointTemperature. Invalid value '{}'! Only values between '{}' and '{}' are allowed.", pointTemperature.doubleValue(), MIN_TEMPERATURE, MAX_TEMPERATURE);
+            final QuantityType<?> pointTemperatureCommand = (QuantityType<?>)command;
+            double pointTemperature = pointTemperatureCommand.doubleValue();
+            if(pointTemperatureCommand.doubleValue() < MIN_TEMPERATURE) {
+                pointTemperature = MIN_TEMPERATURE;
+                logger.debug("pointTemperature set to value {} (instead of value '{}'), because it is the minimal possible value!",
+                        MIN_TEMPERATURE,
+                        pointTemperatureCommand.doubleValue());
+            } else if(pointTemperatureCommand.doubleValue() > MAX_TEMPERATURE) {
+                pointTemperature = MAX_TEMPERATURE;
+                logger.debug("pointTemperature set to value {} (instead of value '{}'), because it is the maximal possible value!",
+                        MAX_TEMPERATURE,
+                        pointTemperatureCommand.doubleValue());
             }
+            bridgeHandler.commandUpdatePointTemperature(deviceId, pointTemperature);
         }
     }
 
