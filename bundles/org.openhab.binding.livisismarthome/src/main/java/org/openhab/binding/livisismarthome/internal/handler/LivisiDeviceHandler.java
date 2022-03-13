@@ -61,6 +61,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatusListener {
 
+    private static final int MIN_TEMPERATURE = 6;
+    private static final int MAX_TEMPERATURE = 30;
     private static final String LONG_PRESS = "LongPress";
     private static final String SHORT_PRESS = "ShortPress";
 
@@ -165,9 +167,11 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
 
     private void commandUpdatePointTemperature(Command command, LivisiBridgeHandler bridgeHandler) {
         if (command instanceof QuantityType) {
-            final QuantityType pointTemperature = (QuantityType) command;
-            if (pointTemperature.doubleValue() >= 6 && pointTemperature.doubleValue() <= 30) {
+            final QuantityType<?> pointTemperature = (QuantityType<?>)command;
+            if (pointTemperature.doubleValue() >= MIN_TEMPERATURE && pointTemperature.doubleValue() <= MAX_TEMPERATURE) {
                 bridgeHandler.commandUpdatePointTemperature(deviceId, pointTemperature.doubleValue());
+            } else {
+                logger.warn("Could not set pointTemperature. Invalid value '{}'! Only values between '{}' and '{}' are allowed.", pointTemperature.doubleValue(), MIN_TEMPERATURE, MAX_TEMPERATURE);
             }
         }
     }
