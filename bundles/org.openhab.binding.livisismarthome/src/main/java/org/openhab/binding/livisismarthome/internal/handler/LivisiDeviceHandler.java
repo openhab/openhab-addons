@@ -36,6 +36,8 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -704,7 +706,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         final Double temperature = capability.getCapabilityState().getTemperatureSensorTemperatureState();
         if (temperature != null) {
             logger.debug("-> Temperature sensor state: {}", temperature);
-            updateState(CHANNEL_TEMPERATURE, new DecimalType(temperature));
+            updateState(CHANNEL_TEMPERATURE, QuantityType.valueOf(temperature, SIUnits.CELSIUS));
         } else {
             logStateNULL(capability);
         }
@@ -724,7 +726,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (pointTemperature != null) {
             logger.debug("Update CHANNEL_SET_TEMPERATURE: state:{} (DeviceName {}, Capab-ID:{})", pointTemperature,
                     device.getConfig().getName(), capability.getId());
-            updateState(CHANNEL_SET_TEMPERATURE, new DecimalType(pointTemperature));
+            updateState(CHANNEL_SET_TEMPERATURE, QuantityType.valueOf(pointTemperature, SIUnits.CELSIUS));
         } else {
             logStateNULL(capability);
         }
@@ -901,8 +903,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     private void updateStateForEnergyChannel(final String channelId, @Nullable final Double state,
             final CapabilityDTO capability) {
         if (state != null) {
-            final DecimalType newValue = new DecimalType(state);
-            updateState(channelId, newValue);
+            updateState(channelId, QuantityType.valueOf(state, Units.WATT));
         } else {
             logStateNULL(capability);
         }
