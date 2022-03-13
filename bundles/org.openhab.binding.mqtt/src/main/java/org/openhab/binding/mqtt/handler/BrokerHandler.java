@@ -30,7 +30,6 @@ import org.openhab.binding.mqtt.internal.ssl.PinnedCallback;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
-import org.openhab.core.io.transport.mqtt.MqttService;
 import org.openhab.core.io.transport.mqtt.MqttWillAndTestament;
 import org.openhab.core.io.transport.mqtt.reconnect.PeriodicReconnectStrategy;
 import org.openhab.core.thing.Bridge;
@@ -41,8 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This handler provided more detailed connection information from a
  * {@link MqttBrokerConnection} via a Thing property, put the Thing
- * offline or online depending on the connection and adds the configured
- * connection to the {@link MqttService}.
+ * offline or online depending on the connection.
  *
  * @author David Graeff - Initial contribution
  * @author Jimmy Tanagra - Add birth and shutdown message
