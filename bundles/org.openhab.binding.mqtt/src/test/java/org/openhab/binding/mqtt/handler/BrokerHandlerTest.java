@@ -34,7 +34,6 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttException;
-import org.openhab.core.io.transport.mqtt.MqttService;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
@@ -54,7 +53,6 @@ public class BrokerHandlerTest extends JavaTest {
 
     private @Mock ThingHandlerCallback callback;
     private @Mock Bridge thing;
-    private @Mock MqttService service;
 
     private MqttBrokerConnectionEx connection;
 
@@ -83,7 +81,7 @@ public class BrokerHandlerTest extends JavaTest {
     public void handlerInitWithoutUrl() throws IllegalArgumentException {
         // Assume it is a real handler and not a mock as defined above
         handler = new BrokerHandler(thing);
-        assertThrows(IllegalArgumentException.class, () -> initializeHandlerWaitForTimeout());
+        assertThrows(IllegalArgumentException.class, this::initializeHandlerWaitForTimeout);
     }
 
     @Test
