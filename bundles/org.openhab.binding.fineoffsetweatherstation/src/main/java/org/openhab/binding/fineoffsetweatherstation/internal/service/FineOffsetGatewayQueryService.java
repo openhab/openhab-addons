@@ -34,7 +34,7 @@ import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Command;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.MeasureType;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Sensor;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.BatteryStatus;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
@@ -67,7 +67,7 @@ public class FineOffsetGatewayQueryService implements AutoCloseable {
         return null;
     }
 
-    public Map<Sensor, SensorDevice> getRegisteredSensors() {
+    public Map<SensorGatewayBinding, SensorDevice> getRegisteredSensors() {
         var data = executeCommand(Command.CMD_READ_SENSOR_ID_NEW);
         if (null == data) {
             return Map.of();
@@ -88,45 +88,46 @@ public class FineOffsetGatewayQueryService implements AutoCloseable {
          * (n * 7) + 12 | 1 | checksum
          */
 
-        Map<Sensor, SensorDevice> result = new HashMap<>();
+        Map<SensorGatewayBinding, SensorDevice> result = new HashMap<>();
         var len = toUInt16(data, 3);
         int entry = 0;
         int entrySize = 7;
         while (entry * entrySize + 11 <= len) {
             int idx = entry++ * entrySize + 5;
             int id = toUInt32(data, idx + 1);
-            List<Sensor> sensorCandidates = Sensor.forIndex(data[idx]);
+            List<SensorGatewayBinding> sensorCandidates = SensorGatewayBinding.forIndex(data[idx]);
             if (sensorCandidates == null || sensorCandidates.isEmpty()) {
                 logger.debug("unknown sensor (id={}) for index {}", id, data[idx]);
                 continue;
             }
-            Sensor sensor = null;
+            SensorGatewayBinding sensorGatewayBinding = null;
             if (sensorCandidates.size() == 1) {
-                sensor = sensorCandidates.get(0);
+                sensorGatewayBinding = sensorCandidates.get(0);
             } else if (sensorCandidates.size() == 2 && data[idx] == 0) {
                 @Nullable
                 SystemInfo systemInfo = fetchSystemInfo();
                 if (systemInfo != null) {
-                    sensor = systemInfo.isUseWh24() ? Sensor.WH24 : Sensor.WH65;
+                    sensorGatewayBinding = systemInfo.isUseWh24() ? SensorGatewayBinding.WH24
+                            : SensorGatewayBinding.WH65;
                 }
             }
-            if (sensor == null) {
+            if (sensorGatewayBinding == null) {
                 logger.debug("to many sensor candidates for (id={}) and index {}: {}", id, data[idx], sensorCandidates);
                 continue;
             }
             switch (id) {
                 case 0xFFFFFFFE:
-                    logger.trace("sensor {} = disabled", sensor);
+                    logger.trace("sensor {} = disabled", sensorGatewayBinding);
                     continue;
                 case 0xFFFFFFFF:
-                    logger.trace("sensor {} = registering", sensor);
+                    logger.trace("sensor {} = registering", sensorGatewayBinding);
                     continue;
             }
 
-            BatteryStatus batteryStatus = sensor.getBatteryStatus(data[idx + 5]);
+            BatteryStatus batteryStatus = sensorGatewayBinding.getBatteryStatus(data[idx + 5]);
             int signal = Utils.toUInt8(data[idx + 6]);
 
-            result.put(sensor, new SensorDevice(id, sensor, batteryStatus, signal));
+            result.put(sensorGatewayBinding, new SensorDevice(id, sensorGatewayBinding, batteryStatus, signal));
         }
         return result;
     }

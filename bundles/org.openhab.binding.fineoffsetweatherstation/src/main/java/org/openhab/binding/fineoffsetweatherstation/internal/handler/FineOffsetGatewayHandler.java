@@ -32,7 +32,7 @@ import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetSensorCon
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants;
 import org.openhab.binding.fineoffsetweatherstation.internal.discovery.FineOffsetGatewayDiscoveryService;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Sensor;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SystemInfo;
@@ -82,7 +82,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
 
     private final ThingUID bridgeUID;
 
-    private @Nullable Map<Sensor, SensorDevice> sensorDeviceMap;
+    private @Nullable Map<SensorGatewayBinding, SensorDevice> sensorDeviceMap;
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> discoverJob;
     private boolean disposed;
@@ -130,7 +130,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
 
     private void fetchAndUpdateSensors() {
         @Nullable
-        Map<Sensor, SensorDevice> deviceMap = query(FineOffsetGatewayQueryService::getRegisteredSensors);
+        Map<SensorGatewayBinding, SensorDevice> deviceMap = query(FineOffsetGatewayQueryService::getRegisteredSensors);
         sensorDeviceMap = deviceMap;
         updateSensors();
         if (deviceMap != null) {
@@ -143,11 +143,11 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
     }
 
     private void updateSensorThing(Thing thing) {
-        Map<Sensor, SensorDevice> sensorMap = sensorDeviceMap;
+        Map<SensorGatewayBinding, SensorDevice> sensorMap = sensorDeviceMap;
         if (!THING_TYPE_SENSOR.equals(thing.getThingTypeUID()) || sensorMap == null) {
             return;
         }
-        Sensor sensor = thing.getConfiguration().as(FineOffsetSensorConfiguration.class).sensor;
+        SensorGatewayBinding sensor = thing.getConfiguration().as(FineOffsetSensorConfiguration.class).sensor;
         Optional.ofNullable(thing.getHandler()).filter(FineOffsetSensorHandler.class::isInstance)
                 .map(FineOffsetSensorHandler.class::cast)
                 .ifPresent(sensorHandler -> sensorHandler.updateSensorState(sensorMap.get(sensor)));
@@ -211,8 +211,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         if (type != null) {
             builder.withAcceptedItemType(type.getItemType());
         }
-        Channel build = builder.build();
-        return build;
+        return builder.build();
     }
 
     private void updateBridgeInfo() {

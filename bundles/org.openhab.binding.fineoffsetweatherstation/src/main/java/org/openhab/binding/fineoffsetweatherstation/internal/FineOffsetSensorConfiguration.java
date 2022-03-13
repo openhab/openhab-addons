@@ -14,7 +14,7 @@ package org.openhab.binding.fineoffsetweatherstation.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Sensor;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 
 /**
  * The {@link FineOffsetSensorConfiguration} class contains the fields mapping thing configuration parameters.
@@ -26,5 +26,5 @@ public class FineOffsetSensorConfiguration {
 
     public static final String SENSOR = "sensor";
 
-    public @Nullable Sensor sensor;
+    public @Nullable SensorGatewayBinding sensor;
 }

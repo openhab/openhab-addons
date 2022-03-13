@@ -69,6 +69,7 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
     private static final int DISCOVERY_TIME = 5;
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
+    private final @Nullable Bundle bundle;
     private @Nullable DatagramSocket clientSocket;
     private @Nullable Thread socketReceiveThread;
     private @Nullable ScheduledFuture<?> discoveryJob;
@@ -79,6 +80,7 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
         super(Collections.singleton(THING_TYPE_GATEWAY), DISCOVERY_TIME, true);
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
+        this.bundle = FrameworkUtil.getBundle(FineOffsetGatewayDiscoveryService.class);
     }
 
     @Override
@@ -128,18 +130,38 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
     public void addSensors(ThingUID bridgeUID, Collection<SensorDevice> sensorDevices) {
         for (SensorDevice sensorDevice : sensorDevices) {
             ThingUID uid = new ThingUID(FineOffsetWeatherStationBindingConstants.THING_TYPE_SENSOR, bridgeUID,
-                    sensorDevice.getSensor().name());
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                    .withProperty(FineOffsetSensorConfiguration.SENSOR, sensorDevice.getSensor().name())
-                    .withRepresentationProperty(FineOffsetSensorConfiguration.SENSOR)
-                    .withLabel(sensorDevice.getSensor().name()).build();
+                    sensorDevice.getSensorGatewayBinding().name());
+
+            String model = sensorDevice.getSensorGatewayBinding().getSensor().name();
+            String prefix = "thing.sensor." + model;
+            @Nullable
+            String name = translationProvider.getText(bundle, prefix + ".label", model, localeProvider.getLocale());
+            DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
+                    .withProperty(FineOffsetSensorConfiguration.SENSOR, sensorDevice.getSensorGatewayBinding().name())
+                    .withProperty(Thing.PROPERTY_MODEL_ID, model)
+                    .withRepresentationProperty(FineOffsetSensorConfiguration.SENSOR);
+
+            @Nullable
+            Integer channel = sensorDevice.getSensorGatewayBinding().getChannel();
+            if (channel != null) {
+                builder.withProperty("channel", channel);
+                name += " " + translationProvider.getText(bundle, "channel", "channel", localeProvider.getLocale())
+                        + " " + channel;
+            }
+            builder.withLabel(name);
+            @Nullable
+            String description = translationProvider.getText(bundle, prefix + ".description", model,
+                    localeProvider.getLocale());
+            if (description != null) {
+                builder.withProperty("description", description);
+            }
+
+            DiscoveryResult result = builder.build();
             thingDiscovered(result);
         }
     }
 
     private void discovered(String ip, int port, byte[] macAddr, String name) {
-        Bundle bundle = FrameworkUtil.getBundle(FineOffsetGatewayDiscoveryService.class);
-
         String id = String.valueOf(Utils.toUInt64(macAddr, 0));
 
         Map<String, Object> properties = new HashMap<>();

@@ -13,7 +13,7 @@
 package org.openhab.binding.fineoffsetweatherstation.internal.domain.response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Sensor;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 
 /**
  * HHolds all available information of a sensor device.
@@ -23,13 +23,13 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.Sensor;
 @NonNullByDefault
 public class SensorDevice {
     private final int id;
-    private final Sensor sensor;
+    private final SensorGatewayBinding sensorGatewayBinding;
     private final BatteryStatus batteryStatus;
     private final int signal;
 
-    public SensorDevice(int id, Sensor sensor, BatteryStatus batteryStatus, int signal) {
+    public SensorDevice(int id, SensorGatewayBinding sensorGatewayBinding, BatteryStatus batteryStatus, int signal) {
         this.id = id;
-        this.sensor = sensor;
+        this.sensorGatewayBinding = sensorGatewayBinding;
         this.batteryStatus = batteryStatus;
         this.signal = signal;
     }
@@ -38,8 +38,8 @@ public class SensorDevice {
         return id;
     }
 
-    public Sensor getSensor() {
-        return sensor;
+    public SensorGatewayBinding getSensorGatewayBinding() {
+        return sensorGatewayBinding;
     }
 
     public BatteryStatus getBatteryStatus() {
@@ -52,7 +52,7 @@ public class SensorDevice {
 
     @Override
     public String toString() {
-        return "SensorDevice{" + "id=" + id + ", sensor=" + sensor + ", batteryStatus=" + batteryStatus + ", signal="
-                + signal + '}';
+        return "SensorDevice{" + "id=" + id + ", sensor=" + sensorGatewayBinding + ", batteryStatus=" + batteryStatus
+                + ", signal=" + signal + '}';
     }
 }
