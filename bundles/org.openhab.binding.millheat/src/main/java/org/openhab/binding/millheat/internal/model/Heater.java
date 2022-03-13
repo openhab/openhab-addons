@@ -38,7 +38,7 @@ public class Heater {
         name = dto.deviceName;
         macAddress = dto.macAddress;
         heatingActive = dto.heaterFlag;
-        canChangeTemp = dto.holiday;
+        canChangeTemp = dto.canChangeTemp;
         subDomain = dto.subDomainId;
         currentTemp = (int) dto.currentTemp;
         setTargetTemp(dto.holidayTemp);

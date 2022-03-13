@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:openthermgateway:otgw">
+	<config-description uri="thing-type:openthermgateway:openthermgateway">
 		<parameter-group name="connection">
 			<label>Connection</label>
 			<description>Connection settings.</description>
@@ -26,6 +26,20 @@
 			<label>Connection Retry Interval</label>
 			<description>The interval in seconds to retry connecting (0 = disabled).</description>
 			<default>60</default>
+		</parameter>
+
+		<parameter name="connectTimeoutSeconds" type="integer" required="true" groupName="connection" min="5"
+			max="60" unit="s">
+			<label>Connect Timeout</label>
+			<description>The maximum time (seconds) to wait for establishing a connection to the gateway.</description>
+			<default>5</default>
+		</parameter>
+
+		<parameter name="readTimeoutSeconds" type="integer" required="true" groupName="connection" min="5" max="60"
+			unit="s">
+			<label>Read Timeout</label>
+			<description>The maximum time (seconds) to wait for reading responses from the gateway.</description>
+			<default>20</default>
 		</parameter>
 
 	</config-description>

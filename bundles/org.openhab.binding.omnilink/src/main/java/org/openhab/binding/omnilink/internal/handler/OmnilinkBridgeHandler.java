@@ -178,7 +178,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
 
         switch (channelUID.getId()) {
-            case CHANNEL_SYSTEMDATE:
+            case CHANNEL_SYSTEM_DATE:
                 if (command instanceof DateTimeType) {
                     ZonedDateTime zdt = ((DateTimeType) command).getZonedDateTime();
                     boolean inDaylightSavings = zdt.getZone().getRules().isDaylightSavings(zdt.toInstant());
@@ -492,7 +492,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 .append(String.format("%02d", status.getHour())).append(":")
                 .append(String.format("%02d", status.getMinute())).append(":")
                 .append(String.format("%02d", status.getSecond())).toString();
-        updateState(CHANNEL_SYSTEMDATE, new DateTimeType(dateString));
+        updateState(CHANNEL_SYSTEM_DATE, new DateTimeType(dateString));
     }
 
     public Message reqObjectProperties(int objectType, int objectNum, int direction, int filter1, int filter2,

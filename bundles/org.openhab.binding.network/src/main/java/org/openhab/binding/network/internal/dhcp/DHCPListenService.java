@@ -34,10 +34,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DHCPListenService {
     static @Nullable DHCPPacketListenerServer instance;
-    static Map<String, IPRequestReceivedCallback> registeredListeners = new TreeMap<>();
-    static Logger logger = LoggerFactory.getLogger(DHCPListenService.class);
+    private static Map<String, IPRequestReceivedCallback> registeredListeners = new TreeMap<>();
+    private static Logger logger = LoggerFactory.getLogger(DHCPListenService.class);
 
-    @SuppressWarnings({ "null", "unused" })
     public static synchronized DHCPPacketListenerServer register(String hostAddress,
             IPRequestReceivedCallback dhcpListener) throws SocketException {
         DHCPPacketListenerServer instance = DHCPListenService.instance;

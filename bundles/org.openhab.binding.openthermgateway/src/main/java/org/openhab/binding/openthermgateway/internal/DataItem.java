@@ -12,81 +12,62 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
-import javax.measure.Unit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.types.State;
 
 /**
- * The {@link DataItem} holds the internal OpenTherm message and meta data.
+ * The {@link DataItem} represents the base dataitem.
  *
  * @author Arjen Korevaar - Initial contribution
  */
+
 @NonNullByDefault
-public class DataItem {
-    private int id;
+public abstract class DataItem {
     private Msg msg;
     private ByteType byteType;
-    private DataType dataType;
-    private int bitpos;
     private String subject;
-    private @Nullable Unit<?> unit;
-    private @Nullable CodeType filteredCode;
-
-    public int getID() {
-        return id;
-    }
+    private @Nullable CodeType codeType;
 
     public Msg getMsg() {
         return msg;
     }
 
     public ByteType getByteType() {
-        return this.byteType;
-    }
-
-    public DataType getDataType() {
-        return dataType;
-    }
-
-    public int getBitPos() {
-        return bitpos;
+        return byteType;
     }
 
     public String getSubject() {
         return subject;
     }
 
-    public @Nullable Unit<?> getUnit() {
-        return unit;
+    public @Nullable CodeType getCodeType() {
+        return codeType;
     }
 
-    public @Nullable CodeType getFilteredCode() {
-        return filteredCode;
-    }
-
-    public DataItem(int id, Msg msg, ByteType byteType, DataType dataType, int bit, String subject) {
-        this(id, msg, byteType, dataType, bit, subject, null, null);
-    }
-
-    public DataItem(int id, Msg msg, ByteType byteType, DataType dataType, int bit, String subject, Unit<?> unit) {
-        this(id, msg, byteType, dataType, bit, subject, unit, null);
-    }
-
-    public DataItem(int id, Msg msg, ByteType byteType, DataType dataType, int bit, String subject,
-            CodeType filteredCode) {
-        this(id, msg, byteType, dataType, bit, subject, null, filteredCode);
-    }
-
-    public DataItem(int id, Msg msg, ByteType byteType, DataType dataType, int bit, String subject,
-            @Nullable Unit<?> unit, @Nullable CodeType filteredCode) {
-        this.id = id;
+    public DataItem(Msg msg, ByteType byteType, String subject, @Nullable CodeType codeType) {
         this.msg = msg;
         this.byteType = byteType;
-        this.dataType = dataType;
-        this.bitpos = bit;
         this.subject = subject;
-        this.unit = unit;
-        this.filteredCode = filteredCode;
+        this.codeType = codeType;
     }
+
+    public boolean hasValidCodeType(Message message) {
+        // Used to bind a dataitem to a specific TBRA code
+        @Nullable
+        CodeType code = this.getCodeType();
+
+        return (code == null || code == message.getCodeType());
+    }
+
+    /**
+     * @param message unused in this default implementation
+     * @return the channel id
+     */
+    public String getChannelId(Message message) {
+        // Default implementation
+        return subject;
+    }
+
+    public abstract State createState(Message message);
 }

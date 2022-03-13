@@ -160,7 +160,7 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
         });
 
         waitForAssert(() -> {
-            assertThat(thing.getStatus(), is(ThingStatus.ONLINE));
+            assertThat(thing.getStatus(), is(ThingStatus.UNKNOWN));
         });
 
         // The device is registered as UPnP Device after the initialization, this will ensure that the polling job will

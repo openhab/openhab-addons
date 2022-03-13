@@ -28,7 +28,7 @@ public class PulseAudioBindingConfiguration {
 
     public boolean sink = true;
 
-    public boolean source = false;
+    public boolean source = true;
 
     public boolean sinkInput = false;
 

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openthermgateway"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="ventilationheatrecovery">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="openthermgateway"/>
+		</supported-bridge-type-refs>
+		<label>Ventilation / Heat Recovery</label>
+		<description>Ventilation or Heat Recovery unit</description>
+		<channels>
+			<channel id="vh_ventilationenable" typeId="vh_ventilationenable"/>
+			<channel id="vh_bypassposition" typeId="vh_bypassposition"/>
+			<channel id="vh_bypassmode" typeId="vh_bypassmode"/>
+			<channel id="vh_freeventilationmode" typeId="vh_freeventilationmode"/>
+			<channel id="vh_faultindication" typeId="vh_faultindication"/>
+			<channel id="vh_ventilationmode" typeId="vh_ventilationmode"/>
+			<channel id="vh_bypassstatus" typeId="vh_bypassstatus"/>
+			<channel id="vh_bypassautomaticstatus" typeId="vh_bypassautomaticstatus"/>
+			<channel id="vh_freeventilationstatus" typeId="vh_freeventilationstatus"/>
+			<channel id="vh_filtercheck" typeId="vh_filtercheck"/>
+			<channel id="vh_diagnosticindication" typeId="vh_diagnosticindication"/>
+			<channel id="vh_controlsetpoint" typeId="vh_controlsetpoint"/>
+			<channel id="vh_servicerequest" typeId="vh_servicerequest"/>
+			<channel id="vh_exhaustfanfault" typeId="vh_exhaustfanfault"/>
+			<channel id="vh_inletfanfault" typeId="vh_inletfanfault"/>
+			<channel id="vh_frostprotection" typeId="vh_frostprotection"/>
+			<channel id="vh_faultcode" typeId="vh_faultcode"/>
+			<channel id="vh_diagnosticcode" typeId="vh_diagnosticcode"/>
+			<channel id="vh_systemtype" typeId="vh_systemtype"/>
+			<channel id="vh_bypass" typeId="vh_bypass"/>
+			<channel id="vh_speedcontrol" typeId="vh_speedcontrol"/>
+			<channel id="vh_memberid" typeId="vh_memberid"/>
+			<channel id="vh_openthermversion" typeId="vh_openthermversion"/>
+			<channel id="vh_versiontype" typeId="vh_versiontype"/>
+			<channel id="vh_relativeventilation" typeId="vh_relativeventilation"/>
+			<channel id="vh_relativehumidity" typeId="vh_relativehumidity"/>
+			<channel id="vh_co2level" typeId="vh_co2level"/>
+			<channel id="vh_supplyinlettemp" typeId="vh_supplyinlettemp"/>
+			<channel id="vh_supplyoutlettemp" typeId="vh_supplyoutlettemp"/>
+			<channel id="vh_exhaustinlettemp" typeId="vh_exhaustinlettemp"/>
+			<channel id="vh_exhaustoutlettemp" typeId="vh_exhaustoutlettemp"/>
+			<channel id="vh_actualexhaustfanspeed" typeId="vh_actualexhaustfanspeed"/>
+			<channel id="vh_actualinletfanspeed" typeId="vh_actualinletfanspeed"/>
+			<channel id="vh_nominalventenable" typeId="vh_nominalventenable"/>
+			<channel id="vh_nominalventrw" typeId="vh_nominalventrw"/>
+			<channel id="vh_nominalventilationvalue" typeId="vh_nominalventilationvalue"/>
+			<channel id="vh_ventilationsetpoint" typeId="vh_ventilationsetpoint"/>
+			<channel id="vh_tspnumber" typeId="vh_tspnumber"/>
+			<channel id="vh_tspentry" typeId="vh_tspentry"/>
+			<channel id="vh_fhbnumber" typeId="vh_fhbnumber"/>
+			<channel id="vh_fhbentry" typeId="vh_fhbentry"/>
+		</channels>
+	</thing-type>
+</thing:thing-descriptions>

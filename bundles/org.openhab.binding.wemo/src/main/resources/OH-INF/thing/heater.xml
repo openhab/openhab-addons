@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wemo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="Heater">
+		<label>Holmes Heater</label>
+		<description>Holmes Smart Heater with WeMo</description>
+
+		<channels>
+			<channel id="heaterMode" typeId="heaterMode"/>
+			<channel id="currentTemperature" typeId="currentTemperature"/>
+			<channel id="targetTemperature" typeId="targetTemperature"/>
+			<channel id="autoOffTime" typeId="autoOffTime"/>
+			<channel id="heatingRemaining" typeId="heatingRemaining"/>
+		</channels>
+
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

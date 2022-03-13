@@ -44,10 +44,10 @@ public class WakeOnLanPacketSender {
 
     // Wake-on-LAN magic packet constants
     static final int PREFIX_BYTE_SIZE = 6;
-    static final int MAC_REPETITIONS = 16;
+    private static final int MAC_REPETITIONS = 16;
     static final int MAC_BYTE_SIZE = 6;
     static final int MAGIC_PACKET_BYTE_SIZE = PREFIX_BYTE_SIZE + MAC_REPETITIONS * MAC_BYTE_SIZE;
-    static final String[] MAC_SEPARATORS = new String[] { ":", "-" };
+    private static final String[] MAC_SEPARATORS = new String[] { ":", "-" };
 
     private final Logger logger = LoggerFactory.getLogger(WakeOnLanPacketSender.class);
 

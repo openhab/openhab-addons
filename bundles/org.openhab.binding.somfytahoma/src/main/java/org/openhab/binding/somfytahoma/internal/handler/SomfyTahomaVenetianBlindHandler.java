@@ -77,11 +77,11 @@ public class SomfyTahomaVenetianBlindHandler extends SomfyTahomaBaseThingHandler
             case "OFF":
             case "DOWN":
             case "CLOSE":
-                return COMMAND_DOWN;
+                return COMMAND_CLOSE;
             case "ON":
             case "UP":
             case "OPEN":
-                return COMMAND_UP;
+                return COMMAND_OPEN;
             case "MOVE":
             case "MY":
                 return COMMAND_MY;
