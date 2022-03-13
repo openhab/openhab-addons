@@ -27,16 +27,13 @@ import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryParticipant;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.binding.mqtt.handler.BrokerHandler;
-import org.openhab.core.io.transport.mqtt.MqttService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,13 +66,6 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
     protected final Set<AbstractBrokerHandler> handlers = Collections
             .synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
-    private MqttService mqttService;
-
-    @Activate
-    public MqttBrokerHandlerFactory(@Reference MqttService mqttService) {
-        this.mqttService = mqttService;
-    }
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -96,9 +86,6 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (mqttService == null) {
-            throw new IllegalStateException("MqttService must be bound, before ThingHandlers can be created");
-        }
         if (!(thing instanceof Bridge)) {
             throw new IllegalStateException("A bridge type is expected");
         }

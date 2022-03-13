@@ -34,7 +34,6 @@ import org.openhab.binding.mqtt.handler.BrokerHandler;
 import org.openhab.binding.mqtt.handler.BrokerHandlerEx;
 import org.openhab.binding.mqtt.handler.MqttBrokerConnectionEx;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.transport.mqtt.MqttService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
@@ -49,9 +48,6 @@ public class MQTTTopicDiscoveryServiceTest {
     private ScheduledExecutorService scheduler;
 
     private MqttBrokerHandlerFactory subject;
-
-    @Mock
-    private MqttService mqttService;
 
     @Mock
     private Bridge thing;
@@ -83,7 +79,7 @@ public class MQTTTopicDiscoveryServiceTest {
         handler = spy(new BrokerHandlerEx(thing, connection));
         handler.setCallback(callback);
 
-        subject = new MqttBrokerHandlerFactory(mqttService);
+        subject = new MqttBrokerHandlerFactory();
     }
 
     @AfterEach
