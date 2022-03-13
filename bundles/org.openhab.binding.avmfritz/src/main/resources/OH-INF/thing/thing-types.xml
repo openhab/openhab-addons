@@ -106,6 +106,35 @@
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
 	</thing-type>
 
+	<thing-type id="FRITZ_DECT_302">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo"/>
+		</supported-bridge-type-refs>
+
+		<label>FRITZ!DECT 302</label>
+		<description>FRITZ!DECT 302 heating thermostat.</description>
+
+		<channels>
+			<channel id="mode" typeId="mode"/>
+			<channel id="locked" typeId="locked"/>
+			<channel id="device_locked" typeId="device_locked"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="actual_temp" typeId="actual_temp"/>
+			<channel id="set_temp" typeId="set_temp"/>
+			<channel id="eco_temp" typeId="eco_temp"/>
+			<channel id="comfort_temp" typeId="comfort_temp"/>
+			<channel id="radiator_mode" typeId="radiator_mode"/>
+			<channel id="next_change" typeId="next_change"/>
+			<channel id="next_temp" typeId="next_temp"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
 	<thing-type id="FRITZ_DECT_301">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox"/>
