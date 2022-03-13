@@ -28,7 +28,14 @@ import org.openhab.binding.livisismarthome.internal.client.api.entity.capability
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.event.EventDTO;
 import org.openhab.binding.livisismarthome.internal.listener.DeviceStatusListener;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -54,7 +61,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatusListener {
 
-    private static final String DEBUG = "DEBUG";
     private static final String LONG_PRESS = "LongPress";
     private static final String SHORT_PRESS = "ShortPress";
 
@@ -115,22 +121,8 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     private void commandSwitchDevice(Command command, LivisiBridgeHandler bridgeHandler) {
-        // DEBUGGING HELPER
-        // ----------------
-        final Optional<DeviceDTO> device = bridgeHandler.getDeviceById(deviceId);
-        if (device.isPresent() && DEBUG.equals(device.get().getConfig().getName())) {
-            logger.debug("DEBUG SWITCH ACTIVATED!");
-            if (OnOffType.ON.equals(command)) {
-                bridgeHandler.onEvent(
-                        "{\"sequenceNumber\": -1,\"type\": \"MessageCreated\",\"desc\": \"/desc/event/MessageCreated\",\"namespace\": \"core.RWE\",\"timestamp\": \"2019-07-07T18:41:47.2970000Z\",\"source\": \"/desc/device/SHC.RWE/1.0\",\"data\": {\"id\": \"6e5ce2290cd247208f95a5b53736958b\",\"type\": \"DeviceLowBattery\",\"read\": false,\"class\": \"Alert\",\"timestamp\": \"2019-07-07T18:41:47.232Z\",\"devices\": [\"/device/fe51785319854f36a621d0b4f8ea0e25\"],\"properties\": {\"deviceName\": \"Heizkörperthermostat\",\"serialNumber\": \"914110165056\",\"locationName\": \"Bad\"},\"namespace\": \"core.RWE\"}}");
-            } else {
-                bridgeHandler.onEvent(
-                        "{\"sequenceNumber\": -1,\"type\": \"MessageDeleted\",\"desc\": \"/desc/event/MessageDeleted\",\"namespace\": \"core.RWE\",\"timestamp\": \"2019-07-07T19:15:39.2100000Z\",\"data\": { \"id\": \"6e5ce2290cd247208f95a5b53736958b\" }}");
-            }
-        } else {
-            if (command instanceof OnOffType) {
-                bridgeHandler.commandSwitchDevice(deviceId, OnOffType.ON.equals(command));
-            }
+        if (command instanceof OnOffType) {
+            bridgeHandler.commandSwitchDevice(deviceId, OnOffType.ON.equals(command));
         }
     }
 
