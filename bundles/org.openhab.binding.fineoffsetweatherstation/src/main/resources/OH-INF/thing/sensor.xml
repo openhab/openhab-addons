@@ -18,5 +18,7 @@
 			<channel id="batteryLevel" typeId="system.battery-level"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
 		</channels>
+
+		<config-description-ref uri="thing-type:fineoffsetweatherstation:sensor"/>
 	</thing-type>
 </thing:thing-descriptions>

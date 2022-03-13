@@ -185,37 +185,33 @@ public enum Measurand {
     // will no longer be used
     LOWBATT("battery-low", (byte) 0x4C, "All sensor lowbatt 16 char 1", MeasureType.BOOLEAN),
 
-    PM25_24HAVG1("air-quality-1-channel-1", (byte) 0x4D, "Air Quality Channel 1",
-            MeasureType.MICRO_GRAMM_PER_CUBIC_METER),
+    PM25_24HAVG1("air-quality-24-hour-average-channel-1", (byte) 0x4D, "PM2.5 Air Quality 24 hour average channel 1",
+            MeasureType.PM25),
 
-    PM25_24HAVG2("air-quality-1-channel-2", (byte) 0x4E, "Air Quality Channel 2",
-            MeasureType.MICRO_GRAMM_PER_CUBIC_METER),
+    PM25_24HAVG2("air-quality-24-hour-average-channel-2", (byte) 0x4E, "PM2.5 Air Quality 24 hour average channel 2",
+            MeasureType.PM25),
 
-    PM25_24HAVG3("air-quality-1-channel-3", (byte) 0x4F, "Air Quality Channel 3",
-            MeasureType.MICRO_GRAMM_PER_CUBIC_METER),
+    PM25_24HAVG3("air-quality-24-hour-average-channel-3", (byte) 0x4F, "PM2.5 Air Quality 24 hour average channel 3",
+            MeasureType.PM25),
 
-    PM25_24HAVG4("air-quality-1-channel-4", (byte) 0x50, "Air Quality Channel 4",
-            MeasureType.MICRO_GRAMM_PER_CUBIC_METER),
+    PM25_24HAVG4("air-quality-24-hour-average-channel-4", (byte) 0x50, "PM2.5 Air Quality 24 hour average channel 4",
+            MeasureType.PM25),
 
-    PM25_CH1("air-quality-2-channel-1", (byte) 0x2A, "PM2.5 Air Quality Sensor Channel 1",
-            MeasureType.MICRO_GRAMM_PER_CUBIC_METER),
+    PM25_CH1("air-quality-channel-1", (byte) 0x2A, "PM2.5 Air Quality channel 1", MeasureType.PM25),
 
-    PM25_CH2("air-quality-2-channel-2", (byte) 0x51, "PM2.5 Air Quality Sensor Channel 2",
-            MeasureType.MICRO_GRAMM_PER_CUBIC_METER),
+    PM25_CH2("air-quality-channel-2", (byte) 0x51, "PM2.5 Air Quality channel 2", MeasureType.PM25),
 
-    PM25_CH3("air-quality-2-channel-3", (byte) 0x52, "PM2.5 Air Quality Sensor Channel 3",
-            MeasureType.MICRO_GRAMM_PER_CUBIC_METER),
+    PM25_CH3("air-quality-channel-3", (byte) 0x52, "PM2.5 Air Quality channel 3", MeasureType.PM25),
 
-    PM25_CH4("air-quality-2-channel-4", (byte) 0x53, "PM2.5 Air Quality Sensor Channel 4",
-            MeasureType.MICRO_GRAMM_PER_CUBIC_METER),
+    PM25_CH4("air-quality-channel-4", (byte) 0x53, "PM2.5 Air Quality channel 4", MeasureType.PM25),
 
-    LEAK_CH1("water-leak-channel-1", (byte) 0x58, "Leak Channel 1", MeasureType.BOOLEAN),
+    LEAK_CH1("water-leak-channel-1", (byte) 0x58, "Leak channel 1", MeasureType.BOOLEAN),
 
-    LEAK_CH2("water-leak-channel-2", (byte) 0x59, "Leak Channel 2", MeasureType.BOOLEAN),
+    LEAK_CH2("water-leak-channel-2", (byte) 0x59, "Leak channel 2", MeasureType.BOOLEAN),
 
-    LEAK_CH3("water-leak-channel-3", (byte) 0x5A, "Leak Channel 3", MeasureType.BOOLEAN),
+    LEAK_CH3("water-leak-channel-3", (byte) 0x5A, "Leak channel 3", MeasureType.BOOLEAN),
 
-    LEAK_CH4("water-leak-channel-4", (byte) 0x5B, "Leak Channel 4", MeasureType.BOOLEAN),
+    LEAK_CH4("water-leak-channel-4", (byte) 0x5B, "Leak channel 4", MeasureType.BOOLEAN),
 
     LIGHTNING("lightning-distance", (byte) 0x60, "lightning distance 1~40KM", MeasureType.KILOMETER),
 
@@ -223,28 +219,28 @@ public enum Measurand {
 
     LIGHTNING_POWER("lightning-power", (byte) 0x62, "lightning counter for the day", MeasureType.INT),
 
-    TF_USR1("temperature-external-channel-1", (byte) 0x63, "Soil or Water temperature Channel 1",
+    TF_USR1("temperature-external-channel-1", (byte) 0x63, "Soil or Water temperature channel 1",
             MeasureType.TEMPERATURE),
 
-    TF_USR2("temperature-external-channel-2", (byte) 0x64, "Soil or Water temperature Channel 2",
+    TF_USR2("temperature-external-channel-2", (byte) 0x64, "Soil or Water temperature channel 2",
             MeasureType.TEMPERATURE),
 
-    TF_USR3("temperature-external-channel-3", (byte) 0x65, "Soil or Water temperature Channel 3",
+    TF_USR3("temperature-external-channel-3", (byte) 0x65, "Soil or Water temperature channel 3",
             MeasureType.TEMPERATURE),
 
-    TF_USR4("temperature-external-channel-4", (byte) 0x66, "Soil or Water temperature Channel 4",
+    TF_USR4("temperature-external-channel-4", (byte) 0x66, "Soil or Water temperature channel 4",
             MeasureType.TEMPERATURE),
 
-    TF_USR5("temperature-external-channel-5", (byte) 0x67, "Soil or Water temperature Channel 5",
+    TF_USR5("temperature-external-channel-5", (byte) 0x67, "Soil or Water temperature channel 5",
             MeasureType.TEMPERATURE),
 
-    TF_USR6("temperature-external-channel-6", (byte) 0x68, "Soil or Water temperature Channel 6",
+    TF_USR6("temperature-external-channel-6", (byte) 0x68, "Soil or Water temperature channel 6",
             MeasureType.TEMPERATURE),
 
-    TF_USR7("temperature-external-channel-7", (byte) 0x69, "Soil or Water temperature Channel 7",
+    TF_USR7("temperature-external-channel-7", (byte) 0x69, "Soil or Water temperature channel 7",
             MeasureType.TEMPERATURE),
 
-    TF_USR8("temperature-external-channel-8", (byte) 0x6A, "Soil or Water temperature Channel 8",
+    TF_USR8("temperature-external-channel-8", (byte) 0x6A, "Soil or Water temperature channel 8",
             MeasureType.TEMPERATURE);
 
     private static final Map<Byte, Measurand> MEASURANDS = new HashMap<>();

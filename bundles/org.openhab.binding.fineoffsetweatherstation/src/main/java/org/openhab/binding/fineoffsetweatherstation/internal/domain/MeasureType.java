@@ -17,6 +17,7 @@ import static javax.measure.MetricPrefix.KILO;
 import static javax.measure.MetricPrefix.MILLI;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_HUMIDITY;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_ILLUMINATION;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_PM25;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_PRESSURE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_RAIN;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_RAIN_RATE;
@@ -80,7 +81,7 @@ public enum MeasureType {
 
     LUX(Units.LUX, 4, CHANNEL_ILLUMINATION, (data, offset) -> toUInt32(data, offset) / 10.),
 
-    MICRO_GRAMM_PER_CUBIC_METER(MICROGRAM_PER_CUBICMETRE, 2, null, (data, offset) -> toUInt16(data, offset) / 10.),
+    PM25(MICROGRAM_PER_CUBICMETRE, 2, CHANNEL_PM25, (data, offset) -> toUInt16(data, offset) / 10.),
 
     BOOLEAN(1, null, (data, offset) -> toUInt8(data[offset]) != 0 ? OnOffType.ON : OnOffType.OFF),
 

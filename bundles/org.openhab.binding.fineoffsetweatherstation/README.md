@@ -122,88 +122,96 @@ Valid sensors:
 
 ### `gateway` Channels
 
-| Channel                         | Type                      | Read/Write | Description                            |
-|---------------------------------|---------------------------|------------|----------------------------------------|
-| temperature-indoor              | Number:Temperature        | R          | Indoor temperature                     |
-| temperature-outdoor             | Number:Temperature        | R          | Outdoor temperature                    |
-| temperature-dew-point           | Number:Temperature        | R          | Dew point                              |
-| temperature-wind-chill          | Number:Temperature        | R          | Perceived temperature                  |
-| temperature-heat-index          | Number:Temperature        | R          | Heat index                             |
-| humidity-indoor                 | Number:Dimensionless      | R          | Humidity inside                        |
-| humidity-outdoor                | Number:Dimensionless      | R          | Humidity outside                       |
-| pressure-absolute               | Number:Pressure           | R          | Absolute pressure                      |
-| pressure-relative               | Number:Pressure           | R          | Relative pressure                      |
-| direction-wind                  | Number:Angle              | R          | Wind direction                         |
-| speed-wind                      | Number:Speed              | R          | Wind speed                             |
-| speed-gust                      | Number:Speed              | R          | Gust speed                             |
-| rain-event                      | Number:Length             | R          | Amount of rainfall at the last rain    |
-| rain-rate                       | Number:VolumetricFlowRate | R          | Rainfall rate                          |
-| rain-hour                       | Number:Length             | R          | Rainfall current hour                  |
-| rain-day                        | Number:Length             | R          | Rainfall today                         |
-| rain-week                       | Number:Length             | R          | Rainfall this week                     |
-| rain-month                      | Number:Length             | R          | Rainfall this month                    |
-| rain-year                       | Number:Length             | R          | Rainfall this year                     |
-| rain-total                      | Number:Length             | R          | Rainfall total                         |
-| illumination                    | Number:Illuminance        | R          | Light intensity                        |
-| irradiation-uv                  | Number:Intensity          | R          | UV irradiation                         |
-| uv-index                        | Number:Dimensionless      | R          | UV index                               |
-| wind-max-day                    | Number:Speed              | R          | Maximum wind speed today               |
-| temperature-channel-1           | Number:Temperature        | R          | Temperature channel 1                  |
-| temperature-channel-2           | Number:Temperature        | R          | Temperature channel 2                  |
-| temperature-channel-3           | Number:Temperature        | R          | Temperature channel 3                  |
-| temperature-channel-4           | Number:Temperature        | R          | Temperature channel 4                  |
-| temperature-channel-5           | Number:Temperature        | R          | Temperature channel 5                  |
-| temperature-channel-6           | Number:Temperature        | R          | Temperature channel 6                  |
-| temperature-channel-7           | Number:Temperature        | R          | Temperature channel 7                  |
-| temperature-channel-8           | Number:Temperature        | R          | Temperature channel 8                  |
-| humidity-channel-1              | Number:Dimensionless      | R          | Humidity channel 1                     |
-| humidity-channel-2              | Number:Dimensionless      | R          | Humidity channel 2                     |
-| humidity-channel-3              | Number:Dimensionless      | R          | Humidity channel 3                     |
-| humidity-channel-4              | Number:Dimensionless      | R          | Humidity channel 4                     |
-| humidity-channel-5              | Number:Dimensionless      | R          | Humidity channel 5                     |
-| humidity-channel-6              | Number:Dimensionless      | R          | Humidity channel 6                     |
-| humidity-channel-7              | Number:Dimensionless      | R          | Humidity channel 7                     |
-| humidity-channel-8              | Number:Dimensionless      | R          | Humidity channel 8                     |
-| temperature-soil-channel-1      | Number:Temperature        | R          | Soil temperature channel 1             |
-| temperature-soil-channel-2      | Number:Temperature        | R          | Soil temperature channel 2             |
-| temperature-soil-channel-3      | Number:Temperature        | R          | Soil temperature channel 3             |
-| temperature-soil-channel-4      | Number:Temperature        | R          | Soil temperature channel 4             |
-| temperature-soil-channel-5      | Number:Temperature        | R          | Soil temperature channel 5             |
-| temperature-soil-channel-6      | Number:Temperature        | R          | Soil temperature channel 6             |
-| temperature-soil-channel-7      | Number:Temperature        | R          | Soil temperature channel 7             |
-| temperature-soil-channel-8      | Number:Temperature        | R          | Soil temperature channel 8             |
-| temperature-soil-channel-9      | Number:Temperature        | R          | Soil temperature channel 9             |
-| temperature-soil-channel-10     | Number:Temperature        | R          | Soil temperature channel 10            |
-| temperature-soil-channel-11     | Number:Temperature        | R          | Soil temperature channel 11            |
-| temperature-soil-channel-12     | Number:Temperature        | R          | Soil temperature channel 12            |
-| temperature-soil-channel-13     | Number:Temperature        | R          | Soil temperature channel 13            |
-| temperature-soil-channel-14     | Number:Temperature        | R          | Soil temperature channel 14            |
-| temperature-soil-channel-15     | Number:Temperature        | R          | Soil temperature channel 15            |
-| temperature-soil-channel-16     | Number:Temperature        | R          | Soil temperature channel 16            |
-| moisture-soil-channel-1         | Number:Dimensionless      | R          | Soil moisture channel 1                |
-| moisture-soil-channel-2         | Number:Dimensionless      | R          | Soil moisture channel 2                |
-| moisture-soil-channel-3         | Number:Dimensionless      | R          | Soil moisture channel 3                |
-| moisture-soil-channel-4         | Number:Dimensionless      | R          | soil moisture channel 4                |
-| moisture-soil-channel-5         | Number:Dimensionless      | R          | Soil moisture channel 5                |
-| moisture-soil-channel-6         | Number:Dimensionless      | R          | Soil moisture channel 6                |
-| moisture-soil-channel-7         | Number:Dimensionless      | R          | Soil moisture channel 7                |
-| moisture-soil-channel-8         | Number:Dimensionless      | R          | Soil moisture channel 8                |
-| moisture-soil-channel-9         | Number:Dimensionless      | R          | Soil moisture channel 9                |
-| moisture-soil-channel-10        | Number:Dimensionless      | R          | Soil moisture channel 10               |
-| moisture-soil-channel-11        | Number:Dimensionless      | R          | Soil moisture channel 11               |
-| moisture-soil-channel-12        | Number:Dimensionless      | R          | Soil moisture channel 12               |
-| moisture-soil-channel-13        | Number:Dimensionless      | R          | soil moisture channel 13               |
-| moisture-soil-channel-14        | Number:Dimensionless      | R          | Soil moisture channel 14               |
-| moisture-soil-channel-15        | Number:Dimensionless      | R          | Soil moisture channel 15               |
-| moisture-soil-channel-16        | Number:Dimensionless      | R          | Soil moisture channel 16               |
-| temperature-external-channel-1  | Number:Temperature        | R          | External temperature sensor channel 1 |
-| temperature-external-channel-2  | Number:Temperature        | R          | External temperature sensor channel 2  |
-| temperature-external-channel-3  | Number:Temperature        | R          | External temperature sensor channel 3  |
-| temperature-external-channel-4  | Number:Temperature        | R          | External temperature sensor channel 4  |
-| temperature-external-channel-5  | Number:Temperature        | R          | External temperature sensor channel 5  |
-| temperature-external-channel-6  | Number:Temperature        | R          | External temperature sensor channel 6  |
-| temperature-external-channel-7  | Number:Temperature        | R          | External temperature sensor channel 7  |
-| temperature-external-channel-8  | Number:Temperature        | R          | External temperature sensor channel 8  |
+| Channel                               | Type                      | Read/Write | Description                                 |
+|---------------------------------------|---------------------------|------------|---------------------------------------------|
+| temperature-indoor                    | Number:Temperature        | R          | Indoor temperature                          |
+| temperature-outdoor                   | Number:Temperature        | R          | Outdoor temperature                         |
+| temperature-dew-point                 | Number:Temperature        | R          | Dew point                                   |
+| temperature-wind-chill                | Number:Temperature        | R          | Perceived temperature                       |
+| temperature-heat-index                | Number:Temperature        | R          | Heat index                                  |
+| humidity-indoor                       | Number:Dimensionless      | R          | Humidity inside                             |
+| humidity-outdoor                      | Number:Dimensionless      | R          | Humidity outside                            |
+| pressure-absolute                     | Number:Pressure           | R          | Absolute pressure                           |
+| pressure-relative                     | Number:Pressure           | R          | Relative pressure                           |
+| direction-wind                        | Number:Angle              | R          | Wind direction                              |
+| speed-wind                            | Number:Speed              | R          | Wind speed                                  |
+| speed-gust                            | Number:Speed              | R          | Gust speed                                  |
+| rain-event                            | Number:Length             | R          | Amount of rainfall at the last rain         |
+| rain-rate                             | Number:VolumetricFlowRate | R          | Rainfall rate                               |
+| rain-hour                             | Number:Length             | R          | Rainfall current hour                       |
+| rain-day                              | Number:Length             | R          | Rainfall today                              |
+| rain-week                             | Number:Length             | R          | Rainfall this week                          |
+| rain-month                            | Number:Length             | R          | Rainfall this month                         |
+| rain-year                             | Number:Length             | R          | Rainfall this year                          |
+| rain-total                            | Number:Length             | R          | Rainfall total                              |
+| illumination                          | Number:Illuminance        | R          | Light intensity                             |
+| irradiation-uv                        | Number:Intensity          | R          | UV irradiation                              |
+| uv-index                              | Number:Dimensionless      | R          | UV index                                    |
+| wind-max-day                          | Number:Speed              | R          | Maximum wind speed today                    |
+| temperature-channel-1                 | Number:Temperature        | R          | Temperature channel 1                       |
+| temperature-channel-2                 | Number:Temperature        | R          | Temperature channel 2                       |
+| temperature-channel-3                 | Number:Temperature        | R          | Temperature channel 3                       |
+| temperature-channel-4                 | Number:Temperature        | R          | Temperature channel 4                       |
+| temperature-channel-5                 | Number:Temperature        | R          | Temperature channel 5                       |
+| temperature-channel-6                 | Number:Temperature        | R          | Temperature channel 6                       |
+| temperature-channel-7                 | Number:Temperature        | R          | Temperature channel 7                       |
+| temperature-channel-8                 | Number:Temperature        | R          | Temperature channel 8                       |
+| humidity-channel-1                    | Number:Dimensionless      | R          | Humidity channel 1                          |
+| humidity-channel-2                    | Number:Dimensionless      | R          | Humidity channel 2                          |
+| humidity-channel-3                    | Number:Dimensionless      | R          | Humidity channel 3                          |
+| humidity-channel-4                    | Number:Dimensionless      | R          | Humidity channel 4                          |
+| humidity-channel-5                    | Number:Dimensionless      | R          | Humidity channel 5                          |
+| humidity-channel-6                    | Number:Dimensionless      | R          | Humidity channel 6                          |
+| humidity-channel-7                    | Number:Dimensionless      | R          | Humidity channel 7                          |
+| humidity-channel-8                    | Number:Dimensionless      | R          | Humidity channel 8                          |
+| temperature-soil-channel-1            | Number:Temperature        | R          | Soil temperature channel 1                  |
+| temperature-soil-channel-2            | Number:Temperature        | R          | Soil temperature channel 2                  |
+| temperature-soil-channel-3            | Number:Temperature        | R          | Soil temperature channel 3                  |
+| temperature-soil-channel-4            | Number:Temperature        | R          | Soil temperature channel 4                  |
+| temperature-soil-channel-5            | Number:Temperature        | R          | Soil temperature channel 5                  |
+| temperature-soil-channel-6            | Number:Temperature        | R          | Soil temperature channel 6                  |
+| temperature-soil-channel-7            | Number:Temperature        | R          | Soil temperature channel 7                  |
+| temperature-soil-channel-8            | Number:Temperature        | R          | Soil temperature channel 8                  |
+| temperature-soil-channel-9            | Number:Temperature        | R          | Soil temperature channel 9                  |
+| temperature-soil-channel-10           | Number:Temperature        | R          | Soil temperature channel 10                 |
+| temperature-soil-channel-11           | Number:Temperature        | R          | Soil temperature channel 11                 |
+| temperature-soil-channel-12           | Number:Temperature        | R          | Soil temperature channel 12                 |
+| temperature-soil-channel-13           | Number:Temperature        | R          | Soil temperature channel 13                 |
+| temperature-soil-channel-14           | Number:Temperature        | R          | Soil temperature channel 14                 |
+| temperature-soil-channel-15           | Number:Temperature        | R          | Soil temperature channel 15                 |
+| temperature-soil-channel-16           | Number:Temperature        | R          | Soil temperature channel 16                 |
+| moisture-soil-channel-1               | Number:Dimensionless      | R          | Soil moisture channel 1                     |
+| moisture-soil-channel-2               | Number:Dimensionless      | R          | Soil moisture channel 2                     |
+| moisture-soil-channel-3               | Number:Dimensionless      | R          | Soil moisture channel 3                     |
+| moisture-soil-channel-4               | Number:Dimensionless      | R          | soil moisture channel 4                     |
+| moisture-soil-channel-5               | Number:Dimensionless      | R          | Soil moisture channel 5                     |
+| moisture-soil-channel-6               | Number:Dimensionless      | R          | Soil moisture channel 6                     |
+| moisture-soil-channel-7               | Number:Dimensionless      | R          | Soil moisture channel 7                     |
+| moisture-soil-channel-8               | Number:Dimensionless      | R          | Soil moisture channel 8                     |
+| moisture-soil-channel-9               | Number:Dimensionless      | R          | Soil moisture channel 9                     |
+| moisture-soil-channel-10              | Number:Dimensionless      | R          | Soil moisture channel 10                    |
+| moisture-soil-channel-11              | Number:Dimensionless      | R          | Soil moisture channel 11                    |
+| moisture-soil-channel-12              | Number:Dimensionless      | R          | Soil moisture channel 12                    |
+| moisture-soil-channel-13              | Number:Dimensionless      | R          | soil moisture channel 13                    |
+| moisture-soil-channel-14              | Number:Dimensionless      | R          | Soil moisture channel 14                    |
+| moisture-soil-channel-15              | Number:Dimensionless      | R          | Soil moisture channel 15                    |
+| moisture-soil-channel-16              | Number:Dimensionless      | R          | Soil moisture channel 16                    |
+| air-quality-24-hour-average-channel-1 | Number:Density            | R          | PM2.5 Air Quality 24 hour average channel 1 |
+| air-quality-24-hour-average-channel-2 | Number:Density            | R          | PM2.5 Air Quality 24 hour average channel 2 |
+| air-quality-24-hour-average-channel-3 | Number:Density            | R          | PM2.5 Air Quality 24 hour average channel 3 |
+| air-quality-24-hour-average-channel-4 | Number:Density            | R          | PM2.5 Air Quality 24 hour average channel 4 |
+| air-quality-channel-1                 | Number:Density            | R          | PM2.5 Air Quality channel 1                 |
+| air-quality-channel-2                 | Number:Density            | R          | PM2.5 Air Quality channel 2                 |
+| air-quality-channel-3                 | Number:Density            | R          | PM2.5 Air Quality channel 3                 |
+| air-quality-channel-4                 | Number:Density            | R          | PM2.5 Air Quality channel 4                 |
+| temperature-external-channel-1        | Number:Temperature        | R          | external temperature sensor channel 1       |
+| temperature-external-channel-2        | Number:Temperature        | R          | External temperature sensor channel 2       |
+| temperature-external-channel-3        | Number:Temperature        | R          | External temperature sensor channel 3       |
+| temperature-external-channel-4        | Number:Temperature        | R          | External temperature sensor channel 4       |
+| temperature-external-channel-5        | Number:Temperature        | R          | External temperature sensor channel 5       |
+| temperature-external-channel-6        | Number:Temperature        | R          | External temperature sensor channel 6       |
+| temperature-external-channel-7        | Number:Temperature        | R          | External temperature sensor channel 7       |
+| temperature-external-channel-8        | Number:Temperature        | R          | External temperature sensor channel 8       |
 
 ### `sensor` Channels
 

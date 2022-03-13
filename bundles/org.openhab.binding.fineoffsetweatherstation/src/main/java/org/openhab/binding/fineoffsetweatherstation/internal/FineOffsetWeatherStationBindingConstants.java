@@ -42,6 +42,7 @@ public class FineOffsetWeatherStationBindingConstants {
     public static final ChannelTypeUID CHANNEL_UV_INDEX = new ChannelTypeUID(BINDING_ID, "uv-index");
     public static final ChannelTypeUID CHANNEL_UV_RADIATION = new ChannelTypeUID(BINDING_ID, "uv-radiation");
     public static final ChannelTypeUID CHANNEL_RAIN_RATE = new ChannelTypeUID(BINDING_ID, "rain-rate");
+    public static final ChannelTypeUID CHANNEL_PM25 = new ChannelTypeUID(BINDING_ID, "pm25");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY, THING_TYPE_SENSOR);
 

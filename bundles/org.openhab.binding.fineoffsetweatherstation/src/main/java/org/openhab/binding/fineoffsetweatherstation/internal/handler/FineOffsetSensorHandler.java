@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.fineoffsetweatherstation.internal.handler;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants;
@@ -74,7 +76,7 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
         Integer percentage = sensorDevice.getBatteryStatus().getPercentage();
         if (percentage != null) {
             updateState(FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_BATTERY_LEVEL,
-                    new DecimalType(percentage));
+                    new DecimalType(new BigDecimal(percentage)));
         } else {
             @Nullable
             Channel channel = thing.getChannel(FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_BATTERY_LEVEL);

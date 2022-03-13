@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetGatewayConfiguration;
+import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetSensorConfiguration;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants;
 import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Command;
@@ -129,9 +130,9 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
             ThingUID uid = new ThingUID(FineOffsetWeatherStationBindingConstants.THING_TYPE_SENSOR, bridgeUID,
                     sensorDevice.getSensor().name());
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                    .withProperty(Thing.PROPERTY_MODEL_ID, sensorDevice.getSensor().name())
-                    .withRepresentationProperty(Thing.PROPERTY_MODEL_ID).withLabel(sensorDevice.getSensor().name())
-                    .build();
+                    .withProperty(FineOffsetSensorConfiguration.SENSOR, sensorDevice.getSensor().name())
+                    .withRepresentationProperty(FineOffsetSensorConfiguration.SENSOR)
+                    .withLabel(sensorDevice.getSensor().name()).build();
             thingDiscovered(result);
         }
     }

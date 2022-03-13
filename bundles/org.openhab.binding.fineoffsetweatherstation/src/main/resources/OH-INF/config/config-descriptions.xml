@@ -28,4 +28,10 @@
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
+
+	<config-description uri="thing-type:fineoffsetweatherstation:sensor">
+		<parameter name="sensor" type="text" required="true">
+			<label>Sensor</label>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>

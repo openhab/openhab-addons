@@ -108,4 +108,15 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="pm25">
+		<item-type>Number:Density</item-type>
+		<label>PM2.5</label>
+		<category>AirQuality</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

@@ -38,4 +38,9 @@ public class MeasuredValue {
     public State getState() {
         return state;
     }
+
+    @Override
+    public String toString() {
+        return "MeasuredValue{" + "measurand=" + measurand + ", state=" + state + '}';
+    }
 }
