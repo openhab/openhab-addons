@@ -28,13 +28,7 @@ import org.openhab.binding.livisismarthome.internal.client.api.entity.capability
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.event.EventDTO;
 import org.openhab.binding.livisismarthome.internal.listener.DeviceStatusListener;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
-import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.StopMoveType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.types.*;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -178,9 +172,11 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     private void commandUpdatePointTemperature(Command command, LivisiBridgeHandler bridgeHandler) {
-        if (command instanceof DecimalType) {
-            final DecimalType pointTemperature = (DecimalType) command;
-            bridgeHandler.commandUpdatePointTemperature(deviceId, pointTemperature.doubleValue());
+        if (command instanceof QuantityType) {
+            final QuantityType pointTemperature = (QuantityType) command;
+            if (pointTemperature.doubleValue() >= 6 && pointTemperature.doubleValue() <= 30) {
+                bridgeHandler.commandUpdatePointTemperature(deviceId, pointTemperature.doubleValue());
+            }
         }
     }
 
