@@ -179,10 +179,10 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             Optional<DeviceDTO> bridgeDeviceOptional = deviceStructMan.getBridgeDevice();
             if (bridgeDeviceOptional.isPresent()) {
                 DeviceDTO bridgeDevice = bridgeDeviceOptional.get();
-
-                setBridgeProperties(bridgeDevice);
                 bridgeId = bridgeDevice.getId();
-                registerDeviceStatusListener(bridgeId, this);
+                setBridgeProperties(bridgeDevice);
+
+                registerDeviceStatusListener(bridgeDevice.getId(), this);
                 onDeviceStateChanged(bridgeDevice); // initialize channels
 
                 startWebSocket(bridgeDevice);
@@ -348,8 +348,10 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      *
      * @param deviceId id of the device to which the listener is registered
      */
-    public void unregisterDeviceStatusListener(final String deviceId) {
-        deviceStatusListeners.remove(deviceId);
+    public void unregisterDeviceStatusListener(@Nullable final String deviceId) {
+        if(deviceId != null) {
+            deviceStatusListeners.remove(deviceId);
+        }
     }
 
     /**
