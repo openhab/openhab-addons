@@ -70,8 +70,11 @@ Name | Type | Description | Read/Write | Zone type
 `acPower` | Switch | Indicates if the Air-Conditioning is Off or On | R | `AC`
 `hvacMode` | String | Active mode, one of `OFF`, `HEAT`, `COOL`, `DRY`, `FAN`, `AUTO` | RW | `HEATING` and `DHW` support `OFF` and `HEAT`, `AC` can support more
 `targetTemperature` | Number:Temperature | Set point | RW | `HEATING`, `AC`, `DHW`
-`fanspeed` | String | Fan speed, one of `AUTO`, `LOW`, `MIDDLE`, `HIGH` | RW | `AC`
-`swing` | Switch | Swing on/off | RW | `AC`
+`fanspeed`<sup>1)</sup> | String | Fan speed, one of `AUTO`, `LOW`, `MIDDLE`, `HIGH` | RW | `AC`
+`fanLevel`<sup>1)</sup> | String | Fan speed, one of `AUTO`, `SILENT`, `LEVEL1`, `LEVEL2`, `LEVEL3`, `LEVEL4` | RW | `AC`
+`swing`<sup>2)</sup> | Switch | Swing on/off | RW | `AC`
+`verticalSwing`<sup>2)</sup> | String | Vertical swing state, one of `ON`, `UP`, `MID_UP`, `MID`, `MID_DOWN`, `DOWN`, `AUTO` | RW | `AC`
+`horizontalSwing`<sup>2)</sup> | String | Horizontal swing state, one of `ON`, `LEFT`, `MID_LEFT`, `MID`, `MID_RIGHT`, `RIGHT`, `AUTO` | RW | `AC`
 `overlayExpiry` | DateTime | End date and time of a timer | R | `HEATING`, `AC`, `DHW`
 `timerDuration` | Number | Timer duration in minutes | RW | `HEATING`, `AC`, `DHW`
 `operationMode` | String | Operation mode the zone is currently in. One of `SCHEDULE` (follow smart schedule), `MANUAL` (override until ended manually), `TIMER` (override for a given time), `UNTIL_CHANGE` (active until next smart schedule block or until AWAY mode becomes active) | RW | `HEATING`, `AC`, `DHW`
@@ -79,6 +82,15 @@ Name | Type | Description | Read/Write | Zone type
 `openWindowDetected` | Switch | An open window has been detected in the Zone | R | Any Zone
 
 The `RW` items are used to either override the schedule or to return to it (if `hvacMode` is set to `SCHEDULE`).
+
+<sup>1)</sup> Simpler A/C units have fan speed settings in the range [`LOW`, `MIDDLE`, `HIGH`].
+However more sophisticated devices have settings in the range [`SILENT`, `LEVEL1`, `LEVEL2`, `LEVEL3`, `LEVEL4`].
+So you need to choose the respective Channel type name that matches the features of your device.
+
+<sup>2)</sup> Simpler A/C units have a single switch type swing function that is either `ON` or `OFF`.
+However more sophisticated devices may have either a vertical swing, a horizontal swing, or both, which could also have more complex settings.
+For example the horizontal swing function could simply be 'ON' or it could have more complex settings in the range [`LEFT`, `MID_LEFT`, `MID`, `MID_RIGHT`, `RIGHT`].
+So you need to choose the respective Channel type name that matches the features of your device.
 
 ### Item Command Collection
 

@@ -552,6 +552,41 @@ definitions:
     - HIGH
     - AUTO
 
+  ACFanLevel:
+    type: string
+    description: Cooling system fan speed.
+    enum:
+    - SILENT
+    - LEVEL1
+    - LEVEL2
+    - LEVEL3
+    - LEVEL4
+    - AUTO
+
+  ACHorizontalSwing: 
+    type: string
+    description: Horizontal swing.
+    enum:
+    - 'ON'
+    - LEFT
+    - MID_LEFT
+    - MID
+    - MID_RIGHT
+    - RIGHT
+    - AUTO
+
+  ACVerticalSwing:
+    type: string
+    description: Vertical swing.
+    enum:
+    - 'ON'
+    - UP
+    - MID_UP
+    - MID
+    - MID_DOWN
+    - DOWN
+    - AUTO
+ 
   AcMode:
     type: string
     description: Cooling system mode.
@@ -582,6 +617,15 @@ definitions:
         swing:
           description: Whether the angle of the air stream should be fixed or not, if power is `ON` and configuring this is supported in this AC mode.
           $ref: "#/definitions/Power"
+        fanLevel:
+          description: The desired fan speed level, if power is `ON` and fan speeds are supported in this AC mode.
+          $ref: "#/definitions/ACFanLevel"
+        verticalSwing:
+          description: Whether the angle of the vertical air stream should be fixed or not, if power is `ON` and configuring this is supported in this AC mode. And if it is fixed, determines the respective position.
+          $ref: "#/definitions/ACVerticalSwing"
+        horizontalSwing:
+          description: Whether the angle of the horizontal air stream should be fixed or not, if power is `ON` and configuring this is supported in this AC mode. And if it is fixed, determines the respective position.
+          $ref: "#/definitions/ACHorizontalSwing"
       required:
       - power
 
@@ -990,6 +1034,21 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/Power"
+      fanLevels:
+        description: Cooling system fan speed.
+        type: array
+        items:
+          $ref: "#/definitions/ACFanLevel"
+      horizontalSwings:
+        description: Cooling system horizontal swing mode.
+        type: array
+        items:
+          $ref: "#/definitions/ACHorizontalSwing"
+      verticalSwings:
+        description: Cooling system vertical swing mode.
+        type: array
+        items:
+          $ref: "#/definitions/ACVerticalSwing"
 
   HeatingCapabilities:
     x-discriminator-value: HEATING

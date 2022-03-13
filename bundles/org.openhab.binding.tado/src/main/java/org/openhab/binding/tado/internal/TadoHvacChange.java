@@ -14,9 +14,12 @@ package org.openhab.binding.tado.internal;
 
 import java.io.IOException;
 
+import org.openhab.binding.tado.internal.TadoBindingConstants.FanLevel;
 import org.openhab.binding.tado.internal.TadoBindingConstants.FanSpeed;
+import org.openhab.binding.tado.internal.TadoBindingConstants.HorizontalSwing;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.OperationMode;
+import org.openhab.binding.tado.internal.TadoBindingConstants.VerticalSwing;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
 import org.openhab.binding.tado.internal.api.model.Overlay;
@@ -112,6 +115,21 @@ public class TadoHvacChange {
 
     public TadoHvacChange withFanSpeed(String fanSpeed) {
         withFanSpeed(FanSpeed.valueOf(fanSpeed.toUpperCase()));
+        return this;
+    }
+
+    public TadoHvacChange withFanLevel(FanLevel fanLevel) {
+        settingsBuilder.withFanLevel(fanLevel);
+        return this;
+    }
+
+    public TadoHvacChange withHorizontalSwing(HorizontalSwing horizontalSwing) {
+        settingsBuilder.withHorizontalSwing(horizontalSwing);
+        return this;
+    }
+
+    public TadoHvacChange withVerticalSwing(VerticalSwing verticalSwing) {
+        settingsBuilder.withVerticalSwing(verticalSwing);
         return this;
     }
 

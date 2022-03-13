@@ -74,6 +74,41 @@ public class TadoBindingConstants {
         AUTO
     }
 
+    public static final String CHANNEL_ZONE_FAN_LEVEL = "fanLevel";
+
+    public static enum FanLevel {
+        SILENT,
+        LEVEL1,
+        LEVEL2,
+        LEVEL3,
+        LEVEL4,
+        AUTO
+    }
+
+    public static final String CHANNEL_ZONE_HORIZONTAL_SWING = "horizontalSwing";
+
+    public static enum HorizontalSwing {
+        ON,
+        LEFT,
+        MID_LEFT,
+        MID,
+        MID_RIGHT,
+        RIGHT,
+        AUTO
+    }
+
+    public static final String CHANNEL_ZONE_VERTICAL_SWING = "verticalSwing";
+
+    public static enum VerticalSwing {
+        ON,
+        UP,
+        MID_UP,
+        MID,
+        MID_DOWN,
+        DOWN,
+        AUTO
+    }
+
     public static final String CHANNEL_ZONE_OPERATION_MODE = "operationMode";
 
     public static enum OperationMode {
