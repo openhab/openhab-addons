@@ -124,10 +124,6 @@
 		<item-type>Switch</item-type>
 		<label>Water Leak Detection</label>
 		<category>Alarm</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -135,10 +131,6 @@
 		<item-type>Number</item-type>
 		<label>Lightning Counter</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>None</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -157,10 +149,6 @@
 		<item-type>Number:Length</item-type>
 		<label>Lightning Distance</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>None</tag>
-		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
