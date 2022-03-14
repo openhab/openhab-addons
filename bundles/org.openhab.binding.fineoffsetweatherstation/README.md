@@ -42,7 +42,23 @@ This binding works offline by [implementing the wire protocol](doc/protocol-v1.6
     - WH2680
     - WH2900
     - WH2950
-- `sensor`: A Fine Offset sensor which is connected to the bridge with the ThingTypeUID `fineoffsetweatherstation:sensor`. Since the gateway collects all the sensor data and harmonizes them, the sensor thing itself will only hold information about the signal and battery status.
+- `sensor`: A Fine Offset sensor which is connected to the bridge with the ThingTypeUID `fineoffsetweatherstation:sensor`. Since the gateway collects all the sensor data and harmonizes them, the sensor thing itself will only hold information about the signal and battery status. This is a list of sensors supported by the protocol:
+  - WH24 - 7-in-1 weather station, Sensor for wind speed & direction, solar radiation & light, temperature, humidity, rainfall
+  - WH25 - 3-in-1 sensor temperature, humidity, pressure
+  - WH26 - 2-in-1 sensor temperature, humidity
+  - WH31 - 2-in-1 sensor temperature, humidity
+  - WH34 - External temperature sensor
+  - WH35 - Leaf wetness sensor
+  - WH40 - Rainfall sensor
+  - WH41 - Outdoor air quality sensor
+  - WH45 - Air quality sensor
+  - WH51 - Soil moisture sensor
+  - WH55 - Water leak detection sensor
+  - WH57 - Lightning detection sensor
+  - WH65 - 7-in-1 weather station for wind speed & direction, solar radiation & light, temperature, humidity and rainfall
+  - WH68 - 4-in-1 weather station - Solar-powered sensor for wind speed & direction, solar radiation & light
+  - WH80 - 6-in-1 weather station - Ultrasonic sensor for wind speed & direction, solar radiation & light, temperature & humidity
+  - WH90 - A new weather station
 
 ## Discovery
 
@@ -204,6 +220,13 @@ Valid sensors:
 | air-quality-channel-2                 | Number:Density            | R          | PM2.5 Air Quality channel 2                 |
 | air-quality-channel-3                 | Number:Density            | R          | PM2.5 Air Quality channel 3                 |
 | air-quality-channel-4                 | Number:Density            | R          | PM2.5 Air Quality channel 4                 |
+| water-leak-channel-1                  | Switch                    | R          | Water leak detection channel 1              |
+| water-leak-channel-2                  | Switch                    | R          | Water leak detection channel 2              |
+| water-leak-channel-3                  | Switch                    | R          | Water leak detection channel 3              |
+| water-leak-channel-4                  | Switch                    | R          | Water leak detection channel 4              |
+| lightning-distance                    | Number:Length             | R          | lightning distance                          |
+| lightning-time                        | DateTime                  | R          | time of last lightning strike               |
+| lightning-counter                     | Number                    | R          | lightning strikes today                     |
 | temperature-external-channel-1        | Number:Temperature        | R          | external temperature sensor channel 1       |
 | temperature-external-channel-2        | Number:Temperature        | R          | External temperature sensor channel 2       |
 | temperature-external-channel-3        | Number:Temperature        | R          | External temperature sensor channel 3       |

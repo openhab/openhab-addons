@@ -119,4 +119,48 @@
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="water-leak-detection">
+		<item-type>Switch</item-type>
+		<label>Water leak detection</label>
+		<category>Alarm</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lightning-counter">
+		<item-type>Number</item-type>
+		<label>Lightning counter</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>None</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lightning-time">
+		<item-type>DateTime</item-type>
+		<label>Lightning time</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lightning-distance">
+		<item-type>Number:Length</item-type>
+		<label>Lightning distance</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>None</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

@@ -205,19 +205,21 @@ public enum Measurand {
 
     PM25_CH4("air-quality-channel-4", (byte) 0x53, "PM2.5 Air Quality channel 4", MeasureType.PM25),
 
-    LEAK_CH1("water-leak-channel-1", (byte) 0x58, "Leak channel 1", MeasureType.BOOLEAN),
+    LEAK_CH1("water-leak-channel-1", (byte) 0x58, "Leak channel 1", MeasureType.WATER_LEAK_DETECTION),
 
-    LEAK_CH2("water-leak-channel-2", (byte) 0x59, "Leak channel 2", MeasureType.BOOLEAN),
+    LEAK_CH2("water-leak-channel-2", (byte) 0x59, "Leak channel 2", MeasureType.WATER_LEAK_DETECTION),
 
-    LEAK_CH3("water-leak-channel-3", (byte) 0x5A, "Leak channel 3", MeasureType.BOOLEAN),
+    LEAK_CH3("water-leak-channel-3", (byte) 0x5A, "Leak channel 3", MeasureType.WATER_LEAK_DETECTION),
 
-    LEAK_CH4("water-leak-channel-4", (byte) 0x5B, "Leak channel 4", MeasureType.BOOLEAN),
+    LEAK_CH4("water-leak-channel-4", (byte) 0x5B, "Leak channel 4", MeasureType.WATER_LEAK_DETECTION),
 
-    LIGHTNING("lightning-distance", (byte) 0x60, "lightning distance 1~40KM", MeasureType.KILOMETER),
+    // `LIGHTNING` is the name in the spec, so we keep it here as it
+    LIGHTNING("lightning-distance", (byte) 0x60, "lightning distance 1~40KM", MeasureType.LIGHTNING_DISTANCE),
 
-    LIGHTNING_TIME("lightning-time", (byte) 0x61, "lightning happened time", MeasureType.DATE_TIME),
+    LIGHTNING_TIME("lightning-time", (byte) 0x61, "lightning happened time", MeasureType.LIGHTNING_TIME),
 
-    LIGHTNING_POWER("lightning-power", (byte) 0x62, "lightning counter for the day", MeasureType.INT),
+    // `LIGHTNING_POWER` is the name in the spec, so we keep it here as it
+    LIGHTNING_POWER("lightning-counter", (byte) 0x62, "lightning counter for the day", MeasureType.LIGHTNING_COUNTER),
 
     TF_USR1("temperature-external-channel-1", (byte) 0x63, "Soil or Water temperature channel 1",
             MeasureType.TEMPERATURE),

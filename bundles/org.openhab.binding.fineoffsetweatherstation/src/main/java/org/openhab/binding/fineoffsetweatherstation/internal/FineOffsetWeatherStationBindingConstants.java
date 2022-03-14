@@ -43,6 +43,12 @@ public class FineOffsetWeatherStationBindingConstants {
     public static final ChannelTypeUID CHANNEL_UV_RADIATION = new ChannelTypeUID(BINDING_ID, "uv-radiation");
     public static final ChannelTypeUID CHANNEL_RAIN_RATE = new ChannelTypeUID(BINDING_ID, "rain-rate");
     public static final ChannelTypeUID CHANNEL_PM25 = new ChannelTypeUID(BINDING_ID, "pm25");
+    public static final ChannelTypeUID CHANNEL_WATER_LEAK_DETECTION = new ChannelTypeUID(BINDING_ID,
+            "water-leak-detection");
+    public static final ChannelTypeUID CHANNEL_LIGHTNING_COUNTER = new ChannelTypeUID(BINDING_ID, "lightning-counter");
+    public static final ChannelTypeUID CHANNEL_LIGHTNING_TIME = new ChannelTypeUID(BINDING_ID, "lightning-time");
+    public static final ChannelTypeUID CHANNEL_LIGHTNING_DISTANCE = new ChannelTypeUID(BINDING_ID,
+            "lightning-distance");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY, THING_TYPE_SENSOR);
 
