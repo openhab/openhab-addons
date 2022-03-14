@@ -67,9 +67,9 @@ However, only devices will appear that are added in the LIVISI SmartHome app bef
 | alarm                   | Switch        | Switches the alarm (ON/OFF)                                           | WSD, WSD2                                             |
 | battery_low             | Switch        | Indicates, if the battery is low (ON/OFF)                             | BRC8, ISC2, RST, WDS, WMD, WMD0, WRT, WSC2, WSD, WSD2 |
 | contact                 | Contact       | Indicates the contact state (OPEN/CLOSED)                             | WDS                                                   |
-| cpu                     | Number        | CPU-Usage of the SHC in percent                                       |                                                       |
+| cpu                     | Number        | CPU-Usage of the SHC in percent                                       | SHC (bridge)                                          |
 | dimmer                  | Dimmer        | Allows to dimm a light device                                         | ISD2, PSD                                             |
-| disk                    | Number        | Disk-Usage of the SHC in percent                                      |                                                       |
+| disk                    | Number        | Disk-Usage of the SHC in percent                                      | SHC (bridge)                                          |
 | frost_warning           | Switch        | active, if the measured temperature is too low (ON/OFF)               | RST                                                   |
 | humidity                | Number        | Relative humidity in percent                                          | RST, WRT                                              |
 | button1                 | -             | Trigger channel for rules, fires with each push                       | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
@@ -89,14 +89,14 @@ However, only devices will appear that are added in the LIVISI SmartHome app bef
 | button7_count           | Number        | Number of button pushes for button 7, increased with each push        | BRC8                                                  |
 | button8_count           | Number        | Number of button pushes for button 8, increased with each push        | BRC8                                                  |
 | luminance               | Number        | Indicates the measured luminance in percent                           | WMD, WMD0                                             |
-| memory                  | Number        | Memory-Usage of the SHC in percent                                    |                                                       |
+| memory                  | Number        | Memory-Usage of the SHC in percent                                    | SHC (bridge)                                          |
 | mold_warning            | Switch        | Active, if the measured humidity is too low (ON/OFF)                  | RST                                                   |
 | motion_count            | Number        | Number of detected motions, increases with each detected motion       | WMD, WMDO                                             |
 | operation_mode          | String        | The mode of a thermostat (auto/manual)                                | RST                                                   |
-| rollershutter*          | Rollershutter | Controls a roller shutter                                             | ISR2                                                  |
+| rollershutter           | Rollershutter | Controls a roller shutter                                             | ISR2                                                  |
 | set_temperature         | Number        | Sets the target temperature in °C (min 6 °C, max 30 °C)               | RST, WRT                                              |
 | smoke                   | Switch        | Indicates, if smoke was detected (ON/OFF)                             | WSD, WSD2                                             |
-| status                  | String        | Status of the SHC (ACTIVE, INITIALIZING or SHUTTINGDOWN)              |                                                       |
+| status                  | String        | Status of the SHC (ACTIVE, INITIALIZING or SHUTTINGDOWN)              | SHC (bridge)                                          |
 | switch                  | Switch        | A switch to turn the device or variable on/off (ON/OFF)               | ISS2, PSS, PSSO, VariableActuator                     |
 | temperature             | Number        | Holds the actual temperature in °C                                    | RST, WRT                                              |
 | window_reduction_active | Switch        | Indicates if a linked window is open and temperature reduced (ON/OFF) | RST                                                   |
@@ -109,11 +109,11 @@ When `invert` is `true` than `0` on LIVISI is `UP` and `100` is `DOWN`.
 
 ## Triggers
 
-| Trigger Type  | Description                                   | Available on thing                                    |
-|---------------|-----------------------------------------------|-------------------------------------------------------|
-| SHORT_PRESSED | Fired when you press a button short           | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
-| LONG_PRESSED  | Fired when you press a button longer          | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
-| PRESSED       | Fired when you press a button (short or long) | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
+| Trigger Type  | Description                                                             | Available on thing                  |
+|---------------|-------------------------------------------------------------------------|-------------------------------------|
+| SHORT_PRESSED | Fired when you press a button short (not supported by SHC 1 / classic)  | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2  |
+| LONG_PRESSED  | Fired when you press a button longer (not supported by SHC 1 / classic) | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2  |
+| PRESSED       | Fired when you press a button (short or long)                           | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2  |
 
 
 ## Thing configuration
@@ -141,8 +141,8 @@ Bridge livisismarthome:bridge:<bridge-id> "Livisi: SmartHome Controller (SHC)" [
 ```
 
 ** *Security warning!**
-The communication betweeen the binding and the SHC is not encrypted and can be traced.
-So be carefull and secure your local network from unauthorized access.
+The communication between the binding and the SHC is not encrypted and can be traced.
+So be careful and secure your local network from unauthorized access.
 
 All other LIVISI devices can be added using the following syntax:
 
@@ -207,9 +207,9 @@ Here is an example rule:
 ```
 rule "Button triggered rule"
 when
-	Channel 'livisismarthome:WSC2:mybridge:myPushButton:button1' triggered SHORT_PRESSED
+	Channel 'livisismarthome:WSC2:mybridge:myPushButton:button1' triggered PRESSED
 then
     // do something...
-	logInfo("testlogger", "Button 1 pressed (short)")
+	logInfo("testlogger", "Button 1 pressed")
 end
 ```
