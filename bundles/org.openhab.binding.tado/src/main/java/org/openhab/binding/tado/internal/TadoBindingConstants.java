@@ -82,6 +82,7 @@ public class TadoBindingConstants {
         LEVEL2,
         LEVEL3,
         LEVEL4,
+        LEVEL5,
         AUTO
     }
 

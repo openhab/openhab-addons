@@ -166,6 +166,8 @@ public class TadoApiTypeUtils {
                 return ACFanLevel.LEVEL3;
             case LEVEL4:
                 return ACFanLevel.LEVEL4;
+            case LEVEL5:
+                return ACFanLevel.LEVEL5;
             case SILENT:
                 return ACFanLevel.SILENT;
         }
