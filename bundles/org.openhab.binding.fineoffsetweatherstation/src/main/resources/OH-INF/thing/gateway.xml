@@ -23,7 +23,7 @@
 
 	<channel-type id="wind-speed">
 		<item-type>Number:Speed</item-type>
-		<label>Wind speed</label>
+		<label>Wind Speed</label>
 		<category>Wind</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -78,7 +78,7 @@
 
 	<channel-type id="uv-radiation">
 		<item-type>Number:Intensity</item-type>
-		<label>UV irradiation</label>
+		<label>UV-Irradiation</label>
 		<category>Sun</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -89,7 +89,7 @@
 
 	<channel-type id="uv-index">
 		<item-type>Number:Dimensionless</item-type>
-		<label>UV Index</label>
+		<label>UV-Index</label>
 		<category>Sun</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -100,7 +100,7 @@
 
 	<channel-type id="rain-rate">
 		<item-type>Number:VolumetricFlowRate</item-type>
-		<label>Rain rate</label>
+		<label>Rain Rate</label>
 		<category>Rain</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -111,7 +111,7 @@
 
 	<channel-type id="pm25">
 		<item-type>Number:Density</item-type>
-		<label>PM2.5</label>
+		<label>PM2.5 Air Quality</label>
 		<category>AirQuality</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -122,7 +122,7 @@
 
 	<channel-type id="water-leak-detection">
 		<item-type>Switch</item-type>
-		<label>Water leak detection</label>
+		<label>Water Leak Detection</label>
 		<category>Alarm</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -133,7 +133,7 @@
 
 	<channel-type id="lightning-counter">
 		<item-type>Number</item-type>
-		<label>Lightning counter</label>
+		<label>Lightning Counter</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -144,7 +144,7 @@
 
 	<channel-type id="lightning-time">
 		<item-type>DateTime</item-type>
-		<label>Lightning time</label>
+		<label>Lightning Time</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -155,7 +155,7 @@
 
 	<channel-type id="lightning-distance">
 		<item-type>Number:Length</item-type>
-		<label>Lightning distance</label>
+		<label>Lightning Distance</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>

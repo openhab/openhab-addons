@@ -3,8 +3,8 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
-	<name>Fine Offset weather station</name>
-	<description>A binding for the weather stations manufactured by Fine Offset</description>
+	<name>Fine Offset Weather Station</name>
+	<description>A binding for the Weather Stations Manufactured by Fine Offset</description>
 	<author>Andreas Berger</author>
 
 </binding:binding>
