@@ -204,12 +204,13 @@
 		<description>AC fan level (only if supported by AC)</description>
 		<state readOnly="false">
 			<options>
-				<option value="SILENT">LEVEL5</option>
+				<option value="SILENT">SILENT</option>
 				<option value="LEVEL1">LEVEL1</option>
 				<option value="LEVEL2">LEVEL2</option>
 				<option value="LEVEL3">LEVEL3</option>
 				<option value="LEVEL4">LEVEL4</option>
-				<option value="AUTO">Auto</option>
+				<option value="LEVEL5">LEVEL5</option>
+				<option value="AUTO">AUTO</option>
 			</options>
 		</state>
 	</channel-type>
