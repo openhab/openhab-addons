@@ -22,6 +22,7 @@ import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.api.model.ACFanLevel;
 import org.openhab.binding.tado.internal.api.model.ACHorizontalSwing;
 import org.openhab.binding.tado.internal.api.model.ACVerticalSwing;
+import org.openhab.binding.tado.internal.api.model.AcFanSpeed;
 import org.openhab.binding.tado.internal.api.model.AcPowerDataPoint;
 import org.openhab.binding.tado.internal.api.model.ActivityDataPoints;
 import org.openhab.binding.tado.internal.api.model.CoolingZoneSetting;
@@ -122,58 +123,40 @@ public class TadoZoneStateAdapter {
 
     public State getFanSpeed() {
         if (zoneState.getSetting().getType() == TadoSystemType.AIR_CONDITIONING) {
-            CoolingZoneSetting setting = (CoolingZoneSetting) zoneState.getSetting();
-            return setting.getFanSpeed() != null ? StringType.valueOf(setting.getFanSpeed().getValue())
-                    : UnDefType.NULL;
-        } else {
-            return UnDefType.UNDEF;
+            AcFanSpeed result = ((CoolingZoneSetting) zoneState.getSetting()).getFanSpeed();
+            return result != null ? StringType.valueOf(result.getValue()) : UnDefType.NULL;
         }
+        return UnDefType.UNDEF;
     }
 
     public State getSwing() {
         if (zoneState.getSetting().getType() == TadoSystemType.AIR_CONDITIONING) {
-            CoolingZoneSetting setting = (CoolingZoneSetting) zoneState.getSetting();
-            if (setting.getSwing() == null) {
-                return UnDefType.NULL;
-            } else if (setting.getSwing() == Power.ON) {
-                return OnOffType.ON;
-            } else {
-                return OnOffType.OFF;
-            }
-        } else {
-            return UnDefType.UNDEF;
+            Power result = ((CoolingZoneSetting) zoneState.getSetting()).getSwing();
+            return result != null ? OnOffType.from(result == Power.ON) : UnDefType.NULL;
         }
+        return UnDefType.UNDEF;
     }
 
     public State getFanLevel() {
         if (zoneState.getSetting().getType() == TadoSystemType.AIR_CONDITIONING) {
-            CoolingZoneSetting setting = (CoolingZoneSetting) zoneState.getSetting();
-            ACFanLevel result = setting.getFanLevel();
-            if (result != null) {
-                return StringType.valueOf(result.getValue());
-            }
+            ACFanLevel result = ((CoolingZoneSetting) zoneState.getSetting()).getFanLevel();
+            return result != null ? StringType.valueOf(result.getValue()) : UnDefType.NULL;
         }
         return UnDefType.UNDEF;
     }
 
     public State getHorizontalSwing() {
         if (zoneState.getSetting().getType() == TadoSystemType.AIR_CONDITIONING) {
-            CoolingZoneSetting setting = (CoolingZoneSetting) zoneState.getSetting();
-            ACHorizontalSwing result = setting.getHorizontalSwing();
-            if (result != null) {
-                return StringType.valueOf(result.getValue());
-            }
+            ACHorizontalSwing result = ((CoolingZoneSetting) zoneState.getSetting()).getHorizontalSwing();
+            return result != null ? StringType.valueOf(result.getValue()) : UnDefType.NULL;
         }
         return UnDefType.UNDEF;
     }
 
     public State getVerticalSwing() {
         if (zoneState.getSetting().getType() == TadoSystemType.AIR_CONDITIONING) {
-            CoolingZoneSetting setting = (CoolingZoneSetting) zoneState.getSetting();
-            ACVerticalSwing result = setting.getVerticalSwing();
-            if (result != null) {
-                return StringType.valueOf(result.getValue());
-            }
+            ACVerticalSwing result = ((CoolingZoneSetting) zoneState.getSetting()).getVerticalSwing();
+            return result != null ? StringType.valueOf(result.getValue()) : UnDefType.NULL;
         }
         return UnDefType.UNDEF;
     }
