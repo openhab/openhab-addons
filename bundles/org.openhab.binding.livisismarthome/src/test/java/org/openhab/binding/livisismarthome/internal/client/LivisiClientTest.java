@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -26,6 +27,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.capability.CapabilityStateDTO;
 import org.openhab.binding.livisismarthome.internal.handler.LivisiBridgeConfiguration;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -36,6 +38,7 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 public class LivisiClientTest {
 
     private static final String DEVICES_URL = "http://127.0.0.1:8080/device";
+    private static final String CAPABILITY_STATES_URL = "http://127.0.0.1:8080/capability/states";
 
     private LivisiClient client;
     private HttpClient httpClientMock;
@@ -83,6 +86,21 @@ public class LivisiClientTest {
     public void testGetDevicesNoDevicesDeviceIds() throws Exception {
         mockRequest(DEVICES_URL, "[]");
         assertEquals(0, client.getDevices(Arrays.asList("123", "456")).size());
+    }
+
+    @Test
+    public void testGetCapabilityStates() throws Exception {
+        mockRequest(CAPABILITY_STATES_URL,
+                "[{\"id\":\"123\",\"state\":{\"isOpen\":{\"value\":false,\"lastChanged\":\"2022-03-12T20:54:50.6930000Z\"}}},{\"id\":\"456\",\"state\":{\"isOpen\":{\"value\":false,\"lastChanged\":\"2022-03-13T13:48:36.6830000Z\"}}},{\"id\":\"789\",\"state\":{\"isOpen\":{\"value\":true,\"lastChanged\":\"2022-03-13T13:48:36.6830000Z\"}}}]");
+        assertEquals(3, client.getCapabilityStates().size());
+    }
+
+    @Test
+    public void testGetCapabilityStatesStateNULL() throws Exception {
+        mockRequest(CAPABILITY_STATES_URL,
+                "[{\"id\":\"123\",\"state\":{\"isOpen\":{\"value\":false,\"lastChanged\":\"2022-03-12T20:54:50.6930000Z\"}}},{\"id\":\"456\",\"state\":[]},{\"id\":\"789\",\"state\":[]}]");
+        List<CapabilityStateDTO> capabilityStates = client.getCapabilityStates();
+        assertEquals(3, capabilityStates.size());
     }
 
     private void mockRequest(String url, String responseContent) throws Exception {

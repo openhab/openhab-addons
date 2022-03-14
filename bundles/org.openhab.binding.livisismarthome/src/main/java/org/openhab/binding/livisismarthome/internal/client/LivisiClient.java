@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -130,7 +131,7 @@ public class LivisiClient {
             throws IOException, AuthenticationException, ApiException {
         final ContentResponse response = request(httpClient.newRequest(url).method(HttpMethod.GET));
 
-        return gson.fromJson(response.getContentAsString(), clazz);
+        return gson.fromJson(normalizedContent(response), clazz);
     }
 
     /**
@@ -142,7 +143,11 @@ public class LivisiClient {
      */
     private <T> List<T> executeGetList(final String url, final Class<T[]> clazz)
             throws IOException, AuthenticationException, ApiException {
-        return Arrays.asList(executeGet(url, clazz));
+        T[] objects = executeGet(url, clazz);
+        if (objects != null) {
+            return Arrays.asList(objects);
+        }
+        return Collections.emptyList();
     }
 
     /**
@@ -195,7 +200,7 @@ public class LivisiClient {
         }
         handleResponseErrors(response, request.getURI());
 
-        LivisiAccessTokenResponseDTO tokenResponse = gson.fromJson(response.getContentAsString(),
+        LivisiAccessTokenResponseDTO tokenResponse = gson.fromJson(normalizedContent(response),
                 LivisiAccessTokenResponseDTO.class);
         return tokenResponse.createAccessTokenResponse();
     }
@@ -231,7 +236,7 @@ public class LivisiClient {
             throw new ServiceUnavailableException("LIVISI SmartHome service is unavailable (503).");
         } else {
             logger.debug("Statuscode {} is NOT OK: [{}]", status, uri);
-            String content = response.getContentAsString();
+            String content = normalizedContent(response);
             try {
                 logger.trace("Response error content: {}", content);
                 final ErrorResponseDTO error = gson.fromJson(content, ErrorResponseDTO.class);
@@ -443,5 +448,18 @@ public class LivisiClient {
     private static boolean isDeviceUsable(DeviceDTO device, Collection<String> activeDeviceIds) {
         return activeDeviceIds.contains(device.getId())
                 || LivisiBindingConstants.DEVICE_VARIABLE_ACTUATOR.equals(device.getType());
+    }
+
+    /**
+     * Normalizes the JSON response content.
+     * The LIVISI SmartHome local API returns "[]" for missing objects instead of "null". This method fixes
+     * this issue.
+     * 
+     * @param response response
+     * @return normalized response content
+     */
+    private static String normalizedContent(ContentResponse response) {
+        String content = response.getContentAsString();
+        return content.replace("[]", "null");
     }
 }
