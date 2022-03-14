@@ -90,12 +90,11 @@
 
 	<!-- HumiditySensor -->
 	<channel-type id="HumiditySensor_Humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Actual Humidity</label>
 		<description>Actual measured room humidity</description>
 		<category>Humidity</category>
-		<state pattern="%.1f%%" readOnly="true">
-		</state>
+		<state readOnly="true" min="0" max="100" pattern="%.1f%%"/>
 	</channel-type>
 	<channel-type id="HumiditySensor_MoldWarning" advanced="true">
 		<item-type>Switch</item-type>
@@ -142,11 +141,11 @@
 
 	<!-- LuminanceSensor Channel -->
 	<channel-type id="LuminanceSensor">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Luminance</label>
 		<description>Shows the detected luminance in percent</description>
 		<category>Light</category>
-		<state pattern="%d%%" readOnly="true"></state>
+		<state readOnly="true" min="0" max="100" pattern="%d%%"/>
 	</channel-type>
 
 	<!-- PushButtonCounter Channel -->

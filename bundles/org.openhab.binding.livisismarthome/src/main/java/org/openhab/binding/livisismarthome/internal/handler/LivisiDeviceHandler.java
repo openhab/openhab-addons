@@ -760,7 +760,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         // humidity
         final Double humidity = capability.getCapabilityState().getHumiditySensorHumidityState();
         if (humidity != null) {
-            updateState(CHANNEL_HUMIDITY, new DecimalType(humidity));
+            updateState(CHANNEL_HUMIDITY, QuantityType.valueOf(humidity, Units.PERCENT));
         } else {
             logStateNULL(capability);
         }
@@ -814,7 +814,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     private void updateLuminanceSensorChannels(CapabilityDTO capability) {
         final Double luminance = capability.getCapabilityState().getLuminanceSensorState();
         if (luminance != null) {
-            updateState(CHANNEL_LUMINANCE, new DecimalType(luminance));
+            updateState(CHANNEL_LUMINANCE, QuantityType.valueOf(luminance, Units.PERCENT));
         } else {
             logStateNULL(capability);
         }

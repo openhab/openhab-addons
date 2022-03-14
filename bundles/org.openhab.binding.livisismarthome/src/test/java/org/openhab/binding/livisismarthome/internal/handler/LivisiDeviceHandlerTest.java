@@ -311,7 +311,7 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertTrue(isChannelUpdated(CHANNEL_HUMIDITY, new DecimalType(35.5)));
+        assertTrue(isChannelUpdated(CHANNEL_HUMIDITY, QuantityType.valueOf(35.5, Units.PERCENT)));
         assertTrue(isChannelUpdated(CHANNEL_MOLD_WARNING, OnOffType.ON));
     }
 
@@ -326,7 +326,7 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertTrue(isChannelUpdated(CHANNEL_HUMIDITY, new DecimalType(35.5)));
+        assertTrue(isChannelUpdated(CHANNEL_HUMIDITY, QuantityType.valueOf(35.5, Units.PERCENT)));
         assertTrue(isChannelUpdated(CHANNEL_MOLD_WARNING, OnOffType.OFF));
     }
 
@@ -587,7 +587,7 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertTrue(isChannelUpdated(CHANNEL_LUMINANCE, new DecimalType(50.1)));
+        assertTrue(isChannelUpdated(CHANNEL_LUMINANCE, QuantityType.valueOf(50.1, Units.PERCENT)));
     }
 
     @Test
@@ -1104,7 +1104,7 @@ public class LivisiDeviceHandlerTest {
         });
 
         deviceHandler.onDeviceStateChanged(device, event);
-        assertTrue(isChannelUpdated(CHANNEL_HUMIDITY, new DecimalType(35.5)));
+        assertTrue(isChannelUpdated(CHANNEL_HUMIDITY, QuantityType.valueOf(35.5, Units.PERCENT)));
         assertTrue(isChannelUpdated(CHANNEL_MOLD_WARNING, OnOffType.ON));
     }
 
@@ -1170,7 +1170,7 @@ public class LivisiDeviceHandlerTest {
         EventDTO event = createCapabilityEvent(c -> c.setLuminance(50.1));
 
         deviceHandler.onDeviceStateChanged(device, event);
-        assertTrue(isChannelUpdated(CHANNEL_LUMINANCE, new DecimalType(50.1)));
+        assertTrue(isChannelUpdated(CHANNEL_LUMINANCE, QuantityType.valueOf(50.1, Units.PERCENT)));
     }
 
     @Test
