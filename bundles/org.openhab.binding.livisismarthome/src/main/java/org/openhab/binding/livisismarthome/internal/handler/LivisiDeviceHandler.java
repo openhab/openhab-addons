@@ -27,6 +27,7 @@ import org.openhab.binding.livisismarthome.internal.client.api.entity.capability
 import org.openhab.binding.livisismarthome.internal.client.api.entity.capability.CapabilityStateDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.event.EventDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.event.EventPropertiesDTO;
 import org.openhab.binding.livisismarthome.internal.listener.DeviceStatusListener;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -469,13 +470,22 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
             capabilityState.setLuminanceSensorState(event.getProperties().getLuminance());
 
             // PushButtonSensor
-        } else if (capability.isTypePushButtonSensor() && event.isButtonPressedEvent()) {
-            // Some devices send both StateChanged and ButtonPressed. But only one should be handled,
-            // therefore it is checked for button pressed event (button index and LastPressedButtonIndex are set).
-            final Integer buttonIndex = event.getProperties().getKeyPressButtonIndex();
-            capabilityState.setPushButtonSensorButtonIndexState(buttonIndex);
-            capabilityState.setPushButtonSensorButtonIndexType(event.getProperties().getKeyPressType());
-            capabilityState.setPushButtonSensorCounterState(event.getProperties().getKeyPressCounter());
+        } else if (capability.isTypePushButtonSensor()) {
+            boolean isSHCClassic = getBridgeHandler().flatMap(LivisiBridgeHandler::getBridgeDevice)
+                    .filter(DeviceDTO::isClassicController).isPresent();
+            if (isSHCClassic) {
+                // SHC 1 (Classic) does only send StateChanged events with missing short or long press information.
+                EventPropertiesDTO properties = event.getProperties();
+                capabilityState.setPushButtonSensorButtonIndexState(properties.getLastKeyPressButtonIndex());
+                capabilityState.setPushButtonSensorCounterState(properties.getLastKeyPressCounter());
+            } else if (event.isButtonPressedEvent()) {
+                // Some devices send both StateChanged and ButtonPressed. But only the ButtonPressed should be handled,
+                // therefore it is checked for button pressed event (button index is set).
+                EventPropertiesDTO properties = event.getProperties();
+                capabilityState.setPushButtonSensorButtonIndexState(properties.getKeyPressButtonIndex());
+                capabilityState.setPushButtonSensorButtonIndexType(properties.getKeyPressType());
+                capabilityState.setPushButtonSensorCounterState(properties.getKeyPressCounter());
+            }
 
             // EnergyConsumptionSensor
         } else if (capability.isTypeEnergyConsumptionSensor()) {
@@ -823,24 +833,20 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     private void updatePushButtonSensorChannels(CapabilityDTO capability) {
         final Integer pushCount = capability.getCapabilityState().getPushButtonSensorCounterState();
         final Integer buttonIndex = capability.getCapabilityState().getPushButtonSensorButtonIndexState();
-        logger.debug("Pushbutton index {} count {}", buttonIndex, pushCount);
+        final String type = capability.getCapabilityState().getPushButtonSensorButtonIndexType();
+        logger.debug("Pushbutton index {}, count {}, type {}", buttonIndex, pushCount, type);
         if (buttonIndex != null && pushCount != null) {
             if (buttonIndex >= 0 && buttonIndex <= 7) {
-                final String type = capability.getCapabilityState().getPushButtonSensorButtonIndexType();
+                final int channelIndex = buttonIndex + 1;
                 if (type != null) {
-                    final int channelIndex = buttonIndex + 1;
                     if (SHORT_PRESS.equals(type)) {
                         triggerChannel(CHANNEL_BUTTON + channelIndex, CommonTriggerEvents.SHORT_PRESSED);
                     } else if (LONG_PRESS.equals(type)) {
                         triggerChannel(CHANNEL_BUTTON + channelIndex, CommonTriggerEvents.LONG_PRESSED);
                     }
-                    triggerChannel(CHANNEL_BUTTON + channelIndex, CommonTriggerEvents.PRESSED);
-                    updateState(String.format(CHANNEL_BUTTON_COUNT, channelIndex), new DecimalType(pushCount));
-                } else {
-                    logger.debug("Button type NULL not supported.");
                 }
-            } else {
-                logger.debug("Button index NULL not supported.");
+                triggerChannel(CHANNEL_BUTTON + channelIndex, CommonTriggerEvents.PRESSED);
+                updateState(String.format(CHANNEL_BUTTON_COUNT, channelIndex), new DecimalType(pushCount));
             }
             // Button handled so remove state to avoid re-trigger.
             capability.getCapabilityState().setPushButtonSensorButtonIndexState(null);

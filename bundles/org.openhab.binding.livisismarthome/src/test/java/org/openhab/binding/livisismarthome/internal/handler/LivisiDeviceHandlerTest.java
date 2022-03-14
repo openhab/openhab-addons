@@ -1188,8 +1188,64 @@ public class LivisiDeviceHandlerTest {
 
         deviceHandler.onDeviceStateChanged(device, event);
         assertTrue(isChannelUpdated("button1_count", new DecimalType(10)));
+        assertTrue(isChannelTriggered("button1", CommonTriggerEvents.PRESSED));
         assertTrue(isChannelTriggered("button1", CommonTriggerEvents.SHORT_PRESSED));
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.LONG_PRESSED));
+        assertFalse(isChannelTriggered("button2", CommonTriggerEvents.PRESSED));
+    }
+
+    @Test
+    public void testOnDeviceStateChanged_StateChangedEvent_PushButtonSensor_SHC_Classic() {
+
+        DeviceDTO shcClassicBridgeDevice = new DeviceDTO();
+        shcClassicBridgeDevice.setType(DEVICE_SHC);
+        when(bridgeHandlerMock.getBridgeDevice()).thenReturn(Optional.of(shcClassicBridgeDevice));
+
+        DeviceDTO device = createDevice();
+        addCapabilityToDevice(CapabilityDTO.TYPE_PUSHBUTTONSENSOR, null, device);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+
+        // SHC Classic sends only StateChanged events with this information
+        EventDTO event = createCapabilityEvent(c -> {
+            c.setLastKeyPressButtonIndex(0);
+            c.setLastKeyPressCounter(10);
+        });
+
+        deviceHandler.onDeviceStateChanged(device, event);
+        assertTrue(isChannelUpdated("button1_count", new DecimalType(10)));
+        assertTrue(isChannelTriggered("button1", CommonTriggerEvents.PRESSED));
+        assertFalse(isChannelTriggered("button1", CommonTriggerEvents.SHORT_PRESSED)); // not available for SHC Classic
+        assertFalse(isChannelTriggered("button1", CommonTriggerEvents.LONG_PRESSED)); // not available for SHC Classic
+        assertFalse(isChannelTriggered("button2", CommonTriggerEvents.PRESSED));
+    }
+
+    @Test
+    public void testOnDeviceStateChanged_StateChangedEvent_PushButtonSensor_SHCA() {
+
+        DeviceDTO shcClassicBridgeDevice = new DeviceDTO();
+        shcClassicBridgeDevice.setType(DEVICE_SHCA);
+        when(bridgeHandlerMock.getBridgeDevice()).thenReturn(Optional.of(shcClassicBridgeDevice));
+
+        DeviceDTO device = createDevice();
+        addCapabilityToDevice(CapabilityDTO.TYPE_PUSHBUTTONSENSOR, null, device);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+
+        // StateChanged events only have with this information
+        EventDTO event = createCapabilityEvent(c -> {
+            c.setLastKeyPressButtonIndex(0);
+            c.setLastKeyPressCounter(10);
+        });
+
+        // Nothing should get processed, because SHCA / SHC 2 should only react on the more detailed ButtonPressed
+        // events
+        deviceHandler.onDeviceStateChanged(device, event);
+        assertFalse(isChannelUpdated("button1_count", new DecimalType(10)));
+        assertFalse(isChannelTriggered("button1", CommonTriggerEvents.PRESSED));
+        assertFalse(isChannelTriggered("button1", CommonTriggerEvents.SHORT_PRESSED));
+        assertFalse(isChannelTriggered("button1", CommonTriggerEvents.LONG_PRESSED));
+        assertFalse(isChannelTriggered("button2", CommonTriggerEvents.PRESSED));
     }
 
     @Test

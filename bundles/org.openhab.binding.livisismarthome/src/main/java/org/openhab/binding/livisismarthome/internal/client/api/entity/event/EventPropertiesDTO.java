@@ -47,11 +47,14 @@ public class EventPropertiesDTO {
     private Boolean isReachable;
     private Boolean isOpen;
     private Boolean isSmokeAlarm;
-    private Integer keyPressCounter;
-    @SerializedName("index")
-    private Integer keyPressButtonIndex;
     @SerializedName("type")
     private String keyPressType;
+    @SerializedName("index")
+    private Integer keyPressButtonIndex;
+    private Integer keyPressCounter;
+    @SerializedName("lastPressedButtonIndex")
+    private Integer lastKeyPressButtonIndex;
+    private Integer lastKeyPressCounter;
     private Double luminance;
     private Boolean moldWarning;
     private Integer motionDetectedCount;
@@ -386,18 +389,12 @@ public class EventPropertiesDTO {
         this.isSmokeAlarm = isSmokeAlarm;
     }
 
-    /**
-     * @return the keyPressCounter
-     */
-    public Integer getKeyPressCounter() {
-        return keyPressCounter;
+    public String getKeyPressType() {
+        return keyPressType;
     }
 
-    /**
-     * @param keyPressCounter the lastKeyPressCounter to set
-     */
-    public void setKeyPressCounter(final Integer keyPressCounter) {
-        this.keyPressCounter = keyPressCounter;
+    public void setKeyPressType(final String keyPressType) {
+        this.keyPressType = keyPressType;
     }
 
     public Integer getKeyPressButtonIndex() {
@@ -408,12 +405,28 @@ public class EventPropertiesDTO {
         this.keyPressButtonIndex = keyPressButtonIndex;
     }
 
-    public String getKeyPressType() {
-        return keyPressType;
+    public Integer getKeyPressCounter() {
+        return keyPressCounter;
     }
 
-    public void setKeyPressType(final String keyPressType) {
-        this.keyPressType = keyPressType;
+    public void setKeyPressCounter(final Integer keyPressCounter) {
+        this.keyPressCounter = keyPressCounter;
+    }
+
+    public Integer getLastKeyPressButtonIndex() {
+        return lastKeyPressButtonIndex;
+    }
+
+    public void setLastKeyPressButtonIndex(final Integer lastKeyPressButtonIndex) {
+        this.lastKeyPressButtonIndex = lastKeyPressButtonIndex;
+    }
+
+    public Integer getLastKeyPressCounter() {
+        return lastKeyPressCounter;
+    }
+
+    public void setLastKeyPressCounter(final Integer lastKeyPressCounter) {
+        this.lastKeyPressCounter = lastKeyPressCounter;
     }
 
     /**

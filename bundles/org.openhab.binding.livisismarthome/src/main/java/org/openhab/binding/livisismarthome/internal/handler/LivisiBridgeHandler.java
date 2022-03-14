@@ -367,6 +367,16 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     /**
+     * Returns the bridge {@link DeviceDTO}.
+     *
+     * @return bridge {@link DeviceDTO}
+     */
+    public Optional<DeviceDTO> getBridgeDevice() {
+        Optional<String> bridgeIdOptional = Optional.ofNullable(bridgeId);
+        return bridgeIdOptional.flatMap(this::getDeviceById);
+    }
+
+    /**
      * Returns the {@link DeviceDTO} with the given deviceId.
      *
      * @param deviceId device id
