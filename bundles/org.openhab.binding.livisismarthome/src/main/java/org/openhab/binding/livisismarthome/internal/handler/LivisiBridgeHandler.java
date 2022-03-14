@@ -349,7 +349,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @param deviceId id of the device to which the listener is registered
      */
     public void unregisterDeviceStatusListener(@Nullable final String deviceId) {
-        if(deviceId != null) {
+        if (deviceId != null) {
             deviceStatusListeners.remove(deviceId);
         }
     }
@@ -434,8 +434,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                         .setValue(event.getProperties().getOperationStatus());
                 device.getDeviceState().getState().getCpuUsage().setValue(event.getProperties().getCpuUsage());
                 device.getDeviceState().getState().getDiskUsage().setValue(event.getProperties().getDiskUsage());
-                device.getDeviceState().getState().getMemoryUsage()
-                        .setValue(event.getProperties().getMemoryUsage());
+                device.getDeviceState().getState().getMemoryUsage().setValue(event.getProperties().getMemoryUsage());
                 onDeviceStateChanged(device);
             }
         }
@@ -615,7 +614,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private void notifyDeviceStatusListener(String deviceId, Optional<DeviceDTO> device) {
         if (device.isPresent()) {
             DeviceStatusListener deviceStatusListener = deviceStatusListeners.get(device.get().getId());
-            if(deviceStatusListener != null) {
+            if (deviceStatusListener != null) {
                 deviceStatusListener.onDeviceStateChanged(device.get());
             } else {
                 logger.debug("No device status listener registered for device {}.", deviceId);
@@ -628,7 +627,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private void notifyDeviceStatusListeners(Optional<DeviceDTO> device, EventDTO event) {
         if (device.isPresent()) {
             DeviceStatusListener deviceStatusListener = deviceStatusListeners.get(device.get().getId());
-            if(deviceStatusListener != null) {
+            if (deviceStatusListener != null) {
                 deviceStatusListener.onDeviceStateChanged(device.get(), event);
             } else {
                 logger.debug("No device status listener registered for device / capability {}.", event.getSourceId());

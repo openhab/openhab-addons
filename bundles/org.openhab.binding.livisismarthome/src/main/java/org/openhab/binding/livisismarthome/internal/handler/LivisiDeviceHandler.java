@@ -169,18 +169,18 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
 
     private void commandUpdatePointTemperature(Command command, LivisiBridgeHandler bridgeHandler) {
         if (command instanceof QuantityType) {
-            final QuantityType<?> pointTemperatureCommand = (QuantityType<?>)command;
+            final QuantityType<?> pointTemperatureCommand = (QuantityType<?>) command;
             double pointTemperature = pointTemperatureCommand.doubleValue();
-            if(pointTemperatureCommand.doubleValue() < MIN_TEMPERATURE) {
+            if (pointTemperatureCommand.doubleValue() < MIN_TEMPERATURE) {
                 pointTemperature = MIN_TEMPERATURE;
-                logger.debug("pointTemperature set to value {} (instead of value '{}'), because it is the minimal possible value!",
-                        MIN_TEMPERATURE,
-                        pointTemperatureCommand.doubleValue());
-            } else if(pointTemperatureCommand.doubleValue() > MAX_TEMPERATURE) {
+                logger.debug(
+                        "pointTemperature set to value {} (instead of value '{}'), because it is the minimal possible value!",
+                        MIN_TEMPERATURE, pointTemperatureCommand.doubleValue());
+            } else if (pointTemperatureCommand.doubleValue() > MAX_TEMPERATURE) {
                 pointTemperature = MAX_TEMPERATURE;
-                logger.debug("pointTemperature set to value {} (instead of value '{}'), because it is the maximal possible value!",
-                        MAX_TEMPERATURE,
-                        pointTemperatureCommand.doubleValue());
+                logger.debug(
+                        "pointTemperature set to value {} (instead of value '{}'), because it is the maximal possible value!",
+                        MAX_TEMPERATURE, pointTemperatureCommand.doubleValue());
             }
             bridgeHandler.commandUpdatePointTemperature(deviceId, pointTemperature);
         }
@@ -347,9 +347,8 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                 final String linkedCapabilityId = event.getSourceId();
 
                 CapabilityDTO capability = device.getCapabilityMap().get(linkedCapabilityId);
-                logger.trace("Loaded Capability {}, {} with id {}, device {} from device id {}",
-                        capability.getType(), capability.getName(), capability.getId(), capability.getDeviceLink(),
-                        device.getId());
+                logger.trace("Loaded Capability {}, {} with id {}, device {} from device id {}", capability.getType(),
+                        capability.getName(), capability.getId(), capability.getDeviceLink(), device.getId());
 
                 if (capability.hasState()) {
                     boolean deviceChanged = updateDevice(event, capability);
@@ -641,7 +640,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                 updateEnergyConsumptionSensorChannels(capability);
                 break;
             case CapabilityDTO.TYPE_POWERCONSUMPTIONSENSOR:
-                updateStateForEnergyChannel(CHANNEL_POWER_CONSUMPTION_WATT,
+                updateStateForEnergyChannelWatt(CHANNEL_POWER_CONSUMPTION_WATT,
                         capability.getCapabilityState().getPowerConsumptionSensorPowerConsumptionWattState(),
                         capability);
                 break;
@@ -649,7 +648,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                 updateGenerationMeterEnergySensorChannels(capability);
                 break;
             case CapabilityDTO.TYPE_GENERATIONMETERPOWERCONSUMPTIONSENSOR:
-                updateStateForEnergyChannel(CHANNEL_POWER_GENERATION_WATT,
+                updateStateForEnergyChannelWatt(CHANNEL_POWER_GENERATION_WATT,
                         capability.getCapabilityState().getGenerationMeterPowerConsumptionSensorPowerInWattState(),
                         capability);
                 break;
@@ -660,7 +659,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                 updateTwoWayMeterEnergyFeedSensorChannels(capability);
                 break;
             case CapabilityDTO.TYPE_TWOWAYMETERPOWERCONSUMPTIONSENSOR:
-                updateStateForEnergyChannel(CHANNEL_POWER_WATT,
+                updateStateForEnergyChannelWatt(CHANNEL_POWER_WATT,
                         capability.getCapabilityState().getTwoWayMeterPowerConsumptionSensorPowerInWattState(),
                         capability);
                 break;
@@ -852,63 +851,72 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     private void updateEnergyConsumptionSensorChannels(CapabilityDTO capability) {
-        updateStateForEnergyChannel(CHANNEL_ENERGY_CONSUMPTION_MONTH_KWH,
+        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_CONSUMPTION_MONTH_KWH,
                 capability.getCapabilityState().getEnergyConsumptionSensorEnergyConsumptionMonthKWhState(), capability);
-        updateStateForEnergyChannel(CHANNEL_ABOLUTE_ENERGY_CONSUMPTION,
+        updateStateForEnergyChannelWatt(CHANNEL_ABOLUTE_ENERGY_CONSUMPTION,
                 capability.getCapabilityState().getEnergyConsumptionSensorAbsoluteEnergyConsumptionState(), capability);
-        updateStateForEnergyChannel(CHANNEL_ENERGY_CONSUMPTION_MONTH_EURO,
+        updateStateForEnergyChannelEuro(CHANNEL_ENERGY_CONSUMPTION_MONTH_EURO,
                 capability.getCapabilityState().getEnergyConsumptionSensorEnergyConsumptionMonthEuroState(),
                 capability);
-        updateStateForEnergyChannel(CHANNEL_ENERGY_CONSUMPTION_DAY_EURO,
+        updateStateForEnergyChannelEuro(CHANNEL_ENERGY_CONSUMPTION_DAY_EURO,
                 capability.getCapabilityState().getEnergyConsumptionSensorEnergyConsumptionDayEuroState(), capability);
-        updateStateForEnergyChannel(CHANNEL_ENERGY_CONSUMPTION_DAY_KWH,
+        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_CONSUMPTION_DAY_KWH,
                 capability.getCapabilityState().getEnergyConsumptionSensorEnergyConsumptionDayKWhState(), capability);
     }
 
     private void updateGenerationMeterEnergySensorChannels(CapabilityDTO capability) {
-        updateStateForEnergyChannel(CHANNEL_ENERGY_GENERATION_MONTH_KWH,
+        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_GENERATION_MONTH_KWH,
                 capability.getCapabilityState().getGenerationMeterEnergySensorEnergyPerMonthInKWhState(), capability);
-        updateStateForEnergyChannel(CHANNEL_TOTAL_ENERGY_GENERATION,
+        updateStateForEnergyChannelWatt(CHANNEL_TOTAL_ENERGY_GENERATION,
                 capability.getCapabilityState().getGenerationMeterEnergySensorTotalEnergyState(), capability);
-        updateStateForEnergyChannel(CHANNEL_ENERGY_GENERATION_MONTH_EURO,
+        updateStateForEnergyChannelEuro(CHANNEL_ENERGY_GENERATION_MONTH_EURO,
                 capability.getCapabilityState().getGenerationMeterEnergySensorEnergyPerMonthInEuroState(), capability);
-        updateStateForEnergyChannel(CHANNEL_ENERGY_GENERATION_DAY_EURO,
+        updateStateForEnergyChannelEuro(CHANNEL_ENERGY_GENERATION_DAY_EURO,
                 capability.getCapabilityState().getGenerationMeterEnergySensorEnergyPerDayInEuroState(), capability);
-        updateStateForEnergyChannel(CHANNEL_ENERGY_GENERATION_DAY_KWH,
+        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_GENERATION_DAY_KWH,
                 capability.getCapabilityState().getGenerationMeterEnergySensorEnergyPerDayInKWhState(), capability);
     }
 
     private void updateTwoWayMeterEnergyConsumptionSensorChannels(CapabilityDTO capability) {
-        updateStateForEnergyChannel(CHANNEL_ENERGY_MONTH_KWH,
+        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_MONTH_KWH,
                 capability.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorEnergyPerMonthInKWhState(),
                 capability);
-        updateStateForEnergyChannel(CHANNEL_TOTAL_ENERGY,
+        updateStateForEnergyChannelWatt(CHANNEL_TOTAL_ENERGY,
                 capability.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorTotalEnergyState(), capability);
-        updateStateForEnergyChannel(CHANNEL_ENERGY_MONTH_EURO,
+        updateStateForEnergyChannelEuro(CHANNEL_ENERGY_MONTH_EURO,
                 capability.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorEnergyPerMonthInEuroState(),
                 capability);
-        updateStateForEnergyChannel(CHANNEL_ENERGY_DAY_EURO,
+        updateStateForEnergyChannelEuro(CHANNEL_ENERGY_DAY_EURO,
                 capability.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorEnergyPerDayInEuroState(),
                 capability);
-        updateStateForEnergyChannel(CHANNEL_ENERGY_DAY_KWH,
+        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_DAY_KWH,
                 capability.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorEnergyPerDayInKWhState(),
                 capability);
     }
 
     private void updateTwoWayMeterEnergyFeedSensorChannels(CapabilityDTO capability) {
-        updateStateForEnergyChannel(CHANNEL_ENERGY_FEED_MONTH_KWH,
+        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_FEED_MONTH_KWH,
                 capability.getCapabilityState().getTwoWayMeterEnergyFeedSensorEnergyPerMonthInKWhState(), capability);
-        updateStateForEnergyChannel(CHANNEL_TOTAL_ENERGY_FED,
+        updateStateForEnergyChannelWatt(CHANNEL_TOTAL_ENERGY_FED,
                 capability.getCapabilityState().getTwoWayMeterEnergyFeedSensorTotalEnergyState(), capability);
-        updateStateForEnergyChannel(CHANNEL_ENERGY_FEED_MONTH_EURO,
+        updateStateForEnergyChannelEuro(CHANNEL_ENERGY_FEED_MONTH_EURO,
                 capability.getCapabilityState().getTwoWayMeterEnergyFeedSensorEnergyPerMonthInEuroState(), capability);
-        updateStateForEnergyChannel(CHANNEL_ENERGY_FEED_DAY_EURO,
+        updateStateForEnergyChannelEuro(CHANNEL_ENERGY_FEED_DAY_EURO,
                 capability.getCapabilityState().getTwoWayMeterEnergyFeedSensorEnergyPerDayInEuroState(), capability);
-        updateStateForEnergyChannel(CHANNEL_ENERGY_FEED_DAY_KWH,
+        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_FEED_DAY_KWH,
                 capability.getCapabilityState().getTwoWayMeterEnergyFeedSensorEnergyPerDayInKWhState(), capability);
     }
 
-    private void updateStateForEnergyChannel(final String channelId, @Nullable final Double state,
+    private void updateStateForEnergyChannelEuro(final String channelId, @Nullable final Double state,
+            final CapabilityDTO capability) {
+        if (state != null) {
+            updateState(channelId, new DecimalType(state));
+        } else {
+            logStateNULL(capability);
+        }
+    }
+
+    private void updateStateForEnergyChannelWatt(final String channelId, @Nullable final Double state,
             final CapabilityDTO capability) {
         if (state != null) {
             updateState(channelId, QuantityType.valueOf(state, Units.WATT));
