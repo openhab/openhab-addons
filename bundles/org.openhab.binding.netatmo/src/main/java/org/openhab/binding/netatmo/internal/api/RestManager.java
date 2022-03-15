@@ -58,14 +58,14 @@ public abstract class RestManager {
     }
 
     protected <T> T post(URI uri, Class<T> clazz, Map<String, String> entries) throws NetatmoException {
-        return apiBridge.executeUri(uri, POST, clazz, toRequest(entries));
+        return apiBridge.executeUri(uri, POST, clazz, toRequest(entries), 3);
     }
 
     private <T extends ApiResponse<?>> T executeUri(UriBuilder uriBuilder, HttpMethod method, Class<T> clazz,
             @Nullable String payload) throws NetatmoException {
         if (apiBridge.isConnected()) {
             URI uri = uriBuilder.build();
-            T response = apiBridge.executeUri(uri, method, clazz, payload);
+            T response = apiBridge.executeUri(uri, method, clazz, payload, 3);
             if (response instanceof ApiResponse.Ok && ((ApiResponse.Ok) response).failed()) {
                 throw new NetatmoException("Command failed : %s for uri : %s", response.getStatus(), uri.toString());
             }

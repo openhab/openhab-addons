@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ApiBridgeHandler extends BaseBridgeHandler {
-    private static final int TIMEOUT_MS = 10000;
+    private static final int TIMEOUT_S = 20;
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
     private final BindingConfiguration bindingConf;
@@ -173,14 +173,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         return (T) managers.get(clazz);
     }
 
-    public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String payload)
-            throws NetatmoException {
+    public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String payload,
+            int retryCount) throws NetatmoException {
         try {
             logger.trace("executeUri {}  {} ", method.toString(), uri);
 
-            Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                    .header(HttpHeader.CONTENT_TYPE, String.format("application/%s;charset=UTF-8",
-                            URL_API.contains(uri.getHost()) ? "x-www-form-urlencoded" : "json"));
+            Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS)
+                    .header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
 
             String auth = connectApi.getAuthorization();
             if (auth != null) {
@@ -210,7 +209,12 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             }
             return deserializer.deserialize(clazz, responseBody);
         } catch (InterruptedException e) {
+            if (retryCount > 0) {
+                logger.debug("Request interrupted, retry counter : {}", retryCount);
+                return executeUri(uri, method, clazz, payload, retryCount - 1);
+            }
             Thread.currentThread().interrupt();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             throw new NetatmoException(String.format("%s: \"%s\"", e.getClass().getName(), e.getMessage()));
         } catch (TimeoutException | ExecutionException e) {
             throw new NetatmoException(e, "Exception while calling %s", uri.toString());

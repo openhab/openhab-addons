@@ -24,7 +24,7 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceErr
 public class ApiError {
     private class Body {
         private String message = "";
-        private int code;
+        private ServiceError code = ServiceError.UNKNOWN;
     }
 
     private Body error = new Body();
@@ -34,6 +34,6 @@ public class ApiError {
     }
 
     public ServiceError getCode() {
-        return ServiceError.fromCode(error.code);
+        return error.code;
     }
 }

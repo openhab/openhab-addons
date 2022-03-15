@@ -358,39 +358,53 @@ public class NetatmoConstants {
     }
 
     public enum ServiceError {
-        UNKNOWN(99),
-        UNKNOWN_ERROR_IN_OAUTH(-2),
-        GRANT_IS_INVALID(-1),
-        ACCESS_TOKEN_MISSING(1),
-        INVALID_TOKEN_MISSING(2),
-        ACCESS_TOKEN_EXPIRED(3),
-        APPLICATION_DEACTIVATED(5),
-        NOTHING_TO_MODIFY(7),
-        DEVICE_NOT_FOUND(9),
-        MISSING_ARGUMENTS(10),
-        OPERATION_FORBIDDEN(13),
-        IP_NOT_FOUND(19),
-        INVALID_ARGUMENT(21),
-        APPLICATION_NOT_FOUND(22),
-        USER_NOT_FOUND(23),
-        INVALID_DATE(25),
-        MAXIMUM_USAGE_REACHED(26),
-        INVALID_REFRESH_TOKEN(30),
-        METHOD_NOT_FOUND(31),
-        UNABLE_TO_EXECUTE(35),
-        PROHIBITED_STRING(36),
-        NO_MORE_SPACE_AVAILABLE_ON_THE_CAMERA(37),
-        JSON_GIVEN_HAS_AN_INVALID_ENCODING(40),
-        DEVICE_IS_UNREACHABLE(41);
-
-        public final int code;
-
-        ServiceError(int i) {
-            this.code = i;
-        }
-
-        public static ServiceError fromCode(int id) {
-            return Arrays.stream(values()).filter(value -> value.code == id).findFirst().orElse(UNKNOWN);
-        }
+        @SerializedName("99")
+        UNKNOWN,
+        @SerializedName("-2")
+        UNKNOWN_ERROR_IN_OAUTH,
+        @SerializedName("-1")
+        GRANT_IS_INVALID,
+        @SerializedName("1")
+        ACCESS_TOKEN_MISSING,
+        @SerializedName("2")
+        INVALID_TOKEN_MISSING,
+        @SerializedName("3")
+        ACCESS_TOKEN_EXPIRED,
+        @SerializedName("5")
+        APPLICATION_DEACTIVATED,
+        @SerializedName("7")
+        NOTHING_TO_MODIFY,
+        @SerializedName("9")
+        DEVICE_NOT_FOUND,
+        @SerializedName("10")
+        MISSING_ARGUMENTS,
+        @SerializedName("13")
+        OPERATION_FORBIDDEN,
+        @SerializedName("19")
+        IP_NOT_FOUND,
+        @SerializedName("21")
+        INVALID_ARGUMENT,
+        @SerializedName("22")
+        APPLICATION_NOT_FOUND,
+        @SerializedName("23")
+        USER_NOT_FOUND,
+        @SerializedName("25")
+        INVALID_DATE,
+        @SerializedName("26")
+        MAXIMUM_USAGE_REACHED,
+        @SerializedName("30")
+        INVALID_REFRESH_TOKEN,
+        @SerializedName("31")
+        METHOD_NOT_FOUND,
+        @SerializedName("35")
+        UNABLE_TO_EXECUTE,
+        @SerializedName("36")
+        PROHIBITED_STRING,
+        @SerializedName("37")
+        NO_MORE_SPACE_AVAILABLE_ON_THE_CAMERA,
+        @SerializedName("40")
+        JSON_GIVEN_HAS_AN_INVALID_ENCODING,
+        @SerializedName("41")
+        DEVICE_IS_UNREACHABLE;
     }
 }

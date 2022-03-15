@@ -49,7 +49,7 @@ public class AuthenticationApi extends RestManager {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationApi.class);
 
     private Optional<ScheduledFuture<?>> refreshTokenJob = Optional.empty();
-    private Optional<NAAccessTokenResponse> answer = Optional.empty();
+    private Optional<NAAccessTokenResponse> tokenResponse = Optional.empty();
     private String scope = "";
 
     public AuthenticationApi(ApiBridgeHandler bridge) {
@@ -60,31 +60,29 @@ public class AuthenticationApi extends RestManager {
         Set<FeatureArea> requestedFeatures = !features.isEmpty() ? features : FeatureArea.AS_SET;
         scope = FeatureArea.toScopeString(requestedFeatures);
         requestToken(credentials.clientId, credentials.clientSecret,
-                Map.of(SCOPE, scope, PASSWORD, credentials.password, USERNAME, credentials.username));
+                Map.of(USERNAME, credentials.username, PASSWORD, credentials.password, SCOPE, scope));
     }
 
-    private void requestToken(String clientId, String clientSecret, Map<String, String> entries)
-            throws NetatmoException {
+    private void requestToken(String id, String secret, Map<String, String> entries) throws NetatmoException {
         freeTokenJob();
 
         Map<String, String> payload = new HashMap<>(entries);
-        payload.putAll(Map.of(CLIENT_ID, clientId, CLIENT_SECRET, clientSecret, GRANT_TYPE,
-                entries.keySet().contains(PASSWORD) ? PASSWORD : REFRESH_TOKEN));
-
-        answer = Optional.empty();
+        payload.putAll(Map.of(GRANT_TYPE, entries.keySet().contains(PASSWORD) ? PASSWORD : REFRESH_TOKEN, CLIENT_ID, id,
+                CLIENT_SECRET, secret));
+        disconnect();
         NAAccessTokenResponse response = post(OAUTH_URI, NAAccessTokenResponse.class, payload);
         refreshTokenJob = Optional.of(scheduler.schedule(() -> {
             try {
-                requestToken(clientId, clientSecret, Map.of(REFRESH_TOKEN, response.getRefreshToken()));
+                requestToken(id, secret, Map.of(REFRESH_TOKEN, response.getRefreshToken()));
             } catch (NetatmoException e) {
                 logger.warn("Unable to refresh access token : {}", e.getMessage());
             }
         }, Math.round(response.getExpiresIn() * 0.8), TimeUnit.SECONDS));
-        answer = Optional.of(response);
+        tokenResponse = Optional.of(response);
     }
 
     public void disconnect() {
-        answer = Optional.empty();
+        tokenResponse = Optional.empty();
     }
 
     public void dispose() {
@@ -97,13 +95,13 @@ public class AuthenticationApi extends RestManager {
     }
 
     public @Nullable String getAuthorization() {
-        return answer.map(at -> String.format("Bearer %s", at.getAccessToken())).orElse(null);
+        return tokenResponse.map(at -> String.format("Bearer %s", at.getAccessToken())).orElse(null);
     }
 
     public boolean matchesScopes(Set<Scope> requiredScopes) {
         // either we do not require any scope, either connected and all scopes available
         return requiredScopes.isEmpty()
-                || (isConnected() && answer.map(at -> at.getScope().containsAll(requiredScopes)).orElse(false));
+                || (isConnected() && tokenResponse.map(at -> at.getScope().containsAll(requiredScopes)).orElse(false));
     }
 
     public boolean isConnected() {
