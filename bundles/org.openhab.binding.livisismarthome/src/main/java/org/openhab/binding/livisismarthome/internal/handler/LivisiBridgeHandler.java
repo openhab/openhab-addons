@@ -110,6 +110,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private @Nullable ScheduledFuture<?> reInitJob;
     private @NonNullByDefault({}) LivisiBridgeConfiguration bridgeConfiguration;
     private @Nullable OAuthClientService oAuthService;
+    private String configVersion = "";
 
     /**
      * Constructs a new {@link LivisiBridgeHandler}.
@@ -196,7 +197,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private boolean refreshDevices() {
         try {
             if (client != null && deviceStructMan != null) {
-                client.refreshStatus();
+                configVersion = client.refreshStatus();
                 deviceStructMan.refreshDevices();
                 return true;
             }
@@ -611,12 +612,12 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     private void handleConfigurationChangedEvent(EventDTO event) {
-        if (client.getConfigVersion().equals(event.getConfigurationVersion().toString())) {
+        if (configVersion.equals(event.getConfigurationVersion().toString())) {
             logger.debug("Ignored configuration changed event with version '{}' as current version is '{}' the same.",
-                    event.getConfigurationVersion(), client.getConfigVersion());
+                    event.getConfigurationVersion(), configVersion);
         } else {
             logger.info("Configuration changed from version {} to {}. Restarting LIVISI SmartHome binding...",
-                    client.getConfigVersion(), event.getConfigurationVersion());
+                    configVersion, event.getConfigurationVersion());
             scheduleRestartClient(false);
         }
     }

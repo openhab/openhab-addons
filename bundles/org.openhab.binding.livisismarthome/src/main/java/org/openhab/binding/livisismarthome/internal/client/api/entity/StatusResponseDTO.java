@@ -27,12 +27,19 @@ public class StatusResponseDTO {
     private GatewayDTO gateway;
 
     /**
+     * Version of the configuration. Changes each time the configuration was changed via the LIVISI client app.
+     */
+    private String configVersion;
+
+    /**
      * @return the configuration version
      */
-    public String getGatewayConfigVersion() {
+    public String getConfigVersion() {
+        // SHC 2 returns a gateway element with the config version.
         if (gateway != null) {
             return gateway.getConfigVersion();
         }
-        return null;
+        // SHC 1 (classic) has no gateway element, the configVersion is returned directly within the response object.
+        return configVersion;
     }
 }

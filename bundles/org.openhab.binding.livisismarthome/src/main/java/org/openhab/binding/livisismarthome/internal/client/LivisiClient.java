@@ -94,7 +94,6 @@ public class LivisiClient {
     private final LivisiBridgeConfiguration bridgeConfiguration;
     private final OAuthClientService oAuthService;
     private final HttpClient httpClient;
-    private String configVersion = "";
 
     public LivisiClient(final LivisiBridgeConfiguration bridgeConfiguration, final OAuthClientService oAuthService,
             final HttpClient httpClient) {
@@ -105,19 +104,18 @@ public class LivisiClient {
 
     /**
      * Gets the status
+     * As the API returns the details of the SmartHome controller (SHC), the config version is returned.
      *
-     * As the API returns the details of the SmartHome controller (SHC), the {@link #configVersion} is set.
-     *
-     * @throws SessionExistsException thrown, if a session already exists
+     * @return config version
      */
-    public void refreshStatus() throws IOException, ApiException, AuthenticationException {
+    public String refreshStatus() throws IOException, ApiException, AuthenticationException {
         logger.debug("Get LIVISI SmartHome status...");
         final StatusResponseDTO status = executeGet(URLCreator.createStatusURL(bridgeConfiguration.host),
                 StatusResponseDTO.class);
 
-        configVersion = status.getGatewayConfigVersion();
-
+        final String configVersion = status.getConfigVersion();
         logger.debug("LIVISI SmartHome status loaded. Configuration version is {}.", configVersion);
+        return configVersion;
     }
 
     /**
@@ -425,13 +423,6 @@ public class LivisiClient {
     public List<MessageDTO> getMessages() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading messages...");
         return executeGetList(URLCreator.createMessageURL(bridgeConfiguration.host), MessageDTO[].class);
-    }
-
-    /**
-     * @return the configVersion
-     */
-    public String getConfigVersion() {
-        return configVersion;
     }
 
     private String createActionURL() {

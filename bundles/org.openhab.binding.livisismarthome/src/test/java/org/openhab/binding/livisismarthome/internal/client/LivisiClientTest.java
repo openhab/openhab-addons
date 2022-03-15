@@ -37,6 +37,7 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
  */
 public class LivisiClientTest {
 
+    private static final String STATUS_URL = "http://127.0.0.1:8080/status";
     private static final String DEVICES_URL = "http://127.0.0.1:8080/device";
     private static final String CAPABILITY_STATES_URL = "http://127.0.0.1:8080/capability/states";
 
@@ -56,6 +57,26 @@ public class LivisiClientTest {
         LivisiBridgeConfiguration bridgeConfiguration = new LivisiBridgeConfiguration();
         bridgeConfiguration.host = "127.0.0.1";
         client = new LivisiClient(bridgeConfiguration, oAuthClientMock, httpClientMock);
+    }
+
+    @Test
+    public void testRefreshStatusSHC1() throws Exception {
+        mockRequest(STATUS_URL,
+                "{\"serialNumber\":\"123\",\"connected\":true,\"appVersion\":\"3.1.1025.0\",\"osVersion\":\"1.914\",\"configVersion\":\"1200\",\"controllerType\":\"Classic\"}");
+        assertEquals("1200", client.refreshStatus());
+    }
+
+    @Test
+    public void testRefreshStatusSHC2() throws Exception {
+        mockRequest(STATUS_URL,
+                "{\"gateway\": {\"serialNumber\": \"123\","
+                        + "\"appVersion\": \"1.2.37.430\",\"osVersion\": \"8.17\",\"configVersion\": 1200,"
+                        + "\"operationStatus\": \"active\",\"network\": "
+                        + "{\"ethCableAttached\": true,\"inUseAdapter\": \"eth\",\"hotspotActive\": false,"
+                        + "\"wpsActive\": false,\"backendAvailable\": true,\"ethMacAddress\": "
+                        + "[{\"id\": \"456\",\"config\": {\"name\": \"Arbeitszimmer\",\"type\": \"Other\"},"
+                        + "\"desc\": \"/desc/location\"}]}}}");
+        assertEquals("1200", client.refreshStatus());
     }
 
     @Test
