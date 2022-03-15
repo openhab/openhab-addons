@@ -13,7 +13,9 @@
 package org.openhab.binding.fineoffsetweatherstation.internal.domain.response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.MeasureType;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.State;
 
 /**
@@ -23,24 +25,44 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class MeasuredValue {
-    private final Measurand measurand;
+    private final MeasureType measureType;
+    private final String channelId;
+    private final @Nullable ChannelTypeUID channelTypeUID;
     private final State state;
+    private final String debugName;
 
-    public MeasuredValue(Measurand measurand, State state) {
-        this.measurand = measurand;
+    public MeasuredValue(MeasureType measureType, String channelId, @Nullable ChannelTypeUID channelTypeUID,
+            State state, String debugName) {
+        this.measureType = measureType;
+        this.channelId = channelId;
+        this.channelTypeUID = channelTypeUID;
         this.state = state;
+        this.debugName = debugName;
     }
 
-    public Measurand getMeasurand() {
-        return measurand;
+    public MeasureType getMeasureType() {
+        return measureType;
+    }
+
+    public String getChannelId() {
+        return channelId;
+    }
+
+    public @Nullable ChannelTypeUID getChannelTypeUID() {
+        return channelTypeUID;
     }
 
     public State getState() {
         return state;
     }
 
+    public String getDebugName() {
+        return debugName;
+    }
+
     @Override
     public String toString() {
-        return "MeasuredValue{" + "measurand=" + measurand + ", state=" + state + '}';
+        return "MeasuredValue{" + "measureType=" + measureType + ", channelId='" + channelId + '\''
+                + ", channelTypeUID=" + channelTypeUID + ", state=" + state + ", debugName='" + debugName + '\'' + '}';
     }
 }

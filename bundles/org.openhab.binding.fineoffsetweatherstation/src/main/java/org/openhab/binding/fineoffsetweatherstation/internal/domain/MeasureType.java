@@ -15,11 +15,13 @@ package org.openhab.binding.fineoffsetweatherstation.internal.domain;
 import static javax.measure.MetricPrefix.HECTO;
 import static javax.measure.MetricPrefix.KILO;
 import static javax.measure.MetricPrefix.MILLI;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_CO2;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_HUMIDITY;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_ILLUMINATION;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_LIGHTNING_COUNTER;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_LIGHTNING_DISTANCE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_LIGHTNING_TIME;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_PM10;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_PM25;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_PRESSURE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_RAIN;
@@ -39,6 +41,7 @@ import static org.openhab.core.library.unit.Units.DEGREE_ANGLE;
 import static org.openhab.core.library.unit.Units.METRE_PER_SECOND;
 import static org.openhab.core.library.unit.Units.MICROGRAM_PER_CUBICMETRE;
 import static org.openhab.core.library.unit.Units.MILLIMETRE_PER_HOUR;
+import static org.openhab.core.library.unit.Units.PARTS_PER_MILLION;
 import static org.openhab.core.library.unit.Units.PERCENT;
 
 import java.time.Instant;
@@ -87,7 +90,10 @@ public enum MeasureType {
 
     PM25(MICROGRAM_PER_CUBICMETRE, 2, CHANNEL_PM25, (data, offset) -> toUInt16(data, offset) / 10.),
 
-    BOOLEAN(1, null, (data, offset) -> toUInt8(data[offset]) != 0 ? OnOffType.ON : OnOffType.OFF),
+    PM10(MICROGRAM_PER_CUBICMETRE, 2, CHANNEL_PM10, (data, offset) -> toUInt16(data, offset) / 10.),
+
+    CO2(PARTS_PER_MILLION, 2, CHANNEL_CO2, Utils::toUInt16),
+
     WATER_LEAK_DETECTION(1, CHANNEL_WATER_LEAK_DETECTION,
             (data, offset) -> toUInt8(data[offset]) != 0 ? OnOffType.ON : OnOffType.OFF),
 

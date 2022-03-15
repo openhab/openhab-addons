@@ -31,7 +31,6 @@ import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetGatewayCo
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetSensorConfiguration;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants;
 import org.openhab.binding.fineoffsetweatherstation.internal.discovery.FineOffsetGatewayDiscoveryService;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
@@ -170,9 +169,9 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         List<Channel> channels = new ArrayList<>();
         for (MeasuredValue measuredValue : data) {
             @Nullable
-            Channel channel = thing.getChannel(measuredValue.getMeasurand().getChannelId());
+            Channel channel = thing.getChannel(measuredValue.getChannelId());
             if (channel == null) {
-                channel = createChannel(measuredValue.getMeasurand());
+                channel = createChannel(measuredValue);
                 if (channel != null) {
                     channels.add(channel);
                 }
@@ -186,17 +185,17 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         }
     }
 
-    private @Nullable Channel createChannel(Measurand measurand) {
-        ChannelTypeUID channelTypeId = measurand.getChannelTypeId();
+    private @Nullable Channel createChannel(MeasuredValue measuredValue) {
+        ChannelTypeUID channelTypeId = measuredValue.getChannelTypeUID();
         if (channelTypeId == null) {
-            logger.warn("cannot create channel for {}", measurand.getName());
+            logger.warn("cannot create channel for {}", measuredValue.getDebugName());
             return null;
         }
-        ChannelBuilder builder = ChannelBuilder.create(new ChannelUID(thing.getUID(), measurand.getChannelId()))
+        ChannelBuilder builder = ChannelBuilder.create(new ChannelUID(thing.getUID(), measuredValue.getChannelId()))
                 .withKind(ChannelKind.STATE).withType(channelTypeId);
         String channelKey = "thing-type." + FineOffsetWeatherStationBindingConstants.BINDING_ID + "."
-                + THING_TYPE_GATEWAY.getId() + ".channel." + measurand.getChannelId();
-        String label = translationProvider.getText(bundle, channelKey + ".label", measurand.getName(),
+                + THING_TYPE_GATEWAY.getId() + ".channel." + measuredValue.getChannelId();
+        String label = translationProvider.getText(bundle, channelKey + ".label", measuredValue.getDebugName(),
                 localeProvider.getLocale());
         if (label != null) {
             builder.withLabel(label);

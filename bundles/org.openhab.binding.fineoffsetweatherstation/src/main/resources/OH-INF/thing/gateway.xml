@@ -65,6 +65,17 @@
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="moisture">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Moisture</label>
+		<category>Moisture</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Moisture</tag>
+		</tags>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="illumination">
 		<item-type>Number:Illuminance</item-type>
 		<label>Illumination</label>
@@ -118,6 +129,28 @@
 			<tag>AirQuality</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pm10">
+		<item-type>Number:Density</item-type>
+		<label>PM10 Air Quality</label>
+		<category>AirQuality</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="co2">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CO₂</label>
+		<category>CarbonDioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="water-leak-detection">

@@ -12,15 +12,19 @@
  */
 package org.openhab.binding.fineoffsetweatherstation.internal.domain;
 
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_MOISTURE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_UV_INDEX;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.State;
 
 /**
  * The measurands of supported by the gateway.
@@ -150,40 +154,48 @@ public enum Measurand {
 
     SOILTEMP16("temperature-soil-channel-16", (byte) 0x49, "Soil Temperature 16", MeasureType.TEMPERATURE),
 
-    SOILMOISTURE1("moisture-soil-channel-1", (byte) 0x2C, "Soil Moisture 1", MeasureType.PERCENTAGE),
+    SOILMOISTURE1("moisture-soil-channel-1", (byte) 0x2C, "Soil Moisture 1", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
 
-    SOILMOISTURE2("moisture-soil-channel-2", (byte) 0x2E, "Soil Moisture 2", MeasureType.PERCENTAGE),
+    SOILMOISTURE2("moisture-soil-channel-2", (byte) 0x2E, "Soil Moisture 2", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
 
-    SOILMOISTURE3("moisture-soil-channel-3", (byte) 0x30, "Soil Moisture 3", MeasureType.PERCENTAGE),
+    SOILMOISTURE3("moisture-soil-channel-3", (byte) 0x30, "Soil Moisture 3", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
 
-    SOILMOISTURE4("moisture-soil-channel-4", (byte) 0x32, "Soil Moisture 4", MeasureType.PERCENTAGE),
+    SOILMOISTURE4("moisture-soil-channel-4", (byte) 0x32, "Soil Moisture 4", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
 
-    SOILMOISTURE5("moisture-soil-channel-5", (byte) 0x34, "Soil Moisture 5", MeasureType.PERCENTAGE),
+    SOILMOISTURE5("moisture-soil-channel-5", (byte) 0x34, "Soil Moisture 5", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
 
-    SOILMOISTURE6("moisture-soil-channel-6", (byte) 0x36, "Soil Moisture 6", MeasureType.PERCENTAGE),
+    SOILMOISTURE6("moisture-soil-channel-6", (byte) 0x36, "Soil Moisture 6", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
 
-    SOILMOISTURE7("moisture-soil-channel-7", (byte) 0x38, "Soil Moisture 7", MeasureType.PERCENTAGE),
+    SOILMOISTURE7("moisture-soil-channel-7", (byte) 0x38, "Soil Moisture 7", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
 
-    SOILMOISTURE8("moisture-soil-channel-8", (byte) 0x3A, "Soil Moisture 8", MeasureType.PERCENTAGE),
+    SOILMOISTURE8("moisture-soil-channel-8", (byte) 0x3A, "Soil Moisture 8", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
 
-    SOILMOISTURE9("moisture-soil-channel-9", (byte) 0x3C, "Soil Moisture 9", MeasureType.PERCENTAGE),
+    SOILMOISTURE9("moisture-soil-channel-9", (byte) 0x3C, "Soil Moisture 9", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
 
-    SOILMOISTURE10("moisture-soil-channel-10", (byte) 0x3E, "Soil Moisture 10", MeasureType.PERCENTAGE),
+    SOILMOISTURE10("moisture-soil-channel-10", (byte) 0x3E, "Soil Moisture 10", MeasureType.PERCENTAGE,
+            CHANNEL_MOISTURE),
 
-    SOILMOISTURE11("moisture-soil-channel-11", (byte) 0x40, "Soil Moisture 11", MeasureType.PERCENTAGE),
+    SOILMOISTURE11("moisture-soil-channel-11", (byte) 0x40, "Soil Moisture 11", MeasureType.PERCENTAGE,
+            CHANNEL_MOISTURE),
 
-    SOILMOISTURE12("moisture-soil-channel-12", (byte) 0x42, "Soil Moisture 12", MeasureType.PERCENTAGE),
+    SOILMOISTURE12("moisture-soil-channel-12", (byte) 0x42, "Soil Moisture 12", MeasureType.PERCENTAGE,
+            CHANNEL_MOISTURE),
 
-    SOILMOISTURE13("moisture-soil-channel-13", (byte) 0x44, "Soil Moisture 13", MeasureType.PERCENTAGE),
+    SOILMOISTURE13("moisture-soil-channel-13", (byte) 0x44, "Soil Moisture 13", MeasureType.PERCENTAGE,
+            CHANNEL_MOISTURE),
 
-    SOILMOISTURE14("moisture-soil-channel-14", (byte) 0x46, "Soil Moisture 14", MeasureType.PERCENTAGE),
+    SOILMOISTURE14("moisture-soil-channel-14", (byte) 0x46, "Soil Moisture 14", MeasureType.PERCENTAGE,
+            CHANNEL_MOISTURE),
 
-    SOILMOISTURE15("moisture-soil-channel-15", (byte) 0x48, "Soil Moisture 15", MeasureType.PERCENTAGE),
+    SOILMOISTURE15("moisture-soil-channel-15", (byte) 0x48, "Soil Moisture 15", MeasureType.PERCENTAGE,
+            CHANNEL_MOISTURE),
 
-    SOILMOISTURE16("moisture-soil-channel-16", (byte) 0x4A, "Soil Moisture 16", MeasureType.PERCENTAGE),
+    SOILMOISTURE16("moisture-soil-channel-16", (byte) 0x4A, "Soil Moisture 16", MeasureType.PERCENTAGE,
+            CHANNEL_MOISTURE),
 
     // will no longer be used
-    LOWBATT("battery-low", (byte) 0x4C, "All sensor lowbatt 16 char 1", MeasureType.BOOLEAN),
+    // skip battery-level, since it is read via Command.CMD_READ_SENSOR_ID_NEW
+    LOWBATT((byte) 0x4C, new Skip(1)),
 
     PM25_24HAVG1("air-quality-24-hour-average-channel-1", (byte) 0x4D, "PM2.5 Air Quality 24 hour average channel 1",
             MeasureType.PM25),
@@ -243,7 +255,45 @@ public enum Measurand {
             MeasureType.TEMPERATURE),
 
     TF_USR8("temperature-external-channel-8", (byte) 0x6A, "Soil or Water temperature channel 8",
-            MeasureType.TEMPERATURE);
+            MeasureType.TEMPERATURE),
+
+    ITEM_SENSOR_CO2((byte) 0x70,
+            new MeasurandParser("sensor-co2-temperature", "Temperature (CO₂-Sensor)", MeasureType.TEMPERATURE),
+            new MeasurandParser("sensor-co2-humidity", "Humidity (CO₂-Sensor)", MeasureType.PERCENTAGE),
+            new MeasurandParser("sensor-co2-pm10", "PM10 Air Quality (CO₂-Sensor)", MeasureType.PM10),
+            new MeasurandParser("sensor-co2-pm10-24-hour-average", "PM10 Air Quality 24 hour average (CO₂-Sensor)",
+                    MeasureType.PM10),
+            new MeasurandParser("sensor-co2-pm25", "PM2.5 Air Quality (CO₂-Sensor)", MeasureType.PM25),
+            new MeasurandParser("sensor-co2-pm25-24-hour-average", "PM2.5 Air Quality 24 hour average (CO₂-Sensor)",
+                    MeasureType.PM25),
+            new MeasurandParser("sensor-co2-co2", "CO₂", MeasureType.CO2),
+            new MeasurandParser("sensor-co2-co2-24-hour-average", "CO₂ 24 hour average", MeasureType.CO2),
+            // skip battery-level, since it is read via Command.CMD_READ_SENSOR_ID_NEW
+            new Skip(1)),
+
+    ITEM_LEAF_WETNESS_CH1("leaf-wetness-channel-1", (byte) 0x72, "Leaf Moisture channel 1", MeasureType.PERCENTAGE,
+            CHANNEL_MOISTURE),
+
+    ITEM_LEAF_WETNESS_CH2("leaf-wetness-channel-2", (byte) 0x73, "Leaf Moisture channel 2", MeasureType.PERCENTAGE,
+            CHANNEL_MOISTURE),
+
+    ITEM_LEAF_WETNESS_CH3("leaf-wetness-channel-3", (byte) 0x74, "Leaf Moisture channel 3", MeasureType.PERCENTAGE,
+            CHANNEL_MOISTURE),
+
+    ITEM_LEAF_WETNESS_CH4("leaf-wetness-channel-4", (byte) 0x75, "Leaf Moisture channel 4", MeasureType.PERCENTAGE,
+            CHANNEL_MOISTURE),
+
+    ITEM_LEAF_WETNESS_CH5("leaf-wetness-channel-5", (byte) 0x76, "Leaf Moisture channel 5", MeasureType.PERCENTAGE,
+            CHANNEL_MOISTURE),
+
+    ITEM_LEAF_WETNESS_CH6("leaf-wetness-channel-6", (byte) 0x77, "Leaf Moisture channel 6", MeasureType.PERCENTAGE,
+            CHANNEL_MOISTURE),
+
+    ITEM_LEAF_WETNESS_CH7("leaf-wetness-channel-7", (byte) 0x78, "Leaf Moisture channel 7", MeasureType.PERCENTAGE,
+            CHANNEL_MOISTURE),
+
+    ITEM_LEAF_WETNESS_CH8("leaf-wetness-channel-8", (byte) 0x79, "Leaf Moisture channel 8", MeasureType.PERCENTAGE,
+            CHANNEL_MOISTURE),;
 
     private static final Map<Byte, Measurand> MEASURANDS = new HashMap<>();
 
@@ -254,10 +304,7 @@ public enum Measurand {
     }
 
     private final byte code;
-    private final String name;
-    private final String channelId;
-    private final MeasureType measureType;
-    private final @Nullable ChannelTypeUID channelTypeUID;
+    private final Parser[] parsers;
 
     Measurand(String channelId, byte code, String name, MeasureType measureType) {
         this(channelId, code, name, measureType, null);
@@ -265,34 +312,71 @@ public enum Measurand {
 
     Measurand(String channelId, byte code, String name, MeasureType measureType,
             @Nullable ChannelTypeUID channelTypeUID) {
-        this.channelId = channelId;
+        this(code, new MeasurandParser(channelId, name, measureType, channelTypeUID));
+    }
+
+    Measurand(byte code, Parser... parsers) {
         this.code = code;
-        this.name = name;
-        this.measureType = measureType;
-        this.channelTypeUID = channelTypeUID;
+        this.parsers = parsers;
     }
 
     public byte getCode() {
         return code;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getChannelId() {
-        return channelId;
-    }
-
-    public MeasureType getMeasureType() {
-        return measureType;
-    }
-
     public static @Nullable Measurand getByCode(byte code) {
         return MEASURANDS.get(code);
     }
 
-    public @Nullable ChannelTypeUID getChannelTypeId() {
-        return channelTypeUID == null ? measureType.getChannelTypeId() : channelTypeUID;
+    public int extractMeasuredValues(byte[] data, int offset, List<MeasuredValue> result) {
+        int subOffset = 0;
+        for (Parser parser : parsers) {
+            subOffset += parser.extractMeasuredValues(data, offset + subOffset, result);
+        }
+        return subOffset;
+    }
+
+    private interface Parser {
+        int extractMeasuredValues(byte[] data, int offset, List<MeasuredValue> result);
+    }
+
+    private static class Skip implements Parser {
+        private final int skip;
+
+        public Skip(int skip) {
+            this.skip = skip;
+        }
+
+        @Override
+        public int extractMeasuredValues(byte[] data, int offset, List<MeasuredValue> result) {
+            return skip;
+        }
+    }
+
+    private static class MeasurandParser implements Parser {
+        private final String name;
+        private final String channelId;
+        private final MeasureType measureType;
+        private final @Nullable ChannelTypeUID channelTypeUID;
+
+        MeasurandParser(String channelId, String name, MeasureType measureType) {
+            this(channelId, name, measureType, null);
+        }
+
+        MeasurandParser(String channelId, String name, MeasureType measureType,
+                @Nullable ChannelTypeUID channelTypeUID) {
+            this.channelId = channelId;
+            this.name = name;
+            this.measureType = measureType;
+            this.channelTypeUID = channelTypeUID == null ? measureType.getChannelTypeId() : channelTypeUID;
+        }
+
+        public int extractMeasuredValues(byte[] data, int offset, List<MeasuredValue> result) {
+            State state = measureType.toState(data, offset);
+            if (state != null) {
+                result.add(new MeasuredValue(measureType, channelId, channelTypeUID, state, name));
+            }
+            return measureType.getByteSize();
+        }
     }
 }
