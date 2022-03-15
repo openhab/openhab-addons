@@ -13,12 +13,12 @@
 		<description>The Generation Meter from the LIVISI PowerControlSolar product, that measures the generated energy.</description>
 
 		<channels>
-			<channel id="energy_generation_month_kwh" typeId="EnergyGenerationMonthKWh"/>
-			<channel id="total_energy_generation" typeId="TotalEnergyGeneration"/>
-			<channel id="energy_generation_month_euro" typeId="EnergyGenerationMonthEuro"/>
-			<channel id="energy_generation_day_euro" typeId="EnergyGenerationDayEuro"/>
-			<channel id="energy_generation_day_kwh" typeId="EnergyGenerationDayKWh"/>
 			<channel id="power_generation_watt" typeId="PowerGenerationWatt"/>
+			<channel id="total_energy_generation" typeId="TotalEnergyGeneration"/>
+			<channel id="energy_generation_day_kwh" typeId="EnergyGenerationDayKWh"/>
+			<channel id="energy_generation_day_euro" typeId="EnergyGenerationDayEuro"/>
+			<channel id="energy_generation_month_kwh" typeId="EnergyGenerationMonthKWh"/>
+			<channel id="energy_generation_month_euro" typeId="EnergyGenerationMonthEuro"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:livisismarthome:config"/>

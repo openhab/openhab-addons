@@ -17,7 +17,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
 		<description>Dimms the connected light</description>
-		<category>DimmableLight</category>
+		<category>Lightbulb</category>
 	</channel-type>
 
 	<!-- RollerShutter Channel -->
@@ -55,7 +55,7 @@
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
 		<description>Thermostat operation mode (manual/auto)</description>
-		<category>Mode</category>
+		<category>Settings</category>
 		<state>
 			<options>
 				<option value="Auto">auto</option>
@@ -135,7 +135,7 @@
 		<item-type>Number</item-type>
 		<label>Motion Count</label>
 		<description>The count of detected motions</description>
-		<category>Count</category>
+		<category>Motion</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -144,7 +144,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Luminance</label>
 		<description>Shows the detected luminance in percent</description>
-		<category>Light</category>
+		<category>Sun</category>
 		<state readOnly="true" min="0" max="100" pattern="%d%%"/>
 	</channel-type>
 
@@ -158,7 +158,7 @@
 	</channel-type>
 
 	<!-- EnergyConsumptionMonthKWh -->
-	<channel-type id="EnergyConsumptionMonthKWh">
+	<channel-type id="EnergyConsumptionMonthKWh" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Consumption (month)</label>
 		<description>The energy consumption per month in kWh</description>
@@ -185,7 +185,7 @@
 	</channel-type>
 
 	<!-- EnergyConsumptionDayEuro -->
-	<channel-type id="EnergyConsumptionDayEuro" advanced="true">
+	<channel-type id="EnergyConsumptionDayEuro">
 		<item-type>Number</item-type>
 		<label>Consumption Costs (day)</label>
 		<description>The energy consumption per day in Euro</description>
@@ -212,7 +212,7 @@
 	</channel-type>
 
 	<!-- EnergyGenerationMonthKWh -->
-	<channel-type id="EnergyGenerationMonthKWh">
+	<channel-type id="EnergyGenerationMonthKWh" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Generation (month)</label>
 		<description>The energy generation per month in kWh</description>
@@ -239,7 +239,7 @@
 	</channel-type>
 
 	<!-- EnergyGenerationDayEuro -->
-	<channel-type id="EnergyGenerationDayEuro" advanced="true">
+	<channel-type id="EnergyGenerationDayEuro">
 		<item-type>Number</item-type>
 		<label>Generation Value (day)</label>
 		<description>The energy generation per day in Euro</description>
@@ -275,7 +275,7 @@
 	</channel-type>
 
 	<!-- EnergyFeedMonthKWh -->
-	<channel-type id="EnergyFeedMonthKWh">
+	<channel-type id="EnergyFeedMonthKWh" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Feed (month)</label>
 		<description>The energy feed per month in kWh</description>
@@ -302,7 +302,7 @@
 	</channel-type>
 
 	<!-- EnergyFeedDayEuro -->
-	<channel-type id="EnergyFeedDayEuro" advanced="true">
+	<channel-type id="EnergyFeedDayEuro">
 		<item-type>Number</item-type>
 		<label>Feed Income (day)</label>
 		<description>The energy feed per day in Euro</description>
@@ -324,7 +324,7 @@
 		<item-type>Number</item-type>
 		<label>CPU Usage</label>
 		<description>The CPU usage of SHC-A</description>
-		<category>System</category>
+		<category>Line</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -333,7 +333,7 @@
 		<item-type>Number</item-type>
 		<label>Disk Usage</label>
 		<description>The disk usage of SHC-A</description>
-		<category>System</category>
+		<category>Line</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -342,7 +342,7 @@
 		<item-type>Number</item-type>
 		<label>Memory Usage</label>
 		<description>The memory usage of SHC-A</description>
-		<category>System</category>
+		<category>Line</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -351,7 +351,7 @@
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>The operation status of SHC-A</description>
-		<category>System</category>
+		<category>Settings</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
