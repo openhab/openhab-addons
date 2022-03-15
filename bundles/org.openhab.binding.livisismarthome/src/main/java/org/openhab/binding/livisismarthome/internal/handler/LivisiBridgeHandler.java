@@ -62,8 +62,9 @@ import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -367,12 +368,16 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         return Collections.emptyList();
     }
 
+    public boolean isSHCClassic() {
+        return getBridgeDevice().filter(DeviceDTO::isClassicController).isPresent();
+    }
+
     /**
      * Returns the bridge {@link DeviceDTO}.
      *
      * @return bridge {@link DeviceDTO}
      */
-    public Optional<DeviceDTO> getBridgeDevice() {
+    private Optional<DeviceDTO> getBridgeDevice() {
         Optional<String> bridgeIdOptional = Optional.ofNullable(bridgeId);
         return bridgeIdOptional.flatMap(this::getDeviceById);
     }
@@ -409,26 +414,29 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public void onDeviceStateChanged(final DeviceDTO device) {
+    public void onDeviceStateChanged(final DeviceDTO bridgeDevice) {
         synchronized (this.lock) {
             // DEVICE STATES
-            if (device.hasDeviceState()) {
-                final Double cpuUsage = device.getDeviceState().getState().getCpuUsage().getValue();
+            if (bridgeDevice.hasDeviceState()) {
+                final boolean isSHCClassic = bridgeDevice.isClassicController();
+                final Double cpuUsage = bridgeDevice.getDeviceState().getState().getCpuUsage(isSHCClassic).getValue();
                 if (cpuUsage != null) {
                     logger.debug("-> CPU usage state: {}", cpuUsage);
-                    updateState(CHANNEL_CPU, new DecimalType(cpuUsage));
+                    updateState(CHANNEL_CPU, QuantityType.valueOf(cpuUsage, Units.PERCENT));
                 }
-                final Double diskUsage = device.getDeviceState().getState().getDiskUsage().getValue();
+                final Double diskUsage = bridgeDevice.getDeviceState().getState().getDiskUsage().getValue();
                 if (diskUsage != null) {
                     logger.debug("-> Disk usage state: {}", diskUsage);
-                    updateState(CHANNEL_DISK, new DecimalType(diskUsage));
+                    updateState(CHANNEL_DISK, QuantityType.valueOf(diskUsage, Units.PERCENT));
                 }
-                final Double memoryUsage = device.getDeviceState().getState().getMemoryUsage().getValue();
+                final Double memoryUsage = bridgeDevice.getDeviceState().getState().getMemoryUsage(isSHCClassic)
+                        .getValue();
                 if (memoryUsage != null) {
                     logger.debug("-> Memory usage state: {}", memoryUsage);
-                    updateState(CHANNEL_MEMORY, new DecimalType(memoryUsage));
+                    updateState(CHANNEL_MEMORY, QuantityType.valueOf(memoryUsage, Units.PERCENT));
                 }
-                String operationStatus = device.getDeviceState().getState().getOperationStatus().getValue();
+                String operationStatus = bridgeDevice.getDeviceState().getState().getOperationStatus(isSHCClassic)
+                        .getValue();
                 if (operationStatus != null) {
                     logger.debug("-> Operation status: {}", operationStatus);
                     updateState(CHANNEL_OPERATION_STATUS, new StringType(operationStatus.toUpperCase()));
@@ -438,15 +446,16 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public void onDeviceStateChanged(final DeviceDTO device, final EventDTO event) {
+    public void onDeviceStateChanged(final DeviceDTO bridgeDevice, final EventDTO event) {
         synchronized (this.lock) {
-            if (event.isLinkedtoDevice() && DEVICE_SHCA.equals(device.getType())) {
-                device.getDeviceState().getState().getOperationStatus()
+            if (event.isLinkedtoDevice() && !bridgeDevice.isClassicController()) {
+                bridgeDevice.getDeviceState().getState().getOperationStatus()
                         .setValue(event.getProperties().getOperationStatus());
-                device.getDeviceState().getState().getCpuUsage().setValue(event.getProperties().getCpuUsage());
-                device.getDeviceState().getState().getDiskUsage().setValue(event.getProperties().getDiskUsage());
-                device.getDeviceState().getState().getMemoryUsage().setValue(event.getProperties().getMemoryUsage());
-                onDeviceStateChanged(device);
+                bridgeDevice.getDeviceState().getState().getCpuUsage().setValue(event.getProperties().getCpuUsage());
+                bridgeDevice.getDeviceState().getState().getDiskUsage().setValue(event.getProperties().getDiskUsage());
+                bridgeDevice.getDeviceState().getState().getMemoryUsage()
+                        .setValue(event.getProperties().getMemoryUsage());
+                onDeviceStateChanged(bridgeDevice);
             }
         }
     }

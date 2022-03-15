@@ -471,8 +471,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
 
             // PushButtonSensor
         } else if (capability.isTypePushButtonSensor()) {
-            boolean isSHCClassic = getBridgeHandler().flatMap(LivisiBridgeHandler::getBridgeDevice)
-                    .filter(DeviceDTO::isClassicController).isPresent();
+            boolean isSHCClassic = getBridgeHandler().map(LivisiBridgeHandler::isSHCClassic).orElse(false);
             if (isSHCClassic) {
                 // SHC 1 (Classic) does only send StateChanged events with missing short or long press information.
                 EventPropertiesDTO properties = event.getProperties();

@@ -43,9 +43,9 @@ public class StateDTO {
     // Related to openhab-addons #6613
     // private StringState updateAvailable
     private DateTimeStateDTO lastReboot;
-    private IntegerStateDTO memoryLoad;
+    private DoubleStateDTO memoryLoad;
     @SerializedName("CPULoad")
-    private IntegerStateDTO cpuLoad;
+    private DoubleStateDTO cpuLoad;
     @SerializedName("LBDongleAttached")
     private BooleanStateDTO lBDongleAttached;
     @SerializedName("MBusDongleAttached")
@@ -74,8 +74,8 @@ public class StateDTO {
         firmwareVersion = new StringStateDTO();
         wHRating = new DoubleStateDTO();
         lastReboot = new DateTimeStateDTO();
-        memoryLoad = new IntegerStateDTO();
-        cpuLoad = new IntegerStateDTO();
+        memoryLoad = new DoubleStateDTO();
+        cpuLoad = new DoubleStateDTO();
         lBDongleAttached = new BooleanStateDTO();
         mBusDongleAttached = new BooleanStateDTO();
         configVersion = new IntegerStateDTO();
@@ -195,28 +195,28 @@ public class StateDTO {
     /**
      * @return the memoryLoad
      */
-    public IntegerStateDTO getMemoryLoad() {
+    public DoubleStateDTO getMemoryLoad() {
         return memoryLoad;
     }
 
     /**
      * @param memoryLoad the memoryLoad to set
      */
-    public void setMemoryLoad(IntegerStateDTO memoryLoad) {
+    public void setMemoryLoad(DoubleStateDTO memoryLoad) {
         this.memoryLoad = memoryLoad;
     }
 
     /**
      * @return the cPULoad
      */
-    public IntegerStateDTO getCPULoad() {
+    public DoubleStateDTO getCPULoad() {
         return cpuLoad;
     }
 
     /**
      * @param cpuLoad the cPULoad to set
      */
-    public void setCPULoad(IntegerStateDTO cpuLoad) {
+    public void setCPULoad(DoubleStateDTO cpuLoad) {
         this.cpuLoad = cpuLoad;
     }
 
@@ -389,6 +389,16 @@ public class StateDTO {
     }
 
     /**
+     * @return the operationStatus
+     */
+    public StringStateDTO getOperationStatus(boolean isSHCClassic) {
+        if (isSHCClassic) {
+            return getOSState();
+        }
+        return getOperationStatus();
+    }
+
+    /**
      * @return the currentUtcOffset
      */
     public DoubleStateDTO getCurrentUtcOffset() {
@@ -414,6 +424,13 @@ public class StateDTO {
      */
     public void setCpuUsage(DoubleStateDTO cpuUsage) {
         this.cpuUsage = cpuUsage;
+    }
+
+    public DoubleStateDTO getCpuUsage(boolean isSHCClassic) {
+        if (isSHCClassic) {
+            return getCPULoad();
+        }
+        return getCpuUsage();
     }
 
     /**
@@ -442,5 +459,15 @@ public class StateDTO {
      */
     public void setMemoryUsage(DoubleStateDTO memoryUsage) {
         this.memoryUsage = memoryUsage;
+    }
+
+    /**
+     * @return the memoryUsage
+     */
+    public DoubleStateDTO getMemoryUsage(boolean isSHCClassic) {
+        if (isSHCClassic) {
+            return getMemoryLoad();
+        }
+        return getMemoryUsage();
     }
 }

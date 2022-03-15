@@ -14,9 +14,13 @@ package org.openhab.binding.livisismarthome.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.livisismarthome.internal.LivisiBindingConstants.*;
 
 import java.net.ConnectException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
@@ -24,17 +28,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.livisismarthome.internal.LivisiBindingConstants;
 import org.openhab.binding.livisismarthome.internal.LivisiWebSocket;
 import org.openhab.binding.livisismarthome.internal.client.LivisiClient;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceConfigDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceStateDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.device.StateDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.state.DoubleStateDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.state.StringStateDTO;
 import org.openhab.binding.livisismarthome.internal.manager.FullDeviceManager;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.types.State;
 
 /**
  * @author Sven Strohschein - Initial contribution
@@ -46,9 +57,12 @@ public class LivisiBridgeHandlerTest {
     private LivisiBridgeHandlerAccessible bridgeHandler;
     private Bridge bridgeMock;
     private LivisiWebSocket webSocketMock;
+    private Map<String, State> updatedChannels;
 
     @BeforeEach
     public void before() throws Exception {
+        updatedChannels = new LinkedHashMap<>();
+
         bridgeMock = mock(Bridge.class);
         when(bridgeMock.getUID()).thenReturn(new ThingUID("livisismarthome", "bridge"));
 
@@ -156,6 +170,80 @@ public class LivisiBridgeHandlerTest {
         assertEquals(1, bridgeHandler.getDirectExecutionCount());
     }
 
+    @Test
+    public void testOnDeviceStateChanged_SHC_Classic() {
+        DeviceDTO bridgeDevice = createBridgeDevice(true);
+
+        StateDTO state = new StateDTO();
+        state.setCPULoad(doubleState(30.5));
+        state.setMemoryLoad(doubleState(60.5));
+        state.setDiskUsage(doubleState(70.5));
+        state.setOSState(stringState("active"));
+
+        DeviceStateDTO deviceState = new DeviceStateDTO();
+        deviceState.setState(state);
+        bridgeDevice.setDeviceState(deviceState);
+
+        bridgeHandler.onDeviceStateChanged(bridgeDevice);
+
+        assertTrue(isChannelUpdated(CHANNEL_CPU, QuantityType.valueOf(30.5, Units.PERCENT)));
+        assertTrue(isChannelUpdated(CHANNEL_MEMORY, QuantityType.valueOf(60.5, Units.PERCENT)));
+        assertTrue(isChannelUpdated(CHANNEL_DISK, QuantityType.valueOf(70.5, Units.PERCENT)));
+        assertTrue(isChannelUpdated(CHANNEL_OPERATION_STATUS, StringType.valueOf("ACTIVE")));
+    }
+
+    @Test
+    public void testOnDeviceStateChanged_SHCA() {
+        DeviceDTO bridgeDevice = createBridgeDevice(false);
+
+        StateDTO state = new StateDTO();
+        state.setCpuUsage(doubleState(30.5));
+        state.setMemoryUsage(doubleState(60.5));
+        state.setDiskUsage(doubleState(70.5));
+        state.setOperationStatus(stringState("active"));
+
+        DeviceStateDTO deviceState = new DeviceStateDTO();
+        deviceState.setState(state);
+        bridgeDevice.setDeviceState(deviceState);
+
+        bridgeHandler.onDeviceStateChanged(bridgeDevice);
+
+        assertTrue(isChannelUpdated(CHANNEL_CPU, QuantityType.valueOf(30.5, Units.PERCENT)));
+        assertTrue(isChannelUpdated(CHANNEL_MEMORY, QuantityType.valueOf(60.5, Units.PERCENT)));
+        assertTrue(isChannelUpdated(CHANNEL_DISK, QuantityType.valueOf(70.5, Units.PERCENT)));
+        assertTrue(isChannelUpdated(CHANNEL_OPERATION_STATUS, StringType.valueOf("ACTIVE")));
+    }
+
+    private static DoubleStateDTO doubleState(double value) {
+        DoubleStateDTO state = new DoubleStateDTO();
+        state.setValue(value);
+        return state;
+    }
+
+    private static StringStateDTO stringState(String value) {
+        StringStateDTO state = new StringStateDTO();
+        state.setValue(value);
+        return state;
+    }
+
+    private static DeviceDTO createBridgeDevice(boolean isSHCClassic) {
+        DeviceDTO device = new DeviceDTO();
+        device.setId("id");
+        device.setConfig(new DeviceConfigDTO());
+        device.setCapabilityMap(new HashMap<>());
+        if (isSHCClassic) {
+            device.setType(DEVICE_SHC);
+        } else {
+            device.setType(DEVICE_SHCA);
+        }
+        return device;
+    }
+
+    private boolean isChannelUpdated(String channelUID, State expectedState) {
+        State state = updatedChannels.get(channelUID);
+        return expectedState.equals(state);
+    }
+
     @NonNullByDefault
     private class LivisiBridgeHandlerAccessible extends LivisiBridgeHandler {
 
@@ -171,7 +259,7 @@ public class LivisiBridgeHandlerTest {
 
             DeviceDTO bridgeDevice = new DeviceDTO();
             bridgeDevice.setId("bridgeId");
-            bridgeDevice.setType(LivisiBindingConstants.DEVICE_SHC);
+            bridgeDevice.setType(DEVICE_SHC);
             bridgeDevice.setConfig(new DeviceConfigDTO());
 
             livisiClientMock = mock(LivisiClient.class);
@@ -224,6 +312,12 @@ public class LivisiBridgeHandlerTest {
         @Override
         ScheduledExecutorService getScheduler() {
             return schedulerMock;
+        }
+
+        @Override
+        protected void updateState(String channelID, State state) {
+            super.updateState(channelID, state);
+            updatedChannels.put(channelID, state);
         }
     }
 }

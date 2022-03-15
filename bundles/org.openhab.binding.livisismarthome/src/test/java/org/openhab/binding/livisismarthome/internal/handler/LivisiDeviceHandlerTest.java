@@ -1196,10 +1196,7 @@ public class LivisiDeviceHandlerTest {
 
     @Test
     public void testOnDeviceStateChanged_StateChangedEvent_PushButtonSensor_SHC_Classic() {
-
-        DeviceDTO shcClassicBridgeDevice = new DeviceDTO();
-        shcClassicBridgeDevice.setType(DEVICE_SHC);
-        when(bridgeHandlerMock.getBridgeDevice()).thenReturn(Optional.of(shcClassicBridgeDevice));
+        when(bridgeHandlerMock.isSHCClassic()).thenReturn(true);
 
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_PUSHBUTTONSENSOR, null, device);
@@ -1222,10 +1219,7 @@ public class LivisiDeviceHandlerTest {
 
     @Test
     public void testOnDeviceStateChanged_StateChangedEvent_PushButtonSensor_SHCA() {
-
-        DeviceDTO shcClassicBridgeDevice = new DeviceDTO();
-        shcClassicBridgeDevice.setType(DEVICE_SHCA);
-        when(bridgeHandlerMock.getBridgeDevice()).thenReturn(Optional.of(shcClassicBridgeDevice));
+        when(bridgeHandlerMock.isSHCClassic()).thenReturn(false);
 
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_PUSHBUTTONSENSOR, null, device);

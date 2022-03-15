@@ -110,7 +110,7 @@
 		<label>Contact</label>
 		<description>Shows the open/close state</description>
 		<category>Contact</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- SmokeDetectorSensor Channel -->
@@ -119,7 +119,7 @@
 		<label>Smoke</label>
 		<description>Shows if smoke was detected</description>
 		<category>Smoke</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- AlarmActuator Channel -->
@@ -136,7 +136,7 @@
 		<label>Motion Count</label>
 		<description>The count of detected motions</description>
 		<category>Motion</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- LuminanceSensor Channel -->
@@ -154,7 +154,7 @@
 		<label>Button Pushed Count</label>
 		<description>The count of button pushes.</description>
 		<category>Count</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- EnergyConsumptionMonthKWh -->
@@ -163,7 +163,7 @@
 		<label>Consumption (month)</label>
 		<description>The energy consumption per month in kWh</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- AbsoluteEnergyConsumption -->
@@ -172,7 +172,7 @@
 		<label>Total Consumption</label>
 		<description>The absolute Energy consumption</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- EnergyConsumptionMonthEuro -->
@@ -181,7 +181,7 @@
 		<label>Consumption Costs (month)</label>
 		<description>The energy consumption per month in Euro</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- EnergyConsumptionDayEuro -->
@@ -190,7 +190,7 @@
 		<label>Consumption Costs (day)</label>
 		<description>The energy consumption per day in Euro</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- EnergyConsumptionDayKWh -->
@@ -199,7 +199,7 @@
 		<label>Consumption (day)</label>
 		<description>The energy consumption per day in kWh</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- PowerConsumptionWatt -->
@@ -208,7 +208,7 @@
 		<label>Current Power Consumption</label>
 		<description>The current power consumption in Watt</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- EnergyGenerationMonthKWh -->
@@ -217,7 +217,7 @@
 		<label>Generation (month)</label>
 		<description>The energy generation per month in kWh</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- TotalEnergyGeneration -->
@@ -226,7 +226,7 @@
 		<label>Total Generation</label>
 		<description>The total Energy generation</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- EnergyGenerationMonthEuro -->
@@ -235,7 +235,7 @@
 		<label>Generation Value (month)</label>
 		<description>The energy generation per month in Euro</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- EnergyGenerationDayEuro -->
@@ -244,7 +244,7 @@
 		<label>Generation Value (day)</label>
 		<description>The energy generation per day in Euro</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- EnergyGenerationDayKWh -->
@@ -253,7 +253,7 @@
 		<label>Generation (day)</label>
 		<description>The energy generation per day in kWh</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- PowerGenerationWatt -->
@@ -262,7 +262,7 @@
 		<label>Current Power Generation</label>
 		<description>The current power generation in Watt</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- TotalEnergyConsumption -->
@@ -271,7 +271,7 @@
 		<label>Total Consumption</label>
 		<description>The total Energy consumption</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- EnergyFeedMonthKWh -->
@@ -280,7 +280,7 @@
 		<label>Feed (month)</label>
 		<description>The energy feed per month in kWh</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- TotalEnergyFeed -->
@@ -289,7 +289,7 @@
 		<label>Total Fed</label>
 		<description>The total Energy fed</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- EnergyFeedMonthEuro -->
@@ -298,7 +298,7 @@
 		<label>Feed Income (month)</label>
 		<description>The energy feed per month in Euro</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- EnergyFeedDayEuro -->
@@ -307,7 +307,7 @@
 		<label>Feed Income (day)</label>
 		<description>The energy feed per day in Euro</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- EnergyFeedDayKWh -->
@@ -316,34 +316,34 @@
 		<label>Feed (day)</label>
 		<description>The energy feed per day in kWh</description>
 		<category>Energy</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- CPUUsage -->
 	<channel-type id="CPUUsage">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>CPU Usage</label>
-		<description>The CPU usage of SHC-A</description>
+		<description>The CPU usage of the SHC in percent</description>
 		<category>Line</category>
-		<state readOnly="true"></state>
+		<state readOnly="true" min="0" max="100" pattern="%d%%"/>
 	</channel-type>
 
 	<!-- DiskUsage -->
 	<channel-type id="DiskUsage">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Disk Usage</label>
-		<description>The disk usage of SHC-A</description>
+		<description>The disk usage of the SHC</description>
 		<category>Line</category>
-		<state readOnly="true"></state>
+		<state readOnly="true" min="0" max="100" pattern="%d%%"/>
 	</channel-type>
 
 	<!-- MemoryUsage -->
 	<channel-type id="MemoryUsage">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Memory Usage</label>
-		<description>The memory usage of SHC-A</description>
+		<description>The memory usage of the SHC in percent</description>
 		<category>Line</category>
-		<state readOnly="true"></state>
+		<state readOnly="true" min="0" max="100" pattern="%d%%"/>
 	</channel-type>
 
 	<!-- OperationStatus -->
@@ -352,7 +352,7 @@
 		<label>Status</label>
 		<description>The operation status of SHC-A</description>
 		<category>Settings</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
