@@ -96,7 +96,7 @@ However, only devices will appear that are added in the LIVISI SmartHome app bef
 | rollershutter           | Rollershutter | Controls a roller shutter                                             | ISR2                                                  |
 | set_temperature         | Number        | Sets the target temperature in °C (min 6 °C, max 30 °C)               | RST, WRT                                              |
 | smoke                   | Switch        | Indicates, if smoke was detected (ON/OFF)                             | WSD, WSD2                                             |
-| status                  | String        | Status of the SHC (ACTIVE, INITIALIZING or SHUTTINGDOWN)              | SHC (bridge)                                          |
+| status                  | String        | Status of the SHC (ACTIVE/NORMAL, INITIALIZING or SHUTTINGDOWN)       | SHC (bridge)                                          |
 | switch                  | Switch        | A switch to turn the device or variable on/off (ON/OFF)               | ISS2, PSS, PSSO, VariableActuator                     |
 | temperature             | Number        | Holds the actual temperature in °C                                    | RST, WRT                                              |
 | window_reduction_active | Switch        | Indicates if a linked window is open and temperature reduced (ON/OFF) | RST                                                   |
