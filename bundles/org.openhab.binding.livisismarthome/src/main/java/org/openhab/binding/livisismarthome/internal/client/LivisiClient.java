@@ -12,23 +12,24 @@
  */
 package org.openhab.binding.livisismarthome.internal.client;
 
+import static org.openhab.binding.livisismarthome.internal.client.URLConnectionFactory.CONTENT_TYPE;
+import static org.openhab.binding.livisismarthome.internal.client.URLConnectionFactory.HTTP_REQUEST_TIMEOUT_MILLISECONDS;
+
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URI;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -79,10 +80,6 @@ import com.google.gson.JsonSyntaxException;
 public class LivisiClient {
 
     private static final String BASIC = "Basic ";
-    private static final String BEARER = "Bearer ";
-    private static final String CONTENT_TYPE = "application/json";
-    private static final int HTTP_REQUEST_TIMEOUT_SECONDS = 10;
-
     private final Logger logger = LoggerFactory.getLogger(LivisiClient.class);
 
     /**
@@ -93,13 +90,13 @@ public class LivisiClient {
     private final Gson gson = new GsonBuilder().setDateFormat(DATE_FORMAT).create();
     private final LivisiBridgeConfiguration bridgeConfiguration;
     private final OAuthClientService oAuthService;
-    private final HttpClient httpClient;
+    private final URLConnectionFactory connectionFactory;
 
     public LivisiClient(final LivisiBridgeConfiguration bridgeConfiguration, final OAuthClientService oAuthService,
-            final HttpClient httpClient) {
+            final URLConnectionFactory connectionFactory) {
         this.bridgeConfiguration = bridgeConfiguration;
         this.oAuthService = oAuthService;
-        this.httpClient = httpClient;
+        this.connectionFactory = connectionFactory;
     }
 
     /**
@@ -127,9 +124,10 @@ public class LivisiClient {
      */
     private <T> T executeGet(final String url, final Class<T> clazz)
             throws IOException, AuthenticationException, ApiException {
-        final ContentResponse response = request(httpClient.newRequest(url).method(HttpMethod.GET));
 
-        return gson.fromJson(normalizedContent(response), clazz);
+        HttpURLConnection connection = createBaseRequest(url, HttpMethod.GET);
+        String responseContent = executeRequest(connection);
+        return gson.fromJson(responseContent, clazz);
     }
 
     /**
@@ -157,28 +155,32 @@ public class LivisiClient {
     private void executePost(final String url, final ActionDTO action)
             throws IOException, AuthenticationException, ApiException {
         final String json = gson.toJson(action);
+        final byte[] jsonBytes = json.getBytes(StandardCharsets.UTF_8);
         logger.debug("Action {} JSON: {}", action.getType(), json);
 
-        request(httpClient.newRequest(url).method(HttpMethod.POST)
-                .content(new StringContentProvider(json), CONTENT_TYPE).accept(CONTENT_TYPE));
+        HttpURLConnection connection = createBaseRequest(url, HttpMethod.POST);
+        connection.setDoOutput(true);
+        connection.setRequestProperty(HttpHeader.CONTENT_LENGTH.asString(), String.valueOf(jsonBytes.length));
+        try (OutputStream outputStream = connection.getOutputStream()) {
+            outputStream.write(jsonBytes);
+        }
+
+        executeRequest(connection);
     }
 
-    private ContentResponse request(final Request request) throws IOException, AuthenticationException, ApiException {
-        final ContentResponse response;
-        try {
-            final AccessTokenResponse accessTokenResponse = getAccessTokenResponse();
+    private String executeRequest(HttpURLConnection connection) throws IOException, ApiException {
+        StringBuilder stringBuilder = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+        }
 
-            response = request.header(HttpHeader.ACCEPT, CONTENT_TYPE)
-                    .header(HttpHeader.AUTHORIZATION, BEARER + accessTokenResponse.getAccessToken())
-                    .timeout(HTTP_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new IOException(e);
-        }
-        if (logger.isTraceEnabled()) {
-            logger.trace("RAW-RESPONSE: {}", response.getContentAsString());
-        }
-        handleResponseErrors(response, request.getURI());
-        return response;
+        String responseContent = stringBuilder.toString();
+        logger.trace("RAW-RESPONSE: {}", responseContent);
+        handleResponseErrors(connection, responseContent);
+        return normalizeResponseContent(responseContent);
     }
 
     public AccessTokenResponse login() throws AuthenticationException, IOException, ApiException {
@@ -188,22 +190,35 @@ public class LivisiClient {
         requestBody.setGrantType("password");
 
         final String json = gson.toJson(requestBody);
-        Request request = httpClient.newRequest(URLCreator.createTokenURL(bridgeConfiguration.host))
-                .method(HttpMethod.POST).content(new StringContentProvider(json), CONTENT_TYPE).accept(CONTENT_TYPE);
+        final byte[] jsonBytes = json.getBytes(StandardCharsets.UTF_8);
 
-        ContentResponse response;
-        try {
-            response = request.header(HttpHeader.ACCEPT, CONTENT_TYPE)
-                    .header(HttpHeader.AUTHORIZATION, BASIC + LivisiBindingConstants.AUTH_HEADER_VALUE)
-                    .timeout(HTTP_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new AuthenticationException("Authentication failed: " + e.getMessage());
+        String tokenURL = URLCreator.createTokenURL(bridgeConfiguration.host);
+
+        HttpURLConnection connection = connectionFactory.createRequest(tokenURL);
+        connection.setDoOutput(true);
+        connection.setRequestMethod(HttpMethod.POST.asString());
+        connection.setRequestProperty(HttpHeader.ACCEPT.asString(), CONTENT_TYPE);
+        connection.setRequestProperty(HttpHeader.CONTENT_TYPE.asString(), CONTENT_TYPE);
+        connection.setRequestProperty(HttpHeader.AUTHORIZATION.asString(),
+                BASIC + LivisiBindingConstants.AUTH_HEADER_VALUE);
+        connection.setConnectTimeout(HTTP_REQUEST_TIMEOUT_MILLISECONDS);
+        connection.setReadTimeout(HTTP_REQUEST_TIMEOUT_MILLISECONDS);
+        connection.setRequestProperty(HttpHeader.CONTENT_LENGTH.asString(), String.valueOf(jsonBytes.length));
+        try (OutputStream outputStream = connection.getOutputStream()) {
+            outputStream.write(jsonBytes);
         }
-        handleResponseErrors(response, request.getURI());
 
-        LivisiAccessTokenResponseDTO tokenResponse = gson.fromJson(normalizedContent(response),
-                LivisiAccessTokenResponseDTO.class);
+        String responseContent = executeRequest(connection);
+
+        LivisiAccessTokenResponseDTO tokenResponse = gson.fromJson(responseContent, LivisiAccessTokenResponseDTO.class);
         return tokenResponse.createAccessTokenResponse();
+    }
+
+    private HttpURLConnection createBaseRequest(String url, HttpMethod httpMethod)
+            throws IOException, AuthenticationException {
+
+        final AccessTokenResponse accessTokenResponse = getAccessTokenResponse();
+        return connectionFactory.createBaseRequest(url, httpMethod, accessTokenResponse);
     }
 
     public AccessTokenResponse getAccessTokenResponse() throws AuthenticationException, IOException {
@@ -223,21 +238,22 @@ public class LivisiClient {
     /**
      * Handles errors from the {@link ContentResponse} and throws the following errors:
      *
-     * @param response response
-     * @param uri uri of api call made
+     * @param connection connection
+     * @param responseContent response content
      * @throws ControllerOfflineException thrown, if the LIVISI SmartHome controller (SHC) is offline.
      */
-    private void handleResponseErrors(final ContentResponse response, final URI uri) throws IOException, ApiException {
+    private void handleResponseErrors(final HttpURLConnection connection, final String responseContent)
+            throws IOException, ApiException {
 
-        final int status = response.getStatus();
+        final int status = connection.getResponseCode();
         if (HttpStatus.OK_200 == status) {
-            logger.debug("Statuscode is OK: [{}]", uri);
+            logger.debug("Statuscode is OK: [{}]", connection.getURL());
         } else if (HttpStatus.SERVICE_UNAVAILABLE_503 == status) {
             logger.debug("LIVISI SmartHome service is unavailable (503).");
             throw new ServiceUnavailableException("LIVISI SmartHome service is unavailable (503).");
         } else {
-            logger.debug("Statuscode {} is NOT OK: [{}]", status, uri);
-            String content = normalizedContent(response);
+            logger.debug("Statuscode {} is NOT OK: [{}]", status, connection.getURL());
+            String content = normalizeResponseContent(responseContent);
             try {
                 logger.trace("Response error content: {}", content);
                 final ErrorResponseDTO error = gson.fromJson(content, ErrorResponseDTO.class);
@@ -449,11 +465,10 @@ public class LivisiClient {
      * The LIVISI SmartHome local API returns "[]" for missing objects instead of "null". This method fixes
      * this issue.
      * 
-     * @param response response
+     * @param responseContent response
      * @return normalized response content
      */
-    private static String normalizedContent(ContentResponse response) {
-        String content = response.getContentAsString();
-        return content.replace("[]", "null");
+    private static String normalizeResponseContent(String responseContent) {
+        return responseContent.replace("[]", "null");
     }
 }

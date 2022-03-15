@@ -36,6 +36,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.livisismarthome.internal.LivisiWebSocket;
 import org.openhab.binding.livisismarthome.internal.client.LivisiClient;
+import org.openhab.binding.livisismarthome.internal.client.URLConnectionFactory;
 import org.openhab.binding.livisismarthome.internal.client.URLCreator;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.action.ShutterActionType;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.capability.CapabilityDTO;
@@ -152,7 +153,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         final OAuthClientService oAuthServiceNonNullable = oAuthFactory.createOAuthClientService(
                 thing.getUID().getAsString(), tokenURL, tokenURL, "clientId", null, null, true);
         this.oAuthService = oAuthServiceNonNullable;
-        LivisiClient clientNonNullable = createClient(oAuthServiceNonNullable, httpClient);
+        LivisiClient clientNonNullable = createClient(oAuthServiceNonNullable);
         this.client = clientNonNullable;
         deviceStructMan = new DeviceStructureManager(createFullDeviceManager(clientNonNullable));
 
@@ -785,8 +786,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         return new FullDeviceManager(client);
     }
 
-    LivisiClient createClient(final OAuthClientService oAuthService, final HttpClient httpClient) {
-        return new LivisiClient(bridgeConfiguration, oAuthService, httpClient);
+    LivisiClient createClient(final OAuthClientService oAuthService) {
+        return new LivisiClient(bridgeConfiguration, oAuthService, new URLConnectionFactory());
     }
 
     /**

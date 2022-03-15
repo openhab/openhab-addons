@@ -300,7 +300,7 @@ public class LivisiBridgeHandlerTest {
         }
 
         @Override
-        LivisiClient createClient(OAuthClientService oAuthService, HttpClient httpClient) {
+        LivisiClient createClient(OAuthClientService oAuthService) {
             return livisiClientMock;
         }
 

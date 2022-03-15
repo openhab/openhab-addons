@@ -15,15 +15,14 @@ package org.openhab.binding.livisismarthome.internal.client;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.io.ByteArrayInputStream;
+import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,21 +41,21 @@ public class LivisiClientTest {
     private static final String CAPABILITY_STATES_URL = "http://127.0.0.1:8080/capability/states";
 
     private LivisiClient client;
-    private HttpClient httpClientMock;
+    private URLConnectionFactory connectionFactoryMock;
 
     @BeforeEach
     public void before() throws Exception {
-        httpClientMock = mock(HttpClient.class);
-
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse();
         accessTokenResponse.setAccessToken("accessToken");
 
         OAuthClientService oAuthClientMock = mock(OAuthClientService.class);
         when(oAuthClientMock.getAccessTokenResponse()).thenReturn(accessTokenResponse);
 
+        connectionFactoryMock = mock(URLConnectionFactory.class);
+
         LivisiBridgeConfiguration bridgeConfiguration = new LivisiBridgeConfiguration();
         bridgeConfiguration.host = "127.0.0.1";
-        client = new LivisiClient(bridgeConfiguration, oAuthClientMock, httpClientMock);
+        client = new LivisiClient(bridgeConfiguration, oAuthClientMock, connectionFactoryMock);
     }
 
     @Test
@@ -129,12 +128,12 @@ public class LivisiClientTest {
         when(response.getStatus()).thenReturn(HttpStatus.OK_200);
         when(response.getContentAsString()).thenReturn(responseContent);
 
-        Request requestMock = mock(Request.class);
-        when(httpClientMock.newRequest(url)).thenReturn(requestMock);
-        when(requestMock.method(any(HttpMethod.class))).thenReturn(requestMock);
-        when(requestMock.header(any(HttpHeader.class), any())).thenReturn(requestMock);
-        when(requestMock.idleTimeout(anyLong(), any())).thenReturn(requestMock);
-        when(requestMock.timeout(anyLong(), any())).thenReturn(requestMock);
-        when(requestMock.send()).thenReturn(response);
+        HttpURLConnection connectionMock = mock(HttpURLConnection.class);
+        when(connectionMock.getResponseCode()).thenReturn(HttpStatus.OK_200);
+        when(connectionMock.getInputStream())
+                .thenReturn(new ByteArrayInputStream(responseContent.getBytes(StandardCharsets.UTF_8)));
+
+        when(connectionFactoryMock.createRequest(eq(url))).thenReturn(connectionMock);
+        when(connectionFactoryMock.createBaseRequest(eq(url), any(), any())).thenReturn(connectionMock);
     }
 }
