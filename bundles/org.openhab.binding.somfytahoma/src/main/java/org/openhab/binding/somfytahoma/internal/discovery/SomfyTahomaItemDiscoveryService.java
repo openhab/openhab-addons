@@ -157,6 +157,8 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
         switch (device.getUiClass()) {
             case CLASS_AWNING:
                 // widget: PositionableHorizontalAwning
+                // widget: DynamicAwning
+                // widget: UpDownHorizontalAwning
                 deviceDiscovered(device, THING_TYPE_AWNING, place);
                 break;
             case CLASS_CONTACT_SENSOR:
@@ -220,6 +222,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                 deviceDiscovered(device, THING_TYPE_SMOKESENSOR, place);
                 break;
             case CLASS_VENETIAN_BLIND:
+                // widget: DynamicVenetianBlind
                 deviceDiscovered(device, THING_TYPE_VENETIANBLIND, place);
                 break;
             case CLASS_WINDOW:

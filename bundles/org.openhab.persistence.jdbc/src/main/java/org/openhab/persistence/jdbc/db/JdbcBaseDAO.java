@@ -343,7 +343,7 @@ public class JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#tablePrimaryValue#" }, new String[] { storedVO.getTableName(), "?" });
         java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
-        Object[] params = new Object[] { storedVO.getValue(), timestamp, storedVO.getValue() };
+        Object[] params = new Object[] { timestamp, storedVO.getValue(), storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
         Yank.execute(sql, params);
     }

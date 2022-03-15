@@ -395,6 +395,8 @@ public class SomfyTahomaBindingConstants {
     public static final String COMMAND_DOWN = "down";
     public static final String COMMAND_OPEN = "open";
     public static final String COMMAND_CLOSE = "close";
+    public static final String COMMAND_DEPLOY = "deploy";
+    public static final String COMMAND_UNDEPLOY = "undeploy";
     public static final String COMMAND_OPEN_SLATS = "openSlats";
     public static final String COMMAND_CLOSE_SLATS = "closeSlats";
     public static final String COMMAND_STOP = "stop";
@@ -539,6 +541,7 @@ public class SomfyTahomaBindingConstants {
             put(72, "TAHOMA_RAIL_DIN");
             put(77, "ELIOT");
             put(88, "WISER");
+            put(99, "CONNECTIVITY KIT");
         }
     };
 }
