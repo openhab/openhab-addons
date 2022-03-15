@@ -17,6 +17,7 @@
 			<!-- read only -->
 			<channel id="remoteControl" typeId="remoteControl"/>
 			<channel id="batteryStatus" typeId="batteryStatus"/>
+			<channel id="function" typeId="functionCentralUnit"/>
 			<!-- read/write -->
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
 			<channel id="mode" typeId="modeCentralUnit"/>

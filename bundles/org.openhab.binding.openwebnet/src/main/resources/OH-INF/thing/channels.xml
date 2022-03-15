@@ -66,6 +66,18 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="functionCentralUnit">
+		<item-type>String</item-type>
+		<label>Thermo Function</label>
+		<description>Thermo function of the Central Unit</description>
+		<state readOnly="true">
+			<options>
+				<option value="HEATING">Heating</option>
+				<option value="COOLING">Cooling</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="setpointTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
