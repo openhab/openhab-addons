@@ -174,6 +174,9 @@ public class LivisiClient {
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new IOException(e);
         }
+        if (logger.isTraceEnabled()) {
+            logger.trace("RAW-RESPONSE: {}", response.getContentAsString());
+        }
         handleResponseErrors(response, request.getURI());
         return response;
     }
