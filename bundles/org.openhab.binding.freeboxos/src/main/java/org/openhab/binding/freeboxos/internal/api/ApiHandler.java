@@ -97,7 +97,7 @@ public class ApiHandler {
                 logger.debug("Fobidden, serviceReponse was {}, ", content);
                 throw new FreeboxException(ErrorCode.AUTHORIZATION_REQUIRED);
             }
-            throw new FreeboxException("Unexpected status code : %d", statusCode);
+            throw new FreeboxException("Error '%s' requesting : %s", statusCode.getMessage(), uri.toString());
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new FreeboxException(e, "Exception while calling %s", request.getURI());
         }
