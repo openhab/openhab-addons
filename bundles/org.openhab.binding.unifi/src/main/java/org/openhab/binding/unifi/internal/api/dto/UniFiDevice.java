@@ -23,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
  * (better known as an Access Point).
  *
  * @author Matthew Bowman - Initial contribution
- * @author Hilbrand Bouwkamp - Added POEPort support
+ * @author Hilbrand Bouwkamp - Added PoEPort support
  */
 public class UniFiDevice implements HasId {
 

@@ -125,17 +125,19 @@ The `site` information that is retrieved is available as these channels:
 
 The `wlan` information that is retrieved is available as these channels:
 
-| Channel ID     | Item Type | Description                                                                    | Permissions |
-|----------------|-----------|--------------------------------------------------------------------------------|-------------|
-| enable         | Switch    | Enable status of the wLAN                                                      | Read, Write |
-| essid          | String    | Wireless Network (ESSID)                                                       | Read        |
-| site           | String    | UniFi Site the client is associated with                                       | Read        |
-| security       | String    | Security protocol of the Wi-Fi network                                         | Read        |
-| wlanBand       | String    | Wireless LAN band of the Wi-Fi network                                         | Read        |
-| wpaEnc         | String    | WPA Encoding of the Wi-Fi network                                              | Read        |
-| wpaMode        | String    | WPA Mode of the Wi-Fi network                                                  | Read        |
-| xPassphrase    | String    | Passphrase of the Wi-Fi network                                                | Read        |
-| qrcodeEncoding | String    | MECARD like encoding to generate a QRCode for easy access to the Wi-Fi network | Read        |
+| Channel ID      | Item Type | Description                                                                    | Permissions |
+|-----------------|-----------|--------------------------------------------------------------------------------|-------------|
+| enable          | Switch    | Enable status of the wLAN                                                      | Read, Write |
+| wirelessClients | Number    | Number of wireless clients connected                                           | Read        |
+| guestClients    | Number    | Number of guest clients connected                                              | Read        |
+| essid           | String    | Wireless Network (ESSID)                                                       | Read        |
+| site            | String    | UniFi Site the client is associated with                                       | Read        |
+| security        | String    | Security protocol of the Wi-Fi network                                         | Read        |
+| wlanBand        | String    | Wireless LAN band of the Wi-Fi network                                         | Read        |
+| wpaEnc          | String    | WPA Encoding of the Wi-Fi network                                              | Read        |
+| wpaMode         | String    | WPA Mode of the Wi-Fi network                                                  | Read        |
+| xPassphrase     | String    | Passphrase of the Wi-Fi network                                                | Read        |
+| qrcodeEncoding  | String    | MECARD like encoding to generate a QRCode for easy access to the Wi-Fi network | Read        |
 
 ::: warning Attention
 If you link an item to the `xPrassphrase` or `qrcodeEncoding` channel your Wi-Fi password will be  exposed in openHAB.

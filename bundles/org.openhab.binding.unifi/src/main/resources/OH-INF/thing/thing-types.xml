@@ -13,7 +13,6 @@
 	</bridge-type>
 
 	<thing-type id="site">
-
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="controller"/>
 		</supported-bridge-type-refs>
@@ -43,6 +42,8 @@
 
 		<channels>
 			<channel id="enable" typeId="wlanEnable"/>
+			<channel id="wirelessClients" typeId="wirelessClients"/>
+			<channel id="guestClients" typeId="guestClients"/>
 			<channel id="essid" typeId="wlanEssid"/>
 			<channel id="site" typeId="site"/>
 			<channel id="security" typeId="security"/>
@@ -59,7 +60,6 @@
 	</thing-type>
 
 	<thing-type id="wiredClient">
-
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="controller"/>
 		</supported-bridge-type-refs>
@@ -84,7 +84,6 @@
 	</thing-type>
 
 	<thing-type id="wirelessClient">
-
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="controller"/>
 		</supported-bridge-type-refs>

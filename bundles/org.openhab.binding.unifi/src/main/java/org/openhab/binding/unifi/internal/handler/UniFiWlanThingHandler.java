@@ -14,13 +14,17 @@ package org.openhab.binding.unifi.internal.handler;
 
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ENABLE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ESSID;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_GUEST_CLIENTS;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_QRCODE_ENCODING;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_SECURITY;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_SITE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_WIRELESS_CLIENTS;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_WLANBAND;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_WPAENC;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_WPAMODE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_XPASSPHRASE;
+
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,8 +32,11 @@ import org.openhab.binding.unifi.internal.UniFiWlanThingConfig;
 import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
+import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
+import org.openhab.binding.unifi.internal.api.dto.UniFiWirelessClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -72,7 +79,6 @@ public class UniFiWlanThingHandler extends UniFiBaseThingHandler<UniFiWlan, UniF
 
     @Override
     protected State getChannelState(final UniFiWlan wlan, final String channelId) {
-        // final UniFiControllerCache cache = wlan.
         final State state;
 
         switch (channelId) {
@@ -89,6 +95,12 @@ public class UniFiWlanThingHandler extends UniFiBaseThingHandler<UniFiWlan, UniF
                 } else {
                     state = UnDefType.UNDEF;
                 }
+                break;
+            case CHANNEL_WIRELESS_CLIENTS:
+                state = countClients(wlan, c -> true);
+                break;
+            case CHANNEL_GUEST_CLIENTS:
+                state = countClients(wlan, c -> c.isGuest());
                 break;
             case CHANNEL_SECURITY:
                 state = StringType.valueOf(wlan.getSecurity());
@@ -113,6 +125,12 @@ public class UniFiWlanThingHandler extends UniFiBaseThingHandler<UniFiWlan, UniF
                 state = UnDefType.NULL;
         }
         return state;
+    }
+
+    private static State countClients(final UniFiWlan wlan, final Function<UniFiClient, Boolean> filter) {
+        final UniFiSite site = wlan.getSite();
+        return new DecimalType(site.getCache().countClients(site, c -> c instanceof UniFiWirelessClient
+                && wlan.getName().equals(((UniFiWirelessClient) c).getEssid()) && filter.apply(c)));
     }
 
     /**
