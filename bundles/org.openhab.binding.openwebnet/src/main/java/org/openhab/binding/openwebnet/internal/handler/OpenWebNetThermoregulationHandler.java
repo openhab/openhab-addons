@@ -368,34 +368,37 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         Thermoregulation.OperationMode mode = w.getMode();
         Thermoregulation.Function function = w.getFunction();
 
-        if (mode == Thermoregulation.OperationMode.OFF) {
-            probesInManual.remove(tmsg.getWhere().value());
-            probesInProtection.remove(tmsg.getWhere().value());
-            if (probesInOFF.add(tmsg.getWhere().value())) {
-                logger.debug("atLeastOneProbeInOFF: added WHERE ---> {}", tmsg.getWhere());
+        // keep track of thermostats (zones) status
+        if (!isCentralUnit && (!((WhereThermo) deviceWhere).isProbe())) {
+            if (mode == Thermoregulation.OperationMode.OFF) {
+                probesInManual.remove(tmsg.getWhere().value());
+                probesInProtection.remove(tmsg.getWhere().value());
+                if (probesInOFF.add(tmsg.getWhere().value())) {
+                    logger.debug("atLeastOneProbeInOFF: added WHERE ---> {}", tmsg.getWhere());
+                }
+            } else if (mode == Thermoregulation.OperationMode.PROTECTION) {
+                probesInManual.remove(tmsg.getWhere().value());
+                probesInOFF.remove(tmsg.getWhere().value());
+                if (probesInProtection.add(tmsg.getWhere().value())) {
+                    logger.debug("atLeastOneProbeInProtection: added WHERE ---> {}", tmsg.getWhere());
+                }
+            } else if (mode == Thermoregulation.OperationMode.MANUAL) {
+                probesInProtection.remove(tmsg.getWhere().value());
+                probesInOFF.remove(tmsg.getWhere().value());
+                if (probesInManual.add(tmsg.getWhere().value())) {
+                    logger.debug("atLeastOneProbeInManual: added WHERE ---> {}", tmsg.getWhere());
+                }
             }
-        } else if (mode == Thermoregulation.OperationMode.PROTECTION) {
-            probesInManual.remove(tmsg.getWhere().value());
-            probesInOFF.remove(tmsg.getWhere().value());
-            if (probesInProtection.add(tmsg.getWhere().value())) {
-                logger.debug("atLeastOneProbeInProtection: added WHERE ---> {}", tmsg.getWhere());
-            }           
-        } else if (mode == Thermoregulation.OperationMode.MANUAL) {
-            probesInProtection.remove(tmsg.getWhere().value());
-            probesInOFF.remove(tmsg.getWhere().value());
-            if (probesInManual.add(tmsg.getWhere().value())) {
-                logger.debug("atLeastOneProbeInManual: added WHERE ---> {}", tmsg.getWhere());
-            }
-        }
 
-        if (probesInOFF.size() == 0) {
-            updateCUAtLeastOneProbeOFF(OnOffType.OFF);
-        }
-        if (probesInProtection.size() == 0) {
-            updateCUAtLeastOneProbeProtection(OnOffType.OFF);
-        }
-        if (probesInManual.size() == 0) {
-            updateCUAtLeastOneProbeManual(OnOffType.OFF);
+            if (probesInOFF.size() == 0) {
+                updateCUAtLeastOneProbeOFF(OnOffType.OFF);
+            }
+            if (probesInProtection.size() == 0) {
+                updateCUAtLeastOneProbeProtection(OnOffType.OFF);
+            }
+            if (probesInManual.size() == 0) {
+                updateCUAtLeastOneProbeManual(OnOffType.OFF);
+            }
         }
 
         updateState(CHANNEL_FUNCTION, new StringType(function.toString()));
@@ -482,14 +485,14 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     private void updateCUBatteryStatus(String status) {
         updateState(CHANNEL_CU_BATTERY_STATUS, new StringType(status));
 
-        if (status == CU_BATTERY_KO)  // do not log default value (which is automatically setted)
+        if (status == CU_BATTERY_KO) // do not log default value (which is automatically setted)
             logger.debug("updateCUBatteryStatus(): {}", status);
     }
 
     private void updateCUFailureDiscovered(OnOffType status) {
         updateState(CHANNEL_CU_FAILURE_DISCOVERED, status);
 
-        if (status == OnOffType.ON)  // do not log default value (which is automatically setted)
+        if (status == OnOffType.ON) // do not log default value (which is automatically setted)
             logger.debug("updateCUFailureDiscovered(): {}", status);
     }
 
