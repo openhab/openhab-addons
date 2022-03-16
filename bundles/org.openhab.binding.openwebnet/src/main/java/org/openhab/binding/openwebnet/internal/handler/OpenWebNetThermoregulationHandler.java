@@ -14,7 +14,11 @@ package org.openhab.binding.openwebnet.internal.handler;
 
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_ACTUATORS;
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CONDITIONING_VALVES;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_AT_LEAST_ONE_PROBE_MANUAL;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_AT_LEAST_ONE_PROBE_OFF;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_AT_LEAST_ONE_PROBE_PROTECTION;
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_BATTERY_STATUS;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_FAILURE_DISCOVERED;
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_REMOTE_CONTROL;
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_SCENARIO_PROGRAM_NUMBER;
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_WEEKLY_PROGRAM_NUMBER;
@@ -26,11 +30,13 @@ import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_TEMPERATURE;
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_TEMP_SETPOINT;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
@@ -78,6 +84,10 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     private boolean isCentralUnit = false;
 
     private String programNumber = "";
+
+    private static Set<String> probesInProtection = new HashSet<String>();
+    private static Set<String> probesInOFF = new HashSet<String>();
+    private static Set<String> probesInManual = new HashSet<String>();
 
     private static final String CU_REMOTE_CONTROL_ENABLED = "ENABLED";
     private static final String CU_REMOTE_CONTROL_DISABLED = "DISABLED";
@@ -284,6 +294,9 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             // it's OK and then change to KO if according message is received
             updateCUBatteryStatus(CU_BATTERY_OK);
 
+            // same in case of Failure Discovered
+            updateCUFailureDiscovered(OnOffType.OFF);
+
             if (msg.getWhat() == Thermoregulation.WhatThermo.REMOTE_CONTROL_DISABLED) {
                 updateCURemoteControlStatus(CU_REMOTE_CONTROL_DISABLED);
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.REMOTE_CONTROL_ENABLED) {
@@ -292,13 +305,13 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 updateCUBatteryStatus(CU_BATTERY_KO);
             } // must intercept all possibile WHATs (will be implemented soon)
             else if (msg.getWhat() == Thermoregulation.WhatThermo.AT_LEAST_ONE_PROBE_OFF) {
-                logger.debug("handleMessage() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
+                updateCUAtLeastOneProbeOFF(OnOffType.ON);
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.AT_LEAST_ONE_PROBE_ANTIFREEZE) {
-                logger.debug("handleMessage() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
+                updateCUAtLeastOneProbeProtection(OnOffType.ON);
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.AT_LEAST_ONE_PROBE_MANUAL) {
-                logger.debug("handleMessage() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
+                updateCUAtLeastOneProbeManual(OnOffType.ON);
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.FAILURE_DISCOVERED) {
-                logger.debug("handleMessage() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
+                updateCUFailureDiscovered(OnOffType.ON);
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.RELEASE_SENSOR_LOCAL_ADJUST) {
                 logger.debug("handleMessage() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
             } else {
@@ -354,6 +367,36 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
         Thermoregulation.OperationMode mode = w.getMode();
         Thermoregulation.Function function = w.getFunction();
+
+        if (mode == Thermoregulation.OperationMode.OFF) {
+            probesInManual.remove(tmsg.getWhere().value());
+            probesInProtection.remove(tmsg.getWhere().value());
+            if (probesInOFF.add(tmsg.getWhere().value())) {
+                logger.debug("atLeastOneProbeInOFF: added WHERE ---> {}", tmsg.getWhere());
+            }
+        } else if (mode == Thermoregulation.OperationMode.PROTECTION) {
+            probesInManual.remove(tmsg.getWhere().value());
+            probesInOFF.remove(tmsg.getWhere().value());
+            if (probesInProtection.add(tmsg.getWhere().value())) {
+                logger.debug("atLeastOneProbeInProtection: added WHERE ---> {}", tmsg.getWhere());
+            }           
+        } else if (mode == Thermoregulation.OperationMode.MANUAL) {
+            probesInProtection.remove(tmsg.getWhere().value());
+            probesInOFF.remove(tmsg.getWhere().value());
+            if (probesInManual.add(tmsg.getWhere().value())) {
+                logger.debug("atLeastOneProbeInManual: added WHERE ---> {}", tmsg.getWhere());
+            }
+        }
+
+        if (probesInOFF.size() == 0) {
+            updateCUAtLeastOneProbeOFF(OnOffType.OFF);
+        }
+        if (probesInProtection.size() == 0) {
+            updateCUAtLeastOneProbeProtection(OnOffType.OFF);
+        }
+        if (probesInManual.size() == 0) {
+            updateCUAtLeastOneProbeManual(OnOffType.OFF);
+        }
 
         updateState(CHANNEL_FUNCTION, new StringType(function.toString()));
         updateState(CHANNEL_MODE, new StringType(mode.toString()));
@@ -438,7 +481,31 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     private void updateCUBatteryStatus(String status) {
         updateState(CHANNEL_CU_BATTERY_STATUS, new StringType(status));
-        logger.debug("updateCUBatteryStatus(): {}", status);
+
+        if (status == CU_BATTERY_KO)  // do not log default value (which is automatically setted)
+            logger.debug("updateCUBatteryStatus(): {}", status);
+    }
+
+    private void updateCUFailureDiscovered(OnOffType status) {
+        updateState(CHANNEL_CU_FAILURE_DISCOVERED, status);
+
+        if (status == OnOffType.ON)  // do not log default value (which is automatically setted)
+            logger.debug("updateCUFailureDiscovered(): {}", status);
+    }
+
+    private void updateCUAtLeastOneProbeOFF(OnOffType status) {
+        updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_OFF, status);
+        logger.debug("updateCUAtLeastOneProbeOFF(): {}", status);
+    }
+
+    private void updateCUAtLeastOneProbeProtection(OnOffType status) {
+        updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_PROTECTION, status);
+        logger.debug("updateCUAtLeastOneProbeProtection(): {}", status);
+    }
+
+    private void updateCUAtLeastOneProbeManual(OnOffType status) {
+        updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_MANUAL, status);
+        logger.debug("updateCUAtLeastOneProbeManual(): {}", status);
     }
 
     private Boolean channelExists(String channelID) {

@@ -18,6 +18,10 @@
 			<channel id="remoteControl" typeId="remoteControl"/>
 			<channel id="batteryStatus" typeId="batteryStatus"/>
 			<channel id="function" typeId="functionCentralUnit"/>
+			<channel id="failureDiscovered" typeId="failureDiscovered"/>
+			<channel id="atLeastOneProbeOFF" typeId="atLeastOneProbeOFF"/>
+			<channel id="atLeastOneProbeProtection" typeId="atLeastOneProbeProtection"/>
+			<channel id="atLeastOneProbeManual" typeId="atLeastOneProbeManual"/>
 			<!-- read/write -->
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
 			<channel id="mode" typeId="modeCentralUnit"/>
