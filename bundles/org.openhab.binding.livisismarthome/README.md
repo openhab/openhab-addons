@@ -38,7 +38,7 @@ The channels are described in detail in the next chapter.
 | WDS    | Window Door Sensor                                                       | contact, battery_low                                                                                                      |
 | WMD    | Wall Mounted Motion Detector, indoor                                     | motion_count, luminance, battery_low                                                                                      |
 | WMDO   | Wall Mounted Motion Detector, outdoor                                    | motion_count, luminance, battery_low                                                                                      |
-| WRT    | Wall Mounted Room Thermostat                                             | set_temperature, temperature, humidity, battery_low                                                                       |
+| WRT    | Wall Mounted Room Thermostat                                             | set_temperature, temperature, frost_warning, humidity, mold_warning, operation_mode, window_reduction_active, battery_low |
 | WSC2   | Wall Mounted Smart Controller                                            | button1, button2, button1_count, button2_count, battery_low                                                               |
 | WSD    | Wall Mounted Smoke Detector, old version                                 | smoke, alarm, battery_low                                                                                                 |
 | WSD2   | Wall Mounted Smoke Detector, new version                                 | smoke, alarm, battery_low                                                                                                 |
@@ -62,44 +62,44 @@ However, only devices will appear that are added in the LIVISI SmartHome app bef
 
 ## Channels
 
-| Channel Type ID         | Item Type     | Description                                                               | Available on thing                                    |
-|-------------------------|---------------|---------------------------------------------------------------------------|-------------------------------------------------------|
-| alarm                   | Switch        | Switches the alarm (ON/OFF)                                               | WSD, WSD2                                             |
-| battery_low             | Switch        | Indicates, if the battery is low (ON/OFF)                                 | BRC8, ISC2, RST, WDS, WMD, WMD0, WRT, WSC2, WSD, WSD2 |
-| contact                 | Contact       | Indicates the contact state (OPEN/CLOSED)                                 | WDS                                                   |
-| cpu                     | Number        | CPU-Usage of the SHC in percent                                           | SHC (bridge)                                          |
-| dimmer                  | Dimmer        | Allows to dimm a light device                                             | ISD2, PSD                                             |
-| disk                    | Number        | Disk-Usage of the SHC in percent                                          | SHC (bridge)                                          |
-| frost_warning           | Switch        | active, if the measured temperature is too low (ON/OFF)                   | RST                                                   |
-| humidity                | Number        | Relative humidity in percent                                              | RST, WRT                                              |
-| button1                 | -             | Trigger channel for rules, fires with each push                           | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
-| button2                 | -             | Trigger channel for rules, fires with each push                           | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
-| button3                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                  |
-| button4                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                  |
-| button5                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                  |
-| button6                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                  |
-| button7                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                  |
-| button8                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                  |
-| button1_count           | Number        | Number of button pushes for button 1, increased with each push            | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
-| button2_count           | Number        | Number of button pushes for button 2, increased with each push            | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                    |
-| button3_count           | Number        | Number of button pushes for button 3, increased with each push            | BRC8                                                  |
-| button4_count           | Number        | Number of button pushes for button 4, increased with each push            | BRC8                                                  |
-| button5_count           | Number        | Number of button pushes for button 5, increased with each push            | BRC8                                                  |
-| button6_count           | Number        | Number of button pushes for button 6, increased with each push            | BRC8                                                  |
-| button7_count           | Number        | Number of button pushes for button 7, increased with each push            | BRC8                                                  |
-| button8_count           | Number        | Number of button pushes for button 8, increased with each push            | BRC8                                                  |
-| luminance               | Number        | Indicates the measured luminance in percent                               | WMD, WMD0                                             |
-| memory                  | Number        | Memory-Usage of the SHC in percent                                        | SHC (bridge)                                          |
-| mold_warning            | Switch        | Active, if the measured humidity is too low (ON/OFF)                      | RST                                                   |
-| motion_count            | Number        | Number of detected motions, increases with each detected motion           | WMD, WMDO                                             |
-| operation_mode          | String        | The mode of a thermostat (auto/manual)                                    | RST                                                   |
-| rollershutter           | Rollershutter | Controls a roller shutter                                                 | ISR2                                                  |
-| set_temperature         | Number        | Sets the target temperature in °C (min 6 °C, max 30 °C)                   | RST, WRT                                              |
-| smoke                   | Switch        | Indicates, if smoke was detected (ON/OFF)                                 | WSD, WSD2                                             |
-| status                  | String        | Status of the SHC (ACTIVE/NORMAL, INITIALIZING/REBOOTING or SHUTTINGDOWN) | SHC (bridge)                                          |
-| switch                  | Switch        | A switch to turn the device or variable on/off (ON/OFF)                   | ISS2, PSS, PSSO, VariableActuator                     |
-| temperature             | Number        | Holds the actual temperature in °C                                        | RST, WRT                                              |
-| window_reduction_active | Switch        | Indicates if a linked window is open and temperature reduced (ON/OFF)     | RST                                                   |
+| Channel Type ID         | Item Type     | Description                                                               | Available on thing                                          |
+|-------------------------|---------------|---------------------------------------------------------------------------|-------------------------------------------------------------|
+| alarm                   | Switch        | Switches the alarm (ON/OFF)                                               | WSD, WSD2                                                   |
+| battery_low             | Switch        | Indicates, if the battery is low (ON/OFF)                                 | BRC8, ISC2, RST, RST2, WDS, WMD, WMD0, WRT, WSC2, WSD, WSD2 |
+| contact                 | Contact       | Indicates the contact state (OPEN/CLOSED)                                 | WDS                                                         |
+| cpu                     | Number        | CPU-Usage of the SHC in percent                                           | SHC (bridge)                                                |
+| dimmer                  | Dimmer        | Allows to dimm a light device                                             | ISD2, PSD                                                   |
+| disk                    | Number        | Disk-Usage of the SHC in percent                                          | SHC (bridge)                                                |
+| frost_warning           | Switch        | active, if the measured temperature is too low (ON/OFF)                   | RST, RST2, WRT                                              |
+| humidity                | Number        | Relative humidity in percent                                              | RST, RST2, WRT                                              |
+| button1                 | -             | Trigger channel for rules, fires with each push                           | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                          |
+| button2                 | -             | Trigger channel for rules, fires with each push                           | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                          |
+| button3                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
+| button4                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
+| button5                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
+| button6                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
+| button7                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
+| button8                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
+| button1_count           | Number        | Number of button pushes for button 1, increased with each push            | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                          |
+| button2_count           | Number        | Number of button pushes for button 2, increased with each push            | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                          |
+| button3_count           | Number        | Number of button pushes for button 3, increased with each push            | BRC8                                                        |
+| button4_count           | Number        | Number of button pushes for button 4, increased with each push            | BRC8                                                        |
+| button5_count           | Number        | Number of button pushes for button 5, increased with each push            | BRC8                                                        |
+| button6_count           | Number        | Number of button pushes for button 6, increased with each push            | BRC8                                                        |
+| button7_count           | Number        | Number of button pushes for button 7, increased with each push            | BRC8                                                        |
+| button8_count           | Number        | Number of button pushes for button 8, increased with each push            | BRC8                                                        |
+| luminance               | Number        | Indicates the measured luminance in percent                               | WMD, WMD0                                                   |
+| memory                  | Number        | Memory-Usage of the SHC in percent                                        | SHC (bridge)                                                |
+| mold_warning            | Switch        | Active, if the measured humidity is too low (ON/OFF)                      | RST, RST2, WRT                                              |
+| motion_count            | Number        | Number of detected motions, increases with each detected motion           | WMD, WMDO                                                   |
+| operation_mode          | String        | The mode of a thermostat (auto/manual)                                    | RST, RST2, WRT                                              |
+| rollershutter           | Rollershutter | Controls a roller shutter                                                 | ISR2                                                        |
+| set_temperature         | Number        | Sets the target temperature in °C (min 6 °C, max 30 °C)                   | RST, RST2, WRT                                              |
+| smoke                   | Switch        | Indicates, if smoke was detected (ON/OFF)                                 | WSD, WSD2                                                   |
+| status                  | String        | Status of the SHC (ACTIVE/NORMAL, INITIALIZING/REBOOTING or SHUTTINGDOWN) | SHC (bridge)                                                |
+| switch                  | Switch        | A switch to turn the device or variable on/off (ON/OFF)                   | ISS2, PSS, PSSO, VariableActuator                           |
+| temperature             | Number        | Holds the actual temperature in °C                                        | RST, RST2, WRT                                              |
+| window_reduction_active | Switch        | Indicates if a linked window is open and temperature reduced (ON/OFF)     | RST, RST2, WRT                                              |
 
 The `rollershutter` channel has a `boolean` parameter `invert`.
 It is `false` by default.
