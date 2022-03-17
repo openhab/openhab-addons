@@ -14,7 +14,7 @@ Some of these brands are e.g.:
 * Steinberg Systems
 * Waldbeck Halley
 
-Here is a product pictures of how this Weather Station look like:
+Here is a product picture of how this Weather Station looks like:
 
 ![WH2650](doc/WH2650.png)
 
@@ -40,7 +40,9 @@ This binding works offline by [implementing the wire protocol](https://osswww.ec
     - WH2680
     - WH2900
     - WH2950
-- `sensor`: A Fine Offset sensor which is connected to the bridge with the ThingTypeUID `fineoffsetweatherstation:sensor`. Since the gateway collects all the sensor data and harmonizes them, the sensor thing itself will only hold information about the signal and battery status. This is a list of sensors supported by the protocol:
+- `sensor`: A Fine Offset sensor which is connected to the bridge with the ThingTypeUID `fineoffsetweatherstation:sensor`.
+  Since the gateway collects all the sensor data and harmonizes them, the sensor thing itself will only hold information about the signal and battery status.
+  This is a list of sensors supported by the protocol:
   - WH24 - 7-in-1 weather station, Sensor for wind speed & direction, solar radiation & light, temperature, humidity, rainfall
   - WH25 - 3-in-1 sensor temperature, humidity, pressure
   - WH26 - 2-in-1 sensor temperature, humidity
