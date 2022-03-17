@@ -305,8 +305,9 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             else if (msg.getWhat() == Thermoregulation.WhatThermo.RELEASE_SENSOR_LOCAL_ADJUST) {
                 logger.debug("handleMessage() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
             } else {
-                // check and eventually parse mode and function
+                // check and update values of other channel (mode, function, temp)
                 updateModeAndFunction((Thermoregulation) msg);
+                updateSetpoint((Thermoregulation) msg);
             }
             return;
         }
@@ -410,7 +411,26 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     private void updateSetpoint(Thermoregulation tmsg) {
         try {
-            double temp = Thermoregulation.parseTemperature(tmsg);
+            double temp;
+            if (isCentralUnit) {
+                if (tmsg.getWhat() == null) {
+                    // it should be like *4*WHAT#TTTT*#0##
+                    logger.debug("updateSetpoint() Could not parse function from {} (what is null)",
+                            tmsg.getFrameValue());
+                    return;
+                }
+
+                // TODO: use new getWhatParams() method when availlable
+                // https://github.com/mvalla/openwebnet4j/issues/30
+                int[] parameters = tmsg.getCommandParams();
+                if (parameters.length == 0) {
+                    logger.debug("updateSetpoint() parameters.lenght=0 ---> {}", tmsg.toStringVerbose());
+                    return;
+                } else
+                    temp = Thermoregulation.decodeTemperature(String.format("%1$4s", parameters[0]).replace(' ', '0'));
+            } else {
+                temp = Thermoregulation.parseTemperature(tmsg);
+            }
             updateState(CHANNEL_TEMP_SETPOINT, getAsQuantityTypeOrNull(temp, SIUnits.CELSIUS));
             currentSetPointTemp = temp;
         } catch (FrameException e) {
