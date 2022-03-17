@@ -303,8 +303,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 updateCURemoteControlStatus(CU_REMOTE_CONTROL_ENABLED);
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.BATTERY_KO) {
                 updateCUBatteryStatus(CU_BATTERY_KO);
-            } // must intercept all possibile WHATs (will be implemented soon)
-            else if (msg.getWhat() == Thermoregulation.WhatThermo.AT_LEAST_ONE_PROBE_OFF) {
+            } else if (msg.getWhat() == Thermoregulation.WhatThermo.AT_LEAST_ONE_PROBE_OFF) {
                 updateCUAtLeastOneProbeOFF(OnOffType.ON);
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.AT_LEAST_ONE_PROBE_ANTIFREEZE) {
                 updateCUAtLeastOneProbeProtection(OnOffType.ON);
@@ -312,7 +311,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 updateCUAtLeastOneProbeManual(OnOffType.ON);
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.FAILURE_DISCOVERED) {
                 updateCUFailureDiscovered(OnOffType.ON);
-            } else if (msg.getWhat() == Thermoregulation.WhatThermo.RELEASE_SENSOR_LOCAL_ADJUST) {
+            } // must intercept all possibile WHATs (will be implemented soon)
+            else if (msg.getWhat() == Thermoregulation.WhatThermo.RELEASE_SENSOR_LOCAL_ADJUST) {
                 logger.debug("handleMessage() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
             } else {
                 // check and eventually parse mode and function
