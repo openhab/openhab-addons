@@ -148,7 +148,7 @@ public class UniFiWlanThingHandler extends UniFiBaseThingHandler<UniFiWlan, UniF
         final String hidden = wlan.isHideSsid() ? "H:true" : "";
         final String passcode = nopass ? "" : "P:" + encode(wlan.getXPassphrase());
 
-        return StringType.valueOf(String.format("WIFI:S:%s;T:%s;P:%s;%s;", name, mode, passcode, hidden));
+        return StringType.valueOf(String.format("WIFI:S:%s;T:%s;%s;%s;", name, mode, passcode, hidden));
     }
 
     private static String encode(final String string) {
