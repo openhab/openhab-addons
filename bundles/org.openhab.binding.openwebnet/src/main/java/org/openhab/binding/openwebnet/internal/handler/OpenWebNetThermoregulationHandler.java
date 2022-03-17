@@ -390,13 +390,13 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 }
             }
 
-            if (probesInOFF.size() == 0) {
+            if (probesInOFF.isEmpty()) {
                 updateCUAtLeastOneProbeOFF(OnOffType.OFF);
             }
-            if (probesInProtection.size() == 0) {
+            if (probesInProtection.isEmpty()) {
                 updateCUAtLeastOneProbeProtection(OnOffType.OFF);
             }
-            if (probesInManual.size() == 0) {
+            if (probesInManual.isEmpty()) {
                 updateCUAtLeastOneProbeManual(OnOffType.OFF);
             }
         }
@@ -485,15 +485,17 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     private void updateCUBatteryStatus(String status) {
         updateState(CHANNEL_CU_BATTERY_STATUS, new StringType(status));
 
-        if (status == CU_BATTERY_KO) // do not log default value (which is automatically setted)
+        if (status == CU_BATTERY_KO) { // do not log default value (which is automatically setted)
             logger.debug("updateCUBatteryStatus(): {}", status);
+        }
     }
 
     private void updateCUFailureDiscovered(OnOffType status) {
         updateState(CHANNEL_CU_FAILURE_DISCOVERED, status);
 
-        if (status == OnOffType.ON) // do not log default value (which is automatically setted)
+        if (status == OnOffType.ON) { // do not log default value (which is automatically setted)
             logger.debug("updateCUFailureDiscovered(): {}", status);
+        }
     }
 
     private void updateCUAtLeastOneProbeOFF(OnOffType status) {
