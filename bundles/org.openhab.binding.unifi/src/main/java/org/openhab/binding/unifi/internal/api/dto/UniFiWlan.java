@@ -35,7 +35,7 @@ public class UniFiWlan implements HasId {
     private String wpaEnc; // ": "ccmp",
     private String wpaMode;// ": "wpa2",
     private String xPassphrase; // : "1234",
-
+    private Boolean hideSsid;
     private String siteId;
 
     public UniFiWlan(final UniFiControllerCache cache) {
@@ -75,7 +75,11 @@ public class UniFiWlan implements HasId {
         return wpaMode;
     }
 
-    public String getxPassphrase() {
+    public String getXPassphrase() {
         return xPassphrase;
+    }
+
+    public boolean isHideSsid() {
+        return Boolean.TRUE.equals(hideSsid);
     }
 }

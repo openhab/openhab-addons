@@ -115,7 +115,7 @@ public class UniFiWlanThingHandler extends UniFiBaseThingHandler<UniFiWlan, UniF
                 state = StringType.valueOf(wlan.getWpaMode());
                 break;
             case CHANNEL_XPASSPHRASE:
-                state = StringType.valueOf(wlan.getxPassphrase());
+                state = StringType.valueOf(wlan.getXPassphrase());
                 break;
             case CHANNEL_QRCODE_ENCODING:
                 state = qrcodeEncoding(wlan);
@@ -143,14 +143,12 @@ public class UniFiWlanThingHandler extends UniFiBaseThingHandler<UniFiWlan, UniF
      */
     private static State qrcodeEncoding(final UniFiWlan wlan) {
         final String name = encode(wlan.getName());
+        final boolean nopass = wlan.getXPassphrase().isBlank();
+        final String mode = nopass ? "nopass" : "WPA";
+        final String hidden = wlan.isHideSsid() ? "H:true" : "";
+        final String passcode = nopass ? "" : "P:" + encode(wlan.getXPassphrase());
 
-        if (wlan.getxPassphrase().isBlank()) {
-            return StringType.valueOf(String.format("WIFI:S:%s;;", name));
-        } else {
-            final String mode = "WPA";
-            return StringType
-                    .valueOf(String.format("WIFI:T:%s;S:%s;P:%s;;", name, mode, encode(wlan.getxPassphrase())));
-        }
+        return StringType.valueOf(String.format("WIFI:S:%s;T:%s;P:%s;%s;", name, mode, passcode, hidden));
     }
 
     private static String encode(final String string) {
