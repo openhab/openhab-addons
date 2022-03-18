@@ -188,7 +188,10 @@ The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing.
 | `batteryStatus`              | `bus_thermo_cu`                        | String             | The Central Unit Battery status: `OK`, `KO`                                                                                                                                             | R          | Y        |
 | `weeklyProgram`              | `bus_thermo_cu`                        | Number             | The program number (`1`, `2`, `3`) when Central Unit mode is `WEEKLY`                                                                                                                   | R/W        | N        |
 | `scenarioProgram`            | `bus_thermo_cu`                        | Number             | The program number (`1`, `2`, .. ,  `16`) when Central Unit mode is `SCENARIO`                                                                                                          | R/W        | N        |
-
+| `failureDiscovered`          | `bus_thermo_cu`                        | Switch             | Indicates if a Failure was discovered by the Central Unit: `ON`, `OFF`                                                                                                                  | R          | Y        |
+| `atLeastOneProbeOff`         | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in OFF mode: `ON`, `OFF`                                                                                                                             | R          | Y        |
+| `atLeastOneProbeProtection`  | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in PROTECTION mode: `ON`, `OFF`                                                                                                                      | R          | Y        |
+| `atLeastOneProbeManual`      | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in MANUAL mode: `ON`, `OFF`                                                                                                                          | R          | Y        |
 
 ### Notes on channels
 
@@ -291,11 +294,16 @@ Number:Power        iCENTRAL_Tb           "Power [%.0f %unit%]" { channel="openw
 // 99 zones central unit 
 Group   gCentralUnit                "Central Unit"                
 Number:Temperature iCU_3550_manualset "Temperature"       (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:setpointTemperature", ga="thermostatTemperatureSetpoint" }
-String iCU_3550_remote    "Remote Control"    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:remoteControl" }
-String iCU_3550_battery   "Battery Status"    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:batteryStatus" }
-String iCU_3550_mode      "Mode"              (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:mode" }
-Number iCU_3550_wpn       "Weekly Program"    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:weeklyProgram" } 
-Number iCU_3550_spn       "Scenario Program"  (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:scenarioProgram" } 
+String iCU_3550_remote    "Remote Control"                    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:remoteControl" }
+String iCU_3550_battery   "Battery Status"                    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:batteryStatus" }
+String iCU_3550_mode      "Mode"                              (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:mode" }
+Number iCU_3550_wpn       "Weekly Program"                    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:weeklyProgram" } 
+Number iCU_3550_spn       "Scenario Program"                  (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:scenarioProgram" } 
+String iCU_3550_func      "Function"                          (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:function" }
+Switch iCU_3550_at1off    "At least one probe in OFF"         (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeOff" } 
+Switch iCU_3550_at1pro    "At least one probe in PROTECTION"  (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeProtection" } 
+Switch iCU_3550_at1man    "At least one probe in MANUAL"      (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeManual" } 
+Switch iCU_3550_failure   "Failure discovered"                (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:failureDiscovered" } 
 
 Group   gLivingRoomZone                         "Living Room Zone"   { ga="Thermostat" [ modes="auto=GENERIC,heat=HEATING,cool=COOLING", thermostatTemperatureRange="7,35", useFahrenheit=false ] }
 Number:Temperature  iLR_zone_temp               "Temperature [%.1f %unit%]"   (gLivingRoomZone) { channel="openwebnet:bus_thermo_zone:mybridge:LR_zone:temperature", ga="thermostatTemperatureAmbient" }
