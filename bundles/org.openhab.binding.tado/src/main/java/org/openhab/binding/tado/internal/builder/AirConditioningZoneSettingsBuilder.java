@@ -94,41 +94,37 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
         AcModeCapabilities capabilities = getModeCapabilities((AirConditioningCapabilities) genericCapabilities,
                 setting.getMode());
 
-        if (capabilities.getTemperatures() != null && setting.getTemperature() == null) {
-            TemperatureObject targetTemperature = getCurrentOrDefaultTemperature(zoneStateProvider,
-                    capabilities.getTemperatures());
-            setting.setTemperature(targetTemperature);
+        TemperatureRange temperatures = capabilities.getTemperatures();
+        if (temperatures != null && setting.getTemperature() == null) {
+            setting.setTemperature(getCurrentOrDefaultTemperature(zoneStateProvider, temperatures));
         }
 
-        if (capabilities.getFanSpeeds() != null && !capabilities.getFanSpeeds().isEmpty()
-                && setting.getFanSpeed() == null) {
-            AcFanSpeed fanSpeed = getCurrentOrDefaultFanSpeed(zoneStateProvider, capabilities.getFanSpeeds());
-            setting.setFanSpeed(fanSpeed);
+        List<AcFanSpeed> fanSpeeds = capabilities.getFanSpeeds();
+        if (fanSpeeds != null && !fanSpeeds.isEmpty() && setting.getFanSpeed() == null) {
+            setting.setFanSpeed(getCurrentOrDefaultFanSpeed(zoneStateProvider, fanSpeeds));
         }
 
-        if (capabilities.getSwings() != null && !capabilities.getSwings().isEmpty() && setting.getSwing() == null) {
-            Power swing = getCurrentOrDefaultSwing(zoneStateProvider, capabilities.getSwings());
-            setting.setSwing(swing);
+        List<Power> swings = capabilities.getSwings();
+        if (swings != null && !swings.isEmpty() && setting.getSwing() == null) {
+            setting.setSwing(getCurrentOrDefaultSwing(zoneStateProvider, swings));
         }
 
-        if (capabilities.getFanLevels() != null && !capabilities.getFanLevels().isEmpty()
-                && setting.getFanLevel() == null) {
-            ACFanLevel fanLevel = getCurrentOrDefaultFanLevel(zoneStateProvider, capabilities.getFanLevels());
-            setting.setFanLevel(fanLevel);
+        // Tado confusingly calls the List / getter method 'fanLevel' / 'getFanLevel()' without 's'
+        List<ACFanLevel> fanLevels = capabilities.getFanLevel();
+        if (fanLevels != null && !fanLevels.isEmpty() && setting.getFanLevel() == null) {
+            setting.setFanLevel(getCurrentOrDefaultFanLevel(zoneStateProvider, fanLevels));
         }
 
-        if (capabilities.getHorizontalSwings() != null && !capabilities.getHorizontalSwings().isEmpty()
-                && setting.getHorizontalSwing() == null) {
-            ACHorizontalSwing horizontalSwing = getCurrentOrDefaultHorizontalSwing(zoneStateProvider,
-                    capabilities.getHorizontalSwings());
-            setting.setHorizontalSwing(horizontalSwing);
+        // Tado confusingly calls the List / getter method 'horizontalSwing' / 'getHorizontalSwing()' without 's'
+        List<ACHorizontalSwing> horizontalSwings = capabilities.getHorizontalSwing();
+        if (horizontalSwings != null && !horizontalSwings.isEmpty() && setting.getHorizontalSwing() == null) {
+            setting.setHorizontalSwing(getCurrentOrDefaultHorizontalSwing(zoneStateProvider, horizontalSwings));
         }
 
-        if (capabilities.getVerticalSwings() != null && !capabilities.getVerticalSwings().isEmpty()
-                && setting.getVerticalSwing() == null) {
-            ACVerticalSwing verticalSwing = getCurrentOrDefaultVerticalSwing(zoneStateProvider,
-                    capabilities.getVerticalSwings());
-            setting.setVerticalSwing(verticalSwing);
+        // Tado confusingly calls the List / getter method 'verticalSwing' / 'getVerticalSwing()' without 's'
+        List<ACVerticalSwing> verticalSwings = capabilities.getVerticalSwing();
+        if (verticalSwings != null && !verticalSwings.isEmpty() && setting.getVerticalSwing() == null) {
+            setting.setVerticalSwing(getCurrentOrDefaultVerticalSwing(zoneStateProvider, verticalSwings));
         }
     }
 

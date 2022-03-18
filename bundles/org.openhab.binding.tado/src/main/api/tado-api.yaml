@@ -1026,27 +1026,27 @@ definitions:
       temperatures:
         $ref: "#/definitions/TemperatureRange"
       fanSpeeds:
-        description: Cooling system fan speed.
+        description: Cooling system fan speeds.
         type: array
         items:
           $ref: "#/definitions/AcFanSpeed"
       swings:
-        description: Cooling system swing mode.
+        description: Cooling system swing modes.
         type: array
         items:
           $ref: "#/definitions/Power"
-      fanLevels:
-        description: Cooling system fan speed.
+      fanLevel:
+        description: Cooling system fan speeds. (Tado confusingly names this array without an 's')
         type: array
         items:
           $ref: "#/definitions/ACFanLevel"
-      horizontalSwings:
-        description: Cooling system horizontal swing mode.
+      horizontalSwing:
+        description: Cooling system horizontal swing modes. (Tado confusingly names this array without an 's')
         type: array
         items:
           $ref: "#/definitions/ACHorizontalSwing"
-      verticalSwings:
-        description: Cooling system vertical swing mode.
+      verticalSwing:
+        description: Cooling system vertical swing modes. (Tado confusingly names this array without an 's')
         type: array
         items:
           $ref: "#/definitions/ACVerticalSwing"
