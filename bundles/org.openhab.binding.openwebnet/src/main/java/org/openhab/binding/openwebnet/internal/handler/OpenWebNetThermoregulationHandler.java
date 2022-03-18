@@ -279,6 +279,12 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     protected void handleMessage(BaseOpenMessage msg) {
         super.handleMessage(msg);
 
+        if (msg.getWhat().value() == 4002)
+        {
+            logger.debug("handleMessage() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
+            return;
+        }
+        
         if (isCentralUnit) {
             // there isn't a message used for setting OK for battery status so let's assume
             // it's OK and then change to KO if according message is received
@@ -422,12 +428,15 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
                 // TODO: use new getWhatParams() method when availlable
                 // https://github.com/mvalla/openwebnet4j/issues/30
-                int[] parameters = tmsg.getCommandParams();
+                String[] parameters = tmsg.getWhatParams();
                 if (parameters.length == 0) {
                     logger.debug("updateSetpoint() parameters.lenght=0 ---> {}", tmsg.toStringVerbose());
                     return;
-                } else
-                    temp = Thermoregulation.decodeTemperature(String.format("%1$4s", parameters[0]).replace(' ', '0'));
+                } else {
+                    temp = Thermoregulation.decodeTemperature(parameters[0]);
+                    logger.debug("updateSetpoint() parsed temp: {} ---> {}  ({})", parameters[0], temp,
+                            tmsg.toStringVerbose());
+                }
             } else {
                 temp = Thermoregulation.parseTemperature(tmsg);
             }
