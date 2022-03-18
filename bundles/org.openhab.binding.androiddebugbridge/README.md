@@ -63,9 +63,9 @@ The available modes are:
 
 The configuration depends on the application, device and version used.
 
-This is a sample of the mediaStateJSONConfig thing configuration:
+This is a sample of the mediaStateJSONConfig thing configuration - the `label` is optional:
 
-`[{"name": "com.amazon.tv.launcher", "mode": "idle"},{"name": "org.jellyfin.androidtv", "mode": "wake_lock", "wakeLockPlayStates": [2,3]},{"name": "com.amazon.firetv.youtube", "mode": "wake_lock", "wakeLockPlayStates": [2]}]`
+`[{"name": "com.amazon.tv.launcher", "mode": "idle"}, {"name": "org.jellyfin.androidtv", "mode": "wake_lock", "wakeLockPlayStates": [2,3]}, {"name": "com.amazon.firetv.youtube", "label":"YouTube", "mode": "wake_lock", "wakeLockPlayStates": [2]}]`
 
 ## Record/Send input events
 
@@ -80,27 +80,26 @@ An example of what you can do:
 
 Please note that events could fail if the input method is removed, for example it could fail if you clone the events of a bluetooth controller and the remote goes offline. This is happening for me when recording the Fire TV remote events but not for my Xiaomi TV which also has a bt remote controller.
 
-
 ## Channels
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| key-event  | String | Send key event to android device. Possible values listed below |
-| text  | String | Send text to android device |
-| tap  | String | Send tap event to android device (format x,y) |
-| url  | String | Open url in browser |
-| media-volume  | Dimmer | Set or get media volume level on android device |
-| media-control  | Player | Control media on android device |
-| start-package  | String | Run application by package name |
-| stop-package  | String | Stop application by package name |
-| stop-current-package  | String | Stop current application |
-| current-package  | String | Package name of the top application in screen |
-| record-input  | String | Capture events, generate the equivalent command and store it under the provided name |
-| recorded-input  | String | Emulates previously captured input events by name |
-| shutdown  | String | Power off/reboot device (allowed values POWER_OFF, REBOOT) |
-| awake-state  | OnOff | Awake state value. |
-| wake-lock  | Number | Power wake lock value |
-| screen-state  | Switch | Screen power state |
+| channel              | type   | description                                                                                                                   |
+|----------------------|--------|-------------------------------------------------------------------------------------------------------------------------------|
+| key-event            | String | Send key event to android device. Possible values listed below                                                                |
+| text                 | String | Send text to android device                                                                                                   |
+| tap                  | String | Send tap event to android device (format x,y)                                                                                 |
+| url                  | String | Open url in browser                                                                                                           |
+| media-volume         | Dimmer | Set or get media volume level on android device                                                                               |
+| media-control        | Player | Control media on android device                                                                                               |
+| start-package        | String | Run application by package name. The commands for this Channel are populated dynamically based on the `mediaStateJSONConfig`. |
+| stop-package         | String | Stop application by package name                                                                                              |
+| stop-current-package | String | Stop current application                                                                                                      |
+| current-package      | String | Package name of the top application in screen                                                                                 |
+| record-input         | String | Capture events, generate the equivalent command and store it under the provided name                                          |
+| recorded-input       | String | Emulates previously captured input events by name                                                                             |
+| shutdown             | String | Power off/reboot device (allowed values POWER_OFF, REBOOT)                                                                    |
+| awake-state          | OnOff  | Awake state value.                                                                                                            |
+| wake-lock            | Number | Power wake lock value                                                                                                         |
+| screen-state         | Switch | Screen power state                                                                                                            |
 
 #### Available key-event values:
 
