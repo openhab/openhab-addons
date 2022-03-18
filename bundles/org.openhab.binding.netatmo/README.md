@@ -457,15 +457,17 @@ All these channels except welcomePersonAtHome are read only.
 ## things/netatmo.things
 
 ```
-Bridge netatmo:NAMain:inside "Inside Weather Station" [id="70:ee:aa:aa:aa:aa"] {
-    NAModule1 outside   "Outside Module" [id="02:00:00:aa:aa:aa"] {
-        Channels:
-            Type hum-measurement : maxHumWeek [limit="MAX",period="1week"]
-    }
-    NAModule3 rainModule        "Netatmo Rain Module"    [id="05:00:00:aa:aa:aa"] {
-        Channels:
-            Type sum_rain-measurement: rainThisWeek  "Rain This Week"     [period="1week"]
-            Type sum_rain-measurement: rainThisMonth "Rain This Month"    [period="1month"]
+Bridge netatmo:NABridge:home "Netatmo API" [clientId="", clientSecret="", username="", password=""] {
+    Bridge netatmo:NAMain:inside "Inside Weather Station" [id="70:ee:aa:aa:aa:aa"] {
+        NAModule1 outside   "Outside Module" [id="02:00:00:aa:aa:aa"] {
+            Channels:
+                Type hum-measurement : maxHumWeek [limit="MAX",period="1week"]
+        }
+        NAModule3 rainModule        "Netatmo Rain Module"    [id="05:00:00:aa:aa:aa"] {
+            Channels:
+                Type sum_rain-measurement: rainThisWeek  "Rain This Week"     [period="1week"]
+                Type sum_rain-measurement: rainThisMonth "Rain This Month"    [period="1month"]
+        }
     }
 }
 ```
