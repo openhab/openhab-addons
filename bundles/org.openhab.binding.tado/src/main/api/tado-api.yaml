@@ -568,6 +568,7 @@ definitions:
     type: string
     description: Horizontal swing.
     enum:
+    - 'OFF'
     - 'ON'
     - LEFT
     - MID_LEFT
@@ -580,6 +581,7 @@ definitions:
     type: string
     description: Vertical swing.
     enum:
+    - 'OFF'
     - 'ON'
     - UP
     - MID_UP

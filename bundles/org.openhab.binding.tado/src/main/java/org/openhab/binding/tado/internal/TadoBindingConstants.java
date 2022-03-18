@@ -89,6 +89,7 @@ public class TadoBindingConstants {
     public static final String CHANNEL_ZONE_HORIZONTAL_SWING = "horizontalSwing";
 
     public static enum HorizontalSwing {
+        OFF,
         ON,
         LEFT,
         MID_LEFT,
@@ -101,6 +102,7 @@ public class TadoBindingConstants {
     public static final String CHANNEL_ZONE_VERTICAL_SWING = "verticalSwing";
 
     public static enum VerticalSwing {
+        OFF,
         ON,
         UP,
         MID_UP,

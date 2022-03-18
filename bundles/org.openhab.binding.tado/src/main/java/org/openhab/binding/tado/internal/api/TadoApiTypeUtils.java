@@ -193,6 +193,8 @@ public class TadoApiTypeUtils {
                 return ACHorizontalSwing.RIGHT;
             case ON:
                 return ACHorizontalSwing.ON;
+            case OFF:
+                return ACHorizontalSwing.OFF;
             case AUTO:
                 return ACHorizontalSwing.AUTO;
         }
@@ -220,6 +222,8 @@ public class TadoApiTypeUtils {
                 return ACVerticalSwing.DOWN;
             case ON:
                 return ACVerticalSwing.ON;
+            case OFF:
+                return ACVerticalSwing.OFF;
         }
 
         return null;
