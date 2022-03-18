@@ -356,6 +356,24 @@ public enum EcoTouchTags {
         }
     },
 
+    // German: Temperatur Mixcircuit aktuell
+    TYPE_TEMPERATURE_MIXCIRCUIT_AKT {
+        {
+            command = "temperature_mixcircuit_akt";
+            unit = CELSIUS;
+            tagName = "A44";
+        }
+    },
+
+    // German: Temperatur Mixcircuit Soll
+    TYPE_TEMPERATURE_MIXCIRCUIT_TARGET {
+        {
+            command = "temperature_mixcircuit_target";
+            unit = CELSIUS;
+            tagName = "A45";
+        }
+    },
+
     // German: geforderte Verdichterleistung
     TYPE_COMPRESSOR_POWER {
         {
@@ -524,6 +542,15 @@ public enum EcoTouchTags {
             command = "tempchange_pool_pv";
             unit = CELSIUS;
             tagName = "A685";
+        }
+    },
+
+    // German: Temperaturveränderung Mischkreis bei PV-Ertrag
+    TYPE_TEMPCHANGE_MIXCIRCUIT_PV {
+        {
+            command = "tempchange_mixcircuit_pv";
+            unit = CELSIUS;
+            tagName = "A1094";
         }
     },
 
