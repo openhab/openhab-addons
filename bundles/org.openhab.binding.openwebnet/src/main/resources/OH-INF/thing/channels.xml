@@ -298,7 +298,7 @@
 	<channel-type id="atLeastOneProbeProtection" advanced="true">
 		<item-type>Switch</item-type>
 		<label>At least one probe in Protection</label>
-		<description>At least one probe in Protection (Anti Freeze/Thermal Protection) indicator in Central Unit (read only)</description>
+		<description>At least one probe in PROTECTION (Anti Freeze/Thermal Protection) indicator in Central Unit (read only)</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
