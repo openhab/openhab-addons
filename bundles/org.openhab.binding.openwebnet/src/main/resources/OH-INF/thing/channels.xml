@@ -281,6 +281,34 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="failureDiscovered" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Failure Discovered</label>
+		<description>Central Unit Failure Discovered (read only)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="atLeastOneProbeOff" advanced="true">
+		<item-type>Switch</item-type>
+		<label>At least one probe OFF</label>
+		<description>At least one probe OFF indicator in Central Unit (read only)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="atLeastOneProbeProtection" advanced="true">
+		<item-type>Switch</item-type>
+		<label>At least one probe in PROTECTION</label>
+		<description>At least one probe in PROTECTION (Anti Freeze/Thermal Protection) indicator in Central Unit (read only)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="atLeastOneProbeManual" advanced="true">
+		<item-type>Switch</item-type>
+		<label>At least one probe in MANUAL</label>
+		<description>At least one probe in MANUAL indicator in Central Unit (read only)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
 	<!-- Energy channels -->
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
