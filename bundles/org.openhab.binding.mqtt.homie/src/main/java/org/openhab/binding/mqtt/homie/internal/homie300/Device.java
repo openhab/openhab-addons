@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.homie.internal.homie300;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
@@ -275,8 +276,9 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
 
     CompletableFuture<@Nullable Void> applyNodes(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        return nodes.apply(attributes.nodes, node -> node.subscribe(connection, scheduler, timeout), this::createNode,
-                this::notifyNodeRemoved).exceptionally(e -> {
+        return nodes.apply(Objects.requireNonNull(attributes.nodes),
+                node -> node.subscribe(connection, scheduler, timeout), this::createNode, this::notifyNodeRemoved)
+                .exceptionally(e -> {
                     logger.warn("Could not subscribe", e);
                     return null;
                 });
@@ -311,15 +313,11 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      * @return Returns a list of relative topics
      */
     public List<String> getRetainedTopics() {
-        List<String> topics = new ArrayList<>();
+        List<String> topics = new ArrayList<>(Stream.of(this.attributes.getClass().getDeclaredFields())
+                .map(f -> String.format("%s/$%s", this.deviceID, f.getName())).collect(Collectors.toList()));
 
-        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(f -> {
-            return String.format("%s/$%s", this.deviceID, f.getName());
-        }).collect(Collectors.toList()));
-
-        this.nodes.stream().map(n -> n.getRetainedTopics().stream().map(a -> {
-            return String.format("%s/%s", this.deviceID, a);
-        }).collect(Collectors.toList())).collect(Collectors.toList()).forEach(topics::addAll);
+        this.nodes.stream().map(n -> n.getRetainedTopics().stream().map(a -> String.format("%s/%s", this.deviceID, a))
+                .collect(Collectors.toList())).collect(Collectors.toList()).forEach(topics::addAll);
 
         return topics;
     }

@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.core.library.types.OnOffType;
@@ -27,6 +28,7 @@ import org.openhab.core.library.types.OnOffType;
  * @author Anton Kharuzhy - Initial contribution
  */
 @SuppressWarnings("ConstantConditions")
+@NonNullByDefault
 public class SwitchTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt";
 
@@ -117,6 +119,7 @@ public class SwitchTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/th1/set/auto_lock", "AUTO");
     }
 
+    @Override
     protected Set<String> getConfigTopics() {
         return Set.of(CONFIG_TOPIC);
     }

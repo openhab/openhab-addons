@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.ImageValue;
 import org.openhab.core.library.types.RawType;
@@ -26,6 +27,7 @@ import org.openhab.core.library.types.RawType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
+@NonNullByDefault
 public class CameraTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "camera/0x0000000000000000_camera_zigbee2mqtt";
 
@@ -63,6 +65,7 @@ public class CameraTests extends AbstractComponentTests {
         assertState(component, Camera.CAMERA_CHANNEL_ID, new RawType(imageBytes, "image/png"));
     }
 
+    @Override
     protected Set<String> getConfigTopics() {
         return Set.of(CONFIG_TOPIC);
     }

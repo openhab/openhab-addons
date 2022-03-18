@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.mqtt.homie.internal.homie300;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.MQTTvalueTransform;
 import org.openhab.binding.mqtt.generic.mapping.MandatoryField;
@@ -24,14 +25,15 @@ import org.openhab.binding.mqtt.generic.mapping.TopicPrefix;
  * @author David Graeff - Initial contribution
  */
 @TopicPrefix
+@NonNullByDefault
 public class NodeAttributes extends AbstractMqttAttributeClass {
-    public @MandatoryField String name;
-    public @MandatoryField @MQTTvalueTransform(splitCharacter = ",") String[] properties;
+    public @MandatoryField String name = "";
+    public @MandatoryField @MQTTvalueTransform(splitCharacter = ",") String @Nullable [] properties;
     // Type has no meaning yet and is currently purely of textual, descriptive nature
-    public String type;
+    public @Nullable String type;
 
     @Override
-    public @NonNull Object getFieldsOf() {
+    public Object getFieldsOf() {
         return this;
     }
 }

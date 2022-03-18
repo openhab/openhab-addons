@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
 import org.openhab.core.library.types.HSBType;
@@ -28,6 +29,7 @@ import org.openhab.core.library.types.OnOffType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
+@NonNullByDefault
 public class LightTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "light/0x0000000000000000_light_zigbee2mqtt";
 
@@ -85,6 +87,7 @@ public class LightTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/light/set/state", "0,0,0");
     }
 
+    @Override
     protected Set<String> getConfigTopics() {
         return Set.of(CONFIG_TOPIC);
     }
