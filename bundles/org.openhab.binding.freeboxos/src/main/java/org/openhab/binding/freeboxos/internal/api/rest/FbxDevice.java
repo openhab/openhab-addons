@@ -29,7 +29,7 @@ public class FbxDevice extends ApiVersion {
     private int id;
 
     @SerializedName(value = "mac", alternate = { "main_mac" })
-    private @NonNullByDefault({}) String mac;
+    private String mac = "";
 
     @SerializedName(value = "device_name", alternate = { "name" })
     private @Nullable String name;
