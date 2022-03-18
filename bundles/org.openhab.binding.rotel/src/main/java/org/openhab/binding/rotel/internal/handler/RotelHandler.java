@@ -2423,8 +2423,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * @return the command
      */
     private RotelCommand getTcbypassToggleCommand() {
-        return connector.getModel().hasOtherThanPrimaryCommands() ? RotelCommand.TCBYPASS_TOGGLE
-                : RotelCommand.TCBYPASS_TOGGLE;
+        return isTcbypassOn() ? RotelCommand.TCBYPASS_OFF : RotelCommand.TCBYPASS_ON;
     }
 
     /**

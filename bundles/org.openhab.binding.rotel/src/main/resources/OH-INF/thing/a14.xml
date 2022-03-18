@@ -27,6 +27,7 @@
 		<properties>
 			<property name="protocol">ASCII_V2</property>
 		</properties>
+
 		<config-description-ref uri="thing-type:rotel:serialandip"/>
 	</thing-type>
 

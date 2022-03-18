@@ -163,7 +163,7 @@ The following channels are available:
 | frequency      | Current Frequency              | Number    | The current frequency (in kHz) for digital source input  |                                    |
 | brightness     | Front Panel Display Brightness | Dimmer    | The backlight brightness level (in %) of the device front panel |                             |
 | tcbypass       | Tone Control Bypass            | Switch    | The user's bass-/treble-settings are bypassed            | ON, OFF                            |
-| balance        | Stereo Balance Adjustment      | Number    | Adjust the balnce                                        | value                              |
+| balance        | Stereo Balance Adjustment      | Number    | Adjust the balance                                       | value                              |
 | speakera       | Speaker-A Adjustment           | Switch    | Turn on/off the speaker group A                          | ON, OFF                            |
 | speakerb       | Speaker-B Adjustment           | Switch    | Turn on/off the speaker group B                          | ON, OFF                            |
 
@@ -226,7 +226,7 @@ Thing rotel:ra1592:preamp "RA-1592" [ serialPort="COM3" ]
 
 Thing rotel:cd14:cd "CD14" [ serialPort="COM4" ]
 
-Thing rotel:a14:amp "A14" [ serialPort="ttyUSB0" ]
+Thing rotel:a14:amp "A14" [ serialPort="/dev/ttyUSB0" ]
 ```
 
 example.things using serial over IP connection:
