@@ -27,7 +27,7 @@ Afterwards the discovery will show all zones and mobile devices associated with 
 ### Channels
 
 Name | Type | Description | Read/Write
--|-|-|-|-
+-|-|-|-
 `homePresence` | String | Current presence value of the tado home. `HOME` and `AWAY` can be set | RW
 
 ## `zone` Thing
@@ -73,8 +73,8 @@ Name | Type | Description | Read/Write | Zone type
 `fanspeed`<sup>1)</sup> | String | Fan speed, one of `AUTO`, `LOW`, `MIDDLE`, `HIGH` | RW | `AC`
 `fanLevel`<sup>1)</sup> | String | Fan speed, one of <sup>3)</sup> `AUTO`, `SILENT`, `LEVEL1`, `LEVEL2`, `LEVEL3`, `LEVEL4`, `LEVEL5` | RW | `AC`
 `swing`<sup>2)</sup> | Switch | Swing on/off | RW | `AC`
-`verticalSwing`<sup>2)</sup> | String | Vertical swing state, one of <sup>3)</sup> `ON`, `UP`, `MID_UP`, `MID`, `MID_DOWN`, `DOWN`, `AUTO` | RW | `AC`
-`horizontalSwing`<sup>2)</sup> | String | Horizontal swing state, one of <sup>3)</sup> `ON`, `LEFT`, `MID_LEFT`, `MID`, `MID_RIGHT`, `RIGHT`, `AUTO` | RW | `AC`
+`verticalSwing`<sup>2)</sup> | String | Vertical swing state, one of <sup>3)</sup> `OFF`, `ON`, `UP`, `MID_UP`, `MID`, `MID_DOWN`, `DOWN`, `AUTO` | RW | `AC`
+`horizontalSwing`<sup>2)</sup> | String | Horizontal swing state, one of <sup>3)</sup> `OFF`, `ON`, `LEFT`, `MID_LEFT`, `MID`, `MID_RIGHT`, `RIGHT`, `AUTO` | RW | `AC`
 `overlayExpiry` | DateTime | End date and time of a timer | R | `HEATING`, `AC`, `DHW`
 `timerDuration` | Number | Timer duration in minutes | RW | `HEATING`, `AC`, `DHW`
 `operationMode` | String | Operation mode the zone is currently in. One of `SCHEDULE` (follow smart schedule), `MANUAL` (override until ended manually), `TIMER` (override for a given time), `UNTIL_CHANGE` (active until next smart schedule block or until AWAY mode becomes active) | RW | `HEATING`, `AC`, `DHW`
@@ -94,7 +94,7 @@ So you need to choose the respective Channel type name that matches the features
 
 <sup>3)</sup> The _'one of'_ list contains all possible state values supported within the tado° binding.
 However in reality different A/C units might only support a **_sub-set_** of those values.
-In that case, if you send a Channel command value to an A/C unit which does not support that particular state value, then openHAB will report a run-time error in the log.
+In that case, if you send a Channel command value to an A/C unit which does not support that particular state value, then openHAB will report a '422' run-time error in the log.
 
 ### Item Command Collection
 
