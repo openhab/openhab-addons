@@ -41,9 +41,7 @@ public class PlayerManager extends ListableRest<Player, PlayerResponse, PlayersR
 
     public PlayerManager(FreeboxOsSession session) throws FreeboxException {
         super(session, Permission.PLAYER, PlayerResponse.class, PlayersResponse.class, PLAYER_SUB_PATH);
-        getDevices().forEach(player -> {
-            subPaths.put(player.getId(), player.baseUrl());
-        });
+        getDevices().forEach(player -> subPaths.put(player.getId(), player.baseUrl()));
     }
 
     public PlayerStatus getPlayerStatus(int id) throws FreeboxException {
