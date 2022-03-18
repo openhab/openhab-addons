@@ -189,7 +189,7 @@ The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing.
 | `weeklyProgram`              | `bus_thermo_cu`                        | Number             | The program number (`1`, `2`, `3`) when Central Unit mode is `WEEKLY`                                                                                                                   | R/W        | N        |
 | `scenarioProgram`            | `bus_thermo_cu`                        | Number             | The program number (`1`, `2`, .. ,  `16`) when Central Unit mode is `SCENARIO`                                                                                                          | R/W        | N        |
 | `failureDiscovered`          | `bus_thermo_cu`                        | Switch             | Indicates if a Failure was discovered by the Central Unit: `ON`, `OFF`                                                                                                                  | R          | Y        |
-| `atLeastOneProbeOFF`         | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in OFF mode: `ON`, `OFF`                                                                                                                             | R          | Y        |
+| `atLeastOneProbeOff`         | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in OFF mode: `ON`, `OFF`                                                                                                                             | R          | Y        |
 | `atLeastOneProbeProtection`  | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in PROTECTION mode: `ON`, `OFF`                                                                                                                      | R          | Y        |
 | `atLeastOneProbeManual`      | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in MANUAL mode: `ON`, `OFF`                                                                                                                          | R          | Y        |
 
@@ -300,9 +300,9 @@ String iCU_3550_mode      "Mode"                              (gCentralUnit) { c
 Number iCU_3550_wpn       "Weekly Program"                    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:weeklyProgram" } 
 Number iCU_3550_spn       "Scenario Program"                  (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:scenarioProgram" } 
 String iCU_3550_func      "Function"                          (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:function" }
-Switch iCU_3550_at1off    "At least one probe in OFF"         (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeOFF" } 
-Switch iCU_3550_at1pro    "At least one probe in Protection"  (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeProtection" } 
-Switch iCU_3550_at1man    "At least one probe in Manual"      (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeManual" } 
+Switch iCU_3550_at1off    "At least one probe in OFF"         (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeOff" } 
+Switch iCU_3550_at1pro    "At least one probe in PROTECTION"  (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeProtection" } 
+Switch iCU_3550_at1man    "At least one probe in MANUAL"      (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeManual" } 
 Switch iCU_3550_failure   "Failure discovered"                (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:failureDiscovered" } 
 
 Group   gLivingRoomZone                         "Living Room Zone"   { ga="Thermostat" [ modes="auto=GENERIC,heat=HEATING,cool=COOLING", thermostatTemperatureRange="7,35", useFahrenheit=false ] }

@@ -304,7 +304,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.BATTERY_KO) {
                 updateCUBatteryStatus(CU_BATTERY_KO);
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.AT_LEAST_ONE_PROBE_OFF) {
-                updateCUAtLeastOneProbeOFF(OnOffType.ON);
+                updateCUAtLeastOneProbeOff(OnOffType.ON);
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.AT_LEAST_ONE_PROBE_ANTIFREEZE) {
                 updateCUAtLeastOneProbeProtection(OnOffType.ON);
             } else if (msg.getWhat() == Thermoregulation.WhatThermo.AT_LEAST_ONE_PROBE_MANUAL) {
@@ -391,7 +391,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             }
 
             if (probesInOFF.isEmpty()) {
-                updateCUAtLeastOneProbeOFF(OnOffType.OFF);
+                updateCUAtLeastOneProbeOff(OnOffType.OFF);
             }
             if (probesInProtection.isEmpty()) {
                 updateCUAtLeastOneProbeProtection(OnOffType.OFF);
@@ -498,9 +498,9 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         }
     }
 
-    private void updateCUAtLeastOneProbeOFF(OnOffType status) {
+    private void updateCUAtLeastOneProbeOff(OnOffType status) {
         updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_OFF, status);
-        logger.debug("updateCUAtLeastOneProbeOFF(): {}", status);
+        logger.debug("updateCUAtLeastOneProbeOff(): {}", status);
     }
 
     private void updateCUAtLeastOneProbeProtection(OnOffType status) {
