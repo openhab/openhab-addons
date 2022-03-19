@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.discovery;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Collection;
@@ -46,8 +45,9 @@ import org.openhab.core.thing.ThingUID;
  */
 @SuppressWarnings({ "ConstantConditions", "unchecked" })
 @ExtendWith(MockitoExtension.class)
+@NonNullByDefault
 public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
-    private HomeAssistantDiscovery discovery;
+    private @NonNullByDefault({}) HomeAssistantDiscovery discovery;
 
     @BeforeEach
     public void beforeEach() {
@@ -89,11 +89,11 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
         }
     }
 
-    @NonNullByDefault
     private static class LatchDiscoveryListener implements DiscoveryListener {
         private final CopyOnWriteArrayList<DiscoveryResult> discoveryResults = new CopyOnWriteArrayList<>();
         private @Nullable CountDownLatch latch;
 
+        @Override
         public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
             discoveryResults.add(result);
             if (latch != null) {
@@ -101,9 +101,11 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
             }
         }
 
+        @Override
         public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
         }
 
+        @Override
         public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
                 @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
             return Collections.emptyList();

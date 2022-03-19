@@ -34,8 +34,6 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MqttBrokerHandlerFactory} is responsible for creating things and thing
@@ -51,8 +49,6 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(MqttBindingConstants.BRIDGE_TYPE_BROKER).collect(Collectors.toSet());
-
-    private final Logger logger = LoggerFactory.getLogger(MqttBrokerHandlerFactory.class);
 
     /**
      * This Map provides a lookup between a Topic string (key) and a Set of MQTTTopicDiscoveryParticipants (value),

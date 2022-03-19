@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,29 +45,23 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
+@NonNullByDefault
 public class MQTTTopicDiscoveryServiceTest {
-    private ScheduledExecutorService scheduler;
 
-    private MqttBrokerHandlerFactory subject;
+    private @Mock @NonNullByDefault({}) Bridge thingMock;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback callbackMock;
+    private @Mock @NonNullByDefault({}) MQTTTopicDiscoveryParticipant listenerMock;
 
-    @Mock
-    private Bridge thing;
-
-    @Mock
-    private ThingHandlerCallback callback;
-
-    @Mock
-    MQTTTopicDiscoveryParticipant listener;
-
-    private MqttBrokerConnectionEx connection;
-
-    private BrokerHandler handler;
+    private @NonNullByDefault({}) MqttBrokerConnectionEx connection;
+    private @NonNullByDefault({}) BrokerHandler handler;
+    private @NonNullByDefault({}) ScheduledExecutorService scheduler;
+    private @NonNullByDefault({}) MqttBrokerHandlerFactory subject;
 
     @BeforeEach
     public void setUp() {
         scheduler = new ScheduledThreadPoolExecutor(1);
 
-        when(thing.getUID()).thenReturn(MqttThingID.getThingUID("10.10.0.10", 80));
+        when(thingMock.getUID()).thenReturn(MqttThingID.getThingUID("10.10.0.10", 80));
         connection = spy(new MqttBrokerConnectionEx("10.10.0.10", 80, false, "BrokerHandlerTest"));
         connection.setTimeoutExecutor(scheduler, 10);
         connection.setConnectionCallback(connection);
@@ -74,10 +69,10 @@ public class MQTTTopicDiscoveryServiceTest {
         Configuration config = new Configuration();
         config.put("host", "10.10.0.10");
         config.put("port", 80);
-        when(thing.getConfiguration()).thenReturn(config);
+        when(thingMock.getConfiguration()).thenReturn(config);
 
-        handler = spy(new BrokerHandlerEx(thing, connection));
-        handler.setCallback(callback);
+        handler = spy(new BrokerHandlerEx(thingMock, connection));
+        handler.setCallback(callbackMock);
 
         subject = new MqttBrokerHandlerFactory();
     }
@@ -92,13 +87,13 @@ public class MQTTTopicDiscoveryServiceTest {
         handler.initialize();
         BrokerHandlerEx.verifyCreateBrokerConnection(handler, 1);
 
-        subject.subscribe(listener, "topic");
+        subject.subscribe(listenerMock, "topic");
         subject.createdHandler(handler);
-        assertThat(subject.discoveryTopics.get("topic"), hasItem(listener));
+        assertThat(subject.discoveryTopics.get("topic"), hasItem(listenerMock));
         // Simulate receiving
         final byte[] bytes = "TEST".getBytes();
         connection.getSubscribers().get("topic").messageArrived("topic", bytes, false);
-        verify(listener).receivedMessage(eq(thing.getUID()), eq(connection), eq("topic"), eq(bytes));
+        verify(listenerMock).receivedMessage(eq(thingMock.getUID()), eq(connection), eq("topic"), eq(bytes));
     }
 
     @Test
@@ -107,20 +102,20 @@ public class MQTTTopicDiscoveryServiceTest {
         BrokerHandlerEx.verifyCreateBrokerConnection(handler, 1);
 
         subject.createdHandler(handler);
-        subject.subscribe(listener, "topic");
-        assertThat(subject.discoveryTopics.get("topic"), hasItem(listener));
+        subject.subscribe(listenerMock, "topic");
+        assertThat(subject.discoveryTopics.get("topic"), hasItem(listenerMock));
 
         // Simulate receiving
         final byte[] bytes = "TEST".getBytes();
         connection.getSubscribers().get("topic").messageArrived("topic", bytes, false);
-        verify(listener).receivedMessage(eq(thing.getUID()), eq(connection), eq("topic"), eq(bytes));
+        verify(listenerMock).receivedMessage(eq(thingMock.getUID()), eq(connection), eq("topic"), eq(bytes));
     }
 
     @Test
     public void handlerInitializeAfterSubscribe() {
         subject.createdHandler(handler);
-        subject.subscribe(listener, "topic");
-        assertThat(subject.discoveryTopics.get("topic"), hasItem(listener));
+        subject.subscribe(listenerMock, "topic");
+        assertThat(subject.discoveryTopics.get("topic"), hasItem(listenerMock));
 
         // Init handler -> create connection
         handler.initialize();
@@ -129,7 +124,7 @@ public class MQTTTopicDiscoveryServiceTest {
         // Simulate receiving
         final byte[] bytes = "TEST".getBytes();
         connection.getSubscribers().get("topic").messageArrived("topic", bytes, false);
-        verify(listener).receivedMessage(eq(thing.getUID()), eq(connection), eq("topic"), eq(bytes));
+        verify(listenerMock).receivedMessage(eq(thingMock.getUID()), eq(connection), eq("topic"), eq(bytes));
     }
 
     @Test
@@ -138,12 +133,12 @@ public class MQTTTopicDiscoveryServiceTest {
         BrokerHandlerEx.verifyCreateBrokerConnection(handler, 1);
 
         subject.createdHandler(handler);
-        subject.subscribe(listener, "topic");
-        assertThat(subject.discoveryTopics.get("topic"), hasItem(listener));
+        subject.subscribe(listenerMock, "topic");
+        assertThat(subject.discoveryTopics.get("topic"), hasItem(listenerMock));
 
         // Simulate receiving
         final byte[] bytes = "".getBytes();
         connection.getSubscribers().get("topic").messageArrived("topic", bytes, false);
-        verify(listener).topicVanished(eq(thing.getUID()), eq(connection), eq("topic"));
+        verify(listenerMock).topicVanished(eq(thingMock.getUID()), eq(connection), eq("topic"));
     }
 }

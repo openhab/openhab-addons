@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.mqtt.homie.internal.homie300;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.MQTTvalueTransform;
 import org.openhab.binding.mqtt.generic.mapping.MandatoryField;
@@ -24,6 +25,7 @@ import org.openhab.binding.mqtt.generic.mapping.TopicPrefix;
  * @author David Graeff - Initial contribution
  */
 @TopicPrefix
+@NonNullByDefault
 public class DeviceAttributes extends AbstractMqttAttributeClass {
     // Lower-case enum value names required. Those are identifiers for the MQTT/homie protocol.
     public enum ReadyState {
@@ -36,13 +38,13 @@ public class DeviceAttributes extends AbstractMqttAttributeClass {
         alert
     }
 
-    public @MandatoryField String homie;
-    public @MandatoryField String name;
+    public @MandatoryField @Nullable String homie;
+    public @MandatoryField @Nullable String name;
     public @MandatoryField ReadyState state = ReadyState.unknown;
-    public @MandatoryField @MQTTvalueTransform(splitCharacter = ",") String[] nodes;
+    public @MandatoryField @MQTTvalueTransform(splitCharacter = ",") String @Nullable [] nodes;
 
     @Override
-    public @NonNull Object getFieldsOf() {
+    public Object getFieldsOf() {
         return this;
     }
 }

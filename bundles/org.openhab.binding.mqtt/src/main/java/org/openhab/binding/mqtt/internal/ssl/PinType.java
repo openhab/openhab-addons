@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.mqtt.internal.ssl;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * A {@link Pin} is either a Public Key or Certificate Pin.
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public enum PinType {
     PUBLIC_KEY_TYPE,
     CERTIFICATE_TYPE

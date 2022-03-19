@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.mqtt.generic.mapping;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Color modes supported by the binding.
  *
  * @author Aitor Iturrioz - Initial contribution
  */
+@NonNullByDefault
 public enum ColorMode {
     HSB,
     RGB,
