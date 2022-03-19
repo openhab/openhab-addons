@@ -52,7 +52,7 @@ public class StateDTO {
     private BooleanStateDTO mBusDongleAttached;
     private IntegerStateDTO configVersion;
     @SerializedName("OSState")
-    private StringStateDTO oSState;
+    private StringStateDTO osState;
     private IntegerStateDTO wifiSignalStrength;
     private StringStateDTO ethIpAddress;
     private StringStateDTO wifiIpAddress;
@@ -79,7 +79,7 @@ public class StateDTO {
         lBDongleAttached = new BooleanStateDTO();
         mBusDongleAttached = new BooleanStateDTO();
         configVersion = new IntegerStateDTO();
-        oSState = new StringStateDTO();
+        osState = new StringStateDTO();
         wifiSignalStrength = new IntegerStateDTO();
         ethIpAddress = new StringStateDTO();
         wifiIpAddress = new StringStateDTO();
@@ -266,14 +266,14 @@ public class StateDTO {
      * @return the oSState
      */
     public StringStateDTO getOSState() {
-        return oSState;
+        return osState;
     }
 
     /**
-     * @param oSState the oSState to set
+     * @param osState the oSState to set
      */
-    public void setOSState(StringStateDTO oSState) {
-        this.oSState = oSState;
+    public void setOSState(StringStateDTO osState) {
+        this.osState = osState;
     }
 
     /**

@@ -283,7 +283,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * The refresh job is only executed for SHC 1 (classic) bridges, newer bridges like SHC 2 do send events.
      */
     private void scheduleBridgeRefreshJob(DeviceDTO bridgeDevice) {
-        if (isSHCClassic(bridgeDevice)) {
+        if (bridgeDevice.isClassicController()) {
             final ScheduledFuture<?> bridgeRefreshJobLocal = this.bridgeRefreshJob;
             if (bridgeRefreshJobLocal == null || !isAlreadyScheduled(bridgeRefreshJobLocal)) {
                 logger.debug("Scheduling bridge refresh job with an interval of {} seconds.", BRIDGE_REFRESH_SECONDS);
@@ -392,11 +392,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     public boolean isSHCClassic() {
-        return getBridgeDevice().filter(this::isSHCClassic).isPresent();
-    }
-
-    private boolean isSHCClassic(DeviceDTO bridgeDevice) {
-        return bridgeDevice.isClassicController();
+        return getBridgeDevice().filter(DeviceDTO::isClassicController).isPresent();
     }
 
     /**
@@ -491,13 +487,14 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     @Override
     public void onDeviceStateChanged(final DeviceDTO bridgeDevice, final EventDTO event) {
         synchronized (this.lock) {
-            if (event.isLinkedtoDevice() && !bridgeDevice.isClassicController()) {
-                bridgeDevice.getDeviceState().getState().getOperationStatus()
-                        .setValue(event.getProperties().getOperationStatus());
-                bridgeDevice.getDeviceState().getState().getCpuUsage().setValue(event.getProperties().getCpuUsage());
+            if (event.isLinkedtoDevice()) {
+                final boolean isSHCClassic = bridgeDevice.isClassicController();
+                bridgeDevice.getDeviceState().getState().getOperationStatus(isSHCClassic)
+                        .setValue(event.getProperties().getOperationStatus(isSHCClassic));
+                bridgeDevice.getDeviceState().getState().getCpuUsage(isSHCClassic).setValue(event.getProperties().getCpuUsage(isSHCClassic));
                 bridgeDevice.getDeviceState().getState().getDiskUsage().setValue(event.getProperties().getDiskUsage());
-                bridgeDevice.getDeviceState().getState().getMemoryUsage()
-                        .setValue(event.getProperties().getMemoryUsage());
+                bridgeDevice.getDeviceState().getState().getMemoryUsage(isSHCClassic)
+                        .setValue(event.getProperties().getMemoryUsage(isSHCClassic));
                 onDeviceStateChanged(bridgeDevice);
             }
         }

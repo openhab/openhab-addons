@@ -66,6 +66,11 @@ public class EventPropertiesDTO {
     private Double cpuUsage;
     private Double diskUsage;
     private Double memoryUsage;
+    @SerializedName("CPULoad")
+    private Double cpuLoad;
+    private Double memoryLoad;
+    @SerializedName("OSState")
+    private String osState;
 
     /**
      * @return the configurationVersion
@@ -581,5 +586,56 @@ public class EventPropertiesDTO {
      */
     public Double getMemoryUsage() {
         return memoryUsage;
+    }
+
+    public Double getCPULoad() {
+        return cpuLoad;
+    }
+
+    public void setCPULoad(Double cpuLoad) {
+        this.cpuLoad = cpuLoad;
+    }
+
+    public Double getCpuUsage(boolean isSHCClassic) {
+        if (isSHCClassic) {
+            return getCPULoad();
+        }
+        return getCpuUsage();
+    }
+
+    public Double getMemoryLoad() {
+        return memoryLoad;
+    }
+
+    public void setMemoryLoad(Double memoryLoad) {
+        this.memoryLoad = memoryLoad;
+    }
+
+    /**
+     * @return the memoryUsage
+     */
+    public Double getMemoryUsage(boolean isSHCClassic) {
+        if (isSHCClassic) {
+            return getMemoryLoad();
+        }
+        return getMemoryUsage();
+    }
+
+    public String getOSState() {
+        return osState;
+    }
+
+    public void setOSState(String osState) {
+        this.osState = osState;
+    }
+
+    /**
+     * @return the operationStatus
+     */
+    public String getOperationStatus(boolean isSHCClassic) {
+        if (isSHCClassic) {
+            return getOSState();
+        }
+        return getOperationStatus();
     }
 }

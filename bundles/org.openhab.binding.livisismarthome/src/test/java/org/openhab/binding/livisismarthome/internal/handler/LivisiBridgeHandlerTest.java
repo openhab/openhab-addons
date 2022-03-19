@@ -15,6 +15,7 @@ package org.openhab.binding.livisismarthome.internal.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.livisismarthome.internal.LivisiBindingConstants.*;
+import static org.openhab.binding.livisismarthome.internal.client.api.entity.link.LinkDTO.LINK_TYPE_DEVICE;
 
 import java.net.ConnectException;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -34,6 +36,8 @@ import org.openhab.binding.livisismarthome.internal.client.api.entity.device.Dev
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceStateDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.StateDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.event.EventDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.event.EventPropertiesDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.state.DoubleStateDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.state.StringStateDTO;
 import org.openhab.binding.livisismarthome.internal.manager.FullDeviceManager;
@@ -178,7 +182,7 @@ public class LivisiBridgeHandlerTest {
         state.setCPULoad(doubleState(30.5));
         state.setMemoryLoad(doubleState(60.5));
         state.setDiskUsage(doubleState(70.5));
-        state.setOSState(stringState("active"));
+        state.setOSState(stringState("Normal"));
 
         DeviceStateDTO deviceState = new DeviceStateDTO();
         deviceState.setState(state);
@@ -189,7 +193,7 @@ public class LivisiBridgeHandlerTest {
         assertTrue(isChannelUpdated(CHANNEL_CPU, QuantityType.valueOf(30.5, Units.PERCENT)));
         assertTrue(isChannelUpdated(CHANNEL_MEMORY, QuantityType.valueOf(60.5, Units.PERCENT)));
         assertTrue(isChannelUpdated(CHANNEL_DISK, QuantityType.valueOf(70.5, Units.PERCENT)));
-        assertTrue(isChannelUpdated(CHANNEL_OPERATION_STATUS, StringType.valueOf("ACTIVE")));
+        assertTrue(isChannelUpdated(CHANNEL_OPERATION_STATUS, StringType.valueOf("NORMAL")));
     }
 
     @Test
@@ -211,6 +215,69 @@ public class LivisiBridgeHandlerTest {
         assertTrue(isChannelUpdated(CHANNEL_CPU, QuantityType.valueOf(30.5, Units.PERCENT)));
         assertTrue(isChannelUpdated(CHANNEL_MEMORY, QuantityType.valueOf(60.5, Units.PERCENT)));
         assertTrue(isChannelUpdated(CHANNEL_DISK, QuantityType.valueOf(70.5, Units.PERCENT)));
+        assertTrue(isChannelUpdated(CHANNEL_OPERATION_STATUS, StringType.valueOf("ACTIVE")));
+    }
+
+    @Test
+    public void testOnDeviceStateChanged_Event_SHC_Classic() {
+        DeviceDTO bridgeDevice = createBridgeDevice(true);
+
+        // Example SHC-Classic-Event
+        // {"sequenceNumber":709,"type":"StateChanged","namespace":"core.RWE","timestamp":"2022-03-17T11:13:20.1100000Z","source":"/device/812ae7233697408378943e5d943a450x","properties":{"updateAvailable":"","lastReboot":"2022-03-17T
+        // 10:10:14.3530000Z","MBusDongleAttached":false,"LBDongleAttached":false,"configVersion":649,"discoveryActive":false,"IPAddress":"192.168.178.12","currentUTCOffset":
+        // 60,"productsHash":"xy","OSState":"Normal","memoryLoad":67,"CPULoad":39,"diskUsage":20}}
+
+        EventDTO event = createDeviceEvent(c -> {
+            c.setOSState("Normal");
+            c.setCPULoad(39.5);
+            c.setMemoryLoad(67.5);
+            c.setDiskUsage(20.5);
+        });
+
+        StateDTO state = new StateDTO();
+        state.setCPULoad(doubleState(30.5));
+        state.setMemoryLoad(doubleState(60.5));
+        state.setDiskUsage(doubleState(70.5));
+        state.setOSState(stringState("active"));
+
+        DeviceStateDTO deviceState = new DeviceStateDTO();
+        deviceState.setState(state);
+        bridgeDevice.setDeviceState(deviceState);
+
+        bridgeHandler.onDeviceStateChanged(bridgeDevice, event);
+
+        assertTrue(isChannelUpdated(CHANNEL_CPU, QuantityType.valueOf(39.5, Units.PERCENT)));
+        assertTrue(isChannelUpdated(CHANNEL_MEMORY, QuantityType.valueOf(67.5, Units.PERCENT)));
+        assertTrue(isChannelUpdated(CHANNEL_DISK, QuantityType.valueOf(20.5, Units.PERCENT)));
+        assertTrue(isChannelUpdated(CHANNEL_OPERATION_STATUS, StringType.valueOf("NORMAL")));
+    }
+
+    @Test
+    public void testOnDeviceStateChanged_Event_SHCA() {
+        DeviceDTO bridgeDevice = createBridgeDevice(false);
+
+        EventDTO event = createDeviceEvent(c -> {
+            c.setOperationStatus("active");
+            c.setCpuUsage(39.5);
+            c.setMemoryUsage(67.5);
+            c.setDiskUsage(20.5);
+        });
+
+        StateDTO state = new StateDTO();
+        state.setCpuUsage(doubleState(30.5));
+        state.setMemoryUsage(doubleState(60.5));
+        state.setDiskUsage(doubleState(70.5));
+        state.setOperationStatus(stringState("shuttingdown"));
+
+        DeviceStateDTO deviceState = new DeviceStateDTO();
+        deviceState.setState(state);
+        bridgeDevice.setDeviceState(deviceState);
+
+        bridgeHandler.onDeviceStateChanged(bridgeDevice, event);
+
+        assertTrue(isChannelUpdated(CHANNEL_CPU, QuantityType.valueOf(39.5, Units.PERCENT)));
+        assertTrue(isChannelUpdated(CHANNEL_MEMORY, QuantityType.valueOf(67.5, Units.PERCENT)));
+        assertTrue(isChannelUpdated(CHANNEL_DISK, QuantityType.valueOf(20.5, Units.PERCENT)));
         assertTrue(isChannelUpdated(CHANNEL_OPERATION_STATUS, StringType.valueOf("ACTIVE")));
     }
 
@@ -242,6 +309,16 @@ public class LivisiBridgeHandlerTest {
     private boolean isChannelUpdated(String channelUID, State expectedState) {
         State state = updatedChannels.get(channelUID);
         return expectedState.equals(state);
+    }
+
+    private static EventDTO createDeviceEvent(Consumer<EventPropertiesDTO> eventPropertiesConsumer) {
+        EventPropertiesDTO eventProperties = new EventPropertiesDTO();
+        eventPropertiesConsumer.accept(eventProperties);
+
+        EventDTO event = new EventDTO();
+        event.setSource(LINK_TYPE_DEVICE + "deviceId");
+        event.setProperties(eventProperties);
+        return event;
     }
 
     @NonNullByDefault
