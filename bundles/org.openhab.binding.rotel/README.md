@@ -163,7 +163,7 @@ The following channels are available:
 | frequency      | Current Frequency              | Number    | The current frequency (in kHz) for digital source input  |                                    |
 | brightness     | Front Panel Display Brightness | Dimmer    | The backlight brightness level (in %) of the device front panel |                             |
 | tcbypass       | Tone Control Bypass            | Switch    | The user's bass-/treble-settings are bypassed            | ON, OFF                            |
-| balance        | Stereo Balance Adjustment      | Number    | Adjust the balance                                       | value                              |
+| balance        | Stereo Balance Adjustment      | Number    | Adjust the balance                                       | INCREASE, DECREASE, value          |
 | speakera       | Speaker-A Adjustment           | Switch    | Turn on/off the speaker group A                          | ON, OFF                            |
 | speakerb       | Speaker-B Adjustment           | Switch    | Turn on/off the speaker group B                          | ON, OFF                            |
 
@@ -171,8 +171,8 @@ Here are the list of channels available for each thing type:
 
 | Thing Type | Available channels                                                                    |
 |------------|---------------------------------------------------------------------------------------|
-| a11        | power, source, volume, mute, bass, treble, brightness                                 |
-| a12        | power, source, volume, mute, bass, treble, frequency, brightness                      |
+| a11        | power, source, volume, mute, bass, treble, brightness, tcbypass, balance, speakera, speakerb |
+| a12        | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
 | a14        | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
 | cd11       | power, playControl, track, brightness                                                 |
 | cd14       | power, playControl, track, brightness                                                 |
