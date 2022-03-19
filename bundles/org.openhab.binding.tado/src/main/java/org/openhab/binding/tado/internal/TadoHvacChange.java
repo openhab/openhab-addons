@@ -153,4 +153,9 @@ public class TadoHvacChange {
 
         return overlay;
     }
+
+    public TadoHvacChange withLight(boolean lightOn) {
+        settingsBuilder.withLight(lightOn);
+        return this;
+    }
 }

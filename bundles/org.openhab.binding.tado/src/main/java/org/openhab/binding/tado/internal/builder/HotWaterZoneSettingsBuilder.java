@@ -45,6 +45,11 @@ public class HotWaterZoneSettingsBuilder extends ZoneSettingsBuilder {
     }
 
     @Override
+    public ZoneSettingsBuilder withLight(boolean lightOn) {
+        throw new IllegalArgumentException("Hot Water zones don't support LIGHT");
+    }
+
+    @Override
     public ZoneSettingsBuilder withFanSpeed(FanSpeed fanSpeed) {
         throw new IllegalArgumentException("Hot Water zones don't support FAN SPEED");
     }

@@ -254,4 +254,12 @@ public class TadoZoneStateAdapter {
         }
         return OnOffType.OFF;
     }
+
+    public State getLight() {
+        if (zoneState.getSetting().getType() == TadoSystemType.AIR_CONDITIONING) {
+            Power result = ((CoolingZoneSetting) zoneState.getSetting()).getLight();
+            return result != null ? OnOffType.from(result == Power.ON) : UnDefType.NULL;
+        }
+        return UnDefType.UNDEF;
+    }
 }

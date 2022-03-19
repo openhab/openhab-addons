@@ -620,6 +620,9 @@ definitions:
         swing:
           description: Whether the angle of the air stream should be fixed or not, if power is `ON` and configuring this is supported in this AC mode.
           $ref: "#/definitions/Power"
+        light:
+          description: State of the control panel light.
+          $ref: "#/definitions/Power"
         fanLevel:
           description: The desired fan speed level, if power is `ON` and fan speeds are supported in this AC mode.
           $ref: "#/definitions/ACFanLevel"
@@ -1034,6 +1037,11 @@ definitions:
           $ref: "#/definitions/AcFanSpeed"
       swings:
         description: Cooling system swing modes.
+        type: array
+        items:
+          $ref: "#/definitions/Power"
+      light:
+        description: Control panel light state. (Tado confusingly names this array without an 's')
         type: array
         items:
           $ref: "#/definitions/Power"

@@ -65,6 +65,8 @@ public class TadoBindingConstants {
 
     public static final String CHANNEL_ZONE_SWING = "swing";
 
+    public static final String CHANNEL_ZONE_LIGHT = "light";
+
     public static final String CHANNEL_ZONE_FAN_SPEED = "fanspeed";
 
     public static enum FanSpeed {

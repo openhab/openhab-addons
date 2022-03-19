@@ -54,6 +54,7 @@ public abstract class ZoneSettingsBuilder {
     protected Float temperature = null;
     protected TemperatureUnit temperatureUnit = TemperatureUnit.CELSIUS;
     protected Boolean swing = null;
+    protected Boolean light = null;
     protected FanSpeed fanSpeed = null;
     protected FanLevel fanLevel = null;
     protected HorizontalSwing horizontalSwing = null;
@@ -123,5 +124,10 @@ public abstract class ZoneSettingsBuilder {
         }
 
         return temperatureObject;
+    }
+
+    public ZoneSettingsBuilder withLight(boolean lightOn) {
+        this.light = lightOn;
+        return this;
     }
 }

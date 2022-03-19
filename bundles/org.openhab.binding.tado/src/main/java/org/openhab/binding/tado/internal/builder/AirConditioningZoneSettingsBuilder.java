@@ -63,6 +63,10 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
             setting.setSwing(swing ? Power.ON : Power.OFF);
         }
 
+        if (light != null) {
+            setting.setLight(light ? Power.ON : Power.OFF);
+        }
+
         if (fanSpeed != null) {
             setting.setFanSpeed(getAcFanSpeed(fanSpeed));
         }
@@ -126,6 +130,12 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
         if (verticalSwings != null && !verticalSwings.isEmpty() && setting.getVerticalSwing() == null) {
             setting.setVerticalSwing(getCurrentOrDefaultVerticalSwing(zoneStateProvider, verticalSwings));
         }
+
+        // Tado confusingly calls the List / getter method 'light' / 'getLight()' without 's'
+        List<Power> lights = capabilities.getLight();
+        if (lights != null && !lights.isEmpty() && setting.getLight() == null) {
+            setting.setLight(getCurrentOrDefaultLight(zoneStateProvider, lights));
+        }
     }
 
     private AcMode getCurrentOrDefaultAcMode(ZoneStateProvider zoneStateProvider) throws IOException, ApiException {
@@ -173,6 +183,17 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
         }
 
         return swings.get(0);
+    }
+
+    private Power getCurrentOrDefaultLight(ZoneStateProvider zoneStateProvider, List<Power> lights)
+            throws IOException, ApiException {
+        CoolingZoneSetting zoneSetting = (CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting();
+
+        if (zoneSetting.getLight() != null && lights.contains(zoneSetting.getLight())) {
+            return zoneSetting.getLight();
+        }
+
+        return lights.get(0);
     }
 
     private ACFanLevel getCurrentOrDefaultFanLevel(ZoneStateProvider zoneStateProvider, List<ACFanLevel> fanLevels)

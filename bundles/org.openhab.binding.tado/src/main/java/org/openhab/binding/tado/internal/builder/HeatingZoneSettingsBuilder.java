@@ -44,6 +44,11 @@ public class HeatingZoneSettingsBuilder extends ZoneSettingsBuilder {
     }
 
     @Override
+    public ZoneSettingsBuilder withLight(boolean lightOn) {
+        throw new IllegalArgumentException("Heating zones don't support LIGHT");
+    }
+
+    @Override
     public ZoneSettingsBuilder withFanSpeed(FanSpeed fanSpeed) {
         throw new IllegalArgumentException("Heating zones don't support FAN SPEED");
     }
