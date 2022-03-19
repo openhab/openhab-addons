@@ -1563,6 +1563,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         balance = minBalanceLevel;
                     } else if (RotelConnector.MSG_VALUE_MAX.equalsIgnoreCase(value)) {
                         balance = maxBalanceLevel;
+                    } else if (value.toUpperCase().startsWith("L")) {
+                        volume = -Integer.parseInt(value.substring(1));
+                    } else if (value.toLowerCase().startsWith("R")) {
+                        volume = Integer.parseInt(value.substring(1));
                     } else {
                         balance = Integer.parseInt(value);
                     }
