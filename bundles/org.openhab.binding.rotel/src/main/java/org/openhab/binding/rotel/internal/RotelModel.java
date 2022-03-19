@@ -423,6 +423,15 @@ public enum RotelModel {
     }
 
     /**
+     * Inform whether balance control is available
+     *
+     * @return true if balance control is available
+     */
+    public boolean hasBalanceControl() {
+        return balanceLevelMax != null;
+    }
+
+    /**
      * Get the maximum balance level
      *
      * @return the maximum balance level or 0
