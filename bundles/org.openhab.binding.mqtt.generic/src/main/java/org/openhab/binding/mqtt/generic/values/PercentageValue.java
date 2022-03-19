@@ -14,8 +14,7 @@ package org.openhab.binding.mqtt.generic.values;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -58,8 +57,8 @@ public class PercentageValue extends Value {
 
     public PercentageValue(@Nullable BigDecimal min, @Nullable BigDecimal max, @Nullable BigDecimal step,
             @Nullable String onValue, @Nullable String offValue) {
-        super(CoreItemFactory.DIMMER, Stream.of(DecimalType.class, QuantityType.class, IncreaseDecreaseType.class,
-                OnOffType.class, UpDownType.class, StringType.class).collect(Collectors.toList()));
+        super(CoreItemFactory.DIMMER, List.of(DecimalType.class, QuantityType.class, IncreaseDecreaseType.class,
+                OnOffType.class, UpDownType.class, StringType.class));
         this.onValue = onValue;
         this.offValue = offValue;
         this.min = min == null ? BigDecimal.ZERO : min;
