@@ -242,6 +242,7 @@ public enum RotelCommand {
     BALANCE_RIGHT("Balance Right", "balance_right", "balance_r"),
     BALANCE_LEFT("Balance Left", "balance_left", "balance_l"),
     BALANCE_SET("Set Balance to level", "balance_", "balance_"),
+    BALANCE_SET_FIX("Set Balance to level", "balance_", "balance_"),
     BALANCE("Request current balance setting", "get_balance", "balance?"),
     SPEAKER_A_TOGGLE("Toggle Speaker A Output", RotelConnector.PRIMARY_CMD, (byte) 0x50, "speaker_a", "speaker_a"),
     SPEAKER_A_ON("Set Speaker A Output", "speaker_a_on", "speaker_a_on"),
