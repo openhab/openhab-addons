@@ -136,6 +136,7 @@ public abstract class RotelConnector {
     public static final String KEY_DSP_MODE = "dsp_mode";
     public static final String KEY_DIMMER = "dimmer";
     public static final String KEY_FREQ = "freq";
+    public static final String KEY_TONE = "tone";
     public static final String KEY_TCBYPASS = "bypass";
     public static final String KEY_BALANCE = "balance";
     public static final String KEY_SPEAKER = "speaker";
@@ -465,6 +466,18 @@ public abstract class RotelConnector {
                                 }
                                 break;
                             case BALANCE_SET:
+                                if (value == 0) {
+                                    messageStr += "000";
+                                } else if (value > 0) {
+                                    messageStr += String.format("R%02d", value);
+                                } else {
+                                    messageStr += String.format("L%02d", -value);
+                                }
+                                break;
+                            case BALANCE_SET_FIX:
+                                // Firmware for models A1x does not follow strictly the Rotel specification
+                                // The firmware expects values like r05 or L04 while the specification mentions
+                                // R05 and L04
                                 if (value == 0) {
                                     messageStr += "000";
                                 } else if (value > 0) {
