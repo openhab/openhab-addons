@@ -269,15 +269,7 @@ public class LivisiBridgeHandlerTest {
             schedulerMock = mock(ScheduledExecutorService.class);
 
             doAnswer(invocationOnMock -> {
-                if (executionCount <= MAXIMUM_RETRY_EXECUTIONS) {
-                    executionCount++;
-                    invocationOnMock.getArgument(0, Runnable.class).run();
-                }
-                return null;
-            }).when(schedulerMock).execute(any());
-
-            doAnswer(invocationOnMock -> {
-                if (executionCount <= MAXIMUM_RETRY_EXECUTIONS) {
+                if (executionCount < MAXIMUM_RETRY_EXECUTIONS) {
                     executionCount++;
                     long seconds = invocationOnMock.getArgument(1);
                     if (seconds <= 0) {

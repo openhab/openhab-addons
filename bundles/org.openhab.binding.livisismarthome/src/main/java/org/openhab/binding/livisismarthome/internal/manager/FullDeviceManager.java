@@ -75,7 +75,7 @@ public class FullDeviceManager {
      * Returns the {@link DeviceDTO} with the given deviceId with full configuration details, {@link CapabilityDTO}s and
      * states. Calling this may take a little bit longer...
      */
-    public DeviceDTO getFullDeviceById(final String deviceId)
+    public DeviceDTO getFullDeviceById(final String deviceId, final boolean isSHCClassic)
             throws IOException, ApiException, AuthenticationException {
         final Map<String, LocationDTO> locationMap = createLocationMap(client);
         final Map<String, CapabilityDTO> capabilityMap = createCapabilityMap(deviceId, client);
@@ -83,7 +83,7 @@ public class FullDeviceManager {
 
         final DeviceStateDTO deviceState = new DeviceStateDTO();
         deviceState.setId(deviceId);
-        deviceState.setState(client.getDeviceStateByDeviceId(deviceId));
+        deviceState.setState(client.getDeviceStateByDeviceId(deviceId, isSHCClassic));
 
         final DeviceDTO device = client.getDeviceById(deviceId);
         initializeDevice(device, deviceState, locationMap, capabilityMap, messageMap);

@@ -36,6 +36,7 @@ public class LivisiBindingConstants {
     public static final String AUTH_HEADER_VALUE = "Y2xpZW50SWQ6Y2xpZW50UGFzcw==";
 
     public static final long REINITIALIZE_DELAY_SECONDS = 30;
+    public static final long BRIDGE_REFRESH_SECONDS = 60;
 
     // properties
     public static final String PROPERTY_ID = "id";

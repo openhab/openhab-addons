@@ -42,6 +42,7 @@ import org.openhab.binding.livisismarthome.internal.client.api.entity.action.Shu
 import org.openhab.binding.livisismarthome.internal.client.api.entity.capability.CapabilityDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceConfigDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceStateDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.event.BaseEventDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.event.EventDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.event.MessageEventDTO;
@@ -110,6 +111,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private @Nullable DeviceStructureManager deviceStructMan;
     private @Nullable String bridgeId;
     private @Nullable ScheduledFuture<?> reInitJob;
+    private @Nullable ScheduledFuture<?> bridgeRefreshJob;
     private @NonNullByDefault({}) LivisiBridgeConfiguration bridgeConfiguration;
     private @Nullable OAuthClientService oAuthService;
     private String configVersion = "";
@@ -142,7 +144,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     public void initialize() {
         logger.debug("Initializing LIVISI SmartHome BridgeHandler...");
         this.bridgeConfiguration = getConfigAs(LivisiBridgeConfiguration.class);
-        getScheduler().execute(this::initializeClient);
+        initializeClient();
     }
 
     /**
@@ -181,14 +183,15 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         if (isSuccessfullyRefreshed) {
             Optional<DeviceDTO> bridgeDeviceOptional = deviceStructMan.getBridgeDevice();
             if (bridgeDeviceOptional.isPresent()) {
-                DeviceDTO bridgeDevice = bridgeDeviceOptional.get();
-                bridgeId = bridgeDevice.getId();
-                setBridgeProperties(bridgeDevice);
+                DeviceDTO bridgeDeviceNonNullable = bridgeDeviceOptional.get();
+                bridgeId = bridgeDeviceNonNullable.getId();
+                setBridgeProperties(bridgeDeviceNonNullable);
 
-                registerDeviceStatusListener(bridgeDevice.getId(), this);
-                onDeviceStateChanged(bridgeDevice); // initialize channels
+                registerDeviceStatusListener(bridgeDeviceNonNullable.getId(), this);
+                onDeviceStateChanged(bridgeDeviceNonNullable); // initialize channels
+                scheduleBridgeRefreshJob(bridgeDeviceNonNullable);
 
-                startWebSocket(bridgeDevice);
+                startWebSocket(bridgeDeviceNonNullable);
             } else {
                 logger.debug("Failed to get bridge device, re-scheduling startClient.");
                 scheduleRestartClient(true);
@@ -263,18 +266,35 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      *            otherwise it starts directly
      */
     private synchronized void scheduleRestartClient(final boolean delayed) {
-        final ScheduledFuture<?> reinitJob = this.reInitJob;
-
-        if (reinitJob != null && isAlreadyScheduled(reinitJob)) {
-            logger.debug("Scheduling reinitialize - ignored: already triggered in {} seconds.",
-                    reinitJob.getDelay(TimeUnit.SECONDS));
-        } else {
+        final ScheduledFuture<?> reInitJobLocal = this.reInitJob;
+        if (reInitJobLocal == null || !isAlreadyScheduled(reInitJobLocal)) {
             long delaySeconds = 0;
             if (delayed) {
                 delaySeconds = REINITIALIZE_DELAY_SECONDS;
             }
             logger.debug("Scheduling reinitialize in {} delaySeconds.", delaySeconds);
             this.reInitJob = getScheduler().schedule(this::startClient, delaySeconds, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * Starts a refresh job for the bridge channels, because the SHC 1 (classic) doesn't send events
+     * for cpu, memory, disc or operation state changes.
+     * The refresh job is only executed for SHC 1 (classic) bridges, newer bridges like SHC 2 do send events.
+     */
+    private void scheduleBridgeRefreshJob(DeviceDTO bridgeDevice) {
+        if (isSHCClassic(bridgeDevice)) {
+            final ScheduledFuture<?> bridgeRefreshJobLocal = this.bridgeRefreshJob;
+            if (bridgeRefreshJobLocal == null || !isAlreadyScheduled(bridgeRefreshJobLocal)) {
+                logger.debug("Scheduling bridge refresh job with an interval of {} seconds.", BRIDGE_REFRESH_SECONDS);
+
+                this.bridgeRefreshJob = getScheduler().scheduleAtFixedRate(() -> {
+                    logger.debug("Refreshing bridge");
+
+                    refreshBridgeState();
+                    onDeviceStateChanged(bridgeDevice);
+                }, BRIDGE_REFRESH_SECONDS, BRIDGE_REFRESH_SECONDS, TimeUnit.SECONDS);
+            }
         }
     }
 
@@ -319,7 +339,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     public void dispose() {
         logger.debug("Disposing LIVISI SmartHome bridge handler '{}'", getThing().getUID().getId());
         unregisterDeviceStatusListener(bridgeId);
-        cancelReInitJob();
+        cancelJobs();
         stopWebSocket();
         client = null;
         deviceStructMan = null;
@@ -328,12 +348,14 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         logger.debug("LIVISI SmartHome bridge handler shut down.");
     }
 
-    private synchronized void cancelReInitJob() {
-        ScheduledFuture<?> reinitJob = this.reInitJob;
-
-        if (reinitJob != null) {
-            reinitJob.cancel(true);
-            this.reInitJob = null;
+    private synchronized void cancelJobs() {
+        if (reInitJob != null) {
+            reInitJob.cancel(true);
+            reInitJob = null;
+        }
+        if (bridgeRefreshJob != null) {
+            bridgeRefreshJob.cancel(true);
+            bridgeRefreshJob = null;
         }
     }
 
@@ -370,7 +392,11 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     public boolean isSHCClassic() {
-        return getBridgeDevice().filter(DeviceDTO::isClassicController).isPresent();
+        return getBridgeDevice().filter(this::isSHCClassic).isPresent();
+    }
+
+    private boolean isSHCClassic(DeviceDTO bridgeDevice) {
+        return bridgeDevice.isClassicController();
     }
 
     /**
@@ -396,6 +422,22 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         return Optional.empty();
     }
 
+    private void refreshBridgeState() {
+        Optional<DeviceDTO> bridgeOptional = getBridgeDevice();
+        if (bridgeOptional.isPresent() && client != null) {
+            try {
+                DeviceDTO bridgeDevice = bridgeOptional.get();
+
+                DeviceStateDTO deviceState = new DeviceStateDTO();
+                deviceState.setId(bridgeDevice.getId());
+                deviceState.setState(client.getDeviceStateByDeviceId(bridgeDevice.getId(), isSHCClassic()));
+                bridgeDevice.setDeviceState(deviceState);
+            } catch (IOException | ApiException | AuthenticationException e) {
+                logger.debug("Exception occurred on reloading bridge", e);
+            }
+        }
+    }
+
     /**
      * Refreshes the {@link DeviceDTO} with the given id, by reloading the full device from the LIVISI webservice.
      *
@@ -405,7 +447,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     public Optional<DeviceDTO> refreshDevice(final String deviceId) {
         if (deviceStructMan != null) {
             try {
-                deviceStructMan.refreshDevice(deviceId);
+                deviceStructMan.refreshDevice(deviceId, isSHCClassic());
                 return deviceStructMan.getDeviceById(deviceId);
             } catch (IOException | ApiException | AuthenticationException e) {
                 handleClientException(e);
@@ -536,7 +578,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
                 Optional<DeviceDTO> bridgeDevice = deviceStructMan.getBridgeDevice();
                 if (bridgeDevice.isPresent() && !event.getSourceId().equals(bridgeDevice.get().getId())) {
-                    deviceStructMan.refreshDevice(event.getSourceId());
+                    deviceStructMan.refreshDevice(event.getSourceId(), isSHCClassic());
                 }
                 final Optional<DeviceDTO> device = deviceStructMan.getDeviceById(event.getSourceId());
                 notifyDeviceStatusListeners(device, event);
@@ -586,7 +628,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             }
             if (MessageDTO.TYPE_DEVICE_LOW_BATTERY.equals(message.getType()) && message.getDevices() != null) {
                 for (final String link : message.getDevices()) {
-                    deviceStructMan.refreshDevice(LinkDTO.getId(link));
+                    deviceStructMan.refreshDevice(LinkDTO.getId(link), isSHCClassic());
                     final Optional<DeviceDTO> device = deviceStructMan.getDeviceById(LinkDTO.getId(link));
                     notifyDeviceStatusListener(event.getSourceId(), device);
                 }
@@ -613,7 +655,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             Optional<DeviceDTO> device = deviceStructMan.getDeviceWithMessageId(messageId);
             if (device.isPresent()) {
                 String id = device.get().getId();
-                DeviceDTO deviceRefreshed = deviceStructMan.refreshDevice(id);
+                DeviceDTO deviceRefreshed = deviceStructMan.refreshDevice(id, isSHCClassic());
                 notifyDeviceStatusListener(event.getSourceId(), Optional.of(deviceRefreshed));
             } else {
                 logger.debug("No device found with message id {}.", messageId);

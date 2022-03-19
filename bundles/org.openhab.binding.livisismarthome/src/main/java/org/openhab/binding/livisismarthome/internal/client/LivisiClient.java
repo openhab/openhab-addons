@@ -390,9 +390,14 @@ public class LivisiClient {
     /**
      * Loads the device state for the given deviceId.
      */
-    public StateDTO getDeviceStateByDeviceId(final String deviceId)
+    public StateDTO getDeviceStateByDeviceId(final String deviceId, final boolean isSHCClassic)
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device states for device id {}...", deviceId);
+        if (isSHCClassic) {
+            DeviceStateDTO deviceState = executeGet(URLCreator.createDeviceStateURL(bridgeConfiguration.host, deviceId),
+                    DeviceStateDTO.class);
+            return deviceState.getState();
+        }
         return executeGet(URLCreator.createDeviceStateURL(bridgeConfiguration.host, deviceId), StateDTO.class);
     }
 

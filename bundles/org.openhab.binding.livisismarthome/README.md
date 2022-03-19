@@ -22,7 +22,7 @@ The channels are described in detail in the next chapter.
 
 | Device | Description                                                              | Supported channels                                                                                                        |
 |--------|--------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| SHC    | SmartHome Controller (Bridge)                                            | status, cpu, disk, memory                                                                                                 |
+| SHC    | SmartHome Controller (Bridge)                                            | status, cpu, disk, memory (updated by events; SHC classic: Updated every minute)                                          |
 | BRC8   | Basic Remote Controller                                                  | button1 ... button8, button1_count ... button8_count, battery_low                                                         |
 | ISC2   | In Wall Smart Controller                                                 | button1, button2, button1_count, button2_count, battery_low                                                               |
 | ISD2   | In Wall Smart Dimmer                                                     | button1, button2, button1_count, button2_count, dimmer                                                                    |
