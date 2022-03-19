@@ -883,7 +883,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             success = false;
                             logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
                         } else {
-                            handleTcbypassCmd(channel, command, getTcbypassOnCommand(), getTcbypassOffCommand());
+                            handleTcbypassCmd(channel, command,
+                                    connector.getProtocol() == RotelProtocol.ASCII_V1 ? RotelCommand.TONE_CONTROLS_OFF
+                                            : RotelCommand.TCBYPASS_ON,
+                                    connector.getProtocol() == RotelProtocol.ASCII_V1 ? RotelCommand.TONE_CONTROLS_ON
+                                            : RotelCommand.TCBYPASS_OFF);
                         }
                         break;
                     case CHANNEL_BALANCE:
@@ -2415,25 +2419,5 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private RotelCommand getMuteToggleCommand() {
         return connector.getModel().hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_TOGGLE
                 : RotelCommand.MUTE_TOGGLE;
-    }
-
-    /**
-     * Get the command to be used for TCBYPASS ON
-     *
-     * @return the command
-     */
-    private RotelCommand getTcbypassOnCommand() {
-        return connector.getProtocol() == RotelProtocol.ASCII_V1 ? RotelCommand.TONE_CONTROLS_OFF
-                : RotelCommand.TCBYPASS_ON;
-    }
-
-    /**
-     * Get the command to be used for TCBYPASS OFF
-     *
-     * @return the command
-     */
-    private RotelCommand getTcbypassOffCommand() {
-        return connector.getProtocol() == RotelProtocol.ASCII_V1 ? RotelCommand.TONE_CONTROLS_ON
-                : RotelCommand.TCBYPASS_OFF;
     }
 }
