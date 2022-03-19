@@ -154,13 +154,13 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
             try {
                 Pin pin;
                 if (config.certificate.isBlank()) {
-                    pin = Pin.LearningPin(PinType.CERTIFICATE_TYPE);
+                    pin = Pin.learningPin(PinType.CERTIFICATE_TYPE);
                 } else {
                     String[] split = config.certificate.split(":");
                     if (split.length != 2) {
                         throw new NoSuchAlgorithmException("Algorithm is missing");
                     }
-                    pin = Pin.CheckingPin(PinType.CERTIFICATE_TYPE, new PinMessageDigest(split[0]),
+                    pin = Pin.checkingPin(PinType.CERTIFICATE_TYPE, new PinMessageDigest(split[0]),
                             HexUtils.hexToBytes(split[1]));
                 }
                 trustManager.addPinning(pin);
@@ -172,13 +172,13 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
             try {
                 Pin pin;
                 if (config.publickey.isBlank()) {
-                    pin = Pin.LearningPin(PinType.PUBLIC_KEY_TYPE);
+                    pin = Pin.learningPin(PinType.PUBLIC_KEY_TYPE);
                 } else {
                     String[] split = config.publickey.split(":");
                     if (split.length != 2) {
                         throw new NoSuchAlgorithmException("Algorithm is missing");
                     }
-                    pin = Pin.CheckingPin(PinType.PUBLIC_KEY_TYPE, new PinMessageDigest(split[0]),
+                    pin = Pin.checkingPin(PinType.PUBLIC_KEY_TYPE, new PinMessageDigest(split[0]),
                             HexUtils.hexToBytes(split[1]));
                 }
                 trustManager.addPinning(pin);

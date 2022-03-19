@@ -14,7 +14,7 @@ package org.openhab.binding.mqtt.handler;
 
 import static org.mockito.Mockito.verify;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.mockito.Mockito;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Bridge;
@@ -25,6 +25,7 @@ import org.openhab.core.thing.Bridge;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class BrokerHandlerEx extends BrokerHandler {
     final MqttBrokerConnectionEx e;
 
@@ -34,7 +35,7 @@ public class BrokerHandlerEx extends BrokerHandler {
     }
 
     @Override
-    protected @NonNull MqttBrokerConnection createBrokerConnection() throws IllegalArgumentException {
+    protected MqttBrokerConnection createBrokerConnection() throws IllegalArgumentException {
         return e;
     }
 

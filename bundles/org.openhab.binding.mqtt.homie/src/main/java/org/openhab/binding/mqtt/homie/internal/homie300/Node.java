@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.homie.internal.homie300;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
@@ -173,8 +174,9 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
 
     protected CompletableFuture<@Nullable Void> applyProperties(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout) {
-        return properties.apply(attributes.properties, prop -> prop.subscribe(connection, scheduler, timeout),
-                this::createProperty, this::notifyPropertyRemoved).exceptionally(e -> {
+        return properties.apply(Objects.requireNonNull(attributes.properties),
+                prop -> prop.subscribe(connection, scheduler, timeout), this::createProperty,
+                this::notifyPropertyRemoved).exceptionally(e -> {
                     logger.warn("Could not subscribe", e);
                     return null;
                 });
@@ -189,10 +191,8 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
         // Special case: Not all fields were known before
         if (!attributes.isComplete()) {
             attributesReceived(connection, scheduler, 500);
-        } else {
-            if ("properties".equals(name)) {
-                applyProperties(connection, scheduler, 500);
-            }
+        } else if ("properties".equals(name)) {
+            applyProperties(connection, scheduler, 500);
         }
         callback.nodeAddedOrChanged(this);
     }
@@ -208,15 +208,12 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
      * @return Returns a list of relative topics
      */
     public List<String> getRetainedTopics() {
-        List<String> topics = new ArrayList<>();
+        List<String> topics = new ArrayList<>(Stream.of(this.attributes.getClass().getDeclaredFields())
+                .map(f -> String.format("%s/$%s", this.nodeID, f.getName())).collect(Collectors.toList()));
 
-        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(f -> {
-            return String.format("%s/$%s", this.nodeID, f.getName());
-        }).collect(Collectors.toList()));
-
-        this.properties.stream().map(p -> p.getRetainedTopics().stream().map(a -> {
-            return String.format("%s/%s", this.nodeID, a);
-        }).collect(Collectors.toList())).collect(Collectors.toList()).forEach(topics::addAll);
+        this.properties.stream().map(p -> p.getRetainedTopics().stream()
+                .map(a -> String.format("%s/%s", this.nodeID, a)).collect(Collectors.toList()))
+                .collect(Collectors.toList()).forEach(topics::addAll);
 
         return topics;
     }

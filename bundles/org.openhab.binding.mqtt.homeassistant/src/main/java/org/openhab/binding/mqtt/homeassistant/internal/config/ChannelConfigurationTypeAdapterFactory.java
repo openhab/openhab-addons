@@ -154,7 +154,7 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
 
             field.set(config, newValue);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 }
