@@ -90,12 +90,13 @@ So you need to choose the respective Channel type name that matches the features
 
 <sup>2)</sup> Simpler A/C units have a single switch type swing function that is either `ON` or `OFF`.
 However more sophisticated devices may have either a vertical swing, a horizontal swing, or both, which could also have more complex settings.
-For example the horizontal swing function could simply be 'ON' or it could have more complex settings in the range [`LEFT`, `MID_LEFT`, `MID`, `MID_RIGHT`, `RIGHT`].
+For example the horizontal swing function could simply be `ON` or it could have more complex settings in the range [`LEFT`, `MID_LEFT`, `MID`, `MID_RIGHT`, `RIGHT`].
 So you need to choose the respective Channel type name that matches the features of your device.
 
 <sup>3)</sup> The _'one of'_ list contains all possible state values supported within the tado° binding.
 However in reality different A/C units might only support a **_sub-set_** of those values.
-In that case, if you send a Channel command value to an A/C unit which does not support that particular state value, then openHAB will report a '422' run-time error in the log.
+And indeed the sub-set of supported values might depend on the current state of the `acPower` and `hvacMode` Channels.
+In that case, if you send a Channel command value to an A/C unit which does not (currently) support that particular state value, then openHAB will report a '422' run-time error in the log.
 
 ### Item Command Collection
 
