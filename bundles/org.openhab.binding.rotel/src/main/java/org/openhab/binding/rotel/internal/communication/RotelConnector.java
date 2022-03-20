@@ -476,7 +476,7 @@ public abstract class RotelConnector {
                                 break;
                             case BALANCE_SET_FIX:
                                 // Firmware for models A1x does not follow strictly the Rotel specification
-                                // The firmware expects values like r05 or L04 while the specification mentions
+                                // The firmware expects values like r05 or l04 while the specification mentions
                                 // R05 and L04
                                 if (value == 0) {
                                     messageStr += "000";

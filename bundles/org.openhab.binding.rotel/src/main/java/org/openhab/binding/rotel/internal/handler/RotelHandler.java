@@ -1087,11 +1087,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 connector.sendCommand(onCmd);
             } else if (command == OnOffType.OFF) {
                 connector.sendCommand(offCmd);
-                Thread.sleep(100);
-                connector.sendCommand(RotelCommand.BASS);
-                Thread.sleep(100);
-                connector.sendCommand(RotelCommand.TREBLE);
             }
+            Thread.sleep(100);
+            connector.sendCommand(RotelCommand.BASS);
+            Thread.sleep(100);
+            connector.sendCommand(RotelCommand.TREBLE);
             Thread.sleep(100);
             updateChannelState(CHANNEL_BASS);
             updateChannelState(CHANNEL_TREBLE);
