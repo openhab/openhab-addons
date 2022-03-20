@@ -21,7 +21,9 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link AndroidDebugBridgeHandlerFactory} is responsible for creating things and thing
@@ -33,6 +35,14 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = BINDING_CONFIGURATION_PID, service = ThingHandlerFactory.class)
 public class AndroidDebugBridgeHandlerFactory extends BaseThingHandlerFactory {
 
+    private final AndroidDebugBridgeDynamicCommandDescriptionProvider commandDescriptionProvider;
+
+    @Activate
+    public AndroidDebugBridgeHandlerFactory(
+            final @Reference AndroidDebugBridgeDynamicCommandDescriptionProvider commandDescriptionProvider) {
+        this.commandDescriptionProvider = commandDescriptionProvider;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES.contains(thingTypeUID);
@@ -42,7 +52,7 @@ public class AndroidDebugBridgeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_ANDROID_DEVICE.equals(thingTypeUID)) {
-            return new AndroidDebugBridgeHandler(thing);
+            return new AndroidDebugBridgeHandler(thing, commandDescriptionProvider);
         }
         return null;
     }
