@@ -24,8 +24,10 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.message.Auxiliary;
+import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereAuxiliary;
 import org.openwebnet4j.message.Who;
@@ -34,11 +36,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OpenWebNetAuxiliaryHandler} is responsible for handling Auxiliary (AUX) commands/messages
- * for an OpenWebNet device.
  * It extends the abstract {@link OpenWebNetThingHandler}.
  *
- * @author Massimo Valla - Initial contribution
- * @author Giovanni Fabiani - Auxiliary message support
+ * @author Giovanni Fabiani - Initial contribution
  */
 @NonNullByDefault
 public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
@@ -75,7 +75,7 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
                         logger.warn("Exception while processing command {}: {}", command, e.getMessage());
                     }
                 } else {
-                    logger.warn("Unsupported Command {}", channel);
+                    logger.warn("Unsupported command {} for channel {}", command, channel);
                     updateStatus(ThingStatus.UNKNOWN);
                 }
             } else {
@@ -86,21 +86,17 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void requestChannelState(ChannelUID channel) {
-        super.requestChannelState(channel);
-        logger.debug("requestChannelState() thingUID={} channel={}", thing.getUID(), channel.getId());
-        if (channel.getId().equals(CHANNEL_AUX)) {
-            ThingStatus ts = getThing().getStatus();
-            if (ThingStatus.ONLINE != ts && ThingStatus.REMOVING != ts && ThingStatus.REMOVED != ts) {
-                updateStatus(ThingStatus.ONLINE);
-            }
-        }
+        /*
+         * NOTICE: It is not possible to get the state of a
+         * WHO=9 command. To get state of the Alarm system use WHO=5 instead
+         */
     }
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
         /*
-         * NOTICE: It is not possible to refresh the status of a
-         * WHO=9 command (for alarm control use WHO=5 instead)
+         * NOTICE: It is not possible to refresh the state of a
+         * WHO=9 command. To refresh the state of the Alarm system use WHO=5 instead
          */
     }
 
@@ -112,5 +108,15 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     @Override
     protected String ownIdPrefix() {
         return Who.AUX.value().toString();
+    }
+
+    @Override
+    protected void handleMessage(BaseOpenMessage msg) {
+        super.handleMessage(msg);
+        if (msg.isCommand()) {
+            updateState(CHANNEL_AUX, (State) msg.getWhat());
+        } else {
+            logger.debug("handleMessage() Ignoring unsupported DIM for thing {}. Frame={}", getThing().getUID(), msg);
+        }
     }
 }

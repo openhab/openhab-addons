@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Massimo Valla - Initial contribution
  * @author Andrea Conte - Energy management, Thermoregulation
  * @author Gilberto Cocchi - Thermoregulation
+ * @author Giovanni Fabiani - Aux support
  */
 @NonNullByDefault
 public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
@@ -172,6 +173,11 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL;
                 deviceWho = Who.CEN_PLUS_SCENARIO_SCHEDULER;
                 break;
+            }
+            case SCS_AUXILIARY_TOGGLE_CONTROL: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_AUX;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_AUX;
+                deviceWho = Who.AUX;
             }
             default:
                 logger.warn("Device type {} is not supported, default to GENERIC device (WHERE={})", deviceType, where);
