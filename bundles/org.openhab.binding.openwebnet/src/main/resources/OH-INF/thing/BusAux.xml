@@ -3,7 +3,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" bindingId="openwebnet"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Thing for BUS Energy Management Central Unit (BTicino F52x) -->
+	<!-- Thing for BUS Auxiliary commands -->
 	<thing-type id="bus_aux">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bus_gateway"/>
