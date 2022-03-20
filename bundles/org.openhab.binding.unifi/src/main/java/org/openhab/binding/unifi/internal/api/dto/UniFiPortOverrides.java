@@ -34,4 +34,9 @@ public class UniFiPortOverrides {
     public void addPortOverride(final int portIdx, final String portconfId, final String poeMode) {
         portOverrides.add(new UnfiPortOverride(portIdx, portconfId, poeMode));
     }
+
+    @Override
+    public String toString() {
+        return String.format("UniFiPortOverrides: {}", String.join(", ", portOverrides.toArray(new String[0])));
+    }
 }

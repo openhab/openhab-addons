@@ -79,4 +79,11 @@ public class UniFiPortTable extends UnfiPortOverride {
     public String getPoeCurrent() {
         return poeCurrent;
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "UniFiPortTable{name: '%s', enable: '%b', up: '%b', portPoe: '%b', poeEnable: '%b, poePower: '%s', poeVoltage: '%s', poeCurrent: '%s'}",
+                name, enable, up, portPoe, poeEnable, poePower, poeVoltage, poeCurrent);
+    }
 }

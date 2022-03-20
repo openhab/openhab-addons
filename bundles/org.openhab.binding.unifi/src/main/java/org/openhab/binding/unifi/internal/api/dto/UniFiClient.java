@@ -128,7 +128,7 @@ public abstract class UniFiClient implements HasId {
     @Override
     public String toString() {
         return String.format(
-                "UniFiClient{id: '%s', mac: '%s', ip: '%s', hostname: '%s', alias: '%s', wired: %b, guest: %b, blocked: %b, device: %s, experience: %d}",
-                id, mac, getIp(), hostname, alias, isWired(), guest, blocked, getDevice(), experience);
+                "UniFiClient{id: '%s', mac: '%s', ip: '%s', hostname: '%s', alias: '%s', wired: %b, guest: %b, blocked: %b, experience: %d, device: %s}",
+                id, mac, getIp(), hostname, alias, isWired(), guest, blocked, experience, getDevice());
     }
 }

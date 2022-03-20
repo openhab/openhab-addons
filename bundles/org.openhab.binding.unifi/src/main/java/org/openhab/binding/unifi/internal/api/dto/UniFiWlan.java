@@ -82,4 +82,14 @@ public class UniFiWlan implements HasId {
     public boolean isHideSsid() {
         return Boolean.TRUE.equals(hideSsid);
     }
+
+    @Override
+    public String toString() {
+        final String xPassphraseString = xPassphrase == null ? ""
+                : (xPassphrase.substring(0, Math.min(5, xPassphrase.length())) + "*".repeat(10));
+
+        return String.format(
+                "UniFiWlan{id: '%s', name: '%s', enable: '%b', security: '%s', wlanBand: '%s', wpaEnc: '%s', wpaMode: '%s', xPassphrase: '%s', hideSsid: '%b', site: '%s'}",
+                id, name, enabled, security, wlanBand, wpaEnc, wpaMode, xPassphraseString, hideSsid, getSite());
+    }
 }

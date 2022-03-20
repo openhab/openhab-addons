@@ -63,4 +63,10 @@ public class UnfiPortOverride {
     public void setPoeMode(final String poeMode) {
         this.poeMode = poeMode;
     }
+
+    @Override
+    public String toString() {
+        return String.format("UnfiPortOverride{portIx: '%d', portconfId: '%s', poeMode: '%s'}", portIdx, portconfId,
+                poeMode);
+    }
 }

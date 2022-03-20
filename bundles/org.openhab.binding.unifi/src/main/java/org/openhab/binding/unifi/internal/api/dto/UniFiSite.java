@@ -63,6 +63,6 @@ public class UniFiSite implements HasId {
 
     @Override
     public String toString() {
-        return String.format("UniFiSite{name: '%s', desc: '%s'}", name, desc);
+        return String.format("UniFiSite{id: '%s', name: '%s', desc: '%s'}", id, name, desc);
     }
 }

@@ -143,16 +143,17 @@ public class UniFiWlanThingHandler extends UniFiBaseThingHandler<UniFiWlan, UniF
      */
     private static State qrcodeEncoding(final UniFiWlan wlan) {
         final String name = encode(wlan.getName());
-        final boolean nopass = wlan.getXPassphrase().isBlank();
+        final String xPassphrase = wlan.getXPassphrase();
+        final boolean nopass = xPassphrase == null || xPassphrase.isBlank();
         final String mode = nopass ? "nopass" : "WPA";
         final String hidden = wlan.isHideSsid() ? "H:true" : "";
-        final String passcode = nopass ? "" : "P:" + encode(wlan.getXPassphrase());
+        final String passcode = nopass ? "" : "P:" + encode(xPassphrase);
 
         return StringType.valueOf(String.format("WIFI:S:%s;T:%s;%s;%s;", name, mode, passcode, hidden));
     }
 
-    private static String encode(final String string) {
-        return string.replaceAll("([\\;,\":])", "\\\\$1");
+    private static String encode(final @Nullable String value) {
+        return value == null ? "" : value.replaceAll("([\\;,\":])", "\\\\$1");
     }
 
     @Override
