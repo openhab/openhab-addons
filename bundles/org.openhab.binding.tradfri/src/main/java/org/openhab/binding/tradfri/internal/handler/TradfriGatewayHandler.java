@@ -225,7 +225,7 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
                             "Pre-shared key was not obtain successfully");
                     return false;
                 } else {
-                    logger.info("Received pre-shared key for gateway '{}'", configuration.host);
+                    logger.debug("Received pre-shared key for gateway '{}'", configuration.host);
                     logger.debug("Using identity '{}' with pre-shared key '{}'.", identity, preSharedKey);
 
                     Configuration editedConfig = editConfiguration();

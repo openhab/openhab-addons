@@ -66,10 +66,10 @@ public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
         switch (command) {
             case "OFF":
             case "DOWN":
-                return COMMAND_DOWN;
+                return COMMAND_DEPLOY;
             case "ON":
             case "UP":
-                return COMMAND_UP;
+                return COMMAND_UNDEPLOY;
             case "MOVE":
             case "MY":
                 return COMMAND_MY;

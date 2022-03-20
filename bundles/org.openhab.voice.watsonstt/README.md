@@ -26,7 +26,8 @@ Use your favorite configuration UI to edit **Settings / Other Services - IBM Wat
 
 * **Background Audio Suppression** - Use the parameter to suppress side conversations or background noise.
 * **Speech Detector Sensitivity** - Use the parameter to suppress word insertions from music, coughing, and other non-speech events.
-* **Inactivity Timeout** - The time in seconds after which, if only silence (no speech) is detected in the audio, the connection is closed.
+* **Single Utterance Mode** - When enabled recognition stops listening after a single utterance.
+* **Max Silence Seconds** - The time in seconds after which, if only silence (no speech) is detected in the audio, the connection is closed.
 * **Opt Out Logging** - By default, all IBM Watson™ services log requests and their results. Logging is done only to improve the services for future users. The logged data is not shared or made public.
 * **No Results Message** - Message to be told when no results.
 * **Smart Formatting** - If true, the service converts dates, times, series of digits and numbers, phone numbers, currency values, and internet addresses into more readable. (Not available for all locales)
@@ -43,7 +44,8 @@ org.openhab.voice.watsonstt:apiKey=******
 org.openhab.voice.watsonstt:instanceUrl=https://api.***.speech-to-text.watson.cloud.ibm.com/instances/*****
 org.openhab.voice.watsonstt:backgroundAudioSuppression=0.5
 org.openhab.voice.watsonstt:speechDetectorSensitivity=0.5
-org.openhab.voice.watsonstt:inactivityTimeout=2
+org.openhab.voice.watsonstt:singleUtteranceMode=true
+org.openhab.voice.watsonstt:maxSilenceSeconds=2
 org.openhab.voice.watsonstt:optOutLogging=false
 org.openhab.voice.watsonstt:smartFormatting=false
 org.openhab.voice.watsonstt:redaction=false
