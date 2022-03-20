@@ -83,6 +83,7 @@ Please note that events could fail if the input method is removed, for example i
 | url  | String | Open url in browser |
 | media-volume  | Dimmer | Set or get media volume level on android device |
 | media-control  | Player | Control media on android device |
+| start-intent  | String | Start application intent. Read bellow section |
 | start-package  | String | Run application by package name |
 | stop-package  | String | Stop application by package name |
 | stop-current-package  | String | Stop current application |
@@ -93,6 +94,16 @@ Please note that events could fail if the input method is removed, for example i
 | awake-state  | OnOff | Awake state value. |
 | wake-lock  | Number | Power wake lock value |
 | screen-state  | Switch | Screen power state |
+
+#### Start Intent
+
+This channel allows to call am start, the sintax por it is:
+<package/activity>||<<arg name>> <arg value>||...
+
+This is a sample:
+com.netflix.ninja/.MainActivity||<a>android.intent.action.VIEW||<d>netflix://title/80025384||<f>0x10000020||<es>amzn_deeplink_data 80025384
+
+Not all the (arguments)[https://developer.android.com/studio/command-line/adb#IntentSpec] are supported, open an issue or pr if you need more.
 
 #### Available key-event values:
 
