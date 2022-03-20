@@ -21,9 +21,11 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.openhab.binding.miele.internal.DeviceMetaData;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miele.internal.DeviceUtil;
 import org.openhab.binding.miele.internal.MieleTranslationProvider;
+import org.openhab.binding.miele.internal.api.dto.DeviceMetaData;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -43,48 +45,41 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Changed START_TIME to DateTimeType
  * @author Jacob Laursen - Added power/water consumption channels, raw channels
  */
+@NonNullByDefault
 public enum DishwasherChannelSelector implements ApplianceChannelSelector {
 
     PRODUCT_TYPE("productTypeId", "productType", StringType.class, true, false),
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true, false),
     STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
-            State state = DeviceUtil.getStateTextState(s, dmd, translationProvider);
-            if (state != null) {
-                return state;
-            }
-            return super.getState(s, dmd, translationProvider);
+        public State getState(String s, @Nullable DeviceMetaData dmd,
+                @Nullable MieleTranslationProvider translationProvider) {
+            return DeviceUtil.getStateTextState(s, dmd, translationProvider);
         }
     },
-    STATE(null, STATE_CHANNEL_ID, DecimalType.class, false, false),
+    STATE("", STATE_CHANNEL_ID, DecimalType.class, false, false),
     PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
-            State state = DeviceUtil.getTextState(s, dmd, translationProvider, programs, MISSING_PROGRAM_TEXT_PREFIX,
+        public State getState(String s, @Nullable DeviceMetaData dmd,
+                @Nullable MieleTranslationProvider translationProvider) {
+            return DeviceUtil.getTextState(s, dmd, translationProvider, programs, MISSING_PROGRAM_TEXT_PREFIX,
                     MIELE_DISHWASHER_TEXT_PREFIX);
-            if (state != null) {
-                return state;
-            }
-            return super.getState(s, dmd, translationProvider);
         }
     },
-    PROGRAM(null, PROGRAM_CHANNEL_ID, DecimalType.class, false, false),
+    PROGRAM("", PROGRAM_CHANNEL_ID, DecimalType.class, false, false),
     PROGRAM_PHASE_TEXT(PHASE_PROPERTY_NAME, PHASE_TEXT_CHANNEL_ID, StringType.class, false, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
-            State state = DeviceUtil.getTextState(s, dmd, translationProvider, phases, MISSING_PHASE_TEXT_PREFIX,
+        public State getState(String s, @Nullable DeviceMetaData dmd,
+                @Nullable MieleTranslationProvider translationProvider) {
+            return DeviceUtil.getTextState(s, dmd, translationProvider, phases, MISSING_PHASE_TEXT_PREFIX,
                     MIELE_DISHWASHER_TEXT_PREFIX);
-            if (state != null) {
-                return state;
-            }
-            return super.getState(s, dmd, translationProvider);
         }
     },
     PROGRAM_PHASE(RAW_PHASE_PROPERTY_NAME, PHASE_CHANNEL_ID, DecimalType.class, false, false),
     START_TIME("startTime", "start", DateTimeType.class, false, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd,
+                @Nullable MieleTranslationProvider translationProvider) {
             Date date = new Date();
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
@@ -98,7 +93,8 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
     },
     DURATION("duration", "duration", DateTimeType.class, false, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd,
+                @Nullable MieleTranslationProvider translationProvider) {
             Date date = new Date();
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
@@ -112,7 +108,8 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
     },
     ELAPSED_TIME("elapsedTime", "elapsed", DateTimeType.class, false, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd,
+                @Nullable MieleTranslationProvider translationProvider) {
             Date date = new Date();
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
@@ -126,7 +123,8 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
     },
     FINISH_TIME("finishTime", "finish", DateTimeType.class, false, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd,
+                @Nullable MieleTranslationProvider translationProvider) {
             Date date = new Date();
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
@@ -140,7 +138,8 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd,
+                @Nullable MieleTranslationProvider translationProvider) {
             if ("true".equals(s)) {
                 return getState("OPEN");
             }
@@ -152,7 +151,7 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
             return UnDefType.UNDEF;
         }
     },
-    SWITCH(null, "switch", OnOffType.class, false, false),
+    SWITCH("", "switch", OnOffType.class, false, false),
     POWER_CONSUMPTION(EXTENDED_DEVICE_STATE_PROPERTY_NAME, POWER_CONSUMPTION_CHANNEL_ID, QuantityType.class, false,
             true),
     WATER_CONSUMPTION(EXTENDED_DEVICE_STATE_PROPERTY_NAME, WATER_CONSUMPTION_CHANNEL_ID, QuantityType.class, false,
@@ -209,12 +208,13 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
-    public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+    public State getState(String s, @Nullable DeviceMetaData dmd,
+            @Nullable MieleTranslationProvider translationProvider) {
         return this.getState(s, dmd);
     }
 
     @Override
-    public State getState(String s, DeviceMetaData dmd) {
+    public State getState(String s, @Nullable DeviceMetaData dmd) {
         if (dmd != null) {
             String localizedValue = dmd.getMieleEnum(s);
             if (localizedValue == null) {
@@ -241,6 +241,6 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
             logger.error("An exception occurred while converting '{}' into a State", s);
         }
 
-        return null;
+        return UnDefType.UNDEF;
     }
 }

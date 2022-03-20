@@ -17,6 +17,9 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.miele.internal.api.dto.DeviceMetaData;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
@@ -29,6 +32,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Jacob Laursen - Initial contribution
  */
+@NonNullByDefault
 public class DeviceUtil {
     private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
     private static final String TEMPERATURE_UNDEFINED = "32768";
@@ -84,7 +88,8 @@ public class DeviceUtil {
      * Get state text for provided string taking into consideration {@link DeviceMetaData}
      * as well as built-in/translated strings.
      */
-    public static State getStateTextState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+    public static State getStateTextState(String s, @Nullable DeviceMetaData dmd,
+            @Nullable MieleTranslationProvider translationProvider) {
         return getTextState(s, dmd, translationProvider, states, MISSING_STATE_TEXT_PREFIX, "");
     }
 
@@ -100,8 +105,9 @@ public class DeviceUtil {
      * @param appliancePrefix Appliance prefix appended to text key (including dot)
      * @return Text string as State
      */
-    public static State getTextState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider,
-            Map<String, String> valueMap, String propertyPrefix, String appliancePrefix) {
+    public static State getTextState(String s, @Nullable DeviceMetaData dmd,
+            @Nullable MieleTranslationProvider translationProvider, Map<String, String> valueMap, String propertyPrefix,
+            String appliancePrefix) {
         if ("0".equals(s)) {
             return UnDefType.UNDEF;
         }
@@ -116,7 +122,7 @@ public class DeviceUtil {
         }
 
         String value = valueMap.get(s);
-        if (value != null) {
+        if (value != null && translationProvider != null) {
             String key = TEXT_PREFIX + propertyPrefix + appliancePrefix + value;
             return new StringType(
                     translationProvider.getText(key, gatewayText != null ? gatewayText : propertyPrefix + s));
