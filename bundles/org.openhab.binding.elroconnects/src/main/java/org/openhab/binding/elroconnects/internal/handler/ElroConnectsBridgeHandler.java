@@ -164,17 +164,6 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        this.addr = null;
-        String ipAddress = config.ipAddress;
-        if (!ipAddress.isEmpty()) {
-            try {
-                InetAddress addr = InetAddress.getByName(ipAddress);
-                this.addr = addr;
-            } catch (UnknownHostException e) {
-                logger.warn("Unknown host for {}, trying to discover address", ipAddress);
-            }
-        }
-
         queryString = QUERY_BASE_STRING + connectorId;
 
         scheduler.submit(this::startCommunication);
@@ -186,7 +175,20 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     }
 
     private synchronized void startCommunication() {
+        ElroConnectsBridgeConfiguration config = getConfigAs(ElroConnectsBridgeConfiguration.class);
         InetAddress addr = this.addr;
+
+        String ipAddress = config.ipAddress;
+        if (!ipAddress.isEmpty()) {
+            try {
+                addr = InetAddress.getByName(ipAddress);
+                this.addr = addr;
+            } catch (UnknownHostException e) {
+                addr = null;
+                logger.warn("Unknown host for {}, trying to discover address", ipAddress);
+            }
+        }
+
         try {
             addr = getAddr(addr == null);
         } catch (IOException e) {
