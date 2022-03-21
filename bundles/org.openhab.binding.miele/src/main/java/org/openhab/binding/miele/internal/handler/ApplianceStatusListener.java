@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceProperty;
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.HomeDevice;
+import org.openhab.binding.miele.internal.api.dto.DeviceClassObject;
+import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
+import org.openhab.binding.miele.internal.api.dto.HomeDevice;
 
 /**
  *
@@ -25,6 +26,7 @@ import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.HomeDevice;
  * @author Karel Goderis - Initial contribution
  * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
+@NonNullByDefault
 public interface ApplianceStatusListener {
 
     /**

@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miele.internal.discovery.MieleApplianceDiscoveryService;
 import org.openhab.binding.miele.internal.handler.CoffeeMachineHandler;
 import org.openhab.binding.miele.internal.handler.DishWasherHandler;
@@ -56,6 +58,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.miele")
 public class MieleHandlerFactory extends BaseThingHandlerFactory {
 
@@ -82,8 +85,8 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-            ThingUID bridgeUID) {
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
         if (MieleBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             ThingUID mieleBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
             return super.createThing(thingTypeUID, configuration, mieleBridgeUID, null);
@@ -97,7 +100,7 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         if (MieleBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             MieleBridgeHandler handler = new MieleBridgeHandler((Bridge) thing);
             registerApplianceDiscoveryService(handler);
@@ -135,7 +138,8 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
+    private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
+            Configuration configuration) {
         if (thingUID == null) {
             String hostID = (String) configuration.get(HOST);
             thingUID = new ThingUID(thingTypeUID, hostID);
@@ -143,12 +147,16 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
         return thingUID;
     }
 
-    private ThingUID getApplianceUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
-            ThingUID bridgeUID) {
+    private ThingUID getApplianceUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
+            Configuration configuration, @Nullable ThingUID bridgeUID) {
         String applianceId = (String) configuration.get(APPLIANCE_ID);
 
         if (thingUID == null) {
-            thingUID = new ThingUID(thingTypeUID, applianceId, bridgeUID.getId());
+            if (bridgeUID == null) {
+                thingUID = new ThingUID(thingTypeUID, applianceId);
+            } else {
+                thingUID = new ThingUID(thingTypeUID, bridgeUID, applianceId);
+            }
         }
         return thingUID;
     }

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.miele.internal;
+package org.openhab.binding.miele.internal.api.dto;
 
 import java.util.Map.Entry;
 
