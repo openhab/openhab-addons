@@ -62,7 +62,7 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd,
                 @Nullable MieleTranslationProvider translationProvider) {
-            return DeviceUtil.getTextState(s, dmd, translationProvider, programs, MISSING_PROGRAM_TEXT_PREFIX,
+            return DeviceUtil.getTextState(s, dmd, translationProvider, PROGRAMS, MISSING_PROGRAM_TEXT_PREFIX,
                     MIELE_DISHWASHER_TEXT_PREFIX);
         }
     },
@@ -71,7 +71,7 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd,
                 @Nullable MieleTranslationProvider translationProvider) {
-            return DeviceUtil.getTextState(s, dmd, translationProvider, phases, MISSING_PHASE_TEXT_PREFIX,
+            return DeviceUtil.getTextState(s, dmd, translationProvider, PHASES, MISSING_PHASE_TEXT_PREFIX,
                     MIELE_DISHWASHER_TEXT_PREFIX);
         }
     },
@@ -159,12 +159,12 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(DishwasherChannelSelector.class);
 
-    private static final Map<String, String> programs = Map.ofEntries(entry("26", "intensive"),
+    private static final Map<String, String> PROGRAMS = Map.ofEntries(entry("26", "intensive"),
             entry("27", "maintenance-programme"), entry("28", "eco"), entry("30", "normal"), entry("32", "automatic"),
             entry("34", "solarsave"), entry("35", "gentle"), entry("36", "extra-quiet"), entry("37", "hygiene"),
             entry("38", "quickpowerwash"), entry("42", "tall-items"));
 
-    private static final Map<String, String> phases = Map.ofEntries(entry("2", "pre-wash"), entry("3", "main-wash"),
+    private static final Map<String, String> PHASES = Map.ofEntries(entry("2", "pre-wash"), entry("3", "main-wash"),
             entry("4", "rinses"), entry("6", "final-rinse"), entry("7", "drying"), entry("8", "finished"));
 
     private final String mieleID;

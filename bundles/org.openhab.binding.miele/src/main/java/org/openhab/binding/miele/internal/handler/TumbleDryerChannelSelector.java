@@ -61,7 +61,7 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd,
                 @Nullable MieleTranslationProvider translationProvider) {
-            return DeviceUtil.getTextState(s, dmd, translationProvider, programs, MISSING_PROGRAM_TEXT_PREFIX,
+            return DeviceUtil.getTextState(s, dmd, translationProvider, PROGRAMS, MISSING_PROGRAM_TEXT_PREFIX,
                     MIELE_TUMBLE_DRYER_TEXT_PREFIX);
         }
     },
@@ -71,7 +71,7 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd,
                 @Nullable MieleTranslationProvider translationProvider) {
-            return DeviceUtil.getTextState(s, dmd, translationProvider, phases, MISSING_PHASE_TEXT_PREFIX,
+            return DeviceUtil.getTextState(s, dmd, translationProvider, PHASES, MISSING_PHASE_TEXT_PREFIX,
                     MIELE_TUMBLE_DRYER_TEXT_PREFIX);
         }
     },
@@ -163,7 +163,7 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(TumbleDryerChannelSelector.class);
 
-    private static final Map<String, String> programs = Map.ofEntries(entry("10", "automatic-plus"),
+    private static final Map<String, String> PROGRAMS = Map.ofEntries(entry("10", "automatic-plus"),
             entry("20", "cottons"), entry("23", "cottons-hygiene"), entry("30", "minimum-iron"),
             entry("31", "gentle-minimum-iron"), entry("40", "woollens-handcare"), entry("50", "delicates"),
             entry("60", "warm-air"), entry("70", "cool-air"), entry("80", "express"), entry("90", "cottons-eco"),
@@ -173,7 +173,7 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
             entry("190", "standard-pillows"), entry("220", "basket-programme"), entry("240", "smoothing"),
             entry("65000", "cottons-auto-load-control"), entry("65001", "minimum-iron-auto-load-control"));
 
-    private static final Map<String, String> phases = Map.ofEntries(entry("1", "programme-running"),
+    private static final Map<String, String> PHASES = Map.ofEntries(entry("1", "programme-running"),
             entry("2", "drying"), entry("3", "drying-machine-iron"), entry("4", "drying-hand-iron"),
             entry("5", "drying-normal"), entry("6", "drying-normal-plus"), entry("7", "cooling-down"),
             entry("8", "drying-hand-iron"), entry("10", "finished"));

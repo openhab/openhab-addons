@@ -62,7 +62,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd,
                 @Nullable MieleTranslationProvider translationProvider) {
-            return DeviceUtil.getTextState(s, dmd, translationProvider, programs, MISSING_PROGRAM_TEXT_PREFIX,
+            return DeviceUtil.getTextState(s, dmd, translationProvider, PROGRAMS, MISSING_PROGRAM_TEXT_PREFIX,
                     MIELE_WASHING_MACHINE_TEXT_PREFIX);
         }
     },
@@ -72,7 +72,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd,
                 @Nullable MieleTranslationProvider translationProvider) {
-            return DeviceUtil.getTextState(s, dmd, translationProvider, phases, MISSING_PHASE_TEXT_PREFIX,
+            return DeviceUtil.getTextState(s, dmd, translationProvider, PHASES, MISSING_PHASE_TEXT_PREFIX,
                     MIELE_WASHING_MACHINE_TEXT_PREFIX);
         }
     },
@@ -159,7 +159,6 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false, false) {
         @Override
-
         public State getState(String s, @Nullable DeviceMetaData dmd,
                 @Nullable MieleTranslationProvider translationProvider) {
             if ("true".equals(s)) {
@@ -181,7 +180,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(WashingMachineChannelSelector.class);
 
-    private static final Map<String, String> programs = Map.ofEntries(entry("1", "cottons"), entry("3", "minimum-iron"),
+    private static final Map<String, String> PROGRAMS = Map.ofEntries(entry("1", "cottons"), entry("3", "minimum-iron"),
             entry("4", "delicates"), entry("8", "woollens"), entry("9", "silks"), entry("17", "starch"),
             entry("18", "rinse"), entry("21", "drain-spin"), entry("22", "curtains"), entry("23", "shirts"),
             entry("24", "denim"), entry("27", "proofing"), entry("29", "sportswear"), entry("31", "automatic-plus"),
@@ -190,7 +189,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             entry("95", "down-duvets"), entry("122", "express-20"), entry("129", "down-filled-items"),
             entry("133", "cottons-eco"), entry("146", "quickpowerwash"), entry("65532", "mix"));
 
-    private static final Map<String, String> phases = Map.ofEntries(entry("1", "pre-wash"), entry("4", "washing"),
+    private static final Map<String, String> PHASES = Map.ofEntries(entry("1", "pre-wash"), entry("4", "washing"),
             entry("5", "rinses"), entry("7", "clean"), entry("9", "drain"), entry("10", "spin"),
             entry("11", "anti-crease"), entry("12", "finished"));
 

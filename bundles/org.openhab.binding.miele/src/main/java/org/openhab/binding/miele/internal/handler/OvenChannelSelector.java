@@ -65,7 +65,7 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd,
                 @Nullable MieleTranslationProvider translationProvider) {
-            return DeviceUtil.getTextState(s, dmd, translationProvider, phases, MISSING_PHASE_TEXT_PREFIX,
+            return DeviceUtil.getTextState(s, dmd, translationProvider, PHASES, MISSING_PHASE_TEXT_PREFIX,
                     MIELE_OVEN_TEXT_PREFIX);
         }
     },
@@ -179,7 +179,7 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(OvenChannelSelector.class);
 
-    private static final Map<String, String> phases = Map.ofEntries(entry("1", "heating"), entry("2", "temp-hold"),
+    private static final Map<String, String> PHASES = Map.ofEntries(entry("1", "heating"), entry("2", "temp-hold"),
             entry("3", "door-open"), entry("4", "pyrolysis"), entry("7", "lighting"), entry("8", "searing-phase"),
             entry("10", "defrost"), entry("11", "cooling-down"), entry("12", "energy-save-phase"));
 

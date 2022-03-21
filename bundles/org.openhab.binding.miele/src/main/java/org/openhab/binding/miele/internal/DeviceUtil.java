@@ -39,7 +39,7 @@ public class DeviceUtil {
     private static final String TEMPERATURE_COLD = "-32760";
     private static final String TEXT_PREFIX = "miele.";
 
-    private static final Map<String, String> states = Map.ofEntries(Map.entry("1", "off"), Map.entry("2", "stand-by"),
+    private static final Map<String, String> STATES = Map.ofEntries(Map.entry("1", "off"), Map.entry("2", "stand-by"),
             Map.entry("3", "programmed"), Map.entry("4", "waiting-to-start"), Map.entry("5", "running"),
             Map.entry("6", "paused"), Map.entry("7", "end"), Map.entry("8", "failure"), Map.entry("9", "abort"),
             Map.entry("10", "idle"), Map.entry("11", "rinse-hold"), Map.entry("12", "service"),
@@ -90,7 +90,7 @@ public class DeviceUtil {
      */
     public static State getStateTextState(String s, @Nullable DeviceMetaData dmd,
             @Nullable MieleTranslationProvider translationProvider) {
-        return getTextState(s, dmd, translationProvider, states, MISSING_STATE_TEXT_PREFIX, "");
+        return getTextState(s, dmd, translationProvider, STATES, MISSING_STATE_TEXT_PREFIX, "");
     }
 
     /**

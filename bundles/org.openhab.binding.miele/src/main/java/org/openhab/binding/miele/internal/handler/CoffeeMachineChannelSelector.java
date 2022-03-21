@@ -55,7 +55,7 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd,
                 @Nullable MieleTranslationProvider translationProvider) {
-            return DeviceUtil.getTextState(s, dmd, translationProvider, programs, MISSING_PROGRAM_TEXT_PREFIX,
+            return DeviceUtil.getTextState(s, dmd, translationProvider, PROGRAMS, MISSING_PROGRAM_TEXT_PREFIX,
                     MIELE_COFFEE_MACHINE_TEXT_PREFIX);
         }
     },
@@ -65,7 +65,7 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd,
                 @Nullable MieleTranslationProvider translationProvider) {
-            return DeviceUtil.getTextState(s, dmd, translationProvider, phases, MISSING_PHASE_TEXT_PREFIX,
+            return DeviceUtil.getTextState(s, dmd, translationProvider, PHASES, MISSING_PHASE_TEXT_PREFIX,
                     MIELE_COFFEE_MACHINE_TEXT_PREFIX);
         }
     },
@@ -90,9 +90,9 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(CoffeeMachineChannelSelector.class);
 
-    private static final Map<String, String> programs = Map.of();
+    private static final Map<String, String> PROGRAMS = Map.of();
 
-    private static final Map<String, String> phases = Map.of();
+    private static final Map<String, String> PHASES = Map.of();
 
     private final String mieleID;
     private final String channelID;
