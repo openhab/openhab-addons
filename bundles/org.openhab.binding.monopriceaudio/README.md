@@ -3,9 +3,9 @@
 This binding can be used to control the following types of whole house multi-zone amplifier systems:
 
 * Monoprice MPR-SG6Z (10761), Monoprice Passive Matrix (39261), Dayton Audio DAX66 or compatible clones
-* Monoprice 31028 or OSD Audio PAM1270
-* Dayton Audio DAX88
-* Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8
+* Monoprice 31028 or OSD Audio PAM1270 (untested)
+* Dayton Audio DAX88 (untested)
+* Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 (untested)
 
 The binding supports two different kinds of connections:
 
@@ -115,7 +115,7 @@ monopriceaudio:monoprice70:myamp "Monoprice WHA" [ serialPort="COM5", pollingInt
 // Dayton DAX88
 monopriceaudio:dax88:myamp "Dayton WHA" [ serialPort="COM5", pollingInterval=15, numZones=8, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono", inputLabel7="Ipod", inputLabel8="Streaming" ]
 
-// Xantech MRC88
+// Xantech 8x8
 monopriceaudio:xantech:myamp "Xantech WHA" [ serialPort="COM5", pollingInterval=30, numZones=8, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono", inputLabel7="Ipod", inputLabel8="Sirius" ]
 
 ```
@@ -123,7 +123,7 @@ monopriceaudio:xantech:myamp "Xantech WHA" [ serialPort="COM5", pollingInterval=
 monoprice.items:
 
 ```
-// substitute 'amplifier' for the appropriate thing id if using 31028, DAX88 or MRC88 amplifier
+// substitute 'amplifier' for the appropriate thing id if using 31028, DAX88 or Xantech amplifier
 
 Switch all_allpower "All Zones Power" { channel="monopriceaudio:amplifier:myamp:all#allpower" }
 Number all_source "Source Input [%s]" { channel="monopriceaudio:amplifier:myamp:all#allsource" }
@@ -155,7 +155,7 @@ sitemap monoprice label="Audio Control" {
         Setpoint item=all_volume minValue=0 maxValue=100 step=1
         Switch item=all_mute
     }
-    
+
     Frame label="Zone 1" {
         Switch item=z1_power
         Selection item=z1_source visibility=[z1_power==ON]
@@ -170,7 +170,7 @@ sitemap monoprice label="Audio Control" {
         Text item=z1_page label="Page Active: [%s]" visibility=[z1_power==ON]
         Text item=z1_keypad label="Keypad Connected: [%s]" visibility=[z1_power==ON]
     }
-    
+
     // repeat for total number of zones used (substitute z1)
 }
 ```
