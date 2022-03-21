@@ -134,9 +134,9 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
+        updateStatus(ThingStatus.UNKNOWN);
         onUpdate();
         lastBridgeConnectionState = false;
-        updateStatus(ThingStatus.UNKNOWN);
     }
 
     private boolean validateConfig(Configuration config) {
