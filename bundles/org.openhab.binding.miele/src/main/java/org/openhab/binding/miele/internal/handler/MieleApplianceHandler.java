@@ -35,6 +35,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -128,10 +129,20 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     public void initialize() {
         logger.debug("Initializing Miele appliance handler.");
         final String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
-        if (applianceId != null) {
-            this.applianceId = applianceId;
-            this.onBridgeConnectionResumed();
+        if (applianceId == null || applianceId.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.uid-not-set");
+            return;
         }
+        this.applianceId = applianceId;
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.bridge-missing");
+            return;
+        }
+        updateStatus(ThingStatus.UNKNOWN);
+        onBridgeConnectionResumed();
     }
 
     public void onBridgeConnectionResumed() {
