@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NetatmoDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService, DiscoveryService {
-    private static final Set<ModuleType> SKIPPED_TYPES = Set.of(ModuleType.UNKNOWN, ModuleType.NABridge);
+    private static final Set<ModuleType> SKIPPED_TYPES = Set.of(ModuleType.UNKNOWN, ModuleType.NAAccount);
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
     private final Logger logger = LoggerFactory.getLogger(NetatmoDiscoveryService.class);
     private @Nullable ApiBridgeHandler handler;

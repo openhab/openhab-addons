@@ -20,7 +20,7 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.handler.NABridgeHandler;
+import org.openhab.binding.netatmo.internal.handler.NAAccountHandler;
 
 /**
  * The {@link LastEventPropCapability} takes care of handling markup property of last event received
@@ -33,7 +33,7 @@ import org.openhab.binding.netatmo.internal.handler.NABridgeHandler;
 public class LastEventPropCapability extends Capability {
     private @Nullable ZonedDateTime maxEventTime;
 
-    public LastEventPropCapability(NABridgeHandler handler) {
+    public LastEventPropCapability(NAAccountHandler handler) {
         super(handler);
     }
 

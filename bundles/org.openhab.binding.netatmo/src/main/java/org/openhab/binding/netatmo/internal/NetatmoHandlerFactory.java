@@ -23,7 +23,7 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.config.BindingConfiguration;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
-import org.openhab.binding.netatmo.internal.handler.NABridgeHandler;
+import org.openhab.binding.netatmo.internal.handler.NAAccountHandler;
 import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
 import org.openhab.binding.netatmo.internal.handler.NAThingHandler;
 import org.openhab.binding.netatmo.internal.handler.capability.AirCareCapability;
@@ -107,10 +107,10 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private BaseThingHandler buildNAHandler(Thing thing, ModuleType moduleType) {
-        if (ModuleType.NABridge.equals(moduleType)) {
+        if (ModuleType.NAAccount.equals(moduleType)) {
             return new ApiBridgeHandler((Bridge) thing, httpClient, httpService, deserializer, configuration);
         }
-        NACommonInterface handler = moduleType.isABridge() ? new NABridgeHandler((Bridge) thing)
+        NACommonInterface handler = moduleType.isABridge() ? new NAAccountHandler((Bridge) thing)
                 : new NAThingHandler(thing);
 
         List<ChannelHelper> helpers = new ArrayList<>();

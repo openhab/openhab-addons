@@ -71,7 +71,8 @@ public interface NACommonInterface {
 
     default @Nullable NACommonInterface getBridgeHandler() {
         Bridge bridge = getBridge();
-        return bridge != null && bridge.getHandler() instanceof NABridgeHandler ? (NABridgeHandler) bridge.getHandler()
+        return bridge != null && bridge.getHandler() instanceof NAAccountHandler
+                ? (NAAccountHandler) bridge.getHandler()
                 : null;
     }
 
@@ -96,8 +97,8 @@ public interface NACommonInterface {
             if (bridgeHandler != null) {
                 root = bridgeHandler.getBridge();
             }
-        } else if (handler instanceof NABridgeHandler) {
-            root = ((NABridgeHandler) handler).getBridge();
+        } else if (handler instanceof NAAccountHandler) {
+            root = ((NAAccountHandler) handler).getBridge();
         }
         if (root instanceof ApiBridgeHandler) {
             return ((ApiBridgeHandler) root).getServlet();
@@ -172,7 +173,7 @@ public interface NACommonInterface {
 
     default void commonInitialize(ScheduledExecutorService scheduler) {
         ModuleType moduleType = ModuleType.valueOf(getThing().getThingTypeUID().getId());
-        if (ModuleType.NABridge.equals(moduleType.getBridge())) {
+        if (ModuleType.NAAccount.equals(moduleType.getBridge())) {
             NAThingConfiguration config = getThing().getConfiguration().as(NAThingConfiguration.class);
             getCapabilities().put(new RefreshCapability(this, scheduler, config.refreshInterval));
         }

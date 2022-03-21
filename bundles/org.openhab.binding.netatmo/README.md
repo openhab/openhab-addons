@@ -457,8 +457,8 @@ All these channels except welcomePersonAtHome are read only.
 ## things/netatmo.things
 
 ```
-Bridge netatmo:NABridge:home "Netatmo API" [clientId="", clientSecret="", username="", password=""] {
-    Bridge netatmo:NAMain:inside "Inside Weather Station" [id="70:ee:aa:aa:aa:aa"] {
+Bridge netatmo:NAAccount:home "Netatmo API" [clientId="", clientSecret="", username="", password=""] {
+    Bridge NAMain inside "Inside Weather Station" [id="70:ee:aa:aa:aa:aa"] {
         NAModule1 outside   "Outside Module" [id="02:00:00:aa:aa:aa"] {
             Channels:
                 Type hum-measurement : maxHumWeek [limit="MAX",period="1week"]

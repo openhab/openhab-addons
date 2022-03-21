@@ -70,8 +70,8 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public enum ModuleType {
     UNKNOWN(FeatureArea.NONE, null, List.of(), List.of()),
-    NABridge(FeatureArea.NONE, null, List.of(), List.of()), // API Bridge ==============================================
-    NAHome(FeatureArea.NONE, NABridge, // Home hosting security or energy devices ======================================
+    NAAccount(FeatureArea.NONE, null, List.of(), List.of()), // Netatmo API Account ====================================
+    NAHome(FeatureArea.NONE, NAAccount, // Home hosting security or energy devices =====================================
             List.of(HomeSecurityChannelHelper.class, HomeEnergyChannelHelper.class),
             List.of(ModuleCapability.class, EventCapability.class, HomeCapability.class)),
     NAPerson(FeatureArea.SECURITY, NAHome, // Person identified by security modules ====================================
@@ -86,7 +86,7 @@ public enum ModuleType {
             List.of(EventCapability.class, PresenceCapability.class)),
     NDB(FeatureArea.SECURITY, NAHome, // Netatmo Doorbell ==============================================================
             List.of(CameraChannelHelper.class, SignalChannelHelper.class, EventChannelHelper.class), List.of()),
-    NAMain(FeatureArea.WEATHER, NABridge, // Main Weather Station ======================================================
+    NAMain(FeatureArea.WEATHER, NAAccount, // Main Weather Station =====================================================
             List.of(PressureExtChannelHelper.class, NoiseChannelHelper.class, HumidityChannelHelper.class,
                     TemperatureExtChannelHelper.class, AirQualityChannelHelper.class, LocationChannelHelper.class,
                     TimestampExtChannelHelper.class, MeasuresChannelHelper.class, SignalChannelHelper.class),
@@ -108,7 +108,7 @@ public enum ModuleType {
                     BatteryChannelHelper.class, MeasuresChannelHelper.class, TimestampExtChannelHelper.class,
                     SignalChannelHelper.class),
             List.of(ModuleCapability.class)),
-    NHC(FeatureArea.AIR_CARE, NABridge, // Healty Home Coach ===========================================================
+    NHC(FeatureArea.AIR_CARE, NAAccount, // Healty Home Coach ==========================================================
             List.of(NoiseChannelHelper.class, HumidityChannelHelper.class, AirQualityExtChannelHelper.class,
                     TemperatureChannelHelper.class, PressureChannelHelper.class, TimestampExtChannelHelper.class,
                     SignalChannelHelper.class, MeasuresChannelHelper.class, LocationChannelHelper.class),
@@ -178,7 +178,7 @@ public enum ModuleType {
     }
 
     public URI getConfigDescription() {
-        return URI.create(BINDING_ID + ":" + (this.equals(NABridge) ? "api_bridge"
+        return URI.create(BINDING_ID + ":" + (this.equals(NAAccount) ? "api_bridge"
                 : (isLogical() ? "virtual" : ModuleType.UNKNOWN.equals(getBridge()) ? "configurable" : "device")));
     }
 }
