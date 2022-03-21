@@ -10,17 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.miele.internal.handler;
+package org.openhab.binding.miele.internal.api.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import com.google.gson.JsonArray;
 
 /**
- * Appliance handlers can implement the {@link ExtendedDeviceStateListener} interface
- * to extract additional information from the ExtendedDeviceState property.
+ * The {@link DeviceClassObject} class represents the DeviceClassObject node in the response JSON.
  *
  * @author Jacob Laursen - Initial contribution
- */
-@NonNullByDefault
-public interface ExtendedDeviceStateListener {
-    void onApplianceExtendedStateChanged(byte[] extendedDeviceState);
+ **/
+public class DeviceClassObject {
+    public String DeviceClassType;
+    public JsonArray Operations;
+    public String DeviceClass;
+    public JsonArray Properties;
+
+    public DeviceClassObject() {
+    }
 }

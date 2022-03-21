@@ -10,17 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.miele.internal.handler;
+package org.openhab.binding.miele.internal.exceptions;
+
+import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Appliance handlers can implement the {@link ExtendedDeviceStateListener} interface
- * to extract additional information from the ExtendedDeviceState property.
+ * The {@link MieleRpcException} indicates failure to perform JSON-RPC call.
  *
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public interface ExtendedDeviceStateListener {
-    void onApplianceExtendedStateChanged(byte[] extendedDeviceState);
+public class MieleRpcException extends IOException {
+
+    private static final long serialVersionUID = -8147063891196639054L;
+
+    public MieleRpcException(String message) {
+        super(message);
+    }
+
+    public MieleRpcException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

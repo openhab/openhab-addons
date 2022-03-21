@@ -28,6 +28,7 @@ public class MieleBindingConstants {
 
     public static final String BINDING_ID = "miele";
     public static final String APPLIANCE_ID = "uid";
+    public static final String MIELE_CLASS = "com.miele.xgw3000.gateway.hdm.deviceclasses.Miele";
 
     // Properties
     public static final String PROPERTY_DEVICE_CLASS = "deviceClass";
