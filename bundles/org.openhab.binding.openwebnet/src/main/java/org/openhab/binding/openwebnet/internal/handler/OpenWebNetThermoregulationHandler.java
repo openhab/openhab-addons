@@ -279,12 +279,17 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     protected void handleMessage(BaseOpenMessage msg) {
         super.handleMessage(msg);
 
-        if (msg.getWhat().value() == 4002)
-        {
-            logger.debug("handleMessage() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
-            return;
+        logger.debug("handleMessage() AC PRIMA");
+        updateCUAtLeastOneProbeProtection(OnOffType.OFF);
+        logger.debug("handleMessage() AC DOPO");
+
+        if (msg.getWhat() != null) {
+            if (msg.getWhat().value() == 4002) {
+                logger.debug("handleMessage() AC Ignoring unsupported WHAT. Frame={}", msg);
+                return;
+            }
         }
-        
+
         if (isCentralUnit) {
             // there isn't a message used for setting OK for battery status so let's assume
             // it's OK and then change to KO if according message is received
@@ -393,9 +398,16 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             if (probesInProtection.isEmpty()) {
                 updateCUAtLeastOneProbeProtection(OnOffType.OFF);
             }
+            else {
+                logger.debug("atLeastOneProbeInProtection: {}wheres", probesInProtection.size());
+            }
             if (probesInManual.isEmpty()) {
                 updateCUAtLeastOneProbeManual(OnOffType.OFF);
             }
+            else {
+                logger.debug("atLeastOneProbeInManual: {}wheres", probesInManual.size());
+            }
+
         }
 
         updateState(CHANNEL_FUNCTION, new StringType(function.toString()));
@@ -426,16 +438,14 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     return;
                 }
 
-                // TODO: use new getWhatParams() method when availlable
-                // https://github.com/mvalla/openwebnet4j/issues/30
                 String[] parameters = tmsg.getWhatParams();
                 if (parameters.length == 0) {
                     logger.debug("updateSetpoint() parameters.lenght=0 ---> {}", tmsg.toStringVerbose());
                     return;
                 } else {
+                    logger.debug("updateSetpoint() pre-parsed temp: {} ---> {}", tmsg.toStringVerbose(), parameters[0]);
                     temp = Thermoregulation.decodeTemperature(parameters[0]);
-                    logger.debug("updateSetpoint() parsed temp: {} ---> {}  ({})", parameters[0], temp,
-                            tmsg.toStringVerbose());
+                    logger.debug("updateSetpoint() parsed temp: {} ---> {}", parameters[0], temp);
                 }
             } else {
                 temp = Thermoregulation.parseTemperature(tmsg);
