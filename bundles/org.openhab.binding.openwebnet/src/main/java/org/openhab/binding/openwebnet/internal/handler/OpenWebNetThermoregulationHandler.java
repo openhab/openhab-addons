@@ -44,7 +44,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
@@ -119,15 +118,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-where");
             }
-        }
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        super.bridgeStatusChanged(bridgeStatusInfo);
-        // when the bridge is ONLINE request for thing states (temp, setTemp, fanSpeed...)
-        if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
-            refreshDevice(false);
         }
     }
 
