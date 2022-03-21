@@ -150,7 +150,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
             try {
                 locale = new Locale.Builder().setLanguageTag(language).build();
             } catch (IllformedLocaleException e) {
-                logger.error("Invalid language configured: {}", e.getMessage());
+                logger.warn("Invalid language configured: {}", e.getMessage());
             }
         }
         if (locale == null) {
@@ -288,7 +288,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 }
             }
         } catch (IllegalArgumentException e) {
-            logger.error("An exception occurred while processing a changed device property :'{}'", e.getMessage());
+            logger.warn("An exception occurred while processing a changed device property: '{}'", e.getMessage());
         }
     }
 

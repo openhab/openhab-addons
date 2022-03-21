@@ -178,7 +178,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         @Override
         public void run() {
             if (!IP_PATTERN.matcher((String) getConfig().get(HOST)).matches()) {
-                logger.debug("Invalid IP address for the Miele@Home gateway : '{}'", getConfig().get(HOST));
+                logger.debug("Invalid IP address for the Miele@home gateway: '{}'", getConfig().get(HOST));
                 return;
             }
 
