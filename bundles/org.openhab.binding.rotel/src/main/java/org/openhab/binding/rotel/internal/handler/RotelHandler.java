@@ -817,8 +817,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (!isPowerOn()) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (OnOffType.from(tcbypass) == OnOffType.ON) {
-                            logger.debug("Command {} from channel {} ignored: device in state TCBYPASS ON", command,
+                        } else if (tcbypass) {
+                            logger.debug("Command {} from channel {} ignored: tone control bypass is ON", command,
                                     channel);
                             updateChannelState(CHANNEL_BASS);
                         } else {
@@ -831,8 +831,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (!isPowerOn()) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (OnOffType.from(tcbypass) == OnOffType.ON) {
-                            logger.debug("Command {} from channel {} ignored: device in state TCBYPASS ON", command,
+                        } else if (tcbypass) {
+                            logger.debug("Command {} from channel {} ignored: tone control bypass is ON", command,
                                     channel);
                             updateChannelState(CHANNEL_TREBLE);
                         } else {
@@ -1095,6 +1095,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 connector.sendCommand(onCmd);
                 bass = 0;
                 treble = 0;
+                updateChannelState(CHANNEL_BASS);
+                updateChannelState(CHANNEL_TREBLE);
             } else if (command == OnOffType.OFF) {
                 connector.sendCommand(offCmd);
                 Thread.sleep(200);
@@ -1102,9 +1104,6 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 Thread.sleep(200);
                 connector.sendCommand(RotelCommand.TREBLE);
             }
-            Thread.sleep(200);
-            updateChannelState(CHANNEL_BASS);
-            updateChannelState(CHANNEL_TREBLE);
         } else {
             logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
         }
