@@ -14,7 +14,7 @@ package org.openhab.binding.mqtt.handler;
 
 import java.util.concurrent.Semaphore;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
@@ -24,6 +24,7 @@ import org.openhab.core.io.transport.mqtt.MqttConnectionState;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class MqttConnectionObserverEx implements MqttConnectionObserver {
     public int counter = 0;
     public Semaphore semaphore = new Semaphore(1);
@@ -33,7 +34,7 @@ public class MqttConnectionObserverEx implements MqttConnectionObserver {
     }
 
     @Override
-    public void connectionStateChanged(@NonNull MqttConnectionState state, @Nullable Throwable error) {
+    public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         // First we expect a CONNECTING state and then a DISCONNECTED state change
         if (counter == 0 && state == MqttConnectionState.CONNECTING) {
             counter = 1;

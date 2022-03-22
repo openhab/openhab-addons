@@ -64,6 +64,7 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  */
 @NonNullByDefault
 class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
+    private static final Duration ONE_DAY = Duration.ofDays(1).minusNanos(1);
     private final ICalendar usedCalendar;
 
     BiweeklyPresentableCalendar(InputStream streamed) throws IOException, CalendarException {
@@ -343,11 +344,14 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
             return Duration.ofMillis(eventDuration.toMillis());
         }
         final DateStart start = vEvent.getDateStart();
-        final DateEnd end = vEvent.getDateEnd();
-        if (start == null || end == null) {
+        if (start == null) {
             return null;
         }
-        return Duration.between(start.getValue().toInstant(), end.getValue().toInstant());
+        final DateEnd end = vEvent.getDateEnd();
+        if (end != null) {
+            return Duration.between(start.getValue().toInstant(), end.getValue().toInstant());
+        }
+        return start.getValue().hasTime() ? Duration.ZERO : ONE_DAY;
     }
 
     /**

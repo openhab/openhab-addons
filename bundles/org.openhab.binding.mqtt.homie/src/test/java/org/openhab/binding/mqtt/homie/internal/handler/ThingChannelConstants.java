@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.mqtt.homie.internal.handler;
 
-import static org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants.*;
+import static org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants.HOMIE300_MQTT_THING;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingUID;
 
 /**
@@ -21,6 +22,7 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class ThingChannelConstants {
     public static final ThingUID TEST_HOMIE_THING = new ThingUID(HOMIE300_MQTT_THING, "device123");
 }

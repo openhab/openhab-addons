@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.MqttBindingConstants;
 import org.openhab.core.thing.ThingUID;
 
@@ -20,6 +21,7 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class MqttThingID {
     /**
      * Convert the url (tcp://122.123.111.123:1883) to a version without colons, dots or slashes

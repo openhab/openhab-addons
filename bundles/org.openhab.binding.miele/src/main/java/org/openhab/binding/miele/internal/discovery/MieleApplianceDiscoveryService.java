@@ -20,13 +20,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
+import org.openhab.binding.miele.internal.api.dto.DeviceClassObject;
+import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
+import org.openhab.binding.miele.internal.api.dto.HomeDevice;
 import org.openhab.binding.miele.internal.handler.ApplianceStatusListener;
 import org.openhab.binding.miele.internal.handler.MieleApplianceHandler;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler;
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceProperty;
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.HomeDevice;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -44,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author Martin Lepsy - Added protocol information in order so support WiFi devices
  * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
+@NonNullByDefault
 public class MieleApplianceDiscoveryService extends AbstractDiscoveryService implements ApplianceStatusListener {
 
     private final Logger logger = LoggerFactory.getLogger(MieleApplianceDiscoveryService.class);
@@ -75,10 +78,8 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
     @Override
     public void startScan() {
         List<HomeDevice> appliances = mieleBridgeHandler.getHomeDevices();
-        if (appliances != null) {
-            for (HomeDevice l : appliances) {
-                onApplianceAddedInternal(l);
-            }
+        for (HomeDevice l : appliances) {
+            onApplianceAddedInternal(l);
         }
     }
 
@@ -100,11 +101,17 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
             Map<String, Object> properties = new HashMap<>(9);
 
             FullyQualifiedApplianceIdentifier applianceIdentifier = appliance.getApplianceIdentifier();
-            properties.put(Thing.PROPERTY_VENDOR, appliance.Vendor);
+            String vendor = appliance.Vendor;
+            if (vendor != null) {
+                properties.put(Thing.PROPERTY_VENDOR, vendor);
+            }
             properties.put(Thing.PROPERTY_MODEL_ID, appliance.getApplianceModel());
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, appliance.getSerialNumber());
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, appliance.getFirmwareVersion());
-            properties.put(PROPERTY_PROTOCOL_ADAPTER, appliance.ProtocolAdapterName);
+            String protocolAdapterName = appliance.ProtocolAdapterName;
+            if (protocolAdapterName != null) {
+                properties.put(PROPERTY_PROTOCOL_ADAPTER, protocolAdapterName);
+            }
             properties.put(APPLIANCE_ID, applianceIdentifier.getApplianceId());
             String deviceClass = appliance.getDeviceClass();
             if (deviceClass != null) {
@@ -149,7 +156,7 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
         // nothing to do
     }
 
-    private ThingUID getThingUID(HomeDevice appliance) {
+    private @Nullable ThingUID getThingUID(HomeDevice appliance) {
         ThingUID bridgeUID = mieleBridgeHandler.getThing().getUID();
         String modelId = appliance.getDeviceClass();
 

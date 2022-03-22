@@ -30,7 +30,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.IllformedLocaleException;
 import java.util.Iterator;
 import java.util.List;
@@ -49,8 +48,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
+import org.openhab.binding.miele.internal.api.dto.DeviceClassObject;
+import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
+import org.openhab.binding.miele.internal.api.dto.HomeDevice;
+import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
 import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
@@ -69,6 +73,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
@@ -80,12 +85,10 @@ import com.google.gson.JsonParser;
  * @author Martin Lepsy - Added protocol information to support WiFi devices & some refactoring for HomeDevice
  * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  **/
+@NonNullByDefault
 public class MieleBridgeHandler extends BaseBridgeHandler {
 
-    @NonNull
-    public static final Set<@NonNull ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_XGW3000);
-
-    private static final String MIELE_CLASS = "com.miele.xgw3000.gateway.hdm.deviceclasses.Miele";
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_XGW3000);
 
     private static final Pattern IP_PATTERN = Pattern
             .compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
@@ -102,128 +105,14 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(MieleBridgeHandler.class);
 
     protected List<ApplianceStatusListener> applianceStatusListeners = new CopyOnWriteArrayList<>();
-    protected ScheduledFuture<?> pollingJob;
-    protected ExecutorService executor;
-    protected Future<?> eventListenerJob;
+    protected @Nullable ScheduledFuture<?> pollingJob;
+    protected @Nullable ExecutorService executor;
+    protected @Nullable Future<?> eventListenerJob;
 
-    @NonNull
     protected Map<String, HomeDevice> cachedHomeDevicesByApplianceId = new ConcurrentHashMap<String, HomeDevice>();
     protected Map<String, HomeDevice> cachedHomeDevicesByRemoteUid = new ConcurrentHashMap<String, HomeDevice>();
 
-    protected URL url;
-    protected Map<String, String> headers;
-
-    // Data structures to de-JSONify whatever Miele appliances are sending us
-    public class HomeDevice {
-
-        private static final String MIELE_APPLIANCE_CLASS = "com.miele.xgw3000.gateway.hdm.deviceclasses.MieleAppliance";
-
-        public String Name;
-        public String Status;
-        public String ParentUID;
-        public String ProtocolAdapterName;
-        public String Vendor;
-        public String UID;
-        public String Type;
-        public JsonArray DeviceClasses;
-        public String Version;
-        public String TimestampAdded;
-        public JsonObject Error;
-        public JsonObject Properties;
-
-        HomeDevice() {
-        }
-
-        public FullyQualifiedApplianceIdentifier getApplianceIdentifier() {
-            return new FullyQualifiedApplianceIdentifier(this.UID);
-        }
-
-        @NonNull
-        public String getSerialNumber() {
-            return Properties.get("serial.number").getAsString();
-        }
-
-        @NonNull
-        public String getFirmwareVersion() {
-            return Properties.get("firmware.version").getAsString();
-        }
-
-        @NonNull
-        public String getRemoteUid() {
-            JsonElement remoteUid = Properties.get("remote.uid");
-            if (remoteUid == null) {
-                // remote.uid and serial.number seems to be the same. If remote.uid
-                // is missing for some reason, it makes sense to provide fallback
-                // to serial number.
-                return getSerialNumber();
-            }
-            return remoteUid.getAsString();
-        }
-
-        public String getConnectionType() {
-            JsonElement connectionType = Properties.get("connection.type");
-            if (connectionType == null) {
-                return null;
-            }
-            return connectionType.getAsString();
-        }
-
-        public String getConnectionBaudRate() {
-            JsonElement baudRate = Properties.get("connection.baud.rate");
-            if (baudRate == null) {
-                return null;
-            }
-            return baudRate.getAsString();
-        }
-
-        @NonNull
-        public String getApplianceModel() {
-            JsonElement model = Properties.get("miele.model");
-            if (model == null) {
-                return "";
-            }
-            return model.getAsString();
-        }
-
-        public String getDeviceClass() {
-            for (JsonElement dc : DeviceClasses) {
-                String dcStr = dc.getAsString();
-                if (dcStr.contains(MIELE_CLASS) && !dcStr.equals(MIELE_APPLIANCE_CLASS)) {
-                    return dcStr.substring(MIELE_CLASS.length());
-                }
-            }
-            return null;
-        }
-    }
-
-    public class DeviceClassObject {
-        public String DeviceClassType;
-        public JsonArray Operations;
-        public String DeviceClass;
-        public JsonArray Properties;
-
-        DeviceClassObject() {
-        }
-    }
-
-    public class DeviceOperation {
-        public String Name;
-        public String Arguments;
-        public JsonObject Metadata;
-
-        DeviceOperation() {
-        }
-    }
-
-    public class DeviceProperty {
-        public String Name;
-        public String Value;
-        public int Polling;
-        public JsonObject Metadata;
-
-        DeviceProperty() {
-        }
-    }
+    protected @Nullable URL url;
 
     public MieleBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -244,9 +133,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
-
-        // for future usage - no headers to be set for now
-        headers = new HashMap<>();
 
         onUpdate();
         lastBridgeConnectionState = false;
@@ -328,10 +214,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     cachedHomeDevicesByRemoteUid.put(hd.getRemoteUid(), hd);
                 }
 
-                @NonNull
-                Set<@NonNull Entry<String, HomeDevice>> cachedEntries = cachedHomeDevicesByApplianceId.entrySet();
-                @NonNull
-                Iterator<@NonNull Entry<String, HomeDevice>> iterator = cachedEntries.iterator();
+                Set<Entry<String, HomeDevice>> cachedEntries = cachedHomeDevicesByApplianceId.entrySet();
+                Iterator<Entry<String, HomeDevice>> iterator = cachedEntries.iterator();
 
                 while (iterator.hasNext()) {
                     Entry<String, HomeDevice> cachedEntry = iterator.next();
@@ -349,11 +233,13 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 for (Thing appliance : getThing().getThings()) {
                     if (appliance.getStatus() == ThingStatus.ONLINE) {
                         String applianceId = (String) appliance.getConfiguration().getProperties().get(APPLIANCE_ID);
-                        FullyQualifiedApplianceIdentifier applianceIdentifier = getApplianceIdentifierFromApplianceId(
-                                applianceId);
+                        FullyQualifiedApplianceIdentifier applianceIdentifier = null;
+                        if (applianceId != null) {
+                            applianceIdentifier = getApplianceIdentifierFromApplianceId(applianceId);
+                        }
 
                         if (applianceIdentifier == null) {
-                            logger.error("The appliance with ID '{}' was not found in appliance list from bridge.",
+                            logger.warn("The appliance with ID '{}' was not found in appliance list from bridge.",
                                     applianceId);
                             continue;
                         }
@@ -363,29 +249,33 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                         args[1] = true;
                         JsonElement result = invokeRPC("HDAccess/getDeviceClassObjects", args);
 
-                        if (result != null) {
-                            for (JsonElement obj : result.getAsJsonArray()) {
-                                try {
-                                    DeviceClassObject dco = gson.fromJson(obj, DeviceClassObject.class);
+                        for (JsonElement obj : result.getAsJsonArray()) {
+                            try {
+                                DeviceClassObject dco = gson.fromJson(obj, DeviceClassObject.class);
 
-                                    // Skip com.prosyst.mbs.services.zigbee.hdm.deviceclasses.ReportingControl
-                                    if (dco == null || !dco.DeviceClass.startsWith(MIELE_CLASS)) {
-                                        continue;
-                                    }
-
-                                    for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                        listener.onApplianceStateChanged(applianceIdentifier, dco);
-                                    }
-                                } catch (Exception e) {
-                                    logger.debug("An exception occurred while querying an appliance : '{}'",
-                                            e.getMessage());
+                                // Skip com.prosyst.mbs.services.zigbee.hdm.deviceclasses.ReportingControl
+                                if (dco == null || !dco.DeviceClass.startsWith(MIELE_CLASS)) {
+                                    continue;
                                 }
+
+                                for (ApplianceStatusListener listener : applianceStatusListeners) {
+                                    listener.onApplianceStateChanged(applianceIdentifier, dco);
+                                }
+                            } catch (Exception e) {
+                                logger.debug("An exception occurred while querying an appliance : '{}'",
+                                        e.getMessage());
                             }
                         }
                     }
                 }
-            } catch (Exception e) {
-                logger.debug("An exception occurred while polling an appliance :'{}'", e.getMessage());
+            } catch (MieleRpcException e) {
+                Throwable cause = e.getCause();
+                if (cause == null) {
+                    logger.debug("An exception occurred while polling an appliance: '{}'", e.getMessage());
+                } else {
+                    logger.debug("An exception occurred while polling an appliance: '{}' -> '{}'", e.getMessage(),
+                            cause.getMessage());
+                }
             }
         }
 
@@ -396,12 +286,9 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 // That's why we do an HTTP access instead
 
                 // If there is no connection, this line will fail
-                JsonElement result = invokeRPC("system.listMethods", null);
-                if (result == null) {
-                    logger.debug("{} is not reachable", ipAddress);
-                    return false;
-                }
-            } catch (Exception e) {
+                invokeRPC("system.listMethods", new Object[0]);
+            } catch (MieleRpcException e) {
+                logger.debug("{} is not reachable", ipAddress);
                 return false;
             }
 
@@ -421,16 +308,24 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
                 for (JsonElement obj : result.getAsJsonArray()) {
                     HomeDevice hd = gson.fromJson(obj, HomeDevice.class);
-                    devices.add(hd);
+                    if (hd != null) {
+                        devices.add(hd);
+                    }
                 }
-            } catch (Exception e) {
-                logger.debug("An exception occurred while getting the home devices :'{}'", e.getMessage());
+            } catch (MieleRpcException e) {
+                Throwable cause = e.getCause();
+                if (cause == null) {
+                    logger.debug("An exception occurred while getting the home devices: '{}'", e.getMessage());
+                } else {
+                    logger.debug("An exception occurred while getting the home devices: '{}' -> '{}", e.getMessage(),
+                            cause.getMessage());
+                }
             }
         }
         return devices;
     }
 
-    private FullyQualifiedApplianceIdentifier getApplianceIdentifierFromApplianceId(String applianceId) {
+    private @Nullable FullyQualifiedApplianceIdentifier getApplianceIdentifierFromApplianceId(String applianceId) {
         HomeDevice homeDevice = this.cachedHomeDevicesByApplianceId.get(applianceId);
         if (homeDevice == null) {
             return null;
@@ -475,19 +370,17 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                 logger.debug("Received a multicast event '{}' from '{}:{}'", event, packet.getAddress(),
                                         packet.getPort());
 
-                                DeviceProperty dp = new DeviceProperty();
-                                String id = null;
-
                                 String[] parts = event.split("&");
+                                String id = null, name = null, value = null;
                                 for (String p : parts) {
                                     String[] subparts = p.split("=");
                                     switch (subparts[0]) {
                                         case "property": {
-                                            dp.Name = subparts[1];
+                                            name = subparts[1];
                                             break;
                                         }
                                         case "value": {
-                                            dp.Value = subparts[1].strip().trim();
+                                            value = subparts[1].strip().trim();
                                             break;
                                         }
                                         case "id": {
@@ -497,7 +390,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                     }
                                 }
 
-                                if (id == null) {
+                                if (id == null || name == null || value == null) {
                                     continue;
                                 }
 
@@ -514,8 +407,11 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                     }
                                     applianceIdentifier = device.getApplianceIdentifier();
                                 }
+                                var deviceProperty = new DeviceProperty();
+                                deviceProperty.Name = name;
+                                deviceProperty.Value = value;
                                 for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                    listener.onAppliancePropertyChanged(applianceIdentifier, dp);
+                                    listener.onAppliancePropertyChanged(applianceIdentifier, deviceProperty);
                                 }
                             } catch (SocketTimeoutException e) {
                                 try {
@@ -549,18 +445,15 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
     };
 
-    public JsonElement invokeOperation(String applianceId, String modelID, String methodName) {
+    public JsonElement invokeOperation(String applianceId, String modelID, String methodName) throws MieleRpcException {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.debug("The Bridge is offline - operations can not be invoked.");
-            return null;
+            throw new MieleRpcException("Bridge is offline, operations can not be invoked");
         }
 
         FullyQualifiedApplianceIdentifier applianceIdentifier = getApplianceIdentifierFromApplianceId(applianceId);
         if (applianceIdentifier == null) {
-            logger.error(
-                    "The appliance with ID '{}' was not found in appliance list from bridge - operations can not be invoked.",
-                    applianceId);
-            return null;
+            throw new MieleRpcException("Appliance with ID" + applianceId
+                    + " was not found in appliance list from gateway - operations can not be invoked");
         }
 
         Object[] args = new Object[4];
@@ -572,53 +465,62 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         return invokeRPC("HDAccess/invokeDCOOperation", args);
     }
 
-    protected JsonElement invokeRPC(String methodName, Object[] args) {
-        int id = rand.nextInt(Integer.MAX_VALUE);
+    protected JsonElement invokeRPC(String methodName, Object[] args) throws MieleRpcException {
+        JsonElement result = null;
+        URL url = this.url;
+        if (url == null) {
+            throw new MieleRpcException("URL is not set");
+        }
 
         JsonObject req = new JsonObject();
+        int id = rand.nextInt(Integer.MAX_VALUE);
         req.addProperty("jsonrpc", "2.0");
         req.addProperty("id", id);
         req.addProperty("method", methodName);
 
-        JsonElement result = null;
-
         JsonArray params = new JsonArray();
-        if (args != null) {
-            for (Object o : args) {
-                params.add(gson.toJsonTree(o));
-            }
+        for (Object o : args) {
+            params.add(gson.toJsonTree(o));
         }
         req.add("params", params);
 
         String requestData = req.toString();
         String responseData = null;
         try {
-            responseData = post(url, headers, requestData);
-        } catch (Exception e) {
-            logger.debug("An exception occurred while posting data : '{}'", e.getMessage());
+            responseData = post(url, Collections.emptyMap(), requestData);
+        } catch (IOException e) {
+            throw new MieleRpcException("Exception occurred while posting data", e);
         }
 
-        if (responseData != null) {
-            logger.trace("The request '{}' yields '{}'", requestData, responseData);
-            JsonObject resp = (JsonObject) JsonParser.parseReader(new StringReader(responseData));
+        logger.trace("The request '{}' yields '{}'", requestData, responseData);
+        JsonObject parsedResponse = null;
+        try {
+            parsedResponse = (JsonObject) JsonParser.parseReader(new StringReader(responseData));
+        } catch (JsonParseException e) {
+            throw new MieleRpcException("Error parsing JSON response", e);
+        }
 
-            result = resp.get("result");
-            JsonElement error = resp.get("error");
-
-            if (error != null && !error.isJsonNull()) {
-                if (error.isJsonPrimitive()) {
-                    logger.debug("A remote exception occurred: '{}'", error.getAsString());
-                } else if (error.isJsonObject()) {
-                    JsonObject o = error.getAsJsonObject();
-                    Integer code = (o.has("code") ? o.get("code").getAsInt() : null);
-                    String message = (o.has("message") ? o.get("message").getAsString() : null);
-                    String data = (o.has("data") ? (o.get("data") instanceof JsonObject ? o.get("data").toString()
-                            : o.get("data").getAsString()) : null);
-                    logger.debug("A remote exception occurred: '{}':'{}':'{}'", code, message, data);
-                } else {
-                    logger.debug("An unknown remote exception occurred: '{}'", error.toString());
-                }
+        JsonElement error = parsedResponse.get("error");
+        if (error != null && !error.isJsonNull()) {
+            if (error.isJsonPrimitive()) {
+                throw new MieleRpcException("Remote exception occurred: '" + error.getAsString() + "'");
+            } else if (error.isJsonObject()) {
+                JsonObject o = error.getAsJsonObject();
+                Integer code = (o.has("code") ? o.get("code").getAsInt() : null);
+                String message = (o.has("message") ? o.get("message").getAsString() : null);
+                String data = (o.has("data")
+                        ? (o.get("data") instanceof JsonObject ? o.get("data").toString() : o.get("data").getAsString())
+                        : null);
+                throw new MieleRpcException(
+                        "Remote exception occurred: '" + code + "':'" + message + "':'" + data + "'");
+            } else {
+                throw new MieleRpcException("Unknown remote exception occurred: '" + error.toString() + "'");
             }
+        }
+
+        result = parsedResponse.get("result");
+        if (result == null) {
+            throw new MieleRpcException("Result is missing in response");
         }
 
         return result;
@@ -627,10 +529,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     protected String post(URL url, Map<String, String> headers, String data) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                connection.addRequestProperty(entry.getKey(), entry.getValue());
-            }
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            connection.addRequestProperty(entry.getKey(), entry.getValue());
         }
 
         connection.addRequestProperty("Accept-Encoding", "gzip");
@@ -688,16 +588,21 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     private synchronized void onUpdate() {
         logger.debug("Scheduling the Miele polling job");
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob == null || pollingJob.isCancelled()) {
             logger.trace("Scheduling the Miele polling job period is {}", POLLING_PERIOD);
             pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, POLLING_PERIOD, TimeUnit.SECONDS);
+            this.pollingJob = pollingJob;
             logger.trace("Scheduling the Miele polling job Job is done ?{}", pollingJob.isDone());
         }
         logger.debug("Scheduling the Miele event listener job");
 
+        Future<?> eventListenerJob = this.eventListenerJob;
         if (eventListenerJob == null || eventListenerJob.isCancelled()) {
-            executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("binding-miele"));
-            eventListenerJob = executor.submit(eventListenerRunnable);
+            ExecutorService executor = Executors
+                    .newSingleThreadExecutor(new NamedThreadFactory("binding-" + BINDING_ID));
+            this.executor = executor;
+            this.eventListenerJob = executor.submit(eventListenerRunnable);
         }
     }
 
@@ -725,9 +630,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     }
 
     public boolean registerApplianceStatusListener(ApplianceStatusListener applianceStatusListener) {
-        if (applianceStatusListener == null) {
-            throw new IllegalArgumentException("It's not allowed to pass a null ApplianceStatusListener.");
-        }
         boolean result = applianceStatusListeners.add(applianceStatusListener);
         if (result && isInitialized()) {
             onUpdate();
@@ -759,17 +661,20 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
-            pollingJob = null;
+            this.pollingJob = null;
         }
+        Future<?> eventListenerJob = this.eventListenerJob;
         if (eventListenerJob != null) {
             eventListenerJob.cancel(true);
-            eventListenerJob = null;
+            this.eventListenerJob = null;
         }
+        ExecutorService executor = this.executor;
         if (executor != null) {
             executor.shutdownNow();
-            executor = null;
+            this.executor = null;
         }
     }
 }
