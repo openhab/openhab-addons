@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.velbus.internal.handler;
 
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -74,27 +76,6 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) VelbusPacketInputStream inputStream;
 
     private boolean listenerStopped;
-
-    private final ChannelUID clockAlarm1Enabled = new ChannelUID(thing.getUID(), "bridgeClockAlarm",
-            "clockAlarm1Enabled");
-    private final ChannelUID clockAlarm1WakeupHour = new ChannelUID(thing.getUID(), "bridgeClockAlarm",
-            "clockAlarm1WakeupHour");
-    private final ChannelUID clockAlarm1WakeupMinute = new ChannelUID(thing.getUID(), "bridgeClockAlarm",
-            "clockAlarm1WakeupMinute");
-    private final ChannelUID clockAlarm1BedtimeHour = new ChannelUID(thing.getUID(), "bridgeClockAlarm",
-            "clockAlarm1BedtimeHour");
-    private final ChannelUID clockAlarm1BedtimeMinute = new ChannelUID(thing.getUID(), "bridgeClockAlarm",
-            "clockAlarm1BedtimeMinute");
-    private final ChannelUID clockAlarm2Enabled = new ChannelUID(thing.getUID(), "bridgeClockAlarm",
-            "clockAlarm2Enabled");
-    private final ChannelUID clockAlarm2WakeupHour = new ChannelUID(thing.getUID(), "bridgeClockAlarm",
-            "clockAlarm2WakeupHour");
-    private final ChannelUID clockAlarm2WakeupMinute = new ChannelUID(thing.getUID(), "bridgeClockAlarm",
-            "clockAlarm2WakeupMinute");
-    private final ChannelUID clockAlarm2BedtimeHour = new ChannelUID(thing.getUID(), "bridgeClockAlarm",
-            "clockAlarm2BedtimeHour");
-    private final ChannelUID clockAlarm2BedtimeMinute = new ChannelUID(thing.getUID(), "bridgeClockAlarm",
-            "clockAlarm2BedtimeMinute");
 
     private VelbusClockAlarmConfiguration alarmClockConfiguration = new VelbusClockAlarmConfiguration();
 
@@ -180,26 +161,47 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
 
             alarmClock.setLocal(false);
 
-            if ((channelUID.equals(clockAlarm1Enabled) || channelUID.equals(clockAlarm2Enabled))
-                    && command instanceof OnOffType) {
-                boolean enabled = command == OnOffType.ON;
-                alarmClock.setEnabled(enabled);
-            } else if (channelUID.equals(clockAlarm1WakeupHour)
-                    || channelUID.equals(clockAlarm2WakeupHour) && command instanceof DecimalType) {
-                byte wakeupHour = ((DecimalType) command).byteValue();
-                alarmClock.setWakeupHour(wakeupHour);
-            } else if (channelUID.equals(clockAlarm1WakeupMinute)
-                    || channelUID.equals(clockAlarm2WakeupMinute) && command instanceof DecimalType) {
-                byte wakeupMinute = ((DecimalType) command).byteValue();
-                alarmClock.setWakeupMinute(wakeupMinute);
-            } else if (channelUID.equals(clockAlarm1BedtimeHour)
-                    || channelUID.equals(clockAlarm2BedtimeHour) && command instanceof DecimalType) {
-                byte bedTimeHour = ((DecimalType) command).byteValue();
-                alarmClock.setBedtimeHour(bedTimeHour);
-            } else if (channelUID.equals(clockAlarm1BedtimeMinute)
-                    || channelUID.equals(clockAlarm2BedtimeMinute) && command instanceof DecimalType) {
-                byte bedTimeMinute = ((DecimalType) command).byteValue();
-                alarmClock.setBedtimeMinute(bedTimeMinute);
+            switch (channelUID.getId()) {
+                case CHANNEL_BRIDGE_CLOCK_ALARM1_ENABLED:
+                case CHANNEL_BRIDGE_CLOCK_ALARM2_ENABLED: {
+                    if (command instanceof OnOffType) {
+                        boolean enabled = command == OnOffType.ON;
+                        alarmClock.setEnabled(enabled);
+                    }
+                    break;
+                }
+                case CHANNEL_BRIDGE_CLOCK_ALARM1_WAKEUP_HOUR:
+                case CHANNEL_BRIDGE_CLOCK_ALARM2_WAKEUP_HOUR: {
+                    if (command instanceof DecimalType) {
+                        byte wakeupHour = ((DecimalType) command).byteValue();
+                        alarmClock.setWakeupHour(wakeupHour);
+                    }
+                    break;
+                }
+                case CHANNEL_BRIDGE_CLOCK_ALARM1_WAKEUP_MINUTE:
+                case CHANNEL_BRIDGE_CLOCK_ALARM2_WAKEUP_MINUTE: {
+                    if (command instanceof DecimalType) {
+                        byte wakeupMinute = ((DecimalType) command).byteValue();
+                        alarmClock.setWakeupMinute(wakeupMinute);
+                    }
+                    break;
+                }
+                case CHANNEL_BRIDGE_CLOCK_ALARM1_BEDTIME_HOUR:
+                case CHANNEL_BRIDGE_CLOCK_ALARM2_BEDTIME_HOUR: {
+                    if (command instanceof DecimalType) {
+                        byte bedTimeHour = ((DecimalType) command).byteValue();
+                        alarmClock.setBedtimeHour(bedTimeHour);
+                    }
+                    break;
+                }
+                case CHANNEL_BRIDGE_CLOCK_ALARM1_BEDTIME_MINUTE:
+                case CHANNEL_BRIDGE_CLOCK_ALARM2_BEDTIME_MINUTE: {
+                    if (command instanceof DecimalType) {
+                        byte bedTimeMinute = ((DecimalType) command).byteValue();
+                        alarmClock.setBedtimeMinute(bedTimeMinute);
+                    }
+                    break;
+                }
             }
 
             if (alarmNumber == 1)
@@ -376,24 +378,38 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
     }
 
     protected boolean isAlarmClockChannel(ChannelUID channelUID) {
-        return channelUID.equals(clockAlarm1Enabled) || channelUID.equals(clockAlarm1WakeupHour)
-                || channelUID.equals(clockAlarm1WakeupMinute) || channelUID.equals(clockAlarm1BedtimeHour)
-                || channelUID.equals(clockAlarm1BedtimeMinute) || channelUID.equals(clockAlarm2Enabled)
-                || channelUID.equals(clockAlarm2WakeupHour) || channelUID.equals(clockAlarm2WakeupMinute)
-                || channelUID.equals(clockAlarm2BedtimeHour) || channelUID.equals(clockAlarm2BedtimeMinute);
+        switch (channelUID.getId()) {
+            case CHANNEL_BRIDGE_CLOCK_ALARM1_ENABLED:
+            case CHANNEL_BRIDGE_CLOCK_ALARM1_WAKEUP_HOUR:
+            case CHANNEL_BRIDGE_CLOCK_ALARM1_WAKEUP_MINUTE:
+            case CHANNEL_BRIDGE_CLOCK_ALARM1_BEDTIME_HOUR:
+            case CHANNEL_BRIDGE_CLOCK_ALARM1_BEDTIME_MINUTE:
+            case CHANNEL_BRIDGE_CLOCK_ALARM2_ENABLED:
+            case CHANNEL_BRIDGE_CLOCK_ALARM2_WAKEUP_HOUR:
+            case CHANNEL_BRIDGE_CLOCK_ALARM2_WAKEUP_MINUTE:
+            case CHANNEL_BRIDGE_CLOCK_ALARM2_BEDTIME_HOUR:
+            case CHANNEL_BRIDGE_CLOCK_ALARM2_BEDTIME_MINUTE:
+                return true;
+        }
+        return false;
     }
 
     protected byte determineAlarmNumber(ChannelUID channelUID) {
-        if (channelUID.equals(clockAlarm1Enabled) || channelUID.equals(clockAlarm1WakeupHour)
-                || channelUID.equals(clockAlarm1WakeupMinute) || channelUID.equals(clockAlarm1BedtimeHour)
-                || channelUID.equals(clockAlarm1BedtimeMinute)) {
-            return 1;
-        } else if (channelUID.equals(clockAlarm2Enabled) || channelUID.equals(clockAlarm2WakeupHour)
-                || channelUID.equals(clockAlarm2WakeupMinute) || channelUID.equals(clockAlarm2BedtimeHour)
-                || channelUID.equals(clockAlarm2BedtimeMinute)) {
-            return 2;
-        } else {
-            throw new IllegalArgumentException("The given channelUID is not an alarm clock channel: " + channelUID);
+        switch (channelUID.getId()) {
+            case CHANNEL_BRIDGE_CLOCK_ALARM1_ENABLED:
+            case CHANNEL_BRIDGE_CLOCK_ALARM1_WAKEUP_HOUR:
+            case CHANNEL_BRIDGE_CLOCK_ALARM1_WAKEUP_MINUTE:
+            case CHANNEL_BRIDGE_CLOCK_ALARM1_BEDTIME_HOUR:
+            case CHANNEL_BRIDGE_CLOCK_ALARM1_BEDTIME_MINUTE:
+                return 1;
+            case CHANNEL_BRIDGE_CLOCK_ALARM2_ENABLED:
+            case CHANNEL_BRIDGE_CLOCK_ALARM2_WAKEUP_HOUR:
+            case CHANNEL_BRIDGE_CLOCK_ALARM2_WAKEUP_MINUTE:
+            case CHANNEL_BRIDGE_CLOCK_ALARM2_BEDTIME_HOUR:
+            case CHANNEL_BRIDGE_CLOCK_ALARM2_BEDTIME_MINUTE:
+                return 2;
         }
+
+        throw new IllegalArgumentException("The given channelUID is not an alarm clock channel: " + channelUID);
     }
 }

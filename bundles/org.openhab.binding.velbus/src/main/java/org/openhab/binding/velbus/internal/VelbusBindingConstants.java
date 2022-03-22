@@ -226,4 +226,28 @@ public class VelbusBindingConstants {
     public static final String CHANNEL = "CH";
     public static final String SUB_ADDRESS = "subaddress";
     public static final String DIMSPEED = "dimspeed";
+
+    // Channels ids
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_ENABLED = "bridgeClockAlarm#clockAlarm1Enabled";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_WAKEUP_HOUR = "bridgeClockAlarm#clockAlarm1WakeupHour";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_WAKEUP_MINUTE = "bridgeClockAlarm#clockAlarm1WakeupMinute";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_BEDTIME_HOUR = "bridgeClockAlarm#clockAlarm1BedtimeHour";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_BEDTIME_MINUTE = "bridgeClockAlarm#clockAlarm1BedtimeMinute";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_ENABLED = "bridgeClockAlarm#clockAlarm2Enabled";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_WAKEUP_HOUR = "bridgeClockAlarm#clockAlarm2WakeupHour";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_WAKEUP_MINUTE = "bridgeClockAlarm#clockAlarm2WakeupMinute";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_BEDTIME_HOUR = "bridgeClockAlarm#clockAlarm2BedtimeHour";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_BEDTIME_MINUTE = "bridgeClockAlarm#clockAlarm2BedtimeMinute";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_ENABLED = "clockAlarm#clockAlarm1Enabled";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_TYPE = "clockAlarm#clockAlarm1Type";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_HOUR = "clockAlarm#clockAlarm1WakeupHour";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_MINUTE = "clockAlarm#clockAlarm1WakeupMinute";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_HOUR = "clockAlarm#clockAlarm1BedtimeHour";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_MINUTE = "clockAlarm#clockAlarm1BedtimeMinute";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_ENABLED = "clockAlarm#clockAlarm2Enabled";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_TYPE = "clockAlarm#clockAlarm2Type";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_HOUR = "clockAlarm#clockAlarm2WakeupHour";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_MINUTE = "clockAlarm#clockAlarm2WakeupMinute";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_HOUR = "clockAlarm#clockAlarm2BedtimeHour";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_MINUTE = "clockAlarm#clockAlarm2BedtimeMinute";
 }
