@@ -52,7 +52,7 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();
-        String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String applianceId = this.applianceId;
         if (applianceId == null) {
             logger.warn("Command '{}' failed, appliance id is unknown", command);
             return;
