@@ -14,29 +14,20 @@ package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
 import java.net.DatagramPacket;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.IllformedLocaleException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -46,11 +37,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
+import org.openhab.binding.miele.internal.MieleGatewayCommunicationController;
 import org.openhab.binding.miele.internal.api.dto.DeviceClassObject;
 import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
 import org.openhab.binding.miele.internal.api.dto.HomeDevice;
@@ -70,11 +61,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
 
 /**
  * The {@link MieleBridgeHandler} is responsible for handling commands, which are
@@ -100,8 +87,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private boolean lastBridgeConnectionState = false;
     private boolean currentBridgeConnectionState = false;
 
-    protected Random rand = new Random();
-    protected Gson gson = new Gson();
+    private Gson gson = new Gson();
+    private @NonNullByDefault({}) MieleGatewayCommunicationController gatewayCommunication;
     private final Logger logger = LoggerFactory.getLogger(MieleBridgeHandler.class);
 
     protected List<ApplianceStatusListener> applianceStatusListeners = new CopyOnWriteArrayList<>();
@@ -111,8 +98,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     protected Map<String, HomeDevice> cachedHomeDevicesByApplianceId = new ConcurrentHashMap<String, HomeDevice>();
     protected Map<String, HomeDevice> cachedHomeDevicesByRemoteUid = new ConcurrentHashMap<String, HomeDevice>();
-
-    protected @Nullable URL url;
 
     public MieleBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -127,9 +112,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
 
         try {
-            url = new URL("http://" + (String) getConfig().get(HOST) + "/remote/json-rpc");
+            gatewayCommunication = new MieleGatewayCommunicationController((String) getConfig().get(HOST));
         } catch (MalformedURLException e) {
-            logger.debug("An exception occurred while defining an URL :'{}'", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
@@ -247,7 +231,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                         Object[] args = new Object[2];
                         args[0] = applianceIdentifier.getUid();
                         args[1] = true;
-                        JsonElement result = invokeRPC("HDAccess/getDeviceClassObjects", args);
+                        JsonElement result = gatewayCommunication.invokeRPC("HDAccess/getDeviceClassObjects", args);
 
                         for (JsonElement obj : result.getAsJsonArray()) {
                             try {
@@ -286,7 +270,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 // That's why we do an HTTP access instead
 
                 // If there is no connection, this line will fail
-                invokeRPC("system.listMethods", new Object[0]);
+                gatewayCommunication.invokeRPC("system.listMethods", new Object[0]);
             } catch (MieleRpcException e) {
                 logger.debug("{} is not reachable", ipAddress);
                 return false;
@@ -304,7 +288,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             try {
                 String[] args = new String[1];
                 args[0] = "(type=SuperVision)";
-                JsonElement result = invokeRPC("HDAccess/getHomeDevices", args);
+                JsonElement result = gatewayCommunication.invokeRPC("HDAccess/getHomeDevices", args);
 
                 for (JsonElement obj : result.getAsJsonArray()) {
                     HomeDevice hd = gson.fromJson(obj, HomeDevice.class);
@@ -456,134 +440,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     + " was not found in appliance list from gateway - operations can not be invoked");
         }
 
-        Object[] args = new Object[4];
-        args[0] = applianceIdentifier.getUid();
-        args[1] = MIELE_CLASS + modelID;
-        args[2] = methodName;
-        args[3] = null;
-
-        return invokeRPC("HDAccess/invokeDCOOperation", args);
-    }
-
-    protected JsonElement invokeRPC(String methodName, Object[] args) throws MieleRpcException {
-        JsonElement result = null;
-        URL url = this.url;
-        if (url == null) {
-            throw new MieleRpcException("URL is not set");
-        }
-
-        JsonObject req = new JsonObject();
-        int id = rand.nextInt(Integer.MAX_VALUE);
-        req.addProperty("jsonrpc", "2.0");
-        req.addProperty("id", id);
-        req.addProperty("method", methodName);
-
-        JsonArray params = new JsonArray();
-        for (Object o : args) {
-            params.add(gson.toJsonTree(o));
-        }
-        req.add("params", params);
-
-        String requestData = req.toString();
-        String responseData = null;
-        try {
-            responseData = post(url, Collections.emptyMap(), requestData);
-        } catch (IOException e) {
-            throw new MieleRpcException("Exception occurred while posting data", e);
-        }
-
-        logger.trace("The request '{}' yields '{}'", requestData, responseData);
-        JsonObject parsedResponse = null;
-        try {
-            parsedResponse = (JsonObject) JsonParser.parseReader(new StringReader(responseData));
-        } catch (JsonParseException e) {
-            throw new MieleRpcException("Error parsing JSON response", e);
-        }
-
-        JsonElement error = parsedResponse.get("error");
-        if (error != null && !error.isJsonNull()) {
-            if (error.isJsonPrimitive()) {
-                throw new MieleRpcException("Remote exception occurred: '" + error.getAsString() + "'");
-            } else if (error.isJsonObject()) {
-                JsonObject o = error.getAsJsonObject();
-                Integer code = (o.has("code") ? o.get("code").getAsInt() : null);
-                String message = (o.has("message") ? o.get("message").getAsString() : null);
-                String data = (o.has("data")
-                        ? (o.get("data") instanceof JsonObject ? o.get("data").toString() : o.get("data").getAsString())
-                        : null);
-                throw new MieleRpcException(
-                        "Remote exception occurred: '" + code + "':'" + message + "':'" + data + "'");
-            } else {
-                throw new MieleRpcException("Unknown remote exception occurred: '" + error.toString() + "'");
-            }
-        }
-
-        result = parsedResponse.get("result");
-        if (result == null) {
-            throw new MieleRpcException("Result is missing in response");
-        }
-
-        return result;
-    }
-
-    protected String post(URL url, Map<String, String> headers, String data) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            connection.addRequestProperty(entry.getKey(), entry.getValue());
-        }
-
-        connection.addRequestProperty("Accept-Encoding", "gzip");
-
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
-        connection.connect();
-
-        OutputStream out = null;
-
-        try {
-            out = connection.getOutputStream();
-
-            out.write(data.getBytes());
-            out.flush();
-
-            int statusCode = connection.getResponseCode();
-            if (statusCode != HttpURLConnection.HTTP_OK) {
-                logger.debug("An unexpected status code was returned: '{}'", statusCode);
-            }
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-        }
-
-        String responseEncoding = connection.getHeaderField("Content-Encoding");
-        responseEncoding = (responseEncoding == null ? "" : responseEncoding.trim());
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        InputStream in = connection.getInputStream();
-        try {
-            in = connection.getInputStream();
-            if ("gzip".equalsIgnoreCase(responseEncoding)) {
-                in = new GZIPInputStream(in);
-            }
-            in = new BufferedInputStream(in);
-
-            byte[] buff = new byte[1024];
-            int n;
-            while ((n = in.read(buff)) > 0) {
-                bos.write(buff, 0, n);
-            }
-            bos.flush();
-            bos.close();
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
-
-        return bos.toString();
+        return gatewayCommunication.invokeOperation(applianceIdentifier, modelID, methodName);
     }
 
     private synchronized void onUpdate() {
