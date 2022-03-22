@@ -18,6 +18,8 @@
 			<channel id="treble" typeId="treble"/>
 			<channel id="frequency" typeId="frequency"/>
 			<channel id="brightness" typeId="brightness"/>
+			<channel id="tcbypass" typeId="tcbypass"/>
+			<channel id="balance" typeId="balance"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:rotel:serialandipandprotocol"/>
