@@ -45,8 +45,7 @@ public enum FridgeChannelSelector implements ApplianceChannelSelector {
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
     STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return DeviceUtil.getStateTextState(s, dmd, translationProvider);
         }
     },
@@ -54,23 +53,20 @@ public enum FridgeChannelSelector implements ApplianceChannelSelector {
     SUPERCOOL("", SUPERCOOL_CHANNEL_ID, OnOffType.class, false),
     FRIDGECURRENTTEMP("currentTemperature", "current", QuantityType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return getTemperatureState(s);
         }
     },
     FRIDGETARGETTEMP("targetTemperature", "target", QuantityType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return getTemperatureState(s);
         }
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
         @Override
 
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             if ("true".equals(s)) {
                 return getState("OPEN");
             }
@@ -124,8 +120,7 @@ public enum FridgeChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
-    public State getState(String s, @Nullable DeviceMetaData dmd,
-            @Nullable MieleTranslationProvider translationProvider) {
+    public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
         return this.getState(s, dmd);
     }
 

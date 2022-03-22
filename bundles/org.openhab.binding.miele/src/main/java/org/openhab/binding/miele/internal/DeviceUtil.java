@@ -89,7 +89,7 @@ public class DeviceUtil {
      * as well as built-in/translated strings.
      */
     public static State getStateTextState(String s, @Nullable DeviceMetaData dmd,
-            @Nullable MieleTranslationProvider translationProvider) {
+            MieleTranslationProvider translationProvider) {
         return getTextState(s, dmd, translationProvider, STATES, MISSING_STATE_TEXT_PREFIX, "");
     }
 
@@ -106,7 +106,7 @@ public class DeviceUtil {
      * @return Text string as State
      */
     public static State getTextState(String s, @Nullable DeviceMetaData dmd,
-            @Nullable MieleTranslationProvider translationProvider, Map<String, String> valueMap, String propertyPrefix,
+            MieleTranslationProvider translationProvider, Map<String, String> valueMap, String propertyPrefix,
             String appliancePrefix) {
         if ("0".equals(s)) {
             return UnDefType.UNDEF;
@@ -122,7 +122,7 @@ public class DeviceUtil {
         }
 
         String value = valueMap.get(s);
-        if (value != null && translationProvider != null) {
+        if (value != null) {
             String key = TEXT_PREFIX + propertyPrefix + appliancePrefix + value;
             return new StringType(
                     translationProvider.getText(key, gatewayText != null ? gatewayText : propertyPrefix + s));

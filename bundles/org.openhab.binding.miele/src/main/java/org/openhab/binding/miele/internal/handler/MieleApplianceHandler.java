@@ -78,7 +78,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     protected @Nullable MieleBridgeHandler bridgeHandler;
     protected TranslationProvider i18nProvider;
     protected LocaleProvider localeProvider;
-    protected @Nullable MieleTranslationProvider translationProvider;
+    protected MieleTranslationProvider translationProvider;
     private Class<E> selectorType;
     protected String modelID;
 
@@ -91,6 +91,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
         this.localeProvider = localeProvider;
         this.selectorType = selectorType;
         this.modelID = modelID;
+        this.translationProvider = new MieleTranslationProvider(i18nProvider, localeProvider);
     }
 
     public ApplianceChannelSelector getValueSelectorFromChannelID(String valueSelectorText)
