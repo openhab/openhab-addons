@@ -162,38 +162,42 @@ The following channels are available:
 | mainZone#line2 | Front Panel Line 2             | String    | The second line displayed on the device front panel      |                                    |
 | frequency      | Current Frequency              | Number    | The current frequency (in kHz) for digital source input  |                                    |
 | brightness     | Front Panel Display Brightness | Dimmer    | The backlight brightness level (in %) of the device front panel |                             |
+| tcbypass       | Tone Control Bypass            | Switch    | The user's bass-/treble-settings are bypassed            | ON, OFF                            |
+| balance        | Stereo Balance Adjustment      | Number    | Adjust the balance                                       | INCREASE, DECREASE, value          |
+| speakera       | Speaker-A Adjustment           | Switch    | Turn on/off the speaker group A                          | ON, OFF                            |
+| speakerb       | Speaker-B Adjustment           | Switch    | Turn on/off the speaker group B                          | ON, OFF                            |
 
 Here are the list of channels available for each thing type:
 
-| Thing Type | Available channels                                                                    |
-|------------|---------------------------------------------------------------------------------------|
-| a11        | power, source, volume, mute, bass, treble, brightness                                 |
-| a12        | power, source, volume, mute, bass, treble, frequency, brightness                      |
-| a14        | power, source, volume, mute, bass, treble, frequency, brightness                      |
-| cd11       | power, playControl, track, brightness                                                 |
-| cd14       | power, playControl, track, brightness                                                 |
-| ra11       | power, source, volume, mute, bass, treble, playControl, frequency, brightness         |
-| ra12       | power, source, volume, mute, bass, treble, playControl, frequency, brightness         |
-| ra1570     | power, source, volume, mute, bass, treble, playControl, frequency, brightness         |
-| ra1572     | power, source, volume, mute, bass, treble, frequency, brightness                      |
-| ra1592     | power, source, volume, mute, bass, treble, frequency, brightness                      |
-| rap1580    | power, source, dsp, volume, mute, brightness                                          |
-| rc1570     | power, source, volume, mute, bass, treble, playControl, frequency, brightness         |
-| rc1572     | power, source, volume, mute, bass, treble, frequency, brightness                      |
-| rc1590     | power, source, volume, mute, bass, treble, frequency, brightness                      |
-| rcd1570    | power, playControl, brightness                                                        |
-| rcd1572    | power, playControl, track, brightness                                                 |
-| rcx1500    | power, source, volume, mute, playControl                                              |
-| rdd1580    | power, source, playControl, frequency                                                 |
-| rdg1520    | power, source, playControl                                                            |
+| Thing Type | Available channels                                                                                      |
+|------------|---------------------------------------------------------------------------------------------------------|
+| a11        | power, source, volume, mute, bass, treble, brightness, tcbypass, balance, speakera, speakerb            |
+| a12        | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
+| a14        | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
+| cd11       | power, playControl, track, brightness                                                                   |
+| cd14       | power, playControl, track, brightness                                                                   |
+| ra11       | power, source, volume, mute, bass, treble, playControl, frequency, brightness, tcbypass, balance        |
+| ra12       | power, source, volume, mute, bass, treble, playControl, frequency, brightness, tcbypass, balance        |
+| ra1570     | power, source, volume, mute, bass, treble, playControl, frequency, brightness, tcbypass, balance, speakera, speakerb |
+| ra1572     | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
+| ra1592     | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
+| rap1580    | power, source, dsp, volume, mute, brightness                                                            |
+| rc1570     | power, source, volume, mute, bass, treble, playControl, frequency, brightness, tcbypass, balance        |
+| rc1572     | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance                     |
+| rc1590     | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance                     |
+| rcd1570    | power, playControl, brightness                                                                          |
+| rcd1572    | power, playControl, track, brightness                                                                   |
+| rcx1500    | power, source, volume, mute, playControl                                                                |
+| rdd1580    | power, source, playControl, frequency                                                                   |
+| rdg1520    | power, source, playControl                                                                              |
 | rsp1066    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volumeUpDown, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volumeUpDown |
 | rsp1068    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsp1069    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsp1098    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute |
 | rsp1570    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsp1572    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
-| rsp1576    | power, source, dsp, volume, mute, brightness                                          |
-| rsp1582    | power, source, dsp, volume, mute, brightness                                          |
+| rsp1576    | power, source, dsp, volume, mute, brightness                                                            |
+| rsp1582    | power, source, dsp, volume, mute, brightness                                                            |
 | rsx1055    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volumeUpDown, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volumeUpDown |
 | rsx1056    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute |
 | rsx1057    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute |
@@ -203,11 +207,11 @@ Here are the list of channels available for each thing type:
 | rsx1550    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsx1560    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsx1562    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
-| rt09       | power, source, playControl, brightness                                                |
-| rt11       | power, source, brightness                                                             |
-| rt1570     | power, source, brightness                                                             |
-| t11        | power, source, brightness                                                             |
-| t14        | power, source, brightness                                                             |
+| rt09       | power, source, playControl, brightness                                                                  |
+| rt11       | power, source, brightness                                                                               |
+| rt1570     | power, source, brightness                                                                               |
+| t11        | power, source, brightness                                                                               |
+| t14        | power, source, brightness                                                                               |
 
 ## Full Example
 
@@ -221,6 +225,8 @@ Thing rotel:rsp1570:preamp "RSP-1570" [ serialPort="COM2" ]
 Thing rotel:ra1592:preamp "RA-1592" [ serialPort="COM3" ]
 
 Thing rotel:cd14:cd "CD14" [ serialPort="COM4" ]
+
+Thing rotel:a14:amp "A14" [ serialPort="/dev/ttyUSB0" ]
 ```
 
 example.things using serial over IP connection:
@@ -281,6 +287,11 @@ Switch amp_mute "Mute" { channel="rotel:ra1592:preamp:mute" }
 Number amp_bass "Bass Adjustment [%d]" { channel="rotel:ra1592:preamp:bass" }
 Number amp_treble "Treble Adjustment [%d]" { channel="rotel:ra1592:preamp:treble" }
 Dimmer amp_brightness "Display brightness" { channel="rotel:ra1592:preamp:brightness" }
+
+Switch amp_bypass "TCBypass" { channel="rotel:a14:amp:tcbypass" }
+Number amp_balance "Balance Adjustment [%d]" { channel="rotel:a14:amp:balance" }
+Switch amp_speakera "Speaker A" { channel="rotel:a14:amp:speakera" }
+Switch amp_speakerb "Speaker B" { channel="rotel:a14:amp:speakerb" }
 
 Switch cd_power "Power" { channel="rotel:cd14:cd:power" }
 Player cd_control "Playback" { channel="rotel:cd14:cd:power" }
