@@ -79,24 +79,26 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private static final Pattern IP_PATTERN = Pattern
             .compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
-    protected static final int POLLING_PERIOD = 15; // in seconds
-    protected static final int JSON_RPC_PORT = 2810;
-    protected static final String JSON_RPC_MULTICAST_IP1 = "239.255.68.139";
-    protected static final String JSON_RPC_MULTICAST_IP2 = "224.255.68.139";
+    private static final int POLLING_PERIOD = 15; // in seconds
+    private static final int JSON_RPC_PORT = 2810;
+    private static final String JSON_RPC_MULTICAST_IP1 = "239.255.68.139";
+    private static final String JSON_RPC_MULTICAST_IP2 = "224.255.68.139";
+
+    private final Logger logger = LoggerFactory.getLogger(MieleBridgeHandler.class);
+
     private boolean lastBridgeConnectionState = false;
     private boolean currentBridgeConnectionState = false;
 
     private Gson gson = new Gson();
     private @NonNullByDefault({}) MieleGatewayCommunicationController gatewayCommunication;
-    private final Logger logger = LoggerFactory.getLogger(MieleBridgeHandler.class);
 
     private Set<ApplianceStatusListener> applianceStatusListeners = ConcurrentHashMap.newKeySet();
-    protected @Nullable ScheduledFuture<?> pollingJob;
-    protected @Nullable ExecutorService executor;
-    protected @Nullable Future<?> eventListenerJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable ExecutorService executor;
+    private @Nullable Future<?> eventListenerJob;
 
-    protected Map<String, HomeDevice> cachedHomeDevicesByApplianceId = new ConcurrentHashMap<String, HomeDevice>();
-    protected Map<String, HomeDevice> cachedHomeDevicesByRemoteUid = new ConcurrentHashMap<String, HomeDevice>();
+    private Map<String, HomeDevice> cachedHomeDevicesByApplianceId = new ConcurrentHashMap<String, HomeDevice>();
+    private Map<String, HomeDevice> cachedHomeDevicesByRemoteUid = new ConcurrentHashMap<String, HomeDevice>();
 
     public MieleBridgeHandler(Bridge bridge) {
         super(bridge);
