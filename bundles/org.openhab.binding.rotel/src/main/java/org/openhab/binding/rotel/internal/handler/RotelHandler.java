@@ -819,7 +819,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
                         } else if (OnOffType.from(tcbypass) == OnOffType.ON) {
                             logger.debug("Command {} from channel {} ignored: device in state TCBYPASS ON", command,
-                                    command, channel);
+                                    channel);
                             updateChannelState(CHANNEL_BASS);
                         } else {
                             handleToneCmd(bass, channel, command, 2, RotelCommand.BASS_UP, RotelCommand.BASS_DOWN,
