@@ -202,12 +202,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             programNumber = command.toString();
             logger.debug("handleSetProgramNumber() Program number set to {}", programNumber);
 
-            logger.debug("handleSetProgramNumber() AC currentMode {}", currentMode);
-
             // force mode update if we are already in SCENARIO o WEEKLY mode
             if (currentMode.isScenario() || currentMode.isWeekly()) {
-                logger.debug("handleSetProgramNumber() AC 1");
-
                 try {
                     Thermoregulation.OperationMode new_mode = Thermoregulation.OperationMode
                             .valueOf(currentMode.mode() + "_" + programNumber);
@@ -215,15 +211,12 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                             currentSetPointTemp);
                     send(Thermoregulation.requestWriteMode(getWhere(""), new_mode, currentFunction,
                             currentSetPointTemp));
-                    logger.debug("handleSetProgramNumber() AC 2");
-
                 } catch (OWNException e) {
                     logger.warn("handleSetProgramNumber() {}", e.getMessage());
                 } catch (IllegalArgumentException e) {
                     logger.warn("handleSetProgramNumber() Unsupported command {} for thing {}", command,
                             getThing().getUID());
                 }
-                logger.debug("handleSetProgramNumber() AC 3");
             }
 
         } else {
