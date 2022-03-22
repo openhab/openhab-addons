@@ -491,7 +491,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 final boolean isSHCClassic = bridgeDevice.isClassicController();
                 bridgeDevice.getDeviceState().getState().getOperationStatus(isSHCClassic)
                         .setValue(event.getProperties().getOperationStatus(isSHCClassic));
-                bridgeDevice.getDeviceState().getState().getCpuUsage(isSHCClassic).setValue(event.getProperties().getCpuUsage(isSHCClassic));
+                bridgeDevice.getDeviceState().getState().getCpuUsage(isSHCClassic)
+                        .setValue(event.getProperties().getCpuUsage(isSHCClassic));
                 bridgeDevice.getDeviceState().getState().getDiskUsage().setValue(event.getProperties().getDiskUsage());
                 bridgeDevice.getDeviceState().getState().getMemoryUsage(isSHCClassic)
                         .setValue(event.getProperties().getMemoryUsage(isSHCClassic));

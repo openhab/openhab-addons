@@ -21,11 +21,11 @@ import com.google.gson.annotations.SerializedName;
  */
 public class LivisiAccessTokenRequestDTO {
 
-    @SerializedName("UserName")
+    @SerializedName("username")
     private String userName;
-    @SerializedName("Password")
+    @SerializedName("password")
     private String password;
-    @SerializedName("Grant_Type")
+    @SerializedName("grant_type")
     private String grantType;
 
     public String getUserName() {
