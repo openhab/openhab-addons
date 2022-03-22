@@ -122,7 +122,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                         "@text/offline.conf-error-where");
             }
 
-            // reset state of signal chanells (they will be setted when specific messages are received)
+            // reset state of signal channels (they will be setted when specific messages are received)
             updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_MANUAL, OnOffType.OFF);
             updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_OFF, OnOffType.OFF);
             updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_PROTECTION, OnOffType.OFF);
@@ -202,7 +202,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             programNumber = command.toString();
             logger.debug("handleSetProgramNumber() Program number set to {}", programNumber);
 
-            // force mode update if we are already in SCENARIO o WEEKLY mode
+            // force OperationMode update if we are already in SCENARIO o WEEKLY mode
             if (currentMode.isScenario() || currentMode.isWeekly()) {
                 try {
                     Thermoregulation.OperationMode new_mode = Thermoregulation.OperationMode
@@ -261,9 +261,9 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
                         // store current mode
                         currentMode = new_mode;
-                    } else
+                    } else {
                         new_mode = Thermoregulation.OperationMode.valueOf(command.toString());
-
+                    }
                     send(Thermoregulation.requestWriteMode(getWhere(w.value()), new_mode, currentFunction,
                             currentSetPointTemp));
                 } catch (OWNException e) {
