@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -91,7 +90,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) MieleGatewayCommunicationController gatewayCommunication;
     private final Logger logger = LoggerFactory.getLogger(MieleBridgeHandler.class);
 
-    protected List<ApplianceStatusListener> applianceStatusListeners = new CopyOnWriteArrayList<>();
+    private Set<ApplianceStatusListener> applianceStatusListeners = ConcurrentHashMap.newKeySet();
     protected @Nullable ScheduledFuture<?> pollingJob;
     protected @Nullable ExecutorService executor;
     protected @Nullable Future<?> eventListenerJob;
