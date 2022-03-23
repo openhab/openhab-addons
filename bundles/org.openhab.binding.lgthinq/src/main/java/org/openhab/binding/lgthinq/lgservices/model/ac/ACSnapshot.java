@@ -47,6 +47,8 @@ public class ACSnapshot implements Snapshot {
     @JsonIgnore
     private boolean online;
 
+    private double energyConsumption;
+
     @JsonIgnore
     public DevicePowerState getPowerStatus() {
         return operation == null ? DevicePowerState.DV_POWER_UNK : DevicePowerState.statusOf(operation);
@@ -80,6 +82,15 @@ public class ACSnapshot implements Snapshot {
 
     public void setAirWindStrength(Integer airWindStrength) {
         this.airWindStrength = airWindStrength;
+    }
+
+    @JsonProperty("airState.energy.onCurrent")
+    public double getEnergyConsumption() {
+        return energyConsumption;
+    }
+
+    public void setEnergyConsumption(double energyConsumption) {
+        this.energyConsumption = energyConsumption;
     }
 
     @JsonProperty("airState.tempState.target")
