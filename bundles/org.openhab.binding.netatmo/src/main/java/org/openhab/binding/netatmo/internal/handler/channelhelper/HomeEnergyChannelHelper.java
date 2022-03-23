@@ -24,8 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
-import org.openhab.binding.netatmo.internal.api.dto.ThermProgram;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
+import org.openhab.binding.netatmo.internal.api.dto.ThermProgram;
 import org.openhab.binding.netatmo.internal.api.dto.TimeTableItem;
 import org.openhab.binding.netatmo.internal.api.dto.Zone;
 import org.openhab.core.config.core.Configuration;
@@ -80,8 +80,7 @@ public class HomeEnergyChannelHelper extends ChannelHelper {
                             if (currentProgram != null) {
                                 TimeTableItem currentProgramMode = currentProgramMode(currentProgram);
                                 if (currentProgramMode != null) {
-                                    Zone zone = currentProgram
-                                            .getZone(String.valueOf(currentProgramMode.getZoneId()));
+                                    Zone zone = currentProgram.getZone(String.valueOf(currentProgramMode.getZoneId()));
                                     if (zone != null) {
                                         return new StringType(zone.getName());
                                     }
