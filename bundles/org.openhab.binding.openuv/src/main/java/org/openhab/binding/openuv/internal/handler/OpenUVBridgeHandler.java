@@ -46,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * {@link OpenUVBridgeHandler} is the handler for OpenUV API and connects it
@@ -115,23 +116,26 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
 
     public @Nullable OpenUVResult getUVData(String latitude, String longitude, String altitude) {
         try {
-            String jsonData = HttpUtil.executeUrl("GET", String.format(QUERY_URL, latitude, longitude, altitude),
-                    header, null, null, REQUEST_TIMEOUT_MS);
-            OpenUVResponse uvResponse = gson.fromJson(jsonData, OpenUVResponse.class);
-            if (uvResponse != null) {
-                String error = uvResponse.getError();
-                if (error == null) {
-                    updateStatus(ThingStatus.ONLINE);
-                    return uvResponse.getResult();
+            String url = String.format(QUERY_URL, latitude, longitude, altitude);
+            String jsonData = HttpUtil.executeUrl("GET", url, header, null, null, REQUEST_TIMEOUT_MS);
+            try {
+                OpenUVResponse uvResponse = gson.fromJson(jsonData, OpenUVResponse.class);
+                if (uvResponse != null) {
+                    String error = uvResponse.getError();
+                    if (error == null) {
+                        updateStatus(ThingStatus.ONLINE);
+                        return uvResponse.getResult();
+                    }
+                    throw new OpenUVException(error);
                 }
-                throw new OpenUVException(error);
+            } catch (JsonSyntaxException e) {
+                logger.info("No json received when calling `{}` : {}", url, jsonData);
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (OpenUVException e) {
             if (e.isQuotaError()) {
-                LocalDate today = LocalDate.now();
-                LocalDate tomorrow = today.plusDays(1);
+                LocalDate tomorrow = LocalDate.now().plusDays(1);
                 LocalDateTime tomorrowMidnight = tomorrow.atStartOfDay().plusMinutes(2);
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
