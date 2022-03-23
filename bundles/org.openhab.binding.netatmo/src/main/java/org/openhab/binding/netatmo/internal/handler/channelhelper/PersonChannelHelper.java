@@ -17,8 +17,8 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeDataPerson;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatusPerson;
+import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
+import org.openhab.binding.netatmo.internal.api.dto.HomeStatusPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
@@ -39,8 +39,8 @@ public class PersonChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
-        if (naThing instanceof NAHomeDataPerson) {
-            NAHomeDataPerson person = (NAHomeDataPerson) naThing;
+        if (naThing instanceof HomeDataPerson) {
+            HomeDataPerson person = (HomeDataPerson) naThing;
             switch (channelId) {
                 case CHANNEL_PERSON_AVATAR_URL:
                     return toStringType(person.getUrl().orElse(null));
@@ -48,8 +48,8 @@ public class PersonChannelHelper extends ChannelHelper {
                     return toRawType(person.getUrl().orElse(null));
             }
         }
-        if (naThing instanceof NAHomeStatusPerson) {
-            NAHomeStatusPerson person = (NAHomeStatusPerson) naThing;
+        if (naThing instanceof HomeStatusPerson) {
+            HomeStatusPerson person = (HomeStatusPerson) naThing;
             switch (channelId) {
                 case CHANNEL_PERSON_AT_HOME:
                     return OnOffType.from(!person.isOutOfSight());

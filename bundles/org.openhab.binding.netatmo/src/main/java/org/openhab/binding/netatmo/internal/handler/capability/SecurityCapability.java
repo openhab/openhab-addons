@@ -22,17 +22,17 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeDataModule;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeDataPerson;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
+import org.openhab.binding.netatmo.internal.api.dto.HomeData;
+import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
+import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
+import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatusModule;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatusPerson;
+import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
+import org.openhab.binding.netatmo.internal.api.dto.HomeStatusPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 class SecurityCapability extends RestCapability<SecurityApi> {
     private final Logger logger = LoggerFactory.getLogger(SecurityCapability.class);
 
-    SecurityCapability(NACommonInterface handler) {
+    SecurityCapability(CommonInterface handler) {
         super(handler);
     }
 
@@ -59,15 +59,15 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     }
 
     @Override
-    protected void updateHomeData(NAHomeData homeData) {
-        NAObjectMap<NAHomeDataPerson> persons = homeData.getPersons();
-        NAObjectMap<NAHomeDataModule> cameras = homeData.getModules();
+    protected void updateHomeData(HomeData homeData) {
+        NAObjectMap<HomeDataPerson> persons = homeData.getPersons();
+        NAObjectMap<HomeDataModule> cameras = homeData.getModules();
         handler.getActiveChildren().forEach(handler -> {
-            NAHomeDataPerson dataPerson = persons.get(handler.getId());
+            HomeDataPerson dataPerson = persons.get(handler.getId());
             if (dataPerson != null) {
                 handler.setNewData(dataPerson);
             }
-            NAHomeDataModule data = cameras.get(handler.getId());
+            HomeDataModule data = cameras.get(handler.getId());
             if (data != null) {
                 handler.setNewData(data);
             }
@@ -76,14 +76,14 @@ class SecurityCapability extends RestCapability<SecurityApi> {
 
     @Override
     protected void updateHomeStatus(HomeStatus homeStatus) {
-        NAObjectMap<NAHomeStatusPerson> persons = homeStatus.getPersons();
-        NAObjectMap<NAHomeStatusModule> cameras = homeStatus.getModules();
+        NAObjectMap<HomeStatusPerson> persons = homeStatus.getPersons();
+        NAObjectMap<HomeStatusModule> cameras = homeStatus.getModules();
         handler.getActiveChildren().forEach(handler -> {
-            NAHomeStatusPerson dataPerson = persons.get(handler.getId());
+            HomeStatusPerson dataPerson = persons.get(handler.getId());
             if (dataPerson != null) {
                 handler.setNewData(dataPerson);
             }
-            NAHomeStatusModule dataCamera = cameras.get(handler.getId());
+            HomeStatusModule dataCamera = cameras.get(handler.getId());
             if (dataCamera != null) {
                 handler.setNewData(dataCamera);
             }
@@ -91,7 +91,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     }
 
     @Override
-    protected void updateHomeEvent(NAHomeEvent homeEvent) {
+    protected void updateHomeEvent(HomeEvent homeEvent) {
         String personId = homeEvent.getPersonId();
         if (personId != null) {
             handler.getActiveChildren().filter(handler -> personId.equals(handler.getId())).findFirst()
@@ -102,7 +102,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
                 .ifPresent(handler -> handler.setNewData(homeEvent));
     }
 
-    Collection<NAHomeEvent> getCameraEvents(String cameraId) {
+    Collection<HomeEvent> getCameraEvents(String cameraId) {
         return api.map(api -> {
 
             try {
@@ -114,7 +114,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
         }).orElse(List.of());
     }
 
-    Collection<NAHomeEvent> getPersonEvents(String personId) {
+    Collection<HomeEvent> getPersonEvents(String personId) {
         return api.map(api -> {
             try {
                 return api.getPersonEvents(handler.getId(), personId);

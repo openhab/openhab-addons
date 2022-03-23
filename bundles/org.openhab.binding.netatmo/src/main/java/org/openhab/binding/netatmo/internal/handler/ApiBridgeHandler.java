@@ -99,11 +99,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing Netatmo API bridge handler.");
         thingConf = getConfigAs(ApiHandlerConfiguration.class);
-        openConnection();
-        String webHookUrl = thingConf.webHookUrl;
-        if (webHookUrl != null && !webHookUrl.isEmpty()) {
-            servlet = Optional.of(new NetatmoServlet(httpService, this, webHookUrl));
-        }
+        scheduler.execute(() -> {
+            openConnection();
+            String webHookUrl = thingConf.webHookUrl;
+            if (webHookUrl != null && !webHookUrl.isEmpty()) {
+                servlet = Optional.of(new NetatmoServlet(httpService, this, webHookUrl));
+            }
+        });
     }
 
     private void openConnection() {

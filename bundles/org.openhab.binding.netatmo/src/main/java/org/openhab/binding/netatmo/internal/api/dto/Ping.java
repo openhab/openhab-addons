@@ -12,19 +12,28 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.ApiResponse;
 
 /**
- * The {@link NetatmoLocationEx} is the common interface for dto holding a extra location data
+ * The {@link Ping} hold url data for a camera module
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public interface NetatmoLocationEx extends NetatmoLocation {
-    public Optional<String> getCountry();
+public class Ping extends ApiResponse<String> {
+    private String localUrl = "";
+    private @Nullable String productName;
 
-    public Optional<String> getTimezone();
+    @Override
+    public String getStatus() {
+        return localUrl;
+    }
+
+    @Override
+    public @Nullable String getBody() {
+        return productName;
+    }
 }

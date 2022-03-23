@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
+import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.NAHomeStatusResponse;
@@ -51,12 +51,12 @@ public class HomeApi extends RestManager {
         return body != null ? body.getHomeStatus().orElse(null) : null;
     }
 
-    public @Nullable NAHomeData getHomeData(String homeId) throws NetatmoException {
-        Collection<NAHomeData> result = getHomesData(homeId, null);
+    public @Nullable HomeData getHomeData(String homeId) throws NetatmoException {
+        Collection<HomeData> result = getHomesData(homeId, null);
         return result.isEmpty() ? null : result.iterator().next();
     }
 
-    public Collection<NAHomeData> getHomesData(@Nullable String homeId, @Nullable ModuleType type)
+    public Collection<HomeData> getHomesData(@Nullable String homeId, @Nullable ModuleType type)
             throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_HOMES_DATA, PARAM_HOMEID, homeId);
 
@@ -64,8 +64,8 @@ public class HomeApi extends RestManager {
             uriBuilder.queryParam(PARAM_GATEWAYTYPE, type.name());
         }
 
-        NAHomeData.NAHomesDataResponse response = get(uriBuilder, NAHomeData.NAHomesDataResponse.class);
-        ListBodyResponse<NAHomeData> body = response.getBody();
+        HomeData.HomesDataResponse response = get(uriBuilder, HomeData.HomesDataResponse.class);
+        ListBodyResponse<HomeData> body = response.getBody();
         return body != null ? body.getElements() : Set.of();
     }
 }

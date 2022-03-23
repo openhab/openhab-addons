@@ -16,7 +16,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
+import org.openhab.binding.netatmo.internal.api.dto.Dashboard;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 
@@ -34,7 +34,7 @@ public class AirQualityExtChannelHelper extends AirQualityChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
+    protected @Nullable State internalGetDashboard(String channelId, Dashboard dashboard) {
         return CHANNEL_HEALTH_INDEX.equals(channelId) ? new DecimalType(dashboard.getHealthIdx())
                 : super.internalGetDashboard(channelId, dashboard);
     }

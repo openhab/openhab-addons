@@ -16,7 +16,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 
 /**
  * The {@link ModuleCapability} takes care of handling properties for netatmo modules
@@ -27,7 +27,7 @@ import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
 @NonNullByDefault
 public class ModuleCapability extends Capability {
 
-    public ModuleCapability(NACommonInterface handler) {
+    public ModuleCapability(CommonInterface handler) {
         super(handler);
     }
 

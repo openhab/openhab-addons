@@ -29,7 +29,7 @@ import com.google.gson.annotations.SerializedName;
  */
 
 @NonNullByDefault
-public class NAThing extends NAObject implements NetatmoModule {
+public class NAThing extends NAObject implements NAModule {
     @SerializedName(value = "rf_status", alternate = { "wifi_status", "rf_strength", "wifi_strength" })
     private int radioStatus = -1;
     @SerializedName(value = "last_seen", alternate = { "last_therm_seen", "last_status_store", "last_plug_seen",
@@ -38,7 +38,7 @@ public class NAThing extends NAObject implements NetatmoModule {
     @SerializedName(value = "firmware", alternate = { "firmware_revision" })
     private @Nullable String firmware;
     private @Nullable Boolean reachable;
-    private @Nullable NADashboard dashboardData;
+    private @Nullable Dashboard dashboardData;
 
     private @Nullable String roomId;
     private @Nullable String bridge;
@@ -55,7 +55,7 @@ public class NAThing extends NAObject implements NetatmoModule {
         return localReachable != null ? localReachable : true;
     }
 
-    public @Nullable NADashboard getDashboardData() {
+    public @Nullable Dashboard getDashboardData() {
         return dashboardData;
     }
 

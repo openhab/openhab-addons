@@ -12,40 +12,26 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 
 /**
- * The {@link NAHome} holds home information.
+ * The {@link HomeStatusPerson} provides Person informations returned by getHomeData endpoint
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 
 @NonNullByDefault
-public class NAHome extends NADevice implements NetatmoLocation {
-    private double[] coordinates = {};
-    private double altitude;
-    private List<NAHomeEvent> events = List.of();
+public class HomeStatusPerson extends NAThing {
+    private boolean outOfSight;
 
     @Override
     public ModuleType getType() {
-        return ModuleType.NAHome;
+        return ModuleType.PERSON;
     }
 
-    @Override
-    public double getAltitude() {
-        return altitude;
-    }
-
-    @Override
-    public double[] getCoordinates() {
-        return coordinates;
-    }
-
-    public List<NAHomeEvent> getEvents() {
-        return events;
+    public boolean isOutOfSight() {
+        return outOfSight;
     }
 }

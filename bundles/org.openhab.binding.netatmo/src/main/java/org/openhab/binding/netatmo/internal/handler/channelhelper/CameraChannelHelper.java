@@ -17,9 +17,9 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatusModule;
+import org.openhab.binding.netatmo.internal.api.dto.Event;
+import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
+import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.types.State;
@@ -53,8 +53,8 @@ public class CameraChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
-        if (naThing instanceof NAHomeStatusModule) {
-            NAHomeStatusModule camera = (NAHomeStatusModule) naThing;
+        if (naThing instanceof HomeStatusModule) {
+            HomeStatusModule camera = (HomeStatusModule) naThing;
             switch (channelId) {
                 case CHANNEL_MONITORING:
                     return camera.getMonitoring();
@@ -74,9 +74,9 @@ public class CameraChannelHelper extends ChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetEvent(String channelId, NAEvent event) {
-        if (event instanceof NAHomeEvent && CHANNEL_EVENT_VIDEO_URL.equals(channelId)) {
-            NAHomeEvent homeEvent = (NAHomeEvent) event;
+    protected @Nullable State internalGetEvent(String channelId, Event event) {
+        if (event instanceof HomeEvent && CHANNEL_EVENT_VIDEO_URL.equals(channelId)) {
+            HomeEvent homeEvent = (HomeEvent) event;
             return toStringType(getStreamURL(homeEvent.getVideoId()));
         }
         return null;

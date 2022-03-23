@@ -25,21 +25,21 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.EventCateg
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.VideoStatus;
 
 /**
- * The {@link NAHomeEvent} holds information transferred by the webhook about a home event.
+ * The {@link HomeEvent} holds information transferred by the webhook about a home event.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 
 @NonNullByDefault
-public class NAHomeEvent extends NAEvent {
-    public class NAEventsDataResponse extends ApiResponse<BodyResponse<NAHome>> {
+public class HomeEvent extends Event {
+    public class NAEventsDataResponse extends ApiResponse<BodyResponse<Home>> {
     }
 
     private @NonNullByDefault({}) ZonedDateTime time;
     private @Nullable String personId;
     private EventCategory category = EventCategory.UNKNOWN;
-    private @Nullable NASnapshot snapshot;
+    private @Nullable Snapshot snapshot;
     private @Nullable String videoId;
     private VideoStatus videoStatus = VideoStatus.UNKNOWN;
     private boolean isArrival;
@@ -88,7 +88,7 @@ public class NAHomeEvent extends NAEvent {
 
     @Override
     public @Nullable String getSnapshotUrl() {
-        NASnapshot localSnap = snapshot;
+        Snapshot localSnap = snapshot;
         return localSnap != null ? localSnap.getUrl() : null;
     }
 

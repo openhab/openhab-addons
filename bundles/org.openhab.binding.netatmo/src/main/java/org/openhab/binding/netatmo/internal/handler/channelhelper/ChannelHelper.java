@@ -20,8 +20,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
-import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
-import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
+import org.openhab.binding.netatmo.internal.api.dto.Dashboard;
+import org.openhab.binding.netatmo.internal.api.dto.Event;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
@@ -59,8 +59,8 @@ public abstract class ChannelHelper {
         State result = null;
         if (channelGroups.isEmpty() || (groupId != null && channelGroups.contains(groupId))) {
             NAObject localData = data;
-            if (localData instanceof NAEvent) {
-                result = internalGetEvent(channelId, (NAEvent) localData);
+            if (localData instanceof Event) {
+                result = internalGetEvent(channelId, (Event) localData);
                 if (result != null) {
                     return result;
                 }
@@ -71,7 +71,7 @@ public abstract class ChannelHelper {
                 if (result != null) {
                     return result;
                 }
-                NADashboard dashboard = naThing.getDashboardData();
+                Dashboard dashboard = naThing.getDashboardData();
                 if (dashboard != null) {
                     result = internalGetDashboard(channelId, dashboard);
                     if (result != null) {
@@ -98,7 +98,7 @@ public abstract class ChannelHelper {
         return null;
     }
 
-    protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
+    protected @Nullable State internalGetDashboard(String channelId, Dashboard dashboard) {
         return null;
     }
 
@@ -106,7 +106,7 @@ public abstract class ChannelHelper {
         return null;
     }
 
-    protected @Nullable State internalGetEvent(String channelId, NAEvent event) {
+    protected @Nullable State internalGetEvent(String channelId, Event event) {
         return null;
     }
 

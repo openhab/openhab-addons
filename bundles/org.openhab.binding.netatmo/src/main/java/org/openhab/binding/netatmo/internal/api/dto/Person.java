@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 
 /**
- * The {@link NAPerson} merges answers provided in event and in webhook to provide the
+ * The {@link Person} merges answers provided in event and in webhook to provide the
  * same interface to the binding
  *
  * @author Gaël L'hopital - Initial contribution
@@ -25,10 +25,10 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
  */
 
 @NonNullByDefault
-public class NAPerson extends NAThing {
+public class Person extends NAThing {
     // Provided by events
     // TODO : not 100% sure this is still used since new API.
-    private @Nullable NASnapshot face;
+    private @Nullable Snapshot face;
 
     // Provided by webhooks
     private @Nullable String faceId;
@@ -37,18 +37,18 @@ public class NAPerson extends NAThing {
 
     @Override
     public ModuleType getType() {
-        return ModuleType.NAPerson;
+        return ModuleType.PERSON;
     }
 
     public @Nullable String getFaceUrl() {
-        NASnapshot localFace = face;
+        Snapshot localFace = face;
         if (localFace != null) {
             return localFace.getUrl();
         }
         String fId = faceId;
         String key = faceKey;
         if (face == null && fId != null && key != null) {
-            return new NASnapshot(fId, key).getUrl();
+            return new Snapshot(fId, key).getUrl();
         }
         return null;
     }

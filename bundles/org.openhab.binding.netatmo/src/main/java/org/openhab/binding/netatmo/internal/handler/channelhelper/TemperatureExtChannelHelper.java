@@ -17,7 +17,7 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStri
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
+import org.openhab.binding.netatmo.internal.api.dto.Dashboard;
 import org.openhab.core.types.State;
 
 /**
@@ -35,7 +35,7 @@ public class TemperatureExtChannelHelper extends TemperatureChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
+    protected @Nullable State internalGetDashboard(String channelId, Dashboard dashboard) {
         return CHANNEL_TREND.equals(channelId) ? toStringType(dashboard.getTempTrend())
                 : super.internalGetDashboard(channelId, dashboard);
     }

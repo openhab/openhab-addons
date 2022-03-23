@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.action.RoomActions;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public class RoomCapability extends Capability {
     private final Logger logger = LoggerFactory.getLogger(RoomCapability.class);
 
-    public RoomCapability(NACommonInterface handler) {
+    public RoomCapability(CommonInterface handler) {
         super(handler);
     }
 

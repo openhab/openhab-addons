@@ -19,13 +19,13 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link NetatmoLocation} is the common interface for dto holding a location
+ * The {@link Location} is the common interface for dto holding a location
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public interface NetatmoLocation {
+public interface Location {
     double[] getCoordinates();
 
     double getAltitude();

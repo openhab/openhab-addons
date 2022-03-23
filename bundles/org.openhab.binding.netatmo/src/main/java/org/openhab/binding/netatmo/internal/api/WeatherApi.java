@@ -23,8 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
-import org.openhab.binding.netatmo.internal.api.dto.NAMain.NAStationDataResponse;
-import org.openhab.binding.netatmo.internal.api.dto.NAMeasureBodyElem;
+import org.openhab.binding.netatmo.internal.api.dto.NAMain.StationDataResponse;
+import org.openhab.binding.netatmo.internal.api.dto.MeasureBodyElem;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 
 /**
@@ -34,10 +34,10 @@ import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
  */
 @NonNullByDefault
 public class WeatherApi extends RestManager {
-    private class NAMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<Double>>> {
+    private class NAMeasuresResponse extends ApiResponse<List<MeasureBodyElem<Double>>> {
     }
 
-    private class NADateMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<ZonedDateTime>>> {
+    private class NADateMeasuresResponse extends ApiResponse<List<MeasureBodyElem<ZonedDateTime>>> {
     }
 
     public WeatherApi(ApiBridgeHandler apiClient) {
@@ -54,11 +54,11 @@ public class WeatherApi extends RestManager {
      * @return NAStationDataResponse
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
-    public NAStationDataResponse getStationsData(@Nullable String deviceId, boolean getFavorites)
+    public StationDataResponse getStationsData(@Nullable String deviceId, boolean getFavorites)
             throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GETSTATION, PARAM_DEVICEID, deviceId, //
                 PARAM_FAVORITES, getFavorites);
-        NAStationDataResponse response = get(uriBuilder, NAStationDataResponse.class);
+        StationDataResponse response = get(uriBuilder, StationDataResponse.class);
         return response;
     }
 
@@ -75,7 +75,7 @@ public class WeatherApi extends RestManager {
 
     public @Nullable Object getMeasurements(String deviceId, @Nullable String moduleId, @Nullable String scale,
             String apiDescriptor) throws NetatmoException {
-        NAMeasureBodyElem<?> result = getMeasure(deviceId, moduleId, scale, apiDescriptor);
+        MeasureBodyElem<?> result = getMeasure(deviceId, moduleId, scale, apiDescriptor);
         return result.getSingleValue();
     }
 
@@ -86,11 +86,11 @@ public class WeatherApi extends RestManager {
             queryLimit += "_" + apiDescriptor;
         }
 
-        NAMeasureBodyElem<?> result = getMeasure(deviceId, moduleId, scale, queryLimit.toLowerCase());
+        MeasureBodyElem<?> result = getMeasure(deviceId, moduleId, scale, queryLimit.toLowerCase());
         return result.getSingleValue();
     }
 
-    private NAMeasureBodyElem<?> getMeasure(String deviceId, @Nullable String moduleId, @Nullable String scale,
+    private MeasureBodyElem<?> getMeasure(String deviceId, @Nullable String moduleId, @Nullable String scale,
             String measureType) throws NetatmoException {
         // NAMeasuresResponse is not designed for optimize=false
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GETMEASURE, PARAM_DEVICEID, deviceId, "real_time", true,
@@ -101,13 +101,13 @@ public class WeatherApi extends RestManager {
         }
         if (measureType.startsWith("date")) {
             NADateMeasuresResponse response = get(uriBuilder, NADateMeasuresResponse.class);
-            List<NAMeasureBodyElem<ZonedDateTime>> body = response.getBody();
+            List<MeasureBodyElem<ZonedDateTime>> body = response.getBody();
             if (body != null && !body.isEmpty()) {
                 return body.get(0);
             }
         } else {
             NAMeasuresResponse response = get(uriBuilder, NAMeasuresResponse.class);
-            List<NAMeasureBodyElem<Double>> body = response.getBody();
+            List<MeasureBodyElem<Double>> body = response.getBody();
             if (body != null && !body.isEmpty()) {
                 return body.get(0);
             }

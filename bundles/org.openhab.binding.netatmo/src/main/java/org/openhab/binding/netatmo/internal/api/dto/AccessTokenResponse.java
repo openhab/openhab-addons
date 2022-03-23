@@ -22,7 +22,7 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public final class NAAccessTokenResponse {
+public final class AccessTokenResponse {
 
     /**
      * The access token issued by the authorization server. It is used

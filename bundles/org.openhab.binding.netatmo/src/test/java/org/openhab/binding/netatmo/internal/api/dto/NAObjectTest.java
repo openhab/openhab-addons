@@ -56,7 +56,7 @@ public class NAObjectTest {
                 + "  \"home_name\": \"Boulogne Billan.\"," + "  \"event_id\": \"5d19baae369359e896380341\","
                 + "  \"message\": \"Boulogne Billan: Movement detected by Indoor Camera\","
                 + "  \"push_type\": \"NACamera-movement\"" + "}";
-        NAWebhookEvent object = gson.deserialize(NAWebhookEvent.class, event);
+        WebhookEvent object = gson.deserialize(WebhookEvent.class, event);
         assertEquals(object.getEventType(), EventType.MOVEMENT);
     }
 
@@ -66,7 +66,7 @@ public class NAObjectTest {
                 + "Humidity:66,Noise:36,Pressure:1026.1,AbsolutePressure:1009.3,"
                 + "min_temp:20,max_temp:22.4,date_max_temp:1623147932,"
                 + "Sdate_min_temp:1623125249,pressure_trend:\"nonexistent\",temp_trend:\"stable\"}";
-        NADashboard object = gson.deserialize(NADashboard.class, dashboard);
+        Dashboard object = gson.deserialize(Dashboard.class, dashboard);
         assertEquals(511, object.getCo2(), 0);
         assertEquals(TrendDescription.UNKNOWN, object.getPressureTrend());
         assertEquals(TrendDescription.STABLE, object.getTempTrend());

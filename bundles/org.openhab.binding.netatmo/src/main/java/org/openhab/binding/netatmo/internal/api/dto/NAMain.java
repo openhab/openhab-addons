@@ -24,8 +24,8 @@ import org.openhab.binding.netatmo.internal.api.ListBodyResponse;
  */
 
 @NonNullByDefault
-public class NAMain extends NADevice {
-    public class NAStationDataResponse extends ApiResponse<ListBodyResponse<NAMain>> {
+public class NAMain extends Device {
+    public class StationDataResponse extends ApiResponse<ListBodyResponse<NAMain>> {
     }
 
     private boolean readOnly;

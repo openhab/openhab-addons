@@ -27,15 +27,15 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMo
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 
 /**
- * The {@link NAHomeData} holds home information returned by homesdata endpoint.
+ * The {@link HomeData} holds home information returned by homesdata endpoint.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 
 @NonNullByDefault
-public class NAHomeData extends NAThing implements NetatmoModule, NetatmoLocationEx {
-    public class NAHomesDataResponse extends ApiResponse<ListBodyResponse<NAHomeData>> {
+public class HomeData extends NAThing implements NAModule, LocationEx {
+    public class HomesDataResponse extends ApiResponse<ListBodyResponse<HomeData>> {
     }
 
     private double altitude;
@@ -46,15 +46,15 @@ public class NAHomeData extends NAThing implements NetatmoModule, NetatmoLocatio
     private @Nullable String temperatureControlMode;
     private SetpointMode thermMode = SetpointMode.UNKNOWN;
     private int thermSetpointDefaultDuration;
-    private List<NAThermProgram> schedules = List.of();
+    private List<ThermProgram> schedules = List.of();
 
-    private NAObjectMap<NAHomeDataPerson> persons = new NAObjectMap<>();
-    private NAObjectMap<NAHomeDataRoom> rooms = new NAObjectMap<>();
-    private NAObjectMap<NAHomeDataModule> modules = new NAObjectMap<>();
+    private NAObjectMap<HomeDataPerson> persons = new NAObjectMap<>();
+    private NAObjectMap<HomeDataRoom> rooms = new NAObjectMap<>();
+    private NAObjectMap<HomeDataModule> modules = new NAObjectMap<>();
 
     @Override
     public ModuleType getType() {
-        return ModuleType.NAHome;
+        return ModuleType.HOME;
     }
 
     @Override
@@ -85,23 +85,23 @@ public class NAHomeData extends NAThing implements NetatmoModule, NetatmoLocatio
         return thermMode;
     }
 
-    public NAObjectMap<NAHomeDataPerson> getPersons() {
+    public NAObjectMap<HomeDataPerson> getPersons() {
         return persons;
     }
 
-    public List<NAHomeDataPerson> getKnownPersons() {
-        return persons.values().stream().filter(NAHomeDataPerson::isKnown).collect(Collectors.toList());
+    public List<HomeDataPerson> getKnownPersons() {
+        return persons.values().stream().filter(HomeDataPerson::isKnown).collect(Collectors.toList());
     }
 
     public Optional<String> getTemperatureControlMode() {
         return Optional.ofNullable(temperatureControlMode);
     }
 
-    public NAObjectMap<NAHomeDataRoom> getRooms() {
+    public NAObjectMap<HomeDataRoom> getRooms() {
         return rooms;
     }
 
-    public NAObjectMap<NAHomeDataModule> getModules() {
+    public NAObjectMap<HomeDataModule> getModules() {
         return modules;
     }
 
@@ -109,11 +109,11 @@ public class NAHomeData extends NAThing implements NetatmoModule, NetatmoLocatio
         return getModules().values().stream().map(m -> m.getType().feature).collect(Collectors.toSet());
     }
 
-    public List<NAThermProgram> getThermSchedules() {
+    public List<ThermProgram> getThermSchedules() {
         return schedules;
     }
 
-    public @Nullable NAThermProgram getActiveProgram() {
-        return schedules.stream().filter(NAThermProgram::isSelected).findFirst().orElse(null);
+    public @Nullable ThermProgram getActiveProgram() {
+        return schedules.stream().filter(ThermProgram::isSelected).findFirst().orElse(null);
     }
 }

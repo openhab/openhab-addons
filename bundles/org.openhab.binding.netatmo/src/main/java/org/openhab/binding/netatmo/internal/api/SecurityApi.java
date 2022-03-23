@@ -22,10 +22,10 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
-import org.openhab.binding.netatmo.internal.api.dto.NAHome;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent.NAEventsDataResponse;
-import org.openhab.binding.netatmo.internal.api.dto.NAPing;
+import org.openhab.binding.netatmo.internal.api.dto.Home;
+import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
+import org.openhab.binding.netatmo.internal.api.dto.HomeEvent.NAEventsDataResponse;
+import org.openhab.binding.netatmo.internal.api.dto.Ping;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 
 /**
@@ -60,14 +60,14 @@ public class SecurityApi extends RestManager {
         post(uriBuilder, ApiResponse.Ok.class, null);
     }
 
-    public Collection<NAHomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {
+    public Collection<HomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {
         // Note : the contract of the API is not respected. It only retrieves the last event and return empty if not the
         // same person. Adding offset parameter gives a chance to get it but how to guess how many must be retrieved ???
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GETEVENTS, PARAM_HOMEID, homeId, PARAM_PERSONID, personId);
         NAEventsDataResponse response = get(uriBuilder, NAEventsDataResponse.class);
-        BodyResponse<NAHome> body = response.getBody();
+        BodyResponse<Home> body = response.getBody();
         if (body != null) {
-            NAHome home = body.getElement();
+            Home home = body.getElement();
             if (home != null) {
                 return home.getEvents();
             }
@@ -75,12 +75,12 @@ public class SecurityApi extends RestManager {
         throw new NetatmoException("home should not be null");
     }
 
-    public Collection<NAHomeEvent> getCameraEvents(String homeId, String cameraId) throws NetatmoException {
+    public Collection<HomeEvent> getCameraEvents(String homeId, String cameraId) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GETEVENTS, PARAM_HOMEID, homeId, PARAM_DEVICEID, cameraId);
         NAEventsDataResponse response = get(uriBuilder, NAEventsDataResponse.class);
-        BodyResponse<NAHome> body = response.getBody();
+        BodyResponse<Home> body = response.getBody();
         if (body != null) {
-            NAHome home = body.getElement();
+            Home home = body.getElement();
             if (home != null) {
                 return home.getEvents();
             }
@@ -90,7 +90,7 @@ public class SecurityApi extends RestManager {
 
     public String ping(String vpnUrl) throws NetatmoException {
         UriBuilder uriBuilder = UriBuilder.fromUri(vpnUrl).path(PATH_COMMAND).path(SUB_PATH_PING);
-        NAPing response = get(uriBuilder, NAPing.class);
+        Ping response = get(uriBuilder, Ping.class);
         return response.getStatus();
     }
 

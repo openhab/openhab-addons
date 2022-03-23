@@ -23,16 +23,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.EnergyApi;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeDataModule;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeDataRoom;
+import org.openhab.binding.netatmo.internal.api.dto.HomeData;
+import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
+import org.openhab.binding.netatmo.internal.api.dto.HomeDataRoom;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatusModule;
+import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.api.dto.NARoom;
+import org.openhab.binding.netatmo.internal.api.dto.Room;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
@@ -53,7 +53,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     private int setPointDefaultDuration = -1;
     private final NetatmoDescriptionProvider descriptionProvider;
 
-    EnergyCapability(NACommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
+    EnergyCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
         super(handler);
         this.descriptionProvider = descriptionProvider;
     }
@@ -67,15 +67,15 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     }
 
     @Override
-    protected void updateHomeData(NAHomeData homeData) {
-        NAObjectMap<NAHomeDataRoom> rooms = homeData.getRooms();
-        NAObjectMap<NAHomeDataModule> modules = homeData.getModules();
+    protected void updateHomeData(HomeData homeData) {
+        NAObjectMap<HomeDataRoom> rooms = homeData.getRooms();
+        NAObjectMap<HomeDataModule> modules = homeData.getModules();
         handler.getActiveChildren().forEach(handler -> {
-            NAHomeDataRoom roomData = rooms.get(handler.getId());
+            HomeDataRoom roomData = rooms.get(handler.getId());
             if (roomData != null) {
                 handler.setNewData(roomData);
             }
-            NAHomeDataModule moduleData = modules.get(handler.getId());
+            HomeDataModule moduleData = modules.get(handler.getId());
             if (moduleData != null) {
                 handler.setNewData(moduleData);
             }
@@ -88,14 +88,14 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
 
     @Override
     protected void updateHomeStatus(HomeStatus homeStatus) {
-        NAObjectMap<NARoom> rooms = homeStatus.getRooms();
-        NAObjectMap<NAHomeStatusModule> modules = homeStatus.getModules();
+        NAObjectMap<Room> rooms = homeStatus.getRooms();
+        NAObjectMap<HomeStatusModule> modules = homeStatus.getModules();
         handler.getActiveChildren().forEach(handler -> {
-            NARoom roomData = rooms.get(handler.getId());
+            Room roomData = rooms.get(handler.getId());
             if (roomData != null) {
                 handler.setNewData(roomData);
             }
-            NAHomeStatusModule data = modules.get(handler.getId());
+            HomeStatusModule data = modules.get(handler.getId());
             if (data != null) {
                 handler.setNewData(data);
             }

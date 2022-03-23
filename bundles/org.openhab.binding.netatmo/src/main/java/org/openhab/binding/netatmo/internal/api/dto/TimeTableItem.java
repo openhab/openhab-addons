@@ -12,28 +12,30 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.data.ModuleType;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ThermostatZoneType;
 
 /**
- * The {@link NAHomeDataRoom} provides Room informations returned by getHomeData endpoint
+ * The {@link TimeTableItem} holds the temp scheduling for a given zone.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
-@NonNullByDefault
-public class NAHomeDataRoom extends NAObject implements NetatmoModule {
-    private List<String> moduleIds = List.of();
 
-    @Override
-    public ModuleType getType() {
-        // In json api answer type for NARoom is used with free strings like kitchen, living...
-        return ModuleType.NARoom;
+@NonNullByDefault
+public class TimeTableItem extends NAObject {
+    private int mOffset;
+    private int zoneId;
+
+    public int getMinuteOffset() {
+        return mOffset;
     }
 
-    public List<String> getModuleIds() {
-        return moduleIds;
+    public int getZoneId() {
+        return zoneId;
+    }
+
+    public ThermostatZoneType getZoneType() {
+        return ThermostatZoneType.fromId(getId());
     }
 }

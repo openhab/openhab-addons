@@ -20,9 +20,9 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
+import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatusPerson;
+import org.openhab.binding.netatmo.internal.api.dto.HomeStatusPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.core.library.types.DecimalType;
@@ -49,15 +49,15 @@ public class HomeSecurityChannelHelper extends ChannelHelper {
     @Override
     public void setNewData(@Nullable NAObject data) {
         super.setNewData(data);
-        if (data instanceof NAHomeData) {
-            NAHomeData homeData = (NAHomeData) data;
+        if (data instanceof HomeData) {
+            HomeData homeData = (HomeData) data;
             knownIds = homeData.getPersons().values().stream().filter(person -> person.isKnown()).map(p -> p.getId())
                     .collect(Collectors.toList());
         }
         if (data instanceof HomeStatus) {
             HomeStatus status = (HomeStatus) data;
-            NAObjectMap<NAHomeStatusPerson> allPersons = status.getPersons();
-            List<NAHomeStatusPerson> present = allPersons.values().stream().filter(p -> !p.isOutOfSight())
+            NAObjectMap<HomeStatusPerson> allPersons = status.getPersons();
+            List<HomeStatusPerson> present = allPersons.values().stream().filter(p -> !p.isOutOfSight())
                     .collect(Collectors.toList());
 
             persons = present.size();

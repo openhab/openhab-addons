@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ public class RefreshCapability extends Capability {
     private @Nullable ZonedDateTime dataTimeStamp0;
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
-    public RefreshCapability(NACommonInterface handler, ScheduledExecutorService scheduler, int refreshInterval) {
+    public RefreshCapability(CommonInterface handler, ScheduledExecutorService scheduler, int refreshInterval) {
         super(handler);
         this.scheduler = scheduler;
         this.dataValidity = Duration.ofMillis(Math.max(0, refreshInterval));

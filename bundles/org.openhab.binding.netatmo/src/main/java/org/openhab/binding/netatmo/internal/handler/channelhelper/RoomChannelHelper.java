@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.api.dto.NARoom;
+import org.openhab.binding.netatmo.internal.api.dto.Room;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
@@ -38,8 +38,8 @@ public class RoomChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetObject(String channelId, NAObject naObject) {
-        if (naObject instanceof NARoom) {
-            NARoom room = (NARoom) naObject;
+        if (naObject instanceof Room) {
+            Room room = (Room) naObject;
             switch (channelId) {
                 case CHANNEL_ROOM_WINDOW_OPEN:
                     return room.hasOpenedWindows();

@@ -18,14 +18,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link NAPlace} reports location information of a Netatmo system.
+ * The {@link Place} reports location information of a Netatmo system.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 
 @NonNullByDefault
-public class NAPlace implements NetatmoLocationEx {
+public class Place implements LocationEx {
     private @Nullable String city;
     private @Nullable String country;
     private @Nullable String timezone;

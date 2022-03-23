@@ -21,19 +21,19 @@ import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
 
 /**
- * The {@link NAWebhookEvent} is responsible to hold
+ * The {@link WebhookEvent} is responsible to hold
  * data given back by the Netatmo API when calling the webhook
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class NAWebhookEvent extends NAEvent {
+public class WebhookEvent extends Event {
     private @NonNullByDefault({}) NAPushType pushType;
     private String homeId = "";
     private @Nullable String snapshotId;
     private @Nullable String snapshotKey;
-    private NAObjectMap<NAPerson> persons = new NAObjectMap<>();
+    private NAObjectMap<Person> persons = new NAObjectMap<>();
     // Webhook does not provide the event generation time, so we'll use the event reception time
     private ZonedDateTime time = ZonedDateTime.now();
 
@@ -41,7 +41,7 @@ public class NAWebhookEvent extends NAEvent {
         return homeId;
     }
 
-    public NAObjectMap<NAPerson> getPersons() {
+    public NAObjectMap<Person> getPersons() {
         return persons;
     }
 
@@ -64,6 +64,6 @@ public class NAWebhookEvent extends NAEvent {
     public @Nullable String getSnapshotUrl() {
         String sId = snapshotId;
         String key = snapshotKey;
-        return (sId != null && key != null) ? new NASnapshot(sId, key).getUrl() : null;
+        return (sId != null && key != null) ? new Snapshot(sId, key).getUrl() : null;
     }
 }

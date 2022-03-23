@@ -62,6 +62,8 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.TimestampExtCh
 import org.openhab.binding.netatmo.internal.handler.channelhelper.WindChannelHelper;
 import org.openhab.core.thing.ThingTypeUID;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * This enum all handled Netatmo modules and devices along with their capabilities
  *
@@ -69,59 +71,63 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public enum ModuleType {
-    UNKNOWN(FeatureArea.NONE, null, List.of(), List.of()),
-    NAAccount(FeatureArea.NONE, null, List.of(), List.of()), // Netatmo API Account ====================================
-    NAHome(FeatureArea.NONE, NAAccount, // Home hosting security or energy devices =====================================
-            List.of(HomeSecurityChannelHelper.class, HomeEnergyChannelHelper.class),
-            List.of(ModuleCapability.class, EventCapability.class, HomeCapability.class)),
-    NAPerson(FeatureArea.SECURITY, NAHome, // Person identified by security modules ====================================
-            List.of(PersonChannelHelper.class, EventPersonChannelHelper.class),
-            List.of(EventCapability.class, PersonCapability.class)),
-    NACamera(FeatureArea.SECURITY, NAHome, // Welcome Camera ===========================================================
-            List.of(CameraChannelHelper.class, SignalChannelHelper.class, EventChannelHelper.class),
-            List.of(EventCapability.class, CameraCapability.class)),
-    NOC(FeatureArea.SECURITY, NAHome, // Netatmo Presence Camera =======================================================
+    UNKNOWN(FeatureArea.NONE, null, null, List.of(), List.of()),
+    ACCOUNT(FeatureArea.NONE, null, null, List.of(), List.of()),
+    @SerializedName("NAHome")
+    HOME(FeatureArea.NONE, "NAHome", ACCOUNT,
+            List.of(ModuleCapability.class, EventCapability.class, HomeCapability.class),
+            List.of(HomeSecurityChannelHelper.class, HomeEnergyChannelHelper.class)),
+    @SerializedName("NAPerson")
+    PERSON(FeatureArea.SECURITY, "NAPerson", HOME, List.of(EventCapability.class, PersonCapability.class),
+            List.of(PersonChannelHelper.class, EventPersonChannelHelper.class)),
+    @SerializedName("NACamera")
+    WELCOME(FeatureArea.SECURITY, "NACamera", HOME, List.of(EventCapability.class, CameraCapability.class),
+            List.of(CameraChannelHelper.class, SignalChannelHelper.class, EventChannelHelper.class)),
+    @SerializedName("NOC")
+    PRESENCE(FeatureArea.SECURITY, "NOC", HOME, List.of(EventCapability.class, PresenceCapability.class),
             List.of(CameraChannelHelper.class, PresenceChannelHelper.class, SignalChannelHelper.class,
-                    EventChannelHelper.class),
-            List.of(EventCapability.class, PresenceCapability.class)),
-    NDB(FeatureArea.SECURITY, NAHome, // Netatmo Doorbell ==============================================================
-            List.of(CameraChannelHelper.class, SignalChannelHelper.class, EventChannelHelper.class), List.of()),
-    NAMain(FeatureArea.WEATHER, NAAccount, // Main Weather Station =====================================================
+                    EventChannelHelper.class)),
+    @SerializedName("NDB")
+    DOORBELL(FeatureArea.SECURITY, "NDB", HOME, List.of(),
+            List.of(CameraChannelHelper.class, SignalChannelHelper.class, EventChannelHelper.class)),
+    @SerializedName("NAMain")
+    WEATHER_STATION(FeatureArea.WEATHER, "NAMain", ACCOUNT, List.of(ModuleCapability.class, WeatherCapability.class),
             List.of(PressureExtChannelHelper.class, NoiseChannelHelper.class, HumidityChannelHelper.class,
                     TemperatureExtChannelHelper.class, AirQualityChannelHelper.class, LocationChannelHelper.class,
-                    TimestampExtChannelHelper.class, MeasuresChannelHelper.class, SignalChannelHelper.class),
-            List.of(ModuleCapability.class, WeatherCapability.class)),
-    NAModule1(FeatureArea.WEATHER, NAMain, // External Temperature & Humidity sensor ===================================
+                    TimestampExtChannelHelper.class, MeasuresChannelHelper.class, SignalChannelHelper.class)),
+    @SerializedName("NAModule1")
+    OUTDOOR(FeatureArea.WEATHER, "NAModule1", WEATHER_STATION, List.of(ModuleCapability.class),
             List.of(HumidityChannelHelper.class, TemperatureExtChannelHelper.class, BatteryChannelHelper.class,
-                    MeasuresChannelHelper.class, TimestampExtChannelHelper.class, SignalChannelHelper.class),
-            List.of(ModuleCapability.class)),
-    NAModule2(FeatureArea.WEATHER, NAMain, // Wind sensor ==============================================================
+                    MeasuresChannelHelper.class, TimestampExtChannelHelper.class, SignalChannelHelper.class)),
+    @SerializedName("NAModule2")
+    WIND(FeatureArea.WEATHER, "NAModule2", WEATHER_STATION, List.of(ModuleCapability.class),
             List.of(WindChannelHelper.class, BatteryChannelHelper.class, TimestampExtChannelHelper.class,
-                    SignalChannelHelper.class),
-            List.of(ModuleCapability.class)),
-    NAModule3(FeatureArea.WEATHER, NAMain, // Rain sensor ==============================================================
+                    SignalChannelHelper.class)),
+    @SerializedName("NAModule3")
+    RAIN(FeatureArea.WEATHER, "NAModule3", WEATHER_STATION, List.of(ModuleCapability.class),
             List.of(RainChannelHelper.class, BatteryChannelHelper.class, MeasuresChannelHelper.class,
-                    TimestampExtChannelHelper.class, SignalChannelHelper.class),
-            List.of(ModuleCapability.class)),
-    NAModule4(FeatureArea.WEATHER, NAMain, // Additional indoor sensor =================================================
+                    TimestampExtChannelHelper.class, SignalChannelHelper.class)),
+    @SerializedName("NAModule4")
+    INDOOR(FeatureArea.WEATHER, "NAModule4", WEATHER_STATION, List.of(ModuleCapability.class),
             List.of(HumidityChannelHelper.class, TemperatureExtChannelHelper.class, AirQualityChannelHelper.class,
                     BatteryChannelHelper.class, MeasuresChannelHelper.class, TimestampExtChannelHelper.class,
-                    SignalChannelHelper.class),
-            List.of(ModuleCapability.class)),
-    NHC(FeatureArea.AIR_CARE, NAAccount, // Healty Home Coach ==========================================================
+                    SignalChannelHelper.class)),
+    @SerializedName("NHC")
+    HOME_COACH(FeatureArea.AIR_CARE, "NHC", ACCOUNT, List.of(ModuleCapability.class, AirCareCapability.class),
             List.of(NoiseChannelHelper.class, HumidityChannelHelper.class, AirQualityExtChannelHelper.class,
                     TemperatureChannelHelper.class, PressureChannelHelper.class, TimestampExtChannelHelper.class,
-                    SignalChannelHelper.class, MeasuresChannelHelper.class, LocationChannelHelper.class),
-            List.of(ModuleCapability.class, AirCareCapability.class)),
-    NAPlug(FeatureArea.ENERGY, NAHome, // Boiler relay =================================================================
-            List.of(SignalChannelHelper.class), List.of(ModuleCapability.class)),
-    NATherm1(FeatureArea.ENERGY, NAHome, // Thermostat module ==========================================================
-            List.of(Therm1ChannelHelper.class, BatteryExtChannelHelper.class, SignalChannelHelper.class),
-            List.of(ModuleCapability.class)),
-    NARoom(FeatureArea.ENERGY, NAHome, // Room holding energy modules ==================================================
-            List.of(RoomChannelHelper.class, SetpointChannelHelper.class), List.of(RoomCapability.class)),
-    NRV(FeatureArea.ENERGY, NAHome, // Valve ===========================================================================
-            List.of(BatteryExtChannelHelper.class, SignalChannelHelper.class), List.of(ModuleCapability.class));
+                    SignalChannelHelper.class, MeasuresChannelHelper.class, LocationChannelHelper.class)),
+    @SerializedName("NAPlug")
+    PLUG(FeatureArea.ENERGY, "NAPlug", HOME, List.of(ModuleCapability.class), List.of(SignalChannelHelper.class)),
+    @SerializedName("NATherm1")
+    THERMOSTAT(FeatureArea.ENERGY, "NATherm1", HOME, List.of(ModuleCapability.class),
+            List.of(Therm1ChannelHelper.class, BatteryExtChannelHelper.class, SignalChannelHelper.class)),
+    @SerializedName("NARoom")
+    ROOM(FeatureArea.ENERGY, "NARoom", HOME, List.of(RoomCapability.class),
+            List.of(RoomChannelHelper.class, SetpointChannelHelper.class)),
+    @SerializedName("NRV")
+    VALVE(FeatureArea.ENERGY, "NRV", HOME, List.of(ModuleCapability.class),
+            List.of(BatteryExtChannelHelper.class, SignalChannelHelper.class));
 
     public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);
 
@@ -130,15 +136,17 @@ public enum ModuleType {
     public final List<Class<? extends ChannelHelper>> channelHelpers;
     public final List<Class<? extends Capability>> capabilities;
     private final @Nullable ModuleType bridgeType;
-    public final ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, name());
+    public final ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, toUID());
     public final FeatureArea feature;
+    public final @Nullable String apiName;
 
-    ModuleType(FeatureArea feature, @Nullable ModuleType bridge, List<Class<? extends ChannelHelper>> helpers,
-            List<Class<? extends Capability>> capabilities) {
+    ModuleType(FeatureArea feature, @Nullable String apiName, @Nullable ModuleType bridge,
+            List<Class<? extends Capability>> capabilities, List<Class<? extends ChannelHelper>> helpers) {
         this.channelHelpers = helpers;
         this.bridgeType = bridge;
         this.feature = feature;
         this.capabilities = capabilities;
+        this.apiName = apiName;
         try {
             for (Class<? extends ChannelHelper> helperClass : helpers) {
                 ChannelHelper helper = helperClass.getConstructor().newInstance();
@@ -148,6 +156,13 @@ public enum ModuleType {
         } catch (RuntimeException | ReflectiveOperationException e) {
             throw new IllegalArgumentException(e);
         }
+    }
+
+    /**
+     * @return the UID compatible string of the enum name
+     */
+    private String toUID() {
+        return name().toLowerCase().replace("_", "-");
     }
 
     public boolean isLogical() {
@@ -178,7 +193,18 @@ public enum ModuleType {
     }
 
     public URI getConfigDescription() {
-        return URI.create(BINDING_ID + ":" + (this.equals(NAAccount) ? "api_bridge"
+        return URI.create(BINDING_ID + ":" + (this.equals(ACCOUNT) ? "api_bridge"
                 : (isLogical() ? "virtual" : ModuleType.UNKNOWN.equals(getBridge()) ? "configurable" : "device")));
+    }
+
+    public static ModuleType from(ThingTypeUID thingTypeUID) {
+        String id = thingTypeUID.getId();
+        return ModuleType.AS_SET.stream().filter(mt -> mt.toUID().equals(id)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException());
+    }
+
+    public static ModuleType from(String apiName) {
+        return ModuleType.AS_SET.stream().filter(mt -> apiName.equals(mt.apiName)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException());
     }
 }

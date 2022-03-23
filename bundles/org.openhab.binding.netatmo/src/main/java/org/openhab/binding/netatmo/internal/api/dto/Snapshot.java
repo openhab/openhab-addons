@@ -22,17 +22,17 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.RestManager;
 
 /**
- * The {@link NASnapshot} holds data related to a snapshot.
+ * The {@link Snapshot} holds data related to a snapshot.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 
 @NonNullByDefault
-public class NASnapshot extends NAObject {
+public class Snapshot extends NAObject {
     private @Nullable String url;
 
-    public NASnapshot(String id, String key) {
+    public Snapshot(String id, String key) {
         this.id = id;
         this.description = key;
     }

@@ -12,33 +12,40 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 
 /**
- * The {@link NAHomeDataPerson} provides Person informations returned by getHomeData endpoint
+ * The {@link Home} holds home information.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 
 @NonNullByDefault
-public class NAHomeDataPerson extends NAThing implements NetatmoModule {
-    private @Nullable String url;
+public class Home extends Device implements Location {
+    private double[] coordinates = {};
+    private double altitude;
+    private List<HomeEvent> events = List.of();
 
     @Override
     public ModuleType getType() {
-        return ModuleType.NAPerson;
+        return ModuleType.HOME;
     }
 
-    public boolean isKnown() {
-        return description != null;
+    @Override
+    public double getAltitude() {
+        return altitude;
     }
 
-    public Optional<String> getUrl() {
-        return Optional.ofNullable(url);
+    @Override
+    public double[] getCoordinates() {
+        return coordinates;
+    }
+
+    public List<HomeEvent> getEvents() {
+        return events;
     }
 }

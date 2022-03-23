@@ -18,8 +18,8 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatusModule;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.PresenceChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
@@ -38,7 +38,7 @@ import org.openhab.core.types.UnDefType;
 public class PresenceCapability extends CameraCapability {
     private State autoMode = UnDefType.UNDEF;
 
-    public PresenceCapability(NACommonInterface handler, NetatmoDescriptionProvider descriptionProvider,
+    public PresenceCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider,
             List<ChannelHelper> channelHelpers) {
         super(handler, descriptionProvider, channelHelpers);
         channelHelpers.stream().filter(c -> c instanceof PresenceChannelHelper).findFirst()
@@ -46,7 +46,7 @@ public class PresenceCapability extends CameraCapability {
     }
 
     @Override
-    public void updateHomeStatusModule(NAHomeStatusModule newData) {
+    public void updateHomeStatusModule(HomeStatusModule newData) {
         super.updateHomeStatusModule(newData);
         if (autoMode == UnDefType.UNDEF) {
             // Auto-mode state shouldn't be updated, because this isn't a dedicated information. When the floodlight
@@ -54,7 +54,7 @@ public class PresenceCapability extends CameraCapability {
             // "auto" instead of "off" is lost... Therefore the binding handles its own auto-mode state.
             // TODO : this will have to be controlled by a Presence owner against the new api usage of HomeStatus
             // apparently now AUTO is part of the answer.
-            NAHomeStatusModule camera = newData;
+            HomeStatusModule camera = newData;
             autoMode = OnOffType.from(camera.getFloodlight() == FloodLightMode.AUTO);
         }
     }

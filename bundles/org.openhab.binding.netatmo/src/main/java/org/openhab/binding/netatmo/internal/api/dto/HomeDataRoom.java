@@ -12,26 +12,28 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 
 /**
- * The {@link NAHomeStatusPerson} provides Person informations returned by getHomeData endpoint
+ * The {@link HomeDataRoom} provides Room informations returned by getHomeData endpoint
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
-
 @NonNullByDefault
-public class NAHomeStatusPerson extends NAThing {
-    private boolean outOfSight;
+public class HomeDataRoom extends NAObject implements NAModule {
+    private List<String> moduleIds = List.of();
 
     @Override
     public ModuleType getType() {
-        return ModuleType.NAPerson;
+        // In json api answer type for NARoom is used with free strings like kitchen, living...
+        return ModuleType.ROOM;
     }
 
-    public boolean isOutOfSight() {
-        return outOfSight;
+    public List<String> getModuleIds() {
+        return moduleIds;
     }
 }

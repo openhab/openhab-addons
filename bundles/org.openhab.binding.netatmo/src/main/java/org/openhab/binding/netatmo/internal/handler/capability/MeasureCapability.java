@@ -28,7 +28,7 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureCla
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.config.MeasureConfiguration;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.MeasuresChannelHelper;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.State;
@@ -47,7 +47,7 @@ public class MeasureCapability extends RestCapability<WeatherApi> {
     private final Logger logger = LoggerFactory.getLogger(MeasureCapability.class);
     private final Map<String, State> measures = new HashMap<>();
 
-    public MeasureCapability(NACommonInterface handler, MeasuresChannelHelper helper) {
+    public MeasureCapability(CommonInterface handler, MeasuresChannelHelper helper) {
         super(handler);
         helper.setMeasures(measures);
     }

@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.ChannelUID;
@@ -33,7 +33,7 @@ import org.openhab.core.types.State;
 public class ChannelHelperCapability extends Capability {
     private final List<ChannelHelper> channelHelpers;
 
-    public ChannelHelperCapability(NACommonInterface handler, List<ChannelHelper> channelHelpers) {
+    public ChannelHelperCapability(CommonInterface handler, List<ChannelHelper> channelHelpers) {
         super(handler);
         this.channelHelpers = channelHelpers;
     }

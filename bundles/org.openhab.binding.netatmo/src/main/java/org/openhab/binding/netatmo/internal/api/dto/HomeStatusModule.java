@@ -26,14 +26,14 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link NAHomeStatusModule} holds module informations returned by getHomeData endpoint
+ * The {@link HomeStatusModule} holds module informations returned by getHomeData endpoint
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 
 @NonNullByDefault
-public class NAHomeStatusModule extends NAThing {
+public class HomeStatusModule extends NAThing {
     private @Nullable String firmwareName;
     private @Nullable String wifiState;
     private @Nullable String status;

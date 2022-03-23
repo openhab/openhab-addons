@@ -16,8 +16,8 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NADevice;
-import org.openhab.binding.netatmo.internal.api.dto.NAHome;
+import org.openhab.binding.netatmo.internal.api.dto.Device;
+import org.openhab.binding.netatmo.internal.api.dto.Home;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.types.State;
@@ -40,10 +40,10 @@ public class LocationChannelHelper extends ChannelHelper {
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
         if (CHANNEL_VALUE.equals(channelId)) {
             State point = UnDefType.UNDEF;
-            if (naThing instanceof NAHome) {
-                point = ((NAHome) naThing).getLocation();
-            } else if (naThing instanceof NADevice) {
-                point = ((NADevice) naThing).getPlace().map(place -> place.getLocation()).orElse(point);
+            if (naThing instanceof Home) {
+                point = ((Home) naThing).getLocation();
+            } else if (naThing instanceof Device) {
+                point = ((Device) naThing).getPlace().map(place -> place.getLocation()).orElse(point);
             }
             return point;
         }

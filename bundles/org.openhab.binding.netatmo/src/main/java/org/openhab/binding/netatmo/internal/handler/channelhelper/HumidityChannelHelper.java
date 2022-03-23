@@ -19,7 +19,7 @@ import static org.openhab.binding.netatmo.internal.utils.WeatherUtils.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
-import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
+import org.openhab.binding.netatmo.internal.api.dto.Dashboard;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 
@@ -37,7 +37,7 @@ public class HumidityChannelHelper extends ChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
+    protected @Nullable State internalGetDashboard(String channelId, Dashboard dashboard) {
         switch (channelId) {
             case CHANNEL_HUMIDEX:
                 return new DecimalType(humidex(dashboard.getTemperature(), dashboard.getHumidity()));

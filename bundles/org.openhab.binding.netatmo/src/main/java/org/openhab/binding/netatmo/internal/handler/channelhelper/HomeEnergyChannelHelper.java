@@ -23,11 +23,11 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
-import org.openhab.binding.netatmo.internal.api.dto.NAThermProgram;
+import org.openhab.binding.netatmo.internal.api.dto.HomeData;
+import org.openhab.binding.netatmo.internal.api.dto.ThermProgram;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.api.dto.NATimeTableItem;
-import org.openhab.binding.netatmo.internal.api.dto.NAZone;
+import org.openhab.binding.netatmo.internal.api.dto.TimeTableItem;
+import org.openhab.binding.netatmo.internal.api.dto.Zone;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -49,10 +49,10 @@ public class HomeEnergyChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing data, Configuration config) {
-        if (data instanceof NAHomeData) {
-            NAHomeData homeData = (NAHomeData) data;
+        if (data instanceof HomeData) {
+            HomeData homeData = (HomeData) data;
             SetpointMode thermMode = homeData.getThermMode();
-            NAThermProgram currentProgram = homeData.getActiveProgram();
+            ThermProgram currentProgram = homeData.getActiveProgram();
             switch (channelId) {
                 case CHANNEL_SETPOINT_DURATION:
                     return toQuantityType(homeData.getThermSetpointDefaultDuration(), Units.MINUTE);
@@ -78,9 +78,9 @@ public class HomeEnergyChannelHelper extends ChannelHelper {
                         case HOME:
                         case SCHEDULE:
                             if (currentProgram != null) {
-                                NATimeTableItem currentProgramMode = currentProgramMode(currentProgram);
+                                TimeTableItem currentProgramMode = currentProgramMode(currentProgram);
                                 if (currentProgramMode != null) {
-                                    NAZone zone = currentProgram
+                                    Zone zone = currentProgram
                                             .getZone(String.valueOf(currentProgramMode.getZoneId()));
                                     if (zone != null) {
                                         return new StringType(zone.getName());
@@ -104,19 +104,19 @@ public class HomeEnergyChannelHelper extends ChannelHelper {
         return ChronoUnit.MINUTES.between(programBaseTimeZdt(), ZonedDateTime.now());
     }
 
-    private static @Nullable NATimeTableItem currentProgramMode(NAThermProgram activeProgram) {
+    private static @Nullable TimeTableItem currentProgramMode(ThermProgram activeProgram) {
         long diff = minutesSinceProgramBaseTime();
         return activeProgram.getTimetable().stream().filter(t -> t.getMinuteOffset() < diff)
                 .reduce((first, second) -> second).orElse(null);
     }
 
-    private static ZonedDateTime nextProgramTime(NAThermProgram activeProgram) {
+    private static ZonedDateTime nextProgramTime(ThermProgram activeProgram) {
         long diff = minutesSinceProgramBaseTime();
         // By default we'll use the first slot of next week - this case will be true if
         // we are in the last schedule of the week so below loop will not exit by break
-        List<NATimeTableItem> timetable = activeProgram.getTimetable();
+        List<TimeTableItem> timetable = activeProgram.getTimetable();
         int next = timetable.get(0).getMinuteOffset() + (7 * 24 * 60);
-        for (NATimeTableItem timeTable : timetable) {
+        for (TimeTableItem timeTable : timetable) {
             if (timeTable.getMinuteOffset() > diff) {
                 next = timeTable.getMinuteOffset();
                 break;

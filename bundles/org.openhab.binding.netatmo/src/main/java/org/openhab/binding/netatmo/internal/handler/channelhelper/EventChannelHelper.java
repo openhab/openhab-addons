@@ -17,8 +17,8 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
+import org.openhab.binding.netatmo.internal.api.dto.Event;
+import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -40,7 +40,7 @@ public class EventChannelHelper extends ChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetEvent(String channelId, NAEvent event) {
+    protected @Nullable State internalGetEvent(String channelId, Event event) {
         switch (channelId) {
             case CHANNEL_EVENT_TYPE:
                 return toStringType(event.getEventType());
@@ -59,9 +59,9 @@ public class EventChannelHelper extends ChannelHelper {
             case CHANNEL_EVENT_SNAPSHOT_URL:
                 return toStringType(event.getSnapshotUrl());
         }
-        if (event instanceof NAHomeEvent) {
+        if (event instanceof HomeEvent) {
             if (CHANNEL_EVENT_VIDEO_STATUS.equals(channelId)) {
-                return toStringType(((NAHomeEvent) event).getVideoStatus());
+                return toStringType(((HomeEvent) event).getVideoStatus());
             }
         }
         return null;

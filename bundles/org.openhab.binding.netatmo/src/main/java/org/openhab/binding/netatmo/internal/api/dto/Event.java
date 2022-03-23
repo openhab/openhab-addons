@@ -24,14 +24,14 @@ import org.openhab.binding.netatmo.internal.api.data.EventType;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link NAEvent} holds information transferred by the webhook.
+ * The {@link Event} holds information transferred by the webhook.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 
 @NonNullByDefault
-public abstract class NAEvent extends NAObject {
+public abstract class Event extends NAObject {
     protected EventType type = EventType.UNKNOWN;
     @SerializedName(value = "camera_id", alternate = { "module_id" })
     private String cameraId = "";

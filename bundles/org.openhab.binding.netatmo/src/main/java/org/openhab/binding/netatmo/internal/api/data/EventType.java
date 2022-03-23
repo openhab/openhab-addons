@@ -29,55 +29,55 @@ public enum EventType {
     UNKNOWN(),
 
     @SerializedName("person") // When the Indoor Camera detects a face
-    PERSON(ModuleType.NAPerson, ModuleType.NACamera),
+    PERSON(ModuleType.PERSON, ModuleType.WELCOME),
 
     @SerializedName("person_away") // When geofencing indicates that the person has left the home
-    PERSON_AWAY(ModuleType.NAPerson),
+    PERSON_AWAY(ModuleType.PERSON),
 
     @SerializedName("outdoor") // When the Outdoor Camera detects a human, a car or an animal
-    OUTDOOR(ModuleType.NOC, ModuleType.NDB),
+    OUTDOOR(ModuleType.PRESENCE, ModuleType.DOORBELL),
 
     @SerializedName("daily_summary") // When the Outdoor Camera video summary of the last 24 hours is available
-    DAILY_SUMMARY(ModuleType.NOC),
+    DAILY_SUMMARY(ModuleType.PRESENCE),
 
     @SerializedName("movement") // When the Indoor Camera detects motion
-    MOVEMENT(ModuleType.NACamera),
+    MOVEMENT(ModuleType.WELCOME),
 
     @SerializedName("new_module") // A new Module has been paired with the Indoor Camera
-    NEW_MODULE(ModuleType.NACamera),
+    NEW_MODULE(ModuleType.WELCOME),
 
     @SerializedName("module_connect") // Module is connected with the Indoor Camera
-    MODULE_CONNECT(ModuleType.NACamera),
+    MODULE_CONNECT(ModuleType.WELCOME),
 
     @SerializedName("module_disconnect") // Module lost its connection with the Indoor Camera
-    MODULE_DISCONNECT(ModuleType.NACamera),
+    MODULE_DISCONNECT(ModuleType.WELCOME),
 
     @SerializedName("module_low_battery") // Module's battery is low
-    MODULE_LOW_BATTERY(ModuleType.NACamera),
+    MODULE_LOW_BATTERY(ModuleType.WELCOME),
 
     @SerializedName("module_end_update") // Module's firmware update is over
-    MODULE_END_UPDATE(ModuleType.NACamera),
+    MODULE_END_UPDATE(ModuleType.WELCOME),
 
     @SerializedName("connection") // When the Camera connects to Netatmo servers
-    CONNECTION(ModuleType.NACamera, ModuleType.NOC),
+    CONNECTION(ModuleType.WELCOME, ModuleType.PRESENCE),
 
     @SerializedName("disconnection") // When the Camera loses connection with Netatmo servers
-    DISCONNECTION(ModuleType.NACamera, ModuleType.NOC),
+    DISCONNECTION(ModuleType.WELCOME, ModuleType.PRESENCE),
 
     @SerializedName("on") // When Camera Monitoring is resumed
-    ON(ModuleType.NACamera, ModuleType.NOC),
+    ON(ModuleType.WELCOME, ModuleType.PRESENCE),
 
     @SerializedName("off") // When Camera Monitoring is turned off
-    OFF(ModuleType.NACamera, ModuleType.NOC),
+    OFF(ModuleType.WELCOME, ModuleType.PRESENCE),
 
     @SerializedName("boot") // When the Camera is booting
-    BOOT(ModuleType.NACamera, ModuleType.NOC),
+    BOOT(ModuleType.WELCOME, ModuleType.PRESENCE),
 
     @SerializedName("sd") // When Camera SD Card status changes
-    SD(ModuleType.NACamera, ModuleType.NOC),
+    SD(ModuleType.WELCOME, ModuleType.PRESENCE),
 
     @SerializedName("alim") // When Camera power supply status changes
-    ALIM(ModuleType.NACamera, ModuleType.NOC);
+    ALIM(ModuleType.WELCOME, ModuleType.PRESENCE);
 
     private final Set<ModuleType> appliesTo;
 

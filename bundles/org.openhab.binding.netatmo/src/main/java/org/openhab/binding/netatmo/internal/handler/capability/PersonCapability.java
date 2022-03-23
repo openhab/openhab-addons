@@ -23,11 +23,11 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.EventType;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
-import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeDataModule;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
+import org.openhab.binding.netatmo.internal.api.dto.Event;
+import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
+import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -45,7 +45,7 @@ public class PersonCapability extends Capability {
     private final NetatmoDescriptionProvider descriptionProvider;
     private final ChannelUID cameraChannelUID;
 
-    public PersonCapability(NACommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
+    public PersonCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
         super(handler);
         this.descriptionProvider = descriptionProvider;
         this.cameraChannelUID = new ChannelUID(thing.getUID(), GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID);
@@ -55,8 +55,8 @@ public class PersonCapability extends Capability {
     protected void beforeNewData() {
         super.beforeNewData();
         handler.getHomeCapability(HomeCapability.class).ifPresent(cap -> {
-            Stream<NAHomeDataModule> cameras = cap.getModules().values().stream()
-                    .filter(module -> module.getType() == ModuleType.NACamera);
+            Stream<HomeDataModule> cameras = cap.getModules().values().stream()
+                    .filter(module -> module.getType() == ModuleType.WELCOME);
             descriptionProvider.setStateOptions(cameraChannelUID,
                     cameras.map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
         });
@@ -71,10 +71,10 @@ public class PersonCapability extends Capability {
     }
 
     @Override
-    public void updateEvent(NAEvent newData) {
+    public void updateEvent(Event newData) {
         super.updateEvent(newData);
         EventType eventType = newData.getEventType();
-        if (eventType.appliesOn(ModuleType.NAPerson)) {
+        if (eventType.appliesOn(ModuleType.PERSON)) {
             handler.triggerChannel(CHANNEL_HOME_EVENT, eventType.name());
         }
     }
@@ -83,7 +83,7 @@ public class PersonCapability extends Capability {
     public List<NAObject> updateReadings() {
         List<NAObject> result = new ArrayList<>();
         handler.getHomeCapability(SecurityCapability.class).ifPresent(cap -> {
-            Collection<NAHomeEvent> events = cap.getPersonEvents(handler.getId());
+            Collection<HomeEvent> events = cap.getPersonEvents(handler.getId());
             if (!events.isEmpty()) {
                 result.add(events.iterator().next());
             }

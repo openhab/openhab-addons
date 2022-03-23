@@ -17,8 +17,8 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStri
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatusModule;
-import org.openhab.binding.netatmo.internal.api.dto.NAModule;
+import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
+import org.openhab.binding.netatmo.internal.api.dto.Module;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.types.State;
@@ -40,11 +40,11 @@ public class BatteryExtChannelHelper extends BatteryChannelHelper {
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
         if (CHANNEL_BATTERY_STATUS.equals(channelId)) {
-            if (naThing instanceof NAModule) {
-                return toStringType(((NAModule) naThing).getBatteryState());
+            if (naThing instanceof Module) {
+                return toStringType(((Module) naThing).getBatteryState());
             }
-            if (naThing instanceof NAHomeStatusModule) {
-                return toStringType(((NAHomeStatusModule) naThing).getBatteryState());
+            if (naThing instanceof HomeStatusModule) {
+                return toStringType(((HomeStatusModule) naThing).getBatteryState());
             }
         }
         return super.internalGetProperty(channelId, naThing, config);

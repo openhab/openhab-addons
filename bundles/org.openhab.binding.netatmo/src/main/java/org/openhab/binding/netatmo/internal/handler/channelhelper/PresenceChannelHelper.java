@@ -17,7 +17,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatusModule;
+import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
@@ -43,8 +43,8 @@ public class PresenceChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
-        if (naThing instanceof NAHomeStatusModule) {
-            NAHomeStatusModule camera = (NAHomeStatusModule) naThing;
+        if (naThing instanceof HomeStatusModule) {
+            HomeStatusModule camera = (HomeStatusModule) naThing;
             switch (channelId) {
                 case CHANNEL_FLOODLIGHT_AUTO_MODE:
                     return autoMode;

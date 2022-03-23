@@ -13,29 +13,25 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ThermostatZoneType;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.BatteryState;
 
 /**
- * The {@link NATimeTableItem} holds the temp scheduling for a given zone.
+ * The {@link Module} holds status information of a Netatmo module.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 
 @NonNullByDefault
-public class NATimeTableItem extends NAObject {
-    private int mOffset;
-    private int zoneId;
+public class Module extends NAThing {
+    private BatteryState batteryState = BatteryState.UNKNOWN;
+    private int batteryPercent = -1;
 
-    public int getMinuteOffset() {
-        return mOffset;
+    public int getBatteryPercent() {
+        return batteryPercent != -1 ? batteryPercent : batteryState.level;
     }
 
-    public int getZoneId() {
-        return zoneId;
-    }
-
-    public ThermostatZoneType getZoneType() {
-        return ThermostatZoneType.fromId(getId());
+    public BatteryState getBatteryState() {
+        return batteryState;
     }
 }

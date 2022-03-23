@@ -39,7 +39,7 @@ class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
         String[] elements = string.split("-");
         if (elements.length > 1) {
             try {
-                ModuleType moduleType = ModuleType.valueOf(elements[0]);
+                ModuleType moduleType = ModuleType.from(elements[0]);
                 EventType eventType = EventType.valueOf(elements[1].toUpperCase());
 
                 return new NAPushType(moduleType, eventType);

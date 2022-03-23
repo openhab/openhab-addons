@@ -31,22 +31,22 @@ public class NAHomeStatus {
     }
 
     public class HomeStatus extends NAThing {
-        private @Nullable NAObjectMap<NAHomeStatusModule> modules;
-        private @Nullable NAObjectMap<NAHomeStatusPerson> persons;
-        private @Nullable NAObjectMap<NARoom> rooms;
+        private @Nullable NAObjectMap<HomeStatusModule> modules;
+        private @Nullable NAObjectMap<HomeStatusPerson> persons;
+        private @Nullable NAObjectMap<Room> rooms;
 
-        public NAObjectMap<NAHomeStatusModule> getModules() {
-            NAObjectMap<NAHomeStatusModule> localModules = modules;
+        public NAObjectMap<HomeStatusModule> getModules() {
+            NAObjectMap<HomeStatusModule> localModules = modules;
             return localModules != null ? localModules : new NAObjectMap<>();
         }
 
-        public NAObjectMap<NAHomeStatusPerson> getPersons() {
-            NAObjectMap<NAHomeStatusPerson> localPersons = persons;
+        public NAObjectMap<HomeStatusPerson> getPersons() {
+            NAObjectMap<HomeStatusPerson> localPersons = persons;
             return localPersons != null ? localPersons : new NAObjectMap<>();
         }
 
-        public NAObjectMap<NARoom> getRooms() {
-            NAObjectMap<NARoom> localRooms = rooms;
+        public NAObjectMap<Room> getRooms() {
+            NAObjectMap<Room> localRooms = rooms;
             return localRooms != null ? localRooms : new NAObjectMap<>();
         }
     }

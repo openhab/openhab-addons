@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
-import org.openhab.binding.netatmo.internal.api.dto.NAMain.NAStationDataResponse;
+import org.openhab.binding.netatmo.internal.api.dto.NAMain.StationDataResponse;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 
 /**
@@ -42,9 +42,9 @@ public class AircareApi extends RestManager {
      * @return NAStationDataResponse
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
-    public NAStationDataResponse getHomeCoachData(@Nullable String deviceId) throws NetatmoException {
+    public StationDataResponse getHomeCoachData(@Nullable String deviceId) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_HOMECOACH, PARAM_DEVICEID, deviceId);
-        return get(uriBuilder, NAStationDataResponse.class);
+        return get(uriBuilder, StationDataResponse.class);
     }
 
     public NAMain getHomeCoach(String deviceId) throws NetatmoException {

@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.EventType;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
-import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
+import org.openhab.binding.netatmo.internal.api.dto.Event;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 
@@ -35,9 +35,9 @@ public class EventPersonChannelHelper extends EventChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetEvent(String channelId, NAEvent event) {
+    protected @Nullable State internalGetEvent(String channelId, Event event) {
         EventType eventType = event.getEventType();
-        if (eventType.appliesOn(ModuleType.NAPerson) && CHANNEL_PERSON_AT_HOME.equals(channelId)) {
+        if (eventType.appliesOn(ModuleType.PERSON) && CHANNEL_PERSON_AT_HOME.equals(channelId)) {
             return OnOffType.from(eventType == EventType.PERSON);
         } else {
             return super.internalGetEvent(channelId, event);

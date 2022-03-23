@@ -21,12 +21,12 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeDataPerson;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatusModule;
+import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
+import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
+import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
@@ -48,7 +48,7 @@ public class CameraCapability extends Capability {
     private final NetatmoDescriptionProvider descriptionProvider;
     private final ChannelUID personChannelUID;
 
-    public CameraCapability(NACommonInterface handler, NetatmoDescriptionProvider descriptionProvider,
+    public CameraCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider,
             List<ChannelHelper> channelHelpers) {
         super(handler);
         this.descriptionProvider = descriptionProvider;
@@ -59,7 +59,7 @@ public class CameraCapability extends Capability {
     }
 
     @Override
-    public void updateHomeStatusModule(NAHomeStatusModule newData) {
+    public void updateHomeStatusModule(HomeStatusModule newData) {
         super.updateHomeStatusModule(newData);
         String vpnUrl = newData.getVpnUrl();
         boolean isLocal = newData.isLocal();
@@ -85,7 +85,7 @@ public class CameraCapability extends Capability {
     protected void beforeNewData() {
         super.beforeNewData();
         handler.getHomeCapability(HomeCapability.class).ifPresent(cap -> {
-            NAObjectMap<NAHomeDataPerson> persons = cap.getPersons();
+            NAObjectMap<HomeDataPerson> persons = cap.getPersons();
             descriptionProvider.setStateOptions(personChannelUID, persons.values().stream()
                     .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
         });
@@ -95,7 +95,7 @@ public class CameraCapability extends Capability {
     public List<NAObject> updateReadings() {
         List<NAObject> result = new ArrayList<>();
         handler.getHomeCapability(SecurityCapability.class).ifPresent(cap -> {
-            Collection<NAHomeEvent> events = cap.getCameraEvents(handler.getId());
+            Collection<HomeEvent> events = cap.getCameraEvents(handler.getId());
             if (!events.isEmpty()) {
                 result.add(events.iterator().next());
             }

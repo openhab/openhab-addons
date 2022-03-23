@@ -39,7 +39,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.SecurityApi;
-import org.openhab.binding.netatmo.internal.api.dto.NAWebhookEvent;
+import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.capability.EventCapability;
@@ -110,7 +110,7 @@ public class NetatmoServlet extends HttpServlet {
             String data = inputStreamToString(req.getInputStream());
             if (!data.isEmpty()) {
                 logger.debug("Event transmitted from restService : {}", data);
-                NAWebhookEvent event = deserializer.deserialize(NAWebhookEvent.class, data);
+                WebhookEvent event = deserializer.deserialize(WebhookEvent.class, data);
                 List<String> tobeNotified = collectNotified(event);
                 dataListeners.keySet().stream().filter(tobeNotified::contains).forEach(id -> {
                     EventCapability module = dataListeners.get(id);
@@ -129,7 +129,7 @@ public class NetatmoServlet extends HttpServlet {
         }
     }
 
-    private List<String> collectNotified(NAWebhookEvent event) {
+    private List<String> collectNotified(WebhookEvent event) {
         List<String> result = new ArrayList<>();
         result.add(event.getCameraId());
         String person = event.getPersonId();

@@ -12,21 +12,19 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 
 /**
- * The {@link NetatmoModule} is the common interface for dto holding module informations
+ * The {@link LocationEx} is the common interface for dto holding a extra location data
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public interface NetatmoModule {
-    public String getId();
+public interface LocationEx extends Location {
+    public Optional<String> getCountry();
 
-    public @Nullable String getName();
-
-    public ModuleType getType();
+    public Optional<String> getTimezone();
 }

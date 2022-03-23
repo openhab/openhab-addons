@@ -12,35 +12,33 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link NAHomeDataModule} holds module informations returned by getHomeData endpoint
+ * The {@link MeasureBodyElem} holds a list of values returned by getMeasure endpoint.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 
 @NonNullByDefault
-public class NAHomeDataModule extends NAThing implements NetatmoModule {
-    private @Nullable ZonedDateTime setupDate;
-    private @Nullable String applianceType;
-    private List<String> moduleBridged = List.of();
+public class MeasureBodyElem<T> {
+    private List<List<T>> value = List.of();
 
-    public @Nullable String getApplianceType() {
-        return applianceType;
+    public List<List<T>> getValue() {
+        return value;
     }
 
-    public Optional<ZonedDateTime> getSetupDate() {
-        return Optional.ofNullable(setupDate);
-    }
-
-    public List<String> getModuleBridged() {
-        return moduleBridged;
+    public @Nullable T getSingleValue() {
+        if (!value.isEmpty()) {
+            List<T> first = value.get(0);
+            if (!first.isEmpty()) {
+                return first.get(0);
+            }
+        }
+        return null;
     }
 }

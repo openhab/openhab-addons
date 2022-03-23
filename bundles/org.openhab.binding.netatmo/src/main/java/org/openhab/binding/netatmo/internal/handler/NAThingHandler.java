@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class NAThingHandler extends BaseThingHandler implements NACommonInterface {
+public class NAThingHandler extends BaseThingHandler implements CommonInterface {
     private final Logger logger = LoggerFactory.getLogger(NAThingHandler.class);
     private CapabilityMap capabilities = new CapabilityMap();
 

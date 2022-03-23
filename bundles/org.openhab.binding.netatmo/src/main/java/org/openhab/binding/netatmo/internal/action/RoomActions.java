@@ -18,7 +18,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.capability.EnergyCapability;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -40,7 +40,7 @@ public class RoomActions implements ThingActions {
     private static final Set<SetpointMode> ALLOWED_MODES = Set.of(SetpointMode.MAX, SetpointMode.MANUAL,
             SetpointMode.HOME);
 
-    private @Nullable NACommonInterface handler;
+    private @Nullable CommonInterface handler;
     private Optional<EnergyCapability> energy = Optional.empty();
 
     public RoomActions() {
@@ -49,8 +49,8 @@ public class RoomActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof NACommonInterface) {
-            NACommonInterface commonHandler = (NACommonInterface) handler;
+        if (handler instanceof CommonInterface) {
+            CommonInterface commonHandler = (CommonInterface) handler;
             this.handler = commonHandler;
             energy = commonHandler.getHomeCapability(EnergyCapability.class);
         }
@@ -83,7 +83,7 @@ public class RoomActions implements ThingActions {
             @ActionInput(name = "setpoint", label = "@text/actionInputSetpointLabel", description = "@text/actionInputSetpointDesc") @Nullable Double temp,
             @ActionInput(name = "endtime", label = "@text/actionInputEndtimeLabel", description = "@text/actionInputEndtimeDesc") @Nullable Long endTime,
             @ActionInput(name = "mode", label = "@text/actionInputModeLabel", description = "@text/actionInputModeDesc") @Nullable String mode) {
-        NACommonInterface roomHandler = handler;
+        CommonInterface roomHandler = handler;
         if (roomHandler != null) {
             String roomId = roomHandler.getId();
             SetpointMode targetMode = SetpointMode.UNKNOWN;

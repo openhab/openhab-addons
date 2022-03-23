@@ -12,28 +12,34 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.ApiResponse;
+import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 
 /**
- * The {@link NAPing} hold url data for a camera module
+ * The {@link ThermProgram} holds setpoint scheduling information.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
-@NonNullByDefault
-public class NAPing extends ApiResponse<String> {
-    private String localUrl = "";
-    private @Nullable String productName;
 
-    @Override
-    public String getStatus() {
-        return localUrl;
+@NonNullByDefault
+public class ThermProgram extends NAObject {
+    private NAObjectMap<Zone> zones = new NAObjectMap<>();
+    private List<TimeTableItem> timetable = List.of();
+    private boolean selected;
+
+    public List<TimeTableItem> getTimetable() {
+        return timetable;
     }
 
-    @Override
-    public @Nullable String getBody() {
-        return productName;
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public @Nullable Zone getZone(String id) {
+        return zones.get(id);
     }
 }

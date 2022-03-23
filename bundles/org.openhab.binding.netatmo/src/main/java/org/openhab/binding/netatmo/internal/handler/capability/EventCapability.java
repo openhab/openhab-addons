@@ -15,7 +15,7 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 
 /**
@@ -30,7 +30,7 @@ import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 public class EventCapability extends Capability {
     private Optional<NetatmoServlet> servlet = Optional.empty();
 
-    public EventCapability(NACommonInterface handler) {
+    public EventCapability(CommonInterface handler) {
         super(handler);
     }
 

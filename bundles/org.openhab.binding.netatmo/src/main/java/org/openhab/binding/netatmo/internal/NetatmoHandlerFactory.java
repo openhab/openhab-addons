@@ -23,8 +23,8 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.config.BindingConfiguration;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
-import org.openhab.binding.netatmo.internal.handler.NAAccountHandler;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.AccountHandler;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.NAThingHandler;
 import org.openhab.binding.netatmo.internal.handler.capability.AirCareCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.CameraCapability;
@@ -103,14 +103,14 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         return ModuleType.AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
-                .map(mt -> buildNAHandler(thing, mt)).orElse(null);
+                .map(mt -> buildHandler(thing, mt)).orElse(null);
     }
 
-    private BaseThingHandler buildNAHandler(Thing thing, ModuleType moduleType) {
-        if (ModuleType.NAAccount.equals(moduleType)) {
+    private BaseThingHandler buildHandler(Thing thing, ModuleType moduleType) {
+        if (ModuleType.ACCOUNT.equals(moduleType)) {
             return new ApiBridgeHandler((Bridge) thing, httpClient, httpService, deserializer, configuration);
         }
-        NACommonInterface handler = moduleType.isABridge() ? new NAAccountHandler((Bridge) thing)
+        CommonInterface handler = moduleType.isABridge() ? new AccountHandler((Bridge) thing)
                 : new NAThingHandler(thing);
 
         List<ChannelHelper> helpers = new ArrayList<>();

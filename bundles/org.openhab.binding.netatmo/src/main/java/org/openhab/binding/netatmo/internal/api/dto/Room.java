@@ -23,13 +23,13 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link NARoom} holds temperature data for a given room.
+ * The {@link Room} holds temperature data for a given room.
  *
  * @author Bernhard Kreuz - Initial contribution
  *
  */
 @NonNullByDefault
-public class NARoom extends NAObject implements NetatmoModule {
+public class Room extends NAObject implements NAModule {
     private @Nullable String type;
     private @Nullable OnOffType anticipating;
     private @Nullable OnOffType openWindow;
@@ -77,7 +77,7 @@ public class NARoom extends NAObject implements NetatmoModule {
     @Override
     public ModuleType getType() {
         // Note: In json api answer type for NARoom is used with words like kitchen, living...
-        return ModuleType.NARoom;
+        return ModuleType.ROOM;
     }
 
     public @Nullable String getLocation() {

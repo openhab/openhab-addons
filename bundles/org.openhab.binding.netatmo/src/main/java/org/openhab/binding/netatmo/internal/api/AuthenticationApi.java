@@ -29,7 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
-import org.openhab.binding.netatmo.internal.api.dto.NAAccessTokenResponse;
+import org.openhab.binding.netatmo.internal.api.dto.AccessTokenResponse;
 import org.openhab.binding.netatmo.internal.config.ApiHandlerConfiguration.Credentials;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.core.common.ThreadPoolManager;
@@ -49,7 +49,7 @@ public class AuthenticationApi extends RestManager {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationApi.class);
 
     private Optional<ScheduledFuture<?>> refreshTokenJob = Optional.empty();
-    private Optional<NAAccessTokenResponse> tokenResponse = Optional.empty();
+    private Optional<AccessTokenResponse> tokenResponse = Optional.empty();
     private String scope = "";
 
     public AuthenticationApi(ApiBridgeHandler bridge) {
@@ -70,7 +70,7 @@ public class AuthenticationApi extends RestManager {
         payload.putAll(Map.of(GRANT_TYPE, entries.keySet().contains(PASSWORD) ? PASSWORD : REFRESH_TOKEN, CLIENT_ID, id,
                 CLIENT_SECRET, secret));
         disconnect();
-        NAAccessTokenResponse response = post(OAUTH_URI, NAAccessTokenResponse.class, payload);
+        AccessTokenResponse response = post(OAUTH_URI, AccessTokenResponse.class, payload);
         refreshTokenJob = Optional.of(scheduler.schedule(() -> {
             try {
                 requestToken(id, secret, Map.of(REFRESH_TOKEN, response.getRefreshToken()));

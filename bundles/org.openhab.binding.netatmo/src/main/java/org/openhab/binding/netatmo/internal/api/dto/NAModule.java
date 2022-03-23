@@ -13,25 +13,20 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.BatteryState;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 
 /**
- * The {@link NAModule} holds status information of a Netatmo module.
+ * The {@link NAModule} is the common interface for dto holding module informations
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
-
 @NonNullByDefault
-public class NAModule extends NAThing {
-    private BatteryState batteryState = BatteryState.UNKNOWN;
-    private int batteryPercent = -1;
+public interface NAModule {
+    public String getId();
 
-    public int getBatteryPercent() {
-        return batteryPercent != -1 ? batteryPercent : batteryState.level;
-    }
+    public @Nullable String getName();
 
-    public BatteryState getBatteryState() {
-        return batteryState;
-    }
+    public ModuleType getType();
 }

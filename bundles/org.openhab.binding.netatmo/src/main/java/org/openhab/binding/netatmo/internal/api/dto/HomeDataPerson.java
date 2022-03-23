@@ -12,33 +12,33 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 
 /**
- * The {@link NAMeasureBodyElem} holds a list of values returned by getMeasure endpoint.
+ * The {@link HomeDataPerson} provides Person informations returned by getHomeData endpoint
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 
 @NonNullByDefault
-public class NAMeasureBodyElem<T> {
-    private List<List<T>> value = List.of();
+public class HomeDataPerson extends NAThing implements NAModule {
+    private @Nullable String url;
 
-    public List<List<T>> getValue() {
-        return value;
+    @Override
+    public ModuleType getType() {
+        return ModuleType.PERSON;
     }
 
-    public @Nullable T getSingleValue() {
-        if (!value.isEmpty()) {
-            List<T> first = value.get(0);
-            if (!first.isEmpty()) {
-                return first.get(0);
-            }
-        }
-        return null;
+    public boolean isKnown() {
+        return description != null;
+    }
+
+    public Optional<String> getUrl() {
+        return Optional.ofNullable(url);
     }
 }

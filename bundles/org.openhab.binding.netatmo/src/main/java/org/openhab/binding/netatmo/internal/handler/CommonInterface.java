@@ -43,13 +43,13 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
 /**
- * {@link NACommonInterface} defines common methods of NABridgeHandlers and NAThingHandlers used by Capabilities
+ * {@link CommonInterface} defines common methods of NABridgeHandlers and NAThingHandlers used by Capabilities
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public interface NACommonInterface {
+public interface CommonInterface {
     Thing getThing();
 
     ThingBuilder editThing();
@@ -69,10 +69,9 @@ public interface NACommonInterface {
     @Nullable
     Bridge getBridge();
 
-    default @Nullable NACommonInterface getBridgeHandler() {
+    default @Nullable CommonInterface getBridgeHandler() {
         Bridge bridge = getBridge();
-        return bridge != null && bridge.getHandler() instanceof NAAccountHandler
-                ? (NAAccountHandler) bridge.getHandler()
+        return bridge != null && bridge.getHandler() instanceof AccountHandler ? (AccountHandler) bridge.getHandler()
                 : null;
     }
 
@@ -82,7 +81,7 @@ public interface NACommonInterface {
         if (bridge != null) {
             bridgeHandler = bridge.getHandler();
             while (bridgeHandler != null && !(bridgeHandler instanceof ApiBridgeHandler)) {
-                bridge = ((NACommonInterface) bridgeHandler).getBridge();
+                bridge = ((CommonInterface) bridgeHandler).getBridge();
                 bridgeHandler = bridge != null ? bridge.getHandler() : null;
             }
         }
@@ -93,12 +92,12 @@ public interface NACommonInterface {
         ThingHandler handler = getThing().getHandler();
         Bridge root = null;
         if (handler instanceof NAThingHandler) {
-            NACommonInterface bridgeHandler = ((NAThingHandler) handler).getBridgeHandler();
+            CommonInterface bridgeHandler = ((NAThingHandler) handler).getBridgeHandler();
             if (bridgeHandler != null) {
                 root = bridgeHandler.getBridge();
             }
-        } else if (handler instanceof NAAccountHandler) {
-            root = ((NAAccountHandler) handler).getBridge();
+        } else if (handler instanceof AccountHandler) {
+            root = ((AccountHandler) handler).getBridge();
         }
         if (root instanceof ApiBridgeHandler) {
             return ((ApiBridgeHandler) root).getServlet();
@@ -107,7 +106,7 @@ public interface NACommonInterface {
     }
 
     default @Nullable String getBridgeId() {
-        NACommonInterface bridge = getBridgeHandler();
+        CommonInterface bridge = getBridgeHandler();
         return bridge != null ? bridge.getId() : null;
     }
 
@@ -124,8 +123,8 @@ public interface NACommonInterface {
                 .filter(channel -> ChannelKind.STATE.equals(channel.getKind()) && isLinked(channel.getUID()));
     }
 
-    default Optional<NACommonInterface> getHomeHandler() {
-        NACommonInterface bridgeHandler = getBridgeHandler();
+    default Optional<CommonInterface> getHomeHandler() {
+        CommonInterface bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             return bridgeHandler.getCapabilities().get(HomeCapability.class).isPresent() ? Optional.of(bridgeHandler)
                     : Optional.empty();
@@ -133,12 +132,12 @@ public interface NACommonInterface {
         return Optional.empty();
     }
 
-    default Stream<NACommonInterface> getActiveChildren() {
+    default Stream<CommonInterface> getActiveChildren() {
         Thing thing = getThing();
         if (thing instanceof Bridge) {
             return ((Bridge) thing).getThings().stream().filter(
                     t -> t.getStatus().equals(ThingStatus.ONLINE) || t.getStatus().equals(ThingStatus.INITIALIZING))
-                    .map(t -> t.getHandler()).map(NACommonInterface.class::cast);
+                    .map(t -> t.getHandler()).map(CommonInterface.class::cast);
         }
         return Stream.of();
     }
@@ -172,13 +171,13 @@ public interface NACommonInterface {
     }
 
     default void commonInitialize(ScheduledExecutorService scheduler) {
-        ModuleType moduleType = ModuleType.valueOf(getThing().getThingTypeUID().getId());
-        if (ModuleType.NAAccount.equals(moduleType.getBridge())) {
+        ModuleType moduleType = ModuleType.from(getThing().getThingTypeUID());
+        if (ModuleType.ACCOUNT.equals(moduleType.getBridge())) {
             NAThingConfiguration config = getThing().getConfiguration().as(NAThingConfiguration.class);
             getCapabilities().put(new RefreshCapability(this, scheduler, config.refreshInterval));
         }
         getCapabilities().values().forEach(cap -> cap.initialize());
-        NACommonInterface bridgeHandler = getBridgeHandler();
+        CommonInterface bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             bridgeHandler.expireData();
         }

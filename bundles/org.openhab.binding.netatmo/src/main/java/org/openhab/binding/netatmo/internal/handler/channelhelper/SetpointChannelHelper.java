@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.api.dto.NARoom;
+import org.openhab.binding.netatmo.internal.api.dto.Room;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -38,8 +38,8 @@ public class SetpointChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetObject(String channelId, NAObject naObject) {
-        if (naObject instanceof NARoom) {
-            NARoom room = (NARoom) naObject;
+        if (naObject instanceof Room) {
+            Room room = (Room) naObject;
             switch (channelId) {
                 case CHANNEL_SETPOINT_MODE:
                     return toStringType(room.getSetpointMode().name());

@@ -16,8 +16,8 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatusModule;
-import org.openhab.binding.netatmo.internal.api.dto.NAModule;
+import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
+import org.openhab.binding.netatmo.internal.api.dto.Module;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -44,11 +44,11 @@ public class BatteryChannelHelper extends ChannelHelper {
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
         int percent = -1;
-        if (naThing instanceof NAModule) {
-            percent = ((NAModule) naThing).getBatteryPercent();
+        if (naThing instanceof Module) {
+            percent = ((Module) naThing).getBatteryPercent();
         }
-        if (naThing instanceof NAHomeStatusModule) {
-            percent = ((NAHomeStatusModule) naThing).getBatteryState().level;
+        if (naThing instanceof HomeStatusModule) {
+            percent = ((HomeStatusModule) naThing).getBatteryState().level;
         }
         switch (channelId) {
             case CHANNEL_VALUE:

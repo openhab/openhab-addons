@@ -23,16 +23,16 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
-import org.openhab.binding.netatmo.internal.api.dto.NADevice;
-import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
+import org.openhab.binding.netatmo.internal.api.dto.Device;
+import org.openhab.binding.netatmo.internal.api.dto.Event;
+import org.openhab.binding.netatmo.internal.api.dto.HomeData;
+import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
+import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -47,14 +47,14 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class Capability {
     protected final Thing thing;
-    protected final NACommonInterface handler;
+    protected final CommonInterface handler;
 
     protected boolean firstLaunch;
     protected Map<String, String> properties = Map.of();
     protected ThingStatus thingStatus = ThingStatus.UNKNOWN;
     protected @Nullable String thingStatusReason = "";
 
-    Capability(NACommonInterface handler) {
+    Capability(CommonInterface handler) {
         this.handler = handler;
         this.thing = handler.getThing();
     }
@@ -62,20 +62,20 @@ public class Capability {
     public final void setNewData(@Nullable NAObject newData) {
         if (newData != null) {
             beforeNewData();
-            if (newData instanceof NAHomeData) {
-                updateHomeData((NAHomeData) newData);
+            if (newData instanceof HomeData) {
+                updateHomeData((HomeData) newData);
             }
             if (newData instanceof HomeStatus) {
                 updateHomeStatus((HomeStatus) newData);
             }
-            if (newData instanceof NAHomeStatusModule) {
-                updateHomeStatusModule((NAHomeStatusModule) newData);
+            if (newData instanceof HomeStatusModule) {
+                updateHomeStatusModule((HomeStatusModule) newData);
             }
-            if (newData instanceof NAEvent) {
-                updateEvent((NAEvent) newData);
+            if (newData instanceof Event) {
+                updateEvent((Event) newData);
             }
-            if (newData instanceof NAHomeEvent) {
-                updateHomeEvent((NAHomeEvent) newData);
+            if (newData instanceof HomeEvent) {
+                updateHomeEvent((HomeEvent) newData);
             }
             if (newData instanceof NAThing) {
                 updateNAThing((NAThing) newData);
@@ -83,8 +83,8 @@ public class Capability {
             if (newData instanceof NAMain) {
                 updateNAMain((NAMain) newData);
             }
-            if (newData instanceof NADevice) {
-                updateNADevice((NADevice) newData);
+            if (newData instanceof Device) {
+                updateNADevice((Device) newData);
             }
             afterNewData(newData);
         }
@@ -93,7 +93,7 @@ public class Capability {
     protected void beforeNewData() {
         properties = new HashMap<>(thing.getProperties());
         firstLaunch = properties.isEmpty();
-        ModuleType moduleType = ModuleType.valueOf(thing.getThingTypeUID().getId());
+        ModuleType moduleType = ModuleType.from(thing.getThingTypeUID());
         if (firstLaunch && !moduleType.isLogical()) {
             properties.put(PROPERTY_VENDOR, VENDOR);
             properties.put(PROPERTY_MODEL_ID, moduleType.name());
@@ -120,7 +120,7 @@ public class Capability {
         // do nothing by default, can be overridden by subclasses
     }
 
-    protected void updateHomeEvent(NAHomeEvent newData) {
+    protected void updateHomeEvent(HomeEvent newData) {
         // do nothing by default, can be overridden by subclasses
     }
 
@@ -128,15 +128,15 @@ public class Capability {
         // do nothing by default, can be overridden by subclasses
     }
 
-    protected void updateHomeData(NAHomeData newData) {
+    protected void updateHomeData(HomeData newData) {
         // do nothing by default, can be overridden by subclasses
     }
 
-    protected void updateEvent(NAEvent newData) {
+    protected void updateEvent(Event newData) {
         // do nothing by default, can be overridden by subclasses
     }
 
-    protected void updateNADevice(NADevice newData) {
+    protected void updateNADevice(Device newData) {
         // do nothing by default, can be overridden by subclasses
     }
 
@@ -152,7 +152,7 @@ public class Capability {
         // do nothing by default, can be overridden by subclasses
     }
 
-    public void updateHomeStatusModule(NAHomeStatusModule newData) {
+    public void updateHomeStatusModule(HomeStatusModule newData) {
         // do nothing by default, can be overridden by subclasses
     }
 

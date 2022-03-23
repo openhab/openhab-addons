@@ -28,17 +28,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link NAAccountHandler} is the base class for all Netatmo bridges
+ * {@link AccountHandler} is the base class for all Netatmo bridges
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class NAAccountHandler extends BaseBridgeHandler implements NACommonInterface {
-    private final Logger logger = LoggerFactory.getLogger(NAAccountHandler.class);
+public class AccountHandler extends BaseBridgeHandler implements CommonInterface {
+    private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private CapabilityMap capabilities = new CapabilityMap();
 
-    public NAAccountHandler(Bridge bridge) {
+    public AccountHandler(Bridge bridge) {
         super(bridge);
     }
 

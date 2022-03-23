@@ -16,14 +16,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ThermostatZoneType;
 
 /**
- * The {@link NAZone} holds temperature data for a given zone.
+ * The {@link Zone} holds temperature data for a given zone.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 
 @NonNullByDefault
-public class NAZone extends NAObject {
+public class Zone extends NAObject {
     private ThermostatZoneType type = ThermostatZoneType.UNKNOWN;
     private double temp;
 

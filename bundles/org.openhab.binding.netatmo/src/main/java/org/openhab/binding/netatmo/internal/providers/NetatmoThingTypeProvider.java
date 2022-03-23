@@ -70,7 +70,7 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
     public @Nullable ThingType getThingType(ThingTypeUID thingTypeUID, @Nullable Locale locale) {
         if (BINDING_ID.equalsIgnoreCase(thingTypeUID.getBindingId())) {
             try {
-                ModuleType moduleType = ModuleType.valueOf(thingTypeUID.getId());
+                ModuleType moduleType = ModuleType.from(thingTypeUID);
 
                 ThingTypeBuilder thingTypeBuilder = ThingTypeBuilder.instance(thingTypeUID, thingTypeUID.toString())
                         .withRepresentationProperty(EQUIPMENT_ID).withExtensibleChannelTypeIds(moduleType.extensions)

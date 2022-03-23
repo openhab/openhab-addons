@@ -28,7 +28,7 @@ import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
-import org.openhab.binding.netatmo.internal.api.dto.NetatmoModule;
+import org.openhab.binding.netatmo.internal.api.dto.NAModule;
 import org.openhab.binding.netatmo.internal.config.BindingConfiguration;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NetatmoDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService, DiscoveryService {
-    private static final Set<ModuleType> SKIPPED_TYPES = Set.of(ModuleType.UNKNOWN, ModuleType.NAAccount);
+    private static final Set<ModuleType> SKIPPED_TYPES = Set.of(ModuleType.UNKNOWN, ModuleType.ACCOUNT);
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
     private final Logger logger = LoggerFactory.getLogger(NetatmoDiscoveryService.class);
     private @Nullable ApiBridgeHandler handler;
@@ -95,9 +95,9 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                         home.getModules().values().stream().forEach(device -> {
                             ModuleType deviceType = device.getType();
                             String deviceBridge = device.getBridge();
-                            ThingUID bridgeUID = deviceBridge != null && deviceType.getBridge() != ModuleType.NAHome
+                            ThingUID bridgeUID = deviceBridge != null && deviceType.getBridge() != ModuleType.HOME
                                     ? findThingUID(deviceType.getBridge(), deviceBridge, apiBridgeUID)
-                                    : deviceType.getBridge() == ModuleType.NAHome ? homeUID : apiBridgeUID;
+                                    : deviceType.getBridge() == ModuleType.HOME ? homeUID : apiBridgeUID;
                             createThing(device, bridgeUID);
                         });
                         home.getRooms().values().stream().forEach(room -> {
@@ -129,7 +129,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
         throw new IllegalArgumentException("Unsupported device type discovered : " + thingType);
     }
 
-    private ThingUID createThing(NetatmoModule module, @Nullable ThingUID bridgeUID) {
+    private ThingUID createThing(NAModule module, @Nullable ThingUID bridgeUID) {
         ThingUID moduleUID = findThingUID(module.getType(), module.getId(), bridgeUID);
         DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(moduleUID)
                 .withProperty(EQUIPMENT_ID, module.getId()).withRepresentationProperty(EQUIPMENT_ID)

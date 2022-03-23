@@ -18,12 +18,12 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.RestManager;
-import org.openhab.binding.netatmo.internal.api.dto.NADevice;
-import org.openhab.binding.netatmo.internal.api.dto.NAModule;
+import org.openhab.binding.netatmo.internal.api.dto.Device;
+import org.openhab.binding.netatmo.internal.api.dto.Module;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.ThingStatus;
 
 /**
@@ -36,7 +36,7 @@ import org.openhab.core.thing.ThingStatus;
 public abstract class RestCapability<T extends RestManager> extends ModuleCapability {
     protected Optional<T> api = Optional.empty();
 
-    RestCapability(NACommonInterface handler) {
+    RestCapability(CommonInterface handler) {
         super(handler);
     }
 
@@ -50,9 +50,9 @@ public abstract class RestCapability<T extends RestManager> extends ModuleCapabi
     }
 
     @Override
-    protected void updateNADevice(NADevice newData) {
+    protected void updateNADevice(Device newData) {
         super.updateNADevice(newData);
-        NAObjectMap<NAModule> modules = newData.getModules();
+        NAObjectMap<Module> modules = newData.getModules();
         handler.getActiveChildren().forEach(child -> child.setNewData(modules.get(child.getId())));
     }
 

@@ -25,15 +25,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.HomeApi;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeDataModule;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeDataPerson;
+import org.openhab.binding.netatmo.internal.api.dto.HomeData;
+import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
+import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.api.dto.NetatmoLocation;
+import org.openhab.binding.netatmo.internal.api.dto.Location;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
-import org.openhab.binding.netatmo.internal.handler.NACommonInterface;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,12 +50,12 @@ public class HomeCapability extends RestCapability<HomeApi> {
 
     private final NetatmoDescriptionProvider descriptionProvider;
 
-    private NAObjectMap<NAHomeDataPerson> persons = new NAObjectMap<>();
-    private NAObjectMap<NAHomeDataModule> modules = new NAObjectMap<>();
+    private NAObjectMap<HomeDataPerson> persons = new NAObjectMap<>();
+    private NAObjectMap<HomeDataModule> modules = new NAObjectMap<>();
 
     private Set<FeatureArea> featuresArea = Set.of();
 
-    public HomeCapability(NACommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
+    public HomeCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
         super(handler);
         this.descriptionProvider = descriptionProvider;
     }
@@ -69,7 +69,7 @@ public class HomeCapability extends RestCapability<HomeApi> {
     }
 
     @Override
-    protected void updateHomeData(NAHomeData home) {
+    protected void updateHomeData(HomeData home) {
         featuresArea = home.getFeatures();
         if (hasFeature(FeatureArea.SECURITY) && !handler.getCapabilities().containsKey(SecurityCapability.class)) {
             handler.getCapabilities().put(new SecurityCapability(handler));
@@ -80,7 +80,7 @@ public class HomeCapability extends RestCapability<HomeApi> {
         if (firstLaunch) {
             home.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
             home.getTimezone().map(tz -> properties.put(PROPERTY_TIMEZONE, tz));
-            properties.put(GROUP_LOCATION, ((NetatmoLocation) home).getLocation().toString());
+            properties.put(GROUP_LOCATION, ((Location) home).getLocation().toString());
             properties.put(PROPERTY_FEATURE, featuresArea.stream().map(f -> f.name()).collect(Collectors.joining(",")));
         }
     }
@@ -100,11 +100,11 @@ public class HomeCapability extends RestCapability<HomeApi> {
         return featuresArea.contains(seeked);
     }
 
-    public NAObjectMap<NAHomeDataPerson> getPersons() {
+    public NAObjectMap<HomeDataPerson> getPersons() {
         return persons;
     }
 
-    public NAObjectMap<NAHomeDataModule> getModules() {
+    public NAObjectMap<HomeDataModule> getModules() {
         return modules;
     }
 
@@ -112,7 +112,7 @@ public class HomeCapability extends RestCapability<HomeApi> {
     protected List<NAObject> updateReadings(HomeApi api) {
         List<NAObject> result = new ArrayList<>();
         try {
-            NAHomeData homeData = api.getHomeData(handler.getId());
+            HomeData homeData = api.getHomeData(handler.getId());
             if (homeData != null) {
                 result.add(homeData);
                 persons = homeData.getPersons();
