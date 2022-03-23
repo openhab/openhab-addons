@@ -28,6 +28,8 @@ public class LGThinQConfiguration {
     public String password = "";
     public String country = "";
     public String language = "";
+    public String manualCountry = "";
+    public String manualLanguage = "";
     public Integer pollingIntervalSec = 0;
     public String alternativeServer = "";
 
@@ -53,10 +55,16 @@ public class LGThinQConfiguration {
     }
 
     public String getCountry() {
+        if ("--".equals(country)) {
+            return manualCountry;
+        }
         return country;
     }
 
     public String getLanguage() {
+        if ("--".equals(language)) {
+            return manualLanguage;
+        }
         return language;
     }
 
