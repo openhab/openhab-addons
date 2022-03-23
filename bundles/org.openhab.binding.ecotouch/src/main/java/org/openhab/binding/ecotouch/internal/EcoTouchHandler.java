@@ -162,7 +162,8 @@ public class EcoTouchHandler extends BaseThingHandler {
             return;
         }
 
-        connector = new EcoTouchConnector(localConfig.ip, localConfig.username, localConfig.password);
+        connector = new EcoTouchConnector(localConfig.ip, localConfig.username, localConfig.password,
+                localConfig.servicepin);
 
         scheduler.execute(() -> {
             try {

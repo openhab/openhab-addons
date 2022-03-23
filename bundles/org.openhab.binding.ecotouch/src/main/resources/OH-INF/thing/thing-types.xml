@@ -140,6 +140,11 @@
 				<description>Since Waterkotte Display software version 1.6.xx, the password default value is waterkotte. Prior to
 					that, the password default was wtkadmin</description>
 			</parameter>
+			<parameter name="servicepin" type="text" required="false">
+				<context>servicepin</context>
+				<label>ServicePin</label>
+				<description>This Service privileges if provided.</description>
+			</parameter>
 			<parameter name="refresh" type="integer" required="false" min="10" unit="s">
 				<default>60</default>
 				<label>Refresh Interval</label>
@@ -288,6 +293,11 @@
 				<label>Password</label>
 				<description>Since Waterkotte Display software version 1.6.xx, the password default value is waterkotte. Prior to
 					that, the password default was wtkadmin</description>
+			</parameter>
+			<parameter name="servicepin" type="text" required="false">
+				<context>servicepin</context>
+				<label>ServicePin</label>
+				<description>This Service privileges if provided.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false" min="10" unit="s">
 				<default>60</default>

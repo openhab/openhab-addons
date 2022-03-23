@@ -49,6 +49,7 @@ public class EcoTouchConnector {
     private String ip;
     private String username;
     private String password;
+    private String servicepin;
     @Nullable
     List<String> cookies;
     static Pattern responsePattern = Pattern.compile("#(.+)\\s+S_OK[^0-9-]+([0-9-]+)\\s+([0-9-.]+)");
@@ -58,10 +59,11 @@ public class EcoTouchConnector {
     /**
      * Create a network communication without having a current access token.
      */
-    public EcoTouchConnector(String ip, String username, String password) {
+    public EcoTouchConnector(String ip, String username, String password, String servicepin) {
         this.ip = ip;
         this.username = username;
         this.password = password;
+        this.servicepin = servicepin;
         this.cookies = null;
     }
 
@@ -69,10 +71,11 @@ public class EcoTouchConnector {
      * Create a network communication with access token. This speeds up
      * retrieving values, because the log in step is omitted.
      */
-    public EcoTouchConnector(String ip, String username, String password, List<String> cookies) {
+    public EcoTouchConnector(String ip, String username, String password, String servicepin, List<String> cookies) {
         this.ip = ip;
         this.username = username;
         this.password = password;
+        this.servicepin = servicepin;
         this.cookies = cookies;
     }
 
@@ -120,6 +123,10 @@ public class EcoTouchConnector {
                 throw new IOException("Cannot login: " + cause);
             }
         }
+        if (servicepin.length() == 5) {
+            activateService();
+            logger.debug("Login Successful with service privileges.");
+        }
     }
 
     public void logout() {
@@ -131,6 +138,18 @@ public class EcoTouchConnector {
             }
             cookies = null;
         }
+    }
+
+    public void activateService() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("http://" + ip + "/cgi/writeTags?returnValue=true&n=5");
+        sb.append("&t1=I91&v1=" + servicepin.charAt(0));
+        sb.append("&t2=I92&v2=" + servicepin.charAt(1));
+        sb.append("&t3=I93&v3=" + servicepin.charAt(2));
+        sb.append("&t4=I94&v4=" + servicepin.charAt(3));
+        sb.append("&t5=I95&v5=" + servicepin.charAt(4));
+        URL url = new URL(sb.toString());
+        url.openConnection();
     }
 
     /**

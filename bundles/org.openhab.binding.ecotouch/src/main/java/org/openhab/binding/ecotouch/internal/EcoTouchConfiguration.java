@@ -24,5 +24,6 @@ public class EcoTouchConfiguration {
     public String ip = "";
     public String username = "";
     public String password = "";
+    public String servicepin = "";
     public Integer refresh = 60;
 }
