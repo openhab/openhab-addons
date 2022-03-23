@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.rotel.internal.communication;
+package org.openhab.binding.rotel.internal.protocol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.rotel.internal.RotelException;
