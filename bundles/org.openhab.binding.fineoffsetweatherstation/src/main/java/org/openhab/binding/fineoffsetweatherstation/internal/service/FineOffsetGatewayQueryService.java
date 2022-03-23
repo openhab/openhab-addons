@@ -29,6 +29,9 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewa
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SystemInfo;
+import org.openhab.binding.fineoffsetweatherstation.internal.handler.ThingStatusListener;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,12 +44,15 @@ import org.slf4j.LoggerFactory;
 public class FineOffsetGatewayQueryService implements AutoCloseable {
     private final Logger logger = LoggerFactory.getLogger(FineOffsetGatewayQueryService.class);
 
-    private final Socket socket;
+    private @Nullable Socket socket;
+    private final FineOffsetGatewayConfiguration config;
+    private final ThingStatusListener thingStatusListener;
     private final FineOffsetDataParser fineOffsetDataParser;
 
-    public FineOffsetGatewayQueryService(FineOffsetGatewayConfiguration config) throws IOException {
-        this.socket = new Socket(config.ip, config.port);
-        this.socket.setSoTimeout(5000);
+    public FineOffsetGatewayQueryService(FineOffsetGatewayConfiguration config,
+            ThingStatusListener thingStatusListener) {
+        this.config = config;
+        this.thingStatusListener = thingStatusListener;
         this.fineOffsetDataParser = new FineOffsetDataParser();
     }
 
@@ -97,6 +103,10 @@ public class FineOffsetGatewayQueryService implements AutoCloseable {
         byte[] request = command.getPayload();
 
         try {
+            Socket socket = getConnection();
+            if (socket == null) {
+                return null;
+            }
             InputStream in = socket.getInputStream();
             socket.getOutputStream().write(request);
             if ((bytesRead = in.read(buffer)) == -1) {
@@ -112,6 +122,15 @@ public class FineOffsetGatewayQueryService implements AutoCloseable {
                 return null;
             }
 
+        } catch (IOException ex) {
+            logger.warn("executeCommand({}): failed to invoke command", command, ex);
+            thingStatusListener.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    ex.getMessage());
+            try {
+                close();
+            } catch (IOException ignored) {
+            }
+            return null;
         } catch (Exception ex) {
             logger.warn("executeCommand({})", command, ex);
             return null;
@@ -122,8 +141,29 @@ public class FineOffsetGatewayQueryService implements AutoCloseable {
         return data;
     }
 
+    private synchronized @Nullable Socket getConnection() {
+        Socket socket = this.socket;
+        if (socket == null) {
+            try {
+                socket = new Socket(config.ip, config.port);
+                socket.setSoTimeout(5000);
+                this.socket = socket;
+                thingStatusListener.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+            } catch (IOException e) {
+                logger.warn("failed to connect to {}:{}", config.ip, config.port, e);
+                thingStatusListener.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        e.getMessage());
+            }
+        }
+        return socket;
+    }
+
     @Override
     public void close() throws IOException {
-        this.socket.close();
+        Socket socket = this.socket;
+        this.socket = null;
+        if (socket != null) {
+            socket.close();
+        }
     }
 }

@@ -110,13 +110,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no configuration available");
             return;
         }
-        try {
-            gatewayQueryService = new FineOffsetGatewayQueryService(config);
-        } catch (IOException e) {
-            logger.debug("", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            return;
-        }
+        gatewayQueryService = new FineOffsetGatewayQueryService(config, this::updateStatus);
 
         updateStatus(ThingStatus.UNKNOWN);
         fetchAndUpdateSensors();

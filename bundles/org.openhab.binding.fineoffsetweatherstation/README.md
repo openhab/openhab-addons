@@ -72,8 +72,8 @@ This binding support discovery of Fine Offset gateway devices by sending a broad
 |-------------------|---------|---------------------------------------------------------------------------------|---------|----------|----------|
 | ip                | text    | Hostname or IP address of the device                                            | N/A     | yes      | no       |
 | port              | text    | Port                                                                            | 45000   | yes      | no       |
-| pollingInterval   | integer | Polling period for refreshing the data in sec                                   | 16     | yes       | yes      |
-| discoverInterval  | integer | Interval in sec to fetch registered sensors, battery status and signal strength | 900     | yes       | yes      |
+| pollingInterval   | integer | Polling period for refreshing the data in sec                                   | 16      | yes      | yes      |
+| discoverInterval  | integer | Interval in sec to fetch registered sensors, battery status and signal strength | 900     | yes      | yes      |
 
 ### `sensor` Thing Configuration
 
@@ -256,9 +256,9 @@ Valid sensors:
 
 | Channel      | Type   | Read/Write | Description                 |
 |--------------|--------|------------|-----------------------------|
-| signal       | Number | R          | The sensors signal stranght |
-| batteryLevel | Number | R          | The sensors batery level    |
-| lowBattery   | Switch | R          | The sensors batery status   |
+| signal       | Number | R          | The sensors signal strenght |
+| batteryLevel | Number | R          | The sensors battery level   |
+| lowBattery   | Switch | R          | The sensors battery status  |
 
 ## Full Example
 
@@ -290,7 +290,6 @@ Number:Temperature        weather_temperature_indoor   "Inside temperature"     
 Number:Dimensionless      weather_humidity_indoor      "Humidity inside"                     <Humidity>               ["Measurement", "Humidity"]     { channel="fineoffsetweatherstation:gateway:3906700515:humidity-indoor" }
 Number:Pressure           weather_pressure_absolute    "Absolute pressure"                   <Pressure>    (gOutdoor) ["Measurement", "Pressure"]     { channel="fineoffsetweatherstation:gateway:3906700515:pressure-absolute" }
 Number:Pressure           weather_pressure_relative    "Relative pressure"                   <Pressure>    (gOutdoor) ["Measurement", "Pressure"]     { channel="fineoffsetweatherstation:gateway:3906700515:pressure-relative" }
-Number:Temperature        weather_temperature_outdoor  "Outdoor temperature"                 <Temperature> (gOutdoor) ["Measurement", "Temperature"]  { channel="fineoffsetweatherstation:gateway:3906700515:temperature-outdoor" }
 Number:Dimensionless      weather_humidity_outdoor     "Humidity outside"                    <Humidity>    (gOutdoor) ["Measurement", "Humidity"]     { channel="fineoffsetweatherstation:gateway:3906700515:humidity-outdoor" }
 Number:Angle              weather_direction_wind       "Wind direction"                      <Wind>        (gOutdoor) ["Measurement", "Wind"]         { channel="fineoffsetweatherstation:gateway:3906700515:direction-wind" }
 Number:Speed              weather_speed_wind           "Wind speed"                          <Wind>        (gOutdoor) ["Measurement", "Wind"]         { channel="fineoffsetweatherstation:gateway:3906700515:speed-wind" }
