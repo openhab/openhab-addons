@@ -129,7 +129,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 throw new OpenUVException(error);
             }
         } catch (JsonSyntaxException e) {
-            logger.debug("No json received when calling `{}` : {}", url, jsonData);
+            logger.debug("No valid json received when calling `{}` : {}", url, jsonData);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (OpenUVException e) {
