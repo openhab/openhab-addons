@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -187,44 +186,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     return;
                 }
 
-                List<HomeDevice> homeDevices = getHomeDevices();
-                for (HomeDevice hd : homeDevices) {
-                    String key = hd.getApplianceIdentifier().getApplianceId();
-                    if (!cachedHomeDevicesByApplianceId.containsKey(key)) {
-                        logger.debug("A new appliance with ID '{}' has been added", hd.UID);
-                        for (DiscoveryListener listener : discoveryListeners) {
-                            listener.onApplianceAdded(hd);
-                        }
-                        ApplianceStatusListener listener = applianceStatusListeners
-                                .get(hd.getApplianceIdentifier().getApplianceId());
-                        if (listener != null) {
-                            listener.onApplianceAdded(hd);
-                        }
-                    }
-                    cachedHomeDevicesByApplianceId.put(key, hd);
-                    cachedHomeDevicesByRemoteUid.put(hd.getRemoteUid(), hd);
-                }
-
-                Set<Entry<String, HomeDevice>> cachedEntries = cachedHomeDevicesByApplianceId.entrySet();
-                Iterator<Entry<String, HomeDevice>> iterator = cachedEntries.iterator();
-
-                while (iterator.hasNext()) {
-                    Entry<String, HomeDevice> cachedEntry = iterator.next();
-                    HomeDevice cachedHomeDevice = cachedEntry.getValue();
-                    if (!homeDevices.stream().anyMatch(d -> d.UID.equals(cachedHomeDevice.UID))) {
-                        logger.debug("The appliance with ID '{}' has been removed", cachedHomeDevice.UID);
-                        for (DiscoveryListener listener : discoveryListeners) {
-                            listener.onApplianceRemoved(cachedHomeDevice);
-                        }
-                        ApplianceStatusListener listener = applianceStatusListeners
-                                .get(cachedHomeDevice.getApplianceIdentifier().getApplianceId());
-                        if (listener != null) {
-                            listener.onApplianceRemoved();
-                        }
-                        cachedHomeDevicesByRemoteUid.remove(cachedHomeDevice.getRemoteUid());
-                        iterator.remove();
-                    }
-                }
+                refreshHomeDevices(getHomeDevices());
 
                 for (Entry<String, ApplianceStatusListener> entry : applianceStatusListeners.entrySet()) {
                     String applianceId = entry.getKey();
@@ -287,6 +249,46 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
     };
 
+    private void refreshHomeDevices(List<HomeDevice> homeDevices) {
+        for (HomeDevice hd : homeDevices) {
+            String key = hd.getApplianceIdentifier().getApplianceId();
+            if (!cachedHomeDevicesByApplianceId.containsKey(key)) {
+                logger.debug("A new appliance with ID '{}' has been added", hd.UID);
+                for (DiscoveryListener listener : discoveryListeners) {
+                    listener.onApplianceAdded(hd);
+                }
+                ApplianceStatusListener listener = applianceStatusListeners
+                        .get(hd.getApplianceIdentifier().getApplianceId());
+                if (listener != null) {
+                    listener.onApplianceAdded(hd);
+                }
+            }
+            cachedHomeDevicesByApplianceId.put(key, hd);
+            cachedHomeDevicesByRemoteUid.put(hd.getRemoteUid(), hd);
+        }
+
+        Set<Entry<String, HomeDevice>> cachedEntries = cachedHomeDevicesByApplianceId.entrySet();
+        Iterator<Entry<String, HomeDevice>> iterator = cachedEntries.iterator();
+
+        while (iterator.hasNext()) {
+            Entry<String, HomeDevice> cachedEntry = iterator.next();
+            HomeDevice cachedHomeDevice = cachedEntry.getValue();
+            if (!homeDevices.stream().anyMatch(d -> d.UID.equals(cachedHomeDevice.UID))) {
+                logger.debug("The appliance with ID '{}' has been removed", cachedHomeDevice.UID);
+                for (DiscoveryListener listener : discoveryListeners) {
+                    listener.onApplianceRemoved(cachedHomeDevice);
+                }
+                ApplianceStatusListener listener = applianceStatusListeners
+                        .get(cachedHomeDevice.getApplianceIdentifier().getApplianceId());
+                if (listener != null) {
+                    listener.onApplianceRemoved();
+                }
+                cachedHomeDevicesByRemoteUid.remove(cachedHomeDevice.getRemoteUid());
+                iterator.remove();
+            }
+        }
+    }
+
     public List<HomeDevice> getHomeDevices() {
         List<HomeDevice> devices = new ArrayList<>();
 
@@ -334,8 +336,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     address1 = InetAddress.getByName(JSON_RPC_MULTICAST_IP1);
                     address2 = InetAddress.getByName(JSON_RPC_MULTICAST_IP2);
                 } catch (UnknownHostException e) {
-                    logger.debug("An exception occurred while setting up the multicast receiver: '{}'",
-                            e.getMessage());
+                    logger.debug("An exception occurred while setting up the multicast receiver: '{}'", e.getMessage());
                 }
 
                 byte[] buf = new byte[256];
@@ -499,9 +500,12 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
         applianceStatusListeners.put(applianceId, applianceStatusListener);
 
-        Optional<HomeDevice> device = getHomeDevices().stream()
-                .filter(hd -> hd.getApplianceIdentifier().getApplianceId().equals(applianceId)).findFirst();
-        device.ifPresent(d -> applianceStatusListener.onApplianceAdded(d));
+        HomeDevice cachedHomeDevice = cachedHomeDevicesByApplianceId.get(applianceId);
+        if (cachedHomeDevice != null) {
+            applianceStatusListener.onApplianceAdded(cachedHomeDevice);
+        } else {
+            refreshHomeDevices(getHomeDevices());
+        }
 
         return true;
     }
