@@ -75,7 +75,7 @@ public class AuthenticationApi extends RestManager {
             } catch (NetatmoException e) {
                 logger.warn("Unable to refresh access token : {}", e.getMessage());
             }
-        }, 5 /* Math.round(response.getExpiresIn() * 0.8) */, TimeUnit.SECONDS);
+        }, Math.round(response.getExpiresIn() * 0.8), TimeUnit.SECONDS);
         tokenResponse = Optional.of(response);
     }
 

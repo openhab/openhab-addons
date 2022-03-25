@@ -135,7 +135,6 @@ public enum ModuleType {
     public final List<String> extensions = new LinkedList<>();
     public final List<Class<? extends ChannelHelper>> channelHelpers;
     public final List<Class<? extends Capability>> capabilities;
-    public final String uid;
     public final ThingTypeUID thingTypeUID;
     private final @Nullable ModuleType bridgeType;
     public final FeatureArea feature;
@@ -148,8 +147,7 @@ public enum ModuleType {
         this.feature = feature;
         this.capabilities = capabilities;
         this.apiName = apiName;
-        uid = name().toLowerCase().replace("_", "-");
-        thingTypeUID = new ThingTypeUID(BINDING_ID, uid);
+        thingTypeUID = new ThingTypeUID(BINDING_ID, name().toLowerCase().replace("_", "-"));
         try {
             for (Class<? extends ChannelHelper> helperClass : helpers) {
                 ChannelHelper helper = helperClass.getConstructor().newInstance();
@@ -194,8 +192,7 @@ public enum ModuleType {
     }
 
     public static ModuleType from(ThingTypeUID thingTypeUID) {
-        String id = thingTypeUID.getId();
-        return ModuleType.AS_SET.stream().filter(mt -> mt.uid.equals(id)).findFirst()
+        return ModuleType.AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException());
     }
 
