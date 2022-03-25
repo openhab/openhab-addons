@@ -36,6 +36,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
@@ -262,20 +263,18 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
             String dpValue = dp.Value.strip().trim();
 
             if (selector != null) {
-                if (!selector.isProperty()) {
-                    ChannelUID theChannelUID = new ChannelUID(getThing().getUID(), selector.getChannelID());
-
-                    State state = selector.getState(dpValue, dmd, this.translationProvider);
+                String channelId = selector.getChannelID();
+                ThingUID thingUid = getThing().getUID();
+                State state = selector.getState(dpValue, dmd, this.translationProvider);
+                if (selector.isProperty()) {
+                    String value = state.toString();
+                    logger.trace("Updating the property '{}' of '{}' to '{}'", channelId, thingUid, value);
+                    updateProperty(channelId, value);
+                } else {
+                    ChannelUID theChannelUID = new ChannelUID(thingUid, channelId);
                     logger.trace("Update state of {} with getState '{}'", theChannelUID, state);
                     updateState(theChannelUID, state);
                     updateRawChannel(dp.Name, dpValue);
-                } else {
-                    logger.debug("Updating the property '{}' of '{}' to '{}'", selector.getChannelID(),
-                            getThing().getUID(), selector.getState(dpValue, dmd, this.translationProvider).toString());
-                    Map<String, String> properties = editProperties();
-                    properties.put(selector.getChannelID(),
-                            selector.getState(dpValue, dmd, this.translationProvider).toString());
-                    updateProperties(properties);
                 }
             }
         } catch (IllegalArgumentException e) {
