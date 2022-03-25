@@ -31,8 +31,7 @@ public class Person extends NAThing {
     private @Nullable Snapshot face;
 
     // Provided by webhooks
-    private @Nullable String faceId;
-    private @Nullable String faceKey;
+    private @Nullable String faceUrl;
     private boolean isKnown;
 
     @Override
@@ -45,12 +44,7 @@ public class Person extends NAThing {
         if (localFace != null) {
             return localFace.getUrl();
         }
-        String fId = faceId;
-        String key = faceKey;
-        if (face == null && fId != null && key != null) {
-            return new Snapshot(fId, key).getUrl();
-        }
-        return null;
+        return faceUrl;
     }
 
     public boolean isKnown() {

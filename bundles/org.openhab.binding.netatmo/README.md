@@ -7,7 +7,7 @@ The Netatmo binding integrates the following Netatmo products:
 - *Indoor Camera / Welcome*. Reports last event and persons at home, consult picture and video from event/camera.
 - *Outdoor Camera / Presence*. Reports last event, consult picture and video from event/camera.
 
-See http://www.netatmo.com/ for details on their product.
+See https://www.netatmo.com/ for details on their product.
 
 ## Binding Configuration
 
@@ -35,7 +35,7 @@ The binding has the following configuration options:
 
 You will have to create at first a bridge to handle communication with your Netatmo Application.
 
-The Netatmo Api bridge has the following configuration options:
+The Account bridge has the following configuration options:
 
 -   **clientId:** Client ID provided for the application you created on http://dev.netatmo.com/createapp.
 -   **clientSecret:**  Client Secret provided for the application you created.
@@ -44,8 +44,6 @@ The Netatmo Api bridge has the following configuration options:
 -   **webHookUrl:** Protocol, public IP and port to access openHAB server from Internet.
 -   **reconnectInterval:** The reconnection interval to Netatmo API (in s).
 
-
-### 2. Things Configuration
 
 ### Webhook
 
@@ -57,7 +55,7 @@ You will define here public way to access your openHAB server:
 http(s)://xx.yy.zz.ww:443
 ```
 
-Your Netatmo App will be configured automatically by the bridge to the endpoint : 
+Your Netatmo App will be configured automatically by the bridge to the endpoint:
 
 ```
 http(s)://xx.yy.zz.ww:443/netatmo
@@ -65,7 +63,7 @@ http(s)://xx.yy.zz.ww:443/netatmo
 
 Please be aware of Netatmo own limits regarding webhook usage that lead to a 24h ban-time when webhook does not answer 5 times.
 
-NB : Allowed ports for webhooks are 80, 88, 443 and 9443.
+NB: Allowed ports for webhooks are 80, 88, 443 and 9443.
 
 
 ### Configure Things
@@ -300,16 +298,9 @@ All these channels are read only.
 
 **Supported channels for the thermostat module:**
 
-| Channel ID          | Item Type          | Description                                                |
-|---------------------|--------------------|------------------------------------------------------------|
-| temperature         | Number:Temperature | Current temperature                                        |
-| setpoint            | Number:Temperature | Thermostat temperature setpoint                            |
-| setpoint-mode       | String             | Chosen setpoint mode (program, away, hg, manual, off, max) |
-| ThermRelayCmd       | Switch             | Indicates whether the furnace is heating or not            |
-| anticipating        | Switch             | Indicates is anticipating the schedule                     |
-| timestamp           | DateTime           | Timestamp when data was measured                           |
-| setpoint-end        | DateTime           | Thermostat goes back to schedule after that timestamp      |
-| last-message        | DateTime           | Last message emitted by the module                         |
+| Channel Group       | Channel Id         | Item Type            | Description                                      |
+|---------------------|--------------------|----------------------|--------------------------------------------------|
+| th-properties       | relay-status       | Contact              | Indicates if the boiler is currently heating     |
 | signal              | strength           | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal              | value              | Number:Power         | Signal strength in dBm                           |
 | battery             | value              | Number               | Battery level                                    |
@@ -324,8 +315,13 @@ All these channels except setpoint, setpoint-mode and planning are read only.
 
 **Supported channels for the Valve module:**
 
-| Channel ID          | Item Type          | Description                                                |
-|---------------------|--------------------|------------------------------------------------------------|
+| Channel Group       | Channel Id         | Item Type            | Description                                      |
+|---------------------|--------------------|----------------------|--------------------------------------------------|
+| signal              | strength           | Number               | Signal strength (0 for no signal, 1 for weak...) |
+| signal              | value              | Number:Power         | Signal strength in dBm                           |
+| battery             | value              | Number               | Battery level                                    |
+| battery             | low-battery        | Switch               | Low battery                                      |
+| battery             | status             | String               | Description of the battery status (*)            |
 
 
 ### Welcome Home
@@ -476,58 +472,39 @@ Bridge netatmo:account:home "Netatmo Account" [clientId="", clientSecret="", use
 
 ```
 # Indoor Module
-Number:Temperature   Indoor_Temp                       "Temperature [%.1f %unit%]"                                  <temperature>      { channel = "netatmo:weather-station:home:inside:temperature" }
-Number:Temperature   Indoor_Min_Temp                   "Min Temperature Today [%.1f %unit%]"                        <temperature>      { channel = "netatmo:weather-station:home:inside:today-min" }
-Number:Temperature   Indoor_Max_Temp                   "Max Temperature Today [%.1f %unit%]"                        <temperature>      { channel = "netatmo:weather-station:home:inside:today-max" }
-DateTime             Indoor_Min_Temp_TS                "Min Temperature Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"      <calendar>         { channel = "netatmo:weather-station:home:inside:ever-min" }
-DateTime             Indoor_Max_Temp_TS                "Max Temperature Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"      <calendar>         { channel = "netatmo:weather-station:home:inside:ever-max" }
-Number:Dimensionless Indoor_Humidity                   "Humidity [%d %unit%]"                                       <humidity>         { channel = "netatmo:weather-station:home:inside:humidity" }
-Number:Dimensionless Indoor_Min_Humidity               "Min Humidity Today [%d %unit%]"                             <humidity>         { channel = "netatmo:weather-station:home:inside:MinHumidity" }
-Number:Dimensionless Indoor_Max_Humidity               "Max Humidity Today [%d %unit%]"                             <humidity>         { channel = "netatmo:weather-station:home:inside:MaxHumidity" }
-DateTime             Indoor_Min_Humidity_TS            "Min Humidity Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"         <calendar>         { channel = "netatmo:weather-station:home:inside:DateMinHumidity" }
-DateTime             Indoor_Max_Humidity_TS            "Max Humidity Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"         <calendar>         { channel = "netatmo:weather-station:home:inside:DateMaxHumidity" }
-Number               Indoor_Humidex                    "Humidex [%.0f]"                                             <temperature_hot>  { channel = "netatmo:weather-station:home:inside:humidex" }
-Number:Temperature   Indoor_HeatIndex                  "HeatIndex [%.1f %unit%]"                                    <temperature_hot>  { channel = "netatmo:weather-station:home:inside:heat-index" }
-Number:Temperature   Indoor_Dewpoint                   "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:weather-station:home:inside:Dewpoint" }
-Number:Temperature   Indoor_DewpointDepression         "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:weather-station:home:inside:dewpoint-depression" }
-Number:Dimensionless Indoor_Co2                        "CO2 [%d %unit%]"                                            <carbondioxide>    { channel = "netatmo:weather-station:home:inside:Co2" }
-Number:Dimensionless Indoor_Min_Co2                    "Min CO2 Today [%.1f %unit%]"                                <carbondioxide>    { channel = "netatmo:weather-station:home:inside:MinCo2" }
-Number:Dimensionless Indoor_Max_Co2                    "Max CO2 Today [%.1f %unit%]"                                <carbondioxide>    { channel = "netatmo:weather-station:home:inside:MaxCo2" }
-DateTime             Indoor_Min_Co2_TS                 "Min CO2 Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"              <calendar>         { channel = "netatmo:weather-station:home:inside:DateMinCo2" }
-DateTime             Indoor_Max_Co2_TS                 "Max CO2 Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"              <calendar>         { channel = "netatmo:weather-station:home:inside:DateMaxCo2" }
-Number:Pressure      Indoor_Pressure                   "Pressure [%.1f %unit%]"                                     <pressure>         { channel = "netatmo:weather-station:home:inside:Pressure" }
-Number:Pressure      Indoor_Min_Pressure               "Min Pressure Today [%d %unit%]"                             <pressure>         { channel = "netatmo:weather-station:home:inside:MinPressure" }
-Number:Pressure      Indoor_Max_Pressure               "Max Pressure Today [%d %unit%]"                             <pressure>         { channel = "netatmo:weather-station:home:inside:MaxPressure" }
-DateTime             Indoor_Min_Pressure_TS            "Min Pressure Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"         <calendar>         { channel = "netatmo:weather-station:home:inside:DateMinPressure" }
-DateTime             Indoor_Max_Pressure_TS            "Max Pressure Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"         <calendar>         { channel = "netatmo:weather-station:home:inside:DateMaxPressure" }
-Number:Pressure      Indoor_AbsolutePressure           "AbsolutePressure [%.1f %unit%]"                             <pressure>         { channel = "netatmo:weather-station:home:inside:absolute-pressure" }
-Number:Dimensionless Indoor_Noise                      "Noise [%d %unit%]"                                          <soundvolume>      { channel = "netatmo:weather-station:home:inside:Noise" }
-Number:Dimensionless Indoor_Min_Noise                  "Min Noise Today [%.1f %unit%]"                              <soundvolume>      { channel = "netatmo:weather-station:home:inside:MinNoise" }
-Number:Dimensionless Indoor_Max_Noise                  "Max Noise Today [%.1f %unit%]"                              <soundvolume>      { channel = "netatmo:weather-station:home:inside:MaxNoise" }
-DateTime             Indoor_Min_Noise_TS               "Min Noise Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"            <calendar>         { channel = "netatmo:weather-station:home:inside:DateMinNoise" }
-DateTime             Indoor_Max_Noise_TS               "Max Noise Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"            <calendar>         { channel = "netatmo:weather-station:home:inside:DateMaxNoise" }
-Number               Indoor_RadioStatus                 "RadioStatus [%s]"                                            <signal>           { channel = "netatmo:weather-station:home:inside:RadioStatus" }
-DateTime             Indoor_TimeStamp                  "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                  <calendar>         { channel = "netatmo:weather-station:home:inside:timestamp" }
+Number:Temperature   Indoor_Temp                       "Temperature [%.1f %unit%]"                                  <temperature>      { channel = "netatmo:weather-station:home:inside:temperature#value" }
+Number:Temperature   Indoor_Min_Temp                   "Min Temperature Today [%.1f %unit%]"                        <temperature>      { channel = "netatmo:weather-station:home:inside:temperature#min-today" }
+Number:Temperature   Indoor_Max_Temp                   "Max Temperature Today [%.1f %unit%]"                        <temperature>      { channel = "netatmo:weather-station:home:inside:temperature#max-today" }
+Number:Dimensionless Indoor_Humidity                   "Humidity [%d %unit%]"                                       <humidity>         { channel = "netatmo:weather-station:home:inside:humidity#value" }
+Number               Indoor_Humidex                    "Humidex [%.0f]"                                             <temperature_hot>  { channel = "netatmo:weather-station:home:inside:humidity#humidex" }
+Number:Temperature   Indoor_HeatIndex                  "HeatIndex [%.1f %unit%]"                                    <temperature_hot>  { channel = "netatmo:weather-station:home:inside:temperature#heat-index" }
+Number:Temperature   Indoor_Dewpoint                   "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:weather-station:home:inside:temperature#dewpoint" }
+Number:Temperature   Indoor_DewpointDepression         "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:weather-station:home:inside:temperature#dewpoint-depression" }
+Number:Dimensionless Indoor_Co2                        "CO2 [%d %unit%]"                                            <carbondioxide>    { channel = "netatmo:weather-station:home:inside:airquality#co2" }
+Number:Pressure      Indoor_Pressure                   "Pressure [%.1f %unit%]"                                     <pressure>         { channel = "netatmo:weather-station:home:inside:pressure#value" }
+Number:Pressure      Indoor_AbsolutePressure           "AbsolutePressure [%.1f %unit%]"                             <pressure>         { channel = "netatmo:weather-station:home:inside:pressure#absolute" }
+Number:Dimensionless Indoor_Noise                      "Noise [%d %unit%]"                                          <soundvolume>      { channel = "netatmo:weather-station:home:inside:noise#value" }
+Number               Indoor_RadioStatus                 "RadioStatus [%s]"                                            <signal>           { channel = "netatmo:weather-station:home:inside:signal#strength" }
+DateTime             Indoor_TimeStamp                  "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                  <calendar>         { channel = "netatmo:weather-station:home:inside:timestamp#last-seen" }
 DateTime             Indoor_LastSeen            "LastSeen [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"            <text>             { channel = "netatmo:weather-station:home:inside:last-seen" }
 
 # Outdoor Module
-Number:Temperature   Outdoor_Temperature               "Temperature [%.1f %unit%]"                                  <temperature>      { channel = "netatmo:outdoor:home:outside:temperature" }
-String               Outdoor_TempTrend                 "TempTrend [%s]"                                             <line>             { channel = "netatmo:outdoor:home:outside:temperature-trend" }
-Number:Dimensionless Outdoor_Humidity                  "Humidity [%d %unit%]"                                       <humidity>         { channel = "netatmo:outdoor:home:outside:humidity" }
-Number               Outdoor_Humidex                   "Humidex [%.0f]"                                             <temperature_hot>  { channel = "netatmo:outdoor:home:outside:humidex" }
-Number:Temperature   Outdoor_HeatIndex                 "heat-index [%.1f %unit%]"                                    <temperature_hot>  { channel = "netatmo:outdoor:home:outside:HeatIndex" }
-Number:Temperature   Outdoor_Dewpoint                  "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:outdoor:home:outside:Dewpoint" }
-Number:Temperature   Outdoor_DewpointDepression        "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:outdoor:home:outside:dewpoint-depression" }
-Number               Outdoor_RadioStatus               "RfStatus [%.0f / 5]"                                        <signal>           { channel = "netatmo:outdoor:home:outside:signal-strength" }
-Switch               Outdoor_LowBattery                "LowBattery [%s]"                                            <siren>            { channel = "netatmo:outdoor:home:outside:low-battery" }
-Number               Outdoor_BatteryVP                 "BatteryVP [%.0f %%]"                                        <battery>          { channel = "netatmo:outdoor:home:outside:battery-level" }
-DateTime             Outdoor_TimeStamp                 "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                  <calendar>         { channel = "netatmo:outdoor:home:outside:timestamp" }
-DateTime             Outdoor_LastMessage               "LastMessage [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                <text>             { channel = "netatmo:outdoor:home:outside:last-message" }
+Number:Temperature   Outdoor_Temperature               "Temperature [%.1f %unit%]"                                  <temperature>      { channel = "netatmo:outdoor:home:inside:outside:temperature#value" }
+String               Outdoor_TempTrend                 "TempTrend [%s]"                                             <line>             { channel = "netatmo:outdoor:home:inside:outside:temperature#trend" }
+Number:Dimensionless Outdoor_Humidity                  "Humidity [%d %unit%]"                                       <humidity>         { channel = "netatmo:outdoor:home:inside:outside:humidity#value" }
+Number               Outdoor_Humidex                   "Humidex [%.0f]"                                             <temperature_hot>  { channel = "netatmo:outdoor:home:inside:outside:humidity#humidex" }
+Number:Temperature   Outdoor_HeatIndex                 "heat-index [%.1f %unit%]"                                    <temperature_hot>  { channel = "netatmo:outdoor:home:inside:outside:temperature#heat-index" }
+Number:Temperature   Outdoor_Dewpoint                  "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:outdoor:home:inside:outside:temperature#dewpoint" }
+Number:Temperature   Outdoor_DewpointDepression        "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:outdoor:home:inside:outside:temperature#dewpoint-depression" }
+Number               Outdoor_RadioStatus               "RfStatus [%.0f / 5]"                                        <signal>           { channel = "netatmo:outdoor:home:inside:outside:signal#strength" }
+Switch               Outdoor_LowBattery                "LowBattery [%s]"                                            <siren>            { channel = "netatmo:outdoor:home:inside:outside:battery#low-battery" }
+DateTime             Outdoor_TimeStamp                 "Measures TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"         <calendar>         { channel = "netatmo:outdoor:home:inside:outside:timestamp#measure" }
+DateTime             Outdoor_LastMessage               "LastMessage [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                <text>             { channel = "netatmo:outdoor:home:inside:outside:timestamp#last-seen" }
 
 # Rain Module
-Number:Length        Rain_Hour                         "Rain Last Hour [%.02f %unit%]"                              <rain>             {channel="netatmo:rain:home:rain:rain-sum-1"}
-Number:Length        Rain_Today                        "Rain Today [%.02f %unit%]"                                  <rain>             {channel="netatmo:rain:home:rain:rain-sum-24"}
-Number               Rain_BatteryVP                    "Rain battery status [%d%%]"                                 <battery>          {channel="netatmo:rain:home:rain:battery-level"}
+Number:Length        Rain_Hour                         "Rain Last Hour [%.02f %unit%]"                              <rain>             {channel="netatmo:rain:home:inside:rainModule:rain#sum-1"}
+Number:Length        Rain_Today                        "Rain Today [%.02f %unit%]"                                  <rain>             {channel="netatmo:rain:home:inside:rainModule:rain#sum-24"}
+Number               Rain_BatteryVP                    "Rain battery status [%d%%]"                                 <battery>          {channel="netatmo:rain:home:inside:rainModule:battery#value"}
 ```
 
 ## sitemaps/netatmo.sitemap
@@ -541,34 +518,14 @@ sitemap netatmo label="Netatmo" {
         Text item=Indoor_Min_Temp_TS
         Text item=Indoor_Max_Temp_TS
         Text item=Indoor_Humidity
-        Text item=Indoor_Min_Humidity
-        Text item=Indoor_Max_Humidity
-        Text item=Indoor_Min_Humidity_TS
-        Text item=Indoor_Max_Humidity_TS
         Text item=Indoor_Humidex                     valuecolor=[<20.1="green",<29.1="blue",<28.1="yellow",<45.1="orange",<54.1="red",>54.1="maroon"]
         Text item=Indoor_HeatIndex
         Text item=Indoor_Dewpoint
         Text item=Indoor_DewpointDepression
         Text item=Indoor_Co2                        valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
-        Text item=Indoor_Min_Co2                    valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
-        Text item=Indoor_Min_Co2_This_Week          valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
-        Text item=Indoor_Min_Co2_This_Month         valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
-        Text item=Indoor_Max_Co2                    valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
-        Text item=Indoor_Max_Co2_This_Week          valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
-        Text item=Indoor_Max_Co2_This_Month         valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
-        Text item=Indoor_Min_Co2_TS
-        Text item=Indoor_Max_Co2_TS
         Text item=Indoor_Pressure
-        Text item=Indoor_Min_Pressure
-        Text item=Indoor_Max_Pressure
-        Text item=Indoor_Min_Pressure_TS
-        Text item=Indoor_Max_Pressure_TS
         Text item=Indoor_AbsolutePressure
         Text item=Indoor_Noise
-        Text item=Indoor_Min_Noise
-        Text item=Indoor_Max_Noise
-        Text item=Indoor_Min_Noise_TS
-        Text item=Indoor_Max_Noise_TS
         Text item=Indoor_WifiStatus
         Text item=Indoor_TimeStamp
         Text item=Indoor_LastSeen

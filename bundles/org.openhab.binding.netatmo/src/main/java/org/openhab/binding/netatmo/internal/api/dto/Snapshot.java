@@ -12,14 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SUB_PATH_GETCAMERAPICTURE;
-
-import java.net.MalformedURLException;
-import java.net.URI;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.RestManager;
 
 /**
  * The {@link Snapshot} holds data related to a snapshot.
@@ -29,26 +23,10 @@ import org.openhab.binding.netatmo.internal.api.RestManager;
  */
 
 @NonNullByDefault
-public class Snapshot extends NAObject {
+public class Snapshot {
     private @Nullable String url;
 
-    public Snapshot(String id, String key) {
-        this.id = id;
-        this.description = key;
-    }
-
     public @Nullable String getUrl() {
-        if (url != null) {
-            return url;
-        } else if (description != null) {
-            URI uri = RestManager.getApiUriBuilder(SUB_PATH_GETCAMERAPICTURE, "image_id", id, "key", description)
-                    .build();
-            try {
-                return uri.toURL().toString();
-            } catch (MalformedURLException e) {
-                throw new IllegalArgumentException("Malformed URI in snapshot, file a bug : " + uri);
-            }
-        }
-        return null;
+        return url;
     }
 }

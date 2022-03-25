@@ -166,7 +166,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 if (connectApi.matchesScopes(expected)) {
                     managers.put(clazz, instance);
                 } else {
-                    logger.info("Unable to instanciate {}, expected scope {} is not active", clazz, expected);
+                    logger.info("Unable to instantiate {}, expected scope {} is not active", clazz, expected);
                 }
             } catch (SecurityException | ReflectiveOperationException e) {
                 logger.warn("Error invoking RestManager constructor for class {} : {}", clazz, e.getMessage());

@@ -135,8 +135,9 @@ public enum ModuleType {
     public final List<String> extensions = new LinkedList<>();
     public final List<Class<? extends ChannelHelper>> channelHelpers;
     public final List<Class<? extends Capability>> capabilities;
+    public final String uid;
+    public final ThingTypeUID thingTypeUID;
     private final @Nullable ModuleType bridgeType;
-    public final ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, toUID());
     public final FeatureArea feature;
     public final @Nullable String apiName;
 
@@ -147,6 +148,8 @@ public enum ModuleType {
         this.feature = feature;
         this.capabilities = capabilities;
         this.apiName = apiName;
+        uid = name().toLowerCase().replace("_", "-");
+        thingTypeUID = new ThingTypeUID(BINDING_ID, uid);
         try {
             for (Class<? extends ChannelHelper> helperClass : helpers) {
                 ChannelHelper helper = helperClass.getConstructor().newInstance();
@@ -156,13 +159,6 @@ public enum ModuleType {
         } catch (RuntimeException | ReflectiveOperationException e) {
             throw new IllegalArgumentException(e);
         }
-    }
-
-    /**
-     * @return the UID compatible string of the enum name
-     */
-    private String toUID() {
-        return name().toLowerCase().replace("_", "-");
     }
 
     public boolean isLogical() {
@@ -199,7 +195,7 @@ public enum ModuleType {
 
     public static ModuleType from(ThingTypeUID thingTypeUID) {
         String id = thingTypeUID.getId();
-        return ModuleType.AS_SET.stream().filter(mt -> mt.toUID().equals(id)).findFirst()
+        return ModuleType.AS_SET.stream().filter(mt -> mt.uid.equals(id)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException());
     }
 
