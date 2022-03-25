@@ -9,8 +9,8 @@
 			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
 		<label>Modbus Data</label>
-		<description>Data thing extracts values from binary data received from Modbus slave. Similarly, it it responsible of
-			tranlating openHAB commands to Modbus write requests</description>
+		<description>Data thing extracts values from binary data received from Modbus slave. Similarly, it is responsible of
+			translating openHAB commands to Modbus write requests</description>
 		<channels>
 			<channel id="number" typeId="number-type"/>
 			<channel id="switch" typeId="switch-type"/>
