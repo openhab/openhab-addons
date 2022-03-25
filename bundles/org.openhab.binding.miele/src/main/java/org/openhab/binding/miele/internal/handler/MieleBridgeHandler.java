@@ -121,7 +121,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
 
         updateStatus(ThingStatus.UNKNOWN);
-        onUpdate();
+        schedulePollingAndEventListener();
         lastBridgeConnectionState = false;
     }
 
@@ -334,7 +334,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     address1 = InetAddress.getByName(JSON_RPC_MULTICAST_IP1);
                     address2 = InetAddress.getByName(JSON_RPC_MULTICAST_IP2);
                 } catch (UnknownHostException e) {
-                    logger.debug("An exception occurred while setting up the multicast receiver : '{}'",
+                    logger.debug("An exception occurred while setting up the multicast receiver: '{}'",
                             e.getMessage());
                 }
 
@@ -409,13 +409,13 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                 try {
                                     Thread.sleep(500);
                                 } catch (InterruptedException ex) {
-                                    logger.debug("Eventlistener has been interrupted.");
+                                    logger.debug("Event listener has been interrupted.");
                                     break;
                                 }
                             }
                         }
                     } catch (Exception ex) {
-                        logger.debug("An exception occurred while receiving multicast packets : '{}'", ex.getMessage());
+                        logger.debug("An exception occurred while receiving multicast packets: '{}'", ex.getMessage());
                     }
 
                     // restart the cycle with a clean slate
@@ -425,7 +425,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                             clientSocket.leaveGroup(address2);
                         }
                     } catch (IOException e) {
-                        logger.debug("An exception occurred while leaving multicast group : '{}'", e.getMessage());
+                        logger.debug("An exception occurred while leaving multicast group: '{}'", e.getMessage());
                     }
                     if (clientSocket != null) {
                         clientSocket.close();
@@ -433,7 +433,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 }
             }
         } else {
-            logger.debug("Invalid IP address for the multicast interface : '{}'", getConfig().get(INTERFACE));
+            logger.debug("Invalid IP address for the multicast interface: '{}'", getConfig().get(INTERFACE));
         }
     };
 
@@ -451,7 +451,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         return gatewayCommunication.invokeOperation(applianceIdentifier, modelID, methodName);
     }
 
-    private synchronized void onUpdate() {
+    private synchronized void schedulePollingAndEventListener() {
         logger.debug("Scheduling the Miele polling job");
         ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob == null || pollingJob.isCancelled()) {
@@ -460,8 +460,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             this.pollingJob = pollingJob;
             logger.trace("Scheduling the Miele polling job Job is done ?{}", pollingJob.isDone());
         }
-        logger.debug("Scheduling the Miele event listener job");
 
+        logger.debug("Scheduling the Miele event listener job");
         Future<?> eventListenerJob = this.eventListenerJob;
         if (eventListenerJob == null || eventListenerJob.isCancelled()) {
             ExecutorService executor = Executors
@@ -498,30 +498,22 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             return false;
         }
         applianceStatusListeners.put(applianceId, applianceStatusListener);
-        if (isInitialized()) {
-            onUpdate();
 
-            Optional<HomeDevice> device = getHomeDevices().stream()
-                    .filter(hd -> hd.getApplianceIdentifier().getApplianceId().equals(applianceId)).findFirst();
-            device.ifPresent(d -> applianceStatusListener.onApplianceAdded(d));
-        }
+        Optional<HomeDevice> device = getHomeDevices().stream()
+                .filter(hd -> hd.getApplianceIdentifier().getApplianceId().equals(applianceId)).findFirst();
+        device.ifPresent(d -> applianceStatusListener.onApplianceAdded(d));
+
         return true;
     }
 
     public boolean unregisterApplianceStatusListener(String applianceId,
             ApplianceStatusListener applianceStatusListener) {
-        ApplianceStatusListener removedListener = applianceStatusListeners.remove(applianceId);
-        if (removedListener != null && isInitialized()) {
-            onUpdate();
-        }
-        return removedListener != null;
+        return applianceStatusListeners.remove(applianceId) != null;
     }
 
     public boolean registerDiscoveryListener(DiscoveryListener discoveryListener) {
         boolean result = discoveryListeners.add(discoveryListener);
-        if (result && isInitialized()) {
-            onUpdate();
-
+        if (result) {
             for (HomeDevice hd : getHomeDevices()) {
                 discoveryListener.onApplianceAdded(hd);
             }
@@ -530,11 +522,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     }
 
     public boolean unregisterDiscoveryListener(DiscoveryListener discoveryListener) {
-        boolean result = discoveryListeners.remove(discoveryListener);
-        if (result && isInitialized()) {
-            onUpdate();
-        }
-        return result;
+        return discoveryListeners.remove(discoveryListener);
     }
 
     @Override
