@@ -249,7 +249,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
     };
 
-    private void refreshHomeDevices(List<HomeDevice> homeDevices) {
+    private synchronized void refreshHomeDevices(List<HomeDevice> homeDevices) {
         for (HomeDevice hd : homeDevices) {
             String key = hd.getApplianceIdentifier().getApplianceId();
             if (!cachedHomeDevicesByApplianceId.containsKey(key)) {
