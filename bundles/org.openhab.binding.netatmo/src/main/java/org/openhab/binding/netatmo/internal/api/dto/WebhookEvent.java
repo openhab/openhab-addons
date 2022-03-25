@@ -31,8 +31,7 @@ import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
 public class WebhookEvent extends Event {
     private @NonNullByDefault({}) NAPushType pushType;
     private String homeId = "";
-    private @Nullable String snapshotId;
-    private @Nullable String snapshotKey;
+    private @Nullable String snapshotUrl;
     private NAObjectMap<Person> persons = new NAObjectMap<>();
     // Webhook does not provide the event generation time, so we'll use the event reception time
     private ZonedDateTime time = ZonedDateTime.now();
@@ -62,8 +61,6 @@ public class WebhookEvent extends Event {
 
     @Override
     public @Nullable String getSnapshotUrl() {
-        String sId = snapshotId;
-        String key = snapshotKey;
-        return (sId != null && key != null) ? new Snapshot(sId, key).getUrl() : null;
+        return snapshotUrl;
     }
 }

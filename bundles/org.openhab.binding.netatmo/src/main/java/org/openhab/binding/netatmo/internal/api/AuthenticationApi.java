@@ -48,7 +48,7 @@ public class AuthenticationApi extends RestManager {
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(SERVICE_PID);
     private final Logger logger = LoggerFactory.getLogger(AuthenticationApi.class);
 
-    private Optional<ScheduledFuture<?>> refreshTokenJob = Optional.empty();
+    private @Nullable ScheduledFuture<?> refreshTokenJob;
     private Optional<AccessTokenResponse> tokenResponse = Optional.empty();
     private String scope = "";
 
@@ -64,20 +64,18 @@ public class AuthenticationApi extends RestManager {
     }
 
     private void requestToken(String id, String secret, Map<String, String> entries) throws NetatmoException {
-        freeTokenJob();
-
         Map<String, String> payload = new HashMap<>(entries);
         payload.putAll(Map.of(GRANT_TYPE, entries.keySet().contains(PASSWORD) ? PASSWORD : REFRESH_TOKEN, CLIENT_ID, id,
                 CLIENT_SECRET, secret));
         disconnect();
         AccessTokenResponse response = post(OAUTH_URI, AccessTokenResponse.class, payload);
-        refreshTokenJob = Optional.of(scheduler.schedule(() -> {
+        refreshTokenJob = scheduler.schedule(() -> {
             try {
                 requestToken(id, secret, Map.of(REFRESH_TOKEN, response.getRefreshToken()));
             } catch (NetatmoException e) {
                 logger.warn("Unable to refresh access token : {}", e.getMessage());
             }
-        }, Math.round(response.getExpiresIn() * 0.8), TimeUnit.SECONDS));
+        }, 5 /* Math.round(response.getExpiresIn() * 0.8) */, TimeUnit.SECONDS);
         tokenResponse = Optional.of(response);
     }
 
@@ -86,12 +84,11 @@ public class AuthenticationApi extends RestManager {
     }
 
     public void dispose() {
-        freeTokenJob();
-    }
-
-    private void freeTokenJob() {
-        refreshTokenJob.ifPresent(j -> j.cancel(true));
-        refreshTokenJob = Optional.empty();
+        ScheduledFuture<?> job = refreshTokenJob;
+        if (job != null) {
+            job.cancel(true);
+        }
+        refreshTokenJob = null;
     }
 
     public @Nullable String getAuthorization() {

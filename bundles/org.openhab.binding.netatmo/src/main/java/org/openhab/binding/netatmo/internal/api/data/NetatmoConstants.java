@@ -150,8 +150,6 @@ public class NetatmoConstants {
     public static final String PARAM_URL = "url";
     public static final String PARAM_FAVORITES = "get_favorites";
     public static final String PARAM_STATUS = "status";
-    @Deprecated
-    public static final String SUB_PATH_GETCAMERAPICTURE = "getcamerapicture";
 
     // Global variables
     public static final int THERM_MAX_SETPOINT = 30;
