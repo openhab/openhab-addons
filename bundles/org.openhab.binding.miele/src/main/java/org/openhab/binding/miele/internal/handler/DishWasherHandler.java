@@ -74,7 +74,7 @@ public class DishWasherHandler extends MieleApplianceHandler<DishwasherChannelSe
         try {
             switch (selector) {
                 case SWITCH: {
-                    MieleBridgeHandler bridgeHandler = this.bridgeHandler;
+                    MieleBridgeHandler bridgeHandler = getMieleBridgeHandler();
                     if (bridgeHandler == null) {
                         logger.warn("Command '{}' failed, missing bridge handler", command);
                         return;

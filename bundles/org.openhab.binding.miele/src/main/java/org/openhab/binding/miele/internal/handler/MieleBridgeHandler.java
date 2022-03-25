@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -49,7 +50,6 @@ import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
@@ -92,13 +92,14 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private Gson gson = new Gson();
     private @NonNullByDefault({}) MieleGatewayCommunicationController gatewayCommunication;
 
-    private Set<ApplianceStatusListener> applianceStatusListeners = ConcurrentHashMap.newKeySet();
+    private Set<DiscoveryListener> discoveryListeners = ConcurrentHashMap.newKeySet();
+    private Map<String, ApplianceStatusListener> applianceStatusListeners = new ConcurrentHashMap<>();
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ExecutorService executor;
     private @Nullable Future<?> eventListenerJob;
 
-    private Map<String, HomeDevice> cachedHomeDevicesByApplianceId = new ConcurrentHashMap<String, HomeDevice>();
-    private Map<String, HomeDevice> cachedHomeDevicesByRemoteUid = new ConcurrentHashMap<String, HomeDevice>();
+    private Map<String, HomeDevice> cachedHomeDevicesByApplianceId = new ConcurrentHashMap<>();
+    private Map<String, HomeDevice> cachedHomeDevicesByRemoteUid = new ConcurrentHashMap<>();
 
     public MieleBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -191,7 +192,12 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     String key = hd.getApplianceIdentifier().getApplianceId();
                     if (!cachedHomeDevicesByApplianceId.containsKey(key)) {
                         logger.debug("A new appliance with ID '{}' has been added", hd.UID);
-                        for (ApplianceStatusListener listener : applianceStatusListeners) {
+                        for (DiscoveryListener listener : discoveryListeners) {
+                            listener.onApplianceAdded(hd);
+                        }
+                        ApplianceStatusListener listener = applianceStatusListeners
+                                .get(hd.getApplianceIdentifier().getApplianceId());
+                        if (listener != null) {
                             listener.onApplianceAdded(hd);
                         }
                     }
@@ -207,49 +213,48 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     HomeDevice cachedHomeDevice = cachedEntry.getValue();
                     if (!homeDevices.stream().anyMatch(d -> d.UID.equals(cachedHomeDevice.UID))) {
                         logger.debug("The appliance with ID '{}' has been removed", cachedHomeDevice.UID);
-                        for (ApplianceStatusListener listener : applianceStatusListeners) {
+                        for (DiscoveryListener listener : discoveryListeners) {
                             listener.onApplianceRemoved(cachedHomeDevice);
+                        }
+                        ApplianceStatusListener listener = applianceStatusListeners
+                                .get(cachedHomeDevice.getApplianceIdentifier().getApplianceId());
+                        if (listener != null) {
+                            listener.onApplianceRemoved();
                         }
                         cachedHomeDevicesByRemoteUid.remove(cachedHomeDevice.getRemoteUid());
                         iterator.remove();
                     }
                 }
 
-                for (Thing appliance : getThing().getThings()) {
-                    if (appliance.getStatus() == ThingStatus.ONLINE) {
-                        String applianceId = (String) appliance.getConfiguration().getProperties().get(APPLIANCE_ID);
-                        FullyQualifiedApplianceIdentifier applianceIdentifier = null;
-                        if (applianceId != null) {
-                            applianceIdentifier = getApplianceIdentifierFromApplianceId(applianceId);
-                        }
+                for (Entry<String, ApplianceStatusListener> entry : applianceStatusListeners.entrySet()) {
+                    String applianceId = entry.getKey();
+                    ApplianceStatusListener listener = entry.getValue();
+                    FullyQualifiedApplianceIdentifier applianceIdentifier = getApplianceIdentifierFromApplianceId(
+                            applianceId);
+                    if (applianceIdentifier == null) {
+                        logger.debug("The appliance with ID '{}' was not found in appliance list from bridge.",
+                                applianceId);
+                        listener.onApplianceRemoved();
+                        continue;
+                    }
 
-                        if (applianceIdentifier == null) {
-                            logger.warn("The appliance with ID '{}' was not found in appliance list from bridge.",
-                                    applianceId);
-                            continue;
-                        }
+                    Object[] args = new Object[2];
+                    args[0] = applianceIdentifier.getUid();
+                    args[1] = true;
+                    JsonElement result = gatewayCommunication.invokeRPC("HDAccess/getDeviceClassObjects", args);
 
-                        Object[] args = new Object[2];
-                        args[0] = applianceIdentifier.getUid();
-                        args[1] = true;
-                        JsonElement result = gatewayCommunication.invokeRPC("HDAccess/getDeviceClassObjects", args);
+                    for (JsonElement obj : result.getAsJsonArray()) {
+                        try {
+                            DeviceClassObject dco = gson.fromJson(obj, DeviceClassObject.class);
 
-                        for (JsonElement obj : result.getAsJsonArray()) {
-                            try {
-                                DeviceClassObject dco = gson.fromJson(obj, DeviceClassObject.class);
-
-                                // Skip com.prosyst.mbs.services.zigbee.hdm.deviceclasses.ReportingControl
-                                if (dco == null || !dco.DeviceClass.startsWith(MIELE_CLASS)) {
-                                    continue;
-                                }
-
-                                for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                    listener.onApplianceStateChanged(applianceIdentifier, dco);
-                                }
-                            } catch (Exception e) {
-                                logger.debug("An exception occurred while querying an appliance : '{}'",
-                                        e.getMessage());
+                            // Skip com.prosyst.mbs.services.zigbee.hdm.deviceclasses.ReportingControl
+                            if (dco == null || !dco.DeviceClass.startsWith(MIELE_CLASS)) {
+                                continue;
                             }
+
+                            listener.onApplianceStateChanged(dco);
+                        } catch (Exception e) {
+                            logger.debug("An exception occurred while querying an appliance : '{}'", e.getMessage());
                         }
                     }
                 }
@@ -395,8 +400,10 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                 var deviceProperty = new DeviceProperty();
                                 deviceProperty.Name = name;
                                 deviceProperty.Value = value;
-                                for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                    listener.onAppliancePropertyChanged(applianceIdentifier, deviceProperty);
+                                ApplianceStatusListener listener = applianceStatusListeners
+                                        .get(applianceIdentifier.getApplianceId());
+                                if (listener != null) {
+                                    listener.onAppliancePropertyChanged(deviceProperty);
                                 }
                             } catch (SocketTimeoutException e) {
                                 try {
@@ -466,7 +473,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     /**
      * This method is called whenever the connection to the given {@link MieleBridge} is lost.
-     *
      */
     public void onConnectionLost() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
@@ -474,33 +480,57 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     /**
      * This method is called whenever the connection to the given {@link MieleBridge} is resumed.
-     *
-     * @param bridge the Miele bridge the connection is resumed to
      */
     public void onConnectionResumed() {
         updateStatus(ThingStatus.ONLINE);
-        for (Thing thing : getThing().getThings()) {
-            MieleApplianceHandler<?> handler = (MieleApplianceHandler<?>) thing.getHandler();
-            if (handler != null) {
-                handler.onBridgeConnectionResumed();
-            }
-        }
     }
 
-    public boolean registerApplianceStatusListener(ApplianceStatusListener applianceStatusListener) {
-        boolean result = applianceStatusListeners.add(applianceStatusListener);
+    public boolean registerApplianceStatusListener(String applianceId,
+            ApplianceStatusListener applianceStatusListener) {
+        ApplianceStatusListener existingListener = applianceStatusListeners.get(applianceId);
+        if (existingListener != null) {
+            if (!existingListener.equals(applianceStatusListener)) {
+                logger.warn("Unsupported configuration: appliance with ID '{}' referenced by multiple things",
+                        applianceId);
+            } else {
+                logger.debug("Duplicate listener registration attempted for '{}'", applianceId);
+            }
+            return false;
+        }
+        applianceStatusListeners.put(applianceId, applianceStatusListener);
+        if (isInitialized()) {
+            onUpdate();
+
+            Optional<HomeDevice> device = getHomeDevices().stream()
+                    .filter(hd -> hd.getApplianceIdentifier().getApplianceId().equals(applianceId)).findFirst();
+            device.ifPresent(d -> applianceStatusListener.onApplianceAdded(d));
+        }
+        return true;
+    }
+
+    public boolean unregisterApplianceStatusListener(String applianceId,
+            ApplianceStatusListener applianceStatusListener) {
+        ApplianceStatusListener removedListener = applianceStatusListeners.remove(applianceId);
+        if (removedListener != null && isInitialized()) {
+            onUpdate();
+        }
+        return removedListener != null;
+    }
+
+    public boolean registerDiscoveryListener(DiscoveryListener discoveryListener) {
+        boolean result = discoveryListeners.add(discoveryListener);
         if (result && isInitialized()) {
             onUpdate();
 
             for (HomeDevice hd : getHomeDevices()) {
-                applianceStatusListener.onApplianceAdded(hd);
+                discoveryListener.onApplianceAdded(hd);
             }
         }
         return result;
     }
 
-    public boolean unregisterApplianceStatusListener(ApplianceStatusListener applianceStatusListener) {
-        boolean result = applianceStatusListeners.remove(applianceStatusListener);
+    public boolean unregisterDiscoveryListener(DiscoveryListener discoveryListener) {
+        boolean result = discoveryListeners.remove(discoveryListener);
         if (result && isInitialized()) {
             onUpdate();
         }

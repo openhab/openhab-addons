@@ -60,7 +60,7 @@ public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
         JsonElement result = null;
 
         try {
-            MieleBridgeHandler bridgeHandler = this.bridgeHandler;
+            MieleBridgeHandler bridgeHandler = getMieleBridgeHandler();
             if (bridgeHandler == null) {
                 logger.warn("Command '{}' failed, missing bridge handler", command);
                 return;

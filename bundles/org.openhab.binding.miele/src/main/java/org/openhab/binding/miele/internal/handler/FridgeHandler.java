@@ -62,7 +62,7 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
         JsonElement result = null;
 
         try {
-            MieleBridgeHandler bridgeHandler = this.bridgeHandler;
+            MieleBridgeHandler bridgeHandler = getMieleBridgeHandler();
             if (bridgeHandler == null) {
                 logger.warn("Command '{}' failed, missing bridge handler", command);
                 return;
@@ -109,7 +109,7 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
     }
 
     @Override
-    protected void onAppliancePropertyChanged(DeviceProperty dp) {
+    public void onAppliancePropertyChanged(DeviceProperty dp) {
         super.onAppliancePropertyChanged(dp);
 
         if (!STATE_PROPERTY_NAME.equals(dp.Name)) {

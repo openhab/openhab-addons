@@ -23,7 +23,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miele.internal.DeviceUtil;
-import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.binding.miele.internal.MieleTranslationProvider;
 import org.openhab.binding.miele.internal.api.dto.DeviceClassObject;
 import org.openhab.binding.miele.internal.api.dto.DeviceMetaData;
@@ -36,7 +35,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -75,7 +73,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     protected Gson gson = new Gson();
 
     protected @Nullable String applianceId;
-    protected @Nullable MieleBridgeHandler bridgeHandler;
+    private @Nullable MieleBridgeHandler bridgeHandler;
     protected TranslationProvider i18nProvider;
     protected LocaleProvider localeProvider;
     protected MieleTranslationProvider translationProvider;
@@ -142,16 +140,12 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                     "@text/offline.configuration-error.bridge-missing");
             return;
         }
+        initializeTranslationProvider(bridge);
         updateStatus(ThingStatus.UNKNOWN);
-        onBridgeConnectionResumed();
-    }
 
-    public void onBridgeConnectionResumed() {
-        Bridge bridge = getBridge();
-        if (bridge != null && getMieleBridgeHandler() != null) {
-            ThingStatusInfo statusInfo = bridge.getStatusInfo();
-            updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
-            initializeTranslationProvider(bridge);
+        MieleBridgeHandler bridgeHandler = getMieleBridgeHandler();
+        if (bridgeHandler != null) {
+            bridgeHandler.registerApplianceStatusListener(applianceId, this);
         }
     }
 
@@ -176,10 +170,11 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     @Override
     public void dispose() {
         logger.debug("Handler disposes. Unregistering listener.");
+        String applianceId = this.applianceId;
         if (applianceId != null) {
             MieleBridgeHandler bridgeHandler = getMieleBridgeHandler();
             if (bridgeHandler != null) {
-                bridgeHandler.unregisterApplianceStatusListener(this);
+                bridgeHandler.unregisterApplianceStatusListener(applianceId, this);
             }
             applianceId = null;
         }
@@ -195,13 +190,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     }
 
     @Override
-    public void onApplianceStateChanged(FullyQualifiedApplianceIdentifier applicationIdentifier,
-            DeviceClassObject dco) {
-        String applianceId = this.applianceId;
-        if (applianceId == null || !applianceId.equals(applicationIdentifier.getApplianceId())) {
-            return;
-        }
-
+    public void onApplianceStateChanged(DeviceClassObject dco) {
         JsonArray properties = dco.Properties;
         if (properties == null) {
             return;
@@ -217,7 +206,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                     dp.Value = dp.Value.trim();
                     dp.Value = dp.Value.strip();
                 }
-                onAppliancePropertyChanged(applicationIdentifier, dp);
+                onAppliancePropertyChanged(dp);
             } catch (Exception p) {
                 // Ignore - this is due to an unrecognized and not yet reverse-engineered array property
             }
@@ -225,17 +214,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     }
 
     @Override
-    public void onAppliancePropertyChanged(FullyQualifiedApplianceIdentifier applicationIdentifier, DeviceProperty dp) {
-        String applianceId = this.applianceId;
-
-        if (applianceId == null || !applianceId.equals(applicationIdentifier.getApplianceId())) {
-            return;
-        }
-
-        this.onAppliancePropertyChanged(dp);
-    }
-
-    protected void onAppliancePropertyChanged(DeviceProperty dp) {
+    public void onAppliancePropertyChanged(DeviceProperty dp) {
         try {
             DeviceMetaData dmd = null;
             if (dp.Metadata == null) {
@@ -341,65 +320,41 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     }
 
     @Override
-    public void onApplianceRemoved(HomeDevice appliance) {
-        String applianceId = this.applianceId;
-        if (applianceId == null) {
-            return;
-        }
-
-        FullyQualifiedApplianceIdentifier applianceIdentifier = appliance.getApplianceIdentifier();
-        if (applianceIdentifier == null) {
-            return;
-        }
-
-        if (applianceId.equals(applianceIdentifier.getApplianceId())) {
-            updateStatus(ThingStatus.OFFLINE);
-        }
+    public void onApplianceRemoved() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.GONE);
     }
 
     @Override
     public void onApplianceAdded(HomeDevice appliance) {
-        String applianceId = this.applianceId;
-        if (applianceId == null) {
-            return;
+        Map<String, String> properties = editProperties();
+        String vendor = appliance.Vendor;
+        if (vendor != null) {
+            properties.put(Thing.PROPERTY_VENDOR, vendor);
         }
-
-        FullyQualifiedApplianceIdentifier applianceIdentifier = appliance.getApplianceIdentifier();
-        if (applianceIdentifier == null) {
-            return;
+        properties.put(Thing.PROPERTY_MODEL_ID, appliance.getApplianceModel());
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, appliance.getSerialNumber());
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, appliance.getFirmwareVersion());
+        String protocolAdapterName = appliance.ProtocolAdapterName;
+        if (protocolAdapterName != null) {
+            properties.put(PROPERTY_PROTOCOL_ADAPTER, protocolAdapterName);
         }
-
-        if (applianceId.equals(applianceIdentifier.getApplianceId())) {
-            Map<String, String> properties = editProperties();
-            String vendor = appliance.Vendor;
-            if (vendor != null) {
-                properties.put(Thing.PROPERTY_VENDOR, vendor);
-            }
-            properties.put(Thing.PROPERTY_MODEL_ID, appliance.getApplianceModel());
-            properties.put(Thing.PROPERTY_SERIAL_NUMBER, appliance.getSerialNumber());
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, appliance.getFirmwareVersion());
-            String protocolAdapterName = appliance.ProtocolAdapterName;
-            if (protocolAdapterName != null) {
-                properties.put(PROPERTY_PROTOCOL_ADAPTER, protocolAdapterName);
-            }
-            String deviceClass = appliance.getDeviceClass();
-            if (deviceClass != null) {
-                properties.put(PROPERTY_DEVICE_CLASS, deviceClass);
-            }
-            String connectionType = appliance.getConnectionType();
-            if (connectionType != null) {
-                properties.put(PROPERTY_CONNECTION_TYPE, connectionType);
-            }
-            String connectionBaudRate = appliance.getConnectionBaudRate();
-            if (connectionBaudRate != null) {
-                properties.put(PROPERTY_CONNECTION_BAUD_RATE, connectionBaudRate);
-            }
-            updateProperties(properties);
-            updateStatus(ThingStatus.ONLINE);
+        String deviceClass = appliance.getDeviceClass();
+        if (deviceClass != null) {
+            properties.put(PROPERTY_DEVICE_CLASS, deviceClass);
         }
+        String connectionType = appliance.getConnectionType();
+        if (connectionType != null) {
+            properties.put(PROPERTY_CONNECTION_TYPE, connectionType);
+        }
+        String connectionBaudRate = appliance.getConnectionBaudRate();
+        if (connectionBaudRate != null) {
+            properties.put(PROPERTY_CONNECTION_BAUD_RATE, connectionBaudRate);
+        }
+        updateProperties(properties);
+        updateStatus(ThingStatus.ONLINE);
     }
 
-    private synchronized @Nullable MieleBridgeHandler getMieleBridgeHandler() {
+    protected synchronized @Nullable MieleBridgeHandler getMieleBridgeHandler() {
         if (this.bridgeHandler == null) {
             Bridge bridge = getBridge();
             if (bridge == null) {
@@ -407,11 +362,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
             }
             ThingHandler handler = bridge.getHandler();
             if (handler instanceof MieleBridgeHandler) {
-                var bridgeHandler = (MieleBridgeHandler) handler;
-                this.bridgeHandler = bridgeHandler;
-                bridgeHandler.registerApplianceStatusListener(this);
-            } else {
-                return null;
+                this.bridgeHandler = (MieleBridgeHandler) handler;
             }
         }
         return this.bridgeHandler;
