@@ -18,8 +18,6 @@ import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.
 
 import java.io.IOException;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPresetControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
@@ -147,7 +145,7 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
 
     private int convertToPresetNumber(String presetValue) {
         if (!presetValue.isEmpty()) {
-            if (StringUtils.isNumeric(presetValue)) {
+            if (presetValue.chars().allMatch(Character::isDigit)) {
                 return Integer.parseInt(presetValue);
             } else {
                 // special handling for RX-V3900, where 'A1' becomes 101 and 'B2' becomes 202 preset
@@ -156,7 +154,7 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
                     if (Character.isLetter(presetAlpha) && Character.isUpperCase(presetAlpha)
                             && Character.isDigit(presetValue.charAt(1))) {
                         int presetNumber = Integer.parseInt(presetValue.substring(1));
-                        return (ArrayUtils.indexOf(LETTERS, presetAlpha) + 1) * 100 + presetNumber;
+                        return (new String(LETTERS).indexOf(presetAlpha) + 1) * 100 + presetNumber;
                     }
                 }
             }
@@ -188,5 +186,5 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
         update();
     }
 
-    private static final Character[] LETTERS = new Character[] { 'A', 'B', 'C', 'D' };
+    private static final char[] LETTERS = { 'A', 'B', 'C', 'D' };
 }
