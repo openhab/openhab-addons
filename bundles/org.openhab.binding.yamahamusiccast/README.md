@@ -36,8 +36,11 @@ No auto discovery
 | host               | String  | IP address of the Yamaha model (AVR, ...)               | false    | true          |
 | syncVolume         | Boolean | Sync volume across linked models (default=false)        | false    | false         |
 | defaultAfterMCLink | String  | Default Input value for client when MC Link is broken   | false    | false         |
+| volumeDbMin        | Number  | Lowest volume in dB.                                    | true     | false         |
+| volumeDbMax        | Number  | Highest volume in dB.                                   | true     | false         |
 
-Default value for *defaultAfterMCLink* is *NET RADIO* as most of the models have this on board.
+Default value for *defaultAfterMCLink* is *NET RADIO* (as *net_radio*) as most of the models have this on board.
+You can also use *RADIO / TUNER* (as *tuner*).
 
 ## Channels
 
@@ -47,6 +50,7 @@ Default value for *defaultAfterMCLink* is *NET RADIO* as most of the models have
 | mute           | Switch | Mute ON/OFF                                                         |
 | volume         | Dimmer | Volume as % (recalculated based on Max Volume Model)                |
 | volumeAbs      | Number | Volume as absolute value                                            |
+| volumeDB       | Number | Volume in decibel (dB)                                              |
 | input          | String | See below for list                                                  |
 | soundProgram   | String | See below for list                                                  |
 | selectPreset   | String | Select Netradio/USB preset (fetched from Model)                     |
@@ -105,7 +109,7 @@ mono_movie / movie / enhanced / 2ch_stereo / 5ch_stereo / 7ch_stereo / 9ch_stere
 
 ```
 Bridge yamahamusiccast:bridge:virtual "YXC Bridge" {
-Thing yamahamusiccast:device:Living "YXC Living" [host="1.2.3.4"]
+    Thing yamahamusiccast:device:Living "YXC Living" [host="1.2.3.4", syncVolume=false, defaultAfterMCLink="net_radio", volumeDbMin=-80, volumeDbMax=-10]
 }
 ```
 
@@ -116,6 +120,7 @@ Switch YamahaPower "" {channel="yamahamusiccast:device:Living:main#power"}
 Switch YamahaMute "" {channel="yamahamusiccast:device:Living:main#mute"}
 Dimmer YamahaVolume "" {channel="yamahamusiccast:device:Living:main#volume"}
 Number YamahaVolumeAbs "" {channel="yamahamusiccast:device:Living:main#volumeAbs"}
+Number YamahaVolumeDb  "" {channel="yamahamusiccast:device:Living:main#volumeDB"}
 String YamahaInput "" {channel="yamahamusiccast:device:Living:main#input"}
 String YamahaSelectPreset "" {channel="yamahamusiccast:device:Living:main#selectPreset"}
 String YamahaSoundProgram "" {channel="yamahamusiccast:device:Living:main#soundProgram"}

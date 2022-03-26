@@ -18,6 +18,7 @@ import com.google.gson.annotations.SerializedName;
  * This class represents the Status request requested from the Yamaha model/device via the API.
  *
  * @author Lennert Coopman - Initial contribution
+ * @author Florian Hotze - Add volume in decibel
  */
 
 public class Status {
@@ -33,6 +34,9 @@ public class Status {
 
     @SerializedName("volume")
     private int volume;
+
+    @SerializedName("actual_volume")
+    private ActualVolume actualVolume;
 
     @SerializedName("max_volume")
     private int maxVolume = 1;
@@ -69,6 +73,10 @@ public class Status {
 
     public int getVolume() {
         return volume;
+    }
+
+    public float getVolumeDb() {
+        return actualVolume.getValue();
     }
 
     public int getMaxVolume() {
