@@ -132,7 +132,6 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private int maxBalanceLevel;
     private boolean speakera;
     private boolean speakerb;
-    private boolean useFixedBalanceCmd;
 
     private Object sequenceLock = new Object();
 
@@ -199,15 +198,12 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 break;
             case THING_TYPE_ID_A11:
                 rotelModel = RotelModel.A11;
-                useFixedBalanceCmd = true;
                 break;
             case THING_TYPE_ID_A12:
                 rotelModel = RotelModel.A12;
-                useFixedBalanceCmd = true;
                 break;
             case THING_TYPE_ID_A14:
                 rotelModel = RotelModel.A14;
-                useFixedBalanceCmd = true;
                 break;
             case THING_TYPE_ID_CD11:
                 rotelModel = RotelModel.CD11;
@@ -275,6 +271,15 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 break;
             case THING_TYPE_ID_T14:
                 rotelModel = RotelModel.T14;
+                break;
+            case THING_TYPE_ID_P5:
+                rotelModel = RotelModel.P5;
+                break;
+            case THING_TYPE_ID_X3:
+                rotelModel = RotelModel.X3;
+                break;
+            case THING_TYPE_ID_X5:
+                rotelModel = RotelModel.X5;
                 break;
             default:
                 rotelModel = DEFAULT_MODEL;
@@ -908,7 +913,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
                         } else {
                             handleBalanceCmd(channel, command, RotelCommand.BALANCE_LEFT, RotelCommand.BALANCE_RIGHT,
-                                    useFixedBalanceCmd ? RotelCommand.BALANCE_SET_FIX : RotelCommand.BALANCE_SET);
+                                    RotelCommand.BALANCE_SET);
                         }
                         break;
                     case CHANNEL_SPEAKER_A:
