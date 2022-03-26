@@ -75,7 +75,7 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
 
     @Override
     public void startScan() {
-        List<HomeDevice> appliances = mieleBridgeHandler.getHomeDevices();
+        List<HomeDevice> appliances = mieleBridgeHandler.getHomeDevicesEmptyOnFailure();
         for (HomeDevice l : appliances) {
             onApplianceAddedInternal(l);
         }

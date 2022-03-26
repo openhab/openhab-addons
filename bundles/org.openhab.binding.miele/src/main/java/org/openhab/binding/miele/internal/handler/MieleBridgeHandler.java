@@ -161,24 +161,17 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private Runnable pollingRunnable = new Runnable() {
         @Override
         public void run() {
+            String host = (String) getConfig().get(HOST);
             try {
-                String host = (String) getConfig().get(HOST);
-                if (isReachable(host)) {
-                    if (!lastBridgeConnectionState) {
-                        logger.debug("Connection to Miele Gateway {} established.", host);
-                        lastBridgeConnectionState = true;
-                    }
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    if (lastBridgeConnectionState) {
-                        logger.debug("Connection to Miele Gateway {} lost.", host);
-                        lastBridgeConnectionState = false;
-                    }
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
-                    return;
-                }
+                List<HomeDevice> homeDevices = getHomeDevices();
 
-                refreshHomeDevices(getHomeDevices());
+                if (!lastBridgeConnectionState) {
+                    logger.debug("Connection to Miele Gateway {} established.", host);
+                    lastBridgeConnectionState = true;
+                }
+                updateStatus(ThingStatus.ONLINE);
+
+                refreshHomeDevices(homeDevices);
 
                 for (Entry<String, ApplianceStatusListener> entry : applianceStatusListeners.entrySet()) {
                     String applianceId = entry.getKey();
@@ -220,24 +213,12 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     logger.debug("An exception occurred while polling an appliance: '{}' -> '{}'", e.getMessage(),
                             cause.getMessage());
                 }
+                if (lastBridgeConnectionState) {
+                    logger.debug("Connection to Miele Gateway {} lost.", host);
+                    lastBridgeConnectionState = false;
+                }
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
             }
-        }
-
-        private boolean isReachable(String ipAddress) {
-            try {
-                // note that InetAddress.isReachable is unreliable, see
-                // http://stackoverflow.com/questions/9922543/why-does-inetaddress-isreachable-return-false-when-i-can-ping-the-ip-address
-                // That's why we do an HTTP access instead
-
-                // If there is no connection, this line will fail
-                gatewayCommunication.invokeRPC("system.listMethods", new Object[0]);
-            } catch (MieleRpcException e) {
-                logger.debug("{} is not reachable", ipAddress);
-                return false;
-            }
-
-            logger.debug("{} is reachable", ipAddress);
-            return true;
         }
     };
 
@@ -281,29 +262,36 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public List<HomeDevice> getHomeDevices() {
+    public List<HomeDevice> getHomeDevicesEmptyOnFailure() {
+        try {
+            return getHomeDevices();
+        } catch (MieleRpcException e) {
+            Throwable cause = e.getCause();
+            if (cause == null) {
+                logger.debug("An exception occurred while getting the home devices: '{}'", e.getMessage());
+            } else {
+                logger.debug("An exception occurred while getting the home devices: '{}' -> '{}", e.getMessage(),
+                        cause.getMessage());
+            }
+            return new ArrayList<>();
+        }
+    }
+
+    private List<HomeDevice> getHomeDevices() throws MieleRpcException {
         List<HomeDevice> devices = new ArrayList<>();
 
-        if (getThing().getStatus() == ThingStatus.ONLINE) {
-            try {
-                String[] args = new String[1];
-                args[0] = "(type=SuperVision)";
-                JsonElement result = gatewayCommunication.invokeRPC("HDAccess/getHomeDevices", args);
+        if (!isInitialized()) {
+            return devices;
+        }
 
-                for (JsonElement obj : result.getAsJsonArray()) {
-                    HomeDevice hd = gson.fromJson(obj, HomeDevice.class);
-                    if (hd != null) {
-                        devices.add(hd);
-                    }
-                }
-            } catch (MieleRpcException e) {
-                Throwable cause = e.getCause();
-                if (cause == null) {
-                    logger.debug("An exception occurred while getting the home devices: '{}'", e.getMessage());
-                } else {
-                    logger.debug("An exception occurred while getting the home devices: '{}' -> '{}", e.getMessage(),
-                            cause.getMessage());
-                }
+        String[] args = new String[1];
+        args[0] = "(type=SuperVision)";
+        JsonElement result = gatewayCommunication.invokeRPC("HDAccess/getHomeDevices", args);
+
+        for (JsonElement obj : result.getAsJsonArray()) {
+            HomeDevice hd = gson.fromJson(obj, HomeDevice.class);
+            if (hd != null) {
+                devices.add(hd);
             }
         }
         return devices;
@@ -482,8 +470,16 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         if (cachedHomeDevice != null) {
             applianceStatusListener.onApplianceAdded(cachedHomeDevice);
         } else {
-            if (isInitialized()) {
+            try {
                 refreshHomeDevices(getHomeDevices());
+            } catch (MieleRpcException e) {
+                Throwable cause = e.getCause();
+                if (cause == null) {
+                    logger.debug("An exception occurred while getting the home devices: '{}'", e.getMessage());
+                } else {
+                    logger.debug("An exception occurred while getting the home devices: '{}' -> '{}", e.getMessage(),
+                            cause.getMessage());
+                }
             }
         }
 
@@ -500,8 +496,16 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             return false;
         }
         if (cachedHomeDevicesByApplianceId.isEmpty()) {
-            if (isInitialized()) {
+            try {
                 refreshHomeDevices(getHomeDevices());
+            } catch (MieleRpcException e) {
+                Throwable cause = e.getCause();
+                if (cause == null) {
+                    logger.debug("An exception occurred while getting the home devices: '{}'", e.getMessage());
+                } else {
+                    logger.debug("An exception occurred while getting the home devices: '{}' -> '{}", e.getMessage(),
+                            cause.getMessage());
+                }
             }
         } else {
             for (Entry<String, HomeDevice> entry : cachedHomeDevicesByApplianceId.entrySet()) {
