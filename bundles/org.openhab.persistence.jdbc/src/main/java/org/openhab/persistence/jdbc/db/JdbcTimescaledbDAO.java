@@ -37,7 +37,8 @@ public class JdbcTimescaledbDAO extends JdbcPostgresqlDAO {
         initSqlQueries();
     }
 
-    public Properties getDatabaseProperties() {
+    @Override
+    public Properties getConnectionProperties() {
         Properties properties = new Properties(this.databaseProps);
 
         // Adjust the jdbc url since the service name 'timescaledb' is only used to differentiate the DAOs
@@ -48,6 +49,7 @@ public class JdbcTimescaledbDAO extends JdbcPostgresqlDAO {
         return properties;
     }
 
+    @Override
     public void doCreateItemTable(ItemVO vo) {
         String sql;
 
