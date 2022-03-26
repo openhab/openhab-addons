@@ -482,7 +482,9 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         if (cachedHomeDevice != null) {
             applianceStatusListener.onApplianceAdded(cachedHomeDevice);
         } else {
-            refreshHomeDevices(getHomeDevices());
+            if (isInitialized()) {
+                refreshHomeDevices(getHomeDevices());
+            }
         }
 
         return true;
@@ -494,13 +496,19 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     }
 
     public boolean registerDiscoveryListener(DiscoveryListener discoveryListener) {
-        boolean result = discoveryListeners.add(discoveryListener);
-        if (result) {
-            for (HomeDevice hd : getHomeDevices()) {
-                discoveryListener.onApplianceAdded(hd);
+        if (!discoveryListeners.add(discoveryListener)) {
+            return false;
+        }
+        if (cachedHomeDevicesByApplianceId.isEmpty()) {
+            if (isInitialized()) {
+                refreshHomeDevices(getHomeDevices());
+            }
+        } else {
+            for (Entry<String, HomeDevice> entry : cachedHomeDevicesByApplianceId.entrySet()) {
+                discoveryListener.onApplianceAdded(entry.getValue());
             }
         }
-        return result;
+        return true;
     }
 
     public boolean unregisterDiscoveryListener(DiscoveryListener discoveryListener) {
