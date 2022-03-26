@@ -42,6 +42,11 @@ public class Locations extends PlugwiseHACollection<Location> {
                         updatedPointLogs.merge(originalLocation.getPointLogs());
                     }
 
+                    ActuatorFunctionalities updatedActuatorFunctionalities = location.getActuatorFunctionalities();
+                    if (updatedActuatorFunctionalities != null) {
+                        updatedActuatorFunctionalities.merge(originalLocation.getActuatorFunctionalities());
+                    }
+
                     this.put(id, location);
                 }
             }

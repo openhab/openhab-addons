@@ -281,6 +281,15 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case THING_TYPE_ID_T14:
                 model = RotelModel.T14;
                 break;
+            case THING_TYPE_ID_P5:
+                model = RotelModel.P5;
+                break;
+            case THING_TYPE_ID_X3:
+                model = RotelModel.X3;
+                break;
+            case THING_TYPE_ID_X5:
+                model = RotelModel.X5;
+                break;
             default:
                 model = DEFAULT_MODEL;
                 break;

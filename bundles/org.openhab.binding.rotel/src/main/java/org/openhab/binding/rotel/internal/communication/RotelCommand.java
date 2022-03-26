@@ -105,6 +105,8 @@ public enum RotelCommand {
     SOURCE_BLUETOOTH("Source Bluetooth", "bluetooth", "bluetooth"),
     SOURCE_ROTEL_CD("Source Rotel CD", "rcd", null),
     SOURCE_XLR("Source XLR", "bal_xlr", "bal_xlr"),
+    SOURCE_XLR1("Source XLR 1", "bal_xlr1", "bal_xlr1"),
+    SOURCE_XLR2("Source XLR 2", "bal_xlr2", "bal_xlr2"),
     SOURCE_FM("Source FM", "fm", "fm"),
     SOURCE_DAB("Source DAB", "dab", "dab"),
     SOURCE_PLAYFI("Source PlayFi", "playfi", "playfi"),

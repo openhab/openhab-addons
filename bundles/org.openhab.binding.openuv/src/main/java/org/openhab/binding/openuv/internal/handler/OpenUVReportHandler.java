@@ -159,13 +159,13 @@ public class OpenUVReportHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing the OpenUV handler.");
-        ScheduledFuture<?> refresh = this.refreshJob;
+        ScheduledFuture<?> refresh = refreshJob;
         if (refresh != null && !refresh.isCancelled()) {
             refresh.cancel(true);
         }
         refreshJob = null;
 
-        ScheduledFuture<?> uxMax = this.uvMaxJob;
+        ScheduledFuture<?> uxMax = uvMaxJob;
         if (uxMax != null && !uxMax.isCancelled()) {
             uxMax.cancel(true);
         }
