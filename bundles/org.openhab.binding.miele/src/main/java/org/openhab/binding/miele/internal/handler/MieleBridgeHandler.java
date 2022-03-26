@@ -86,7 +86,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(MieleBridgeHandler.class);
 
     private boolean lastBridgeConnectionState = false;
-    private boolean currentBridgeConnectionState = false;
 
     private Gson gson = new Gson();
     private @NonNullByDefault({}) MieleGatewayCommunicationController gatewayCommunication;
@@ -120,8 +119,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
 
         updateStatus(ThingStatus.UNKNOWN);
-        schedulePollingAndEventListener();
         lastBridgeConnectionState = false;
+        schedulePollingAndEventListener();
     }
 
     private boolean validateConfig(Configuration config) {
@@ -162,27 +161,20 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private Runnable pollingRunnable = new Runnable() {
         @Override
         public void run() {
-            if (!IP_PATTERN.matcher((String) getConfig().get(HOST)).matches()) {
-                logger.debug("Invalid IP address for the Miele@home gateway: '{}'", getConfig().get(HOST));
-                return;
-            }
-
             try {
-                if (isReachable((String) getConfig().get(HOST))) {
-                    currentBridgeConnectionState = true;
+                String host = (String) getConfig().get(HOST);
+                if (isReachable(host)) {
+                    if (!lastBridgeConnectionState) {
+                        logger.debug("Connection to Miele Gateway {} established.", host);
+                        lastBridgeConnectionState = true;
+                    }
+                    updateStatus(ThingStatus.ONLINE);
                 } else {
-                    currentBridgeConnectionState = false;
-                    lastBridgeConnectionState = false;
-                    onConnectionLost();
-                }
-
-                if (!lastBridgeConnectionState && currentBridgeConnectionState) {
-                    logger.debug("Connection to Miele Gateway {} established.", getConfig().get(HOST));
-                    lastBridgeConnectionState = true;
-                    onConnectionResumed();
-                }
-
-                if (!currentBridgeConnectionState || getThing().getStatus() != ThingStatus.ONLINE) {
+                    if (lastBridgeConnectionState) {
+                        logger.debug("Connection to Miele Gateway {} lost.", host);
+                        lastBridgeConnectionState = false;
+                    }
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
                     return;
                 }
 
@@ -470,20 +462,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             this.executor = executor;
             this.eventListenerJob = executor.submit(eventListenerRunnable);
         }
-    }
-
-    /**
-     * This method is called whenever the connection to the given {@link MieleBridge} is lost.
-     */
-    public void onConnectionLost() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
-    }
-
-    /**
-     * This method is called whenever the connection to the given {@link MieleBridge} is resumed.
-     */
-    public void onConnectionResumed() {
-        updateStatus(ThingStatus.ONLINE);
     }
 
     public boolean registerApplianceStatusListener(String applianceId,
