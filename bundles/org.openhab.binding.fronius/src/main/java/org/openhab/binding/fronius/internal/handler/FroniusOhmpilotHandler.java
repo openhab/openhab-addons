@@ -24,6 +24,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.State;
 
 /**
  * The {@link FroniusOhmpilotHandler} is responsible for updating the data, which are
@@ -66,7 +67,7 @@ public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
      * @return the last retrieved data
      */
     @Override
-    protected Object getValue(String channelId) {
+    protected State getValue(String channelId) {
         if (ohmpilotRealtimeBodyData == null) {
             return null;
         }
@@ -128,9 +129,7 @@ public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
      */
     private OhmpilotRealtimeResponseDTO getOhmpilotRealtimeData(String ip, int deviceId)
             throws FroniusCommunicationException {
-        String location = FroniusBindingConstants.OHMPILOT_REALTIME_DATA_URL.replace("%IP%",
-                (ip != null ? ip.trim() : ""));
-        location = location.replace("%DEVICEID%", Integer.toString(deviceId));
+        String location = FroniusBindingConstants.getOhmPilotDataUrl(ip, deviceId);
         return collectDataFromUrl(OhmpilotRealtimeResponseDTO.class, location);
     }
 }

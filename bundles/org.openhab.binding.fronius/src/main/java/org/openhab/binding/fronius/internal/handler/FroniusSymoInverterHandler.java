@@ -12,19 +12,25 @@
  */
 package org.openhab.binding.fronius.internal.handler;
 
-import java.util.Map;
+import java.util.Optional;
+
+import javax.measure.Unit;
 
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.FroniusCommunicationException;
+import org.openhab.binding.fronius.internal.api.InverterRealtimeBodyData;
 import org.openhab.binding.fronius.internal.api.InverterRealtimeResponse;
 import org.openhab.binding.fronius.internal.api.PowerFlowRealtimeInverter;
 import org.openhab.binding.fronius.internal.api.PowerFlowRealtimeResponse;
+import org.openhab.binding.fronius.internal.api.PowerFlowRealtimeSite;
 import org.openhab.binding.fronius.internal.api.ValueUnit;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,13 +41,9 @@ import org.slf4j.LoggerFactory;
  * @author Thomas Rokohl - Initial contribution
  * @author Peter Schraffl - Added device status and error status channels
  * @author Thomas Kordelle - Added inverter power, battery state of charge and PV solar yield
+ * @author Jimmy Tanagra - Add powerflow autonomy, self consumption channels
  */
 public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
-
-    /* power produced/handled by the inverter. */
-    public static final String INVERTER_POWER = "power";
-    /* state of charge of the battery or other storage device */
-    public static final String INVERTER_SOC = "soc";
 
     private final Logger logger = LoggerFactory.getLogger(FroniusSymoInverterHandler.class);
     private InverterRealtimeResponse inverterRealtimeResponse;
@@ -76,7 +78,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @return the last retrieved data
      */
     @Override
-    protected Object getValue(String channelId) {
+    protected State getValue(String channelId) {
         final String[] fields = channelId.split("#");
         if (fields.length < 1) {
             return null;
@@ -84,65 +86,57 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         final String fieldName = fields[0];
 
         if (inverterRealtimeResponse != null) {
+            InverterRealtimeBodyData inverterData = inverterRealtimeResponse.getBody().getData();
             switch (fieldName) {
-                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_DAY_ENERGY:
-                    ValueUnit day = inverterRealtimeResponse.getBody().getData().getDayEnergy();
-                    if (day != null) {
-                        day.setUnit("kWh");
-                    }
-                    return day;
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_PAC:
-                    ValueUnit pac = inverterRealtimeResponse.getBody().getData().getPac();
-                    if (pac == null) {
-                        pac = new ValueUnit();
-                        pac.setValue(0);
-                    }
-                    return pac;
-                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_TOTAL:
-                    ValueUnit total = inverterRealtimeResponse.getBody().getData().getTotalEnergy();
-                    if (total != null) {
-                        total.setUnit("MWh");
-                    }
-                    return total;
-                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_YEAR:
-                    ValueUnit year = inverterRealtimeResponse.getBody().getData().getYearEnergy();
-                    if (year != null) {
-                        year.setUnit("MWh");
-                    }
-                    return year;
+                    return getQuantityOrZero(inverterData.getPac(), Units.WATT);
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_FAC:
-                    return inverterRealtimeResponse.getBody().getData().getFac();
+                    return getQuantityOrZero(inverterData.getFac(), Units.HERTZ);
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_IAC:
-                    return inverterRealtimeResponse.getBody().getData().getIac();
+                    return getQuantityOrZero(inverterData.getIac(), Units.AMPERE);
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_IDC:
-                    return inverterRealtimeResponse.getBody().getData().getIdc();
+                    return getQuantityOrZero(inverterData.getIdc(), Units.AMPERE);
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_UAC:
-                    return inverterRealtimeResponse.getBody().getData().getUac();
+                    return getQuantityOrZero(inverterData.getUac(), Units.VOLT);
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_UDC:
-                    return inverterRealtimeResponse.getBody().getData().getUdc();
+                    return getQuantityOrZero(inverterData.getUdc(), Units.VOLT);
+                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_DAY_ENERGY:
+                    // Convert the unit to kWh for backwards compatibility with non-quantity type
+                    return getQuantityOrZero(inverterData.getDayEnergy(), Units.KILOWATT_HOUR).toUnit("kWh");
+                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_TOTAL:
+                    // Convert the unit to MWh for backwards compatibility with non-quantity type
+                    return getQuantityOrZero(inverterData.getTotalEnergy(), Units.MEGAWATT_HOUR).toUnit("MWh");
+                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_YEAR:
+                    // Convert the unit to MWh for backwards compatibility with non-quantity type
+                    return getQuantityOrZero(inverterData.getYearEnergy(), Units.MEGAWATT_HOUR).toUnit("MWh");
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_DEVICE_STATUS_ERROR_CODE:
-                    return inverterRealtimeResponse.getBody().getData().getDeviceStatus().getErrorCode();
+                    return new DecimalType(inverterData.getDeviceStatus().getErrorCode());
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_DEVICE_STATUS_STATUS_CODE:
-                    return inverterRealtimeResponse.getBody().getData().getDeviceStatus().getStatusCode();
+                    return new DecimalType(inverterData.getDeviceStatus().getStatusCode());
                 default:
                     break;
             }
         }
 
         if (powerFlowResponse != null) {
+            PowerFlowRealtimeSite site = powerFlowResponse.getBody().getData().getSite();
             switch (fieldName) {
                 case FroniusBindingConstants.POWER_FLOW_P_GRID:
-                    return new QuantityType<>(powerFlowResponse.getBody().getData().getSite().getPgrid(), Units.WATT);
+                    return new QuantityType<>(site.getPgrid(), Units.WATT);
                 case FroniusBindingConstants.POWER_FLOW_P_LOAD:
-                    return new QuantityType<>(powerFlowResponse.getBody().getData().getSite().getPload(), Units.WATT);
+                    return new QuantityType<>(site.getPload(), Units.WATT);
                 case FroniusBindingConstants.POWER_FLOW_P_AKKU:
-                    return new QuantityType<>(powerFlowResponse.getBody().getData().getSite().getPakku(), Units.WATT);
+                    return new QuantityType<>(site.getPakku(), Units.WATT);
                 case FroniusBindingConstants.POWER_FLOW_P_PV:
-                    return new QuantityType<>(powerFlowResponse.getBody().getData().getSite().getPpv(), Units.WATT);
+                    return new QuantityType<>(site.getPpv(), Units.WATT);
+                case FroniusBindingConstants.POWER_FLOW_AUTONOMY:
+                    return new QuantityType<>(site.getRelAutonomy(), Units.PERCENT);
+                case FroniusBindingConstants.POWER_FLOW_SELF_CONSUMPTION:
+                    return new QuantityType<>(site.getRelSelfConsumption(), Units.PERCENT);
                 case FroniusBindingConstants.POWER_FLOW_INVERTER_1_POWER:
-                    return getInverterFlowValue(INVERTER_POWER, "1");
+                    return new QuantityType<>(getInverter("1").getP(), Units.WATT);
                 case FroniusBindingConstants.POWER_FLOW_INVERTER_1_SOC:
-                    return getInverterFlowValue(INVERTER_SOC, "1");
+                    return new QuantityType<>(getInverter("1").getSoc(), Units.PERCENT);
                 default:
                     break;
             }
@@ -154,25 +148,24 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     /**
      * get flow data for a specific inverter.
      *
-     * @param fieldName
-     * @param number
-     * @return
+     * @param number The inverter object of the given index
+     * @return an PowerFlowRealtimeInverter object.
      */
-    private Object getInverterFlowValue(final String fieldName, final String number) {
-        final Map<String, PowerFlowRealtimeInverter> inverters = powerFlowResponse.getBody().getData().getInverters();
-        if ((inverters == null) || (inverters.get(number) == null)) {
-            logger.debug("No data for inverter '{}' found.", number);
-            return null;
-        }
-        switch (fieldName) {
-            case INVERTER_POWER:
-                return new QuantityType<>(inverters.get(number).getP(), Units.WATT);
-            case INVERTER_SOC:
-                return new QuantityType<>(inverters.get(number).getSoc(), Units.PERCENT);
-            default:
-                break;
-        }
-        return null;
+    private PowerFlowRealtimeInverter getInverter(final String number) {
+        return powerFlowResponse.getBody().getData().getInverters().get(number);
+    }
+
+    /**
+     * Return the value as QuantityType with the unit extracted from ValueUnit
+     * or a zero QuantityType with the given unit argument when value is null
+     * 
+     * @param value The ValueUnit data
+     * @param unit The default unit to use when value is null
+     * @return a QuantityType from the given value
+     */
+    private QuantityType<?> getQuantityOrZero(ValueUnit value, Unit unit) {
+        return Optional.ofNullable(value).map(val -> val.asQuantityType().toUnit(unit))
+                .orElse(new QuantityType<>(0, unit));
     }
 
     /**
@@ -191,8 +184,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @return {PowerFlowRealtimeResponse} the object representation of the json response
      */
     private PowerFlowRealtimeResponse getPowerFlowRealtime(String ip) throws FroniusCommunicationException {
-        String location = FroniusBindingConstants.POWERFLOW_REALTIME_DATA.replace("%IP%",
-                (ip != null ? ip.trim() : ""));
+        String location = FroniusBindingConstants.getPowerFlowDataUrl(ip);
         return collectDataFromUrl(PowerFlowRealtimeResponse.class, location);
     }
 
@@ -204,9 +196,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @return {InverterRealtimeResponse} the object representation of the json response
      */
     private InverterRealtimeResponse getRealtimeData(String ip, int deviceId) throws FroniusCommunicationException {
-        String location = FroniusBindingConstants.INVERTER_REALTIME_DATA_URL.replace("%IP%",
-                (ip != null ? ip.trim() : ""));
-        location = location.replace("%DEVICEID%", Integer.toString(deviceId));
+        String location = FroniusBindingConstants.getInverterDataUrl(ip, deviceId);
         return collectDataFromUrl(InverterRealtimeResponse.class, location);
     }
 }
