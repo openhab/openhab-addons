@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.knx.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class DeviceConstants {
 
     private DeviceConstants() {

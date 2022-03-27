@@ -17,7 +17,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.Type;
 
 import tuwien.auto.calimero.datapoint.Datapoint;
-import tuwien.auto.calimero.process.ProcessEvent;
 
 /**
  * This interface must be implemented by classes that provide a type mapping
@@ -25,7 +24,7 @@ import tuwien.auto.calimero.process.ProcessEvent;
  * When a command or status update is sent to an item on the openHAB event bus,
  * it must be clear, in which format it must be sent to KNX and vice versa.
  *
- * @author Kai Kreuzer
+ * @author Kai Kreuzer - Initial contribution
  *
  */
 @NonNullByDefault
@@ -45,7 +44,8 @@ public interface KNXTypeMapper {
      * maps a datapoint value to an openHAB command or state
      *
      * @param datapoint the source datapoint
-     * @param data the datapoint value as an ASDU byte array (see <code>{@link ProcessEvent}.getASDU()</code>)
+     * @param data the datapoint value as an ASDU byte array (see
+     *            <code>{@link tuwien.auto.calimero.process.ProcessEvent}.getASDU()</code>)
      * @return a command or state of openHAB
      */
     @Nullable

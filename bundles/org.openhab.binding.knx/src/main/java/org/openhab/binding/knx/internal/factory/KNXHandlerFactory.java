@@ -55,8 +55,8 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
             ThingUID bridgeUID) {
         if (THING_TYPE_IP_BRIDGE.equals(thingTypeUID)) {
-            ThingUID IPBridgeUID = getIPBridgeThingUID(thingTypeUID, thingUID, configuration);
-            return super.createThing(thingTypeUID, configuration, IPBridgeUID, null);
+            ThingUID ipBridgeUID = getIPBridgeThingUID(thingTypeUID, thingUID, configuration);
+            return super.createThing(thingTypeUID, configuration, ipBridgeUID, null);
         }
         if (THING_TYPE_SERIAL_BRIDGE.equals(thingTypeUID)) {
             ThingUID serialBridgeUID = getSerialBridgeThingUID(thingTypeUID, thingUID, configuration);
