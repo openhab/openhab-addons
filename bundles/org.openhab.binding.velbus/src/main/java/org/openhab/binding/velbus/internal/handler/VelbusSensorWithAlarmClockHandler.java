@@ -160,8 +160,7 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
                 case CHANNEL_MODULE_CLOCK_ALARM2_TYPE: {
                     if (command instanceof OnOffType) {
                         // If AlarmType is not read only, it's an old implementation of the module, warn user and
-                        // discard the
-                        // command
+                        // discard the command
                         logger.warn(
                                 "Old implementation of thing '{}', still works, but it's better to remove and recreate the thing.",
                                 getThing().getUID());
@@ -210,10 +209,11 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
                 }
             }
 
-            if (alarmNumber == 1)
+            if (alarmNumber == 1) {
                 lastUpdateAlarm1TimeMillis = System.currentTimeMillis();
-            else
+            } else {
                 lastUpdateAlarm2TimeMillis = System.currentTimeMillis();
+            }
 
             VelbusSetLocalClockAlarmPacket packet = new VelbusSetLocalClockAlarmPacket(getModuleAddress().getAddress(),
                     alarmNumber, alarmClock);
@@ -223,7 +223,7 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
             // flooding of the bus)
             scheduler.schedule(() -> {
                 sendAlarmPacket(alarmNumber, packetBytes);
-            }, 10000, TimeUnit.MILLISECONDS);
+            }, DELAY_SEND_CLOCK_ALARM_UPDATE, TimeUnit.MILLISECONDS);
         } else {
             logger.debug("The command '{}' is not supported by this handler.", command.getClass());
         }
@@ -238,14 +238,16 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
 
         long timeSinceLastUpdate;
 
-        if (alarmNumber == 1)
+        if (alarmNumber == 1) {
             timeSinceLastUpdate = System.currentTimeMillis() - lastUpdateAlarm1TimeMillis;
-        else
+        } else {
             timeSinceLastUpdate = System.currentTimeMillis() - lastUpdateAlarm2TimeMillis;
+        }
 
         // If a value of the alarm has been updated, discard this old update
-        if (timeSinceLastUpdate < 10000)
+        if (timeSinceLastUpdate < DELAY_SEND_CLOCK_ALARM_UPDATE) {
             return;
+        }
 
         velbusBridgeHandler.sendPacket(packetBytes);
     }

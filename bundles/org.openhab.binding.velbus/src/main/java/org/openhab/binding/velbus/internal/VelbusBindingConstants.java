@@ -250,4 +250,7 @@ public class VelbusBindingConstants {
     public static final String CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_MINUTE = "clockAlarm#clockAlarm2WakeupMinute";
     public static final String CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_HOUR = "clockAlarm#clockAlarm2BedtimeHour";
     public static final String CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_MINUTE = "clockAlarm#clockAlarm2BedtimeMinute";
+
+    // Delay
+    public static final Integer DELAY_SEND_CLOCK_ALARM_UPDATE = 10000;
 }

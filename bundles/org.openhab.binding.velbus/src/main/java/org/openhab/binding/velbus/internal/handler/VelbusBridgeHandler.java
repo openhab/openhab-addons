@@ -204,10 +204,11 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
                 }
             }
 
-            if (alarmNumber == 1)
+            if (alarmNumber == 1) {
                 lastUpdateAlarm1TimeMillis = System.currentTimeMillis();
-            else
+            } else {
                 lastUpdateAlarm2TimeMillis = System.currentTimeMillis();
+            }
 
             VelbusSetLocalClockAlarmPacket packet = new VelbusSetLocalClockAlarmPacket((byte) 0x00, alarmNumber,
                     alarmClock);
@@ -217,7 +218,7 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
             // flooding of the bus)
             scheduler.schedule(() -> {
                 sendAlarmPacket(alarmNumber, packetBytes);
-            }, 10000, TimeUnit.MILLISECONDS);
+            }, DELAY_SEND_CLOCK_ALARM_UPDATE, TimeUnit.MILLISECONDS);
         } else {
             logger.debug("The command '{}' is not supported by this handler.", command.getClass());
         }
@@ -226,14 +227,16 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
     public synchronized void sendAlarmPacket(int alarmNumber, byte[] packetBytes) {
         long timeSinceLastUpdate;
 
-        if (alarmNumber == 1)
+        if (alarmNumber == 1) {
             timeSinceLastUpdate = System.currentTimeMillis() - lastUpdateAlarm1TimeMillis;
-        else
+        } else {
             timeSinceLastUpdate = System.currentTimeMillis() - lastUpdateAlarm2TimeMillis;
+        }
 
         // If a value of the alarm has been updated, discard this old update
-        if (timeSinceLastUpdate < 10000)
+        if (timeSinceLastUpdate < DELAY_SEND_CLOCK_ALARM_UPDATE) {
             return;
+        }
 
         sendPacket(packetBytes);
     }
