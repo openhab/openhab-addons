@@ -7,7 +7,7 @@
 	<!-- Rotel RC-1590 Connection Thing Type -->
 	<thing-type id="rc1590">
 		<label>RC-1590 Stereo Preamplifier</label>
-		<description>Connection to the Rotel RC-1590 stereo preamplifier</description>
+		<description>Connection to the Rotel RC-1590 or RC-1590MKII stereo preamplifier</description>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
