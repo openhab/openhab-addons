@@ -39,7 +39,6 @@ import org.jsoup.nodes.Element;
 import org.openhab.binding.tesla.internal.protocol.sso.AuthorizationCodeExchangeRequest;
 import org.openhab.binding.tesla.internal.protocol.sso.AuthorizationCodeExchangeResponse;
 import org.openhab.binding.tesla.internal.protocol.sso.RefreshTokenRequest;
-import org.openhab.binding.tesla.internal.protocol.sso.TokenExchangeRequest;
 import org.openhab.binding.tesla.internal.protocol.sso.TokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,29 +81,9 @@ public class TeslaSSOHandler {
             TokenResponse tokenResponse = gson.fromJson(refreshTokenResponse.trim(), TokenResponse.class);
 
             if (tokenResponse != null && tokenResponse.access_token != null && !tokenResponse.access_token.isEmpty()) {
-                TokenExchangeRequest token = new TokenExchangeRequest();
-                String tokenPayload = gson.toJson(token);
-
-                final org.eclipse.jetty.client.api.Request logonRequest = httpClient
-                        .newRequest(URI_OWNERS + "/" + PATH_ACCESS_TOKEN);
-                logonRequest.content(new StringContentProvider(tokenPayload));
-                logonRequest.header(HttpHeader.CONTENT_TYPE, "application/json");
-                logonRequest.header(HttpHeader.AUTHORIZATION, "Bearer " + tokenResponse.access_token);
-                logonRequest.method(HttpMethod.POST);
-
-                ContentResponse logonTokenResponse = executeHttpRequest(logonRequest);
-
-                if (logonTokenResponse != null && logonTokenResponse.getStatus() == 200) {
-                    String tokenResponsePayload = logonTokenResponse.getContentAsString();
-                    TokenResponse tr = gson.fromJson(tokenResponsePayload.trim(), TokenResponse.class);
-
-                    if (tr != null && tr.token_type != null && !tr.access_token.isEmpty()) {
-                        return tr;
-                    }
-                } else {
-                    logger.debug("An error occurred while exchanging SSO access token for API access token: {}",
-                            (logonTokenResponse != null ? logonTokenResponse.getStatus() : "no response"));
-                }
+                return tokenResponse;
+            } else {
+                logger.debug("An error occurred while exchanging SSO auth token for API access token.");
             }
         } else {
             logger.debug("An error occurred during refresh of SSO token: {}",
