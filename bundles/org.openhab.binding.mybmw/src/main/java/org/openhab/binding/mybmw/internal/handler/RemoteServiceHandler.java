@@ -113,7 +113,6 @@ public class RemoteServiceHandler implements StringResponseCallback {
     }
 
     boolean execute(RemoteService service, String... data) {
-        logger.info("Execute {} with parameters {}", service.getCommand(), data);
         synchronized (this) {
             if (serviceExecuting.isPresent()) {
                 logger.debug("Execution rejected - {} still pending", serviceExecuting.get());
@@ -161,7 +160,6 @@ public class RemoteServiceHandler implements StringResponseCallback {
 
     @Override
     public void onResponse(@Nullable String result) {
-        logger.info("Remote execution result {}", result);
         if (result != null) {
             try {
                 ExecutionStatusContainer esc = Converter.getGson().fromJson(result, ExecutionStatusContainer.class);

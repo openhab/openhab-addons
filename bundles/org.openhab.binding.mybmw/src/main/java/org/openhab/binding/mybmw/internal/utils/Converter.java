@@ -330,7 +330,7 @@ public class Converter {
                 LocalTime timeL = LocalTime.parse(timeSplit[1].trim(), LOCALE_ENGLISH_TIMEFORMATTER);
                 return timeSplit[0] + Constants.TILDE + timeL.toString();
             } catch (Exception e) {
-                LOGGER.info("Unable to parse date {} - {}", timeSplit[1], e.getMessage());
+                LOGGER.debug("Unable to parse date {} - {}", timeSplit[1], e.getMessage());
             }
         }
         return chrageInfoLabel;

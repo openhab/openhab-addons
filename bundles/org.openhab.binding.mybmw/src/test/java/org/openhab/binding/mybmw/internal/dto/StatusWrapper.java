@@ -150,7 +150,7 @@ public class StatusWrapper {
                 }
                 break;
             case RANGE_ELECTRIC:
-                assertTrue(isElectric, "Is Eelctric");
+                assertTrue(isElectric, "Is Electric");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
                 wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
@@ -183,7 +183,7 @@ public class StatusWrapper {
                 assertEquals(vehicle.properties.fuelLevel.value, qt.intValue(), "Fuel Level");
                 break;
             case SOC:
-                assertTrue(isElectric, "Is Eelctric");
+                assertTrue(isElectric, "Is Ee<lctric");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
                 assertEquals(Units.PERCENT, qt.getUnit(), "Percent");

@@ -113,7 +113,7 @@ public class VehicleStatusUtils {
                 case Constants.KM_JSON:
                     if (ret != null) {
                         if (!ret.equals(Constants.KILOMETRE_UNIT)) {
-                            LOGGER.info("Ambigious Unit declarations. Found {} before {}", ret, Constants.KM_JSON);
+                            LOGGER.debug("Ambigious Unit declarations. Found {} before {}", ret, Constants.KM_JSON);
                         } // else - fine!
                     } else {
                         ret = Constants.KILOMETRE_UNIT;
@@ -122,14 +122,14 @@ public class VehicleStatusUtils {
                 case Constants.MI_JSON:
                     if (ret != null) {
                         if (!ret.equals(ImperialUnits.MILE)) {
-                            LOGGER.info("Ambigious Unit declarations. Found {} before {}", ret, Constants.MI_JSON);
+                            LOGGER.debug("Ambigious Unit declarations. Found {} before {}", ret, Constants.MI_JSON);
                         } // else - fine!
                     } else {
                         ret = ImperialUnits.MILE;
                     }
                     break;
                 default:
-                    LOGGER.info("Cannot evaluate Unit for {}", unitAbbrev);
+                    LOGGER.debug("Cannot evaluate Unit for {}", unitAbbrev);
                     break;
             }
         }

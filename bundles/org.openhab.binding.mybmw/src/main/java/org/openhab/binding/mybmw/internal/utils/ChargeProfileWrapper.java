@@ -49,8 +49,8 @@ public class ChargeProfileWrapper {
 
     private static final String CHARGING_WINDOW = "chargingWindow";
     private static final String WEEKLY_PLANNER = "weeklyPlanner";
-    private static final String ACTIVATE = "activate"; // [todo check variable]
-    private static final String DEACTIVATE = "deactivate"; // [todo check variable]
+    private static final String ACTIVATE = "activate";
+    private static final String DEACTIVATE = "deactivate";
 
     public enum ProfileKey {
         CLIMATE,

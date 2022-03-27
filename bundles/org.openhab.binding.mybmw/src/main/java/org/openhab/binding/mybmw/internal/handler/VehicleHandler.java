@@ -314,7 +314,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     logger.warn("{}", jse.getLocalizedMessage());
                 }
             } else {
-                logger.info("Content not valid");
+                logger.debug("Content not valid");
             }
         }
 
@@ -339,7 +339,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     logger.warn("{}", jse.getLocalizedMessage());
                 }
             } else {
-                logger.info("Content not valid");
+                logger.debug("Content not valid");
             }
         }
 
