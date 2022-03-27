@@ -105,30 +105,30 @@ mono_movie / movie / enhanced / 2ch_stereo / 5ch_stereo / 7ch_stereo / 9ch_stere
 
 ```
 Bridge yamahamusiccast:bridge:virtual "YXC Bridge" {
-Thing yamahamusiccast:device:Living "YXC Living" [host="1.2.3.4"]
+    Thing device Living "YXC Living" [host="1.2.3.4", defaultAfterMCLink="none", syncVolume=false]
 }
 ```
 
 ### Basic setup
 
 ```
-Switch YamahaPower "" {channel="yamahamusiccast:device:Living:main#power"}
-Switch YamahaMute "" {channel="yamahamusiccast:device:Living:main#mute"}
-Dimmer YamahaVolume "" {channel="yamahamusiccast:device:Living:main#volume"}
-Number YamahaVolumeAbs "" {channel="yamahamusiccast:device:Living:main#volumeAbs"}
-String YamahaInput "" {channel="yamahamusiccast:device:Living:main#input"}
-String YamahaSelectPreset "" {channel="yamahamusiccast:device:Living:main#selectPreset"}
-String YamahaSoundProgram "" {channel="yamahamusiccast:device:Living:main#soundProgram"}
+Switch YamahaPower "" {channel="yamahamusiccast:device:virtual:Living:main#power"}
+Switch YamahaMute "" {channel="yamahamusiccast:device:virtual:Living:main#mute"}
+Dimmer YamahaVolume "" {channel="yamahamusiccast:device:virtual:Living:main#volume"}
+Number YamahaVolumeAbs "" {channel="yamahamusiccast:device:virtual:Living:main#volumeAbs"}
+String YamahaInput "" {channel="yamahamusiccast:device:virtual:Living:main#input"}
+String YamahaSelectPreset "" {channel="yamahamusiccast:device:virtual:Living:main#selectPreset"}
+String YamahaSoundProgram "" {channel="yamahamusiccast:device:virtual:Living:main#soundProgram"}
 ```
 
 ### Player controls
 
 ```
-Player YamahaPlayer "" {channel="yamahamusiccast:device:Living:playerControls#player"}
-String YamahaArt "" {channel="yamahamusiccast:device:Living:playerControls#albumArt"}
-String YamahaArtist "" {channel="yamahamusiccast:device:Living:playerControls#artist"}
-String YamahaTrack "" {channel="yamahamusiccast:device:Living:playerControls#track"}
-String YamahaAlbum "" {channel="yamahamusiccast:device:Living:playerControls#album"}
+Player YamahaPlayer "" {channel="yamahamusiccast:device:virtual:Living:playerControls#player"}
+String YamahaArt "" {channel="yamahamusiccast:device:virtual:Living:playerControls#albumArt"}
+String YamahaArtist "" {channel="yamahamusiccast:device:virtual:Living:playerControls#artist"}
+String YamahaTrack "" {channel="yamahamusiccast:device:virtual:Living:playerControls#track"}
+String YamahaAlbum "" {channel="yamahamusiccast:device:virtual:Living:playerControls#album"}
 ```
 
 ### MusicCast setup
