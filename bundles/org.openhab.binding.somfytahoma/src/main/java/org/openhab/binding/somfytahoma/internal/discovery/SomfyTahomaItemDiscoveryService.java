@@ -180,8 +180,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                 deviceDiscovered(device, THING_TYPE_GARAGEDOOR, place);
                 break;
             case CLASS_LIGHT:
-                if ("DimmerLight".equals(device.getWidget())) {
+                if ("DimmerLight".equals(device.getWidget()) || "DynamicLight".equals(device.getWidget())) {
                     // widget: DimmerLight
+                    // widget: DynamicLight
                     deviceDiscovered(device, THING_TYPE_DIMMER_LIGHT, place);
                 } else {
                     // widget: TimedOnOffLight
