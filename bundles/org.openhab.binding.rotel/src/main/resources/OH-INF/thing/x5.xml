@@ -4,10 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Rotel A14 Connection Thing Type -->
-	<thing-type id="a14">
-		<label>A14 Integrated Amplifier</label>
-		<description>Connection to the Rotel A14 or A14MKII integrated amplifier</description>
+	<!-- Rotel X5 Connection Thing Type -->
+	<thing-type id="x5">
+		<label>X5 Integrated Amplifier</label>
+		<description>Connection to the Rotel Michi X5 integrated amplifier</description>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -20,8 +20,6 @@
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="tcbypass" typeId="tcbypass"/>
 			<channel id="balance" typeId="balance"/>
-			<channel id="speakera" typeId="speakera"/>
-			<channel id="speakerb" typeId="speakerb"/>
 		</channels>
 
 		<properties>

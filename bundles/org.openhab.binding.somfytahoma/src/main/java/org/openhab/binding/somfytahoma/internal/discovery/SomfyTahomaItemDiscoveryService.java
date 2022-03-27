@@ -180,8 +180,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                 deviceDiscovered(device, THING_TYPE_GARAGEDOOR, place);
                 break;
             case CLASS_LIGHT:
-                if ("DimmerLight".equals(device.getWidget())) {
+                if ("DimmerLight".equals(device.getWidget()) || "DynamicLight".equals(device.getWidget())) {
                     // widget: DimmerLight
+                    // widget: DynamicLight
                     deviceDiscovered(device, THING_TYPE_DIMMER_LIGHT, place);
                 } else {
                     // widget: TimedOnOffLight
@@ -213,6 +214,10 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                     deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER, place);
                 }
                 break;
+            case CLASS_SHUTTER:
+                // widget: DynamicShutter
+                deviceDiscovered(device, THING_TYPE_SHUTTER, place);
+                break;
             case CLASS_SCREEN:
                 // widget: PositionableTiltedScreen
                 deviceDiscovered(device, THING_TYPE_SCREEN, place);
@@ -223,7 +228,12 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                 break;
             case CLASS_VENETIAN_BLIND:
                 // widget: DynamicVenetianBlind
-                deviceDiscovered(device, THING_TYPE_VENETIANBLIND, place);
+                if (hasCommmand(device, "setOrientation")) {
+                    deviceDiscovered(device, THING_TYPE_VENETIANBLIND, place);
+                } else {
+                    // simple venetian blind without orientation
+                    deviceDiscovered(device, THING_TYPE_SHUTTER, place);
+                }
                 break;
             case CLASS_WINDOW:
                 // widget: PositionableTiltedWindow

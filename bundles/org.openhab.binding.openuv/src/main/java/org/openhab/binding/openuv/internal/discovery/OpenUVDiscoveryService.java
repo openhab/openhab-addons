@@ -13,10 +13,10 @@
 package org.openhab.binding.openuv.internal.discovery;
 
 import static org.openhab.binding.openuv.internal.OpenUVBindingConstants.*;
+import static org.openhab.binding.openuv.internal.config.ReportConfiguration.LOCATION;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openuv.internal.config.ReportConfiguration;
 import org.openhab.binding.openuv.internal.handler.OpenUVBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -75,11 +75,11 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService implements 
             PointType location = bridge.getLocation();
             if (location != null) {
                 ThingUID bridgeUID = bridge.getThing().getUID();
-                thingDiscovered(DiscoveryResultBuilder
-                        .create(new ThingUID(LOCATION_REPORT_THING_TYPE, bridgeUID, LOCAL))
-                        .withLabel("@text/discovery.openuv.uvreport.local.label")
-                        .withProperty(ReportConfiguration.LOCATION, location.toString())
-                        .withRepresentationProperty(ReportConfiguration.LOCATION).withBridge(bridgeUID).build());
+                thingDiscovered(
+                        DiscoveryResultBuilder.create(new ThingUID(LOCATION_REPORT_THING_TYPE, bridgeUID, LOCAL))
+                                .withLabel("@text/discovery.openuv.uvreport.local.label")
+                                .withProperty(LOCATION, location.toString()).withRepresentationProperty(LOCATION)
+                                .withBridge(bridgeUID).build());
             } else {
                 logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
             }
