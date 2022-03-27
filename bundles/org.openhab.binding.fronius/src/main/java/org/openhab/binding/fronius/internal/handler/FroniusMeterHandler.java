@@ -20,9 +20,11 @@ import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.MeterRealtimeBodyDataDTO;
 import org.openhab.binding.fronius.internal.api.MeterRealtimeResponseDTO;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.State;
 
 /**
  * The {@link FroniusMeterHandler} is responsible for updating the data, which are
@@ -66,7 +68,7 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
      * @return the last retrieved data
      */
     @Override
-    protected Object getValue(String channelId) {
+    protected State getValue(String channelId) {
         if (meterRealtimeBodyData == null) {
             return null;
         }
@@ -79,9 +81,9 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
 
         switch (fieldName) {
             case FroniusBindingConstants.METER_ENABLE:
-                return meterRealtimeBodyData.getEnable();
+                return new DecimalType(meterRealtimeBodyData.getEnable());
             case FroniusBindingConstants.METER_LOCATION:
-                return meterRealtimeBodyData.getMeterLocationCurrent();
+                return new DecimalType(meterRealtimeBodyData.getMeterLocationCurrent());
             case FroniusBindingConstants.METER_CURRENT_AC_PHASE_1:
                 return new QuantityType<>(meterRealtimeBodyData.getCurrentACPhase1(), Units.AMPERE);
             case FroniusBindingConstants.METER_CURRENT_AC_PHASE_2:
@@ -103,11 +105,11 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
             case FroniusBindingConstants.METER_POWER_SUM:
                 return new QuantityType<>(meterRealtimeBodyData.getPowerRealPSum(), Units.WATT);
             case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_1:
-                return meterRealtimeBodyData.getPowerFactorPhase1();
+                return new DecimalType(meterRealtimeBodyData.getPowerFactorPhase1());
             case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_2:
-                return meterRealtimeBodyData.getPowerFactorPhase2();
+                return new DecimalType(meterRealtimeBodyData.getPowerFactorPhase2());
             case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_3:
-                return meterRealtimeBodyData.getPowerFactorPhase3();
+                return new DecimalType(meterRealtimeBodyData.getPowerFactorPhase3());
             case FroniusBindingConstants.METER_ENERGY_REAL_SUM_CONSUMED:
                 return new QuantityType<>(meterRealtimeBodyData.getEnergyRealWACSumConsumed(), Units.WATT_HOUR);
             case FroniusBindingConstants.METER_ENERGY_REAL_SUM_PRODUCED:
@@ -151,9 +153,7 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
      */
     private MeterRealtimeResponseDTO getMeterRealtimeData(String ip, int deviceId)
             throws FroniusCommunicationException {
-        String location = FroniusBindingConstants.METER_REALTIME_DATA_URL.replace("%IP%",
-                (ip != null ? ip.trim() : ""));
-        location = location.replace("%DEVICEID%", Integer.toString(deviceId));
+        String location = FroniusBindingConstants.getMeterDataUrl(ip, deviceId);
         return collectDataFromUrl(MeterRealtimeResponseDTO.class, location);
     }
 }

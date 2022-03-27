@@ -34,6 +34,8 @@
 			<channel id="powerflowchannelppv" typeId="pPv">
 				<label>Current Solar Yield</label>
 			</channel>
+			<channel id="powerflowautonomy" typeId="powerflow_rel_autonomy"/>
+			<channel id="powerflowselfconsumption" typeId="powerflow_rel_selfconsumption"/>
 			<channel id="powerflowinverter1power" typeId="inverter1Power">
 				<label>Power Flow (Inverter 1)</label>
 			</channel>
@@ -144,58 +146,58 @@
 	</thing-type>
 
 	<channel-type id="day_energy">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Day Energy</label>
 		<description>Energy generated on current day</description>
 		<state pattern="%.2f kWh" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pac">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>AC Power</label>
 		<description>AC power</description>
 		<state pattern="%f W" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="total_energy">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Total Energy</label>
 		<description>Energy generated overall</description>
 		<state pattern="%.3f MWh" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="year_energy">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Year Energy</label>
 		<description>Energy generated in current year</description>
 		<state pattern="%.3f MWh" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="fac">
-		<item-type>Number</item-type>
+		<item-type>Number:Frequency</item-type>
 		<label>AC Frequency</label>
 		<description>AC frequency</description>
 		<state pattern="%.2f Hz" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="iac">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>AC Current</label>
 		<description>AC current</description>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="idc">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>DC Current</label>
 		<description>DC current</description>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="uac">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>AC Voltage</label>
 		<description>AC voltage</description>
 		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="udc">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>DC Voltage</label>
 		<description>DC voltage</description>
 		<state pattern="%.1f V" readOnly="true"></state>
@@ -237,6 +239,18 @@
 		<label>Solar Plant Power</label>
 		<description>Current Solar Plant Power</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="powerflow_rel_autonomy">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Autonomy</label>
+		<description>The current relative autonomy in %, NULL if no smart meter is connected</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="powerflow_rel_selfconsumption">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Self Consumption</label>
+		<description>The current relative self consumption in %, NULL if no smart meter is connected</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="inverter1Power">
 		<item-type>Number:Power</item-type>
@@ -308,7 +322,6 @@
 		<description>Temperature of the PT1000</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
-
 
 
 </thing:thing-descriptions>
