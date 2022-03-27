@@ -109,7 +109,14 @@ public class UdpMessage {
             return volume;
         }
 
+        /**
+         * Get the volume in decibel (dB).
+         * 
+         * @return volume in dB or -90 dB if not available
+         */
         public float getVolumeDb() {
+            if (actualVolume == null)
+                return -80f;
             return actualVolume.getValue();
         }
 

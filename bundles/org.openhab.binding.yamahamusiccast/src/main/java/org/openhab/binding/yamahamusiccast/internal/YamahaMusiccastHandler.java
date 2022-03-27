@@ -537,7 +537,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         String muteState = "";
         String inputState = "";
         int volumeState = 0;
-        float volumeDbState = -80f; // -80.0 dB
+        float volumeDbState = -90f; // -90.0 dB
         int presetNumber = 0;
         int playTime = 0;
         String distInfoUpdated = "";
@@ -621,7 +621,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             updateState(channel, new DecimalType(volumeState));
         }
 
-        if (volumeDbState != -80f) {
+        if (volumeDbState != -90f) {
             channel = new ChannelUID(getThing().getUID(), zoneToUpdate, CHANNEL_VOLUMEDB);
             updateState(channel, new QuantityType<>(volumeDbState, Units.DECIBEL));
         }
