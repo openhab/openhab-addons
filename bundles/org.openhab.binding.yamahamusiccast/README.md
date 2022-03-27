@@ -129,11 +129,11 @@ String YamahaSoundProgram "" {channel="yamahamusiccast:device:virtual:Living:mai
 ### Player controls
 
 ```
-Player YamahaPlayer "" {channel="yamahamusiccast:device:Living:playerControls#player"}
-String YamahaArt "" {channel="yamahamusiccast:device:Living:playerControls#albumArt"}
-String YamahaArtist "" {channel="yamahamusiccast:device:Living:playerControls#artist"}
-String YamahaTrack "" {channel="yamahamusiccast:device:Living:playerControls#track"}
-String YamahaAlbum "" {channel="yamahamusiccast:device:Living:playerControls#album"}
+Player YamahaPlayer "" {channel="yamahamusiccast:device:virtual:Living:playerControls#player"}
+String YamahaArt "" {channel="yamahamusiccast:device:virtual:Living:playerControls#albumArt"}
+String YamahaArtist "" {channel="yamahamusiccast:device:virtual:Living:playerControls#artist"}
+String YamahaTrack "" {channel="yamahamusiccast:device:virtual:Living:playerControls#track"}
+String YamahaAlbum "" {channel="yamahamusiccast:device:virtual:Living:playerControls#album"}
 ```
 
 ### MusicCast setup

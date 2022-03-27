@@ -14,8 +14,6 @@ package org.openhab.binding.knx.internal.channel;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.knx.internal.client.InboundSpec;
-import org.openhab.binding.knx.internal.client.OutboundSpec;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.KNXFormatException;
@@ -57,7 +55,8 @@ public abstract class AbstractSpec {
     /**
      * Return the data point type.
      * <p>
-     * See {@link InboundSpec#getDPT()} and {@link OutboundSpec#getDPT()}.
+     * See {@link org.openhab.binding.knx.internal.client.InboundSpec#getDPT()} and
+     * {@link org.openhab.binding.knx.internal.client.OutboundSpec#getDPT()}.
      *
      * @return the data point type.
      */
