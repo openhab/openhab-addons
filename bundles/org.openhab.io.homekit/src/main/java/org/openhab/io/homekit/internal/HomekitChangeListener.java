@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.items.GroupItem;
@@ -189,6 +190,13 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         for (Item accessoryGroup : HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry)) {
             pendingUpdates.add(accessoryGroup.getName());
         }
+
+        /*
+         * if metadata of a group item was changed, mark all group member as dirty.
+         */
+        if (item instanceof GroupItem) {
+            ((GroupItem) item).getMembers().forEach(groupMember -> pendingUpdates.add(groupMember.getName()));
+        }
         applyUpdatesDebouncer.call();
     }
 
@@ -274,18 +282,65 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     }
 
     /**
+     * select primary accessory type from list of types.
+     * selection logic:
+     * - if accessory has only one type, it is the primary type
+     * - if accessory has no primary type defined per configuration, then the first type on the list is the primary type
+     * - if accessory has primary type defined per configuration and this type is on the list of types, then it is the
+     * primary
+     * - if accessory has primary type defined per configuration and this type is NOT on the list of types, then the
+     * first type on the list is the primary type
+     *
+     * @param item openhab item
+     * @param accessoryTypes list of accessory type attached to the item
+     * @return primary accessory type
+     */
+    private HomekitAccessoryType getPrimaryAccessoryType(Item item,
+            List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessoryTypes) {
+        if (accessoryTypes.size() > 1) {
+            final @Nullable Map<String, Object> configuration = HomekitAccessoryFactory.getItemConfiguration(item,
+                    metadataRegistry);
+            if (configuration != null) {
+                final @Nullable Object value = configuration.get(HomekitTaggedItem.PRIMARY_SERVICE);
+                if (value instanceof String) {
+                    return accessoryTypes.stream()
+                            .filter(aType -> ((String) value).equalsIgnoreCase(aType.getKey().getTag())).findAny()
+                            .orElse(accessoryTypes.get(0)).getKey();
+                }
+            }
+        }
+        // no primary accessory found or there is only one type, so return the first type from the list
+        return accessoryTypes.get(0).getKey();
+    }
+
+    /**
      * creates one or more HomeKit items for given openhab item.
-     * one OpenHAB item can linked to several HomeKit accessories or characteristics.
-     * OpenHAB Item is a good candidate for homeKit accessory IF
-     * - it has HomeKit accessory types, i.e. HomeKit accessory tag AND
-     * - has no group with HomeKit tag, i.e. single line accessory ODER
-     * - has groups with HomeKit tag, but all groups are with baseItem, e.g. Group:Switch,
-     * so that the groups already complete accessory and group members can be a standalone HomeKit accessory.
+     * one OpenHAB item can be linked to several HomeKit accessories.
+     * OpenHAB item is a good candidate for a HomeKit accessory
+     * IF
+     * - it has HomeKit accessory types defined using HomeKit accessory metadata
+     * - AND is not part of a group with HomeKit metadata
+     * e.g.
+     * Switch light "Light" {homekit="Lighting"}
+     * Group gLight "Light Group" {homekit="Lighting"}
+     *
+     * OR
+     * - it has HomeKit accessory types defined using HomeKit accessory metadata
+     * - AND is part of groups with HomeKit metadata, but all groups have baseItem
+     * e.g.
+     * Group:Switch:OR(ON,OFF) gLight "Light Group " {homekit="Lighting"}
+     * Switch light "Light" (gLight) {homekit="Lighting.OnState"}
+     *
+     *
      * In contrast, items which are part of groups without BaseItem are additional HomeKit characteristics of the
-     * accessory defined by that group and dont need to be created as RootAccessory here.
+     * accessory defined by that group and don't need to be created as accessory here.
+     * e.g.
+     * Group gLight "Light Group " {homekit="Lighting"}
+     * Switch light "Light" (gLight) {homekit="Lighting.OnState"}
+     * is not the root accessory but only a characteristic "OnState"
      *
      * Examples:
-     * // Single Line HomeKit Accessory
+     * // Single line HomeKit Accessory
      * Switch light "Light" {homekit="Lighting"}
      *
      * // One HomeKit accessory defined using group
@@ -304,19 +359,33 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         final List<GroupItem> groups = HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry);
         if (!accessoryTypes.isEmpty()
                 && (groups.isEmpty() || groups.stream().noneMatch(g -> g.getBaseItem() == null))) {
-            logger.trace("Item {} is a HomeKit accessory of types {}", item.getName(), accessoryTypes);
+            final HomekitAccessoryType primaryAccessoryType = getPrimaryAccessoryType(item, accessoryTypes);
+            logger.trace("Item {} is a HomeKit accessory of types {}. Primary type is {}", item.getName(),
+                    accessoryTypes, primaryAccessoryType);
             final HomekitOHItemProxy itemProxy = new HomekitOHItemProxy(item);
-            accessoryTypes.forEach(rootAccessory -> createRootAccessory(new HomekitTaggedItem(itemProxy,
-                    rootAccessory.getKey(), HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry))));
-        }
-    }
+            final HomekitTaggedItem taggedItem = new HomekitTaggedItem(new HomekitOHItemProxy(item),
+                    primaryAccessoryType, HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry));
+            try {
+                final HomekitAccessory accessory = HomekitAccessoryFactory.create(taggedItem, metadataRegistry, updater,
+                        settings);
 
-    private void createRootAccessory(HomekitTaggedItem taggedItem) {
-        try {
-            accessoryRegistry.addRootAccessory(taggedItem.getName(),
-                    HomekitAccessoryFactory.create(taggedItem, metadataRegistry, updater, settings));
-        } catch (HomekitException e) {
-            logger.warn("Could not add device {}: {}", taggedItem.getItem().getUID(), e.getMessage());
+                accessoryTypes.stream().filter(aType -> !primaryAccessoryType.equals(aType.getKey()))
+                        .forEach(additionalAccessoryType -> {
+                            final HomekitTaggedItem additionalTaggedItem = new HomekitTaggedItem(itemProxy,
+                                    additionalAccessoryType.getKey(),
+                                    HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry));
+                            try {
+                                final HomekitAccessory additionalAccessory = HomekitAccessoryFactory
+                                        .create(additionalTaggedItem, metadataRegistry, updater, settings);
+                                accessory.getServices().add(additionalAccessory.getPrimaryService());
+                            } catch (HomekitException e) {
+                                logger.warn("Cannot create additional accessory {}", additionalTaggedItem);
+                            }
+                        });
+                accessoryRegistry.addRootAccessory(taggedItem.getName(), accessory);
+            } catch (HomekitException e) {
+                logger.warn("Cannot create accessory {}", taggedItem);
+            }
         }
     }
 }
