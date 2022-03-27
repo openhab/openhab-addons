@@ -48,6 +48,8 @@ import org.w3c.dom.Node;
  */
 public class InputWithPresetControlXML extends AbstractInputControlXML implements InputWithPresetControl {
 
+    private static final String PRESET_LETTERS = "ABCD";
+
     protected CommandTemplate preset = new CommandTemplate(
             "<Play_Control><Preset><Preset_Sel>%s</Preset_Sel></Preset></Play_Control>",
             "Play_Control/Preset/Preset_Sel");
@@ -154,7 +156,7 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
                     if (Character.isLetter(presetAlpha) && Character.isUpperCase(presetAlpha)
                             && Character.isDigit(presetValue.charAt(1))) {
                         int presetNumber = Integer.parseInt(presetValue.substring(1));
-                        return (new String(LETTERS).indexOf(presetAlpha) + 1) * 100 + presetNumber;
+                        return (PRESET_LETTERS.indexOf(presetAlpha) + 1) * 100 + presetNumber;
                     }
                 }
             }
@@ -175,7 +177,7 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
         // special handling for RX-V3900, where 'A1' becomes 101 and 'B2' becomes 202 preset
         if (presetChannel > 100) {
             int presetNumber = presetChannel % 100;
-            char presetAlpha = LETTERS[presetChannel / 100 - 1];
+            char presetAlpha = PRESET_LETTERS.charAt(presetChannel / 100 - 1);
             presetValue = Character.toString(presetAlpha) + presetNumber;
         } else {
             presetValue = Integer.toString(presetChannel);
@@ -185,6 +187,4 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
         comReference.get().send(cmd);
         update();
     }
-
-    private static final char[] LETTERS = { 'A', 'B', 'C', 'D' };
 }
