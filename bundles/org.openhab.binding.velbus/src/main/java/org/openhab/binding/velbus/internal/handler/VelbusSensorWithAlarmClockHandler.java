@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velbus.internal.VelbusClockAlarm;
@@ -40,6 +41,8 @@ import org.openhab.core.types.RefreshType;
  * sent to one of the channels.
  *
  * @author Cedric Boon - Initial contribution
+ * @author Daniel Rosengarten - Add VMBELPIR support, removes global alarm configuration from module (moved on bridge),
+ *         reduces bus flooding on alarm value update
  */
 @NonNullByDefault
 public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
@@ -58,6 +61,7 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBEL2, 0x0357);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBEL4, 0x0357);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBELO, 0x0593);
+        ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBELPIR, 0x030F);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBPIRC, 0x0031);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBPIRM, 0x0031);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBPIRO, 0x0031);
@@ -110,6 +114,9 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
     private int clockAlarmConfigurationMemoryAddress;
     private VelbusClockAlarmConfiguration alarmClockConfiguration = new VelbusClockAlarmConfiguration();
 
+    private long lastUpdateAlarm1TimeMillis;
+    private long lastUpdateAlarm2TimeMillis;
+
     public VelbusSensorWithAlarmClockHandler(Thing thing) {
         this(thing, 0);
     }
@@ -146,40 +153,103 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
             byte alarmNumber = determineAlarmNumber(channelUID);
             VelbusClockAlarm alarmClock = alarmClockConfiguration.getAlarmClock(alarmNumber);
 
-            if ((channelUID.equals(clockAlarm1Enabled) || channelUID.equals(clockAlarm2Enabled))
-                    && command instanceof OnOffType) {
-                boolean enabled = command == OnOffType.ON;
-                alarmClock.setEnabled(enabled);
-            } else if ((channelUID.equals(clockAlarm1Type) || channelUID.equals(clockAlarm2Type))
-                    && command instanceof StringType) {
-                boolean isLocal = ((StringType) command).equals(ALARM_TYPE_LOCAL);
-                alarmClock.setLocal(isLocal);
-            } else if (channelUID.equals(clockAlarm1WakeupHour)
-                    || channelUID.equals(clockAlarm2WakeupHour) && command instanceof DecimalType) {
-                byte wakeupHour = ((DecimalType) command).byteValue();
-                alarmClock.setWakeupHour(wakeupHour);
-            } else if (channelUID.equals(clockAlarm1WakeupMinute)
-                    || channelUID.equals(clockAlarm2WakeupMinute) && command instanceof DecimalType) {
-                byte wakeupMinute = ((DecimalType) command).byteValue();
-                alarmClock.setWakeupMinute(wakeupMinute);
-            } else if (channelUID.equals(clockAlarm1BedtimeHour)
-                    || channelUID.equals(clockAlarm2BedtimeHour) && command instanceof DecimalType) {
-                byte bedTimeHour = ((DecimalType) command).byteValue();
-                alarmClock.setBedtimeHour(bedTimeHour);
-            } else if (channelUID.equals(clockAlarm1BedtimeMinute)
-                    || channelUID.equals(clockAlarm2BedtimeMinute) && command instanceof DecimalType) {
-                byte bedTimeMinute = ((DecimalType) command).byteValue();
-                alarmClock.setBedtimeMinute(bedTimeMinute);
+            alarmClock.setLocal(true);
+
+            switch (channelUID.getId()) {
+                case CHANNEL_MODULE_CLOCK_ALARM1_TYPE:
+                case CHANNEL_MODULE_CLOCK_ALARM2_TYPE: {
+                    if (command instanceof OnOffType) {
+                        // If AlarmType is not read only, it's an old implementation of the module, warn user and
+                        // discard the command
+                        logger.warn(
+                                "Old implementation of thing '{}', still works, but it's better to remove and recreate the thing.",
+                                getThing().getUID());
+                    }
+                    return;
+                }
+                case CHANNEL_MODULE_CLOCK_ALARM1_ENABLED:
+                case CHANNEL_MODULE_CLOCK_ALARM2_ENABLED: {
+                    if (command instanceof OnOffType) {
+                        boolean enabled = command == OnOffType.ON;
+                        alarmClock.setEnabled(enabled);
+                    }
+                    break;
+                }
+                case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_HOUR:
+                case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_HOUR: {
+                    if (command instanceof DecimalType) {
+                        byte wakeupHour = ((DecimalType) command).byteValue();
+                        alarmClock.setWakeupHour(wakeupHour);
+                    }
+                    break;
+                }
+                case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_MINUTE:
+                case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_MINUTE: {
+                    if (command instanceof DecimalType) {
+                        byte wakeupMinute = ((DecimalType) command).byteValue();
+                        alarmClock.setWakeupMinute(wakeupMinute);
+                    }
+                    break;
+                }
+                case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_HOUR:
+                case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_HOUR: {
+                    if (command instanceof DecimalType) {
+                        byte bedTimeHour = ((DecimalType) command).byteValue();
+                        alarmClock.setBedtimeHour(bedTimeHour);
+                    }
+                    break;
+                }
+                case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_MINUTE:
+                case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_MINUTE: {
+                    if (command instanceof DecimalType) {
+                        byte bedTimeMinute = ((DecimalType) command).byteValue();
+                        alarmClock.setBedtimeMinute(bedTimeMinute);
+                    }
+                    break;
+                }
             }
 
-            byte address = alarmClock.isLocal() ? getModuleAddress().getAddress() : 0x00;
-            VelbusSetLocalClockAlarmPacket packet = new VelbusSetLocalClockAlarmPacket(address, alarmNumber,
-                    alarmClock);
+            if (alarmNumber == 1) {
+                lastUpdateAlarm1TimeMillis = System.currentTimeMillis();
+            } else {
+                lastUpdateAlarm2TimeMillis = System.currentTimeMillis();
+            }
+
+            VelbusSetLocalClockAlarmPacket packet = new VelbusSetLocalClockAlarmPacket(getModuleAddress().getAddress(),
+                    alarmNumber, alarmClock);
             byte[] packetBytes = packet.getBytes();
-            velbusBridgeHandler.sendPacket(packetBytes);
+
+            // Schedule the send of the packet to see if there is another update in less than 10 secondes (reduce
+            // flooding of the bus)
+            scheduler.schedule(() -> {
+                sendAlarmPacket(alarmNumber, packetBytes);
+            }, DELAY_SEND_CLOCK_ALARM_UPDATE, TimeUnit.MILLISECONDS);
         } else {
             logger.debug("The command '{}' is not supported by this handler.", command.getClass());
         }
+    }
+
+    public synchronized void sendAlarmPacket(int alarmNumber, byte[] packetBytes) {
+        VelbusBridgeHandler velbusBridgeHandler = getVelbusBridgeHandler();
+        if (velbusBridgeHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return;
+        }
+
+        long timeSinceLastUpdate;
+
+        if (alarmNumber == 1) {
+            timeSinceLastUpdate = System.currentTimeMillis() - lastUpdateAlarm1TimeMillis;
+        } else {
+            timeSinceLastUpdate = System.currentTimeMillis() - lastUpdateAlarm2TimeMillis;
+        }
+
+        // If a value of the alarm has been updated, discard this old update
+        if (timeSinceLastUpdate < DELAY_SEND_CLOCK_ALARM_UPDATE) {
+            return;
+        }
+
+        velbusBridgeHandler.sendPacket(packetBytes);
     }
 
     @Override
@@ -295,26 +365,43 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
     }
 
     protected boolean isAlarmClockChannel(ChannelUID channelUID) {
-        return channelUID.equals(clockAlarm1Enabled) || channelUID.equals(clockAlarm1Type)
-                || channelUID.equals(clockAlarm1WakeupHour) || channelUID.equals(clockAlarm1WakeupMinute)
-                || channelUID.equals(clockAlarm1BedtimeHour) || channelUID.equals(clockAlarm1BedtimeMinute)
-                || channelUID.equals(clockAlarm2Enabled) || channelUID.equals(clockAlarm2Type)
-                || channelUID.equals(clockAlarm2WakeupHour) || channelUID.equals(clockAlarm2WakeupMinute)
-                || channelUID.equals(clockAlarm2BedtimeHour) || channelUID.equals(clockAlarm2BedtimeMinute);
+        switch (channelUID.getId()) {
+            case CHANNEL_MODULE_CLOCK_ALARM1_ENABLED:
+            case CHANNEL_MODULE_CLOCK_ALARM1_TYPE:
+            case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_HOUR:
+            case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_MINUTE:
+            case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_HOUR:
+            case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_MINUTE:
+            case CHANNEL_MODULE_CLOCK_ALARM2_ENABLED:
+            case CHANNEL_MODULE_CLOCK_ALARM2_TYPE:
+            case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_HOUR:
+            case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_MINUTE:
+            case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_HOUR:
+            case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_MINUTE:
+                return true;
+        }
+        return false;
     }
 
     protected byte determineAlarmNumber(ChannelUID channelUID) {
-        if (channelUID.equals(clockAlarm1Enabled) || channelUID.equals(clockAlarm1Type)
-                || channelUID.equals(clockAlarm1WakeupHour) || channelUID.equals(clockAlarm1WakeupMinute)
-                || channelUID.equals(clockAlarm1BedtimeHour) || channelUID.equals(clockAlarm1BedtimeMinute)) {
-            return 1;
-        } else if (channelUID.equals(clockAlarm2Enabled) || channelUID.equals(clockAlarm2Type)
-                || channelUID.equals(clockAlarm2WakeupHour) || channelUID.equals(clockAlarm2WakeupMinute)
-                || channelUID.equals(clockAlarm2BedtimeHour) || channelUID.equals(clockAlarm2BedtimeMinute)) {
-            return 2;
-        } else {
-            throw new IllegalArgumentException("The given channelUID is not an alarm clock channel: " + channelUID);
+        switch (channelUID.getId()) {
+            case CHANNEL_MODULE_CLOCK_ALARM1_ENABLED:
+            case CHANNEL_MODULE_CLOCK_ALARM1_TYPE:
+            case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_HOUR:
+            case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_MINUTE:
+            case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_HOUR:
+            case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_MINUTE:
+                return 1;
+            case CHANNEL_MODULE_CLOCK_ALARM2_ENABLED:
+            case CHANNEL_MODULE_CLOCK_ALARM2_TYPE:
+            case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_HOUR:
+            case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_MINUTE:
+            case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_HOUR:
+            case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_MINUTE:
+                return 2;
         }
+
+        throw new IllegalArgumentException("The given channelUID is not an alarm clock channel: " + channelUID);
     }
 
     protected int getClockAlarmAndProgramSelectionIndexInModuleStatus() {
