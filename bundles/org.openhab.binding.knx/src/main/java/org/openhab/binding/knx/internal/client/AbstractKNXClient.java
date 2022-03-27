@@ -244,7 +244,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         });
     }
 
-    private <T> T nullify(T target, @Nullable Consumer<T> lastWill) {
+    private <T> @Nullable T nullify(T target, @Nullable Consumer<T> lastWill) {
         if (target != null && lastWill != null) {
             lastWill.accept(target);
         }
@@ -392,7 +392,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
     @Override
     public boolean isConnected() {
-        return link != null && link.isOpen();
+        final var tmpLink = link;
+        return tmpLink != null && tmpLink.isOpen();
     }
 
     @Override
