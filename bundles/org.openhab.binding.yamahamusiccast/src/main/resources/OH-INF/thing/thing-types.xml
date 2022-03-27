@@ -96,11 +96,11 @@
 		<category>SoundVolume</category>
 	</channel-type>
 	<channel-type id="volumeDB">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Volume in dB</label>
 		<description>Volume channel - in decibel (dB)</description>
 		<category>SoundVolume</category>
-		<state min="-80" max="12" step="0.5" pattern="%.1f dB"/>
+		<state min="-80" max="12" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="input">
 		<item-type>String</item-type>

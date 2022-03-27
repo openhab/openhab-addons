@@ -12,40 +12,7 @@
  */
 package org.openhab.binding.yamahamusiccast.internal;
 
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_ALBUM;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_ALBUMART;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_ARTIST;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_INPUT;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_MCLINKSTATUS;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_MUTE;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_PLAYER;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_PLAYTIME;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_POWER;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_RECALLSCENE;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_REPEAT;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_SELECTPRESET;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_SHUFFLE;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_SLEEP;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_SOUNDPROGRAM;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_TOTALTIME;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_TRACK;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_TYPE_UID_INPUT;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_TYPE_UID_MCLINKSTATUS;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_TYPE_UID_MUTE;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_TYPE_UID_POWER;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_TYPE_UID_RECALLSCENE;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_TYPE_UID_SELECTPRESET;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_TYPE_UID_SLEEP;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_TYPE_UID_SOUNDPROGRAM;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_TYPE_UID_VOLUME;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_TYPE_UID_VOLUMEABS;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_TYPE_UID_VOLUMEDB;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_VOLUME;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_VOLUMEABS;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.CHANNEL_VOLUMEDB;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.HTTP;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.LONG_CONNECTION_TIMEOUT_MILLISEC;
-import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.YAMAHA_EXTENDED_CONTROL;
+import static org.openhab.binding.yamahamusiccast.internal.YamahaMusiccastBindingConstants.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -77,8 +44,10 @@ import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -258,7 +227,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_VOLUMEDB:
-                    setVolumeDb(((DecimalType) command).floatValue(), zone, this.host);
+                    setVolumeDb(((QuantityType<?>) command).floatValue(), zone, this.host);
                     localSyncVolume = Boolean.parseBoolean(getThing().getConfiguration().get("syncVolume").toString());
                     if (localSyncVolume == Boolean.TRUE) {
                         tmpString = getDistributionInfo(this.host);
@@ -504,7 +473,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         createChannel(zone, CHANNEL_MUTE, CHANNEL_TYPE_UID_MUTE, "Switch");
         createChannel(zone, CHANNEL_VOLUME, CHANNEL_TYPE_UID_VOLUME, "Dimmer");
         createChannel(zone, CHANNEL_VOLUMEABS, CHANNEL_TYPE_UID_VOLUMEABS, "Number");
-        createChannel(zone, CHANNEL_VOLUMEDB, CHANNEL_TYPE_UID_VOLUMEDB, "Number");
+        createChannel(zone, CHANNEL_VOLUMEDB, CHANNEL_TYPE_UID_VOLUMEDB, "Number:Dimensionless");
         createChannel(zone, CHANNEL_INPUT, CHANNEL_TYPE_UID_INPUT, "String");
         createChannel(zone, CHANNEL_SOUNDPROGRAM, CHANNEL_TYPE_UID_SOUNDPROGRAM, "String");
         createChannel(zone, CHANNEL_SLEEP, CHANNEL_TYPE_UID_SLEEP, "Number");
@@ -654,7 +623,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
 
         if (volumeDbState != -80f) {
             channel = new ChannelUID(getThing().getUID(), zoneToUpdate, CHANNEL_VOLUMEDB);
-            updateState(channel, new DecimalType(volumeDbState));
+            updateState(channel, new QuantityType<>(volumeDbState, Units.DECIBEL));
         }
 
         if (presetNumber != 0) {
@@ -748,7 +717,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                                         break;
                                     case CHANNEL_VOLUMEDB:
                                         if (localZone.equals(zoneToUpdate)) {
-                                            updateState(channelUID, new DecimalType(volumeDbState));
+                                            updateState(channelUID, new QuantityType<>(volumeDbState, Units.DECIBEL));
                                         }
                                         break;
                                     case CHANNEL_INPUT:
@@ -1100,7 +1069,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                     setVolumeDb(value, "zone3", host);
                     break;
                 case 4:
-                    setVolumeDb(value, "zone2", host);
+                    setVolumeDb(value, "zone4", host);
                     break;
             }
         }
@@ -1241,11 +1210,13 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
      * @return HTTP request
      */
     private @Nullable String setVolumeDb(float value, @Nullable String zone, @Nullable String host) {
-        if (value < Float.parseFloat(getThing().getConfiguration().get("volumeDbMin").toString())) {
-            value = Float.parseFloat(getThing().getConfiguration().get("volumeDbMin").toString());
+        float volumeDbMin = Float.parseFloat(getThing().getConfiguration().get("volumeDbMin").toString());
+        float volumeDbMax = Float.parseFloat(getThing().getConfiguration().get("volumeDbMax").toString());
+        if (value < volumeDbMin) {
+            value = volumeDbMin;
         }
-        if (value > Float.parseFloat(getThing().getConfiguration().get("volumeDbMax").toString())) {
-            value = Float.parseFloat(getThing().getConfiguration().get("volumeDbMax").toString());
+        if (value > volumeDbMax) {
+            value = volumeDbMax;
         }
 
         // Yamaha accepts only integer values with .0 or .5 at the end only (-20.5dB, -20.0dB) - at least on RX-S601D.
