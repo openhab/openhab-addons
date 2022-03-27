@@ -333,7 +333,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
      *
      *
      * In contrast, items which are part of groups without BaseItem are additional HomeKit characteristics of the
-     * accessory defined by that group and dont need to be created as accessory here.
+     * accessory defined by that group and don't need to be created as accessory here.
      * e.g.
      * Group gLight "Light Group " {homekit="Lighting"}
      * Switch light "Light" (gLight) {homekit="Lighting.OnState"}

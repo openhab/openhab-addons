@@ -461,7 +461,7 @@ or using UI
 
 Multiple HomeKit accessories can be combined to one accessory in order to group several functions provided by one or multiple physical devices. 
 
-For example, ceiling fans often include lighting functionality. Such fans can be modelled as:
+For example, ceiling fans often include lighting functionality. Such fans can be modeled as:
 
 - two separate HomeKit accessories - fan **and** light. 
   
@@ -498,7 +498,7 @@ or in mainUI
 ![ui_fan_with_light_group_config.png](doc/ui_fan_with_light_group_config.png)
 
 
-iOS home app use by default the type of the first accessory on the list for the tile on home screen. 
+iOS home app uses by default the type of the first accessory on the list for the tile on home screen. 
 e.g. an accessory defined as homekit = "Fan,Light" will be shown as a fan and an accessory defined as homekit = "Light,Fan" as a light in iOS home app.  
 
 if you want to change the tile you can either change the order of types in homekit metadata or add "primary=<type>" to HomeKit metadata configuration. 
