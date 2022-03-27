@@ -105,7 +105,7 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
 
     private void cancelChannelFutures() {
         for (ScheduledFuture<?> future : channelFutures.values()) {
-            if (future != null && !future.isDone()) {
+            if (!future.isDone()) {
                 future.cancel(true);
             }
         }
@@ -121,7 +121,7 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
     @Override
     protected void cancelReadFutures() {
         for (ScheduledFuture<?> future : readFutures.values()) {
-            if (future != null && !future.isDone()) {
+            if (!future.isDone()) {
                 future.cancel(true);
             }
         }
