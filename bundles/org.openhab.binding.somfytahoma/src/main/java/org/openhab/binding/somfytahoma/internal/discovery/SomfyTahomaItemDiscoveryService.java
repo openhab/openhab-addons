@@ -213,6 +213,10 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                     deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER, place);
                 }
                 break;
+            case CLASS_SHUTTER:
+                // widget: DynamicShutter
+                deviceDiscovered(device, THING_TYPE_SHUTTER, place);
+                break;
             case CLASS_SCREEN:
                 // widget: PositionableTiltedScreen
                 deviceDiscovered(device, THING_TYPE_SCREEN, place);
@@ -223,7 +227,12 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                 break;
             case CLASS_VENETIAN_BLIND:
                 // widget: DynamicVenetianBlind
-                deviceDiscovered(device, THING_TYPE_VENETIANBLIND, place);
+                if (hasCommmand(device, "setOrientation")) {
+                    deviceDiscovered(device, THING_TYPE_VENETIANBLIND, place);
+                } else {
+                    // simple venetian blind without orientation
+                    deviceDiscovered(device, THING_TYPE_SHUTTER, place);
+                }
                 break;
             case CLASS_WINDOW:
                 // widget: PositionableTiltedWindow
