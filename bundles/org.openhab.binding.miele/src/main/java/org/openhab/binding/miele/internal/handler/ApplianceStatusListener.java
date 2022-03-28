@@ -49,7 +49,7 @@ public interface ApplianceStatusListener {
     /**
      * This method is called whenever an appliance is added.
      *
-     * @param appliance The XGW homedevice definition of the appliance that was removed
+     * @param appliance The XGW homedevice definition of the appliance that was added
      */
     void onApplianceAdded(HomeDevice appliance);
 }
