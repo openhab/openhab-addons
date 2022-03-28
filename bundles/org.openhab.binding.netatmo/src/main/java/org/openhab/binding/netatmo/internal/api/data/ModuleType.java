@@ -58,6 +58,7 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.SignalChannelH
 import org.openhab.binding.netatmo.internal.handler.channelhelper.TemperatureChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.TemperatureExtChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.Therm1ChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.channelhelper.TimestampChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.TimestampExtChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.WindChannelHelper;
 import org.openhab.core.thing.ThingTypeUID;
@@ -87,6 +88,9 @@ public enum ModuleType {
     PRESENCE(FeatureArea.SECURITY, "NOC", HOME, List.of(EventCapability.class, PresenceCapability.class),
             List.of(CameraChannelHelper.class, PresenceChannelHelper.class, SignalChannelHelper.class,
                     EventChannelHelper.class)),
+    @SerializedName("NIS")
+    SIREN(FeatureArea.SECURITY, "NIS", HOME, List.of(ModuleCapability.class),
+            List.of(BatteryChannelHelper.class, TimestampChannelHelper.class, SignalChannelHelper.class)),
     @SerializedName("NDB")
     DOORBELL(FeatureArea.SECURITY, "NDB", HOME, List.of(),
             List.of(CameraChannelHelper.class, SignalChannelHelper.class, EventChannelHelper.class)),

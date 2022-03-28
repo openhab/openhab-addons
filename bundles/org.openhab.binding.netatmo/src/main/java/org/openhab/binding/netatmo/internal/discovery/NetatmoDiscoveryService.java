@@ -115,15 +115,12 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
         }
     }
 
-    private ThingUID findThingUID(ModuleType thingType, String thingId, @Nullable ThingUID brigdeUID)
-            throws IllegalArgumentException {
+    private ThingUID findThingUID(ModuleType thingType, String thingId, @Nullable ThingUID brigdeUID) {
         for (ThingTypeUID supported : getSupportedThingTypes()) {
-            if (supported.getId().equalsIgnoreCase(thingType.name())) {
+            ThingTypeUID thingTypeUID = thingType.thingTypeUID;
+            if (supported.equals(thingTypeUID)) {
                 String id = thingId.replaceAll("[^a-zA-Z0-9_]", "");
-                if (brigdeUID == null) {
-                    return new ThingUID(supported, id);
-                }
-                return new ThingUID(supported, brigdeUID, id);
+                return brigdeUID == null ? new ThingUID(supported, id) : new ThingUID(supported, brigdeUID, id);
             }
         }
         throw new IllegalArgumentException("Unsupported device type discovered : " + thingType);

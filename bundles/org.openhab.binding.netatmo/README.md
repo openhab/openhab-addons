@@ -409,16 +409,15 @@ Warnings:
 
 | Channel Group  | Channel ID     | Item Type    | Read/Write | Description                                                  |
 |----------------|----------------|--------------|------------|--------------------------------------------------------------|
-| status         | monitoring     | Switch       | Read-write | State of the camera (video surveillance on/off)  |
-| status         | sd-card        | String       | Read-only  | State of the SD card                             |
-| status         | alim           | String       | Read-only  | State of the power connector                     |
+| status         | monitoring     | Switch       | Read-write | State of the camera (video surveillance on/off)              |
+| status         | sd-card        | String       | Read-only  | State of the SD card                                         |
+| status         | alim           | String       | Read-only  | State of the power connector                                 |
 | live           | picture        | Image        | Read-only  | Camera Live Snapshot                                         |
 | live           | picture-url    | String       | Read-only  | Url of the live snapshot for this camera                     |
 | live           | stream-url (*) | String       | Read-only  | Url of the live stream for this camera                       |
 | signal         | strength       | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)             |
 | signal         | value          | Number:Power | Read-only  | Signal strength in dBm                                       |
-| presence       | auto-mode      | Switch       | Read-write | When set the floodlight gets switched to auto instead of off |
-| presence       | floodlight     | Switch       | Read-write | Switch for the floodlight                                    |
+| presence       | floodlight     | Switch       | Read-write | Sets the floodlight to ON/OFF/AUTO                           |
 
 (*) This channel is configurable : low, poor, high.
 

@@ -130,8 +130,5 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_PERSON_AVATAR_URL = "avatar-url";
     public static final String CHANNEL_HOME_EVENT = "home-event";
     public static final String CHANNEL_SETPOINT_DURATION = "setpoint-duration";
-
-    // Presence outdoor camera specific channels
-    public static final String CHANNEL_FLOODLIGHT_AUTO_MODE = "auto-mode";
     public static final String CHANNEL_FLOODLIGHT = "floodlight";
 }

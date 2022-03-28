@@ -111,14 +111,7 @@
 	<channel-group-type id="presence">
 		<label>Presence Camera</label>
 		<channels>
-			<channel id="auto-mode" typeId="switch-rw">
-				<label>Floodlight Auto-Mode</label>
-				<description>State of the floodlight auto-mode</description>
-			</channel>
-			<channel id="floodlight" typeId="switch-rw">
-				<label>Floodlight</label>
-				<description>State of the floodlight</description>
-			</channel>
+			<channel id="floodlight" typeId="floodlight-mode"/>
 		</channels>
 	</channel-group-type>
 

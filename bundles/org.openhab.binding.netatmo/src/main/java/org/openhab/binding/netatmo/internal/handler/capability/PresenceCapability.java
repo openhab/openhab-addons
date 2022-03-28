@@ -12,21 +12,20 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_FLOODLIGHT;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
-import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.PresenceChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link PresenceCapability} give to handle Presence Camera specifics
@@ -36,52 +35,30 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class PresenceCapability extends CameraCapability {
-    private State autoMode = UnDefType.UNDEF;
+    private final Logger logger = LoggerFactory.getLogger(PresenceCapability.class);
 
     public PresenceCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider,
             List<ChannelHelper> channelHelpers) {
         super(handler, descriptionProvider, channelHelpers);
-        channelHelpers.stream().filter(c -> c instanceof PresenceChannelHelper).findFirst()
-                .map(PresenceChannelHelper.class::cast).ifPresent(helper -> helper.setFloodLightMode(autoMode));
-    }
-
-    @Override
-    public void updateHomeStatusModule(HomeStatusModule newData) {
-        super.updateHomeStatusModule(newData);
-        if (autoMode == UnDefType.UNDEF) {
-            // Auto-mode state shouldn't be updated, because this isn't a dedicated information. When the floodlight
-            // is switched on the state within the Netatmo API is "on" and the information if the previous state was
-            // "auto" instead of "off" is lost... Therefore the binding handles its own auto-mode state.
-            // TODO : this will have to be controlled by a Presence owner against the new api usage of HomeStatus
-            // apparently now AUTO is part of the answer.
-            HomeStatusModule camera = newData;
-            autoMode = OnOffType.from(camera.getFloodlight() == FloodLightMode.AUTO);
-        }
     }
 
     @Override
     public void handleCommand(String channelName, Command command) {
-        if (command instanceof OnOffType && CHANNEL_MONITORING.equals(channelName)) {
-            switch (channelName) {
-                case CHANNEL_FLOODLIGHT:
-                    if (command == OnOffType.ON) {
-                        changeFloodlightMode(FloodLightMode.ON);
-                    } else {
-                        switchFloodlightAutoMode(autoMode == OnOffType.ON);
-                    }
-                    return;
-                case CHANNEL_FLOODLIGHT_AUTO_MODE:
-                    switchFloodlightAutoMode(command == OnOffType.ON);
-                    return;
+        if (CHANNEL_FLOODLIGHT.equals(channelName)) {
+            if (command instanceof OnOffType) {
+                changeFloodlightMode(command == OnOffType.ON ? FloodLightMode.ON : FloodLightMode.OFF);
+                return;
+            } else if (command instanceof StringType) {
+                try {
+                    FloodLightMode mode = FloodLightMode.valueOf(command.toString());
+                    changeFloodlightMode(mode);
+                } catch (IllegalArgumentException e) {
+                    logger.info("Incorrect command '{}' received for channel '{}'", command, channelName);
+                }
+                return;
             }
-        } else {
-            super.handleCommand(channelName, command);
         }
-    }
-
-    private void switchFloodlightAutoMode(boolean isAutoMode) {
-        autoMode = OnOffType.from(isAutoMode);
-        changeFloodlightMode(isAutoMode ? FloodLightMode.AUTO : FloodLightMode.OFF);
+        super.handleCommand(channelName, command);
     }
 
     private void changeFloodlightMode(FloodLightMode mode) {

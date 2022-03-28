@@ -62,7 +62,7 @@
 		<channels>
 			<channel id="relay-status" typeId="contact">
 				<label>Heating Status</label>
-				<description>Is the furnace currently heating ?</description>
+				<description>Is the furnace currently heating?</description>
 			</channel>
 		</channels>
 	</channel-group-type>

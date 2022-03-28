@@ -13,14 +13,13 @@
 package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 
 /**
@@ -31,14 +30,8 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class PresenceChannelHelper extends ChannelHelper {
-    private @NonNullByDefault({}) State autoMode;
-
     public PresenceChannelHelper() {
         super(GROUP_PRESENCE);
-    }
-
-    public void setFloodLightMode(State autoMode) {
-        this.autoMode = autoMode;
     }
 
     @Override
@@ -46,10 +39,8 @@ public class PresenceChannelHelper extends ChannelHelper {
         if (naThing instanceof HomeStatusModule) {
             HomeStatusModule camera = (HomeStatusModule) naThing;
             switch (channelId) {
-                case CHANNEL_FLOODLIGHT_AUTO_MODE:
-                    return autoMode;
                 case CHANNEL_FLOODLIGHT:
-                    return OnOffType.from(camera.getFloodlight() == FloodLightMode.ON);
+                    return toStringType(camera.getFloodlight());
             }
         }
         return null;

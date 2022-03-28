@@ -24,7 +24,7 @@
 
 		<parameter name="readFriends" type="boolean">
 			<label>Access Guests</label>
-			<description>For Weather Stations : A friend gave you access to their Netatmo Weather Station.</description>
+			<description>For Weather Stations: A friend gave you access to their Netatmo Weather Station.</description>
 			<default>false</default>
 		</parameter>
 
