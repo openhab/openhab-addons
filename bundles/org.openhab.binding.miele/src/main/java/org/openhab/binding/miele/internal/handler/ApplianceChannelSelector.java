@@ -64,7 +64,7 @@ public interface ApplianceChannelSelector {
      * @param dmd - the device meta data
      * @param translationProvider {@link MieleTranslationProvider} instance
      */
-    State getState(String s, @Nullable DeviceMetaData dmd, @Nullable MieleTranslationProvider translationProvider);
+    State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider);
 
     /**
      * Returns a State for the given string, taking into

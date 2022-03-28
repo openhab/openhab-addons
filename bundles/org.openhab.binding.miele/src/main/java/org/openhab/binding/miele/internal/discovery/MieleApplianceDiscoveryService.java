@@ -23,10 +23,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
-import org.openhab.binding.miele.internal.api.dto.DeviceClassObject;
-import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
 import org.openhab.binding.miele.internal.api.dto.HomeDevice;
-import org.openhab.binding.miele.internal.handler.ApplianceStatusListener;
+import org.openhab.binding.miele.internal.handler.DiscoveryListener;
 import org.openhab.binding.miele.internal.handler.MieleApplianceHandler;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -47,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
 @NonNullByDefault
-public class MieleApplianceDiscoveryService extends AbstractDiscoveryService implements ApplianceStatusListener {
+public class MieleApplianceDiscoveryService extends AbstractDiscoveryService implements DiscoveryListener {
 
     private final Logger logger = LoggerFactory.getLogger(MieleApplianceDiscoveryService.class);
 
@@ -61,13 +59,13 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
     }
 
     public void activate() {
-        mieleBridgeHandler.registerApplianceStatusListener(this);
+        mieleBridgeHandler.registerDiscoveryListener(this);
     }
 
     @Override
     public void deactivate() {
         removeOlderResults(new Date().getTime());
-        mieleBridgeHandler.unregisterApplianceStatusListener(this);
+        mieleBridgeHandler.unregisterDiscoveryListener(this);
     }
 
     @Override
@@ -77,7 +75,7 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
 
     @Override
     public void startScan() {
-        List<HomeDevice> appliances = mieleBridgeHandler.getHomeDevices();
+        List<HomeDevice> appliances = mieleBridgeHandler.getHomeDevicesEmptyOnFailure();
         for (HomeDevice l : appliances) {
             onApplianceAddedInternal(l);
         }
@@ -144,16 +142,6 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
         if (thingUID != null) {
             thingRemoved(thingUID);
         }
-    }
-
-    @Override
-    public void onApplianceStateChanged(FullyQualifiedApplianceIdentifier applianceIdentifier, DeviceClassObject dco) {
-        // nothing to do
-    }
-
-    @Override
-    public void onAppliancePropertyChanged(FullyQualifiedApplianceIdentifier applianceIdentifier, DeviceProperty dp) {
-        // nothing to do
     }
 
     private @Nullable ThingUID getThingUID(HomeDevice appliance) {
