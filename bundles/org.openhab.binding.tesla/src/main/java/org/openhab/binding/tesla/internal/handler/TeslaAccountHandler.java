@@ -38,12 +38,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.openhab.binding.tesla.internal.TeslaBindingConstants;
 import org.openhab.binding.tesla.internal.discovery.TeslaVehicleDiscoveryService;
 import org.openhab.binding.tesla.internal.protocol.Vehicle;
 import org.openhab.binding.tesla.internal.protocol.VehicleConfig;
 import org.openhab.binding.tesla.internal.protocol.sso.TokenResponse;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -269,33 +267,11 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         }
 
         if (hasExpired) {
-            String username = (String) getConfig().get(CONFIG_USERNAME);
-            String password = (String) getConfig().get(CONFIG_PASSWORD);
             String refreshToken = (String) getConfig().get(CONFIG_REFRESHTOKEN);
 
             if (refreshToken == null || refreshToken.isEmpty()) {
-                if (username != null && !username.isEmpty() && password != null && !password.isEmpty()) {
-                    try {
-                        refreshToken = ssoHandler.authenticate(username, password);
-                    } catch (Exception e) {
-                        logger.error("An exception occurred while obtaining refresh token with username/password: '{}'",
-                                e.getMessage());
-                    }
-
-                    if (refreshToken != null) {
-                        // store refresh token from SSO endpoint in config, clear the password
-                        Configuration cfg = editConfiguration();
-                        cfg.put(TeslaBindingConstants.CONFIG_REFRESHTOKEN, refreshToken);
-                        cfg.remove(TeslaBindingConstants.CONFIG_PASSWORD);
-                        updateConfiguration(cfg);
-                    } else {
-                        return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Failed to obtain refresh token with username/password.");
-                    }
-                } else {
-                    return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Neither a refresh token nor credentials are provided.");
-                }
+                return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "No refresh token is provided.");
             }
 
             this.logonToken = ssoHandler.getAccessToken(refreshToken);
