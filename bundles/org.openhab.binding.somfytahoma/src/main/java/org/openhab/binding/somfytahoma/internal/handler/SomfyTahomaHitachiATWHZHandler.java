@@ -39,6 +39,9 @@ public class SomfyTahomaHitachiATWHZHandler extends SomfyTahomaBaseThingHandler 
         stateNames.put(YUTAKI_MODE, "modbus:YutakiModeState");
         stateNames.put(HOLIDAY_MODE, "modbus:HolidayModeZone1State");
         stateNames.put(ALARM_NUMBER, "modbus:AlarmNumberState");
+        stateNames.put(THERMOSTAT_SETTING_ZONE1, "modbus:ThermostatSettingStatusZone1State");
+        stateNames.put(WH_SETTING_TEMP_ZONE1, "modbus:WaterHeatingSettingTemperatureStatusZone1State");
+        stateNames.put(ROOM_AMBIENT_TEMP_ZONE1, "modbus:RoomAmbientTemperatureStatusZone1State");
     }
 
     @Override
@@ -47,25 +50,38 @@ public class SomfyTahomaHitachiATWHZHandler extends SomfyTahomaBaseThingHandler 
         if (command instanceof RefreshType) {
             return;
         } else {
-            if (command instanceof StringType) {
-                switch (channelUID.getId()) {
-                    case ZONE_MODE:
+            switch (channelUID.getId()) {
+                case ZONE_MODE:
+                    if (command instanceof StringType) {
                         sendCommand("setAutoManuMode", "[\"" + command + "\"]");
-                        break;
-                    case CIRCUIT_CONTROL:
+                    }
+                    break;
+                case CIRCUIT_CONTROL:
+                    if (command instanceof StringType) {
                         sendCommand("setControlCircuit1", "[\"" + command + "\"]");
-                        break;
-                    case YUTAKI_TARGET_MODE:
+                    }
+                    break;
+                case YUTAKI_TARGET_MODE:
+                    if (command instanceof StringType) {
                         sendCommand("setTargetMode", "[\"" + command + "\"]");
-                        break;
-                    case HOLIDAY_MODE:
+                    }
+                    break;
+                case HOLIDAY_MODE:
+                    if (command instanceof StringType) {
                         sendCommand("setHolidayMode", "[\"" + command + "\"]");
-                        break;
-                    default:
-                        getLogger().debug("This channel doesn't accept any commands");
-                }
-            } else {
-                getLogger().debug("This thing accepts only String commands");
+                    }
+                    break;
+                case THERMOSTAT_SETTING_ZONE1:
+                    sendTempCommand("setThermostatSettingControlZone1", command);
+                    break;
+                case WH_SETTING_TEMP_ZONE1:
+                    sendTempCommand("setWaterHeatingSettingTemperatureControlZone1", command);
+                    break;
+                case ROOM_AMBIENT_TEMP_ZONE1:
+                    sendTempCommand("setRoomAmbientTemperatureControlZone1", command);
+                    break;
+                default:
+                    getLogger().debug("This channel doesn't accept any commands");
             }
         }
     }
