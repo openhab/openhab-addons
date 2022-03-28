@@ -29,7 +29,7 @@
 			<parameter name="syncVolume" type="boolean">
 				<label>Sync Volume</label>
 				<description>Sync Volume across linked Music Cast models</description>
-				<default>true</default>
+				<default>false</default>
 			</parameter>
 			<parameter name="defaultAfterMCLink" type="text">
 				<label>MC Link Default Value</label>
@@ -38,7 +38,22 @@
 				<options>
 					<option value="none">None</option>
 					<option value="net_radio">Net Radio</option>
+					<option value="tuner">Radio</option>
 				</options>
+			</parameter>
+			<parameter name="volumeDbMin" type="decimal" required="false">
+				<label>Minimum Volume</label>
+				<description>Lowest volume in dB.</description>
+				<default>-80</default>
+				<advanced>true</advanced>
+				<unitLabel>dB</unitLabel>
+			</parameter>
+			<parameter name="volumeDbMax" type="decimal" required="false">
+				<label>Maximum Volume</label>
+				<description>Highest volume in dB.</description>
+				<default>12</default>
+				<advanced>true</advanced>
+				<unitLabel>dB</unitLabel>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -78,6 +93,14 @@
 		<item-type>Number</item-type>
 		<label>Volume</label>
 		<description>Volume channel - Absolute value</description>
+		<category>SoundVolume</category>
+	</channel-type>
+	<channel-type id="volumeDB">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Volume in dB</label>
+		<description>Volume channel - in decibel (dB) (-90 dB if not available)</description>
+		<category>SoundVolume</category>
+		<state min="-80" max="12" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="input">
 		<item-type>String</item-type>
