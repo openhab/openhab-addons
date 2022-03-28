@@ -50,6 +50,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenThermGatewayCallback {
+    private static final String PROPERTY_GATEWAY_ID_NAME = "gatewayId";
+    private static final String PROPERTY_GATEWAY_ID_TAG = "PR: A=";
 
     private final Logger logger = LoggerFactory.getLogger(OpenThermGatewayHandler.class);
 
@@ -178,6 +180,18 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
                     }
                 default:
             }
+        }
+    }
+
+    @Override
+    public void receiveAcknowledgement(String message) {
+        scheduler.submit(() -> receiveAcknowledgementTask(message));
+    }
+
+    private void receiveAcknowledgementTask(String message) {
+        if (message.startsWith(PROPERTY_GATEWAY_ID_TAG)) {
+            getThing().setProperty(PROPERTY_GATEWAY_ID_NAME,
+                    message.substring(PROPERTY_GATEWAY_ID_TAG.length()).strip());
         }
     }
 
