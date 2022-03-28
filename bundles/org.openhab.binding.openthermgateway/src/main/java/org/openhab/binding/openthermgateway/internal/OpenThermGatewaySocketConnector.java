@@ -20,8 +20,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Instant;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -69,7 +70,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
      *
      * Note: we must use 'synchronized' when accessing this object to ensure proper thread safety.
      */
-    private final List<PendingCommand> pendingCommands = new ArrayList<>();
+    private final Queue<PendingCommand> pendingCommands = new ArrayDeque<>(MAXIMUM_FIFO_BUFFER_SIZE);
 
     /**
      * Wrapper for a command entry in the pending command FIFO queue.
@@ -78,8 +79,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
      */
     private class PendingCommand {
         protected final GatewayCommand command;
-        protected final long expiryTime = System.currentTimeMillis() + COMMAND_RESPONSE_MAX_WAIT_TIME_MILLISECONDS;
-        protected long sentTime = 0;
+        protected final Instant expiryTime = Instant.now().plusMillis(COMMAND_RESPONSE_MAX_WAIT_TIME_MILLISECONDS);
+        protected Instant sentTime = Instant.MIN;
 
         protected PendingCommand(GatewayCommand command) {
             this.command = command;
@@ -91,7 +92,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
          * @return true if it has been sent
          */
         protected boolean sent() {
-            return (sentTime != 0);
+            return Instant.MIN.isBefore(sentTime);
         }
 
         /**
@@ -101,7 +102,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
          *         needs to be re-sent
          */
         protected boolean readyToSend() {
-            return (!sent()) || (System.currentTimeMillis() > (sentTime + COMMAND_RESPONSE_MIN_WAIT_TIME_MILLISECONDS));
+            return sentTime.isBefore(Instant.now().minusMillis(COMMAND_RESPONSE_MIN_WAIT_TIME_MILLISECONDS));
         }
 
         /**
@@ -110,7 +111,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
          * @return true if the expiry time has expired
          */
         protected boolean expired() {
-            return (System.currentTimeMillis() > expiryTime);
+            return Instant.now().isAfter(expiryTime);
         }
     }
 
@@ -219,9 +220,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     public void sendCommand(GatewayCommand command) {
         synchronized (pendingCommands) {
             // append the command to the end of the FIFO queue
-            if (pendingCommands.size() < MAXIMUM_FIFO_BUFFER_SIZE) {
-                pendingCommands.add(new PendingCommand(command));
-            } else {
+            if (MAXIMUM_FIFO_BUFFER_SIZE < pendingCommands.size()
+                    || !pendingCommands.offer(new PendingCommand(command))) {
                 logger.warn("Command refused: FIFO buffer overrun => PLEASE REPORT !!");
             }
             // send the FIFO head command, which may or may not be the one just added
@@ -239,14 +239,14 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
      */
     private void handleMessage(String message) {
         // check if the message is a command acknowledgement e.g. having the form "XX: yyy"
-        boolean isCommandAcknowlegement = (message.length() > 2) && (message.charAt(2) == ':');
+        boolean isCommandAcknowledgement = (message.length() > 2) && (message.charAt(2) == ':');
 
         synchronized (pendingCommands) {
             // remove all expired commands
             pendingCommandsRemoveAllExpiredCommands();
 
             // if acknowledgement is for the FIFO head command, remove it from the queue
-            if (isCommandAcknowlegement) {
+            if (isCommandAcknowledgement) {
                 pendingCommandsRemoveHeadCommandIfAcknowledgement(message);
             }
 
@@ -254,7 +254,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             pendingCommandsSendHeadCommandIfReady();
         } // release the pendingCommands lock
 
-        if (isCommandAcknowlegement) {
+        if (isCommandAcknowledgement) {
             callback.receiveAcknowledgement(message);
         } else if (message.startsWith(WDT_RESET_RESPONSE_MESSAGE)) {
             logger.warn("OpenTherm Gateway was reset by its Watch-Dog Timer!");
@@ -280,29 +280,25 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
      */
     private void pendingCommandsSendHeadCommandIfReady() {
         // process the command at the head of the queue
-        if (!pendingCommands.isEmpty()) {
-            PendingCommand headCommand = pendingCommands.get(0);
+        PendingCommand headCommand = pendingCommands.peek();
+        if (headCommand != null && headCommand.readyToSend()) {
+            String message = headCommand.command.toFullString();
 
-            if (headCommand.readyToSend()) {
-                String message = headCommand.command.toFullString();
-
-                // transmit the command string
-                PrintWriter writer = this.writer;
-                if (isConnected() && (writer != null)) {
-                    writer.print(message + "\r\n");
-                    writer.flush();
-                    if (writer.checkError()) {
-                        logger.warn("Error sending command to OpenTherm Gateway => PLEASE REPORT !!");
-                        stop();
-                    }
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Sent: {}{}", message, headCommand.sent() ? " (repeat)" : "");
-                    }
-                    headCommand.sentTime = System.currentTimeMillis();
-                } else {
-                    logger.debug("Unable to send command: {}. OpenThermGatewaySocketConnector is not connected.",
-                            message);
+            // transmit the command string
+            PrintWriter writer = this.writer;
+            if (isConnected() && (writer != null)) {
+                writer.print(message + "\r\n");
+                writer.flush();
+                if (writer.checkError()) {
+                    logger.warn("Error sending command to OpenTherm Gateway => PLEASE REPORT !!");
+                    stop();
                 }
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Sent: {}{}", message, headCommand.sent() ? " (repeat)" : "");
+                }
+                headCommand.sentTime = Instant.now();
+            } else {
+                logger.debug("Unable to send command: {}. OpenThermGatewaySocketConnector is not connected.", message);
             }
         }
     }
@@ -313,11 +309,9 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
      * @param message must be an acknowledgement message in the form "XX: yyy"
      */
     private void pendingCommandsRemoveHeadCommandIfAcknowledgement(String message) {
-        if (!pendingCommands.isEmpty()) {
-            String commandCode = message.substring(0, 2);
-            if (commandCode.equals(pendingCommands.get(0).command.getCode())) {
-                pendingCommands.remove(0);
-            }
+        PendingCommand headCommand = pendingCommands.peek();
+        if (headCommand != null && headCommand.command.getCode().equals(message.substring(0, 2))) {
+            pendingCommands.poll();
         }
     }
 
@@ -325,12 +319,6 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
      * Remove all expired commands from the queue.
      */
     private void pendingCommandsRemoveAllExpiredCommands() {
-        int i = pendingCommands.size();
-        while (i > 0) {
-            i--;
-            if (pendingCommands.get(i).expired()) {
-                pendingCommands.remove(i);
-            }
-        }
+        pendingCommands.removeIf(pendingCommand -> pendingCommand.expired());
     }
 }
