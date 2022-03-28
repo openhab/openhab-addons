@@ -51,16 +51,14 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
     STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return DeviceUtil.getStateTextState(s, dmd, translationProvider);
         }
     },
     STATE("", STATE_CHANNEL_ID, DecimalType.class, false),
     PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return DeviceUtil.getTextState(s, dmd, translationProvider, PROGRAMS, MISSING_PROGRAM_TEXT_PREFIX,
                     MIELE_TUMBLE_DRYER_TEXT_PREFIX);
         }
@@ -69,8 +67,7 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     PROGRAMTYPE("programType", "type", StringType.class, false),
     PROGRAM_PHASE_TEXT(PHASE_PROPERTY_NAME, PHASE_TEXT_CHANNEL_ID, StringType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return DeviceUtil.getTextState(s, dmd, translationProvider, PHASES, MISSING_PHASE_TEXT_PREFIX,
                     MIELE_TUMBLE_DRYER_TEXT_PREFIX);
         }
@@ -78,8 +75,7 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     PROGRAM_PHASE(RAW_PHASE_PROPERTY_NAME, PHASE_CHANNEL_ID, DecimalType.class, false),
     START_TIME("startTime", "start", DateTimeType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             Date date = new Date();
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
@@ -93,8 +89,7 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     },
     DURATION("duration", "duration", DateTimeType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             Date date = new Date();
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
@@ -108,8 +103,7 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     },
     ELAPSED_TIME("elapsedTime", "elapsed", DateTimeType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             Date date = new Date();
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
@@ -123,8 +117,7 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     },
     FINISH_TIME("finishTime", "finish", DateTimeType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             Date date = new Date();
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
@@ -138,16 +131,14 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     },
     DRYING_STEP("dryingStep", "step", DecimalType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return getState(s);
         }
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
         @Override
 
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             if ("true".equals(s)) {
                 return getState("OPEN");
             }
@@ -217,8 +208,7 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
-    public State getState(String s, @Nullable DeviceMetaData dmd,
-            @Nullable MieleTranslationProvider translationProvider) {
+    public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
         return this.getState(s, dmd);
     }
 
@@ -247,7 +237,7 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
                 return state;
             }
         } catch (Exception e) {
-            logger.error("An exception occurred while converting '{}' into a State", s);
+            logger.warn("An exception occurred while converting '{}' into a State", s);
         }
 
         return UnDefType.UNDEF;
