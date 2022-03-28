@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * The {@link YamahaMusiccastConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Lennert Coopman - Initial contribution
+ * @author Florian Hotze - Add volume in decibel
  */
 @NonNullByDefault
 public class YamahaMusiccastConfiguration {
@@ -26,4 +27,13 @@ public class YamahaMusiccastConfiguration {
     public @Nullable String host;
     public @Nullable Boolean syncVolume;
     public @Nullable String defaultAfterMCLink;
+
+    /**
+     * Minimum allowed volume in dB.
+     */
+    public float volumeDbMin = -80f; // -80.0 dB
+    /**
+     * Maximum allowed volume in dB.
+     */
+    public float volumeDbMax = 12f; // 12.0 dB
 }
