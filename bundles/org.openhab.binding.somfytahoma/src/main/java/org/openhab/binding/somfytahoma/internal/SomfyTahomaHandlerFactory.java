@@ -46,6 +46,7 @@ import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaPergolaHandle
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaPodHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaRainSensorHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaRollerShutterHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaShutterHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaSilentRollerShutterHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaSirenHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaSmokeSensorHandler;
@@ -118,6 +119,8 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaUnoRollerShutterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SCREEN) || thingTypeUID.equals(THING_TYPE_EXTERIORSCREEN)) {
             return new SomfyTahomaRollerShutterHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_SHUTTER)) {
+            return new SomfyTahomaShutterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_VENETIANBLIND)
                 || thingTypeUID.equals(THING_TYPE_EXTERIORVENETIANBLIND)) {
             return new SomfyTahomaVenetianBlindHandler(thing);

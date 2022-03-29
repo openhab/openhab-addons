@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link OpenThermGatewayCallback} is used as a callback interface by a connector to signal status
  * and relay incoming messages to be processed by the binding.
- * 
+ *
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
@@ -26,4 +26,6 @@ public interface OpenThermGatewayCallback {
     void connectionStateChanged(ConnectionState state);
 
     void receiveMessage(Message message);
+
+    void receiveAcknowledgement(String message);
 }
