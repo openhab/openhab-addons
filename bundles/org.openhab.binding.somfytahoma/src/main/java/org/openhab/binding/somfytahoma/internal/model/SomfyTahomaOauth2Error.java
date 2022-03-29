@@ -27,6 +27,11 @@ public class SomfyTahomaOauth2Error {
     private String error = "";
     @SerializedName("error_description")
     private String errorDescription = "";
+    private String message = "";
+
+    public String getMessage() {
+        return message;
+    }
 
     public String getError() {
         return error;

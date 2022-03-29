@@ -33,6 +33,7 @@ import javax.ws.rs.core.MediaType;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -44,8 +45,8 @@ import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaAction;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaActionGroup;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaApplyResponse;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaDevice;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaError;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaEvent;
-import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaLoginResponse;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaOauth2Error;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaOauth2Reponse;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaRegisterEventsResponse;
@@ -103,6 +104,11 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      */
     private @Nullable ScheduledFuture<?> reconciliationFuture;
 
+    /**
+     * Future for postponed login
+     */
+    private @Nullable ScheduledFuture<?> loginFuture;
+
     // List of futures used for command retries
     private Collection<ScheduledFuture<?>> retryFutures = new ConcurrentLinkedQueue<ScheduledFuture<?>>();
 
@@ -129,6 +135,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      * Id of registered events
      */
     private String eventsId = "";
+
+    private String accessToken = "";
 
     private Map<String, SomfyTahomaDevice> devicePlaces = new HashMap<>();
 
@@ -157,6 +165,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             logger.debug("Cannot start http client for: {}", thing.getBridgeUID().getId(), e);
             return;
         }
+        // Remove the WWWAuth protocol handler since Tahoma is not fully compliant
+        httpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
 
         scheduler.execute(() -> {
             login();
@@ -224,26 +234,40 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 logger.debug("CozyTouch Oauth2 authentication flow");
                 urlParameters = "jwt=" + loginCozytouch();
             } else {
-                urlParameters = "userId=" + urlEncode(thingConfig.getEmail()) + "&userPassword="
-                        + urlEncode(thingConfig.getPassword());
+                urlParameters = "username=" + urlEncode(thingConfig.getEmail()) + "&password="
+                        + urlEncode(thingConfig.getPassword()) + "&client_id=" + TAHOMA_CLIENT_ID + "&client_secret="
+                        + TAHOMA_CLIENT_SECRET + "&grant_type=password";
             }
 
-            ContentResponse response = sendRequestBuilder("login", HttpMethod.POST)
-                    .content(new StringContentProvider(urlParameters),
-                            "application/x-www-form-urlencoded; charset=UTF-8")
-                    .send();
+            ContentResponse response = tokenRequestBuilder().content(new StringContentProvider(urlParameters),
+                    "application/x-www-form-urlencoded; charset=UTF-8").send();
 
             if (logger.isTraceEnabled()) {
                 logger.trace("Login response: {}", response.getContentAsString());
             }
 
-            SomfyTahomaLoginResponse data = gson.fromJson(response.getContentAsString(),
-                    SomfyTahomaLoginResponse.class);
-            if (data == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Received invalid data (login)");
-            } else if (data.isSuccess()) {
-                logger.debug("SomfyTahoma version: {}", data.getVersion());
+            if (response.getStatus() != 200) {
+                // Login error
+                if (response.getHeaders().getField(HttpHeader.CONTENT_TYPE).getValue()
+                        .equalsIgnoreCase(MediaType.APPLICATION_JSON)) {
+                    try {
+                        SomfyTahomaOauth2Error error = gson.fromJson(response.getContentAsString(),
+                                SomfyTahomaOauth2Error.class);
+                        throw new ExecutionException(error.getMessage(), null);
+                    } catch (JsonSyntaxException e) {
+
+                    }
+                }
+                throw new ExecutionException("Unknown error while attempting to log in.", null);
+            }
+
+            SomfyTahomaOauth2Reponse oauth2response = gson.fromJson(response.getContentAsString(),
+                    SomfyTahomaOauth2Reponse.class);
+
+            logger.debug("OAuth2 Access Token: {}", oauth2response.getAccessToken());
+            accessToken = oauth2response.getAccessToken();
+
+            if (!accessToken.isEmpty()) {
                 String id = registerEvents();
                 if (id != null && !UNAUTHORIZED.equals(id)) {
                     eventsId = id;
@@ -252,18 +276,12 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 } else {
                     logger.debug("Events id error: {}", id);
                 }
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error logging in: " + data.getError());
-                if (data.getError().startsWith(TOO_MANY_REQUESTS)) {
-                    setTooManyRequests();
-                }
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Received invalid data (login)", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data (login)");
         } catch (ExecutionException e) {
-            if (isAuthenticationChallenge(e) || isOAuthGrantError(e)) {
+            if (isOAuthGrantError(e)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Error logging in (check your credentials)");
                 setTooManyRequests();
@@ -281,10 +299,13 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private void setTooManyRequests() {
-        logger.debug("Too many requests or bad credentials for the cloud portal, suspending activity for {} seconds",
-                SUSPEND_TIME);
-        tooManyRequests = true;
-        scheduler.schedule(this::enableLogin, SUSPEND_TIME, TimeUnit.SECONDS);
+        if (!tooManyRequests) {
+            logger.debug(
+                    "Too many requests or bad credentials for the cloud portal, suspending activity for {} seconds",
+                    SUSPEND_TIME);
+            tooManyRequests = true;
+            loginFuture = scheduler.schedule(this::enableLogin, SUSPEND_TIME, TimeUnit.SECONDS);
+        }
     }
 
     private @Nullable String registerEvents() {
@@ -330,6 +351,11 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         executions.clear();
         // cancel all scheduled retries
         retryFutures.forEach(x -> x.cancel(false));
+
+        ScheduledFuture<?> localLoginFuture = loginFuture;
+        if (localLoginFuture != null && !localLoginFuture.isCancelled()) {
+            localLoginFuture.cancel(true);
+        }
 
         try {
             httpClient.stop();
@@ -651,15 +677,37 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
         if (response.getStatus() < 200 || response.getStatus() >= 300) {
             logger.debug("Received unexpected status code: {}", response.getStatus());
+            if (response.getHeaders().getField(HttpHeader.CONTENT_TYPE).getValue()
+                    .equalsIgnoreCase(MediaType.APPLICATION_JSON)) {
+                try {
+                    SomfyTahomaError error = gson.fromJson(response.getContentAsString(), SomfyTahomaError.class);
+                    throw new ExecutionException(error.getError(), null);
+                } catch (JsonSyntaxException e) {
+
+                }
+            }
+            throw new ExecutionException("Unknown error while attempting to send a message.", null);
         }
         return response.getContentAsString();
     }
 
+    private Request tokenRequestBuilder() {
+        return httpClient.newRequest(TAHOMA_OAUTH2_URL).method(HttpMethod.POST)
+                .header(HttpHeader.ORIGIN, "https://" + TAHOMA_PORTAL)
+                .header(HttpHeader.REFERER, "https://" + TAHOMA_PORTAL).header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en")
+                .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate").timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS)
+                .agent(TAHOMA_AGENT);
+    }
+
     private Request sendRequestBuilder(String subUrl, HttpMethod method) {
+        return sendRequestBuilder(subUrl, method, accessToken);
+    }
+
+    private Request sendRequestBuilder(String subUrl, HttpMethod method, String token) {
         return httpClient.newRequest(getApiFullUrl(subUrl)).method(method)
                 .header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en").header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate")
                 .header("X-Requested-With", "XMLHttpRequest").timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS)
-                .agent(TAHOMA_AGENT);
+                .header(HttpHeader.AUTHORIZATION, "Bearer " + token).agent(TAHOMA_AGENT);
     }
 
     /**
@@ -864,14 +912,27 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         return new SomfyTahomaStatus();
     }
 
-    private boolean isAuthenticationChallenge(Exception ex) {
+    /*
+     * private boolean isAuthenticationChallenge(Exception ex) {
+     * String msg = ex.getMessage();
+     * return msg != null && msg.contains(AUTHENTICATION_CHALLENGE);
+     * }
+     */
+
+    private boolean isTempBanned(Exception ex) {
         String msg = ex.getMessage();
-        return msg != null && msg.contains(AUTHENTICATION_CHALLENGE);
+        return msg != null && msg.contains(TEMPORARILY_BANNED);
+    }
+
+    private boolean isEventListenerTimeout(Exception ex) {
+        String msg = ex.getMessage();
+        return msg != null && msg.contains(EVENT_LISTENER_TIMEOUT);
     }
 
     private boolean isOAuthGrantError(Exception ex) {
         String msg = ex.getMessage();
-        return msg != null && msg.contains(AUTHENTICATION_OAUTH_GRANT_ERROR);
+        return msg != null
+                && (msg.contains(AUTHENTICATION_OAUTH_GRANT_ERROR) || msg.contains(AUTHENTICATION_OAUTH_INVALID_GRANT));
     }
 
     @Override
@@ -915,7 +976,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             logger.debug("Received data: {} is not JSON", response, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
         } catch (ExecutionException e) {
-            if (isAuthenticationChallenge(e)) {
+            if (isTempBanned(e)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Temporarily banned");
+                setTooManyRequests();
+            } else if (isEventListenerTimeout(e)) {
                 reLogin();
             } else {
                 logger.debug("Cannot call url: {} with params: {}!", getApiFullUrl(url), urlParameters, e);

@@ -360,6 +360,9 @@ public class SomfyTahomaBindingConstants {
     // Constants
     public static final String COZYTOUCH_PORTAL = "ha110-1.overkiz.com";
     public static final String TAHOMA_PORTAL = "www.tahomalink.com";
+    public static final String TAHOMA_CLIENT_SECRET = "4txucwsv29a8o0co8s8kw8ggswkks8ossccockgcckokw8ck00";
+    public static final String TAHOMA_CLIENT_ID = "1e2d830f-4c65-11e7-bd0c-02dd59bd3041_5n78r5nnwaw4wc0kskkg0csogkk8cwocswg84c0gowcgossogw";
+    public static final String TAHOMA_OAUTH2_URL = "https://accounts.somfy.com/oauth/oauth/v2/token";
     public static final String COZYTOUCH_OAUTH2_URL = "api.groupe-atlantic.com";
     public static final String COZYTOUCH_OAUTH2_BASICAUTH = "czduc0RZZXdWbjVGbVV4UmlYN1pVSUM3ZFI4YTphSDEzOXZmbzA1ZGdqeDJkSFVSQkFTbmhCRW9h";
     public static final String COZYTOUCH_OAUTH2_TOKEN_URL = "/token";
@@ -372,7 +375,7 @@ public class SomfyTahomaBindingConstants {
     public static final String REFRESH_URL = DEVICES_URL + "states/refresh";
     public static final String EXEC_URL = "exec/";
     public static final String DELETE_URL = EXEC_URL + "current/setup/";
-    public static final String TAHOMA_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36";
+    public static final String TAHOMA_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36";
     public static final int TAHOMA_TIMEOUT = 5;
     public static final String UNAUTHORIZED = "Not logged in";
     public static final int TYPE_NONE = 0;
@@ -381,9 +384,10 @@ public class SomfyTahomaBindingConstants {
     public static final int TYPE_STRING = 3;
     public static final int TYPE_BOOLEAN = 6;
     public static final String UNAVAILABLE = "unavailable";
-    public static final String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";
+    public static final String TEMPORARILY_BANNED = "Too many attempts with an invalid token, temporarily banned.";
+    public static final String EVENT_LISTENER_TIMEOUT = "No registered event listener";
     public static final String AUTHENTICATION_OAUTH_GRANT_ERROR = "Provided Authorization Grant is invalid.";
-    public static final String TOO_MANY_REQUESTS = "Too many requests, try again later";
+    public static final String AUTHENTICATION_OAUTH_INVALID_GRANT = "error.invalid.grant";
     public static final int SUSPEND_TIME = 120;
     public static final int RECONCILIATION_TIME = 600;
 
