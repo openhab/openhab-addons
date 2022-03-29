@@ -54,7 +54,7 @@ public class SensorMeasuredDataReply extends SensorReply {
      * @return the measured PM2.5 value
      */
     public float getPm25() {
-        int shiftedValue = (pm25highByte << 8 & 0xFF) | pm25lowByte & 0xFF;
+        int shiftedValue = ((pm25highByte & 0xFF) << 8) | pm25lowByte & 0xFF;
         return ((float) shiftedValue) / 10;
     }
 
@@ -64,7 +64,7 @@ public class SensorMeasuredDataReply extends SensorReply {
      * @return the measured PM10 value
      */
     public float getPm10() {
-        int shiftedValue = (pm10highByte << 8 & 0xFF) | pm10lowByte & 0xFF;
+        int shiftedValue = ((pm10highByte & 0xFF) << 8) | pm10lowByte & 0xFF;
         return ((float) shiftedValue) / 10;
     }
 
