@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.api.data;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.core.library.CoreItemFactory.*;
 import static org.openhab.core.library.unit.MetricPrefix.*;
 
 import java.net.URI;
@@ -27,9 +28,10 @@ import java.util.stream.Stream;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.StateDescriptionFragment;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.util.UnitUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -63,29 +65,30 @@ public class NetatmoConstants {
     }
 
     public static class MeasureChannelDetails {
+        private static final StateDescriptionFragmentBuilder BUILDER = StateDescriptionFragmentBuilder.create();
         public final URI configURI;
         public final String itemType;
-        public final String pattern;
+        public final StateDescriptionFragment stateDescriptionFragment;
 
         public MeasureChannelDetails(String measureType, String itemType, String pattern) {
             this.configURI = URI.create(String.join(":", BINDING_ID, measureType, "config"));
             this.itemType = itemType;
-            this.pattern = pattern;
+            this.stateDescriptionFragment = BUILDER.withReadOnly(true).withPattern(pattern).build();
         }
     }
 
     public enum MeasureClass {
-        INTERIOR_TEMPERATURE(new Measure(0, 50, 0.3, SIUnits.CELSIUS), "temp", true),
-        EXTERIOR_TEMPERATURE(new Measure(-40, 65, 0.3, SIUnits.CELSIUS), "temp", true),
-        HEAT_INDEX(new Measure(-40, 65, 1, SIUnits.CELSIUS)),
-        PRESSURE(new Measure(260, 1260, 1, HECTO(SIUnits.PASCAL)), "pressure", true),
-        CO2(new Measure(0, 5000, 50, Units.PARTS_PER_MILLION), "co2", true),
-        NOISE(new Measure(35, 120, 1, Units.DECIBEL), "noise", true),
-        RAIN_QUANTITY(new Measure(0, 150, 0.1, MILLI(SIUnits.METRE)), "sum_rain", false),
-        RAIN_INTENSITY(new Measure(0, 150, 0.1, Units.MILLIMETRE_PER_HOUR)),
-        WIND_SPEED(new Measure(0, 160, 1.8, SIUnits.KILOMETRE_PER_HOUR)),
-        WIND_ANGLE(new Measure(0, 360, 5, Units.DEGREE_ANGLE)),
-        HUMIDITY(new Measure(0, 100, 3, Units.PERCENT), "hum", true);
+        INTERIOR_TEMPERATURE(0, 50, 0.3, SIUnits.CELSIUS, "temp", true),
+        EXTERIOR_TEMPERATURE(-40, 65, 0.3, SIUnits.CELSIUS, "temp", true),
+        HEAT_INDEX(-40, 65, 1, SIUnits.CELSIUS, "", false),
+        PRESSURE(260, 1260, 1, HECTO(SIUnits.PASCAL), "pressure", true),
+        CO2(0, 5000, 50, Units.PARTS_PER_MILLION, "co2", true),
+        NOISE(35, 120, 1, Units.DECIBEL, "noise", true),
+        RAIN_QUANTITY(0, 150, 0.1, MILLI(SIUnits.METRE), "sum_rain", false),
+        RAIN_INTENSITY(0, 150, 0.1, Units.MILLIMETRE_PER_HOUR, "", false),
+        WIND_SPEED(0, 160, 1.8, SIUnits.KILOMETRE_PER_HOUR, "", false),
+        WIND_ANGLE(0, 360, 5, Units.DEGREE_ANGLE, "", false),
+        HUMIDITY(0, 100, 3, Units.PERCENT, "hum", true);
 
         public static final EnumSet<MeasureClass> AS_SET = EnumSet.allOf(MeasureClass.class);
 
@@ -93,25 +96,20 @@ public class NetatmoConstants {
         public final String apiDescriptor;
         public final Map<String, MeasureChannelDetails> channels = new HashMap<>(2);
 
-        MeasureClass(Measure measureDef) {
-            this(measureDef, "", false);
-        }
-
-        MeasureClass(Measure measureDef, String apiDescriptor, boolean canScale) {
-            this.measureDefinition = measureDef;
+        MeasureClass(double min, double max, double precision, Unit<?> unit, String apiDescriptor, boolean canScale) {
+            this.measureDefinition = new Measure(min, max, precision, unit);
             this.apiDescriptor = apiDescriptor;
             if (!apiDescriptor.isBlank()) {
-                String dimension = (Units.DECIBEL.equals(measureDef.unit)
-                        || Units.PARTS_PER_MILLION.equals(measureDef.unit) || Units.PERCENT.equals(measureDef.unit))
-                                ? "Dimensionless" // strangely it is given as an Angle
-                                : UnitUtils.getDimensionName(measureDef.unit);
+                String dimension = (Units.DECIBEL.equals(unit) || Units.PARTS_PER_MILLION.equals(unit)
+                        || Units.PERCENT.equals(unit)) ? "Dimensionless" // strangely it is given as an Angle
+                                : UnitUtils.getDimensionName(unit);
 
                 channels.put(String.join("-", apiDescriptor, "measurement"),
-                        new MeasureChannelDetails(apiDescriptor, String.join(":", CoreItemFactory.NUMBER, dimension),
+                        new MeasureChannelDetails(apiDescriptor, String.join(":", NUMBER, dimension),
                                 String.format("%%.%df %s", measureDefinition.scale, UnitUtils.UNIT_PLACEHOLDER)));
                 if (canScale) {
-                    channels.put(String.join("-", apiDescriptor, GROUP_TIMESTAMP), new MeasureChannelDetails(
-                            GROUP_TIMESTAMP, CoreItemFactory.DATETIME, "%1$tA, %1$td.%1$tm. %1$tH:%1$tM"));
+                    channels.put(String.join("-", apiDescriptor, GROUP_TIMESTAMP),
+                            new MeasureChannelDetails(GROUP_TIMESTAMP, DATETIME, "%1$tA, %1$td.%1$tm. %1$tH:%1$tM"));
                 }
             }
         }

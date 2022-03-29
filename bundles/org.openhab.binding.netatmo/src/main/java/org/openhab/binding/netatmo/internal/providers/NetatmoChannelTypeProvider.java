@@ -15,9 +15,9 @@ package org.openhab.binding.netatmo.internal.providers;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.BINDING_ID;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,7 +27,6 @@ import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
-import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -36,33 +35,30 @@ import org.osgi.service.component.annotations.Component;
  * @author Gaël L'hopital - Initial contribution
  *
  */
-
 @NonNullByDefault
 @Component(service = { NetatmoChannelTypeProvider.class, ChannelTypeProvider.class })
 public class NetatmoChannelTypeProvider implements ChannelTypeProvider {
-    private final Map<ChannelTypeUID, ChannelType> channelTypes = new ConcurrentHashMap<>();
+    private final Collection<ChannelType> channelTypes = new HashSet<>();
 
     public NetatmoChannelTypeProvider() {
         MeasureClass.AS_SET.forEach(mc -> mc.channels.forEach((measureChannel, channelDetails) -> {
-            ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, measureChannel);
             StateChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder
-                    .state(channelTypeUID, measureChannel.replace("-", " "), channelDetails.itemType)
-                    .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withReadOnly(true)
-                            .withPattern(channelDetails.pattern).build())
+                    .state(new ChannelTypeUID(BINDING_ID, measureChannel), measureChannel.replace("-", " "),
+                            channelDetails.itemType)
+                    .withStateDescriptionFragment(channelDetails.stateDescriptionFragment)
                     .withConfigDescriptionURI(channelDetails.configURI);
 
-            channelTypes.put(channelTypeUID, channelTypeBuilder.build());
+            channelTypes.add(channelTypeBuilder.build());
         }));
     }
 
     @Override
     public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
-        return channelTypes.values();
+        return Collections.unmodifiableCollection(channelTypes);
     }
 
     @Override
     public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
-        return getChannelTypes(locale).stream().filter(ct -> ct.getUID().equals(channelTypeUID)).findFirst()
-                .orElse(null);
+        return channelTypes.stream().filter(ct -> ct.getUID().equals(channelTypeUID)).findFirst().orElse(null);
     }
 }

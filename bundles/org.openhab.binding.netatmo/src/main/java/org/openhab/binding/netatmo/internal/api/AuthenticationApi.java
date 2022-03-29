@@ -102,6 +102,6 @@ public class AuthenticationApi extends RestManager {
     }
 
     public boolean isConnected() {
-        return getAuthorization() != null;
+        return !tokenResponse.isEmpty();
     }
 }
