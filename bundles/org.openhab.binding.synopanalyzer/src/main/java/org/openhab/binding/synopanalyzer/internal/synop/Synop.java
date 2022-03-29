@@ -187,8 +187,9 @@ public abstract class Synop {
 
     private void setWindAndOvercast() {
         setWindString();
-        if (windString != null) {
-            String gustyFlag = windString.substring(0, 2);
+        String localWind = windString;
+        if (localWind != null) {
+            String gustyFlag = localWind.substring(0, 2);
             if ("00".equals(gustyFlag)) {
                 setWindSpeed(true);
             } else {
@@ -203,18 +204,20 @@ public abstract class Synop {
     }
 
     private void setOcta() {
-        if (windString != null) {
-            octa = Character.getNumericValue(windString.charAt(0));
+        String localWind = windString;
+        if (localWind != null) {
+            octa = Character.getNumericValue(localWind.charAt(0));
         } else {
             octa = -1;
         }
     }
 
     private void setWindDirection() {
-        if (windString != null) {
-            String windDirectionString = windString.substring(1, 3);
+        String localWind = windString;
+        if (localWind != null) {
+            String windDirectionString = localWind.substring(1, 3);
 
-            if (windDirectionString.equals("99") || windDirectionString.equals("||")) {
+            if ("99".equals(windDirectionString) || "||".equals(windDirectionString)) {
                 windDirection = INITIAL_VALUE;
             } else {
                 try {
@@ -228,8 +231,9 @@ public abstract class Synop {
 
     private void setWindSpeed(boolean gustyWind) {
         String speedString = null;
-        if (windString != null) {
-            speedString = windString.substring(gustyWind ? 2 : 3, 5);
+        String localWind = windString;
+        if (localWind != null) {
+            speedString = localWind.substring(gustyWind ? 2 : 3, 5);
             try {
                 windSpeed = Integer.parseInt(speedString);
             } catch (NumberFormatException e) {
@@ -242,10 +246,10 @@ public abstract class Synop {
 
     private void setPressure() {
         setPressureString();
+        String localPressure = pressureString;
+        if (localPressure != null) {
 
-        if (pressureString != null) {
-
-            String pressureTemp = pressureString.substring(1, 5);
+            String pressureTemp = localPressure.substring(1, 5);
 
             if (pressureTemp.charAt(0) == '0') {
                 pressureTemp = '1' + pressureTemp;

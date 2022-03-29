@@ -33,8 +33,8 @@ import javax.ws.rs.HttpMethod;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.synopanalyzer.internal.config.SynopAnalyzerConfiguration;
+import org.openhab.binding.synopanalyzer.internal.stationdb.Station;
 import org.openhab.binding.synopanalyzer.internal.synop.Overcast;
-import org.openhab.binding.synopanalyzer.internal.synop.StationDB;
 import org.openhab.binding.synopanalyzer.internal.synop.Synop;
 import org.openhab.binding.synopanalyzer.internal.synop.SynopLand;
 import org.openhab.binding.synopanalyzer.internal.synop.SynopMobile;
@@ -51,6 +51,7 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -79,12 +80,12 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> executionJob;
     private @NonNullByDefault({}) String formattedStationId;
     private final LocationProvider locationProvider;
-    private final @Nullable StationDB stationDB;
+    private final List<Station> stations;
 
-    public SynopAnalyzerHandler(Thing thing, LocationProvider locationProvider, @Nullable StationDB stationDB) {
+    public SynopAnalyzerHandler(Thing thing, LocationProvider locationProvider, List<Station> stations) {
         super(thing);
         this.locationProvider = locationProvider;
-        this.stationDB = stationDB;
+        this.stations = stations;
     }
 
     @Override
@@ -94,9 +95,8 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
         logger.info("Scheduling Synop update thread to run every {} minute for Station '{}'",
                 configuration.refreshInterval, formattedStationId);
 
-        StationDB stations = stationDB;
-        if (thing.getProperties().isEmpty() && stations != null) {
-            discoverAttributes(stations, configuration.stationId);
+        if (thing.getProperties().isEmpty()) {
+            discoverAttributes(configuration.stationId);
         }
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -105,15 +105,15 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 TimeUnit.MINUTES);
     }
 
-    protected void discoverAttributes(StationDB stations, int stationId) {
-        stations.stations.stream().filter(s -> stationId == s.idOmm).findFirst().ifPresent(s -> {
+    protected void discoverAttributes(int stationId) {
+        stations.stream().filter(s -> stationId == s.idOmm).findFirst().ifPresent(station -> {
             Map<String, String> properties = new HashMap<>();
-            properties.put("Usual name", s.usualName);
-            properties.put("Location", s.getLocation());
+            properties.put("Usual name", station.usualName);
+            properties.put("Location", station.getLocation());
 
-            PointType stationLocation = new PointType(s.getLocation());
             PointType serverLocation = locationProvider.getLocation();
             if (serverLocation != null) {
+                PointType stationLocation = new PointType(station.getLocation());
                 DecimalType distance = serverLocation.distanceFrom(stationLocation);
 
                 properties.put("Distance", new QuantityType<>(distance, SIUnits.METRE).toString());
@@ -152,30 +152,32 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     private void updateSynopChannels() {
         logger.debug("Updating device channels");
 
-        Optional<Synop> synop = getLastAvailableSynop();
-        updateStatus(synop.isPresent() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
-        synop.ifPresent(theSynop -> {
+        getLastAvailableSynop().ifPresentOrElse(synop -> {
+            updateStatus(ThingStatus.ONLINE);
             getThing().getChannels().forEach(channel -> {
                 String channelId = channel.getUID().getId();
                 if (isLinked(channelId)) {
-                    updateState(channelId, getChannelState(channelId, theSynop));
+                    updateState(channelId, getChannelState(channelId, synop));
                 }
             });
-        });
+        }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No Synop message available"));
     }
 
     private State getChannelState(String channelId, Synop synop) {
+        int octa = synop.getOcta();
         switch (channelId) {
             case HORIZONTAL_VISIBILITY:
                 return new StringType(synop.getHorizontalVisibility().name());
             case OCTA:
-                return new DecimalType(Math.max(0, synop.getOcta()));
+                return octa >= 0 ? new DecimalType(octa) : UnDefType.NULL;
             case ATTENUATION_FACTOR:
-                double kc = Math.max(0, Math.min(synop.getOcta(), OCTA_MAX)) / OCTA_MAX;
-                kc = 1 - 0.75 * Math.pow(kc, KASTEN_POWER);
-                return new DecimalType(kc);
+                if (octa >= 0) {
+                    double kc = Math.max(0, Math.min(octa, OCTA_MAX)) / OCTA_MAX;
+                    kc = 1 - 0.75 * Math.pow(kc, KASTEN_POWER);
+                    return new DecimalType(kc);
+                }
+                return UnDefType.NULL;
             case OVERCAST:
-                int octa = synop.getOcta();
                 Overcast overcast = Overcast.fromOcta(octa);
                 return overcast == Overcast.UNDEFINED ? UnDefType.NULL : new StringType(overcast.name());
             case PRESSURE:
@@ -232,7 +234,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> job = this.executionJob;
+        ScheduledFuture<?> job = executionJob;
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
         }

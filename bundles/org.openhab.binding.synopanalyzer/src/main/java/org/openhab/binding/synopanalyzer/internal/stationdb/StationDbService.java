@@ -1,0 +1,53 @@
+/**
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.synopanalyzer.internal.stationdb;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+
+import com.google.gson.Gson;
+
+/**
+ * The {@link StationDbService} makes available a list of known Synop stations.
+ *
+ * @author Gaël L'hopital - Initial Contribution
+ */
+
+@Component(service = StationDbService.class)
+@NonNullByDefault
+public class StationDbService {
+    private final List<Station> stations;
+
+    @Activate
+    public StationDbService() {
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/db/stations.json");
+                Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);) {
+            stations = Arrays.asList(new Gson().fromJson(reader, Station[].class));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public List<Station> getStations() {
+        return stations;
+    }
+}

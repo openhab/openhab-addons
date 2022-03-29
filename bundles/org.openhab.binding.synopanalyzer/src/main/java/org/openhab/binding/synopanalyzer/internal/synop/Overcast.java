@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.synopanalyzer.internal.synop;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link WindDirections} enum possible overcast descriptions
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public enum Overcast {
     UNDEFINED,
     CLEAR_SKY,

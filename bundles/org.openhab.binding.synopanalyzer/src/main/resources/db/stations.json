@@ -1,5 +1,4 @@
-{
-   "stations":[
+[
       {
          "country":"FR",
          "pack":"RADOME",
@@ -2420,5 +2419,4 @@
          "elevation":1133,
          "station_type":1
       }
-   ]
-}
+]
