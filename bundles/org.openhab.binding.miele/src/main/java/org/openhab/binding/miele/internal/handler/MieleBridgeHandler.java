@@ -108,7 +108,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing the Miele bridge handler.");
+        logger.debug("Initializing handler for bridge {}", getThing().getUID());
 
         if (!validateConfig(getConfig())) {
             return;

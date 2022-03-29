@@ -127,7 +127,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Miele appliance handler.");
+        logger.debug("Initializing handler for thing {}", getThing().getUID());
         final String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
         if (applianceId == null || applianceId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
