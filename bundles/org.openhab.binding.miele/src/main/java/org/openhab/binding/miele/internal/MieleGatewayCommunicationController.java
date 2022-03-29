@@ -90,7 +90,10 @@ public class MieleGatewayCommunicationController {
             final ContentResponse contentResponse = request.send();
             final int httpStatus = contentResponse.getStatus();
             if (httpStatus != 200) {
-                logger.debug("An unexpected status code was returned: '{}'", httpStatus);
+                if (httpStatus == 503) {
+                    throw new MieleRpcException("Gateway is temporarily unavailable");
+                }
+                throw new MieleRpcException("Unexpected HTTP status code " + httpStatus);
             }
             responseData = contentResponse.getContentAsString();
         } catch (TimeoutException e) {
@@ -120,7 +123,7 @@ public class MieleGatewayCommunicationController {
                 String message = (o.has("message") ? o.get("message").getAsString() : null);
                 String data = (o.has("data")
                         ? (o.get("data") instanceof JsonObject ? o.get("data").toString() : o.get("data").getAsString())
-                        : null);
+                        : "");
                 throw new MieleRpcException(
                         "Remote exception occurred: '" + code + "':'" + message + "':'" + data + "'");
             } else {
