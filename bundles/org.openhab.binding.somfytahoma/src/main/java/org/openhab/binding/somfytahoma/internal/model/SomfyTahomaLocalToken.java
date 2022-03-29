@@ -15,22 +15,20 @@ package org.openhab.binding.somfytahoma.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SomfyTahomaStatusResponse} holds information about
- * response to getting gateway's status command.
+ * The {@link SomfyTahomaLocalToken} is used to parse a local token.
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaStatusResponse {
+public class SomfyTahomaLocalToken {
+    String uuid = "";
+    String label = "";
 
-    private String gatewayId = "";
-    private SomfyTahomaStatus connectivity = new SomfyTahomaStatus();
-
-    public SomfyTahomaStatus getConnectivity() {
-        return connectivity;
+    public String getUuid() {
+        return uuid;
     }
 
-    public String getGatewayId() {
-        return gatewayId;
+    public String getLabel() {
+        return label;
     }
 }

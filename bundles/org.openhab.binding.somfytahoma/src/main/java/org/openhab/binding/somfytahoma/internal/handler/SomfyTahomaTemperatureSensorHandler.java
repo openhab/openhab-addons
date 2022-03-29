@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.TEMPERATURE;
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.TYPE_DECIMAL;
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
@@ -29,9 +28,9 @@ public class SomfyTahomaTemperatureSensorHandler extends SomfyTahomaBaseThingHan
 
     public SomfyTahomaTemperatureSensorHandler(Thing thing) {
         super(thing);
-        stateNames.put(TEMPERATURE, "core:TemperatureState");
+        stateNames.put(TEMPERATURE, TEMPERATURE_STATE);
 
         // override state type because the cloud sends both percent & decimal
-        cacheStateType("core:TemperatureState", TYPE_DECIMAL);
+        cacheStateType(TEMPERATURE_STATE, TYPE_DECIMAL);
     }
 }
