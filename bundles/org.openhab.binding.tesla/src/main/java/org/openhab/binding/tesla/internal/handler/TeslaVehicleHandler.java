@@ -707,7 +707,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         sendCommand(COMMAND_WAKE_UP, account.wakeUpTarget);
     }
 
-    protected Vehicle queryVehicle() {
+    protected synchronized Vehicle queryVehicle() {
         String authHeader = account.getAuthHeader();
 
         if (authHeader != null) {
@@ -720,7 +720,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         response.getStatusInfo().getReasonPhrase());
 
                 if (!checkResponse(response, true)) {
-                    logger.error("An error occurred while querying the vehicle");
+                    logger.debug("An error occurred while querying the vehicle");
                     return null;
                 }
 
