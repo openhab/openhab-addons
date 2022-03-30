@@ -13,44 +13,33 @@
 package org.openhab.binding.boschspexor.internal.api.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus.ObservationType;
+import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus.SensorMode;
 
 /**
- * Representation of Observation Status
+ * Representation of Observation Change Status
  *
  * @author Marc Fischer - Initial contribution *
  */
 @NonNullByDefault
-public class ObservationStatus {
+public class ObservationChangeStatus {
     /**
-     * Observation Types
+     * StatusCode
      *
      * @author Marc Fischer - Initial contribution
      *
      */
-    public enum ObservationType {
-        Burglary,
-        Fire,
-        CO,
-        Narcotics
-    }
-
-    /**
-     * Sensor modes
-     *
-     * @author Marc Fischer - Initial contribution
-     *
-     */
-    public enum SensorMode {
-        Deactivated,
-        InActivation,
-        InCalibration,
-        Activated,
-        Triggered,
-        InDeactivation
+    public enum StatusCode {
+        SUCCESS,
+        FAILURE
     }
 
     private ObservationType observationType = ObservationType.Burglary;
     private SensorMode sensorMode = SensorMode.Deactivated;
+    private StatusCode statusCode = StatusCode.FAILURE;
+    @Nullable
+    private String message;
 
     public ObservationType getObservationType() {
         return observationType;
@@ -66,5 +55,21 @@ public class ObservationStatus {
 
     public void setSensorMode(SensorMode sensorMode) {
         this.sensorMode = sensorMode;
+    }
+
+    public StatusCode getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(StatusCode statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public @Nullable String getMessage() {
+        return message;
+    }
+
+    public void setMessage(@Nullable String message) {
+        this.message = message;
     }
 }

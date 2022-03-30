@@ -13,7 +13,6 @@
 package org.openhab.binding.boschspexor.internal.api.service.auth;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
 import org.slf4j.Logger;
@@ -50,36 +50,51 @@ public class SpexorAuthServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (MimeTypes.Type.APPLICATION_JSON.asString().equalsIgnoreCase(req.getContentType())) {
+        if (req.getParameterMap().containsKey("status")) {
             resp.setContentType(MimeTypes.Type.APPLICATION_JSON.asString());
-            AuthProcessingStatus currentStatus = determineCurrentStatus();
-            if ("authorize".equalsIgnoreCase(req.getParameter("action"))) {
+            String action = req.getParameter("action");
+            if ("authorize".equalsIgnoreCase(action)) {
                 grantService.getAuthService().authorize();
                 // start authorization
+            } else if ("reset".equalsIgnoreCase(action)) {
+                grantService.getAuthService().reset();
             }
+            AuthProcessingStatus currentStatus = determineCurrentStatus();
             if (currentStatus.isError()) {
                 logger.error("requested state of spexor grant service returned with an error: {}",
                         currentStatus.getErrorMessage());
-                resp.sendError(HttpStatus.INTERNAL_SERVER_ERROR_500,
-                        MessageFormat.format("{'status' : '{0}', 'message': '{1}'}", currentStatus.getState().name(),
-                                currentStatus.getErrorMessage()));
-            } else {
-                resp.setStatus(HttpStatus.OK_200);
-                resp.getWriter().append(
-                        MessageFormat.format("{'status' : '{0}', 'message': null}", currentStatus.getState().name()));
             }
+            resp.setStatus(HttpStatus.OK_200);
+            StringBuilder jsonAnswer = new StringBuilder("{");
+
+            appendValue(jsonAnswer, "status", currentStatus.getState().name());
+            appendValue(jsonAnswer, "userCode", currentStatus.getUserCode());
+            appendValue(jsonAnswer, "deviceCode", currentStatus.getDeviceCode());
+            appendValue(jsonAnswer, "message", currentStatus.getErrorMessage());
+
+            jsonAnswer.append("}");
+
+            resp.getWriter().append(jsonAnswer);
         } else {
             resp.setContentType(MimeTypes.Type.TEXT_HTML_UTF_8.asString());
             resp.getWriter().append(statusPage);
         }
     }
 
+    private void appendValue(StringBuilder json, String key, @Nullable String value) {
+        if (value != null) {
+            if (json.length() - 1 == json.lastIndexOf("\"")) {
+                json.append(",");
+            }
+            json.append("\"").append(key).append("\":\"").append(value).append("\"");
+        }
+    }
+
     private AuthProcessingStatus determineCurrentStatus() {
         AuthProcessingStatus result = null;
         SpexorAuthorizationService authService = grantService.getAuthService();
-        if (authService == null || authService.getStatus() == null) {
+        if (authService == null) {
             result = new AuthProcessingStatus();
-            result.error("openHAB spexor grant service is not available");
             logger.error("openHAB spexorGrantService grant process is null");
         } else {
             result = authService.getStatus();

@@ -1,4 +1,5 @@
-/* Copyright (c) 2010-2021 Contributors to the openHAB project
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,10 +25,10 @@ public class BoschSpexorBridgeConfig {
     /**
      * The host name of the Bosch spexor backend.
      */
-    private String host = "https://api.bosch-spexor.com/";
-    private String hostQA = "https://api-q.bosch-spexor.com/";
+    private String host = "https://api.spexor-bosch.com/";
+    private String hostQA = "https://api-q.spexor-bosch.com/";
 
-    private boolean testing = false;
+    private boolean testing = true;
     /**
      * The OAuth2 client id
      */

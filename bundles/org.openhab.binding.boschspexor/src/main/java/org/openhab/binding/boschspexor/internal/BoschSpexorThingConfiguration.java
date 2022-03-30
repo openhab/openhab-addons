@@ -13,16 +13,14 @@
 package org.openhab.binding.boschspexor.internal;
 
 /**
- * The {@link BoschSpexorConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link BoschSpexorThingConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Marc Fischer - Initial contribution
  */
-public class BoschSpexorConfiguration {
+public class BoschSpexorThingConfiguration {
 
     /**
      * Sample configuration parameters. Replace with your own.
      */
-    public String hostname;
-    public String password;
     public int refreshInterval;
 }

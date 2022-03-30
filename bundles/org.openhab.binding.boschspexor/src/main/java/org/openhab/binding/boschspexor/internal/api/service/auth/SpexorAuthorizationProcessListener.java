@@ -10,28 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschspexor.internal.api.model;
+package org.openhab.binding.boschspexor.internal.api.service.auth;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.boschspexor.internal.api.service.auth.SpexorAuthorizationService.SpexorAuthGrantState;
 
 /**
- * Sensor Types
+ * Listener to received change events if the authroization was dropped or gained.
  *
- * @author Marc Fischer - Initial contribution *
+ * @author Marc Fischer - Initial contribution
+ *
  */
 @NonNullByDefault
-public enum SensorType {
-    AirQuality,
-    AirQualityLevel,
-    Temperature,
-    Pressure,
-    Acceleration,
-    Light,
-    Gas,
-    Humidity,
-    Microphone,
-    PassiveInfrared,
-    Fire,
-    CO,
-    Narcotics
+public interface SpexorAuthorizationProcessListener {
+
+    void changedState(SpexorAuthGrantState oldState, SpexorAuthGrantState newState);
 }

@@ -47,15 +47,15 @@ html {
 	text-decoration: none;
 }
 </style>
+<script type="text/javascript" src="/spexor/resources/jquery.min.js"></script>
+<script type="text/javascript" src="/spexor/resources/qrcode.min.js"></script>
 </head>
 <body>
 	<div>
 		<h1>Authorization of openHAB to for binding Bosch spexor</h1>
 	</div>
-	<p>To use the openHAB with the Bosch spexor please authorize your
-		openHAB with spexor.</p>
-	<p>Please register this service with the Bosch spexor app.
-		Therefore please proceed with following steps:</p>
+	<p>To use the openHAB with the Bosch spexor please authorize your openHAB with spexor.</p>
+	<p>Please register this service with the Bosch spexor app. Therefore please proceed with following steps:</p>
 	<ul>
 		<li>Open the Bosch spexor app.</li>
 		<li>Go to: Account</li>
@@ -66,37 +66,85 @@ html {
 		<li>proceed with the app</li>
 	</ul>
 	<p>
-		This openHAB service is currently <span id="state">UNAUTHORIZED</span>
+		This openHAB service is currently
+		<span id="state">UNAUTHORIZED</span>
 		to communicate with the spexor API
 	</p>
 
-	<div id="status">
+	<div id="status" style="display: none;">
 		<div>
-			<label>Device code</label><input id="deviceCode"
-				value="YUcTDyJOT3XmWS-AoRkE6gv4fbmpV9N5mIRBe8s5AXY" type="text"
-				disabled="disabled"></input>
+			<label>Device code</label>
+			<input id="deviceCode" value="" type="text" disabled="disabled"></input>
 		</div>
 		<div>
-			<label>User code</label><input id="userCode" value="XXXX-XXXX"
-				type="text" disabled="disabled"></input>
+			<label>User code</label>
+			<input id="userCode" value="XXXX-XXXX" type="text" disabled="disabled"></input>
 		</div>
+	</div>
+	<div id="authorize" style="display: none;">
 		<div>
-			<label>expires in</label><input id="expires_in" value="3600"
-				type="text" disabled="disabled"></input>
+			<label>PRESS </label>
+			<button onclick="authorize()">AUTHORIZE</button>
 		</div>
+	</div>
+	<div id="reset" style="display: none;">
 		<div>
-			<label>interval</label><input id="interval" value="5" type="text"
-				disabled="disabled"></input>
+			<label>Bosch spexor authorization </label>
+			<button onclick="reset()">RESET</button>
 		</div>
 	</div>
 
-	<div>
+	<div id="code" style="display: none;">
 		<label>QR CODE</label>
 		<div id="qrcode"></div>
 		<script type="text/javascript">
-			new QRCode(document.getElementById("qrcode"),
-					"http://jindo.dev.naver.com/collie");
-		</script>
+            function authorize() {
+                $.get("spexor?status&action=authorize", function(data) {
+                    loadPage(data);
+                });
+            };
+            function reset() {
+                $.get("spexor?status&action=reset", function(data) {
+                    loadPage(data);
+                });
+            };
+            function loadPage(data) {
+                if (data.status !== undefined) {
+                    $('#status').hide();
+                    $('#code').hide();
+                    $('#authorize').hide();
+                    $('#reset').hide();
+                    $('#state').html(data.status);
+                    $('#error').html('');
+                    if ('UNINITIALIZED' == data.status) {
+                        $('#authorize').show();
+                    } else if ('AWAITING_USER_ACCEPTANCE' == data.status) {
+                        $('#status').show();
+                        $('#deviceCode').val(data.deviceCode);
+                        $('#userCode').val(data.userCode);
+                        $('#qrcode').html('');
+                        new QRCode(document.getElementById("qrcode"), $('#userCode').val());
+                        $('#code').show();
+                    } else if (data.userCode !== undefined) {
+                        $('#deviceCode').val(data.deviceCode);
+                        $('#userCode').val(data.userCode);
+                        $('#qrcode').html('');
+                        new QRCode(document.getElementById("qrcode"), $('#userCode').val());
+                        $('#code').show();
+                    } else {
+                        $('#reset').show();
+                    }
+                    if(data.message !== undefined) {
+                        $('#error').html(data.message);
+                    }
+                    setTimeout(refresh, 5000);
+                }
+            }
+            function refresh() {
+                $.get("spexor?status", loadPage);
+            }
+            refresh();
+        </script>
 	</div>
 
 	<div id="error"></div>

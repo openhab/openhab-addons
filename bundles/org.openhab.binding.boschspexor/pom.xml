@@ -15,21 +15,62 @@
   <name>openHAB Add-ons :: Bundles :: BoschSpexor Binding</name>
 
   <properties>
-    <nimbusds.oauth2.version>9.18</nimbusds.oauth2.version>
+    <bnd.importpackage>android.*,com.android.*,dalvik.*,org.apache.harmony.*,org.conscrypt.*,sun.*,javax.annotation.meta.*,com.fasterxml.jackson.*,com.sun.jdi.*,!com.google.*,!net.shibboleth.utilities.java.*,!org.bouncycastle.*,!org.cryptomator.*,!org.joda.*,!org.objectweb.*,!org.opensaml.*</bnd.importpackage>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.nimbusds</groupId>
       <artifactId>oauth2-oidc-sdk</artifactId>
-      <version>${nimbusds.oauth2.version}</version>
+      <version>9.20</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.nimbusds</groupId>
+      <artifactId>content-type</artifactId>
+      <version>2.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.nimbusds</groupId>
+      <artifactId>nimbus-jose-jwt</artifactId>
+      <version>9.14</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.stephenc.jcip</groupId>
+      <artifactId>jcip-annotations</artifactId>
+      <version>1.0-1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.nimbusds</groupId>
+      <artifactId>lang-tag</artifactId>
+      <version>1.5</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.minidev</groupId>
+      <artifactId>json-smart</artifactId>
+      <version>2.4.7</version>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.connectorio.cloud</groupId>
-      <artifactId>org.connectorio.cloud.device.auth.nimbus</artifactId>
-      <version>0.2.0-SNAPSHOT</version>
+      <groupId>net.minidev</groupId>
+      <artifactId>accessors-smart</artifactId>
+      <version>2.4.7</version>
+      <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>7.3.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+
+
   </dependencies>
 
 </project>

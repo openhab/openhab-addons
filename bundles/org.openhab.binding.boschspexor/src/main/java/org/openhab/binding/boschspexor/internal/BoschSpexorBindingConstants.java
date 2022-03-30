@@ -31,23 +31,25 @@ public class BoschSpexorBindingConstants {
     public static final String BINDING_ID = "boschspexor";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID SPEXOR_BRIDGE_TYPE = new ThingTypeUID(BINDING_ID, "spexorAPI");
-    public static final ThingTypeUID SPEXOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "spexor");
+    public static final ThingTypeUID SPEXOR_BRIDGE_TYPE = new ThingTypeUID(BINDING_ID, "BoschSpexorAPIBrigde");
+    public static final ThingTypeUID SPEXOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "BoschSpexorThing");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Set.of(SPEXOR_THING_TYPE, SPEXOR_BRIDGE_TYPE));
 
     // List of all Channel ids
+    public static final String CHANNEL_BOSCH_SPEXOR = "boschspexor";
     public static final String CHANNEL_SPEXOR_INFO = "spexorInfo";
     public static final String CHANNEL_SPEXORS = "spexors";
+
+    public static final String CHANNEL_SPEXOR_SOC = "soc";
+    public static final String CHANNEL_SPEXOR_POWER = "power";
 
     // Authorization related Servlet and resources aliases.
     public static final String SPEXOR_OPENHAB_URL = "/spexor";
     public static final String SPEXOR_OPENHAB_RESOURCES_URL = SPEXOR_OPENHAB_URL + "/resources";
 
     public static final int BACKGROUND_SCAN_REFRESH_MINUTES = 5;
-
-    public static final int OAUTH_EXPIRE_BUFFER = 10;
 
     public static final String DEVICE_CODE = "deviceCode";
     public static final String PROPERTY_SPEXOR_ID = "deviceID";
@@ -57,13 +59,21 @@ public class BoschSpexorBindingConstants {
     public static final String DEVICE_CODE_REQUEST_TIME_LIFETIME = DEVICE_CODE + ".lifetime";
     public static final String DEVICE_CODE_REQUEST_INTERVAL = DEVICE_CODE + ".interval";
 
+    public static final String OAUTH2 = "oauth2";
+    public static final String OAUTH2_ACCESSTOKEN = OAUTH2 + ".accesstoken";
+    public static final String OAUTH2_REFRESHTOKEN = OAUTH2 + ".refreshtoken";
+    public static final String OAUTH2_EXPIRED_AT = OAUTH2 + ".expiredAt";
+    public static final String OAUTH2_CREATEDON = OAUTH2 + ".createdOn";
+
     public static final String OAUTH_FLOW_AUTHORIZATION_PENDING = "authorization_pending";
     public static final String OAUTH_FLOW_AUTHORIZATION_DECLINED = "authorization_declined";
     public static final String OAUTH_FLOW_BAD_VERIFICATION_CODE = "bad_verification_code";
     public static final String OAUTH_FLOW_EXPIRED_TOKEN = "expired_token";
 
-    public static final String ENDPOINT_SPEXORS = "api/public/spexors/";
-    public static final String ENDPOINT_SPEXOR = "api/public/spexor/";
+    public static final String ENDPOINT_SPEXORS = "api/public/v1/spexors/";
+    public static final String ENDPOINT_SPEXOR = "api/public/v1/spexor/";
+    public static final String ENDPOINT_SENSORVALUE = "/sensor?keys=";
+    public static final String ENDPOINT_OBSERVATION = "/status/observation";
 
     public static final String getConstantBinding(String constant) {
         return MessageFormat.format("{0}.{1}", BINDING_ID, constant);

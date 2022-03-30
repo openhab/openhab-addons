@@ -18,11 +18,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.boschspexor.internal.api.model.Spexor;
+import org.openhab.binding.boschspexor.internal.api.service.auth.SpexorAuthorizationProcessListener;
 import org.openhab.binding.boschspexor.internal.api.service.auth.SpexorAuthorizationService;
 import org.openhab.binding.boschspexor.internal.api.service.auth.SpexorAuthorizationService.SpexorAuthGrantState;
 import org.openhab.binding.boschspexor.internal.discovery.BoschSpexorDiscoveryService;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -35,53 +39,59 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SpexorBridgeHandler extends BaseBridgeHandler {
+/**
+ * Spexor Bridge Handler
+ *
+ * @author Marc Fischer - Initial contribution *
+ */
+@NonNullByDefault
+public class SpexorBridgeHandler extends BaseBridgeHandler implements SpexorAuthorizationProcessListener {
     private final Logger logger = LoggerFactory.getLogger(SpexorBridgeHandler.class);
 
     // private @NonNullByDefault Future<?> pollingFuture;
     private BoschSpexorBridgeConfig bridgeConfig;
-    private final @NonNull SpexorAuthorizationService authService;
-    private final @NonNull SpexorAPIService apiService;
+    private SpexorAuthorizationService authService;
+    private SpexorAPIService apiService;
 
-    private BoschSpexorDiscoveryService discoveryService;
+    private @Nullable BoschSpexorDiscoveryService discoveryService;
 
-    private @NonNull ChannelUID spexorsChannelUID;
+    private ChannelUID spexorsChannelUID;
 
-    public SpexorBridgeHandler(Bridge bridge, @NonNull SpexorAuthorizationService authService,
-            @NonNull SpexorAPIService apiService) {
+    public SpexorBridgeHandler(Bridge bridge, HttpClient httpClient, StorageService storageService) {
         super(bridge);
-        this.authService = authService;
-        this.apiService = apiService;
+        bridgeConfig = getConfigAs(BoschSpexorBridgeConfig.class);
         spexorsChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_SPEXORS);
-        initialize();
+        this.authService = new SpexorAuthorizationService(httpClient, storageService, this);
+        this.apiService = new SpexorAPIService(authService);
     }
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-        logger.debug("Initializing Bosch spexor BridgeHandler...");
-        bridgeConfig = getConfigAs(BoschSpexorBridgeConfig.class);
+        logger.debug("Initializing Bosch spexor BridgeHandler... using {}", bridgeConfig.getHost());
         authService.setConfig(bridgeConfig);
-        updateStatus(ThingStatus.UNINITIALIZED);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.INITIALIZING.NONE);
         if (authService.isRegistered()) {
-            updateStatus(ThingStatus.INITIALIZING);
             authService.authorize();
-            if (isAuthorized()) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
+            updateStatus();
         } else {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_PENDING,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Please register your openHAB and visit this website: http(s)://<YOUROPENHAB>:<YOURPORT>"
                             + SPEXOR_OPENHAB_URL);
         }
     }
 
+    private void updateStatus() {
+        if (isAuthorized()) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE);
+        }
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command '{}' received for channel '{}'", command, channelUID);
-        if (command instanceof RefreshType) {
+        logger.debug("Command '{}' received for channel '{}'", command, channelUID);
+        if (command instanceof RefreshType && discoveryService != null) {
             discoveryService.startScan(null);
         }
     }
@@ -114,6 +124,14 @@ public class SpexorBridgeHandler extends BaseBridgeHandler {
         return this.thing.getUID();
     }
 
+    public SpexorAPIService getApiService() {
+        return apiService;
+    }
+
+    public SpexorAuthorizationService getAuthService() {
+        return authService;
+    }
+
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(BoschSpexorDiscoveryService.class);
@@ -122,7 +140,12 @@ public class SpexorBridgeHandler extends BaseBridgeHandler {
     /**
      * Called by the discovery service to let this handler have a reference.
      */
-    public void setDiscoveryService(BoschSpexorDiscoveryService discoveryService) {
+    public void setDiscoveryService(@Nullable BoschSpexorDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
+    }
+
+    @Override
+    public void changedState(SpexorAuthGrantState oldState, SpexorAuthGrantState newState) {
+        updateStatus();
     }
 }

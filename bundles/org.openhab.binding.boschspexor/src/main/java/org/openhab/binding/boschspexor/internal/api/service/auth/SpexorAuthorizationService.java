@@ -1,32 +1,48 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.boschspexor.internal.api.service.auth;
 
 import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstants.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.boschspexor.internal.api.service.BoschSpexorBridgeConfig;
-import org.openhab.core.auth.oauth2client.internal.OAuthStoreHandler;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.nimbusds.common.contenttype.ContentType;
 import com.nimbusds.oauth2.sdk.AbstractOptionallyIdentifiedRequest;
 import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.nimbusds.oauth2.sdk.AuthorizationGrant;
@@ -42,7 +58,6 @@ import com.nimbusds.oauth2.sdk.device.DeviceCodeGrant;
 import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
-import com.nimbusds.oauth2.sdk.token.Tokens;
 
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -52,9 +67,9 @@ import net.minidev.json.parser.JSONParser;
  * Therefore the state is tracked with the {@link SpexorAuthGrantState}s.
  * The Service is polling against the OAuth2.0 device flow authorization service of Bosch spexor.
  *
- * @author Marc
- *
+ * @author Marc Fischer - Initial contribution *
  */
+@NonNullByDefault
 public class SpexorAuthorizationService {
 
     private final Logger logger = LoggerFactory.getLogger(SpexorAuthorizationService.class);
@@ -62,7 +77,7 @@ public class SpexorAuthorizationService {
     /**
      * State machine of the authorization process
      *
-     * @author Marc
+     * @author Marc Fischer - Initial contribution
      *
      */
     public enum SpexorAuthGrantState {
@@ -88,50 +103,48 @@ public class SpexorAuthorizationService {
         AWAITING_USER_ACCEPTANCE
     }
 
-    private final OAuthStoreHandler oAuthStoreHandler;
     private final HttpClient httpClient;
-    private BoschSpexorBridgeConfig bridgeConfig = null;
+    private Optional<BoschSpexorBridgeConfig> bridgeConfig = Optional.empty();
     private Storage<String> storage;
     private AuthProcessingStatus processingStatus = new AuthProcessingStatus();
     private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
-    private String handle = null;
+    private Optional<OAuthToken> token;
+    private Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
+    private SpexorAuthorizationProcessListener authListener;
 
-    public SpexorAuthorizationService(@NonNull OAuthStoreHandler oAuthStoreHandler, @NonNull HttpClient httpClient,
-            final @Reference StorageService storageService) {
+    public SpexorAuthorizationService(HttpClient httpClient, final @Reference StorageService storageService,
+            SpexorAuthorizationProcessListener authListener) {
         this.httpClient = httpClient;
-        this.oAuthStoreHandler = oAuthStoreHandler;
+        this.authListener = authListener;
         this.storage = storageService.getStorage(BINDING_ID, String.class.getClassLoader());
-        processingStatus.uninitialized();
+        this.token = OAuthToken.load(storage);
     }
 
-    public Request newRequest(String... parameters) {
+    public Optional<Request> newRequest(String... parameters) {
         try {
             authorize();
-            if (SpexorAuthGrantState.AUTHORIZED.equals(processingStatus.getState())) {
-                String handle = getConstantBinding(bridgeConfig.getScope());
+            if (SpexorAuthGrantState.AUTHORIZED.equals(processingStatus.getState()) && bridgeConfig.isPresent()
+                    && token.isPresent()) {
                 Request request = httpClient
-                        .newRequest(String.join("", bridgeConfig.getHost(), String.join("", parameters)));
-                org.openhab.core.auth.client.oauth2.AccessTokenResponse token = oAuthStoreHandler
-                        .loadAccessTokenResponse(handle);
-                request.header("Authorization", String.join(" ", "Bearer", token.getAccessToken()));
-                return request;
+                        .newRequest(String.join("", bridgeConfig.get().getHost(), String.join("", parameters)));
+
+                request.header("Authorization", String.join(" ", "Bearer", token.get().getAccessToken().get()));
+                return Optional.of(request);
             }
-        } catch (GeneralSecurityException e) {
+        } catch (Exception e) {
             logger.error("failed to load access token", e);
-            processingStatus.error("Authorization information could not be loaded. Pleaes check logs.");
+            processingStatus.error("Authorization information could not be loaded. Pleaes check logs.", authListener);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     public boolean isRegistered() {
-        boolean result = bridgeConfig != null;
+        boolean result = token.isPresent();
         if (result) {
-            String handle = getConstantBinding(bridgeConfig.getScope());
             try {
-                org.openhab.core.auth.client.oauth2.AccessTokenResponse tokenResp = oAuthStoreHandler
-                        .loadAccessTokenResponse(handle);
-                result = StringUtils.isNotEmpty(tokenResp.getRefreshToken());
+                result = token.isPresent() && token.get().getRefreshToken().isPresent()
+                        && isNotEmpty(token.get().getRefreshToken().get());
             } catch (Exception e) {
                 logger.error("failed to load access token", e);
                 result = false;
@@ -145,48 +158,54 @@ public class SpexorAuthorizationService {
      * or is already synced
      */
     public void authorize() {
-        if (bridgeConfig == null) {
+        if (bridgeConfig.isEmpty()) {
             throw new IllegalStateException("configuration was not loaded");
         }
 
         String deviceCode = getConstantBinding(DEVICE_CODE);
-        try {
-            org.openhab.core.auth.client.oauth2.AccessTokenResponse tokenResp = oAuthStoreHandler
-                    .loadAccessTokenResponse(handle);
-            if (tokenResp == null) {
-                if (StringUtils.isEmpty(storage.get(deviceCode))) {
+        if (token.isEmpty()) {
+            if (isEmpty(storage.get(deviceCode))) {
+                registerAsDevice();
+            } else {
+                // device was registered but not completed by user flow - timeout needs to be checked
+                LocalDateTime deviceCodeRequestTime = getDeviceCodeRequestTime();
+                String requestLifetime = storage.get(getConstantBinding(DEVICE_CODE_REQUEST_TIME_LIFETIME));
+                long lifeTime = 10L;
+
+                if (requestLifetime != null && isNumeric(requestLifetime)) {
+                    lifeTime = Long.valueOf(requestLifetime);
+                }
+                if (isExpired(deviceCodeRequestTime, lifeTime)) {
                     registerAsDevice();
                 } else {
-                    // device was registered but not completed by user flow - timeout needs to be checked
-                    LocalDateTime deviceCodeRequestTime = getDeviceCodeRequestTime();
-                    String requestLifetime = storage.get(getConstantBinding(DEVICE_CODE_REQUEST_TIME_LIFETIME));
-                    long lifeTime = 10L;
-                    if (requestLifetime != null && StringUtils.isNumeric(requestLifetime)) {
-                        lifeTime = Long.valueOf(requestLifetime);
-                    }
-                    if (isExpired(deviceCodeRequestTime, lifeTime)) {
-                        registerAsDevice();
-                    } else {
-                        loadAccessToken();
-                    }
+                    loadAccessToken();
                 }
-            } else if (tokenResp.isExpired(LocalDateTime.now(), OAUTH_EXPIRE_BUFFER)) {
-                refreshAccessToken();
-            } else {
-                // token is fine and doesn't need to be updated
-                processingStatus.valid();
             }
-        } catch (GeneralSecurityException e) {
-            logger.error("failed to load access token", e);
-            processingStatus.error("Authorization information could not be loaded. Pleaes check logs.");
+        } else if (token.get().isAccessTokenExpired()) {
+            refreshAccessToken();
+        } else {
+            // token is fine and doesn't need to be updated
+            processingStatus.valid(authListener);
         }
+    }
+
+    public void reset() {
+        storage.remove(getConstantBinding(DEVICE_CODE));
+        storage.remove(getConstantBinding(DEVICE_CODE_REQUEST_TIME));
+        storage.remove(getConstantBinding(DEVICE_CODE_REQUEST_TIME_LIFETIME));
+        storage.remove(getConstantBinding(DEVICE_CODE_REQUEST_INTERVAL));
+        if (token.isPresent()) {
+            token.get().reset(storage);
+            token = OAuthToken.load(storage);
+        }
+        processingStatus.uninitialized(authListener);
     }
 
     private void registerAsDevice() {
         try {
             DeviceAuthorizationRequest request = new DeviceAuthorizationRequest(
-                    new URI(bridgeConfig.buildAuthorizationUrl()), new ClientID(bridgeConfig.getClientId()),
-                    new Scope(bridgeConfig.getScope()));
+                    new URI(bridgeConfig.get().buildAuthorizationUrl()), new ClientID(bridgeConfig.get().getClientId()),
+                    new Scope(bridgeConfig.get().getScope()));
             JSONObject response = requestSpexorBackend(request, "authorization");
             if (response != null) {
                 DeviceAuthorizationResponse resp = DeviceAuthorizationResponse.parse(response);
@@ -197,26 +216,27 @@ public class SpexorAuthorizationService {
                             String.valueOf(resp.toSuccessResponse().getLifetime()));
                     storage.put(getConstantBinding(DEVICE_CODE_REQUEST_INTERVAL),
                             String.valueOf(resp.toSuccessResponse().getInterval()));
-                    processingStatus.awaitingUserAcceptance(resp.toSuccessResponse().getUserCode().getValue());
+                    processingStatus.awaitingUserAcceptance(resp.toSuccessResponse().getDeviceCode().getValue(),
+                            resp.toSuccessResponse().getUserCode().getValue(), authListener);
                     pollStatus();
                 } else {
                     logger.error("error reported with code '{}'", resp.toErrorResponse().getErrorObject().getCode());
                     processingStatus.error(MessageFormat.format("Server responded with {0} \"{1}\"",
                             resp.toErrorResponse().getErrorObject().getCode(),
-                            resp.toErrorResponse().getErrorObject().getDescription()));
+                            resp.toErrorResponse().getErrorObject().getDescription()), authListener);
                 }
             }
         } catch (ParseException | URISyntaxException e) {
             String message = ("response did not comply to excected response:" + e.getLocalizedMessage());
             logger.error(message, e);
-            processingStatus.error(message);
+            processingStatus.error(message, authListener);
         }
     }
 
     private void pollStatus() {
         long interval = 5; // by default 5 seconds
         String requestInterval = storage.get(getConstantBinding(DEVICE_CODE_REQUEST_INTERVAL));
-        if (requestInterval != null && StringUtils.isNumeric(requestInterval)) {
+        if (requestInterval != null && isNumeric(requestInterval)) {
             interval = Long.valueOf(requestInterval);
         }
         final LocalDateTime requestedPolling = LocalDateTime.now();
@@ -231,33 +251,34 @@ public class SpexorAuthorizationService {
         if (processingStatus.getState() == SpexorAuthGrantState.AWAITING_USER_ACCEPTANCE) {
             AuthorizationGrant authorizationGrant = new DeviceCodeGrant(
                     new DeviceCode(storage.get(getConstantBinding(DEVICE_CODE))));
-            String tokenUrl = bridgeConfig.buildTokenUrl();
+            processingStatus.setDeviceCode(storage.get(getConstantBinding(DEVICE_CODE)));
+            String tokenUrl = bridgeConfig.get().buildTokenUrl();
             requestAuthorizationGrant(authorizationGrant, tokenUrl, "token");
         } else {
-            processingStatus.expiredDeviceToken();
+            processingStatus.expiredDeviceToken(authListener);
+            processingStatus.setDeviceCode(storage.get(getConstantBinding(DEVICE_CODE)));
         }
+    }
+
+    public Optional<OAuthToken> getToken() {
+        return token;
     }
 
     private void requestAuthorizationGrant(AuthorizationGrant authorizationGrant, String tokenUrl, String purpose) {
         try {
-            TokenRequest request = new TokenRequest(new URI(tokenUrl), new ClientID(bridgeConfig.getClientId()),
-                    authorizationGrant, new Scope(bridgeConfig.getScope()));
+            TokenRequest request = new TokenRequest(new URI(tokenUrl), new ClientID(bridgeConfig.get().getClientId()),
+                    authorizationGrant, new Scope(bridgeConfig.get().getScope()));
             JSONObject response = requestSpexorBackend(request, purpose);
             if (response != null) {
                 TokenResponse resp = TokenResponse.parse(response);
                 if (resp.indicatesSuccess()) {
                     AccessTokenResponse successResponse = resp.toSuccessResponse();
-                    String handle = getConstantBinding(bridgeConfig.getScope());
-                    org.openhab.core.auth.client.oauth2.AccessTokenResponse accessTokenResponse = new org.openhab.core.auth.client.oauth2.AccessTokenResponse();
-                    Tokens tokens = successResponse.getTokens();
-                    accessTokenResponse.setAccessToken(tokens.getAccessToken().getValue());
-                    accessTokenResponse.setCreatedOn(LocalDateTime.now());
-                    accessTokenResponse.setRefreshToken(tokens.getRefreshToken().getValue());
-                    accessTokenResponse.setExpiresIn(tokens.getAccessToken().getLifetime());
-                    accessTokenResponse.setScope(String.valueOf(tokens.getAccessToken().getScope()));
-                    accessTokenResponse.setTokenType(tokens.getAccessToken().getType().getValue());
-                    oAuthStoreHandler.saveAccessTokenResponse(handle, accessTokenResponse);
-                    processingStatus.valid();
+                    OAuthToken token = OAuthToken.of(successResponse.getTokens());
+                    logger.debug("new token is {}", token);
+                    token.save(this.storage);
+                    logger.debug("token was stored");
+                    this.token = Optional.of(token);
+                    processingStatus.valid(authListener);
                 } else {
                     // handle error states (not all)
                     String error = resp.toErrorResponse().getErrorObject().getCode();
@@ -270,29 +291,30 @@ public class SpexorAuthorizationService {
                         pollStatus();
                     } else if (OAUTH_FLOW_AUTHORIZATION_DECLINED.equalsIgnoreCase(error)
                             || OAUTH_FLOW_EXPIRED_TOKEN.equalsIgnoreCase(error)) {
+                        logger.debug("authorization request returned error {}", error);
                         // authorization_declined
                         // -- The end user denied the authorization request. Stop polling, and revert to an
                         // -- unauthenticated state.
                         // expired_token
                         // -- At least expires_in seconds have passed, and authentication is no longer possible with
                         // -- this device_code. Stop polling and revert to an unauthenticated state
-                        processingStatus.expiredDeviceToken();
+                        processingStatus.expiredDeviceToken(authListener);
                     } else if (OAUTH_FLOW_BAD_VERIFICATION_CODE.equalsIgnoreCase(error)) {
                         // bad_verification_code
                         // -- The device_code sent to the /token endpoint wasn't recognized. Verify that the client
                         // is
                         // -- sending the correct device_code in the request.
                         //
-                        processingStatus.error(error);
+                        processingStatus.error(error, authListener);
                     } else {
-                        processingStatus.error("Unknown state '" + error + "'");
+                        processingStatus.error("Unknown state '" + error + "'", authListener);
                     }
                 }
             }
-        } catch (URISyntaxException | ParseException e) {
+        } catch (Exception e) {
             String message = MessageFormat.format("invalid message {0}", e.getLocalizedMessage());
             logger.error(message, e);
-            processingStatus.error(message);
+            processingStatus.error(message, authListener);
             return;
         }
     }
@@ -300,20 +322,16 @@ public class SpexorAuthorizationService {
     private void refreshAccessToken() {
 
         if (processingStatus.getState() == SpexorAuthGrantState.AUTHORIZED) {
-            String handle = getConstantBinding(bridgeConfig.getScope());
-            try {
-                org.openhab.core.auth.client.oauth2.AccessTokenResponse tokenResp = oAuthStoreHandler
-                        .loadAccessTokenResponse(handle);
+            if (token.isPresent() && token.get().getRefreshToken().isPresent()) {
                 AuthorizationGrant authorizationGrant = new RefreshTokenGrant(
-                        new RefreshToken(tokenResp.getRefreshToken()));
-                String refreshUrl = bridgeConfig.buildRefreshUrl();
+                        new RefreshToken(token.get().getRefreshToken().get()));
+                String refreshUrl = bridgeConfig.get().buildRefreshUrl();
                 requestAuthorizationGrant(authorizationGrant, refreshUrl, "refresh");
-            } catch (GeneralSecurityException e) {
-                logger.error("could not load stored refresh token", e);
-                processingStatus.error("could not access refresh token - '" + e.getLocalizedMessage() + "'");
+            } else {
+                processingStatus.error("could not access refresh token - its empty", authListener);
             }
         } else {
-            processingStatus.expiredDeviceToken();
+            processingStatus.expiredDeviceToken(authListener);
         }
     }
 
@@ -325,7 +343,7 @@ public class SpexorAuthorizationService {
         LocalDateTime result = LocalDateTime.MIN;
         String key = getConstantBinding(DEVICE_CODE_REQUEST_TIME);
         String value = storage.get(key);
-        if (!StringUtils.isEmpty(value)) {
+        if (isNotEmpty(value)) {
             try {
                 result = LocalDateTime.parse(value.subSequence(0, value.length() - 1));
             } catch (DateTimeException e) {
@@ -335,23 +353,37 @@ public class SpexorAuthorizationService {
         return result;
     }
 
+    @Nullable
     private JSONObject requestSpexorBackend(AbstractOptionallyIdentifiedRequest req, String contextName) {
         JSONObject result = null;
         HTTPRequest httpRequest = req.toHTTPRequest();
         Request request = httpClient.newRequest((httpRequest.getURI()));
         request.method(httpRequest.getMethod().name());
-        request.accept(httpRequest.getAccept());
-        request.header("Authorization", httpRequest.getAuthorization());
+        if (httpRequest.getAccept() != null) {
+            request.accept(httpRequest.getAccept());
+        }
+        if (httpRequest.getAuthorization() != null && !"".contentEquals(httpRequest.getAuthorization())) {
+            request.header("Authorization", httpRequest.getAuthorization());
+        }
         httpRequest.getHeaderMap().keySet().stream().forEach((c) -> request.header(c, httpRequest.getHeaderValue(c)));
-        httpRequest.getQueryParameters().keySet().stream()
-                .forEach((p) -> request.param(p, String.valueOf(httpRequest.getQueryParameters().get(p))));
+        if (ContentType.APPLICATION_URLENCODED.getType().equals(request.getHeaders().get("Content-Type"))) {
+            Fields formFields = new Fields();
+            request.content(new FormContentProvider(formFields));
+            httpRequest.getQueryParameters().keySet().stream()
+                    .forEach((p) -> formFields.add(p, String.valueOf(httpRequest.getQueryParameters().get(p))));
+        } else {
+            request.content(new StringContentProvider(httpRequest.getQuery()));
+        }
+
         ContentResponse response;
         try {
             response = request.send();
+            logger.debug("send message {} headers[{}] with result {} content[{}]", request, request.getHeaders(),
+                    response, response.getContentAsString());
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             String message = ("code couldn't be requested:" + e.getLocalizedMessage());
             logger.error(message);
-            processingStatus.error(message);
+            processingStatus.error(message, authListener);
             return result;
         }
         JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
@@ -359,27 +391,28 @@ public class SpexorAuthorizationService {
             Object parsedResult = parser.parse(response.getContent());
             if (parsedResult instanceof JSONObject) {
                 result = (JSONObject) parsedResult;
+                logger.debug("parsed json : {}", result);
             } else {
                 String message = ("response did not comply to excected resonse. Excepted: JSON received:"
                         + (parsedResult == null ? "null" : parsedResult.getClass()));
                 logger.error(message);
-                processingStatus.error(message);
+                processingStatus.error(message, authListener);
             }
         } catch (net.minidev.json.parser.ParseException e) {
             String message = ("response did not comply to excected response:" + e.getLocalizedMessage());
             logger.error(message, e);
-            processingStatus.error(message);
+            processingStatus.error(message, authListener);
         }
         return result;
     }
 
     public BoschSpexorBridgeConfig getConfig() {
-        return bridgeConfig;
+        return bridgeConfig.get();
     }
 
     public void setConfig(BoschSpexorBridgeConfig bridgeConfig) {
-        this.bridgeConfig = bridgeConfig;
-        handle = getConstantBinding(bridgeConfig.getScope());
+        logger.info("spexor config was assigned");
+        this.bridgeConfig = Optional.of(bridgeConfig);
     }
 
     public AuthProcessingStatus getStatus() {
@@ -388,5 +421,26 @@ public class SpexorAuthorizationService {
 
     public ScheduledThreadPoolExecutor getThreadPoolExecutor() {
         return this.executor;
+    }
+
+    public boolean isNumeric(@Nullable String candidate) {
+        if (candidate == null) {
+            return false;
+        }
+        return pattern.matcher(candidate).matches();
+    }
+
+    public boolean isEmpty(@Nullable String candidate) {
+        if (candidate == null) {
+            return true;
+        }
+        return "".equalsIgnoreCase(candidate.trim());
+    }
+
+    public boolean isNotEmpty(@Nullable String candidate) {
+        if (candidate == null) {
+            return false;
+        }
+        return !"".equalsIgnoreCase(candidate.trim());
     }
 }

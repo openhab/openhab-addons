@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.boschspexor.internal.api.service.auth;
 
 import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstants.*;
@@ -26,6 +38,11 @@ import org.slf4j.LoggerFactory;
 
 import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 
+/**
+ * Creates a servlet and binds the business objects
+ *
+ * @author Marc Fischer - Initial contribution *
+ */
 @Component(service = SpexorUserGrantService.class, configurationPid = "binding.spexor.userGrantService")
 public class SpexorUserGrantService {
     private static final String HTML_FOLDER = "html/";
@@ -58,6 +75,7 @@ public class SpexorUserGrantService {
     }
 
     public void initialize(SpexorAuthorizationService authService) {
+        logger.info("authService is assigned and can be used");
         this.authService = authService;
     }
 

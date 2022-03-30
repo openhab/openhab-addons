@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.boschspexor.internal.discovery;
 
 import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstants.*;
@@ -5,6 +17,7 @@ import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstan
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +37,11 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Discovery Service to determine spexors
+ *
+ * @author Marc Fischer - Initial contribution *
+ */
 @NonNullByDefault
 public class BoschSpexorDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService {
@@ -32,13 +50,17 @@ public class BoschSpexorDiscoveryService extends AbstractDiscoveryService
     private static final int DISCOVERY_TIME_SECONDS = 10;
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(SPEXOR_THING_TYPE);
 
-    private @NonNullByDefault({}) SpexorBridgeHandler bridgeHandler;
+    private Optional<SpexorBridgeHandler> bridgeHandler = Optional.empty();
     private @NonNullByDefault({}) ThingUID bridgeUID;
 
     private @Nullable ScheduledFuture<?> backgroundFuture;
 
-    public BoschSpexorDiscoveryService(int timeout) throws IllegalArgumentException {
+    public BoschSpexorDiscoveryService() throws IllegalArgumentException {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIME_SECONDS);
+    }
+
+    public void init() {
+        // logger.debug("bridgeHandler is " + (bridgeHandler.isEmpty() ? "'null'" : "available"));
     }
 
     @Override
@@ -56,21 +78,21 @@ public class BoschSpexorDiscoveryService extends AbstractDiscoveryService
     @Override
     public void deactivate() {
         super.deactivate();
-        bridgeHandler.setDiscoveryService(null);
+        bridgeHandler.get().setDiscoveryService(null);
     }
 
     @Override
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof SpexorBridgeHandler) {
-            bridgeHandler = (SpexorBridgeHandler) handler;
-            bridgeUID = bridgeHandler.getUID();
-            bridgeHandler.setDiscoveryService(this);
+            bridgeHandler = Optional.of((SpexorBridgeHandler) handler);
+            bridgeUID = bridgeHandler.get().getUID();
+            bridgeHandler.get().setDiscoveryService(this);
         }
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+        return bridgeHandler.isEmpty() ? null : bridgeHandler.get();
     }
 
     @Override
@@ -90,9 +112,9 @@ public class BoschSpexorDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected void startScan() {
-        if (bridgeHandler.isAuthorized()) {
+        if (bridgeHandler.isPresent() && bridgeHandler.get().isAuthorized()) {
             logger.debug("Starting spexor discovery for bridge {}", bridgeUID);
-            bridgeHandler.listSpexors().forEach(this::thingDiscovered);
+            bridgeHandler.get().listSpexors().forEach(this::thingDiscovered);
         }
     }
 

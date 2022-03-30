@@ -14,15 +14,15 @@ package org.openhab.binding.boschspexor.internal;
 
 import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstants.*;
 
-import org.connectorio.cloud.device.auth.nimbus.internal.NimbusDeviceAuthenticator;
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.boschspexor.internal.api.service.SpexorAPIService;
 import org.openhab.binding.boschspexor.internal.api.service.SpexorBridgeHandler;
-import org.openhab.binding.boschspexor.internal.api.service.auth.SpexorAuthorizationService;
 import org.openhab.binding.boschspexor.internal.api.service.auth.SpexorUserGrantService;
-import org.openhab.core.auth.oauth2client.internal.OAuthStoreHandler;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
@@ -45,22 +45,16 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.boschspexor", service = ThingHandlerFactory.class)
 public class BoschSpexorHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
-    private @Nullable OAuthStoreHandler oAuthStoreHandler;
     private final SpexorUserGrantService authGrantService;
-    private final SpexorAuthorizationService authService;
-    private final SpexorAPIService apiService;
-    private @Nullable StorageService storageService;
+    private Optional<SpexorAPIService> apiService = Optional.empty();
+    private StorageService storageService;
 
     @Activate
-    public BoschSpexorHandlerFactory(@Reference OAuthStoreHandler oAuthStoreHandler,
-            @Reference StorageService storageService, @Reference final HttpClientFactory httpClientFactory,
-            @Reference final NimbusDeviceAuthenticator deviceAuthenticator,
-            @Reference SpexorUserGrantService authGrantService) {
+    public BoschSpexorHandlerFactory(@Reference OAuthFactory oauthFactory, @Reference StorageService storageService,
+            @Reference final HttpClientFactory httpClientFactory, @Reference SpexorUserGrantService authGrantService) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.authGrantService = authGrantService;
         this.storageService = storageService;
-        this.authService = new SpexorAuthorizationService(oAuthStoreHandler, httpClient, storageService);
-        this.apiService = new SpexorAPIService(authService);
     }
 
     @Override
@@ -74,9 +68,13 @@ public class BoschSpexorHandlerFactory extends BaseThingHandlerFactory {
 
         ThingHandler result = null;
         if (SPEXOR_BRIDGE_TYPE.equals(thingTypeUID)) {
-            result = new SpexorBridgeHandler((Bridge) thing, authService, apiService);
+            SpexorBridgeHandler spexorBridgeHandler = new SpexorBridgeHandler((Bridge) thing, httpClient,
+                    storageService);
+            this.apiService = Optional.of(spexorBridgeHandler.getApiService());
+            this.authGrantService.initialize(spexorBridgeHandler.getAuthService());
+            result = spexorBridgeHandler;
         } else if (SPEXOR_THING_TYPE.equals(thingTypeUID)) {
-            result = new BoschSpexorHandler(thing, apiService);
+            result = new BoschSpexorThingHandler(thing, apiService.get());
         }
 
         return result;

@@ -1,13 +1,26 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.boschspexor.internal.api.service.auth;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstants.*;
+import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstants.BINDING_ID;
 
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,28 +41,31 @@ import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 import org.openhab.binding.boschspexor.internal.api.service.BoschSpexorBridgeConfig;
 import org.openhab.binding.boschspexor.internal.api.service.auth.SpexorAuthorizationService.SpexorAuthGrantState;
-import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
-import org.openhab.core.auth.oauth2client.internal.OAuthStoreHandlerImpl;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.test.storage.VolatileStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Authorization Tests for the Bosch spexor backend
+ *
+ * @author Marc Fischer - Initial contribution
+ *
+ */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
 public class SpexorAuthorizationServiceTest {
     private final Logger logger = LoggerFactory.getLogger(SpexorAuthorizationServiceTest.class);
     private SpexorAuthorizationService authorizationService;
-    private OAuthStoreHandlerImpl oAuthStoreHandler;
     private @Mock HttpClient httpClient;
     private @Mock HttpConversation conversation;
     private StorageService storageService = new VolatileStorageService();
     private BoschSpexorBridgeConfig bridgeConfig;
+    private @Mock SpexorAuthorizationProcessListener listener;
 
     @BeforeEach
     public void setUp() {
-        oAuthStoreHandler = new OAuthStoreHandlerImpl(storageService);
         bridgeConfig = new BoschSpexorBridgeConfig();
         bridgeConfig.setTesting(true);
     }
@@ -67,7 +83,7 @@ public class SpexorAuthorizationServiceTest {
 
     @Test
     public void testInitializeFirstTime() {
-        authorizationService = new SpexorAuthorizationService(oAuthStoreHandler, httpClient, storageService);
+        authorizationService = new SpexorAuthorizationService(httpClient, storageService, listener);
         assertNotNull(authorizationService.getStatus());
         assertEquals(SpexorAuthGrantState.UNINITIALIZED, authorizationService.getStatus().getState());
         verify(httpClient, never()).newRequest(any(URI.class));
@@ -75,7 +91,7 @@ public class SpexorAuthorizationServiceTest {
 
     @Test
     public void testAuthorizationAccepted() {
-        authorizationService = new SpexorAuthorizationService(oAuthStoreHandler, httpClient, storageService);
+        authorizationService = new SpexorAuthorizationService(httpClient, storageService, listener);
         authorizationService.setConfig(bridgeConfig);
 
         ContentResponse responseAuthorization = mock(ContentResponse.class);
@@ -115,14 +131,14 @@ public class SpexorAuthorizationServiceTest {
             }
             Thread.sleep(500);
             assertEquals(SpexorAuthGrantState.AUTHORIZED, authorizationService.getStatus().getState());
-        } catch (Throwable t) {
+        } catch (Exception t) {
             fail(t);
         }
     }
 
     @Test
     public void testAuthorizationOutdated() {
-        authorizationService = new SpexorAuthorizationService(oAuthStoreHandler, httpClient, storageService);
+        authorizationService = new SpexorAuthorizationService(httpClient, storageService, listener);
         authorizationService.setConfig(bridgeConfig);
 
         ContentResponse responseAuthorization = mock(ContentResponse.class);
@@ -142,7 +158,7 @@ public class SpexorAuthorizationServiceTest {
         assertEquals(SpexorAuthGrantState.UNINITIALIZED, authorizationService.getStatus().getState());
         try {
             when(responseAuthorization.getContent()).thenReturn(
-                    " {\"device_code\": \"YUcTDyJOT3XmWS-AoRkE6gv4fbmpV9N5mIRBe8s5AXY\",\"user_code\": \"QAMP-ENOU\",\"expires_in\": 10,\"interval\": 2, \"verification_uri\":\"\"}"
+                    " {\"device_code\": \"YUcTDyJOT3XmWS-AoRkE6gv4fbmpV9N5mIRBe8s5AXY\",\"user_code\":\"QAMP-ENOU\",\"expires_in\": 10,\"interval\": 2, \"verification_uri\":\"\"}"
                             .getBytes());
             when(responseTokenNotCompleted.getContent()).thenReturn("{\"error\":\"authorization_pending\"}".getBytes());
             when(responseTokenOutdated.getContent()).thenReturn("{\"error\":\"expired_token\"}".getBytes());
@@ -162,14 +178,14 @@ public class SpexorAuthorizationServiceTest {
             }
             Thread.sleep(500);
             assertEquals(SpexorAuthGrantState.CODE_REQUEST_FAILED, authorizationService.getStatus().getState());
-        } catch (Throwable t) {
+        } catch (Exception t) {
             fail(t);
         }
     }
 
     @Test
     public void testAuthorizationAcceptedAndContainsValidToken() {
-        authorizationService = new SpexorAuthorizationService(oAuthStoreHandler, httpClient, storageService);
+        authorizationService = new SpexorAuthorizationService(httpClient, storageService, listener);
         authorizationService.setConfig(bridgeConfig);
 
         ContentResponse responseAuthorization = mock(ContentResponse.class);
@@ -186,7 +202,7 @@ public class SpexorAuthorizationServiceTest {
         assertEquals(SpexorAuthGrantState.UNINITIALIZED, authorizationService.getStatus().getState());
         try {
             when(responseAuthorization.getContent()).thenReturn(
-                    " {\"device_code\": \"YUcTDyJOT3XmWS-AoRkE6gv4fbmpV9N5mIRBe8s5AXY\",\"user_code\": \"QAMP-ENOU\",\"expires_in\": 3,\"interval\": 1, \"verification_uri\":\"\"}"
+                    " {\"device_code\": \"YUcTDyJOT3XmWS-AoRkE6gv4fbmpV9N5mIRBe8s5AXY\",\"user_code\":\"QAMP-ENOU\",\"expires_in\": 3,\"interval\": 1, \"verification_uri\":\"\"}"
                             .getBytes());
             when(responseTokenNotCompleted.getContent()).thenReturn("{\"error\":\"authorization_pending\"}".getBytes());
             when(responseTokenCompleted.getContent()).thenReturn(
@@ -208,28 +224,28 @@ public class SpexorAuthorizationServiceTest {
                 assertTrue(timePassedInMillis < 5000, "waiting loop took longer than expected (5 seconds max");
             }
             Thread.sleep(500);
+            Optional<@NonNull OAuthToken> accessToken1 = authorizationService.getToken();
             assertEquals(SpexorAuthGrantState.AUTHORIZED, authorizationService.getStatus().getState());
-            AccessTokenResponse accessToken1 = oAuthStoreHandler
-                    .loadAccessTokenResponse(getConstantBinding(bridgeConfig.getScope()));
-            assertNotNull(accessToken1);
+            assertTrue(accessToken1.isPresent());
+            assertEquals("access-token", accessToken1.get().getAccessToken().get());
             authorizationService.authorize();
             assertEquals(SpexorAuthGrantState.AUTHORIZED, authorizationService.getStatus().getState());
-            AccessTokenResponse accessToken2 = oAuthStoreHandler
-                    .loadAccessTokenResponse(getConstantBinding(bridgeConfig.getScope()));
+            Optional<@NonNull OAuthToken> accessToken2 = authorizationService.getToken();
             assertEquals(accessToken1, accessToken2);
-            assertEquals("access-token", accessToken2.getAccessToken());
-            assertEquals(3600, accessToken2.getExpiresIn());
-            assertEquals("refresh-token", accessToken2.getRefreshToken());
-            assertTrue(
-                    accessToken2.getCreatedOn().plusSeconds(accessToken2.getExpiresIn()).isAfter(LocalDateTime.now()));
-        } catch (Throwable t) {
+            assertTrue(accessToken2.isPresent());
+            assertEquals("access-token", accessToken2.get().getAccessToken().get());
+            assertEquals("refresh-token", accessToken2.get().getRefreshToken().get());
+            assertTrue(accessToken2.get().getCreatedOn().plusSeconds(accessToken2.get().getExpiresAt())
+                    .isAfter(LocalDateTime.now()));
+            assertFalse(accessToken2.get().isAccessTokenExpired());
+        } catch (Exception t) {
             fail(t);
         }
     }
 
     @Test
     public void testAuthorizationAcceptedAndRefreshTokenWasRequestedAgain() {
-        authorizationService = new SpexorAuthorizationService(oAuthStoreHandler, httpClient, storageService);
+        authorizationService = new SpexorAuthorizationService(httpClient, storageService, listener);
         authorizationService.setConfig(bridgeConfig);
 
         ContentResponse responseAuthorization = mock(ContentResponse.class);
@@ -269,33 +285,32 @@ public class SpexorAuthorizationServiceTest {
                 if (SpexorAuthGrantState.AUTHORIZED.equals(authorizationService.getStatus().getState())) {
                     assertEquals(2, authorizationService.getThreadPoolExecutor().getCompletedTaskCount());
                     // already responsed with wished result
+                    logger.debug("service is in authorized state");
                     break;
                 }
                 assertTrue(timePassedInMillis < 5000, "waiting loop took longer than expected (5 seconds max");
             }
             Thread.sleep(500);
+            Optional<@NonNull OAuthToken> accessToken1 = authorizationService.getToken();
             assertEquals(SpexorAuthGrantState.AUTHORIZED, authorizationService.getStatus().getState());
-            AccessTokenResponse accessToken1 = oAuthStoreHandler
-                    .loadAccessTokenResponse(getConstantBinding(bridgeConfig.getScope()));
-            assertNotNull(accessToken1);
-            assertEquals("access-token1", accessToken1.getAccessToken());
-            assertEquals("refresh-token", accessToken1.getRefreshToken());
+            assertTrue(accessToken1.isPresent());
+            assertEquals("access-token1", accessToken1.get().getAccessToken().get());
+            assertEquals("refresh-token", accessToken1.get().getRefreshToken().get());
             Thread.sleep(1000);
-            assertEquals(1, accessToken1.getExpiresIn());
-            assertTrue(
-                    accessToken1.getCreatedOn().plusSeconds(accessToken1.getExpiresIn()).isBefore(LocalDateTime.now()));
+            assertEquals(1, accessToken1.get().getExpiresAt());
+            assertTrue(accessToken1.get().getCreatedOn().plusSeconds(accessToken1.get().getExpiresAt())
+                    .isBefore(LocalDateTime.now()));
             authorizationService.authorize();
             assertEquals(SpexorAuthGrantState.AUTHORIZED, authorizationService.getStatus().getState());
-            AccessTokenResponse accessToken2 = oAuthStoreHandler
-                    .loadAccessTokenResponse(getConstantBinding(bridgeConfig.getScope()));
+            OAuthToken accessToken2 = authorizationService.getToken().get();
             assertNotEquals(accessToken1, accessToken2);
             assertNotNull(accessToken2);
-            assertEquals(3600, accessToken2.getExpiresIn());
-            assertEquals("access-token2", accessToken2.getAccessToken());
-            assertEquals("refresh-token", accessToken2.getRefreshToken());
+            assertEquals(3600, accessToken2.getExpiresAt());
+            assertEquals("access-token2", accessToken2.getAccessToken().get());
+            assertEquals("refresh-token", accessToken2.getRefreshToken().get());
             assertTrue(
-                    accessToken2.getCreatedOn().plusSeconds(accessToken2.getExpiresIn()).isAfter(LocalDateTime.now()));
-        } catch (Throwable t) {
+                    accessToken2.getCreatedOn().plusSeconds(accessToken2.getExpiresAt()).isAfter(LocalDateTime.now()));
+        } catch (Exception t) {
             fail(t);
         }
     }
@@ -303,7 +318,7 @@ public class SpexorAuthorizationServiceTest {
     private Answer<Request> defineResponse(ContentResponse response) {
         return new Answer<Request>() {
             @Override
-            public @Nullable Request answer(@NonNull InvocationOnMock invocation) throws Throwable {
+            public @Nullable Request answer(@NonNull InvocationOnMock invocation) throws Exception {
                 Request request = spy(new FakeHttpRequest(httpClient, conversation, invocation.getArgument(0)));
                 doReturn(response).when(request).send();
                 return request;
