@@ -248,7 +248,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         return this.getThing().getUID().getId();
     }
 
-    private ThingStatusInfo authenticate() {
+    ThingStatusInfo authenticate() {
         TokenResponse token = logonToken;
 
         boolean hasExpired = true;
