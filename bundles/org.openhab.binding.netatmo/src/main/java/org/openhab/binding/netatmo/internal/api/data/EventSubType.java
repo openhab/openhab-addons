@@ -33,6 +33,8 @@ public enum EventSubType {
 
     // Artificially implemented by the binding subtypes
     PERSON_ARRIVAL(EventType.PERSON, 1),
+    PERSON_SEEN(EventType.PERSON, 2),
+    PERSON_DEPARTURE(EventType.PERSON_AWAY, 1),
     MOVEMENT_HUMAN(EventType.MOVEMENT, 1),
     MOVEMENT_VEHICLE(EventType.MOVEMENT, 2),
     MOVEMENT_ANIMAL(EventType.MOVEMENT, 3);

@@ -16,6 +16,7 @@ import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -61,15 +62,15 @@ public class SecurityApi extends RestManager {
     }
 
     public Collection<HomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {
-        // Note : the contract of the API is not respected. It only retrieves the last event and return empty if not the
-        // same person. Adding offset parameter gives a chance to get it but how to guess how many must be retrieved ???
-        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GETEVENTS, PARAM_HOMEID, homeId, PARAM_PERSONID, personId);
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GETEVENTS, PARAM_HOMEID, homeId, PARAM_PERSONID, personId,
+                PARAM_OFFSET, 1);
         NAEventsDataResponse response = get(uriBuilder, NAEventsDataResponse.class);
         BodyResponse<Home> body = response.getBody();
         if (body != null) {
             Home home = body.getElement();
             if (home != null) {
-                return home.getEvents();
+                return home.getEvents().stream().filter(event -> personId.equals(event.getPersonId()))
+                        .collect(Collectors.toList());
             }
         }
         throw new NetatmoException("home should not be null");

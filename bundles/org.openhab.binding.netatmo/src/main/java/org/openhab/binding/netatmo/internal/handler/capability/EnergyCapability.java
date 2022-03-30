@@ -56,10 +56,6 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     EnergyCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
         super(handler);
         this.descriptionProvider = descriptionProvider;
-    }
-
-    @Override
-    public void initialize() {
         ApiBridgeHandler bridgeApi = handler.getRootBridge();
         if (bridgeApi != null) {
             api = Optional.ofNullable(bridgeApi.getRestManager(EnergyApi.class));

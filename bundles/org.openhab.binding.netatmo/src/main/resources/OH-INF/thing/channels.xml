@@ -338,6 +338,8 @@
 				<option value="ALIM_INCORRECT_POWER">Incorrect power adapter</option>
 				<option value="ALIM_CORRECT_POWER">Correct power adapter</option>
 				<option value="PERSON_ARRIVAL">Person arrived</option>
+				<option value="PERSON_DEPARTURE">Person has left</option>
+				<option value="PERSON_SEEN">Person has been seen</option>
 				<option value="MOVEMENT_HUMAN">Human seen</option>
 				<option value="MOVEMENT_VEHICLE">Car seen</option>
 				<option value="MOVEMENT_ANIMAL">Animal seen</option>

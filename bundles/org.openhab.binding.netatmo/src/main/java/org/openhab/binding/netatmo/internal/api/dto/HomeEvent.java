@@ -65,18 +65,20 @@ public class HomeEvent extends Event {
     @Override
     public Optional<EventSubType> getSubTypeDescription() {
         // Blend extra information provided by this kind of event in subcategories...
-        if (isArrival && type == EventType.PERSON) {
-            this.subType = EventSubType.PERSON_ARRIVAL.subType;
+        if (type == EventType.PERSON) {
+            subType = isArrival ? EventSubType.PERSON_ARRIVAL.subType : EventSubType.PERSON_SEEN.subType;
+        } else if (type == EventType.PERSON_AWAY) {
+            subType = EventSubType.PERSON_DEPARTURE.subType;
         } else {
             switch (category) {
                 case ANIMAL:
-                    this.subType = EventSubType.MOVEMENT_ANIMAL.subType;
+                    subType = EventSubType.MOVEMENT_ANIMAL.subType;
                     break;
                 case HUMAN:
-                    this.subType = EventSubType.MOVEMENT_HUMAN.subType;
+                    subType = EventSubType.MOVEMENT_HUMAN.subType;
                     break;
                 case VEHICLE:
-                    this.subType = EventSubType.MOVEMENT_VEHICLE.subType;
+                    subType = EventSubType.MOVEMENT_VEHICLE.subType;
                     break;
                 default:
                     break;

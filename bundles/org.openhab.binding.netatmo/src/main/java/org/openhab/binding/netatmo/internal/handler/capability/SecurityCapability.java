@@ -48,10 +48,6 @@ class SecurityCapability extends RestCapability<SecurityApi> {
 
     SecurityCapability(CommonInterface handler) {
         super(handler);
-    }
-
-    @Override
-    public void initialize() {
         ApiBridgeHandler bridgeApi = handler.getRootBridge();
         if (bridgeApi != null) {
             api = Optional.ofNullable(bridgeApi.getRestManager(SecurityApi.class));

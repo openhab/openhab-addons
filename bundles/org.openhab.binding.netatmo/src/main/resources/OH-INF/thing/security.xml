@@ -75,6 +75,9 @@
 		<label>Last Event</label>
 		<channels>
 			<channel id="subtype" typeId="event-subtype"/>
+			<channel id="message" typeId="string-ro">
+				<label>Message</label>
+			</channel>
 			<channel id="time" typeId="timestamp">
 				<label>Timestamp</label>
 			</channel>
