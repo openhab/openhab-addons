@@ -56,7 +56,7 @@
 
 	<!-- Controller Channels -->
 	<channel-type id="system_date">
-		<item-type>DateTime</item-type>
+		<item-type>String</item-type>
 		<label>Date/Time</label>
 		<description>Set controller date/time.</description>
 		<category>Time</category>
