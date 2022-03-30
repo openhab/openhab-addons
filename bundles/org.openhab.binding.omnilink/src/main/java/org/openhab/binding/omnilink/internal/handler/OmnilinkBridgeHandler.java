@@ -17,6 +17,7 @@ import static org.openhab.binding.omnilink.internal.OmnilinkBindingConstants.*;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -32,7 +33,6 @@ import org.openhab.binding.omnilink.internal.TemperatureFormat;
 import org.openhab.binding.omnilink.internal.config.OmnilinkBridgeConfig;
 import org.openhab.binding.omnilink.internal.discovery.OmnilinkDiscoveryService;
 import org.openhab.binding.omnilink.internal.exceptions.BridgeOfflineException;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -179,8 +179,9 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
         switch (channelUID.getId()) {
             case CHANNEL_SYSTEM_DATE:
-                if (command instanceof DateTimeType) {
-                    ZonedDateTime zdt = ((DateTimeType) command).getZonedDateTime();
+                if (command instanceof StringType) {
+                    ZonedDateTime zdt = ZonedDateTime.parse(((StringType) command).toString(),
+                            DateTimeFormatter.ISO_ZONED_DATE_TIME);
                     boolean inDaylightSavings = zdt.getZone().getRules().isDaylightSavings(zdt.toInstant());
                     try {
                         getOmniConnection().setTimeCommand(zdt.getYear() - 2000, zdt.getMonthValue(),
@@ -191,7 +192,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         logger.debug("Could not send Set Time command to OmniLink Controller: {}", e.getMessage());
                     }
                 } else {
-                    logger.debug("Invalid command: {}, must be DateTimeType", command);
+                    logger.debug("Invalid command: {}, must be StringType", command);
                 }
                 break;
             case CHANNEL_CONSOLE_ENABLE_DISABLE_BEEPER:
@@ -492,7 +493,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 .append(String.format("%02d", status.getHour())).append(":")
                 .append(String.format("%02d", status.getMinute())).append(":")
                 .append(String.format("%02d", status.getSecond())).toString();
-        updateState(CHANNEL_SYSTEM_DATE, new DateTimeType(dateString));
+        updateState(CHANNEL_SYSTEM_DATE, new StringType(dateString));
     }
 
     public Message reqObjectProperties(int objectType, int objectNum, int direction, int filter1, int filter2,
