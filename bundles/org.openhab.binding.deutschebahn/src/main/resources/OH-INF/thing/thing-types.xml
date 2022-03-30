@@ -32,6 +32,11 @@
 					<option value="departures">Departures</option>
 				</options>
 			</parameter>
+			<parameter name="additionalFilter" type="text" required="false">
+				<advanced>true</advanced>
+				<label>Additional Filter</label>
+				<description>Specifies additional filters for trains, that should be displayed within the timetable.</description>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

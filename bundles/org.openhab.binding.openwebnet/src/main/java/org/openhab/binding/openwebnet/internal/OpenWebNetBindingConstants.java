@@ -25,8 +25,8 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link OpenWebNetBindingConstants} class defines common constants, which are used across the whole binding.
  *
  * @author Massimo Valla - Initial contribution
- * @author Andrea Conte - Energy management, Thermoregulation
  * @author Gilberto Cocchi - Thermoregulation
+ * @author Andrea Conte - Energy management, Thermoregulation
  */
 
 @NonNullByDefault
@@ -62,6 +62,8 @@ public class OpenWebNetBindingConstants {
     public static final ThingTypeUID THING_TYPE_BUS_CEN_SCENARIO_CONTROL = new ThingTypeUID(BINDING_ID,
             "bus_cen_scenario_control");
     public static final String THING_LABEL_BUS_CEN_SCENARIO_CONTROL = "CEN Control";
+    public static final ThingTypeUID THING_TYPE_BUS_DRY_CONTACT_IR = new ThingTypeUID(BINDING_ID, "bus_dry_contact_ir");
+    public static final String THING_LABEL_BUS_DRY_CONTACT_IR = "Dry Contact/IR";
     public static final ThingTypeUID THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL = new ThingTypeUID(BINDING_ID,
             "bus_cenplus_scenario_control");
     public static final String THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL = "CEN+ Control";
@@ -94,7 +96,7 @@ public class OpenWebNetBindingConstants {
     public static final Set<ThingTypeUID> ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_ENERGY_METER);
     // ## CEN/CEN+ Scenario
     public static final Set<ThingTypeUID> SCENARIO_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_CEN_SCENARIO_CONTROL,
-            THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL);
+            THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL, THING_TYPE_BUS_DRY_CONTACT_IR);
     // ## Groups
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Stream
             .of(LIGHTING_SUPPORTED_THING_TYPES, AUTOMATION_SUPPORTED_THING_TYPES,
@@ -130,6 +132,7 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_SCENARIO_BUTTON = "button#";
     public static final String CHANNEL_TYPE_CEN_BUTTON_EVENT = "cenButtonEvent";
     public static final String CHANNEL_TYPE_CEN_PLUS_BUTTON_EVENT = "cenPlusButtonEvent";
+    public static final String CHANNEL_DRY_CONTACT_IR = "sensor";
 
     // devices config properties
     public static final String CONFIG_PROPERTY_WHERE = "where";

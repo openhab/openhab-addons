@@ -30,6 +30,10 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deutschebahn.internal.filter.AndPredicate;
+import org.openhab.binding.deutschebahn.internal.filter.FilterParserException;
+import org.openhab.binding.deutschebahn.internal.filter.FilterScannerException;
+import org.openhab.binding.deutschebahn.internal.filter.TimetableStopPredicate;
 import org.openhab.binding.deutschebahn.internal.timetable.TimetableLoader;
 import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1Api;
 import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1ApiFactory;
@@ -151,14 +155,22 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
         try {
             final TimetablesV1Api api = this.timetablesV1ApiFactory.create(config.accessToken, HttpUtil::executeUrl);
 
-            final TimetableStopFilter stopFilter = config.getTimetableStopFilter();
+            final TimetableStopFilter stopFilter = config.getTrainFilterFilter();
+            final TimetableStopPredicate additionalFilter = config.getAdditionalFilter();
+
+            final TimetableStopPredicate combinedFilter;
+            if (additionalFilter == null) {
+                combinedFilter = stopFilter;
+            } else {
+                combinedFilter = new AndPredicate(stopFilter, additionalFilter);
+            }
 
             final EventType eventSelection = stopFilter == TimetableStopFilter.ARRIVALS ? EventType.ARRIVAL
                     : EventType.ARRIVAL;
 
             this.loader = new TimetableLoader( //
                     api, //
-                    stopFilter, //
+                    combinedFilter, //
                     eventSelection, //
                     currentTimeProvider, //
                     config.evaNo, //
@@ -170,6 +182,8 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
                 this.updateChannels();
                 this.restartJob();
             });
+        } catch (FilterScannerException | FilterParserException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (JAXBException | SAXException | URISyntaxException e) {
             this.logger.error("Error initializing api", e);
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

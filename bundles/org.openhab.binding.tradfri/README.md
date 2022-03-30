@@ -10,7 +10,7 @@ The TRÅDFRI controller and sensor devices currently cannot be observed right aw
 This makes it nearly impossible to trigger events for pressed buttons.
 We only can access some static data like the present status or battery level.
 
-The thing type ids are defined according to the lighting devices defined for ZigBee LightLink ([see page 24, table 2](https://www.nxp.com/documents/user_manual/JN-UG-3091.pdf)).
+The thing type ids are defined according to the lighting devices defined for ZigBee LightLink ([see page 24, table 2](https://www.nxp.com/docs/en/user-guide/JN-UG-3091.pdf)).
 These are:
 
 | Device type                     | ZigBee Device ID | Thing type |

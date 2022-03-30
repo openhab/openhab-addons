@@ -96,6 +96,12 @@ public class Helper {
         if (sectionHeaderBeginning > 0) {
             result = result.substring(0, sectionHeaderBeginning);
         }
+        if (!key.endsWith(">")) {
+            startIndex = result.indexOf(">");
+            if (startIndex != -1) {
+                return result.substring(startIndex + 1);
+            }
+        }
         return result;
     }
 

@@ -85,6 +85,9 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
      */
     @Override
     protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
+        // availability topics are also started asynchronously, so no problem here
+        clearAllAvailabilityTopics();
+        initializeAvailabilityTopicsFromConfig();
         return channelStateByChannelUID.values().stream().map(c -> c.start(connection, scheduler, 0))
                 .collect(FutureCollector.allOf()).thenRun(this::calculateThingStatus);
     }
@@ -142,15 +145,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
 
     @Override
     public void initialize() {
-        GenericThingConfiguration config = getConfigAs(GenericThingConfiguration.class);
-
-        String availabilityTopic = config.availabilityTopic;
-
-        if (availabilityTopic != null) {
-            addAvailabilityTopic(availabilityTopic, config.payloadAvailable, config.payloadNotAvailable);
-        } else {
-            clearAllAvailabilityTopics();
-        }
+        initializeAvailabilityTopicsFromConfig();
 
         List<ChannelUID> configErrors = new ArrayList<>();
         for (Channel channel : thing.getChannels()) {
@@ -191,6 +186,18 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+        }
+    }
+
+    private void initializeAvailabilityTopicsFromConfig() {
+        GenericThingConfiguration config = getConfigAs(GenericThingConfiguration.class);
+
+        String availabilityTopic = config.availabilityTopic;
+
+        if (availabilityTopic != null) {
+            addAvailabilityTopic(availabilityTopic, config.payloadAvailable, config.payloadNotAvailable);
+        } else {
+            clearAllAvailabilityTopics();
         }
     }
 }

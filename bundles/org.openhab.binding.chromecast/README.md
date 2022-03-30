@@ -55,7 +55,7 @@ Thing chromecast:audiogroup:bathroom  [ ipAddress="192.168.0.23", port=42139]
 
 | Channel Type ID | Item Type   | Description                                                                                                                                                                           |
 |-----------------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| control         | Player      | Player control; currently only supports play/pause and does not correctly update, if the state changes on the device itself                                                           |
+| control         | Player      | Player control; currently only supports play/pause/next and does not correctly update, if the state changes on the device itself                                                           |
 | stop            | Switch      | Send `ON` to this channel: Stops the Chromecast. If this channel is `ON`, the Chromecast is stopped, otherwise it is in another state (see control channel)                           |
 | volume          | Dimmer      | Control the volume, this is also updated if the volume is changed by another app                                                                                                      |
 | mute            | Switch      | Mute the audio                                                                                                                                                                        |

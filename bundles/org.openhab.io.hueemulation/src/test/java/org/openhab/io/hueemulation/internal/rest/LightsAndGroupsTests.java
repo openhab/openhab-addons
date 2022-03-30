@@ -306,6 +306,7 @@ public class LightsAndGroupsTests {
                 .put(Entity.json(body));
         assertEquals(200, response.getStatus());
         assertThat(response.readEntity(String.class), containsString("success"));
+        assertThat(response.readEntity(String.class), containsString("xy"));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(true));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(200));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).xy[0], is(0.5119));

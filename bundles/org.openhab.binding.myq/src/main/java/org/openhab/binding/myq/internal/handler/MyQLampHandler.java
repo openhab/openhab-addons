@@ -62,8 +62,7 @@ public class MyQLampHandler extends BaseThingHandler implements MyQDeviceHandler
             if (bridge != null && localDevice != null) {
                 BridgeHandler handler = bridge.getHandler();
                 if (handler != null) {
-                    ((MyQAccountHandler) handler).sendLampAction(localDevice,
-                            command == OnOffType.ON ? "turnon" : "turnoff");
+                    ((MyQAccountHandler) handler).sendLampAction(localDevice, command == OnOffType.ON ? "on" : "off");
                 }
             }
         }

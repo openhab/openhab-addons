@@ -139,6 +139,10 @@ public class WLedHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_MASTER_CONTROLS:
                     if (command instanceof OnOffType) {
+                        if (OnOffType.ON.equals(command)) {
+                            // global may be off, but we don't want to switch global off and affect other segments
+                            localApi.setGlobalOn(true);
+                        }
                         localApi.setMasterOn(OnOffType.ON.equals(command), config.segmentIndex);
                     } else if (command instanceof IncreaseDecreaseType) {
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {
@@ -159,6 +163,7 @@ public class WLedHandler extends BaseThingHandler {
                             localApi.setMasterOn(false, config.segmentIndex);
                             return;
                         }
+                        localApi.setGlobalOn(true);
                         primaryColor = (HSBType) command;
                         if (primaryColor.getSaturation().intValue() < config.saturationThreshold && hasWhite) {
                             localApi.setWhiteOnly((PercentType) command, config.segmentIndex);
@@ -305,6 +310,7 @@ public class WLedHandler extends BaseThingHandler {
             future.cancel(true);
             pollingFuture = null;
         }
+        api = null; // re-initialize api after configuration change
     }
 
     @Override

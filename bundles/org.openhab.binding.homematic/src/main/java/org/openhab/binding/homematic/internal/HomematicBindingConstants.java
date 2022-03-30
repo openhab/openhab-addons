@@ -24,6 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public class HomematicBindingConstants {
 
     public static final String BINDING_ID = "homematic";
+    public static final String GATEWAY_POOL_NAME = "homematicGateway";
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final String CONFIG_DESCRIPTION_URI_CHANNEL = "channel-type:homematic:config";
 

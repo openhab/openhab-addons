@@ -25,4 +25,6 @@ public class WLedConfiguration {
     public int pollTime;
     public int segmentIndex;
     public int saturationThreshold;
+    public boolean sortEffects = false;
+    public boolean sortPalettes = false;
 }

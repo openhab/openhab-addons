@@ -22,6 +22,7 @@ import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -63,6 +64,14 @@ public class DahuaHandler extends ChannelDuplexHandler {
             return;
         }
         String action = content.substring(startIndex, endIndex);
+        startIndex = content.indexOf(";data=", startIndex);
+        if (startIndex > 0) {
+            endIndex = content.lastIndexOf("}");
+            if (endIndex > 0) {
+                String data = content.substring(startIndex + 6, endIndex + 1);
+                ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(data));
+            }
+        }
         switch (code) {
             case "VideoMotion":
                 if ("Start".equals(action)) {
@@ -106,6 +115,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                     ipCameraHandler.noMotionDetected(CHANNEL_LINE_CROSSING_ALARM);
                 }
                 break;
+            case "AudioAnomaly":
             case "AudioMutation":
                 if ("Start".equals(action)) {
                     ipCameraHandler.audioDetected();

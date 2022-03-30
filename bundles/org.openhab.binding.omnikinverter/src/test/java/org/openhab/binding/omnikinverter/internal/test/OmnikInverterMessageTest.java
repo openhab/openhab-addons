@@ -41,6 +41,51 @@ public class OmnikInverterMessageTest {
     }
 
     @Test
+    public void testGetPowerAC1() {
+        assertEquals(137.0, message.getPowerAC1(), 0.01);
+    }
+
+    @Test
+    public void testGetPowerAC2() {
+        assertEquals(-1.0, message.getPowerAC2(), 0.01);
+    }
+
+    @Test
+    public void testGetPowerAC3() {
+        assertEquals(-1.0, message.getPowerAC3(), 0.01);
+    }
+
+    @Test
+    public void testGetCurrentPV1() {
+        assertEquals(0.5, message.getCurrentPV1(), 0.01);
+    }
+
+    @Test
+    public void testGetCurrentPV2() {
+        assertEquals(0.6, message.getCurrentPV2(), 0.01);
+    }
+
+    @Test
+    public void testGetCurrentPV3() {
+        assertEquals(-0.1, message.getCurrentPV3(), 0.01);
+    }
+
+    @Test
+    public void testGetVoltagePV1() {
+        assertEquals(160.0, message.getVoltagePV1(), 0.01);
+    }
+
+    @Test
+    public void testGetVoltagePV2() {
+        assertEquals(131.9, message.getVoltagePV2(), 0.01);
+    }
+
+    @Test
+    public void testGetVoltagePV3() {
+        assertEquals(-0.1, message.getVoltagePV3(), 0.01);
+    }
+
+    @Test
     public void testGetTotalEnergy() {
         assertEquals(12412.7, message.getTotalEnergy(), 0.01);
     }

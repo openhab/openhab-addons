@@ -248,6 +248,10 @@ public class JdbcBaseDAO {
         dbMeta = new DbMetaData();// get DB information
     }
 
+    public Properties getConnectionProperties() {
+        return new Properties(this.databaseProps);
+    }
+
     /**************
      * ITEMS DAOs *
      **************/

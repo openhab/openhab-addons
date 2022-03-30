@@ -35,6 +35,9 @@ public class NikoHomeControlConstants {
     public static final String NHCON = "On";
     public static final String NHCOFF = "Off";
 
+    public static final String NHCTRUE = "True";
+    public static final String NHCFALSE = "False";
+
     public static final String NHCTRIGGERED = "Triggered";
 
     // rollershutter constants in the Nhc layer

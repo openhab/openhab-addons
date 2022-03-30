@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.deutschebahn.internal;
 
-import java.util.function.Predicate;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.deutschebahn.internal.filter.TimetableStopPredicate;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 
 /**
@@ -23,7 +22,7 @@ import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
  * @author Sönke Küper - initial contribution.
  */
 @NonNullByDefault
-public enum TimetableStopFilter implements Predicate<TimetableStop> {
+public enum TimetableStopFilter implements TimetableStopPredicate {
 
     /**
      * Selects all entries.

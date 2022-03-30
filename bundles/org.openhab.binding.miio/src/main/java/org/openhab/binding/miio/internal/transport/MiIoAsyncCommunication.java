@@ -182,10 +182,7 @@ public class MiIoAsyncCommunication {
                             miIoSendCommand.getCloudServer());
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 } else {
-                    String data = miIoSendCommand.getParams().isJsonArray()
-                            && miIoSendCommand.getParams().getAsJsonArray().size() > 0
-                                    ? miIoSendCommand.getParams().getAsJsonArray().get(0).toString()
-                                    : "";
+                    String data = miIoSendCommand.getParams().toString();
                     logger.debug("Custom cloud request send to url '{}' with data '{}'", miIoSendCommand.getMethod(),
                             data);
                     decryptedResponse = cloudConnector.sendCloudCommand(miIoSendCommand.getMethod(),

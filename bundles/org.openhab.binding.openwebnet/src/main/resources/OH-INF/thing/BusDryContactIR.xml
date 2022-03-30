@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing for BUS Dry Contact Interfaces and IR Interfaces -->
+	<thing-type id="bus_dry_contact_ir">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Dry Contact/IR Interface</label>
+		<description>A OpenWebNet BUS/SCS Dry Contact Interface or IR Interface. BTicino models: 3477/F428, IR 4610-4611-4640
+			etc.</description>
+
+		<channels>
+			<channel id="sensor" typeId="dryContactIR"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-3477/F428/IR 4610-4611-4640 etc.</property>
+			<property name="ownDeviceType">2510</property>
+		</properties>
+
+		<representation-property>ownId</representation-property>
+
+		<config-description>
+			<parameter name="where" type="text" required="true">
+				<label>OpenWebNet Address (where)</label>
+				<description>Automation Dry Contacts (N=1-201): example N=60 --> where=360. Alarm Dry Contacts and IR sensors
+					(Zone=1-9, N=1-9): example Zone=4, N=5 --> where=345</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>

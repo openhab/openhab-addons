@@ -7,7 +7,7 @@
 
 	<config-description uri="thing-type:teleinfo:adco">
 		<parameter name="adco" type="text" required="true" pattern="^\w{12}$">
-			<label>ADCO</label>
+			<label>ADCO/ADSC</label>
 			<description>Electricity meter identifier (format: 12 characters / e.g: '031528042289')</description>
 			<limitToOptions>false</limitToOptions>
 		</parameter>

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.deutschebahn.internal;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -37,6 +38,7 @@ public abstract class AbstractDtoAttributeSelector<DTO_TYPE extends JaxbEntity, 
     private final Function<VALUE_TYPE, @Nullable STATE_TYPE> getState;
     private final String channelTypeName;
     private final Class<STATE_TYPE> stateType;
+    private final Function<VALUE_TYPE, List<String>> valueToList;
 
     /**
      * Creates an new {@link EventAttribute}.
@@ -49,11 +51,13 @@ public abstract class AbstractDtoAttributeSelector<DTO_TYPE extends JaxbEntity, 
             final Function<DTO_TYPE, @Nullable VALUE_TYPE> getter, //
             final BiConsumer<DTO_TYPE, VALUE_TYPE> setter, //
             final Function<VALUE_TYPE, @Nullable STATE_TYPE> getState, //
+            final Function<VALUE_TYPE, List<String>> valueToList, //
             final Class<STATE_TYPE> stateType) {
         this.channelTypeName = channelTypeName;
         this.getter = getter;
         this.setter = setter;
         this.getState = getState;
+        this.valueToList = valueToList;
         this.stateType = stateType;
     }
 
@@ -90,6 +94,14 @@ public abstract class AbstractDtoAttributeSelector<DTO_TYPE extends JaxbEntity, 
     @Nullable
     public final VALUE_TYPE getValue(final DTO_TYPE object) {
         return this.getter.apply(object);
+    }
+
+    /**
+     * Returns a list of values as string list.
+     * Returns empty list if value is not present, singleton list if attribute is not single-valued.
+     */
+    public final List<String> getStringValues(DTO_TYPE object) {
+        return this.valueToList.apply(getValue(object));
     }
 
     /**

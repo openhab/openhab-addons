@@ -44,7 +44,7 @@ public class Conversions {
      * @param RGB + brightness value (note brightness in the first byte)
      * @return HSV
      */
-    public static JsonElement bRGBtoHSV(JsonElement bRGB) throws ClassCastException {
+    private static JsonElement bRGBtoHSV(JsonElement bRGB) throws ClassCastException {
         if (bRGB.isJsonPrimitive() && bRGB.getAsJsonPrimitive().isNumber()) {
             Color rgb = new Color(bRGB.getAsInt());
             HSBType hsb = HSBType.fromRGB(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
@@ -62,7 +62,7 @@ public class Conversions {
      * @param map with device variables containing the brightness info
      * @return HSV
      */
-    public static JsonElement addBrightToHSV(JsonElement rgbValue, @Nullable Map<String, Object> deviceVariables)
+    private static JsonElement addBrightToHSV(JsonElement rgbValue, @Nullable Map<String, Object> deviceVariables)
             throws ClassCastException, IllegalStateException {
         int bright = 100;
         if (deviceVariables != null) {
@@ -79,12 +79,12 @@ public class Conversions {
         return rgbValue;
     }
 
-    public static JsonElement secondsToHours(JsonElement seconds) throws ClassCastException {
+    private static JsonElement secondsToHours(JsonElement seconds) throws ClassCastException {
         double value = seconds.getAsDouble() / 3600;
         return new JsonPrimitive(value);
     }
 
-    public static JsonElement yeelightSceneConversion(JsonElement intValue)
+    private static JsonElement yeelightSceneConversion(JsonElement intValue)
             throws ClassCastException, IllegalStateException {
         switch (intValue.getAsInt()) {
             case 1:
@@ -104,17 +104,17 @@ public class Conversions {
         }
     }
 
-    public static JsonElement divideTen(JsonElement value10) throws ClassCastException, IllegalStateException {
+    private static JsonElement divideTen(JsonElement value10) throws ClassCastException, IllegalStateException {
         double value = value10.getAsDouble() / 10.0;
         return new JsonPrimitive(value);
     }
 
-    public static JsonElement divideHundred(JsonElement value10) throws ClassCastException, IllegalStateException {
+    private static JsonElement divideHundred(JsonElement value10) throws ClassCastException, IllegalStateException {
         double value = value10.getAsDouble() / 100.0;
         return new JsonPrimitive(value);
     }
 
-    public static JsonElement tankLevel(JsonElement value12) throws ClassCastException, IllegalStateException {
+    private static JsonElement tankLevel(JsonElement value12) throws ClassCastException, IllegalStateException {
         // 127 without water tank. 120 = 100% water
         if (value12.getAsInt() == 127) {
             return new JsonPrimitive(-1);
@@ -124,7 +124,30 @@ public class Conversions {
         }
     }
 
-    public static JsonElement getJsonElement(String element, JsonElement responseValue) {
+    /**
+     * Returns the deviceId element value from the Json response. If not found, returns the input
+     *
+     * @param responseValue
+     * @param deviceVariables containing the deviceId
+     * @return
+     */
+    private static JsonElement getDidElement(JsonElement responseValue, Map<String, Object> deviceVariables) {
+        String did = (String) deviceVariables.get("deviceId");
+        if (did != null) {
+            return getJsonElement(did, responseValue);
+        }
+        LOGGER.debug("deviceId not Found, no conversion");
+        return responseValue;
+    }
+
+    /**
+     * Returns the element from the Json response. If not found, returns the input
+     *
+     * @param element to be found
+     * @param responseValue
+     * @return
+     */
+    private static JsonElement getJsonElement(String element, JsonElement responseValue) {
         try {
             if (responseValue.isJsonPrimitive() || responseValue.isJsonObject()) {
                 JsonElement jsonElement = responseValue.isJsonObject() ? responseValue
@@ -143,8 +166,7 @@ public class Conversions {
         return responseValue;
     }
 
-    public static JsonElement execute(String transformation, JsonElement value,
-            @Nullable Map<String, Object> deviceVariables) {
+    public static JsonElement execute(String transformation, JsonElement value, Map<String, Object> deviceVariables) {
         try {
             if (transformation.toUpperCase().startsWith("GETJSONELEMENT")) {
                 if (transformation.length() > 15) {
@@ -168,6 +190,8 @@ public class Conversions {
                     return addBrightToHSV(value, deviceVariables);
                 case "BRGBTOHSV":
                     return bRGBtoHSV(value);
+                case "GETDIDELEMENT":
+                    return getDidElement(value, deviceVariables);
                 default:
                     LOGGER.debug("Transformation {} not found. Returning '{}'", transformation, value.toString());
                     return value;

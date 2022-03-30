@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.deutschebahn.internal;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.Event;
@@ -48,5 +52,39 @@ public final class EventAttributeSelection implements AttributeSelection {
         } else {
             return this.eventAttribute.getState(event);
         }
+    }
+
+    @Override
+    public @Nullable Object getValue(TimetableStop stop) {
+        final Event event = eventType.getEvent(stop);
+        if (event == null) {
+            return UnDefType.UNDEF;
+        } else {
+            return this.eventAttribute.getValue(event);
+        }
+    }
+
+    @Override
+    public List<String> getStringValues(TimetableStop stop) {
+        final Event event = eventType.getEvent(stop);
+        if (event == null) {
+            return Collections.emptyList();
+        } else {
+            return this.eventAttribute.getStringValues(event);
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(eventAttribute, eventType);
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (!(obj instanceof EventAttributeSelection)) {
+            return false;
+        }
+        final EventAttributeSelection other = (EventAttributeSelection) obj;
+        return Objects.equals(eventAttribute, other.eventAttribute) && eventType == other.eventType;
     }
 }

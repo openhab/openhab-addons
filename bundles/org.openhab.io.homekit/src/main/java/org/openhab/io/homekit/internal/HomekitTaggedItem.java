@@ -221,6 +221,17 @@ public class HomekitTaggedItem {
     }
 
     /**
+     * return configuration as int if exists otherwise return defaultValue
+     *
+     * @param key configuration key
+     * @param defaultValue default value
+     * @return value
+     */
+    public int getConfigurationAsInt(String key, int defaultValue) {
+        return getConfiguration(key, BigDecimal.valueOf(defaultValue)).intValue();
+    }
+
+    /**
      * return configuration as double if exists otherwise return defaultValue
      * 
      * @param key configuration key

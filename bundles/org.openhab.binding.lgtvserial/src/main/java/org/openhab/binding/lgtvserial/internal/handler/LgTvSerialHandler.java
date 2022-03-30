@@ -170,6 +170,12 @@ public class LgTvSerialHandler extends BaseThingHandler {
         if (updateJob == null || updateJob.isCancelled()) {
             updateJob = scheduler.scheduleWithFixedDelay(eventRunnable, 0, EVENT_REFRESH_INTERVAL, TimeUnit.SECONDS);
         }
+        // trigger REFRESH commands for all linked Channels to start polling
+        getThing().getChannels().forEach(channel -> {
+            if (isLinked(channel.getUID())) {
+                channelLinked(channel.getUID());
+            }
+        });
 
         updateStatus(ThingStatus.ONLINE);
     }

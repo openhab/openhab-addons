@@ -55,6 +55,8 @@ public class AVMFritzBindingConstants {
     public static final String DEVICE_HAN_FUN_SWITCH = "HAN_FUN_SWITCH";
     public static final String DEVICE_HAN_FUN_ON_OFF = "HAN_FUN_ON_OFF";
     public static final String DEVICE_HAN_FUN_BLINDS = "HAN_FUN_BLINDS";
+    public static final String DEVICE_HAN_FUN_COLOR_BULB = "HAN_FUN_COLOR_BULB";
+    public static final String DEVICE_HAN_FUN_DIMMABLE_BULB = "HAN_FUN_DIMMABLE_BULB";
 
     // List of main group types
     public static final String GROUP_HEATING = "FRITZ_GROUP_HEATING";
@@ -78,6 +80,10 @@ public class AVMFritzBindingConstants {
     public static final ThingTypeUID HAN_FUN_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_SWITCH);
     public static final ThingTypeUID HAN_FUN_ON_OFF_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_ON_OFF);
     public static final ThingTypeUID HAN_FUN_BLINDS_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_BLINDS);
+    public static final ThingTypeUID HAN_FUN_COLOR_BULB_THING_TYPE = new ThingTypeUID(BINDING_ID,
+            DEVICE_HAN_FUN_COLOR_BULB);
+    public static final ThingTypeUID HAN_FUN_DIMMABLE_BULB_THING_TYPE = new ThingTypeUID(BINDING_ID,
+            DEVICE_HAN_FUN_DIMMABLE_BULB);
     public static final ThingTypeUID GROUP_HEATING_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_HEATING);
     public static final ThingTypeUID GROUP_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_SWITCH);
 
@@ -132,9 +138,9 @@ public class AVMFritzBindingConstants {
     public static final String CHANNEL_PRESS = "press";
     public static final String CHANNEL_LAST_CHANGE = "last_change";
     public static final String CHANNEL_ROLLERSHUTTER = "rollershutter";
-    public static final String CHANNEL_ON_OFF = "on_off";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
+    public static final String CHANNEL_ON_OFF = "on_off";
 
     // List of all Channel config ids
     public static final String CONFIG_CHANNEL_TEMP_OFFSET = "offset";
@@ -167,7 +173,8 @@ public class AVMFritzBindingConstants {
     public static final String MODE_WINDOW_OPEN = "WINDOW_OPEN";
     public static final String MODE_UNKNOWN = "UNKNOWN";
 
-    public static final Set<ThingTypeUID> SUPPORTED_LIGHTING_THING_TYPES = Set.of(DECT500_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_LIGHTING_THING_TYPES = Set.of(DECT500_THING_TYPE,
+            HAN_FUN_COLOR_BULB_THING_TYPE, HAN_FUN_DIMMABLE_BULB_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_BUTTON_THING_TYPES_UIDS = Set.of(DECT400_THING_TYPE,
             DECT440_THING_TYPE, HAN_FUN_SWITCH_THING_TYPE);

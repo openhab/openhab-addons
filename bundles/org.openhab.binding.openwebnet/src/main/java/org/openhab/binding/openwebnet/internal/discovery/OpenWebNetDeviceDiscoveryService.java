@@ -159,6 +159,12 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 deviceWho = Who.CEN_SCENARIO_SCHEDULER;
                 break;
             }
+            case SCS_DRY_CONTACT_IR: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_DRY_CONTACT_IR;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_DRY_CONTACT_IR;
+                deviceWho = Who.CEN_PLUS_SCENARIO_SCHEDULER;
+                break;
+            }
             case MULTIFUNCTION_SCENARIO_CONTROL: {
                 thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL;
                 thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL;

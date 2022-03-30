@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Defines all the type of values
  * 
  * @author Olivier MARCEAU - Initial contribution
  *
  */
+@NonNullByDefault
 public enum ValueType {
     INTEGER,
     STRING

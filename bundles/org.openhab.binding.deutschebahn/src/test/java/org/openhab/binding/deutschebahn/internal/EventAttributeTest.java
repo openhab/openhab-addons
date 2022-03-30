@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.function.Consumer;
@@ -218,24 +219,32 @@ public class EventAttributeTest {
     public void testPlannedIntermediateStations() {
         String expectedFollowing = "Bielefeld Hbf - Herford - Löhne(Westf) - Bad Oeynhausen - Porta Westfalica - Minden(Westf) - Bückeburg - Stadthagen - Haste - Wunstorf - Hannover Hbf";
         doTestEventAttribute("planned-intermediate-stations", "planned-following-stations",
-                (Event e) -> e.setPpth(SAMPLE_PATH), expectedFollowing, new StringType(expectedFollowing),
-                EventType.DEPARTURE, false);
+                (Event e) -> e.setPpth(SAMPLE_PATH),
+                Arrays.asList("Bielefeld Hbf", "Herford", "Löhne(Westf)", "Bad Oeynhausen", "Porta Westfalica",
+                        "Minden(Westf)", "Bückeburg", "Stadthagen", "Haste", "Wunstorf", "Hannover Hbf"),
+                new StringType(expectedFollowing), EventType.DEPARTURE, false);
         String expectedPrevious = "Herford - Löhne(Westf) - Bad Oeynhausen - Porta Westfalica - Minden(Westf) - Bückeburg - Stadthagen - Haste - Wunstorf - Hannover Hbf - Lehrte";
         doTestEventAttribute("planned-intermediate-stations", "planned-previous-stations",
-                (Event e) -> e.setPpth(SAMPLE_PATH), expectedPrevious, new StringType(expectedPrevious),
-                EventType.ARRIVAL, false);
+                (Event e) -> e.setPpth(SAMPLE_PATH),
+                Arrays.asList("Herford", "Löhne(Westf)", "Bad Oeynhausen", "Porta Westfalica", "Minden(Westf)",
+                        "Bückeburg", "Stadthagen", "Haste", "Wunstorf", "Hannover Hbf", "Lehrte"),
+                new StringType(expectedPrevious), EventType.ARRIVAL, false);
     }
 
     @Test
     public void testChangedIntermediateStations() {
         String expectedFollowing = "Bielefeld Hbf - Herford - Löhne(Westf) - Bad Oeynhausen - Porta Westfalica - Minden(Westf) - Bückeburg - Stadthagen - Haste - Wunstorf - Hannover Hbf";
         doTestEventAttribute("changed-intermediate-stations", "changed-following-stations",
-                (Event e) -> e.setCpth(SAMPLE_PATH), expectedFollowing, new StringType(expectedFollowing),
-                EventType.DEPARTURE, false);
+                (Event e) -> e.setCpth(SAMPLE_PATH),
+                Arrays.asList("Bielefeld Hbf", "Herford", "Löhne(Westf)", "Bad Oeynhausen", "Porta Westfalica",
+                        "Minden(Westf)", "Bückeburg", "Stadthagen", "Haste", "Wunstorf", "Hannover Hbf"),
+                new StringType(expectedFollowing), EventType.DEPARTURE, false);
         String expectedPrevious = "Herford - Löhne(Westf) - Bad Oeynhausen - Porta Westfalica - Minden(Westf) - Bückeburg - Stadthagen - Haste - Wunstorf - Hannover Hbf - Lehrte";
         doTestEventAttribute("changed-intermediate-stations", "changed-previous-stations",
-                (Event e) -> e.setCpth(SAMPLE_PATH), expectedPrevious, new StringType(expectedPrevious),
-                EventType.ARRIVAL, false);
+                (Event e) -> e.setCpth(SAMPLE_PATH),
+                Arrays.asList("Herford", "Löhne(Westf)", "Bad Oeynhausen", "Porta Westfalica", "Minden(Westf)",
+                        "Bückeburg", "Stadthagen", "Haste", "Wunstorf", "Hannover Hbf", "Lehrte"),
+                new StringType(expectedPrevious), EventType.ARRIVAL, false);
     }
 
     @Test

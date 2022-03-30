@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.teleinfo.internal.data;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Define the evolution option values
  * 
  * @author Olivier MARCEAU - Initial contribution
  *
  */
+@NonNullByDefault
 public enum Evolution {
     ICC,
     NONE

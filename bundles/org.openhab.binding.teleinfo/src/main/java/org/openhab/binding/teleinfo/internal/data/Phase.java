@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.teleinfo.internal.data;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Define all the phase values
  * 
  * @author Olivier MARCEAU - Initial contribution
  *
  */
+@NonNullByDefault
 public enum Phase {
     ONE_PHASED,
     THREE_PHASED
