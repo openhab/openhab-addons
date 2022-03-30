@@ -12,21 +12,19 @@
  */
 package org.openhab.binding.miele.internal;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collections;
-import java.util.Map;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Random;
-import java.util.zip.GZIPInputStream;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,13 +45,15 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class MieleGatewayCommunicationController {
 
-    private final URL url;
+    private final URI uri;
     private final Random rand = new Random();
     private final Gson gson = new Gson();
     private final Logger logger = LoggerFactory.getLogger(MieleGatewayCommunicationController.class);
+    private final HttpClient httpClient;
 
-    public MieleGatewayCommunicationController(String host) throws MalformedURLException {
-        url = new URL("http://" + host + "/remote/json-rpc");
+    public MieleGatewayCommunicationController(HttpClient httpClient, String host) throws URISyntaxException {
+        uri = new URI("http://" + host + "/remote/json-rpc");
+        this.httpClient = httpClient;
     }
 
     public JsonElement invokeOperation(FullyQualifiedApplianceIdentifier applianceIdentifier, String modelID,
@@ -69,27 +69,43 @@ public class MieleGatewayCommunicationController {
 
     public JsonElement invokeRPC(String methodName, Object[] args) throws MieleRpcException {
         JsonElement result = null;
-        JsonObject req = new JsonObject();
+        JsonObject requestBodyAsJson = new JsonObject();
         int id = rand.nextInt(Integer.MAX_VALUE);
-        req.addProperty("jsonrpc", "2.0");
-        req.addProperty("id", id);
-        req.addProperty("method", methodName);
+        requestBodyAsJson.addProperty("jsonrpc", "2.0");
+        requestBodyAsJson.addProperty("id", id);
+        requestBodyAsJson.addProperty("method", methodName);
 
         JsonArray params = new JsonArray();
         for (Object o : args) {
             params.add(gson.toJsonTree(o));
         }
-        req.add("params", params);
+        requestBodyAsJson.add("params", params);
 
-        String requestData = req.toString();
+        String requestBody = requestBodyAsJson.toString();
+        Request request = httpClient.newRequest(uri).method(HttpMethod.POST)
+                .content(new StringContentProvider(requestBody), "application/json");
+
         String responseData = null;
         try {
-            responseData = post(url, Collections.emptyMap(), requestData);
-        } catch (IOException e) {
-            throw new MieleRpcException("Exception occurred while posting data", e);
+            final ContentResponse contentResponse = request.send();
+            final int httpStatus = contentResponse.getStatus();
+            if (httpStatus != 200) {
+                if (httpStatus == 503) {
+                    throw new MieleRpcException("Gateway is temporarily unavailable");
+                }
+                throw new MieleRpcException("Unexpected HTTP status code " + httpStatus);
+            }
+            responseData = contentResponse.getContentAsString();
+        } catch (TimeoutException e) {
+            throw new MieleRpcException("Timeout when calling gateway", e);
+        } catch (ExecutionException e) {
+            throw new MieleRpcException("Failure when calling gateway", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new MieleRpcException("Interrupted while calling gateway", e);
         }
 
-        logger.trace("The request '{}' yields '{}'", requestData, responseData);
+        logger.trace("The request '{}' yields '{}'", requestBody, responseData);
         JsonObject parsedResponse = null;
         try {
             parsedResponse = (JsonObject) JsonParser.parseReader(new StringReader(responseData));
@@ -107,7 +123,7 @@ public class MieleGatewayCommunicationController {
                 String message = (o.has("message") ? o.get("message").getAsString() : null);
                 String data = (o.has("data")
                         ? (o.get("data") instanceof JsonObject ? o.get("data").toString() : o.get("data").getAsString())
-                        : null);
+                        : "");
                 throw new MieleRpcException(
                         "Remote exception occurred: '" + code + "':'" + message + "':'" + data + "'");
             } else {
@@ -121,64 +137,5 @@ public class MieleGatewayCommunicationController {
         }
 
         return result;
-    }
-
-    private String post(URL url, Map<String, String> headers, String data) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            connection.addRequestProperty(entry.getKey(), entry.getValue());
-        }
-
-        connection.addRequestProperty("Accept-Encoding", "gzip");
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
-        connection.connect();
-
-        OutputStream out = null;
-
-        try {
-            out = connection.getOutputStream();
-
-            out.write(data.getBytes());
-            out.flush();
-
-            int statusCode = connection.getResponseCode();
-            if (statusCode != HttpURLConnection.HTTP_OK) {
-                logger.debug("An unexpected status code was returned: '{}'", statusCode);
-            }
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-        }
-
-        String responseEncoding = connection.getHeaderField("Content-Encoding");
-        responseEncoding = (responseEncoding == null ? "" : responseEncoding.trim());
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        InputStream in = connection.getInputStream();
-        try {
-            in = connection.getInputStream();
-            if ("gzip".equalsIgnoreCase(responseEncoding)) {
-                in = new GZIPInputStream(in);
-            }
-            in = new BufferedInputStream(in);
-
-            byte[] buff = new byte[1024];
-            int n;
-            while ((n = in.read(buff)) > 0) {
-                bos.write(buff, 0, n);
-            }
-            bos.flush();
-            bos.close();
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
-
-        return bos.toString();
     }
 }
