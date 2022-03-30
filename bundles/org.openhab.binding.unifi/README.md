@@ -164,7 +164,7 @@ The `wirelessClient` information that is retrieved is available as these channel
 | rssi       | Number    | Received signal strength indicator (RSSI) of the client              | Read        |
 | uptime     | Number    | Uptime of the client (in seconds)                                    | Read        |
 | lastSeen   | DateTime  | Date and Time the client was last seen                               | Read        |
-| experience | Number    | Experience of client                                                 | Read        |
+| experience | Number    | Overall health indication of the client (in percentage)              | Read        |
 | blocked    | Switch    | Blocked status of the client                                         | Read, Write |
 | cmd        | String    | Command channel: `reconnect` to force the client to be reconnect     | Write       |
 | reconnect  | Switch    | Force the client to be reconnect                                     | Write       |
