@@ -1027,8 +1027,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                 if (!isEstablished) {
                     eventBufferedReader = null;
 
-                    eventClient = clientBuilder.build()
-                            .register(new Authenticator((String) getConfig().get(CONFIG_USERNAME), vehicle.tokens[0]));
+                    eventClient = clientBuilder.build().register(new Authenticator("", vehicle.tokens[0]));
                     eventTarget = eventClient.target(URI_EVENT).path(vehicle.vehicle_id + "/").queryParam("values",
                             Arrays.asList(EventKeys.values()).stream().skip(1).map(Enum::toString)
                                     .collect(Collectors.joining(",")));
