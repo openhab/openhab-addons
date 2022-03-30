@@ -32,8 +32,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link SynopAnalyzerHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link SynopAnalyzerHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Gaël L'hopital - Initial contribution
  */

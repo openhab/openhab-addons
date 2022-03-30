@@ -30,14 +30,14 @@ import org.openhab.core.library.unit.Units;
 @NonNullByDefault
 public abstract class Synop {
     protected static final int INITIAL_VALUE = -1000;
-    protected static final char PLUS_SIGN_TEMPERATURE = '0';
-    protected static final char MINUS_SIGN_TEMPERATURE = '1';
+    private static final char PLUS_SIGN_TEMPERATURE = '0';
+    private static final char MINUS_SIGN_TEMPERATURE = '1';
 
     /*
      * WS - WIND SPEED
      */
-    protected static final int WS_WILDTYPE_IN_MPS = 0;
-    protected static final int WS_ANEMOMETER_IN_MPS = 1;
+    private static final int WS_WILDTYPE_IN_MPS = 0;
+    private static final int WS_ANEMOMETER_IN_MPS = 1;
 
     /*
      * HV - HORIZONTAL VISIBILITY [IN KILOMETERS]
@@ -59,12 +59,12 @@ public abstract class Synop {
      * 99 - > 50 km
      * HP - high precision
      */
-    protected static final int HV_LESS_THAN_1_LIMIT = 10;
-    protected static final int HV_LESS_THAN_10_LIMIT = 60;
-    protected static final int HV_LESS_THAN_50_LIMIT = 84;
-    protected static final int HV_LESS_THAN_1_HP_LIMIT = 93;
-    protected static final int HV_LESS_THAN_10_HP_LIMIT = 96;
-    protected static final int HV_LESS_THAN_50_HP_LIMIT = 98;
+    private static final int HV_LESS_THAN_1_LIMIT = 10;
+    private static final int HV_LESS_THAN_10_LIMIT = 60;
+    private static final int HV_LESS_THAN_50_LIMIT = 84;
+    private static final int HV_LESS_THAN_1_HP_LIMIT = 93;
+    private static final int HV_LESS_THAN_10_HP_LIMIT = 96;
+    private static final int HV_LESS_THAN_50_HP_LIMIT = 98;
 
     public static enum HorizontalVisibility {
         UNDEFINED,
@@ -106,6 +106,14 @@ public abstract class Synop {
         setWindAndOvercast();
         setPressure();
     }
+
+    protected abstract void setTemperatureString();
+
+    protected abstract void setHorizontalVisibilityInt();
+
+    protected abstract void setPressureString();
+
+    protected abstract void setWindString();
 
     private void setDateHourAndWindIndicator() {
         String dayHourAndWindIndicator = "";
@@ -166,8 +174,6 @@ public abstract class Synop {
         }
     }
 
-    protected abstract void setHorizontalVisibilityInt();
-
     private void setTemperature() {
         setTemperatureString();
         temperature = INITIAL_VALUE;
@@ -182,8 +188,6 @@ public abstract class Synop {
             }
         }
     }
-
-    protected abstract void setTemperatureString();
 
     private void setWindAndOvercast() {
         setWindString();
@@ -242,8 +246,6 @@ public abstract class Synop {
         }
     }
 
-    protected abstract void setWindString();
-
     private void setPressure() {
         setPressureString();
         String localPressure = pressureString;
@@ -262,8 +264,6 @@ public abstract class Synop {
             }
         }
     }
-
-    protected abstract void setPressureString();
 
     protected boolean isValidString(String str) {
         return (str.length() == VALID_STRING_LENGTH);

@@ -48,7 +48,6 @@ public class SynopAnalyzerDiscoveryService extends AbstractDiscoveryService {
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
 
     private final Logger logger = LoggerFactory.getLogger(SynopAnalyzerDiscoveryService.class);
-    private final Map<Double, Station> distances = new TreeMap<>();
     private final LocationProvider locationProvider;
     private final List<Station> stations;
     private double radius = 0;
@@ -73,7 +72,7 @@ public class SynopAnalyzerDiscoveryService extends AbstractDiscoveryService {
     }
 
     public void createResults(PointType serverLocation) {
-        distances.clear();
+        Map<Double, Station> distances = new TreeMap<>();
 
         stations.forEach(station -> {
             PointType stationLocation = new PointType(station.getLocation());
@@ -86,11 +85,12 @@ public class SynopAnalyzerDiscoveryService extends AbstractDiscoveryService {
         try {
             Entry<Double, Station> nearest = distances.entrySet().iterator().next();
             Station station = nearest.getValue();
-            thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_SYNOP, station.getId()))
+            radius = nearest.getKey();
+
+            thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_SYNOP, Integer.toString(station.idOmm)))
                     .withLabel(String.format("Synop : %s", station.usualName))
                     .withProperty(SynopAnalyzerConfiguration.STATION_ID, station.idOmm)
                     .withRepresentationProperty(SynopAnalyzerConfiguration.STATION_ID).build());
-            radius = nearest.getKey();
         } catch (NoSuchElementException e) {
             logger.info("No Synop station available at a radius higher than {} m - resetting to 0 m", radius);
             radius = 0;

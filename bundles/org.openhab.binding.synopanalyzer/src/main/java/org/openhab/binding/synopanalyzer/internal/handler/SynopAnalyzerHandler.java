@@ -76,11 +76,11 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     private static final double OCTA_MAX = 8.0;
 
     private final Logger logger = LoggerFactory.getLogger(SynopAnalyzerHandler.class);
-
-    private @Nullable ScheduledFuture<?> executionJob;
-    private @NonNullByDefault({}) String formattedStationId;
     private final LocationProvider locationProvider;
     private final List<Station> stations;
+
+    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private @NonNullByDefault({}) String formattedStationId;
 
     public SynopAnalyzerHandler(Thing thing, LocationProvider locationProvider, List<Station> stations) {
         super(thing);
@@ -96,22 +96,20 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 configuration.refreshInterval, formattedStationId);
 
         if (thing.getProperties().isEmpty()) {
-            discoverAttributes(configuration.stationId);
+            discoverAttributes(configuration.stationId, locationProvider.getLocation());
         }
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        executionJob = scheduler.scheduleWithFixedDelay(this::updateSynopChannels, 0, configuration.refreshInterval,
-                TimeUnit.MINUTES);
+        refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::updateChannels, 0,
+                configuration.refreshInterval, TimeUnit.MINUTES));
     }
 
-    protected void discoverAttributes(int stationId) {
+    private void discoverAttributes(int stationId, @Nullable PointType serverLocation) {
         stations.stream().filter(s -> stationId == s.idOmm).findFirst().ifPresent(station -> {
-            Map<String, String> properties = new HashMap<>();
-            properties.put("Usual name", station.usualName);
-            properties.put("Location", station.getLocation());
+            Map<String, String> properties = new HashMap<>(
+                    Map.of("Usual name", station.usualName, "Location", station.getLocation()));
 
-            PointType serverLocation = locationProvider.getLocation();
             if (serverLocation != null) {
                 PointType stationLocation = new PointType(station.getLocation());
                 DecimalType distance = serverLocation.distanceFrom(stationLocation);
@@ -149,7 +147,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
         return Optional.empty();
     }
 
-    private void updateSynopChannels() {
+    private void updateChannels() {
         logger.debug("Updating device channels");
 
         getLastAvailableSynop().ifPresentOrElse(synop -> {
@@ -192,15 +190,14 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 return getWindStrength(synop);
             case WIND_SPEED_BEAUFORT:
                 QuantityType<Speed> wsKpH = getWindStrength(synop).toUnit(SIUnits.KILOMETRE_PER_HOUR);
-                return (wsKpH != null) ? new DecimalType(Math.round(Math.pow(wsKpH.floatValue() / 3.01, 0.666666666)))
+                return wsKpH != null ? new DecimalType(Math.round(Math.pow(wsKpH.floatValue() / 3.01, 0.666666666)))
                         : UnDefType.NULL;
             case TIME_UTC:
                 ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
                 int year = synop.getYear() == 0 ? now.getYear() : synop.getYear();
                 int month = synop.getMonth() == 0 ? now.getMonth().getValue() : synop.getMonth();
-                ZonedDateTime zdt = ZonedDateTime.of(year, month, synop.getDay(), synop.getHour(), 0, 0, 0,
-                        ZoneOffset.UTC);
-                return new DateTimeType(zdt);
+                return new DateTimeType(
+                        ZonedDateTime.of(year, month, synop.getDay(), synop.getHour(), 0, 0, 0, ZoneOffset.UTC));
             default:
                 logger.error("Unsupported channel Id '{}'", channelId);
                 return UnDefType.UNDEF;
@@ -234,17 +231,14 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> job = executionJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
-        }
-        executionJob = null;
+        refreshJob.ifPresent(job -> job.cancel(true));
+        refreshJob = Optional.empty();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
-            updateSynopChannels();
+            updateChannels();
         }
     }
 }

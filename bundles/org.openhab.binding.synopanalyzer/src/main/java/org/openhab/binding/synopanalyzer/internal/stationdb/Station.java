@@ -14,8 +14,6 @@ package org.openhab.binding.synopanalyzer.internal.stationdb;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link Station} is a DTO for stations.json database.
  *
@@ -23,25 +21,12 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Station {
-    public String country = "";
-    public String pack = "";
-    @SerializedName("id_omm")
     public int idOmm;
-    @SerializedName("numer_sta")
-    public long numerSta;
-    @SerializedName("usual_name")
     public String usualName = "";
-    public double latitude;
-    public double longitude;
-    public double elevation;
-    @SerializedName("station_type")
-    public int stationType;
+    private double latitude;
+    private double longitude;
 
     public String getLocation() {
         return Double.toString(latitude) + "," + Double.toString(longitude);
-    }
-
-    public String getId() {
-        return Integer.toString(idOmm);
     }
 }
