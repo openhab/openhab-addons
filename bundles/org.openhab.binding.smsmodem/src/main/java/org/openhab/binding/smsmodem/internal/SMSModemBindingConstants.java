@@ -13,6 +13,7 @@
 package org.openhab.binding.smsmodem.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -45,10 +46,10 @@ public class SMSModemBindingConstants {
     public static final String SMSCONVERSATION_ASK_DELIVERY_REPORT = "deliveryReport";
 
     // List of all properties
-    public static final String PROPERTY_MANUFACTURER = "manufacturer";
-    public static final String PROPERTY_MODEL = "model";
-    public static final String PROPERTY_SWVERSION = "swversion";
-    public static final String PROPERTY_SERIALNO = "serialno";
+    public static final String PROPERTY_MANUFACTURER = Thing.PROPERTY_VENDOR;
+    public static final String PROPERTY_MODEL = Thing.PROPERTY_MODEL_ID;
+    public static final String PROPERTY_SWVERSION = Thing.PROPERTY_FIRMWARE_VERSION;
+    public static final String PROPERTY_SERIALNO = Thing.PROPERTY_SERIAL_NUMBER;
     public static final String PROPERTY_IMSI = "imsi";
     public static final String PROPERTY_RSSI = "rssi";
     public static final String PROPERTY_MODE = "mode";
