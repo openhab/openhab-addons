@@ -993,5 +993,4 @@ public class TeslaVehicleHandler extends BaseThingHandler {
             }
         }
     };
-
 }
