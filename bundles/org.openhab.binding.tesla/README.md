@@ -5,7 +5,8 @@ The integration happens through the Tesla Owners Remote API.
 
 ## Supported Things
 
-All current Tesla models are supported by this binding. Access is established through a Tesla account as a bridge.
+All current Tesla models are supported by this binding.
+Access is established through a Tesla account as a bridge.
 
 | Thing Type | Description                                  |
 |------------|----------------------------------------------|
@@ -19,36 +20,24 @@ All current Tesla models are supported by this binding. Access is established th
 
 ## Auto Discovery
 
-If the authentication with the Tesla Account is done through the openHAB console (see "Bridge Configuration" option 1 below), the account is automatically added to the Inbox.
+The account cannot be automatically discovered, but has to be created manually.
 
-Furthermore, once an account is configured, it is automatically queried for associated vehicles and an Inbox entry is created for each of them.
+Once an account is configured, it is automatically queried for associated vehicles and an Inbox entry is created for each of them.
+
 
 ## Bridge Configuration
 
 The `account` bridge requires an OAuth2 refresh token as the only parameter `refreshToken`.
 
-There are two different ways of obtaining the token:
+There are a few 3rd party tools available that have specialized on getting hold of refresh tokens for the Tesla API.
+Please note that we in general consider it dangerous to enter your credentials into some 3rd party app - you will have to trust the author not to send or store those credentials anywhere.
 
-1. Use the openHAB console
+- [Tesla Access Token Generator (Chromium Extension](https://github.com/DoctorMcKay/chromium-tesla-token-generator)
+- [Auth App for Tesla (iOS)](https://apps.apple.com/us/app/auth-app-for-tesla/id1552058613)
+- [Tesla Tokens (Android)](https://play.google.com/store/apps/details?id=net.leveugle.teslatokens)
 
-Run the following command on the console and provide your Tesla account credentials (the same that you use in the official Tesla app):
+When using one of such apps, simply copy and paste the received refresh token into the account configuration.
 
-```
-openhab> openhab:tesla login
-Username (email): mail@example.com
-Password: topsecret
-Attempting login...Attempting login...
-Refresh token: xxxxxxxxxx
-```
-When successfully doing the login through the console, openHAB will automatically create an Inbox entry that is preconfigured with the refresh token, which you can now simply approve.
-
-Alternatively, you can use the refresh token to textually configure your `account` bridge or enter it in a manually created "Tesla Account" thing in the UI.
-
-2. Provide your credentials in the UI
-
-If you do not want to use the openHAB console, you can also manually create a "Tesla Account" thing in the UI by providing your username and password as parameters (to show them, use the "Show More" button) in the "Edit Thing" view and leaving the refresh token parameter field empty.
-
-openHAB will use the provided credentials to retrieve and set the refresh token and automatically delete your password from the configuration afterwards for safety reasons.
 
 ## Thing Configuration
 
