@@ -34,9 +34,9 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>switch</label>
-		<description>Switch type action in Luxom</description>
+		<description>Luxom Switch</description>
 		<channels>
-			<channel id="switch" typeId="button"/>
+			<channel id="switch" typeId="switchState"/>
 		</channels>
 		<representation-property>address</representation-property>
 		<config-description>
@@ -52,7 +52,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Dimmer</label>
-		<description>Dimmer type action in Luxom</description>
+		<description>Luxom Dimmer</description>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
@@ -86,10 +86,10 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="button">
+	<channel-type id="switchState">
 		<item-type>Switch</item-type>
-		<label>Button</label>
-		<description>Pushbutton control for action in Luxom</description>
+		<label>Switch</label>
+		<description>Switch control for action in Luxom</description>
 		<category>Switch</category>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>

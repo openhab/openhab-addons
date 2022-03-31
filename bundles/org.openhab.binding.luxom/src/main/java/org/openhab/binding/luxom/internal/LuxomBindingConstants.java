@@ -14,8 +14,6 @@ package org.openhab.binding.luxom.internal;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -40,8 +38,8 @@ public class LuxomBindingConstants {
     public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
     public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(BRIDGE_THING_TYPE, THING_TYPE_SWITCH, THING_TYPE_DIMMER).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Set.of(BRIDGE_THING_TYPE, THING_TYPE_SWITCH, THING_TYPE_DIMMER));
 
     // List of all Channel ids
     public static final String CHANNEL_BRIGHTNESS = "brightness";

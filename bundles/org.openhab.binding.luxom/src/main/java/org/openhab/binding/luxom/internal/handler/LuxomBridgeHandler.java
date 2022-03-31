@@ -21,8 +21,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.luxom.internal.handler.config.LuxomBridgeConfig;
@@ -59,7 +57,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     private final AtomicInteger nrOfSendPermits = new AtomicInteger(0);
     private int reconnectInterval;
 
-    private @Nullable LuxomCommand previousCommand = null;
+    private @Nullable LuxomCommand previousCommand;
     private final LuxomCommunication communication;
     private final BlockingQueue<List<CommandExecutionSpecification>> sendQueue = new LinkedBlockingQueue<>();
 
@@ -68,8 +66,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> heartBeatTimeoutTask;
     private @Nullable ScheduledFuture<?> connectRetryJob;
 
-    @Nullable
-    public LuxomBridgeConfig getIPBridgeConfig() {
+    public @Nullable LuxomBridgeConfig getIPBridgeConfig() {
         return config;
     }
 
@@ -81,7 +78,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
-    public void handleCommand(@NotNull ChannelUID channelUID, Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Bridge received command {} for {}", command.toFullString(), channelUID);
     }
 
@@ -93,7 +90,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
             reconnectInterval = (config.reconnectInterval > 0) ? config.reconnectInterval
                     : DEFAULT_RECONNECT_INTERVAL_IN_MINUTES;
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/status.connecting");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.connecting");
             scheduler.submit(this::connect); // start the async connect task
         }
     }
@@ -116,12 +113,12 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     }
 
     private void scheduleConnectRetry(long waitMinutes) {
-        logger.warn("Scheduling connection retry in {} (minutes)", waitMinutes);
+        logger.debug("Scheduling connection retry in {} (minutes)", waitMinutes);
         connectRetryJob = scheduler.schedule(this::connect, waitMinutes, TimeUnit.MINUTES);
     }
 
     private synchronized void connect() {
-        if (this.communication.isConnected()) {
+        if (communication.isConnected()) {
             return;
         }
 
@@ -139,7 +136,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     }
 
     public void startProcessing() {
-        this.nrOfSendPermits.set(1);
+        nrOfSendPermits.set(1);
 
         updateStatus(ThingStatus.ONLINE);
 
@@ -203,12 +200,12 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
 
     private synchronized void reconnect(boolean timeout) {
         if (timeout) {
-            logger.warn("Keepalive timeout, attempting to reconnect to the bridge");
+            logger.debug("Keepalive timeout, attempting to reconnect to the bridge");
         } else {
             logger.debug("Connection problem, attempting to reconnect to the bridge");
         }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         disconnect();
         connect();
     }
@@ -217,8 +214,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
         this.sendQueue.add(commands);
     }
 
-    @Nullable
-    private LuxomThingHandler findThingHandler(@Nullable String address) {
+    private @Nullable LuxomThingHandler findThingHandler(@Nullable String address) {
         for (Thing thing : getThing().getThings()) {
             if (thing.getHandler() instanceof LuxomThingHandler) {
                 LuxomThingHandler handler = (LuxomThingHandler) thing.getHandler();
@@ -275,7 +271,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     }
 
     public void handleCommunicationError(IOException e) {
-        logger.warn("Communication error while reading, will try to reconnect. Error: {}", e.getMessage());
+        logger.debug("Communication error while reading, will try to reconnect. Error: {}", e.getMessage());
         reconnect();
     }
 
@@ -321,13 +317,13 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
                 LuxomThingHandler handler = findThingHandler(luxomCommand.getAddress());
 
                 if (handler != null) {
-                    handler.handleCommandCommingFromBridge(luxomCommand);
+                    handler.handleCommandComingFromBridge(luxomCommand);
                 } else {
                     logger.warn("No handler found command {} for address : {}", luxomMessage,
                             luxomCommand.getAddress());
                 }
             } else {
-                logger.warn("Something was wrong with the order of incomming commands, resulting command is null");
+                logger.warn("Something was wrong with the order of incoming commands, resulting command is null");
             }
         } else {
             logger.trace("Luxom: not handled {}", luxomMessage);
@@ -336,10 +332,11 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     }
 
     private void cancelCheckAliveTimeoutTask() {
-        if (this.heartBeatTimeoutTask != null) {
+        var task = this.heartBeatTimeoutTask;
+        if (task != null) {
             // This method can be called from the keepAliveReconnect thread. Make sure
             // we don't interrupt ourselves, as that may prevent the reconnection attempt.
-            this.heartBeatTimeoutTask.cancel(false);
+            task.cancel(false);
         }
     }
 

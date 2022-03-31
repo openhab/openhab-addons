@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.luxom.internal.handler;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,7 +31,6 @@ import org.slf4j.LoggerFactory;
  * Base type for all Luxom thing handlers.
  *
  * @author Kris Jespers - Initial contribution
- *
  */
 @NonNullByDefault
 public abstract class LuxomThingHandler extends BaseThingHandler {
@@ -56,10 +54,10 @@ public abstract class LuxomThingHandler extends BaseThingHandler {
         super(thing);
     }
 
-    public abstract void handleCommandCommingFromBridge(LuxomCommand command);
+    public abstract void handleCommandComingFromBridge(LuxomCommand command);
 
     public final String getAddress() {
-        return this.address;
+        return address;
     }
 
     /**
@@ -113,23 +111,20 @@ public abstract class LuxomThingHandler extends BaseThingHandler {
      * example : *P,0,1,21;
      */
     protected void ping() {
-        sendCommands(Collections.singletonList(
-                new CommandExecutionSpecification(LuxomAction.PING.getCommand() + ",0," + getAddress())));
+        sendCommands(List.of(new CommandExecutionSpecification(LuxomAction.PING.getCommand() + ",0," + getAddress())));
     }
 
     /**
      * example : *S,0,1,21;
      */
     protected void set() {
-        sendCommands(Collections
-                .singletonList(new CommandExecutionSpecification(LuxomAction.SET.getCommand() + ",0," + getAddress())));
+        sendCommands(List.of(new CommandExecutionSpecification(LuxomAction.SET.getCommand() + ",0," + getAddress())));
     }
 
     /**
      * example : *C,0,1,21;
      */
     protected void clear() {
-        sendCommands(Collections.singletonList(
-                new CommandExecutionSpecification(LuxomAction.CLEAR.getCommand() + ",0," + getAddress())));
+        sendCommands(List.of(new CommandExecutionSpecification(LuxomAction.CLEAR.getCommand() + ",0," + getAddress())));
     }
 }

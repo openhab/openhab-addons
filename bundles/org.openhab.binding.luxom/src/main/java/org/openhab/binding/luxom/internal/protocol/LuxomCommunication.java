@@ -55,7 +55,7 @@ public class LuxomCommunication {
     private volatile boolean listenerStopped;
     private volatile boolean stillListeningToEvents;
 
-    public LuxomCommunication(@NotNull LuxomBridgeHandler luxomBridgeHandler) {
+    public LuxomCommunication(LuxomBridgeHandler luxomBridgeHandler) {
         super();
         this.bridgeHandler = luxomBridgeHandler;
     }
@@ -82,8 +82,7 @@ public class LuxomCommunication {
             Thread.sleep(1000);
         }
         if (stillListeningToEvents) {
-            logger.debug("Luxom: starting but previous connection still active after 5000ms");
-            throw new IOException();
+            throw new IOException("starting but previous connection still active after 5000ms");
         }
     }
 
@@ -106,7 +105,6 @@ public class LuxomCommunication {
 
     /**
      * Cleanup socket when the communication with Luxom IP-interface is closed.
-     *
      */
     public synchronized void stopCommunication() {
         listenerStopped = true;
@@ -133,7 +131,6 @@ public class LuxomCommunication {
      * The thread listens to the TCP socket opened at instantiation of the {@link LuxomCommunication} class
      * and interprets all inbound json messages. It triggers state updates for active channels linked to the Niko Home
      * Control actions. It is started after initialization of the communication.
-     *
      */
     private void runLuxomEvents() {
         StringBuilder luxomMessage = new StringBuilder();

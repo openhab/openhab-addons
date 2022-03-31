@@ -24,11 +24,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public final class LuxomSystemInfo {
 
-    @Nullable
-    private String swVersion = "";
+    private @Nullable String swVersion = "";
 
-    @Nullable
-    public String getSwVersion() {
+    public @Nullable String getSwVersion() {
         return swVersion;
     }
 

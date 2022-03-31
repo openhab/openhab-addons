@@ -23,12 +23,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class LuxomCommand {
     private final LuxomAction action;
+    private final @Nullable String address; // must for data byte commands be set after construction
 
-    @Nullable
-    private final String address; // must for data byte commands be set after construction
-
-    @Nullable
-    private String data;
+    private @Nullable String data;
 
     public LuxomCommand(String command) {
         if (command.length() == 0) {

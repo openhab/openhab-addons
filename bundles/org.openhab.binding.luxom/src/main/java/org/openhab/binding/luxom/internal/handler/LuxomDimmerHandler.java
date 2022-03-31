@@ -49,8 +49,7 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
         super(thing);
     }
 
-    @Nullable
-    private LuxomThingDimmerConfig config;
+    private @Nullable LuxomThingDimmerConfig config;
     private final AtomicReference<Integer> lastLightLevel = new AtomicReference<>(0);
 
     @Override
@@ -96,7 +95,7 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
         } else if (LuxomBindingConstants.CHANNEL_BRIGHTNESS.equals(channelUID.getId()) && config != null) {
             if (command instanceof Number) {
                 int level = ((Number) command).intValue();
-                logger.trace("dimmer at address {} just setting dimmer level", this.getAddress());
+                logger.trace("dimmer at address {} just setting dimmer level", getAddress());
                 dim(level);
             } else if (command instanceof IncreaseDecreaseType) {
                 IncreaseDecreaseType s = (IncreaseDecreaseType) command;
@@ -106,13 +105,13 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
                     newValue = currentValue + config.stepPercentage;
                     // round down to step multiple
                     newValue = newValue - newValue % config.stepPercentage;
-                    logger.trace("dimmer at address {} just increasing dimmer level", this.getAddress());
+                    logger.trace("dimmer at address {} just increasing dimmer level", getAddress());
                     dim(newValue);
                 } else {
                     newValue = currentValue - config.stepPercentage;
                     // round up to step multiple
                     newValue = newValue + newValue % config.stepPercentage;
-                    logger.trace("dimmer at address {} just increasing dimmer level", this.getAddress());
+                    logger.trace("dimmer at address {} just increasing dimmer level", getAddress());
                     dim(Math.max(newValue, 0));
                 }
             } else if (OnOffType.ON.equals(command)) {
@@ -128,7 +127,7 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
     }
 
     @Override
-    public void handleCommandCommingFromBridge(LuxomCommand command) {
+    public void handleCommandComingFromBridge(LuxomCommand command) {
         updateStatus(ThingStatus.ONLINE);
         if (LuxomAction.CLEAR_RESPONSE.equals(command.getAction())) {
             updateState(LuxomBindingConstants.CHANNEL_SWITCH, OnOffType.OFF);
@@ -148,7 +147,7 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
         if (LuxomBindingConstants.CHANNEL_SWITCH.equals(channelUID.getId())
                 || LuxomBindingConstants.CHANNEL_BRIGHTNESS.equals(channelUID.getId())) {
             // Refresh state when new item is linked.
-            if (this.config != null && !this.config.doesNotReply) {
+            if (config != null && !config.doesNotReply) {
                 ping();
             }
         }
@@ -158,7 +157,7 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
      * example : *A,0,2,2B;*Z,057;
      */
     private void dim(int percentage) {
-        logger.debug("dimming dimmer at address {} to {} %", this.getAddress(), percentage);
+        logger.debug("dimming dimmer at address {} to {} %", getAddress(), percentage);
         List<CommandExecutionSpecification> commands = new ArrayList<>(3);
         if (percentage == 0) {
             commands.add(new CommandExecutionSpecification(LuxomAction.CLEAR.getCommand() + ",0," + getAddress()));

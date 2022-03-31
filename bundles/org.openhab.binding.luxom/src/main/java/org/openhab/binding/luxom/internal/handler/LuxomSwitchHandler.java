@@ -65,7 +65,7 @@ public class LuxomSwitchHandler extends LuxomThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("switch at address {} received command {} for {}", this.getAddress(), command.toFullString(),
+        logger.debug("switch at address {} received command {} for {}", getAddress(), command.toFullString(),
                 channelUID);
         if (LuxomBindingConstants.CHANNEL_SWITCH.equals(channelUID.getId())) {
             if (OnOffType.ON.equals(command)) {
@@ -79,7 +79,7 @@ public class LuxomSwitchHandler extends LuxomThingHandler {
     }
 
     @Override
-    public void handleCommandCommingFromBridge(LuxomCommand command) {
+    public void handleCommandComingFromBridge(LuxomCommand command) {
         if (LuxomAction.CLEAR_RESPONSE.equals(command.getAction())) {
             updateState(LuxomBindingConstants.CHANNEL_SWITCH, OnOffType.OFF);
             updateStatus(ThingStatus.ONLINE);
