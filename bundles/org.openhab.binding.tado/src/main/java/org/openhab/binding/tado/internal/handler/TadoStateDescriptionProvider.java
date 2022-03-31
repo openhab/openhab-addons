@@ -34,8 +34,8 @@ import org.osgi.service.component.annotations.Reference;
 public class TadoStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
 
     @Activate
-    public TadoStateDescriptionProvider(final @Reference EventPublisher eventPublisher, //
-            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, //
+    public TadoStateDescriptionProvider(final @Reference EventPublisher eventPublisher,
+            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry,
             final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
         this.eventPublisher = eventPublisher;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;

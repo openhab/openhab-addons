@@ -329,36 +329,38 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
      */
     private void updateDynamicStateDescriptions(ZoneState zoneState) {
         GenericZoneSetting setting = zoneState.getSetting();
-        if (setting.getType() == TadoSystemType.AIR_CONDITIONING) {
-            AcModeCapabilities acCapabilities = TadoApiTypeUtils.getModeCapabilities(
-                    (AirConditioningCapabilities) capabilities, ((CoolingZoneSetting) setting).getMode());
+        if (setting.getType() != TadoSystemType.AIR_CONDITIONING) {
+            return;
+        }
 
-            if (acCapabilities != null) {
-                Channel channel;
+        AcModeCapabilities acCapabilities = TadoApiTypeUtils.getModeCapabilities(
+                (AirConditioningCapabilities) capabilities, ((CoolingZoneSetting) setting).getMode());
 
-                // update the options list of supported fan levels
-                channel = thing.getChannel(TadoBindingConstants.CHANNEL_ZONE_FAN_LEVEL);
-                List<ACFanLevel> fanLevels = acCapabilities.getFanLevel();
-                if (channel != null && fanLevels != null) {
-                    stateDescriptionProvider.setStateOptions(channel.getUID(), fanLevels.stream()
-                            .map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
-                }
+        if (acCapabilities != null) {
+            Channel channel;
 
-                // update the options list of supported horizontal swing settings
-                channel = thing.getChannel(TadoBindingConstants.CHANNEL_ZONE_HORIZONTAL_SWING);
-                List<ACHorizontalSwing> horizontalSwings = acCapabilities.getHorizontalSwing();
-                if (channel != null && horizontalSwings != null) {
-                    stateDescriptionProvider.setStateOptions(channel.getUID(), horizontalSwings.stream()
-                            .map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
-                }
+            // update the options list of supported fan levels
+            channel = thing.getChannel(TadoBindingConstants.CHANNEL_ZONE_FAN_LEVEL);
+            List<ACFanLevel> fanLevels = acCapabilities.getFanLevel();
+            if (channel != null && fanLevels != null) {
+                stateDescriptionProvider.setStateOptions(channel.getUID(),
+                        fanLevels.stream().map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
+            }
 
-                // update the options list of supported vertical swing settings
-                channel = thing.getChannel(TadoBindingConstants.CHANNEL_ZONE_VERTICAL_SWING);
-                List<ACVerticalSwing> verticalSwings = acCapabilities.getVerticalSwing();
-                if (channel != null && verticalSwings != null) {
-                    stateDescriptionProvider.setStateOptions(channel.getUID(), verticalSwings.stream()
-                            .map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
-                }
+            // update the options list of supported horizontal swing settings
+            channel = thing.getChannel(TadoBindingConstants.CHANNEL_ZONE_HORIZONTAL_SWING);
+            List<ACHorizontalSwing> horizontalSwings = acCapabilities.getHorizontalSwing();
+            if (channel != null && horizontalSwings != null) {
+                stateDescriptionProvider.setStateOptions(channel.getUID(), horizontalSwings.stream()
+                        .map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
+            }
+
+            // update the options list of supported vertical swing settings
+            channel = thing.getChannel(TadoBindingConstants.CHANNEL_ZONE_VERTICAL_SWING);
+            List<ACVerticalSwing> verticalSwings = acCapabilities.getVerticalSwing();
+            if (channel != null && verticalSwings != null) {
+                stateDescriptionProvider.setStateOptions(channel.getUID(), verticalSwings.stream()
+                        .map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
             }
         }
     }
