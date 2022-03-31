@@ -178,6 +178,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_AUX;
                 thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_AUX;
                 deviceWho = Who.AUX;
+                break;
             }
             default:
                 logger.warn("Device type {} is not supported, default to GENERIC device (WHERE={})", deviceType, where);
