@@ -95,7 +95,7 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
             logger.debug("Initializing the Plugwise Home Automation bridge handler with config = {}", bridgeConfig);
             try {
                 this.controller = new PlugwiseHAController(httpClient, bridgeConfig.getHost(), bridgeConfig.getPort(),
-                        bridgeConfig.getUsername(), bridgeConfig.getsmileId());
+                        bridgeConfig.getUsername(), bridgeConfig.getsmileId(), bridgeConfig.getRefresh());
                 scheduleRefreshJob(bridgeConfig);
             } catch (PlugwiseHAException e) {
                 updateStatus(OFFLINE, CONFIGURATION_ERROR, e.getMessage());
@@ -163,7 +163,7 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
 
     private void run() {
         try {
-            logger.trace("Executing refresh job");
+            this.logger.trace("Executing refresh job");
             refresh();
 
             if (super.thing.getStatus() == ThingStatus.INITIALIZING) {
@@ -175,12 +175,16 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
         } catch (PlugwiseHAUnauthorizedException | PlugwiseHANotAuthorizedException e) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_CREDENTIALS);
         } catch (PlugwiseHACommunicationException e) {
+            this.logger.trace("Bridge encountered an error {}", e.getMessage(), e);
             updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR);
         } catch (PlugwiseHATimeoutException e) {
+            this.logger.trace("Bridge encountered an error {}", e.getMessage(), e);
             updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_TIMEOUT);
         } catch (PlugwiseHAException e) {
+            this.logger.trace("Bridge encountered an error {}", e.getMessage(), e);
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
         } catch (RuntimeException e) {
+            this.logger.trace("Bridge encountered an error {}", e.getMessage(), e);
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
         }
     }

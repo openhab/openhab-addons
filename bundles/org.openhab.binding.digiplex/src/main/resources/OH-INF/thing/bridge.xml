@@ -17,7 +17,6 @@
 			<parameter-group name="port">
 				<context>communication</context>
 				<label>Port Configuration</label>
-				<description></description>
 			</parameter-group>
 
 			<parameter name="port" type="text" required="true" groupName="port">

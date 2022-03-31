@@ -35,6 +35,7 @@ import org.osgi.service.component.annotations.Modified;
  * This is an implementation of a {@link ScriptEngineFactory} for Ruby.
  *
  * @author Brian O'Connell - Initial contribution
+ * @author Jimmy Tanagra - Add require injection
  */
 @NonNullByDefault
 @Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jrubyscripting")
@@ -45,7 +46,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
 
     // Filter out the File entry to prevent shadowing the Ruby File class which breaks Ruby in spectacularly
     // difficult ways to debug.
-    private static final Set<String> FILTERED_PRESETS = Set.of("File");
+    private static final Set<String> FILTERED_PRESETS = Set.of("File", "Files", "Path", "Paths");
     private static final Set<String> INSTANCE_PRESETS = Set.of();
     private static final Set<String> GLOBAL_PRESETS = Set.of("scriptExtension", "automationManager", "ruleRegistry",
             "items", "voice", "rules", "things", "events", "itemRegistry", "ir", "actions", "se", "audio",
@@ -113,6 +114,12 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
 
         importClassesToRuby(scriptEngine, partitionedMap.getOrDefault(true, new HashMap<>()));
         super.scopeValues(scriptEngine, partitionedMap.getOrDefault(false, new HashMap<>()));
+
+        // scopeValues is called twice. The first call only passed 'se'. The second call passed the rest of the
+        // presets, including 'ir'. We wait for the second call before running the require statements.
+        if (scopeValues.containsKey("ir")) {
+            configuration.injectRequire(scriptEngine);
+        }
     }
 
     private void importClassesToRuby(ScriptEngine scriptEngine, Map<String, Object> objects) {

@@ -28,49 +28,52 @@ The binding has been tested with a RSP-1066 and a RSP-1570.
 
 This binding supports the following thing types:
 
-| Thing Type | Description                                                   |
-|------------|---------------------------------------------------------------|
-| a11        | Connection to the Rotel A11 integrated amplifier              |
-| a12        | Connection to the Rotel A12 integrated amplifier              |
-| a14        | Connection to the Rotel A14 integrated amplifier              |
-| cd11       | Connection to the Rotel CD11 CD player                        |
-| cd14       | Connection to the Rotel CD14 CD player                        |
-| ra11       | Connection to the Rotel RA-11 integrated amplifier            |
-| ra12       | Connection to the Rotel RA-12 integrated amplifier            |
-| ra1570     | Connection to the Rotel RA-1570 integrated amplifier          |
-| ra1572     | Connection to the Rotel RA-1572 integrated amplifier          |
-| ra1592     | Connection to the Rotel RA-1592 integrated amplifier          |
-| rap1580    | Connection to the Rotel RAP-1580 surround amplified processor |
-| rc1570     | Connection to the Rotel RC-1570 stereo preamplifier           |
-| rc1572     | Connection to the Rotel RC-1572 stereo preamplifier           |
-| rc1590     | Connection to the Rotel RC-1590 stereo preamplifier           |
-| rcd1570    | Connection to the Rotel RCD-1570 CD player                    |
-| rcd1572    | Connection to the Rotel RCD-1572 CD player                    |
-| rcx1500    | Connection to the Rotel RCX-1500 stereo receiver              |
-| rdd1580    | Connection to the Rotel RDD-1580 stereo DAC                   |
-| rdg1520    | Connection to the Rotel RDG-1520 tuner                        |
-| rsp1066    | Connection to the Rotel RSP-1066 surround processor           |
-| rsp1068    | Connection to the Rotel RSP-1068 surround processor           |
-| rsp1069    | Connection to the Rotel RSP-1069 surround processor           |
-| rsp1098    | Connection to the Rotel RSP-1098 surround processor           |
-| rsp1570    | Connection to the Rotel RSP-1570 surround processor           |
-| rsp1572    | Connection to the Rotel RSP-1572 surround processor           |
-| rsp1576    | Connection to the Rotel RSP-1576 surround processor           |
-| rsp1582    | Connection to the Rotel RSP-1582 surround processor           |
-| rsx1055    | Connection to the Rotel RSX-1055 surround receiver            |
-| rsx1056    | Connection to the Rotel RSX-1056 surround receiver            |
-| rsx1057    | Connection to the Rotel RSX-1057 surround receiver            |
-| rsx1058    | Connection to the Rotel RSX-1058 surround receiver            |
-| rsx1065    | Connection to the Rotel RSX-1065 surround receiver            |
-| rsx1067    | Connection to the Rotel RSX-1067 surround receiver            |
-| rsx1550    | Connection to the Rotel RSX-1550 surround receiver            |
-| rsx1560    | Connection to the Rotel RSX-1560 surround receiver            |
-| rsx1562    | Connection to the Rotel RSX-1562 surround receiver            |
-| rt09       | Connection to the Rotel RT-09 tuner                           |
-| rt11       | Connection to the Rotel RT-11 tuner                           |
-| rt1570     | Connection to the Rotel RT-1570 tuner                         |
-| t11        | Connection to the Rotel T11 tuner                             |
-| t14        | Connection to the Rotel T14 tuner                             |
+| Thing Type | Description                                                                   |
+|------------|-------------------------------------------------------------------------------|
+| a11        | Connection to the Rotel A11 integrated amplifier                              |
+| a12        | Connection to the Rotel A12 or A12MKII integrated amplifier                   |
+| a14        | Connection to the Rotel A14 or A14MKII integrated amplifier                   |
+| cd11       | Connection to the Rotel CD11 CD player                                        |
+| cd14       | Connection to the Rotel CD14 or CD14MKII CD player                            |
+| p5         | Connection to the Rotel Michi P5 stereo preamplifier                          |
+| ra11       | Connection to the Rotel RA-11 integrated amplifier                            |
+| ra12       | Connection to the Rotel RA-12 integrated amplifier                            |
+| ra1570     | Connection to the Rotel RA-1570 integrated amplifier                          |
+| ra1572     | Connection to the Rotel RA-1572 or RA-1572MKII integrated amplifier           |
+| ra1592     | Connection to the Rotel RA-1592 or RA-1592MKII integrated amplifier           |
+| rap1580    | Connection to the Rotel RAP-1580 or RAP-1580MKII surround amplified processor |
+| rc1570     | Connection to the Rotel RC-1570 stereo preamplifier                           |
+| rc1572     | Connection to the Rotel RC-1572 or RC-1572MKII stereo preamplifier            |
+| rc1590     | Connection to the Rotel RC-1590 or RC-1590MKII stereo preamplifier            |
+| rcd1570    | Connection to the Rotel RCD-1570 CD player                                    |
+| rcd1572    | Connection to the Rotel RCD-1572 or RCD-1572MKII CD player                    |
+| rcx1500    | Connection to the Rotel RCX-1500 stereo receiver                              |
+| rdd1580    | Connection to the Rotel RDD-1580 stereo DAC                                   |
+| rdg1520    | Connection to the Rotel RDG-1520 tuner                                        |
+| rsp1066    | Connection to the Rotel RSP-1066 surround processor                           |
+| rsp1068    | Connection to the Rotel RSP-1068 surround processor                           |
+| rsp1069    | Connection to the Rotel RSP-1069 surround processor                           |
+| rsp1098    | Connection to the Rotel RSP-1098 surround processor                           |
+| rsp1570    | Connection to the Rotel RSP-1570 surround processor                           |
+| rsp1572    | Connection to the Rotel RSP-1572 surround processor                           |
+| rsp1576    | Connection to the Rotel RSP-1576 or RSP-1576MKII surround processor           |
+| rsp1582    | Connection to the Rotel RSP-1582 surround processor                           |
+| rsx1055    | Connection to the Rotel RSX-1055 surround receiver                            |
+| rsx1056    | Connection to the Rotel RSX-1056 surround receiver                            |
+| rsx1057    | Connection to the Rotel RSX-1057 surround receiver                            |
+| rsx1058    | Connection to the Rotel RSX-1058 surround receiver                            |
+| rsx1065    | Connection to the Rotel RSX-1065 surround receiver                            |
+| rsx1067    | Connection to the Rotel RSX-1067 surround receiver                            |
+| rsx1550    | Connection to the Rotel RSX-1550 surround receiver                            |
+| rsx1560    | Connection to the Rotel RSX-1560 surround receiver                            |
+| rsx1562    | Connection to the Rotel RSX-1562 surround receiver                            |
+| rt09       | Connection to the Rotel RT-09 tuner                                           |
+| rt11       | Connection to the Rotel RT-11 tuner                                           |
+| rt1570     | Connection to the Rotel RT-1570 tuner                                         |
+| t11        | Connection to the Rotel T11 tuner                                             |
+| t14        | Connection to the Rotel T14 tuner                                             |
+| x3         | Connection to the Rotel Michi X3 integrated amplifier                         |
+| x5         | Connection to the Rotel Michi X5 integrated amplifier                         |
 
 ## Discovery
 
@@ -162,38 +165,43 @@ The following channels are available:
 | mainZone#line2 | Front Panel Line 2             | String    | The second line displayed on the device front panel      |                                    |
 | frequency      | Current Frequency              | Number    | The current frequency (in kHz) for digital source input  |                                    |
 | brightness     | Front Panel Display Brightness | Dimmer    | The backlight brightness level (in %) of the device front panel |                             |
+| tcbypass       | Tone Control Bypass            | Switch    | The user's bass-/treble-settings are bypassed            | ON, OFF                            |
+| balance        | Stereo Balance Adjustment      | Number    | Adjust the balance                                       | INCREASE, DECREASE, value          |
+| speakera       | Speaker-A Adjustment           | Switch    | Turn on/off the speaker group A                          | ON, OFF                            |
+| speakerb       | Speaker-B Adjustment           | Switch    | Turn on/off the speaker group B                          | ON, OFF                            |
 
 Here are the list of channels available for each thing type:
 
-| Thing Type | Available channels                                                                    |
-|------------|---------------------------------------------------------------------------------------|
-| a11        | power, source, volume, mute, bass, treble, brightness                                 |
-| a12        | power, source, volume, mute, bass, treble, frequency, brightness                      |
-| a14        | power, source, volume, mute, bass, treble, frequency, brightness                      |
-| cd11       | power, playControl, track, brightness                                                 |
-| cd14       | power, playControl, track, brightness                                                 |
-| ra11       | power, source, volume, mute, bass, treble, playControl, frequency, brightness         |
-| ra12       | power, source, volume, mute, bass, treble, playControl, frequency, brightness         |
-| ra1570     | power, source, volume, mute, bass, treble, playControl, frequency, brightness         |
-| ra1572     | power, source, volume, mute, bass, treble, frequency, brightness                      |
-| ra1592     | power, source, volume, mute, bass, treble, frequency, brightness                      |
-| rap1580    | power, source, dsp, volume, mute, brightness                                          |
-| rc1570     | power, source, volume, mute, bass, treble, playControl, frequency, brightness         |
-| rc1572     | power, source, volume, mute, bass, treble, frequency, brightness                      |
-| rc1590     | power, source, volume, mute, bass, treble, frequency, brightness                      |
-| rcd1570    | power, playControl, brightness                                                        |
-| rcd1572    | power, playControl, track, brightness                                                 |
-| rcx1500    | power, source, volume, mute, playControl                                              |
-| rdd1580    | power, source, playControl, frequency                                                 |
-| rdg1520    | power, source, playControl                                                            |
+| Thing Type | Available channels                                                                                      |
+|------------|---------------------------------------------------------------------------------------------------------|
+| a11        | power, source, volume, mute, bass, treble, brightness, tcbypass, balance, speakera, speakerb            |
+| a12        | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
+| a14        | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
+| cd11       | power, playControl, track, brightness                                                                   |
+| cd14       | power, playControl, track, brightness                                                                   |
+| p5         | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance                     |
+| ra11       | power, source, volume, mute, bass, treble, playControl, frequency, brightness, tcbypass, balance        |
+| ra12       | power, source, volume, mute, bass, treble, playControl, frequency, brightness, tcbypass, balance        |
+| ra1570     | power, source, volume, mute, bass, treble, playControl, frequency, brightness, tcbypass, balance, speakera, speakerb |
+| ra1572     | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
+| ra1592     | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
+| rap1580    | power, source, dsp, volume, mute, brightness                                                            |
+| rc1570     | power, source, volume, mute, bass, treble, playControl, frequency, brightness, tcbypass, balance        |
+| rc1572     | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance                     |
+| rc1590     | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance                     |
+| rcd1570    | power, playControl, brightness                                                                          |
+| rcd1572    | power, playControl, track, brightness                                                                   |
+| rcx1500    | power, source, volume, mute, playControl                                                                |
+| rdd1580    | power, source, playControl, frequency                                                                   |
+| rdg1520    | power, source, playControl                                                                              |
 | rsp1066    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volumeUpDown, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volumeUpDown |
 | rsp1068    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsp1069    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsp1098    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute |
 | rsp1570    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsp1572    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
-| rsp1576    | power, source, dsp, volume, mute, brightness                                          |
-| rsp1582    | power, source, dsp, volume, mute, brightness                                          |
+| rsp1576    | power, source, dsp, volume, mute, brightness                                                            |
+| rsp1582    | power, source, dsp, volume, mute, brightness                                                            |
 | rsx1055    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volumeUpDown, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volumeUpDown |
 | rsx1056    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute |
 | rsx1057    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute |
@@ -203,11 +211,13 @@ Here are the list of channels available for each thing type:
 | rsx1550    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsx1560    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsx1562    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
-| rt09       | power, source, playControl, brightness                                                |
-| rt11       | power, source, brightness                                                             |
-| rt1570     | power, source, brightness                                                             |
-| t11        | power, source, brightness                                                             |
-| t14        | power, source, brightness                                                             |
+| rt09       | power, source, playControl, brightness                                                                  |
+| rt11       | power, source, brightness                                                                               |
+| rt1570     | power, source, brightness                                                                               |
+| t11        | power, source, brightness                                                                               |
+| t14        | power, source, brightness                                                                               |
+| x3         | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance                     |
+| x5         | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance                     |
 
 ## Full Example
 
@@ -221,6 +231,8 @@ Thing rotel:rsp1570:preamp "RSP-1570" [ serialPort="COM2" ]
 Thing rotel:ra1592:preamp "RA-1592" [ serialPort="COM3" ]
 
 Thing rotel:cd14:cd "CD14" [ serialPort="COM4" ]
+
+Thing rotel:a14:amp "A14" [ serialPort="/dev/ttyUSB0" ]
 ```
 
 example.things using serial over IP connection:
@@ -281,6 +293,11 @@ Switch amp_mute "Mute" { channel="rotel:ra1592:preamp:mute" }
 Number amp_bass "Bass Adjustment [%d]" { channel="rotel:ra1592:preamp:bass" }
 Number amp_treble "Treble Adjustment [%d]" { channel="rotel:ra1592:preamp:treble" }
 Dimmer amp_brightness "Display brightness" { channel="rotel:ra1592:preamp:brightness" }
+
+Switch amp_bypass "TCBypass" { channel="rotel:a14:amp:tcbypass" }
+Number amp_balance "Balance Adjustment [%d]" { channel="rotel:a14:amp:balance" }
+Switch amp_speakera "Speaker A" { channel="rotel:a14:amp:speakera" }
+Switch amp_speakerb "Speaker B" { channel="rotel:a14:amp:speakerb" }
 
 Switch cd_power "Power" { channel="rotel:cd14:cd:power" }
 Player cd_control "Playback" { channel="rotel:cd14:cd:power" }

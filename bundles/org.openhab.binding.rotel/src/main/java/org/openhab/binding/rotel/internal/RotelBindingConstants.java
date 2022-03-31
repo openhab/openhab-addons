@@ -68,6 +68,9 @@ public class RotelBindingConstants {
     public static final String THING_TYPE_ID_RT1570 = "rt1570";
     public static final String THING_TYPE_ID_T11 = "t11";
     public static final String THING_TYPE_ID_T14 = "t14";
+    public static final String THING_TYPE_ID_P5 = "p5";
+    public static final String THING_TYPE_ID_X3 = "x3";
+    public static final String THING_TYPE_ID_X5 = "x5";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_RSP1066 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_RSP1066);
@@ -111,6 +114,9 @@ public class RotelBindingConstants {
     public static final ThingTypeUID THING_TYPE_RT1570 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_RT1570);
     public static final ThingTypeUID THING_TYPE_T11 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_T11);
     public static final ThingTypeUID THING_TYPE_T14 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_T14);
+    public static final ThingTypeUID THING_TYPE_P5 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_P5);
+    public static final ThingTypeUID THING_TYPE_X3 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_X3);
+    public static final ThingTypeUID THING_TYPE_X5 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_X5);
 
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";
@@ -148,6 +154,10 @@ public class RotelBindingConstants {
     public static final String CHANNEL_ZONE4_SOURCE = "zone4#source";
     public static final String CHANNEL_ZONE4_VOLUME = "zone4#volume";
     public static final String CHANNEL_ZONE4_MUTE = "zone4#mute";
+    public static final String CHANNEL_TCBYPASS = "tcbypass";
+    public static final String CHANNEL_BALANCE = "balance";
+    public static final String CHANNEL_SPEAKER_A = "speakera";
+    public static final String CHANNEL_SPEAKER_B = "speakerb";
 
     // List of all properties
     public static final String PROPERTY_PROTOCOL = "protocol";

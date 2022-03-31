@@ -24,10 +24,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapOneCallHistoryConfiguration;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapOneCallHistAPIData;
+import org.openhab.binding.openweathermap.internal.dto.onecall.Precipitation;
 import org.openhab.binding.openweathermap.internal.dto.onecallhist.Hourly;
-import org.openhab.binding.openweathermap.internal.dto.onecallhist.OpenWeatherMapOneCallHistAPIData;
-import org.openhab.binding.openweathermap.internal.dto.onecallhist.Rain;
-import org.openhab.binding.openweathermap.internal.dto.onecallhist.Snow;
 import org.openhab.core.i18n.CommunicationException;
 import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -198,11 +197,11 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
                     state = getDecimalTypeState(localWeatherData.getCurrent().getUvi());
                     break;
                 case CHANNEL_RAIN:
-                    Rain rain = localWeatherData.getCurrent().getRain();
+                    Precipitation rain = localWeatherData.getCurrent().getRain();
                     state = getQuantityTypeState(rain == null ? 0 : rain.get1h(), MILLI(METRE));
                     break;
                 case CHANNEL_SNOW:
-                    Snow snow = localWeatherData.getCurrent().getSnow();
+                    Precipitation snow = localWeatherData.getCurrent().getSnow();
                     state = getQuantityTypeState(snow == null ? 0 : snow.get1h(), MILLI(METRE));
                     break;
                 case CHANNEL_VISIBILITY:
@@ -295,11 +294,11 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
                     State tempstate = new QuantityType<>(historyData.getVisibility(), METRE).toUnit(KILO(METRE));
                     state = (tempstate == null ? state : tempstate);
                 case CHANNEL_RAIN:
-                    Rain rain = historyData.getRain();
+                    Precipitation rain = historyData.getRain();
                     state = getQuantityTypeState(rain == null ? 0 : rain.get1h(), MILLI(METRE));
                     break;
                 case CHANNEL_SNOW:
-                    Snow snow = historyData.getSnow();
+                    Precipitation snow = historyData.getSnow();
                     state = getQuantityTypeState(snow == null ? 0 : snow.get1h(), MILLI(METRE));
                     break;
                 default:

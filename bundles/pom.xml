@@ -114,6 +114,7 @@
     <module>org.openhab.binding.ekey</module>
     <module>org.openhab.binding.electroluxair</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
+    <module>org.openhab.binding.elroconnects</module>
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.enigma2</module>
     <module>org.openhab.binding.enocean</module>
@@ -125,6 +126,7 @@
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
     <module>org.openhab.binding.feican</module>
+    <module>org.openhab.binding.flicbutton</module>
     <module>org.openhab.binding.fmiweather</module>
     <module>org.openhab.binding.folderwatcher</module>
     <module>org.openhab.binding.folding</module>
@@ -282,6 +284,7 @@
     <module>org.openhab.binding.plugwiseha</module>
     <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.proteusecometer</module>
+    <module>org.openhab.binding.prowl</module>
     <module>org.openhab.binding.publictransportswitzerland</module>
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.pushbullet</module>
@@ -402,6 +405,7 @@
     <module>org.openhab.voice.pollytts</module>
     <module>org.openhab.voice.porcupineks</module>
     <module>org.openhab.voice.voicerss</module>
+    <module>org.openhab.voice.voskstt</module>
     <module>org.openhab.voice.watsonstt</module>
   </modules>
 

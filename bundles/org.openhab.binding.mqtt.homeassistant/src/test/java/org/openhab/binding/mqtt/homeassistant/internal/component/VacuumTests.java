@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
@@ -32,6 +33,7 @@ import org.openhab.core.types.UnDefType;
  * @author Anton Kharuzhy - Initial contribution
  */
 @SuppressWarnings("ConstantConditions")
+@NonNullByDefault
 public class VacuumTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "vacuum/rockrobo_vacuum";
 
@@ -248,6 +250,7 @@ public class VacuumTests extends AbstractComponentTests {
         assertPublished("vacuum/send_command", "custom_command");
     }
 
+    @Override
     protected Set<String> getConfigTopics() {
         return Set.of(CONFIG_TOPIC);
     }

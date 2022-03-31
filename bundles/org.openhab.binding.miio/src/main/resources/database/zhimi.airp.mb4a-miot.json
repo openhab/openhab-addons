@@ -1,0 +1,291 @@
+{
+	"deviceMapping": {
+		"id": [
+			"zhimi.airp.mb4a"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "filter-reset-filter-life",
+							"label": "Filter Reset Filter Life"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"parameters": [
+							3.0
+						],
+						"siid": 4,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "filter-reset-filter-life"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping `[\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\"]`"
+			},
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Air Purifier - Device Fault",
+				"channel": "fault",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Auto"
+						},
+						{
+							"value": "1",
+							"label": "Sleep"
+						},
+						{
+							"value": "2",
+							"label": "Favorite"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\"]`"
+			},
+			{
+				"property": "pm2.5-density",
+				"siid": 3,
+				"piid": 4,
+				"friendlyName": "Environment - PM2 5 Density",
+				"channel": "pm2_5_density",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 600,
+					"step": 1,
+					"pattern": "%.1f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "filter-life-level",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Filter - Filter Life Level",
+				"channel": "filter_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "filter-used-time",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Filter - Filter Used Time",
+				"channel": "filter_used_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "alarm",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Alarm - Alarm",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "brightness",
+				"siid": 7,
+				"piid": 2,
+				"friendlyName": "Screen - Brightness",
+				"channel": "brightness",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 8,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "Physical Control Locked - Physical Control Locked",
+				"channel": "physical_controls_locked",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "moto-speed-rpm",
+				"siid": 9,
+				"piid": 1,
+				"friendlyName": "Custom Service - Moto Speed Rpm",
+				"channel": "moto_speed_rpm",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "miio-lib-version",
+				"siid": 9,
+				"piid": 2,
+				"friendlyName": "Custom Service - Miio Lib Version",
+				"channel": "miio_lib_version",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "favorite-speed",
+				"siid": 9,
+				"piid": 3,
+				"friendlyName": "Custom Service - Favorite Speed",
+				"channel": "favorite_speed",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 300,
+					"maximum": 2200,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "aqi-updata-heartbeat",
+				"siid": 9,
+				"piid": 4,
+				"friendlyName": "Custom Service - Aqi Updata Heartbeat",
+				"channel": "aqi_updata_heartbeat",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65534,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			}
+		],
+		"experimental": false
+	}
+}

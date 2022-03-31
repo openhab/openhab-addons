@@ -58,6 +58,8 @@
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="presetScene" typeId="presetScene"/>
 			<channel id="preHeat" typeId="preHeat"/>
+			<channel id="coolingAllowed" typeId="coolingAllowed"/>
+			<channel id="regulationControl" typeId="regulationControl"/>
 		</channels>
 
 		<representation-property>id</representation-property>

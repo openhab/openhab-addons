@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Stefan Bußweiler - Added new thing status handling
  * @author Erdoan Hadzhiyusein - Adapted the class to work with the new DateTimeType
  * @author Mihir Patil - Added standby switch
+ * @author Jacob Laursen - Refactoring
  */
 @NonNullByDefault
 public abstract class WemoHandler extends WemoBaseThingHandler {
@@ -69,14 +70,12 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
             if (THING_TYPE_INSIGHT.equals(thing.getThingTypeUID())) {
                 addSubscription(INSIGHTEVENT);
             }
-            host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
-            updateStatus(ThingStatus.ONLINE);
+            updateStatus(ThingStatus.UNKNOWN);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/config-status.error.missing-udn");
-            logger.debug("Cannot initalize WemoHandler. UDN not set.");
         }
     }
 
@@ -99,12 +98,10 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
             }
             try {
                 logger.debug("Polling job");
-                host = getHost();
                 // Check if the Wemo device is set in the UPnP service registry
-                // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                             "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     return;
                 }
@@ -117,20 +114,10 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String localHost = getHost();
-        if (localHost.isEmpty()) {
-            logger.warn("Failed to send command '{}' for device '{}': IP address missing", command,
-                    getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
-        }
-        String wemoURL = getWemoURL(localHost, BASICACTION);
+        String wemoURL = getWemoURL(BASICACTION);
         if (wemoURL == null) {
             logger.debug("Failed to send command '{}' for device '{}': URL cannot be created", command,
                     getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-url");
             return;
         }
         if (command instanceof RefreshType) {
@@ -163,13 +150,6 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
      */
     protected void updateWemoState() {
         String actionService = BASICACTION;
-        String localhost = getHost();
-        if (localhost.isEmpty()) {
-            logger.warn("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
-        }
         String action = "GetBinaryState";
         String variable = "BinaryState";
         String value = null;
@@ -178,11 +158,9 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
             variable = "InsightParams";
             actionService = INSIGHTACTION;
         }
-        String wemoURL = getWemoURL(localhost, actionService);
+        String wemoURL = getWemoURL(actionService);
         if (wemoURL == null) {
             logger.debug("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-url");
             return;
         }
         String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
@@ -198,8 +176,10 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
                 logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
                 this.onValueReceived(variable, value, actionService + "1");
             }
+            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.warn("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }

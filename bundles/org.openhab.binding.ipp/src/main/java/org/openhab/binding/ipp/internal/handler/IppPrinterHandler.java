@@ -82,7 +82,7 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
             } else if (obj instanceof String) {
                 url = new URL((String) obj);
             }
-            printer = new CupsPrinter(url, name, false);
+            printer = new CupsPrinter(null, url, name);
         } catch (MalformedURLException e) {
             logger.error("malformed url {}, printer thing creation failed", config.get(PRINTER_PARAMETER_URL));
         }

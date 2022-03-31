@@ -75,7 +75,7 @@ public class ExponentialBackoffWithJitterTest {
     @Test
     public void whenTheNumberOfFailedAttemptsIsNegativeThenZeroIsAssumedInstead() {
         // given:
-        Random random = mock(Random.class);
+        Random random = mock(Random.class, withSettings().withoutAnnotations());
         when(random.nextLong()).thenReturn(RETRY_INTERVAL);
 
         ExponentialBackoffWithJitter backoffStrategy = new ExponentialBackoffWithJitter(MINIMUM_WAIT_TIME,
@@ -91,7 +91,7 @@ public class ExponentialBackoffWithJitterTest {
     @Test
     public void whenThereIsNoFailedAttemptThenTheMaximalResultIsMinimumWaitTimePlusRetryInterval() {
         // given:
-        Random random = mock(Random.class);
+        Random random = mock(Random.class, withSettings().withoutAnnotations());
         when(random.nextLong()).thenReturn(RETRY_INTERVAL);
 
         ExponentialBackoffWithJitter backoffStrategy = new ExponentialBackoffWithJitter(MINIMUM_WAIT_TIME,
@@ -107,7 +107,7 @@ public class ExponentialBackoffWithJitterTest {
     @Test
     public void whenThereIsOneFailedAttemptThenTheMaximalResultIsMinimumWaitTimePlusTwiceTheRetryInterval() {
         // given:
-        Random random = mock(Random.class);
+        Random random = mock(Random.class, withSettings().withoutAnnotations());
         when(random.nextLong()).thenReturn(RETRY_INTERVAL * 2);
 
         ExponentialBackoffWithJitter backoffStrategy = new ExponentialBackoffWithJitter(MINIMUM_WAIT_TIME,
@@ -123,7 +123,7 @@ public class ExponentialBackoffWithJitterTest {
     @Test
     public void whenThereAreTwoFailedAttemptsThenTheMaximalResultIsMinimumWaitTimePlusFourTimesTheRetryInterval() {
         // given:
-        Random random = mock(Random.class);
+        Random random = mock(Random.class, withSettings().withoutAnnotations());
         when(random.nextLong()).thenReturn(RETRY_INTERVAL * 4);
 
         ExponentialBackoffWithJitter backoffStrategy = new ExponentialBackoffWithJitter(MINIMUM_WAIT_TIME,
@@ -139,7 +139,7 @@ public class ExponentialBackoffWithJitterTest {
     @Test
     public void whenThereAreTwoFailedAttemptsThenTheMinimalResultIsTheMinimumWaitTime() {
         // given:
-        Random random = mock(Random.class);
+        Random random = mock(Random.class, withSettings().withoutAnnotations());
         when(random.nextLong()).thenReturn(0L);
 
         ExponentialBackoffWithJitter backoffStrategy = new ExponentialBackoffWithJitter(MINIMUM_WAIT_TIME,
@@ -155,7 +155,7 @@ public class ExponentialBackoffWithJitterTest {
     @Test
     public void whenTheDrawnRandomValueIsNegativeThenItIsProjectedToAPositiveValue() {
         // given:
-        Random random = mock(Random.class);
+        Random random = mock(Random.class, withSettings().withoutAnnotations());
         when(random.nextLong()).thenReturn(-RETRY_INTERVAL * 4 - 1);
 
         ExponentialBackoffWithJitter backoffStrategy = new ExponentialBackoffWithJitter(MINIMUM_WAIT_TIME,
@@ -171,7 +171,7 @@ public class ExponentialBackoffWithJitterTest {
     @Test
     public void whenTheResultWouldBeLargerThanTheMaximumThenItIsCappedToTheMaximum() {
         // given:
-        Random random = mock(Random.class);
+        Random random = mock(Random.class, withSettings().withoutAnnotations());
         when(random.nextLong()).thenReturn(MAXIMUM_WAIT_TIME - ALTERNATIVE_MINIMUM_WAIT_TIME);
 
         ExponentialBackoffWithJitter backoffStrategy = new ExponentialBackoffWithJitter(ALTERNATIVE_MINIMUM_WAIT_TIME,
@@ -187,7 +187,7 @@ public class ExponentialBackoffWithJitterTest {
     @Test
     public void whenTheResultWouldBeLargerThanTheAlternativeMaximumThenItIsCappedToTheAlternativeMaximum() {
         // given:
-        Random random = mock(Random.class);
+        Random random = mock(Random.class, withSettings().withoutAnnotations());
         when(random.nextLong()).thenReturn(ALTERNATIVE_MAXIMUM_WAIT_TIME - ALTERNATIVE_MINIMUM_WAIT_TIME);
 
         ExponentialBackoffWithJitter backoffStrategy = new ExponentialBackoffWithJitter(ALTERNATIVE_MINIMUM_WAIT_TIME,

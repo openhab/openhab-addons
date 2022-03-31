@@ -27,7 +27,6 @@ import org.openhab.binding.mqtt.internal.action.MQTTActions;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
-import org.openhab.core.io.transport.mqtt.MqttService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -41,8 +40,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This base implementation handles connection changes of the {@link MqttBrokerConnection}
- * and puts the Thing on or offline. It also handles adding/removing notifications of the
- * {@link MqttService} and provides a basic dispose() implementation.
+ * and puts the Thing on or offline. It also provides a basic dispose() implementation.
  *
  * @author David Graeff - Initial contribution
  */

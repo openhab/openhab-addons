@@ -136,6 +136,10 @@ public abstract class RotelConnector {
     public static final String KEY_DSP_MODE = "dsp_mode";
     public static final String KEY_DIMMER = "dimmer";
     public static final String KEY_FREQ = "freq";
+    public static final String KEY_TONE = "tone";
+    public static final String KEY_TCBYPASS = "bypass";
+    public static final String KEY_BALANCE = "balance";
+    public static final String KEY_SPEAKER = "speaker";
 
     // Special keys used by the binding
     public static final String KEY_LINE1 = "line1";
@@ -171,6 +175,9 @@ public abstract class RotelConnector {
     public static final String PAUSE = "pause";
     public static final String STOP = "stop";
     private static final String SOURCE = "source";
+    public static final String MSG_VALUE_SPEAKER_A = "a";
+    public static final String MSG_VALUE_SPEAKER_B = "b";
+    public static final String MSG_VALUE_SPEAKER_AB = "a_b";
 
     private RotelModel model;
     private RotelProtocol protocol;
@@ -419,6 +426,15 @@ public abstract class RotelConnector {
                                     messageStr += String.format("-%02d", -value);
                                 }
                                 break;
+                            case BALANCE_SET:
+                                if (value == 0) {
+                                    messageStr += "000";
+                                } else if (value > 0) {
+                                    messageStr += String.format("R%02d", value);
+                                } else {
+                                    messageStr += String.format("L%02d", -value);
+                                }
+                                break;
                             case DIMMER_LEVEL_SET:
                                 if (value > 0 && model.getDimmerLevelMin() < 0) {
                                     messageStr += String.format("+%d", value);
@@ -456,6 +472,15 @@ public abstract class RotelConnector {
                                     messageStr += String.format("+%02d", value);
                                 } else {
                                     messageStr += String.format("-%02d", -value);
+                                }
+                                break;
+                            case BALANCE_SET:
+                                if (value == 0) {
+                                    messageStr += "000";
+                                } else if (value > 0) {
+                                    messageStr += String.format("r%02d", value);
+                                } else {
+                                    messageStr += String.format("l%02d", -value);
                                 }
                                 break;
                             case DIMMER_LEVEL_SET:

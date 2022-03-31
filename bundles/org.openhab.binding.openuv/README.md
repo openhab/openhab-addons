@@ -58,6 +58,7 @@ The OpenUV Report thing that is retrieved has these channels:
 
 The elevation channel will be used as an input in order to limit API queries to OpenUV. If not used, 
 the binding will not consider it. When value is provided queries will only be issued if the elevation is > 0°.
+This is quite useful with a free OpenUV account (50 req/day included): in this case, and with the elevation channel configured, a 20 minutes refresh interval should be ok (in Europe the longest day is around 15 hours).
 
 Thing can be extended with as many SafeExposure channels as needed for each skin type.
 
@@ -67,13 +68,13 @@ demo.things:
 
 ```xtend
 Bridge openuv:openuvapi:local "OpenUV Api" [ apikey="xxxxYYYxxxx" ] {
-    Thing uvreport city1 "UV In My City" [ location="52.5200066,13.4049540", refresh=10 ]{
+    Thing uvreport city1 "UV In My City" [ location="52.5200066,13.4049540", refresh=20 ]{
         Channels:
-            Type SafeExposure : Parents [       
-                index=3
+            Type SafeExposure : parents [       
+                index="III"
             ]
-            Type SafeExposure : Childs [
-                index=2
+            Type SafeExposure : childs [
+                index="II"
             ]
     }
 }
@@ -83,9 +84,13 @@ Bridge openuv:openuvapi:local "OpenUV Api" [ apikey="xxxxYYYxxxx" ] {
 demo.items:
 
 ```xtend
-Number              UVIndex   "UV Index"  {channel="openuv:uvreport:local:city1:UVIndex" }
-Number              UVMax     "UV Max"    {channel="openuv:uvreport:local:city1:UVMaxEvent" }
-Number:ArealDensity Ozone     "Ozone"     {channel="openuv:uvreport:local:city1:Ozone" }
+
+Number              UVIndex   "UV Index"  { channel = "openuv:uvreport:local:city1:UVIndex" }
+Number              UVMax     "UV Max"    { channel = "openuv:uvreport:local:city1:UVMaxEvent" }
+Number:ArealDensity Ozone     "Ozone"     { channel = "openuv:uvreport:local:city1:Ozone" }
+Number:Time         SafeExp3  "Parents"   { channel = "openuv:uvreport:local:city1:parents" }
+Number:Time         SafeExp2  "Childs"    { channel = "openuv:uvreport:local:city1:childs" }
+
 ```
 
 astro.items:

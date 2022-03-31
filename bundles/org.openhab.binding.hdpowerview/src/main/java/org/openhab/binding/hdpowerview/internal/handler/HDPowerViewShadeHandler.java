@@ -94,27 +94,14 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         isDisposing = false;
         shadeId = getConfigAs(HDPowerViewShadeConfiguration.class).id;
         logger.debug("Initializing shade handler for shade {}", shadeId);
-        if (shadeId <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.invalid-id");
-            return;
-        }
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-            return;
-        }
-        if (!(bridge.getHandler() instanceof HDPowerViewHubHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.invalid-bridge-handler");
             return;
         }
-        ThingStatus bridgeStatus = bridge.getStatus();
-        if (bridgeStatus == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.UNKNOWN);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
+
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override

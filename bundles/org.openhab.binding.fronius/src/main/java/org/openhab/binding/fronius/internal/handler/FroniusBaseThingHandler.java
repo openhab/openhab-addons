@@ -12,18 +12,12 @@
  */
 package org.openhab.binding.fronius.internal.handler;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.FroniusHttpUtil;
 import org.openhab.binding.fronius.internal.api.BaseFroniusResponse;
 import org.openhab.binding.fronius.internal.api.HeadStatus;
-import org.openhab.binding.fronius.internal.api.ValueUnit;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -34,6 +28,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +42,8 @@ import com.google.gson.JsonSyntaxException;
  * @author Thomas Rokohl - Refactoring to merge the concepts
  * @author Thomas Kordelle - Added inverter power, battery state of charge and PV solar yield
  * @author Jimmy Tanagra - Implement connection retry
+ *         Convert ValueUnit to QuantityType
+ *         Support NULL value
  */
 public abstract class FroniusBaseThingHandler extends BaseThingHandler {
 
@@ -102,35 +99,16 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             return;
         }
 
-        Object value = getValue(channelId);
-        if (value == null) {
-            logger.debug("Value retrieved for channel '{}' was null. Can't update.", channelId);
-            return;
+        State state = getValue(channelId);
+        if (state == null) {
+            state = UnDefType.NULL;
         }
 
-        State state = null;
-        if (value instanceof BigDecimal) {
-            state = new DecimalType((BigDecimal) value);
-        } else if (value instanceof Integer) {
-            state = new DecimalType(BigDecimal.valueOf(((Integer) value).longValue()));
-        } else if (value instanceof Double) {
-            state = new DecimalType((double) value);
-        } else if (value instanceof ValueUnit) {
-            state = new DecimalType(((ValueUnit) value).getValue());
-        } else if (value instanceof String) {
-            state = new StringType((String) value);
-        } else if (value instanceof QuantityType) {
-            state = (QuantityType) value;
-        } else {
-            logger.warn("Update channel {}: Unsupported value type {}", channelId, value.getClass().getSimpleName());
+        if (logger.isTraceEnabled()) {
+            logger.trace("Update channel {} with state {} ({})", channelId, state.toString(),
+                    state.getClass().getSimpleName());
         }
-        logger.trace("Update channel {} with state {} ({})", channelId, (state == null) ? "null" : state.toString(),
-                value.getClass().getSimpleName());
-
-        // Update the channel
-        if (state != null) {
-            updateState(channelId, state);
-        }
+        updateState(channelId, state);
     }
 
     /**
@@ -146,7 +124,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
      * @param channelId the id identifying the channel
      * @return the "new" associated value
      */
-    protected abstract Object getValue(String channelId);
+    protected abstract State getValue(String channelId);
 
     /**
      * Called by the bridge to fetch data and update channels

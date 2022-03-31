@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import org.openhab.binding.miele.internal.DeviceMetaData;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miele.internal.MieleTranslationProvider;
+import org.openhab.binding.miele.internal.api.dto.DeviceMetaData;
 import org.openhab.core.types.State;
 
 /**
@@ -25,6 +27,7 @@ import org.openhab.core.types.State;
  * @author Karel Goderis - Initial contribution
  * @author Jacob Laursen - Added power/water consumption channels
  */
+@NonNullByDefault
 public interface ApplianceChannelSelector {
 
     @Override
@@ -61,7 +64,7 @@ public interface ApplianceChannelSelector {
      * @param dmd - the device meta data
      * @param translationProvider {@link MieleTranslationProvider} instance
      */
-    State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider);
+    State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider);
 
     /**
      * Returns a State for the given string, taking into
@@ -71,7 +74,7 @@ public interface ApplianceChannelSelector {
      * @param s - the value to be used to instantiate the State
      * @param dmd - the device meta data
      */
-    State getState(String s, DeviceMetaData dmd);
+    State getState(String s, @Nullable DeviceMetaData dmd);
 
     /**
      * Returns a raw State for the given string, not taking into

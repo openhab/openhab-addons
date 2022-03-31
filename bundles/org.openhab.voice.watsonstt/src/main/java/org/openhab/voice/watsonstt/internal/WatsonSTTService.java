@@ -19,10 +19,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-
-import javax.net.ssl.SSLPeerUnverifiedException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,6 +45,7 @@ import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
 import com.ibm.cloud.sdk.core.http.HttpMediaType;
 import com.ibm.cloud.sdk.core.security.IamAuthenticator;
 import com.ibm.watson.speech_to_text.v1.SpeechToText;
@@ -129,44 +129,23 @@ public class WatsonSTTService implements STTService {
                 .contentType(contentType).redaction(config.redaction).smartFormatting(config.smartFormatting)
                 .model(locale.toLanguageTag() + "_BroadbandModel").interimResults(true)
                 .backgroundAudioSuppression(config.backgroundAudioSuppression)
-                .speechDetectorSensitivity(config.speechDetectorSensitivity).inactivityTimeout(config.inactivityTimeout)
+                .speechDetectorSensitivity(config.speechDetectorSensitivity).inactivityTimeout(config.maxSilenceSeconds)
                 .build();
         final AtomicReference<@Nullable WebSocket> socketRef = new AtomicReference<>();
-        var task = executor.submit(() -> {
-            int retries = 2;
-            while (retries > 0) {
-                try {
-                    socketRef.set(speechToText.recognizeUsingWebSocket(wsOptions,
-                            new TranscriptionListener(sttListener, config)));
-                    break;
-                } catch (RuntimeException e) {
-                    var cause = e.getCause();
-                    if (cause instanceof SSLPeerUnverifiedException) {
-                        logger.debug("Retrying on error: {}", cause.getMessage());
-                        retries--;
-                    } else {
-                        var errorMessage = e.getMessage();
-                        logger.warn("Aborting on error: {}", errorMessage);
-                        sttListener.sttEventReceived(
-                                new SpeechRecognitionErrorEvent(errorMessage != null ? errorMessage : "Unknown error"));
-                        break;
-                    }
-                }
-            }
+        final AtomicBoolean aborted = new AtomicBoolean(false);
+        executor.submit(() -> {
+            socketRef.set(speechToText.recognizeUsingWebSocket(wsOptions,
+                    new TranscriptionListener(socketRef, sttListener, config, aborted)));
         });
         return new STTServiceHandle() {
             @Override
             public void abort() {
-                var socket = socketRef.get();
-                if (socket != null) {
-                    socket.close(1000, null);
-                    socket.cancel();
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException ignored) {
+                if (!aborted.getAndSet(true)) {
+                    var socket = socketRef.get();
+                    if (socket != null) {
+                        sendStopMessage(socket);
                     }
                 }
-                task.cancel(true);
             }
         };
     }
@@ -221,18 +200,29 @@ public class WatsonSTTService implements STTService {
         return null;
     }
 
+    private static void sendStopMessage(WebSocket ws) {
+        JsonObject stopMessage = new JsonObject();
+        stopMessage.addProperty("action", "stop");
+        ws.send(stopMessage.toString());
+    }
+
     private static class TranscriptionListener implements RecognizeCallback {
         private final Logger logger = LoggerFactory.getLogger(TranscriptionListener.class);
         private final StringBuilder transcriptBuilder = new StringBuilder();
         private final STTListener sttListener;
         private final WatsonSTTConfiguration config;
+        private final AtomicBoolean aborted;
+        private final AtomicReference<@Nullable WebSocket> socketRef;
         private float confidenceSum = 0f;
         private int responseCount = 0;
         private boolean disconnected = false;
 
-        public TranscriptionListener(STTListener sttListener, WatsonSTTConfiguration config) {
+        public TranscriptionListener(AtomicReference<@Nullable WebSocket> socketRef, STTListener sttListener,
+                WatsonSTTConfiguration config, AtomicBoolean aborted) {
+            this.socketRef = socketRef;
             this.sttListener = sttListener;
             this.config = config;
+            this.aborted = aborted;
         }
 
         @Override
@@ -251,6 +241,12 @@ public class WatsonSTTService implements STTService {
                 transcriptBuilder.append(alternative.getTranscript());
                 confidenceSum += confidence != null ? confidence.floatValue() : 0f;
                 responseCount++;
+                if (config.singleUtteranceMode) {
+                    var socket = socketRef.get();
+                    if (socket != null) {
+                        sendStopMessage(socket);
+                    }
+                }
             });
         }
 
@@ -267,24 +263,28 @@ public class WatsonSTTService implements STTService {
                 return;
             }
             logger.warn("TranscriptionError: {}", errorMessage);
-            sttListener.sttEventReceived(
-                    new SpeechRecognitionErrorEvent(errorMessage != null ? errorMessage : "Unknown error"));
+            if (!aborted.getAndSet(true)) {
+                sttListener.sttEventReceived(
+                        new SpeechRecognitionErrorEvent(errorMessage != null ? errorMessage : "Unknown error"));
+            }
         }
 
         @Override
         public void onDisconnected() {
             logger.debug("onDisconnected");
             disconnected = true;
-            sttListener.sttEventReceived(new RecognitionStopEvent());
-            float averageConfidence = confidenceSum / (float) responseCount;
-            String transcript = transcriptBuilder.toString();
-            if (!transcript.isBlank()) {
-                sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, averageConfidence));
-            } else {
-                if (!config.noResultsMessage.isBlank()) {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
+            if (!aborted.getAndSet(true)) {
+                sttListener.sttEventReceived(new RecognitionStopEvent());
+                float averageConfidence = confidenceSum / (float) responseCount;
+                String transcript = transcriptBuilder.toString().trim();
+                if (!transcript.isBlank()) {
+                    sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, averageConfidence));
                 } else {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("No results"));
+                    if (!config.noResultsMessage.isBlank()) {
+                        sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
+                    } else {
+                        sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("No results"));
+                    }
                 }
             }
         }
