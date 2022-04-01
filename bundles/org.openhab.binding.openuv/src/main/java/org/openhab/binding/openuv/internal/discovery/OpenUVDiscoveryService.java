@@ -34,15 +34,12 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OpenUVDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
-    private final Logger logger = LoggerFactory.getLogger(OpenUVDiscoveryService.class);
-
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
+
+    private final Logger logger = LoggerFactory.getLogger(OpenUVDiscoveryService.class);
 
     private @Nullable OpenUVBridgeHandler bridgeHandler;
 
-    /**
-     * Creates a OpenUVDiscoveryService with enabled autostart.
-     */
     public OpenUVDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS);
     }
@@ -51,9 +48,9 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService implements 
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof OpenUVBridgeHandler) {
             OpenUVBridgeHandler localHandler = (OpenUVBridgeHandler) handler;
-            this.bridgeHandler = localHandler;
-            this.i18nProvider = localHandler.getI18nProvider();
-            this.localeProvider = localHandler.getLocaleProvider();
+            bridgeHandler = localHandler;
+            i18nProvider = localHandler.getI18nProvider();
+            localeProvider = localHandler.getLocaleProvider();
         }
     }
 

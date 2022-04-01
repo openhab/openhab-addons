@@ -17,8 +17,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -111,7 +111,8 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
 
     private void initiateConnexion() {
         // Just checking if the provided api key is a valid one by making a fake call
-        getUVData("0", "0", "0");
+        // getUVData("0", "0", "0");
+        updateStatus(ThingStatus.ONLINE);
     }
 
     public @Nullable OpenUVResult getUVData(String latitude, String longitude, String altitude) {
@@ -152,7 +153,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(OpenUVDiscoveryService.class);
+        return Set.of(OpenUVDiscoveryService.class);
     }
 
     public @Nullable PointType getLocation() {
