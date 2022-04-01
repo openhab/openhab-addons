@@ -219,7 +219,14 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             throw new NetatmoException(String.format("%s: \"%s\"", e.getClass().getName(), e.getMessage()));
         } catch (TimeoutException | ExecutionException e) {
-            throw new NetatmoException(e, "Exception while calling %s", uri.toString());
+            if (retryCount > 0) {
+                logger.debug("Request timedout, retry counter : {}", retryCount);
+                return executeUri(uri, method, clazz, payload, retryCount - 1);
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Request timedout - will attempt to reconnect later");
+            prepareReconnection();
+            throw new NetatmoException(String.format("%s: \"%s\"", e.getClass().getName(), e.getMessage()));
         }
     }
 
