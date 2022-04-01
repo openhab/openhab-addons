@@ -178,6 +178,12 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     protected boolean checkResponse(Response response, boolean immediatelyFail) {
         if (response != null && response.getStatus() == 200) {
             return true;
+        } else if (response != null && response.getStatus() == 401) {
+            logger.debug("The access token has expired, trying to get a new one.");
+            ThingStatusInfo authenticationResult = authenticate();
+            updateStatus(authenticationResult.getStatus(), authenticationResult.getStatusDetail(),
+                    authenticationResult.getDescription());
+            return false;
         } else {
             apiIntervalErrors++;
             if (immediatelyFail || apiIntervalErrors >= API_MAXIMUM_ERRORS_IN_INTERVAL) {
@@ -210,7 +216,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             logger.debug("Querying the vehicle: Response: {}:{}", response.getStatus(), response.getStatusInfo());
 
             if (!checkResponse(response, true)) {
-                logger.error("An error occurred while querying the vehicle");
+                logger.debug("An error occurred while querying the vehicle");
                 return null;
             }
 
@@ -249,7 +255,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         return this.getThing().getUID().getId();
     }
 
-    private ThingStatusInfo authenticate() {
+    ThingStatusInfo authenticate() {
         TokenResponse token = logonToken;
 
         boolean hasExpired = true;
