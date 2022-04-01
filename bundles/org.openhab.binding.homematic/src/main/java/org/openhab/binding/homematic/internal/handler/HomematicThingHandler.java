@@ -140,8 +140,7 @@ public class HomematicThingHandler extends BaseThingHandler {
             loadHomematicChannelValues(channel);
             for (HmDatapoint dp : channel.getDatapoints()) {
                 if (dp.getParamsetType() == HmParamsetType.MASTER) {
-                    config.put(MetadataUtils.getParameterName(dp),
-                            dp.isEnumType() ? dp.getOptionValue() : dp.getValue());
+                    config.put(MetadataUtils.getParameterName(dp), getValueForConfiguration(dp));
                 }
             }
         }
@@ -401,7 +400,7 @@ public class HomematicThingHandler extends BaseThingHandler {
             if (dp.getParamsetType() == HmParamsetType.MASTER) {
                 // update configuration
                 Configuration config = editConfiguration();
-                config.put(MetadataUtils.getParameterName(dp), dp.isEnumType() ? dp.getOptionValue() : dp.getValue());
+                config.put(MetadataUtils.getParameterName(dp), getValueForConfiguration(dp));
                 updateConfiguration(config);
             } else if (!HomematicTypeGeneratorImpl.isIgnoredDatapoint(dp)) {
                 // update channel
@@ -418,6 +417,37 @@ public class HomematicThingHandler extends BaseThingHandler {
         } catch (Exception ex) {
             logger.error("{}", ex.getMessage(), ex);
         }
+    }
+
+    private Object getValueForConfiguration(HmDatapoint dp) {
+        if (dp.getValue() == null) {
+            return null;
+        }
+        if (dp.isEnumType()) {
+            return dp.getOptionValue();
+        }
+        if (dp.isNumberType()) {
+            // For number datapoints that are only used depending on the value of other datapoints,
+            // the CCU may return invalid (out of range) values if the datapoint currently is not in use.
+            // Make sure to not invalidate the whole configuration by returning the datapoint's default
+            // value in that case.
+            final boolean minValid, maxValid;
+            if (dp.isFloatType()) {
+                Double numValue = dp.getDoubleValue();
+                minValid = dp.getMinValue() == null || numValue >= dp.getMaxValue().doubleValue();
+                maxValid = dp.getMinValue() == null || numValue <= dp.getMinValue().doubleValue();
+            } else {
+                Integer numValue = dp.getIntegerValue();
+                minValid = dp.getMinValue() == null || numValue >= dp.getMaxValue().intValue();
+                maxValid = dp.getMinValue() == null || numValue <= dp.getMinValue().intValue();
+            }
+            if (minValid && maxValid) {
+                return dp.getValue();
+            }
+            logger.warn("Value for datapoint {} is outside of valid range, using default value for config.", dp);
+            return dp.getDefaultValue();
+        }
+        return dp.getValue();
     }
 
     /**

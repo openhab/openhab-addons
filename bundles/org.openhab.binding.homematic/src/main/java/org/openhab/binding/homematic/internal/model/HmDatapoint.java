@@ -150,17 +150,32 @@ public class HmDatapoint implements Cloneable {
      */
     public String getOptionValue() {
         if (options != null && value != null) {
-            int idx = 0;
-            if (value instanceof Integer) {
-                idx = (int) value;
-            } else {
-                idx = Integer.parseInt(value.toString());
-            }
+            int idx = getIntegerValue();
             if (idx < options.length) {
                 return options[idx];
             }
         }
         return null;
+    }
+
+    public Integer getIntegerValue() {
+        if (value instanceof Integer) {
+            return (int) value;
+        } else if (value != null) {
+            return Integer.parseInt(value.toString());
+        } else {
+            return null;
+        }
+    }
+
+    public Double getDoubleValue() {
+        if (value instanceof Double) {
+            return (double) value;
+        } else if (value != null) {
+            return Double.parseDouble(value.toString());
+        } else {
+            return null;
+        }
     }
 
     /**
