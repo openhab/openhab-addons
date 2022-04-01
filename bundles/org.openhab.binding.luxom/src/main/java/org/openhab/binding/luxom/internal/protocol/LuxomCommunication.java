@@ -194,7 +194,7 @@ public class LuxomCommunication {
         logger.debug("Luxom: event listener thread stopped");
     }
 
-    public synchronized void sendMessage(@NotNull String message) throws IOException {
+    public synchronized void sendMessage(String message) throws IOException {
         logger.debug("Luxom: send {}", message);
         if (luxomOut != null) {
             luxomOut.print(message + ";");
