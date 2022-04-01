@@ -549,6 +549,10 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     protected boolean checkResponse(Response response, boolean immediatelyFail) {
         if (response != null && response.getStatus() == 200) {
             return true;
+        } else if (response != null && response.getStatus() == 401) {
+            logger.debug("The access token has expired, trying to get a new one.");
+            account.authenticate();
+            return false;
         } else {
             apiIntervalErrors++;
             if (immediatelyFail || apiIntervalErrors >= TeslaAccountHandler.API_MAXIMUM_ERRORS_IN_INTERVAL) {
@@ -707,7 +711,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         sendCommand(COMMAND_WAKE_UP, account.wakeUpTarget);
     }
 
-    protected Vehicle queryVehicle() {
+    protected synchronized Vehicle queryVehicle() {
         String authHeader = account.getAuthHeader();
 
         if (authHeader != null) {
@@ -720,7 +724,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         response.getStatusInfo().getReasonPhrase());
 
                 if (!checkResponse(response, true)) {
-                    logger.error("An error occurred while querying the vehicle");
+                    logger.debug("An error occurred while querying the vehicle");
                     return null;
                 }
 
