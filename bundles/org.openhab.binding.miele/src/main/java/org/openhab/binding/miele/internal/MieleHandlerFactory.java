@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.miele.internal.discovery.MieleApplianceDiscoveryService;
 import org.openhab.binding.miele.internal.handler.CoffeeMachineHandler;
 import org.openhab.binding.miele.internal.handler.DishWasherHandler;
@@ -39,6 +40,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -57,6 +59,7 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Karel Goderis - Initial contribution
+ * @author Jacob Laursen - Refactored to use framework's HTTP client
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.miele")
@@ -67,14 +70,17 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
                     MieleApplianceHandler.SUPPORTED_THING_TYPES.stream())
             .collect(Collectors.toSet());
 
+    private final HttpClient httpClient;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Activate
-    public MieleHandlerFactory(final @Reference TranslationProvider i18nProvider,
-            final @Reference LocaleProvider localeProvider, ComponentContext componentContext) {
+    public MieleHandlerFactory(@Reference final HttpClientFactory httpClientFactory,
+            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider,
+            ComponentContext componentContext) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
     }
@@ -102,7 +108,7 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (MieleBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            MieleBridgeHandler handler = new MieleBridgeHandler((Bridge) thing);
+            MieleBridgeHandler handler = new MieleBridgeHandler((Bridge) thing, httpClient);
             registerApplianceDiscoveryService(handler);
             return handler;
         } else if (MieleApplianceHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {

@@ -334,17 +334,25 @@ public class HomekitCharacteristicFactory {
     private static Supplier<CompletableFuture<Double>> getDoubleSupplier(HomekitTaggedItem taggedItem,
             double defaultValue) {
         return () -> {
-            final @Nullable DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
-            return CompletableFuture.completedFuture(value != null ? value.doubleValue() : defaultValue);
+            final State state = taggedItem.getItem().getState();
+            double value = defaultValue;
+            if (state instanceof PercentType) {
+                value = ((PercentType) state).doubleValue();
+            } else if (state instanceof DecimalType) {
+                value = ((DecimalType) state).doubleValue();
+            }
+            return CompletableFuture.completedFuture(value);
         };
     }
 
     private static ExceptionalConsumer<Double> setDoubleConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
             if (taggedItem.getItem() instanceof NumberItem) {
-                ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
+                ((NumberItem) taggedItem.getItem()).send(new DecimalType(value.doubleValue()));
+            } else if (taggedItem.getItem() instanceof DimmerItem) {
+                ((DimmerItem) taggedItem.getItem()).send(new PercentType(value.intValue()));
             } else {
-                logger.warn("Item type {} is not supported for {}. Only Number type is supported.",
+                logger.warn("Item type {} is not supported for {}. Only Number and Dimmer type are supported.",
                         taggedItem.getItem().getType(), taggedItem.getName());
             }
         };

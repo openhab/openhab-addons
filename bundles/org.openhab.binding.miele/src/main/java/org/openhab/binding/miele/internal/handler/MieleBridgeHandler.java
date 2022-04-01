@@ -17,9 +17,9 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.IllformedLocaleException;
@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.binding.miele.internal.MieleGatewayCommunicationController;
 import org.openhab.binding.miele.internal.api.dto.DeviceClassObject;
@@ -87,7 +88,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     private boolean lastBridgeConnectionState = false;
 
-    private Gson gson = new Gson();
+    private final HttpClient httpClient;
+    private final Gson gson = new Gson();
     private @NonNullByDefault({}) MieleGatewayCommunicationController gatewayCommunication;
 
     private Set<DiscoveryListener> discoveryListeners = ConcurrentHashMap.newKeySet();
@@ -99,21 +101,22 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private Map<String, HomeDevice> cachedHomeDevicesByApplianceId = new ConcurrentHashMap<>();
     private Map<String, HomeDevice> cachedHomeDevicesByRemoteUid = new ConcurrentHashMap<>();
 
-    public MieleBridgeHandler(Bridge bridge) {
+    public MieleBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
+        this.httpClient = httpClient;
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing the Miele bridge handler.");
+        logger.debug("Initializing handler for bridge {}", getThing().getUID());
 
         if (!validateConfig(getConfig())) {
             return;
         }
 
         try {
-            gatewayCommunication = new MieleGatewayCommunicationController((String) getConfig().get(HOST));
-        } catch (MalformedURLException e) {
+            gatewayCommunication = new MieleGatewayCommunicationController(httpClient, (String) getConfig().get(HOST));
+        } catch (URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
