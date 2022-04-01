@@ -26,9 +26,7 @@ public class BoschSpexorBridgeConfig {
      * The host name of the Bosch spexor backend.
      */
     private String host = "https://api.spexor-bosch.com/";
-    private String hostQA = "https://api-q.spexor-bosch.com/";
 
-    private boolean testing = true;
     /**
      * The OAuth2 client id
      */
@@ -56,7 +54,7 @@ public class BoschSpexorBridgeConfig {
     private String authorizationUrl = "api/public/auth";
 
     public String getHost() {
-        return testing ? hostQA : host;
+        return host;
     }
 
     public String getClientId() {
@@ -93,13 +91,5 @@ public class BoschSpexorBridgeConfig {
 
     public String buildRefreshUrl() {
         return String.join("", getHost(), refreshUrl);
-    }
-
-    public boolean isTesting() {
-        return testing;
-    }
-
-    public void setTesting(boolean testing) {
-        this.testing = testing;
     }
 }

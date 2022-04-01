@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.boschspexor.internal.api.model;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Generic Type of Sensor values
@@ -23,21 +24,18 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class SensorValue<T> {
-    @Nullable
-    private T value = null;
+    private Optional<T> value = Optional.empty();
     private String unit = "N/A";
-    @Nullable
-    private T minValue;
-    @Nullable
-    private T maxValue;
+    private Optional<T> minValue = Optional.empty();
+    private Optional<T> maxValue = Optional.empty();
     private String timestamp = "-";
 
     public T getValue() {
-        return value;
+        return value.get();
     }
 
     public void setValue(T value) {
-        this.value = value;
+        this.value = Optional.ofNullable(value);
     }
 
     public String getUnit() {
@@ -49,27 +47,27 @@ public class SensorValue<T> {
     }
 
     public boolean hasMinValue() {
-        return minValue != null;
+        return minValue.isPresent();
     }
 
     public T getMinValue() {
-        return minValue;
+        return minValue.get();
     }
 
     public void setMinValue(T minValue) {
-        this.minValue = minValue;
+        this.minValue = Optional.ofNullable(minValue);
     }
 
     public boolean hasMaxValue() {
-        return maxValue != null;
+        return maxValue.isPresent();
     }
 
     public T getMaxValue() {
-        return maxValue;
+        return maxValue.get();
     }
 
     public void setMaxValue(T maxValue) {
-        this.maxValue = maxValue;
+        this.maxValue = Optional.ofNullable(maxValue);
     }
 
     public boolean hasTimestamp() {

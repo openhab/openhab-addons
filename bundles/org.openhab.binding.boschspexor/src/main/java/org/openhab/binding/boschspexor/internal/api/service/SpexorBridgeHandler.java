@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.boschspexor.internal.api.service;
 
-import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstants.*;
+import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstants.SPEXOR_OPENHAB_URL;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -55,12 +55,9 @@ public class SpexorBridgeHandler extends BaseBridgeHandler implements SpexorAuth
 
     private @Nullable BoschSpexorDiscoveryService discoveryService;
 
-    private ChannelUID spexorsChannelUID;
-
     public SpexorBridgeHandler(Bridge bridge, HttpClient httpClient, StorageService storageService) {
         super(bridge);
         bridgeConfig = getConfigAs(BoschSpexorBridgeConfig.class);
-        spexorsChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_SPEXORS);
         this.authService = new SpexorAuthorizationService(httpClient, storageService, this);
         this.apiService = new SpexorAPIService(authService);
     }
@@ -112,10 +109,7 @@ public class SpexorBridgeHandler extends BaseBridgeHandler implements SpexorAuth
     public List<Spexor> listSpexors() {
         List<Spexor> result = Collections.emptyList();
         if (isAuthorized()) {
-            List<Spexor> spexors = apiService.getSpexors();
-            if (spexors != null) {
-                result = spexors;
-            }
+            result = apiService.getSpexors();
         }
         return result;
     }

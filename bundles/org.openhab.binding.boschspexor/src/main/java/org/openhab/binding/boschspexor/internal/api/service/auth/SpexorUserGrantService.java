@@ -36,8 +36,6 @@ import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nimbusds.oauth2.sdk.http.HTTPRequest;
-
 /**
  * Creates a servlet and binds the business objects
  *
@@ -53,7 +51,6 @@ public class SpexorUserGrantService {
     private HttpService httpService;
     private BundleContext bundleContext;
 
-    private HTTPRequest httpRequest;
     private SpexorAuthorizationService authService;
 
     @Activate

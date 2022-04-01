@@ -4,13 +4,5 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="thing-type:boschspexor:bridge">
-		<parameter name="testing" type="boolean" required="true">
-			<label>Beta Testing</label>
-			<context>beta testing</context>
-			<description>
-				Enable the beta testing functionality of the API
-				http://localhost:8080/spexor Register the service
-			</description>
-		</parameter>
 	</config-description>
 </config-description:config-descriptions>

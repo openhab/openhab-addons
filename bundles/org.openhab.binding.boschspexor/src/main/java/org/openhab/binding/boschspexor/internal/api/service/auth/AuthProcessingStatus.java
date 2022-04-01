@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.boschspexor.internal.api.service.auth;
 
-import org.eclipse.jdt.annotation.NonNull;
+import java.util.Optional;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschspexor.internal.api.service.auth.SpexorAuthorizationService.SpexorAuthGrantState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +26,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marc Fischer - Initial contribution
  */
+@NonNullByDefault
 public class AuthProcessingStatus {
 
     private final Logger logger = LoggerFactory.getLogger(AuthProcessingStatus.class);
 
     private SpexorAuthGrantState state = SpexorAuthGrantState.UNINITIALIZED;
-    private String errorMessage;
-    private String userCode;
-    private String deviceCode;
+    private Optional<String> errorMessage = Optional.empty();
+    private Optional<String> userCode = Optional.empty();
+    private Optional<String> deviceCode = Optional.empty();
 
     /**
      * returns the current state of the authorization status
@@ -52,11 +56,11 @@ public class AuthProcessingStatus {
      * @return
      */
     public String getErrorMessage() {
-        return errorMessage;
+        return errorMessage.orElse("");
     }
 
-    private void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
+    private void setErrorMessage(@Nullable String errorMessage) {
+        this.errorMessage = Optional.ofNullable(errorMessage);
     }
 
     /**
@@ -65,25 +69,30 @@ public class AuthProcessingStatus {
      * @return an OAuth2.0 User Code
      */
     public String getUserCode() {
-        return userCode;
+        return userCode.orElse("");
     }
 
-    private void setUserCode(String userCode) {
-        this.userCode = userCode;
+    private void setUserCode(@Nullable String userCode) {
+        this.userCode = Optional.ofNullable(userCode);
     }
 
+    /**
+     * will return a device code that needs to be accepted by the user
+     *
+     * @return an OAuth2.0 Device Code
+     */
     public String getDeviceCode() {
-        return deviceCode;
+        return deviceCode.orElse("");
     }
 
-    public void setDeviceCode(String deviceCode) {
-        this.deviceCode = deviceCode;
+    public void setDeviceCode(@Nullable String deviceCode) {
+        this.deviceCode = Optional.ofNullable(deviceCode);
     }
 
     private void clear() {
-        this.userCode = null;
-        this.deviceCode = null;
-        this.errorMessage = null;
+        this.userCode = Optional.empty();
+        this.deviceCode = Optional.empty();
+        this.errorMessage = Optional.empty();
     }
 
     /**
@@ -92,24 +101,24 @@ public class AuthProcessingStatus {
      * @return
      */
     public boolean isError() {
-        return errorMessage != null;
+        return errorMessage.isEmpty();
     }
 
-    public void valid(@NonNull SpexorAuthorizationProcessListener authListener) {
+    public void valid(SpexorAuthorizationProcessListener authListener) {
         SpexorAuthGrantState oldState = state;
         clear();
         setState(SpexorAuthGrantState.AUTHORIZED);
         authListener.changedState(oldState, state);
     }
 
-    public void uninitialized(@NonNull SpexorAuthorizationProcessListener authListener) {
+    public void uninitialized(SpexorAuthorizationProcessListener authListener) {
         SpexorAuthGrantState oldState = state;
         clear();
         setState(SpexorAuthGrantState.UNINITIALIZED);
         authListener.changedState(oldState, state);
     }
 
-    public void error(String error, @NonNull SpexorAuthorizationProcessListener authListener) {
+    public void error(String error, SpexorAuthorizationProcessListener authListener) {
         SpexorAuthGrantState oldState = state;
         clear();
         setState(SpexorAuthGrantState.UNINITIALIZED);
@@ -117,7 +126,7 @@ public class AuthProcessingStatus {
         authListener.changedState(oldState, state);
     }
 
-    public void codeRequested(@NonNull SpexorAuthorizationProcessListener authListener) {
+    public void codeRequested(SpexorAuthorizationProcessListener authListener) {
         SpexorAuthGrantState oldState = state;
         clear();
         setState(SpexorAuthGrantState.CODE_REQUESTED);
@@ -125,7 +134,7 @@ public class AuthProcessingStatus {
     }
 
     public void awaitingUserAcceptance(String deviceCode, String userCode,
-            @NonNull SpexorAuthorizationProcessListener authListener) {
+            SpexorAuthorizationProcessListener authListener) {
         SpexorAuthGrantState oldState = state;
         clear();
         setState(SpexorAuthGrantState.AWAITING_USER_ACCEPTANCE);
@@ -134,7 +143,7 @@ public class AuthProcessingStatus {
         authListener.changedState(oldState, state);
     }
 
-    public void expiredDeviceToken(@NonNull SpexorAuthorizationProcessListener authListener) {
+    public void expiredDeviceToken(SpexorAuthorizationProcessListener authListener) {
         SpexorAuthGrantState oldState = state;
         clear();
         setState(SpexorAuthGrantState.CODE_REQUEST_FAILED);

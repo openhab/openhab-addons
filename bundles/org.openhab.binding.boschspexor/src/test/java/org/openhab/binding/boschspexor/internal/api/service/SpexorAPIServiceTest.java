@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ class SpexorAPIServiceTest {
         when(authService.newRequest(any())).thenReturn(Optional.of(request));
         when(request.send()).thenReturn(response);
         when(response.getContentAsString()).thenReturn(testResponse);
-        when(response.getContent()).thenReturn(testResponse.getBytes());
+        when(response.getContent()).thenReturn(testResponse.getBytes(StandardCharsets.UTF_8));
         SpexorAPIService apiService = new SpexorAPIService(authService);
 
         List<Spexor> spexors = apiService.getSpexors();
@@ -102,7 +103,7 @@ class SpexorAPIServiceTest {
         when(authService.newRequest(any())).thenReturn(Optional.of(request));
         when(request.send()).thenReturn(response);
         when(response.getContentAsString()).thenReturn(testResponse);
-        when(response.getContent()).thenReturn(testResponse.getBytes());
+        when(response.getContent()).thenReturn(testResponse.getBytes(StandardCharsets.UTF_8));
         SpexorAPIService apiService = new SpexorAPIService(authService);
 
         SpexorInfo spexor = apiService.getSpexor("860906043381800");
@@ -147,7 +148,7 @@ class SpexorAPIServiceTest {
         when(authService.newRequest(any(), any(), any(), any())).thenReturn(Optional.of(request));
         when(request.send()).thenReturn(response);
         when(response.getContentAsString()).thenReturn(testResponse);
-        when(response.getContent()).thenReturn(testResponse.getBytes());
+        when(response.getContent()).thenReturn(testResponse.getBytes(StandardCharsets.UTF_8));
         SpexorAPIService apiService = new SpexorAPIService(authService);
 
         Map<@NonNull SensorType, @NonNull SensorValue<?>> sensorValues = apiService.getSensorValues("123456",

@@ -67,7 +67,6 @@ public class SpexorAuthorizationServiceTest {
     @BeforeEach
     public void setUp() {
         bridgeConfig = new BoschSpexorBridgeConfig();
-        bridgeConfig.setTesting(true);
     }
 
     public @NonNull Storage<String> getStorage() {

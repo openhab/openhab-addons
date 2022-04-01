@@ -31,7 +31,5 @@ public enum SensorType {
     Humidity,
     Microphone,
     PassiveInfrared,
-    Fire,
-    CO,
-    Narcotics
+    Fire
 }

@@ -15,19 +15,26 @@ package org.openhab.binding.boschspexor.internal.api.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Representation of a short status object
  *
  * @author Marc Fischer - Initial contribution *
  */
+@NonNullByDefault
 public class StatusShort {
+    @Nullable
     private String lastConnected;
     private boolean online;
+    @Nullable
     private String version;
     private int stateOfCharge;
     private boolean updateAvailable;
     private final List<ObservationStatus> observationStatus = new ArrayList<>();
 
+    @Nullable
     public String getLastConnected() {
         return lastConnected;
     }
@@ -44,6 +51,7 @@ public class StatusShort {
         this.online = online;
     }
 
+    @Nullable
     public String getVersion() {
         return version;
     }

@@ -82,8 +82,6 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BoschSpexorThingHandler.class);
 
-    private @Nullable BoschSpexorThingConfiguration config;
-
     private @NonNullByDefault({}) SpexorAPIService apiService;
 
     private Optional<ScheduledFuture<?>> pollEvent;
@@ -129,6 +127,7 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
         super.thingUpdated(thing);
     }
 
+    @SuppressWarnings("unchecked")
     private void updateStatus() {
         logger.info("updating {} with new values from backend", getThing().getUID());
         SpexorInfo spexor = apiService.getSpexor(getThing().getUID().getId());
@@ -235,14 +234,12 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
             case Temperature:
             case Humidity:
             case Microphone:
-            case CO:
             case Fire:
             case Pressure:
             case Acceleration:
             case Light:
             case Gas:
             case PassiveInfrared:
-            case Narcotics:
                 channel = ChannelBuilder.create(getChannelID(GROUP_ID_SENSORS, sensorType), "Number")
                         .withType(new ChannelTypeUID("boschspexor", "sampleNumberChannel")).withKind(ChannelKind.STATE)
                         .withDescription("Sensor Value \"" + sensorType + "\"").withLabel("Sensor Type " + sensorType)
@@ -267,7 +264,6 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(BoschSpexorThingConfiguration.class);
         logger.debug("Bosch Spexor ID is {}", getThing().getUID().getId());
         int refreshRate = ((BigDecimal) getConfig().get("refreshInterval")).intValue();
         if (pollEvent.isPresent()) {

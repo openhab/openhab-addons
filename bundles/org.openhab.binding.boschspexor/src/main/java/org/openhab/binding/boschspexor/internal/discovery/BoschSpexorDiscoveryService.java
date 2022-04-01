@@ -53,10 +53,11 @@ public class BoschSpexorDiscoveryService extends AbstractDiscoveryService
     private Optional<SpexorBridgeHandler> bridgeHandler = Optional.empty();
     private @NonNullByDefault({}) ThingUID bridgeUID;
 
-    private @Nullable ScheduledFuture<?> backgroundFuture;
+    private Optional<ScheduledFuture<?>> backgroundFuture;
 
     public BoschSpexorDiscoveryService() throws IllegalArgumentException {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIME_SECONDS);
+        backgroundFuture = Optional.empty();
     }
 
     public void init() {
@@ -98,15 +99,15 @@ public class BoschSpexorDiscoveryService extends AbstractDiscoveryService
     @Override
     protected synchronized void startBackgroundDiscovery() {
         stopBackgroundDiscovery();
-        backgroundFuture = scheduler.scheduleWithFixedDelay(this::startScan, BACKGROUND_SCAN_REFRESH_MINUTES,
-                BACKGROUND_SCAN_REFRESH_MINUTES, TimeUnit.MINUTES);
+        backgroundFuture = Optional.of(scheduler.scheduleWithFixedDelay(this::startScan,
+                BACKGROUND_SCAN_REFRESH_MINUTES, BACKGROUND_SCAN_REFRESH_MINUTES, TimeUnit.MINUTES));
     }
 
     @Override
     protected synchronized void stopBackgroundDiscovery() {
-        if (backgroundFuture != null) {
-            backgroundFuture.cancel(true);
-            backgroundFuture = null;
+        if (backgroundFuture.isPresent()) {
+            backgroundFuture.get().cancel(true);
+            backgroundFuture = Optional.empty();
         }
     }
 
