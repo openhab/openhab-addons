@@ -111,8 +111,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
 
     private void initiateConnexion() {
         // Just checking if the provided api key is a valid one by making a fake call
-        // getUVData("0", "0", "0");
-        updateStatus(ThingStatus.ONLINE);
+        getUVData("0", "0", "0");
     }
 
     public @Nullable OpenUVResult getUVData(String latitude, String longitude, String altitude) {
