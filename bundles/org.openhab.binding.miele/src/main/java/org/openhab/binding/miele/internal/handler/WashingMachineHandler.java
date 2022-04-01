@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_WASHING_MACHINE;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.POWER_CONSUMPTION_CHANNEL_ID;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CONSUMPTION_CHANNEL_ID;
@@ -64,7 +63,7 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();
-        String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String applianceId = this.applianceId;
         if (applianceId == null) {
             logger.warn("Command '{}' failed, appliance id is unknown", command);
             return;
@@ -77,7 +76,7 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
         try {
             switch (selector) {
                 case SWITCH: {
-                    MieleBridgeHandler bridgeHandler = this.bridgeHandler;
+                    MieleBridgeHandler bridgeHandler = getMieleBridgeHandler();
                     if (bridgeHandler == null) {
                         logger.warn("Command '{}' failed, missing bridge handler", command);
                         return;

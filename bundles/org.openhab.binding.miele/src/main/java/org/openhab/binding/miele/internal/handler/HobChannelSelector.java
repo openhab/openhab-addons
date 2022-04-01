@@ -42,8 +42,7 @@ public enum HobChannelSelector implements ApplianceChannelSelector {
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
     STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return DeviceUtil.getStateTextState(s, dmd, translationProvider);
         }
     },
@@ -52,8 +51,7 @@ public enum HobChannelSelector implements ApplianceChannelSelector {
     PLATE1_POWER("plate1PowerStep", "plate1power", DecimalType.class, false),
     PLATE1_HEAT("plate1RemainingHeat", "plate1heat", DecimalType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             // If there is remaining heat, the device metadata contains some informative string which can not be
             // converted into a DecimalType. We therefore ignore the metadata and return the device property value as a
             // State
@@ -64,8 +62,7 @@ public enum HobChannelSelector implements ApplianceChannelSelector {
     PLATE2_POWER("plate2PowerStep", "plate2power", DecimalType.class, false),
     PLATE2_HEAT("plate2RemainingHeat", "plate2heat", DecimalType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return getState(s);
         }
     },
@@ -73,8 +70,7 @@ public enum HobChannelSelector implements ApplianceChannelSelector {
     PLATE3_POWER("plate3PowerStep", "plate3power", DecimalType.class, false),
     PLATE3_HEAT("plate3RemainingHeat", "plate3heat", DecimalType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return getState(s);
         }
     },
@@ -82,8 +78,7 @@ public enum HobChannelSelector implements ApplianceChannelSelector {
     PLATE4_POWER("plate4PowerStep", "plate4power", DecimalType.class, false),
     PLATE4_HEAT("plate4RemainingHeat", "plate4heat", DecimalType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return getState(s);
         }
     },
@@ -91,8 +86,7 @@ public enum HobChannelSelector implements ApplianceChannelSelector {
     PLATE5_POWER("plate5PowerStep", "plate5power", DecimalType.class, false),
     PLATE5_HEAT("plate5RemainingHeat", "plate5heat", DecimalType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return getState(s);
         }
     },
@@ -100,8 +94,7 @@ public enum HobChannelSelector implements ApplianceChannelSelector {
     PLATE6_POWER("plate6PowerStep", "plate6power", DecimalType.class, false),
     PLATE6_HEAT("plate6RemainingHeat", "plate6heat", DecimalType.class, false) {
         @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd,
-                @Nullable MieleTranslationProvider translationProvider) {
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return getState(s);
         }
     },
@@ -147,8 +140,7 @@ public enum HobChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
-    public State getState(String s, @Nullable DeviceMetaData dmd,
-            @Nullable MieleTranslationProvider translationProvider) {
+    public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
         return this.getState(s, dmd);
     }
 
@@ -177,7 +169,7 @@ public enum HobChannelSelector implements ApplianceChannelSelector {
                 return state;
             }
         } catch (Exception e) {
-            logger.error("An exception occurred while converting '{}' into a State", s);
+            logger.warn("An exception occurred while converting '{}' into a State", s);
         }
 
         return UnDefType.UNDEF;

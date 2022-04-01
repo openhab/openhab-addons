@@ -52,7 +52,7 @@ public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerCha
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();
-        String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String applianceId = this.applianceId;
         if (applianceId == null) {
             logger.warn("Command '{}' failed, appliance id is unknown", command);
             return;
@@ -62,7 +62,7 @@ public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerCha
         JsonElement result = null;
 
         try {
-            MieleBridgeHandler bridgeHandler = this.bridgeHandler;
+            MieleBridgeHandler bridgeHandler = getMieleBridgeHandler();
             if (bridgeHandler == null) {
                 logger.warn("Command '{}' failed, missing bridge handler", command);
                 return;
@@ -108,7 +108,7 @@ public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerCha
     }
 
     @Override
-    protected void onAppliancePropertyChanged(DeviceProperty dp) {
+    public void onAppliancePropertyChanged(DeviceProperty dp) {
         super.onAppliancePropertyChanged(dp);
 
         if (!STATE_PROPERTY_NAME.equals(dp.Name)) {
