@@ -5,12 +5,13 @@ The binding has been tested with the DS65L IP interface, but it's not an officia
 
 The API implementation is based on the following documentation: 
 
-- https://old.luxom.io/uploads/ppfiles/27/LUXOM_ASCII.pdf
-- https://old.luxom.io/uploads/ppfiles/28/LUXOM_ASCII_extended.pdf
+* https://old.luxom.io/uploads/ppfiles/27/LUXOM_ASCII.pdf
+* https://old.luxom.io/uploads/ppfiles/28/LUXOM_ASCII_extended.pdf
 
 ## Supported Things
 
 This binding currently supports the following thing types:
+
 * **ipbridge** - The Lutron main repeater/processor/hub
 * **dimmer** - Light dimmer
 * **switch** - Switch or relay module
@@ -32,9 +33,10 @@ Bridge luxom:bridge:myhouse [ ipAddress="192.168.0.50", port="2300"] {
 
 ### Devices
 
-- Each device has an address on the Luxom bus, this address must be specified in the 'address' parameter. 
-You will have to look it up in your documentation or in the 'Luxom Plusconfig' software.
-- Sometimes a device does not send back a confirmation over the bus having set the correct state. 
+Each device has an address on the Luxom bus, this address must be specified in the 'address' parameter. 
+You will have to look it up in your documentation or in the 'Luxom Plusconfig' software. 
+
+Sometimes a device does not send back a confirmation over the bus having set the correct state. 
 Some dimmers do the dimming, but do not send back the set brightness level. 
 To be able to use these devices, you can add the `doesNotReply=true` parameter so that the binding immediately sets the item's state and does not wait for confirmation.
   
@@ -42,9 +44,9 @@ To be able to use these devices, you can add the `doesNotReply=true` parameter s
 
 Dimmers support the optional advanced parameters `onLevel`, `onToLast` and `stepPercentage`:
 
-- The `onLevel` parameter specifies the level to which the dimmer will go when sent an ON command. It defaults to 100.
-- The `onToLast` parameter is a boolean that defaults to false. If set to "true", the dimmer will go to its last non-zero level when sent an ON command. If the last non-zero level cannot be determined, the value of `onLevel` will be used instead.
-- The `stepPercentage` specifies the in-/decrease in percentage of brightness. Default is 5.
+* The `onLevel` parameter specifies the level to which the dimmer will go when sent an ON command. It defaults to 100.
+* The `onToLast` parameter is a boolean that defaults to false. If set to "true", the dimmer will go to its last non-zero level when sent an ON command. If the last non-zero level cannot be determined, the value of `onLevel` will be used instead.
+* The `stepPercentage` specifies the in-/decrease in percentage of brightness. Default is 5.
 
 A **dimmer** thing has a single channel *Lighting.Brightness* with type Dimmer and category DimmableLight.
 
