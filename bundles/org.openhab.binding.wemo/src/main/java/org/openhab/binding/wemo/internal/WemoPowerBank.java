@@ -37,15 +37,14 @@ public class WemoPowerBank {
     private int slidingSeconds;
 
     private class CacheItem {
+        public Instant start;
+        public @Nullable Instant end;
+        public double power;
 
         public CacheItem(double power, Instant start) {
             this.start = start;
             this.power = power;
         }
-
-        public Instant start;
-        public @Nullable Instant end;
-        public double power;
     }
 
     public WemoPowerBank() {
