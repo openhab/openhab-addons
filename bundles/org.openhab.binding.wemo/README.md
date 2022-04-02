@@ -128,7 +128,7 @@ demo.things:
 ```
 wemo:socket:Switch1     "DemoSwitch"   @ "Office"   [udn="Socket-1_0-221242K11xxxxx"]
 wemo:motion:Sensor1     "MotionSensor" @ "Entrance" [udn="Sensor-1_0-221337L11xxxxx"]
-wemo:insight:Insight1   "Insight"      @ "Attic"    [udn="Insight-1_0-xxxxxxxxxxxxxx", currentPowerSlidingSeconds="120", currentPowerDeltaTrigger=2]
+wemo:insight:Insight1   "Insight"      @ "Attic"    [udn="Insight-1_0-xxxxxxxxxxxxxx", currentPowerSlidingSeconds=120, currentPowerDeltaTrigger=2]
 
 Bridge wemo:bridge:Bridge-1_0-231445B010xxxx [udn="Bridge-1_0-231445B010xxxx"] {
 MZ100 94103EA2B278xxxx  "DemoLight1"   @ "Living"   [ deviceID="94103EA2B278xxxx" ]
