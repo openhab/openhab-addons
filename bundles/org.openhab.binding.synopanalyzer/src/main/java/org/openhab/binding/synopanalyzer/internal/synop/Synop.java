@@ -74,7 +74,7 @@ public abstract class Synop {
         MORE_THAN_50
     }
 
-    private final int VALID_STRING_LENGTH = 5;
+    private static final int VALID_STRING_LENGTH = 5;
 
     protected final List<String> stringArray;
 
@@ -155,9 +155,7 @@ public abstract class Synop {
 
     private void setHorizontalVisibility() {
         setHorizontalVisibilityInt();
-
         if (horizontalVisibilityInt != INITIAL_VALUE) {
-
             if (horizontalVisibilityInt < HV_LESS_THAN_1_LIMIT || horizontalVisibilityInt < HV_LESS_THAN_1_HP_LIMIT) {
                 horizontalVisibility = HorizontalVisibility.LESS_THAN_1;
             } else if (horizontalVisibilityInt < HV_LESS_THAN_10_LIMIT
@@ -250,13 +248,10 @@ public abstract class Synop {
         setPressureString();
         String localPressure = pressureString;
         if (localPressure != null) {
-
             String pressureTemp = localPressure.substring(1, 5);
-
             if (pressureTemp.charAt(0) == '0') {
                 pressureTemp = '1' + pressureTemp;
             }
-
             try {
                 pressure = (float) Integer.parseInt(pressureTemp) / 10;
             } catch (NumberFormatException e) {

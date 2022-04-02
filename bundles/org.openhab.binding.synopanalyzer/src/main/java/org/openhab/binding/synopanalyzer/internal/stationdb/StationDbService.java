@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.synopanalyzer.internal.stationdb;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -41,13 +40,10 @@ public class StationDbService {
 
     @Activate
     public StationDbService() {
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/db/stations.json");
-                Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);) {
-            Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-            stations = Arrays.asList(gson.fromJson(reader, Station[].class));
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/db/stations.json");
+        Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
+        Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+        stations = Arrays.asList(gson.fromJson(reader, Station[].class));
     }
 
     public List<Station> getStations() {

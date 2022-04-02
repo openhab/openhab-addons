@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SynopAnalyzerDiscoveryService} creates discovers synop stations based on the configured location.
+ * The {@link SynopAnalyzerDiscoveryService} discovers synop stations based on the configured location.
  *
  * @author Gaël L'hopital - Initial Contribution
  */
