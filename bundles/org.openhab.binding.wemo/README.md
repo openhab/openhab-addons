@@ -10,7 +10,8 @@ The Binding also supports the Crock-Pot Smart Slow Cooker, Mr. Coffee Smart Coff
 
 ## Discovery
 
-The WeMo devices are discovered through UPnP discovery service in the network. Devices will show up in the inbox and can be easily added as Things.
+The WeMo devices are discovered through UPnP discovery service in the network.
+Devices will show up in the inbox and can be easily added as Things.
 
 ## Binding Configuration
 
@@ -18,8 +19,8 @@ The binding does not need any configuration.
 
 ## Thing Configuration
 
-For manual Thing configuration, one needs to know the UDN of a certain WeMo device. It can most easily be obtained
-by performing an auto-discovery before configuring the thing manually.
+For manual Thing configuration, one needs to know the UDN of a certain WeMo device.
+It can most easily be obtained by performing an auto-discovery before configuring the thing manually.
 
 Most devices share the `udn` configuration parameter:
 
@@ -38,15 +39,16 @@ For LED Lights paired to a WeMo Link bridge, please use the following configurat
 ### WeMo Insight Switch
 
 The WeMo Insight Switch has some additional parameters for controlling the behavior for channel `currentPower`.
-This channel reports the current power consumption in Watt. The internal theoretical accuracy is 5 mW, i.e.
-three decimals. These raw values are reported with high frequency, often multiple updates can occur within
-a single second. For example, the sequence of 40.440 W, 40.500 W and 40.485 W would result in the channel
-being updated with values rounded to nearest integer, respectively 40 W, 41 W and 40 W.
+This channel reports the current power consumption in Watt.
+The internal theoretical accuracy is 5 mW, i.e. three decimals.
+These raw values are reported with high frequency, often multiple updates can occur within a single second.
+For example, the sequence of 40.440 W, 40.500 W and 40.485 W would result in the channel being updated with values rounded to nearest integer, respectively 40 W, 41 W and 40 W.
 
 When persisting items linked to this channel, this can result in a significant amount of data being stored.
-To mitigate this issue, a sliding window with a moving average calculation has been introduced. This window
-is defined with a one minute default period. This is combined with a delta trigger value, which is defaulted
-to 1 W. This means that the channel is only updated when one of the following conditions are met:
+To mitigate this issue, a sliding window with a moving average calculation has been introduced.
+This window is defined with a one minute default period.
+This is combined with a delta trigger value, which is defaulted to 1 W.
+This means that the channel is only updated when one of the following conditions are met:
 
 1. The rounded value received is equal to the rounded average for the past minute, i.e. this value has stabilized. This introduces a delay for very small changes in consumption, but on the other hand it prevents excessive logging and persistence caused by temporary small changes and rounding.
 2. The rounded value received is more than 1 W from the previous value. So when changes are happening fast, the channel will also be updated fast.
@@ -57,8 +59,8 @@ to 1 W. This means that the channel is only updated when one of the following co
 | currentPowerSlidingSeconds | Sliding window in seconds for which moving average power is calculated (0 = disabled) |
 | currentPowerDeltaTrigger   | Delta triggering immediate channel update (in Watt)                                   |
 
-The moving average calculation can be disabled by setting either `currentPowerSlidingSeconds` or `currentPowerDeltaTrigger`
-to 0. This will cause the channel to be updated the same way as in openHAB versions prior to 3.3.
+The moving average calculation can be disabled by setting either `currentPowerSlidingSeconds` or `currentPowerDeltaTrigger` to 0.
+This will cause the channel to be updated the same way as in openHAB versions prior to 3.3.
 
 ## Channels
 
