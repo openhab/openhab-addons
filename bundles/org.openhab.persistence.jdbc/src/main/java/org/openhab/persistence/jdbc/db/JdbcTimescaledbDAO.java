@@ -32,10 +32,6 @@ public class JdbcTimescaledbDAO extends JdbcPostgresqlDAO {
 
     private final String sqlCreateHypertable = "SELECT created from create_hypertable('#tableName#', 'time')";
 
-    public JdbcTimescaledbDAO() {
-        super();
-    }
-
     @Override
     public Properties getConnectionProperties() {
         Properties properties = (Properties) this.databaseProps.clone();
