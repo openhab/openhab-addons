@@ -54,15 +54,15 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
     @Override
     public GenericZoneSetting build(ZoneStateProvider zoneStateProvider, GenericZoneCapabilities genericCapabilities)
             throws IOException, ApiException {
-        if (acMode == HvacMode.OFF) {
+        if (mode == HvacMode.OFF) {
             return coolingSetting(false);
         }
 
         CoolingZoneSetting setting = coolingSetting(true);
 
-        HvacMode acMode = this.acMode;
-        if (acMode != null) {
-            setting.setMode(getAcMode(acMode));
+        HvacMode mode = this.mode;
+        if (mode != null) {
+            setting.setMode(getAcMode(mode));
         }
 
         Float temperature = this.temperature;

@@ -74,7 +74,7 @@ public class HotWaterZoneSettingsBuilder extends ZoneSettingsBuilder {
     @Override
     public GenericZoneSetting build(ZoneStateProvider zoneStateProvider, GenericZoneCapabilities capabilities)
             throws IOException, ApiException {
-        if (acMode == HvacMode.OFF) {
+        if (mode == HvacMode.OFF) {
             return hotWaterSetting(false);
         }
 

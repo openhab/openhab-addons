@@ -99,7 +99,6 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
         ScheduledFuture<?> discoveryFuture = this.discoveryFuture;
         if (discoveryFuture != null && !discoveryFuture.isCancelled()) {
             discoveryFuture.cancel(true);
-            this.discoveryFuture = null;
         }
     }
 

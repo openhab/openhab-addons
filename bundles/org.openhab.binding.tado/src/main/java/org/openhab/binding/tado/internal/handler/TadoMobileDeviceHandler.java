@@ -148,7 +148,6 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
         ScheduledFuture<?> refreshTimer = this.refreshTimer;
         if (refreshTimer != null) {
             refreshTimer.cancel(false);
-            this.refreshTimer = null;
         }
     }
 }

@@ -53,18 +53,17 @@ public abstract class ZoneSettingsBuilder {
     }
 
     protected TemperatureUnit temperatureUnit = TemperatureUnit.CELSIUS;
-    protected @Nullable Float temperature = null;
-
-    protected @Nullable HvacMode acMode = null;
-    protected @Nullable Boolean swing = null;
-    protected @Nullable Boolean light = null;
-    protected @Nullable FanSpeed fanSpeed = null;
-    protected @Nullable FanLevel fanLevel = null;
-    protected @Nullable HorizontalSwing horizontalSwing = null;
-    protected @Nullable VerticalSwing verticalSwing = null;
+    protected @Nullable Float temperature;
+    protected @Nullable HvacMode mode;
+    protected @Nullable Boolean swing;
+    protected @Nullable Boolean light;
+    protected @Nullable FanSpeed fanSpeed;
+    protected @Nullable FanLevel fanLevel;
+    protected @Nullable HorizontalSwing horizontalSwing;
+    protected @Nullable VerticalSwing verticalSwing;
 
     public ZoneSettingsBuilder withMode(HvacMode mode) {
-        this.acMode = mode;
+        this.mode = mode;
         return this;
     }
 

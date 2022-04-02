@@ -124,7 +124,6 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         ScheduledFuture<?> initializationFuture = this.initializationFuture;
         if (initializationFuture != null && !initializationFuture.isCancelled()) {
             initializationFuture.cancel(true);
-            this.initializationFuture = null;
         }
     }
 

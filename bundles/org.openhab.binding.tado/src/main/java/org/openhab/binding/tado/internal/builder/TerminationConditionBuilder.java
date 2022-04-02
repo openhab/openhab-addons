@@ -35,7 +35,7 @@ public class TerminationConditionBuilder {
 
     private final TadoZoneHandler zoneHandler;
 
-    private @Nullable OverlayTerminationConditionType terminationType = null;
+    private @Nullable OverlayTerminationConditionType terminationType;
     private int timerDurationInSeconds;
 
     protected TerminationConditionBuilder(TadoZoneHandler zoneHandler) {
