@@ -28,6 +28,6 @@ public class WemoInsightConfiguration {
 
     @Nullable
     public String udn;
-    public int currentPowerSlidingSeconds;
-    public int currentPowerDeltaTrigger;
+    public int currentPowerSlidingSeconds = 60;
+    public int currentPowerDeltaTrigger = 1;
 }
