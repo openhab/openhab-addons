@@ -221,10 +221,10 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        final String prm_info_url = URL_APPS_LINCS + "/mes-mesures/api/private/v1/personnes/null/prms";
-        String data = getData(prm_info_url);
+        final String prmInfoUrl = URL_APPS_LINCS + "/mes-mesures/api/private/v1/personnes/null/prms";
+        String data = getData(prmInfoUrl);
         if (data.isEmpty()) {
-            throw new LinkyException(String.format("Requesting '%s' returned an empty response", prm_info_url));
+            throw new LinkyException(String.format("Requesting '%s' returned an empty response", prmInfoUrl));
         }
         try {
             PrmInfo[] prms = gson.fromJson(data, PrmInfo[].class);
@@ -234,8 +234,9 @@ public class EnedisHttpApi {
             return prms[0];
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
-            throw new LinkyException(String.format("Requesting '%s' returned an invalid JSON response : %s",
-                    prm_info_url, e.getMessage()), e);
+            throw new LinkyException(
+                    String.format("Requesting '%s' returned an invalid JSON response : %s", prmInfoUrl, e.getMessage()),
+                    e);
         }
     }
 
@@ -243,25 +244,25 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        final String user_info_url = URL_APPS_LINCS + "/userinfos";
-        String data = getData(user_info_url);
+        final String userInfoUrl = URL_APPS_LINCS + "/userinfos";
+        String data = getData(userInfoUrl);
         if (data.isEmpty()) {
-            throw new LinkyException(String.format("Requesting '%s' returned an empty response", user_info_url));
+            throw new LinkyException(String.format("Requesting '%s' returned an empty response", userInfoUrl));
         }
         try {
             return Objects.requireNonNull(gson.fromJson(data, UserInfo.class));
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching UserInfo.class: {}", data);
             throw new LinkyException(String.format("Requesting '%s' returned an invalid JSON response : %s",
-                    user_info_url, e.getMessage()), e);
+                    userInfoUrl, e.getMessage()), e);
         }
     }
 
     private Consumption getMeasures(String userId, String prmId, LocalDate from, LocalDate to, String request)
             throws LinkyException {
-        final String measure_url = URL_APPS_LINCS
+        final String measureUrl = URL_APPS_LINCS
                 + "/mes-mesures/api/private/v1/personnes/%s/prms/%s/donnees-%s?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
-        String url = String.format(measure_url, userId, prmId, request, from.format(API_DATE_FORMAT),
+        String url = String.format(measureUrl, userId, prmId, request, from.format(API_DATE_FORMAT),
                 to.format(API_DATE_FORMAT));
         String data = getData(url);
         if (data.isEmpty()) {

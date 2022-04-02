@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.linky.internal;
 
-import static org.openhab.binding.linky.internal.LinkyBindingConstants.THING_TYPE_LINKY;
+import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -66,11 +67,11 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
         this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID);
     }
 
-    @Override
-    protected void activate(ComponentContext componentContext) {
+    @Activate
+    protected void activate(ComponentContext componentContext, Map<String, Object> config) {
         super.activate(componentContext);
-        httpClient.getSslContextFactory().setExcludeCipherSuites(new String[0]);
         httpClient.setFollowRedirects(false);
+        httpClient.setRequestBufferSize(Integer.parseInt((String) config.getOrDefault(REQUEST_BUFFER_SIZE, "6000")));
         try {
             httpClient.start();
         } catch (Exception e) {

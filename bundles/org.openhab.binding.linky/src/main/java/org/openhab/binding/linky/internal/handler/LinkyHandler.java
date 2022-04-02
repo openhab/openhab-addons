@@ -68,18 +68,17 @@ public class LinkyHandler extends BaseThingHandler {
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
     private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
-
     private final HttpClient httpClient;
     private final Gson gson;
     private final WeekFields weekFields;
-
-    private @Nullable ScheduledFuture<?> refreshJob;
-    private @Nullable EnedisHttpApi enedisApi;
 
     private final ExpiringDayCache<Consumption> cachedDailyData;
     private final ExpiringDayCache<Consumption> cachedPowerData;
     private final ExpiringDayCache<Consumption> cachedMonthlyData;
     private final ExpiringDayCache<Consumption> cachedYearlyData;
+
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable EnedisHttpApi enedisApi;
 
     private @NonNullByDefault({}) String prmId;
     private @NonNullByDefault({}) String userId;
@@ -108,8 +107,8 @@ public class LinkyHandler extends BaseThingHandler {
         });
 
         this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-            LocalDate to = LocalDate.now().plusDays(1);
-            LocalDate from = to.minusDays(2);
+            LocalDate to = LocalDate.now().plusDays(0);
+            LocalDate from = to.minusDays(1);
             Consumption consumption = getPowerData(from, to);
             if (consumption != null) {
                 logData(consumption.aggregats.days, "Day (peak)", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME,

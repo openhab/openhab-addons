@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class LinkyException extends Exception {
-
     private static final long serialVersionUID = 3703839284673384018L;
 
     public LinkyException() {
