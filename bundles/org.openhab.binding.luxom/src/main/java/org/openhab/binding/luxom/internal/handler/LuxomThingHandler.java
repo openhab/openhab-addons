@@ -40,7 +40,7 @@ public abstract class LuxomThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        String id = (String) getThing().getConfiguration().get("address");
+        String id = (String) getConfig().get("address");
         if (id == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/status.thing-address-missing");

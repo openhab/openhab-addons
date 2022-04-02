@@ -13,7 +13,6 @@
 package org.openhab.binding.luxom.internal.handler;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -73,8 +72,8 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     public LuxomBridgeHandler(Bridge bridge) {
         super(bridge);
         logger.debug("Luxom bridge init");
-        this.systemInfo = new LuxomSystemInfo();
-        this.communication = new LuxomCommunication(this);
+        systemInfo = new LuxomSystemInfo();
+        communication = new LuxomCommunication(this);
     }
 
     @Override
@@ -84,9 +83,9 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        this.config = getThing().getConfiguration().as(LuxomBridgeConfig.class);
+        config = getConfig().as(LuxomBridgeConfig.class);
 
-        if (validConfiguration(this.config)) {
+        if (validConfiguration(config)) {
             reconnectInterval = (config.reconnectInterval > 0) ? config.reconnectInterval
                     : DEFAULT_RECONNECT_INTERVAL_IN_MINUTES;
 
@@ -247,16 +246,16 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     private void sendHeartBeat() {
         logger.trace("Sending heartbeat");
         // Reconnect if no response is received within KEEPALIVE_TIMEOUT_SECONDS.
-        heartBeatTimeoutTask = scheduler.schedule(() -> this.reconnect(true), HEARTBEAT_ACK_TIMEOUT_SECONDS,
+        heartBeatTimeoutTask = scheduler.schedule(() -> reconnect(true), HEARTBEAT_ACK_TIMEOUT_SECONDS,
                 TimeUnit.SECONDS);
-        sendCommands(Collections.singletonList(new CommandExecutionSpecification(LuxomAction.HEARTBEAT.getCommand())));
+        sendCommands(List.of(new CommandExecutionSpecification(LuxomAction.HEARTBEAT.getCommand())));
     }
 
     @Override
     public void thingUpdated(Thing thing) {
         LuxomBridgeConfig newConfig = thing.getConfiguration().as(LuxomBridgeConfig.class);
         boolean validConfig = validConfiguration(newConfig);
-        boolean needsReconnect = validConfig && this.config != null && !this.config.sameConnectionParameters(newConfig);
+        boolean needsReconnect = validConfig && config != null && !config.sameConnectionParameters(newConfig);
 
         if (!validConfig || needsReconnect) {
             dispose();
@@ -293,7 +292,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
             // no tcp flow constraint
         } else if (LuxomAction.MODULE_INFORMATION == luxomCommand.getAction()) {
             cmdSystemInfo(luxomCommand.getData());
-            if (ThingStatus.ONLINE != this.getThing().getStatus()) {
+            if (ThingStatus.ONLINE != getThing().getStatus()) {
                 // this all happens before TCP flow controle, when startProcessing is called, TCP flow is activated...
                 startProcessing();
             }
@@ -332,7 +331,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     }
 
     private void cancelCheckAliveTimeoutTask() {
-        var task = this.heartBeatTimeoutTask;
+        var task = heartBeatTimeoutTask;
         if (task != null) {
             // This method can be called from the keepAliveReconnect thread. Make sure
             // we don't interrupt ourselves, as that may prevent the reconnection attempt.

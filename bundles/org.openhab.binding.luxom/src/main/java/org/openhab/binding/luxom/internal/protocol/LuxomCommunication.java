@@ -55,7 +55,7 @@ public class LuxomCommunication {
 
     public LuxomCommunication(LuxomBridgeHandler luxomBridgeHandler) {
         super();
-        this.bridgeHandler = luxomBridgeHandler;
+        bridgeHandler = luxomBridgeHandler;
     }
 
     public synchronized void startCommunication() throws LuxomConnectionException {
@@ -66,7 +66,8 @@ public class LuxomCommunication {
 
             // Start Luxom event listener. This listener will act on all messages coming from
             // IP-interface.
-            (new Thread(this::runLuxomEvents)).start();
+            (new Thread(this::runLuxomEvents,
+                    "OH-binding-" + bridgeHandler.getThing().getBridgeUID() + "-listen-for-events")).start();
 
         } catch (IOException | InterruptedException e) {
             throw new LuxomConnectionException(e);
@@ -144,16 +145,16 @@ public class LuxomCommunication {
                 int nextChar = luxomIn.read();
                 if (nextChar == -1) {
                     logger.trace("Luxom: stream ends unexpectedly...");
-                    LuxomBridgeConfig luxomBridgeConfig = this.bridgeHandler.getIPBridgeConfig();
+                    LuxomBridgeConfig luxomBridgeConfig = bridgeHandler.getIPBridgeConfig();
                     if (mayUseFastReconnect && luxomBridgeConfig != null && luxomBridgeConfig.useFastReconnect) {
                         // we stay in the loop and just reinitialize socket
                         mayUseFastReconnect = false; // just once use fast reconnect
                         this.closeSocket();
                         this.initializeSocket();
                         // followed by forced update of status
-                        this.bridgeHandler.forceRefreshThings();
+                        bridgeHandler.forceRefreshThings();
                     } else {
-                        this.listenerStopped = true;
+                        listenerStopped = true;
                         mustDoFullReconnect = true;
                     }
                 } else {
@@ -165,14 +166,14 @@ public class LuxomCommunication {
 
                     if (';' == c) {
                         String message = luxomMessage.toString();
-                        this.bridgeHandler.handleIncomingLuxomMessage(message.substring(0, message.length() - 1));
+                        bridgeHandler.handleIncomingLuxomMessage(message.substring(0, message.length() - 1));
                         luxomMessage = new StringBuilder();
                     }
                 }
             }
             if (mustDoFullReconnect) {
                 // I want to do this out of the loop
-                this.bridgeHandler.reconnect();
+                bridgeHandler.reconnect();
             }
             logger.trace("Luxom: stopped listening to events");
         } catch (IOException e) {

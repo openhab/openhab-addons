@@ -55,7 +55,7 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-        config = getThing().getConfiguration().as(LuxomThingDimmerConfig.class);
+        config = getConfig().as(LuxomThingDimmerConfig.class);
 
         logger.debug("Initializing Switch handler for address {}", getAddress());
 
@@ -84,7 +84,7 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("dimmer at address {} received command {} for {}", this.getAddress(), command.toFullString(),
+        logger.debug("dimmer at address {} received command {} for {}", getAddress(), command.toFullString(),
                 channelUID);
         if (LuxomBindingConstants.CHANNEL_SWITCH.equals(channelUID.getId())) {
             if (OnOffType.ON.equals(command)) {
