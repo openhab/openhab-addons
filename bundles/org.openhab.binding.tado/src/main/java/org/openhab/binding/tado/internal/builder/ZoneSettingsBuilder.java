@@ -15,9 +15,12 @@ package org.openhab.binding.tado.internal.builder;
 import java.io.IOException;
 
 import org.openhab.binding.tado.internal.TadoBindingConstants;
+import org.openhab.binding.tado.internal.TadoBindingConstants.FanLevel;
 import org.openhab.binding.tado.internal.TadoBindingConstants.FanSpeed;
+import org.openhab.binding.tado.internal.TadoBindingConstants.HorizontalSwing;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
+import org.openhab.binding.tado.internal.TadoBindingConstants.VerticalSwing;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
@@ -51,7 +54,11 @@ public abstract class ZoneSettingsBuilder {
     protected Float temperature = null;
     protected TemperatureUnit temperatureUnit = TemperatureUnit.CELSIUS;
     protected Boolean swing = null;
+    protected Boolean light = null;
     protected FanSpeed fanSpeed = null;
+    protected FanLevel fanLevel = null;
+    protected HorizontalSwing horizontalSwing = null;
+    protected VerticalSwing verticalSwing = null;
 
     public ZoneSettingsBuilder withMode(HvacMode mode) {
         this.mode = mode;
@@ -71,6 +78,21 @@ public abstract class ZoneSettingsBuilder {
 
     public ZoneSettingsBuilder withFanSpeed(FanSpeed fanSpeed) {
         this.fanSpeed = fanSpeed;
+        return this;
+    }
+
+    public ZoneSettingsBuilder withFanLevel(FanLevel fanLevel) {
+        this.fanLevel = fanLevel;
+        return this;
+    }
+
+    public ZoneSettingsBuilder withHorizontalSwing(HorizontalSwing horizontalSwing) {
+        this.horizontalSwing = horizontalSwing;
+        return this;
+    }
+
+    public ZoneSettingsBuilder withVerticalSwing(VerticalSwing verticalSwing) {
+        this.verticalSwing = verticalSwing;
         return this;
     }
 
@@ -102,5 +124,10 @@ public abstract class ZoneSettingsBuilder {
         }
 
         return temperatureObject;
+    }
+
+    public ZoneSettingsBuilder withLight(boolean lightOn) {
+        this.light = lightOn;
+        return this;
     }
 }
