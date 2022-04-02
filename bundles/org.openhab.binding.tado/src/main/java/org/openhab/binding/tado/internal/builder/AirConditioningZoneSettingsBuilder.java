@@ -17,8 +17,13 @@ import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.*;
 import java.io.IOException;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.tado.internal.TadoBindingConstants.FanLevel;
+import org.openhab.binding.tado.internal.TadoBindingConstants.FanSpeed;
+import org.openhab.binding.tado.internal.TadoBindingConstants.HorizontalSwing;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
+import org.openhab.binding.tado.internal.TadoBindingConstants.VerticalSwing;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.ACFanLevel;
 import org.openhab.binding.tado.internal.api.model.ACHorizontalSwing;
@@ -26,7 +31,6 @@ import org.openhab.binding.tado.internal.api.model.ACVerticalSwing;
 import org.openhab.binding.tado.internal.api.model.AcFanSpeed;
 import org.openhab.binding.tado.internal.api.model.AcMode;
 import org.openhab.binding.tado.internal.api.model.AcModeCapabilities;
-import org.openhab.binding.tado.internal.api.model.AirConditioningCapabilities;
 import org.openhab.binding.tado.internal.api.model.CoolingZoneSetting;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
@@ -41,6 +45,7 @@ import org.openhab.binding.tado.internal.api.model.TemperatureRange;
  *
  * @author Dennis Frommknecht - Initial contribution
  */
+@NonNullByDefault
 public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
     private static final AcMode DEFAULT_MODE = AcMode.COOL;
     private static final float DEFAULT_TEMPERATURE_C = 20.0f;
@@ -49,12 +54,18 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
     @Override
     public GenericZoneSetting build(ZoneStateProvider zoneStateProvider, GenericZoneCapabilities genericCapabilities)
             throws IOException, ApiException {
-        if (mode == HvacMode.OFF) {
+        if (acMode == HvacMode.OFF) {
             return coolingSetting(false);
         }
 
         CoolingZoneSetting setting = coolingSetting(true);
-        setting.setMode(getAcMode(mode));
+
+        HvacMode acMode = this.acMode;
+        if (acMode != null) {
+            setting.setMode(getAcMode(acMode));
+        }
+
+        Float temperature = this.temperature;
         if (temperature != null) {
             setting.setTemperature(temperature(temperature, temperatureUnit));
         }
@@ -67,18 +78,22 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
             setting.setLight(light ? Power.ON : Power.OFF);
         }
 
+        FanSpeed fanSpeed = this.fanSpeed;
         if (fanSpeed != null) {
             setting.setFanSpeed(getAcFanSpeed(fanSpeed));
         }
 
+        FanLevel fanLevel = this.fanLevel;
         if (fanLevel != null) {
             setting.setFanLevel(getFanLevel(fanLevel));
         }
 
+        HorizontalSwing horizontalSwing = this.horizontalSwing;
         if (horizontalSwing != null) {
             setting.setHorizontalSwing(getHorizontalSwing(horizontalSwing));
         }
 
+        VerticalSwing verticalSwing = this.verticalSwing;
         if (verticalSwing != null) {
             setting.setVerticalSwing(getVerticalSwing(verticalSwing));
         }
@@ -95,8 +110,7 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
             setting.setMode(targetMode);
         }
 
-        AcModeCapabilities capabilities = getModeCapabilities((AirConditioningCapabilities) genericCapabilities,
-                setting.getMode());
+        AcModeCapabilities capabilities = getModeCapabilities(setting.getMode(), genericCapabilities);
 
         TemperatureRange temperatures = capabilities.getTemperatures();
         if (temperatures != null && setting.getTemperature() == null) {

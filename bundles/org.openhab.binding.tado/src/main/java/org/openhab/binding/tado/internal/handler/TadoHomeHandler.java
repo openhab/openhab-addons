@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.api.ApiException;
@@ -36,6 +38,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,21 +47,23 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dennis Frommknecht - Initial contribution
  */
+@NonNullByDefault
 public class TadoHomeHandler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(TadoHomeHandler.class);
 
-    private TadoHomeConfig configuration;
-    private HomeApi api;
-    private Long homeId;
+    private final TadoHomeConfig configuration;
+    private final HomeApi api;
+    private long homeId = -1;
 
-    private TadoBatteryChecker batteryChecker;
-
-    private ScheduledFuture<?> initializationFuture;
+    private @Nullable TadoBatteryChecker batteryChecker;
+    private @Nullable ScheduledFuture<?> initializationFuture;
 
     public TadoHomeHandler(Bridge bridge) {
         super(bridge);
         batteryChecker = new TadoBatteryChecker(this);
+        configuration = getConfigAs(TadoHomeConfig.class);
+        api = new HomeApiFactory().create(configuration.username, configuration.password);
     }
 
     public TemperatureUnit getTemperatureUnit() {
@@ -69,12 +74,10 @@ public class TadoHomeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        configuration = getConfigAs(TadoHomeConfig.class);
-        api = new HomeApiFactory().create(configuration.username, configuration.password);
-
-        if (this.initializationFuture == null || this.initializationFuture.isDone()) {
-            initializationFuture = scheduler.scheduleWithFixedDelay(this::initializeBridgeStatusAndPropertiesIfOffline,
-                    0, 300, TimeUnit.SECONDS);
+        ScheduledFuture<?> initializationFuture = this.initializationFuture;
+        if (initializationFuture == null || initializationFuture.isDone()) {
+            this.initializationFuture = scheduler.scheduleWithFixedDelay(
+                    this::initializeBridgeStatusAndPropertiesIfOffline, 0, 300, TimeUnit.SECONDS);
         }
     }
 
@@ -118,8 +121,9 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
-        if (this.initializationFuture != null || !this.initializationFuture.isDone()) {
-            this.initializationFuture.cancel(true);
+        ScheduledFuture<?> initializationFuture = this.initializationFuture;
+        if (initializationFuture != null && !initializationFuture.isCancelled()) {
+            initializationFuture.cancel(true);
             this.initializationFuture = null;
         }
     }
@@ -128,13 +132,12 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         return api;
     }
 
-    public Long getHomeId() {
+    public long getHomeId() {
         return homeId;
     }
 
     public HomeState getHomeState() throws IOException, ApiException {
-        HomeApi api = getApi();
-        return api != null ? api.homeState(getHomeId()) : null;
+        return api.homeState(getHomeId());
     }
 
     public void updateHomeState() {
@@ -173,6 +176,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     }
 
     public State getBatteryLowAlarm(long zoneId) {
-        return batteryChecker.getBatteryLowAlarm(zoneId);
+        TadoBatteryChecker batteryChecker = this.batteryChecker;
+        return batteryChecker != null ? batteryChecker.getBatteryLowAlarm(zoneId) : UnDefType.UNDEF;
     }
 }

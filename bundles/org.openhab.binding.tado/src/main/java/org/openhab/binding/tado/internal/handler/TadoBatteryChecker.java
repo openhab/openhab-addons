@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.ControlDevice;
 import org.openhab.core.library.types.OnOffType;
@@ -32,14 +33,16 @@ import org.slf4j.LoggerFactory;
  * devices.
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
+@NonNullByDefault
 public class TadoBatteryChecker {
     private final Logger logger = LoggerFactory.getLogger(TadoBatteryChecker.class);
 
-    private Map<Long, State> zoneList = new HashMap<>();
+    private final Map<Long, State> zoneList = new HashMap<>();
+    private final TadoHomeHandler homeHandler;
+
     private Date refreshTime = new Date();
-    private TadoHomeHandler homeHandler;
 
     public TadoBatteryChecker(TadoHomeHandler homeHandler) {
         this.homeHandler = homeHandler;
@@ -47,15 +50,15 @@ public class TadoBatteryChecker {
 
     private synchronized void refreshZoneList() {
         Date now = new Date();
-        if (homeHandler != null && (now.after(refreshTime) || zoneList.isEmpty())) {
+        if (now.after(refreshTime) || zoneList.isEmpty()) {
             // be frugal, we only need to refresh the battery state hourly
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(now);
             calendar.add(Calendar.HOUR, 1);
             refreshTime = calendar.getTime();
 
-            Long homeId = homeHandler.getHomeId();
-            if (homeId != null) {
+            long homeId = homeHandler.getHomeId();
+            if (homeId != -1) {
                 logger.debug("Fetching (battery state) zone list for HomeId {}", homeId);
                 zoneList.clear();
                 try {

@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.tado.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Holder-object for home configuration
  *
  * @author Dennis Frommknecht - Initial contribution
  */
+@NonNullByDefault
 public class TadoHomeConfig {
-    public String username;
-    public String password;
+    public String username = "";
+    public String password = "";
 }

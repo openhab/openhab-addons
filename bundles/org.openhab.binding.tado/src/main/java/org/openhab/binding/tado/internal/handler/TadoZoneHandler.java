@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.FanLevel;
@@ -34,12 +35,10 @@ import org.openhab.binding.tado.internal.TadoHvacChange;
 import org.openhab.binding.tado.internal.adapter.TadoZoneStateAdapter;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.TadoApiTypeUtils;
-import org.openhab.binding.tado.internal.api.client.HomeApi;
 import org.openhab.binding.tado.internal.api.model.ACFanLevel;
 import org.openhab.binding.tado.internal.api.model.ACHorizontalSwing;
 import org.openhab.binding.tado.internal.api.model.ACVerticalSwing;
 import org.openhab.binding.tado.internal.api.model.AcModeCapabilities;
-import org.openhab.binding.tado.internal.api.model.AirConditioningCapabilities;
 import org.openhab.binding.tado.internal.api.model.CoolingZoneSetting;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
@@ -65,7 +64,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,33 +75,38 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Added Low Battery Alarm, A/C Power and Open Window channels
  *
  */
+@NonNullByDefault
 public class TadoZoneHandler extends BaseHomeThingHandler {
     private Logger logger = LoggerFactory.getLogger(TadoZoneHandler.class);
 
     private final TadoStateDescriptionProvider stateDescriptionProvider;
+    private final TadoZoneConfig configuration;
 
-    private TadoZoneConfig configuration;
-    private ScheduledFuture<?> refreshTimer;
-    private ScheduledFuture<?> scheduledHvacChange;
-    private GenericZoneCapabilities capabilities;
-    TadoHvacChange pendingHvacChange;
+    private @Nullable ScheduledFuture<?> refreshTimer;
+    private @Nullable ScheduledFuture<?> scheduledHvacChange;
+    private @Nullable GenericZoneCapabilities capabilities;
+    private @Nullable TadoHvacChange pendingHvacChange;
 
     public TadoZoneHandler(Thing thing, TadoStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
+        configuration = getConfigAs(TadoZoneConfig.class);
     }
 
     public long getZoneId() {
-        return this.configuration.id;
+        return configuration.id;
     }
 
     public int getFallbackTimerDuration() {
-        return this.configuration.fallbackTimerDuration;
+        return configuration.fallbackTimerDuration;
     }
 
-    public @Nullable ZoneType getZoneType() {
-        String zoneTypeStr = this.thing.getProperties().get(TadoBindingConstants.PROPERTY_ZONE_TYPE);
-        return zoneTypeStr != null ? ZoneType.valueOf(zoneTypeStr) : null;
+    public ZoneType getZoneType() {
+        String zoneTypeStr = thing.getProperties().get(TadoBindingConstants.PROPERTY_ZONE_TYPE);
+        if (zoneTypeStr == null) {
+            throw new IllegalStateException("Zone type not initialized");
+        }
+        return ZoneType.valueOf(zoneTypeStr);
     }
 
     public OverlayTerminationCondition getDefaultTerminationCondition() throws IOException, ApiException {
@@ -112,12 +115,15 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     public ZoneState getZoneState() throws IOException, ApiException {
-        HomeApi api = getApi();
-        return api != null ? api.showZoneState(getHomeId(), getZoneId()) : null;
+        return getApi().showZoneState(getHomeId(), getZoneId());
     }
 
     public GenericZoneCapabilities getZoneCapabilities() {
-        return this.capabilities;
+        GenericZoneCapabilities capabilities = this.capabilities;
+        if (capabilities == null) {
+            throw new IllegalStateException("Zone capabilities not initialized");
+        }
+        return capabilities;
     }
 
     public TemperatureUnit getTemperatureUnit() {
@@ -144,22 +150,29 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             return;
         }
 
+        TadoHvacChange pendingHvacChange = this.pendingHvacChange;
+        if (pendingHvacChange == null) {
+            throw new IllegalStateException("Zone pendingHvacChange not initialized");
+        }
+
         switch (id) {
             case TadoBindingConstants.CHANNEL_ZONE_HVAC_MODE:
                 pendingHvacChange.withHvacMode(((StringType) command).toFullString());
                 scheduleHvacChange();
                 break;
             case TadoBindingConstants.CHANNEL_ZONE_TARGET_TEMPERATURE:
-                QuantityType<Temperature> state = (QuantityType<Temperature>) command;
-                QuantityType<Temperature> stateInTargetUnit = getTemperatureUnit() == TemperatureUnit.FAHRENHEIT
-                        ? state.toUnit(ImperialUnits.FAHRENHEIT)
-                        : state.toUnit(SIUnits.CELSIUS);
+                if (command instanceof QuantityType<?>) {
+                    @SuppressWarnings("unchecked")
+                    QuantityType<Temperature> state = (QuantityType<Temperature>) command;
+                    QuantityType<Temperature> stateInTargetUnit = getTemperatureUnit() == TemperatureUnit.FAHRENHEIT
+                            ? state.toUnit(ImperialUnits.FAHRENHEIT)
+                            : state.toUnit(SIUnits.CELSIUS);
 
-                if (stateInTargetUnit != null) {
-                    pendingHvacChange.withTemperature(stateInTargetUnit.floatValue());
-                    scheduleHvacChange();
+                    if (stateInTargetUnit != null) {
+                        pendingHvacChange.withTemperature(stateInTargetUnit.floatValue());
+                        scheduleHvacChange();
+                    }
                 }
-
                 break;
             case TadoBindingConstants.CHANNEL_ZONE_SWING:
                 pendingHvacChange.withSwing(((OnOffType) command) == OnOffType.ON);
@@ -201,8 +214,6 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
     @Override
     public void initialize() {
-        configuration = getConfigAs(TadoZoneConfig.class);
-
         if (configuration.refreshInterval <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Refresh interval of zone "
                     + getZoneId() + " of home " + getHomeId() + " must be greater than zero");
@@ -263,12 +274,10 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     private void updateZoneState(boolean forceUpdate) {
-        TadoHomeHandler home = getHomeHandler();
-        if (home != null) {
-            home.updateHomeState();
-        }
+        getHomeHandler().updateHomeState();
 
         // No update during HVAC change debounce
+        ScheduledFuture<?> scheduledHvacChange = this.scheduledHvacChange;
         if (!forceUpdate && scheduledHvacChange != null && !scheduledHvacChange.isDone()) {
             return;
         }
@@ -276,18 +285,14 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         try {
             ZoneState zoneState = getZoneState();
 
-            if (zoneState == null) {
-                return;
-            }
-
             logger.debug("Updating state of home {} and zone {}", getHomeId(), getZoneId());
 
             TadoZoneStateAdapter state = new TadoZoneStateAdapter(zoneState, getTemperatureUnit());
-            updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_CURRENT_TEMPERATURE, state.getInsideTemperature());
-            updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_HUMIDITY, state.getHumidity());
+            updateState(TadoBindingConstants.CHANNEL_ZONE_CURRENT_TEMPERATURE, state.getInsideTemperature());
+            updateState(TadoBindingConstants.CHANNEL_ZONE_HUMIDITY, state.getHumidity());
 
-            updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_HEATING_POWER, state.getHeatingPower());
-            updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_AC_POWER, state.getAcPower());
+            updateState(TadoBindingConstants.CHANNEL_ZONE_HEATING_POWER, state.getHeatingPower());
+            updateState(TadoBindingConstants.CHANNEL_ZONE_AC_POWER, state.getAcPower());
 
             updateState(TadoBindingConstants.CHANNEL_ZONE_OPERATION_MODE, state.getOperationMode());
 
@@ -314,9 +319,8 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                     "Could not connect to server due to " + e.getMessage());
         }
 
-        if (home != null) {
-            updateState(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM, home.getBatteryLowAlarm(getZoneId()));
-        }
+        updateState(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM,
+                getHomeHandler().getBatteryLowAlarm(getZoneId()));
     }
 
     /**
@@ -333,39 +337,36 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             return;
         }
 
-        AcModeCapabilities acCapabilities = TadoApiTypeUtils.getModeCapabilities(
-                (AirConditioningCapabilities) capabilities, ((CoolingZoneSetting) setting).getMode());
+        AcModeCapabilities acCapabilities = TadoApiTypeUtils
+                .getModeCapabilities(((CoolingZoneSetting) setting).getMode(), capabilities);
 
-        if (acCapabilities != null) {
-            Channel channel;
+        // update the options list of supported fan levels
+        Channel channel = thing.getChannel(TadoBindingConstants.CHANNEL_ZONE_FAN_LEVEL);
+        List<ACFanLevel> fanLevels = acCapabilities.getFanLevel();
+        if (channel != null && fanLevels != null) {
+            stateDescriptionProvider.setStateOptions(channel.getUID(),
+                    fanLevels.stream().map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
+        }
 
-            // update the options list of supported fan levels
-            channel = thing.getChannel(TadoBindingConstants.CHANNEL_ZONE_FAN_LEVEL);
-            List<ACFanLevel> fanLevels = acCapabilities.getFanLevel();
-            if (channel != null && fanLevels != null) {
-                stateDescriptionProvider.setStateOptions(channel.getUID(),
-                        fanLevels.stream().map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
-            }
+        // update the options list of supported horizontal swing settings
+        channel = thing.getChannel(TadoBindingConstants.CHANNEL_ZONE_HORIZONTAL_SWING);
+        List<ACHorizontalSwing> horizontalSwings = acCapabilities.getHorizontalSwing();
+        if (channel != null && horizontalSwings != null) {
+            stateDescriptionProvider.setStateOptions(channel.getUID(), horizontalSwings.stream()
+                    .map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
+        }
 
-            // update the options list of supported horizontal swing settings
-            channel = thing.getChannel(TadoBindingConstants.CHANNEL_ZONE_HORIZONTAL_SWING);
-            List<ACHorizontalSwing> horizontalSwings = acCapabilities.getHorizontalSwing();
-            if (channel != null && horizontalSwings != null) {
-                stateDescriptionProvider.setStateOptions(channel.getUID(), horizontalSwings.stream()
-                        .map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
-            }
-
-            // update the options list of supported vertical swing settings
-            channel = thing.getChannel(TadoBindingConstants.CHANNEL_ZONE_VERTICAL_SWING);
-            List<ACVerticalSwing> verticalSwings = acCapabilities.getVerticalSwing();
-            if (channel != null && verticalSwings != null) {
-                stateDescriptionProvider.setStateOptions(channel.getUID(), verticalSwings.stream()
-                        .map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
-            }
+        // update the options list of supported vertical swing settings
+        channel = thing.getChannel(TadoBindingConstants.CHANNEL_ZONE_VERTICAL_SWING);
+        List<ACVerticalSwing> verticalSwings = acCapabilities.getVerticalSwing();
+        if (channel != null && verticalSwings != null) {
+            stateDescriptionProvider.setStateOptions(channel.getUID(),
+                    verticalSwings.stream().map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
         }
     }
 
     private void scheduleZoneStateUpdate() {
+        ScheduledFuture<?> refreshTimer = this.refreshTimer;
         if (refreshTimer == null || refreshTimer.isCancelled()) {
             refreshTimer = scheduler.scheduleWithFixedDelay(new Runnable() {
                 @Override
@@ -377,21 +378,25 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     private void cancelScheduledZoneStateUpdate() {
+        ScheduledFuture<?> refreshTimer = this.refreshTimer;
         if (refreshTimer != null) {
             refreshTimer.cancel(false);
         }
     }
 
     private void scheduleHvacChange() {
+        ScheduledFuture<?> scheduledHvacChange = this.scheduledHvacChange;
         if (scheduledHvacChange != null) {
             scheduledHvacChange.cancel(false);
         }
 
         scheduledHvacChange = scheduler.schedule(() -> {
             try {
-                TadoHvacChange change = this.pendingHvacChange;
+                TadoHvacChange pendingHvacChange = this.pendingHvacChange;
+                if (pendingHvacChange != null) {
+                    pendingHvacChange.apply();
+                }
                 this.pendingHvacChange = new TadoHvacChange(getThing());
-                change.apply();
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (ApiException e) {
@@ -401,11 +406,5 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 updateZoneState(true);
             }
         }, configuration.hvacChangeDebounce, TimeUnit.SECONDS);
-    }
-
-    private void updateStateIfNotNull(String channelID, State state) {
-        if (state != null) {
-            updateState(channelID, state);
-        }
     }
 }
