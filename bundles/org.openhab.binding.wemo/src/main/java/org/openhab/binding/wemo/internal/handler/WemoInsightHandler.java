@@ -112,11 +112,11 @@ public class WemoInsightHandler extends WemoHandler {
                 }
 
                 // Update helper channel onStandBy by checking if currentPower > standByLimit.
-                var standByLimit = (QuantityType<?>) results.get(WemoBindingConstants.CHANNEL_STANDBYLIMIT);
+                var standByLimit = (QuantityType<?>) results.get(WemoBindingConstants.CHANNEL_STAND_BY_LIMIT);
                 if (standByLimit != null) {
                     QuantityType<?> currentPower = wemoPowerBank.getPreviousCurrentPower();
                     if (currentPower != null) {
-                        updateState(WemoBindingConstants.CHANNEL_ONSTANDBY,
+                        updateState(WemoBindingConstants.CHANNEL_ON_STAND_BY,
                                 OnOffType.from(currentPower.intValue() <= standByLimit.intValue()));
                     }
                 }
