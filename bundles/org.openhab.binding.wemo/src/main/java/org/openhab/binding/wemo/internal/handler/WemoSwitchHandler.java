@@ -44,6 +44,13 @@ public class WemoSwitchHandler extends WemoHandler {
     }
 
     @Override
+    public void initialize() {
+        logger.debug("Initializing WemoSwitchHandler for thing '{}'", thing.getUID());
+        updateStatus(ThingStatus.UNKNOWN);
+        super.initialize();
+    }
+
+    @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'",
                 new Object[] { variable, value, service, this.getThing().getUID() });

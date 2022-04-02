@@ -70,34 +70,34 @@ public class InsightParser {
                     result.put(WemoBindingConstants.CHANNEL_STATE, getOnOff(value));
                     break;
                 case INSIGHT_POSITION_LASTCHANGEDAT:
-                    result.put(WemoBindingConstants.CHANNEL_LASTCHANGEDAT, getDateTime(value));
+                    result.put(WemoBindingConstants.CHANNEL_LAST_CHANGED_AT, getDateTime(value));
                     break;
                 case INSIGHT_POSITION_LASTONFOR:
-                    result.put(WemoBindingConstants.CHANNEL_LASTONFOR, getNumber(value));
+                    result.put(WemoBindingConstants.CHANNEL_LAST_ON_FOR, getNumber(value));
                     break;
                 case INSIGHT_POSITION_ONTODAY:
-                    result.put(WemoBindingConstants.CHANNEL_ONTODAY, getNumber(value));
+                    result.put(WemoBindingConstants.CHANNEL_ON_TODAY, getNumber(value));
                     break;
                 case INSIGHT_POSITION_ONTOTAL:
-                    result.put(WemoBindingConstants.CHANNEL_ONTOTAL, getNumber(value));
+                    result.put(WemoBindingConstants.CHANNEL_ON_TOTAL, getNumber(value));
                     break;
                 case INSIGHT_POSITION_TIMESPAN:
                     result.put(WemoBindingConstants.CHANNEL_TIMESPAN, getNumber(value));
                     break;
                 case INSIGHT_POSITION_AVERAGEPOWER:
-                    result.put(WemoBindingConstants.CHANNEL_AVERAGEPOWER, getPowerFromWatt(value));
+                    result.put(WemoBindingConstants.CHANNEL_AVERAGE_POWER, getPowerFromWatt(value));
                     break;
                 case INSIGHT_POSITION_CURRENTPOWER:
-                    result.put(WemoBindingConstants.CHANNEL_CURRENTPOWER, getPowerFromMilliWatt(value));
+                    result.put(WemoBindingConstants.CHANNEL_CURRENT_POWER_RAW, getPowerFromMilliWatt(value));
                     break;
                 case INSIGHT_POSITION_ENERGYTODAY:
-                    result.put(WemoBindingConstants.CHANNEL_ENERGYTODAY, getEnergy(value));
+                    result.put(WemoBindingConstants.CHANNEL_ENERGY_TODAY, getEnergy(value));
                     break;
                 case INSIGHT_POSITION_ENERGYTOTAL:
-                    result.put(WemoBindingConstants.CHANNEL_ENERGYTOTAL, getEnergy(value));
+                    result.put(WemoBindingConstants.CHANNEL_ENERGY_TOTAL, getEnergy(value));
                     break;
                 case INSIGHT_POSITION_STANDBYLIMIT:
-                    result.put(WemoBindingConstants.CHANNEL_STANDBYLIMIT, getPowerFromMilliWatt(value));
+                    result.put(WemoBindingConstants.CHANNEL_STAND_BY_LIMIT, getPowerFromMilliWatt(value));
                     break;
             }
         }
@@ -137,7 +137,7 @@ public class InsightParser {
     }
 
     private State getPowerFromMilliWatt(String value) {
-        return new QuantityType<>(new BigDecimal(value).divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP),
+        return new QuantityType<>(new BigDecimal(value).divide(new BigDecimal(1000), 3, RoundingMode.HALF_UP),
                 Units.WATT);
     }
 
