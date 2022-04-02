@@ -75,7 +75,7 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        if (homeHandler.getHomeId() < 0) {
+        if (homeHandler.getHomeId() <= 0) {
             return;
         }
 
@@ -104,6 +104,7 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
 
     private void discoverZones() {
         Long homeId = homeHandler.getHomeId();
+
         try {
             List<Zone> zoneList = homeHandler.getApi().listZones(homeId);
 

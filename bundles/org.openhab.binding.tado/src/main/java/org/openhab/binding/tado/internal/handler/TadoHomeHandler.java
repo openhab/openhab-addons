@@ -13,6 +13,7 @@
 package org.openhab.binding.tado.internal.handler;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +29,7 @@ import org.openhab.binding.tado.internal.api.model.HomePresence;
 import org.openhab.binding.tado.internal.api.model.HomeState;
 import org.openhab.binding.tado.internal.api.model.PresenceState;
 import org.openhab.binding.tado.internal.api.model.User;
+import org.openhab.binding.tado.internal.api.model.UserHomes;
 import org.openhab.binding.tado.internal.config.TadoHomeConfig;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -54,8 +56,8 @@ public class TadoHomeHandler extends BaseBridgeHandler {
 
     private final TadoHomeConfig configuration;
     private final HomeApi api;
-    private long homeId = -1;
 
+    private @Nullable Long homeId;
     private @Nullable TadoBatteryChecker batteryChecker;
     private @Nullable ScheduledFuture<?> initializationFuture;
 
@@ -96,13 +98,20 @@ public class TadoHomeHandler extends BaseBridgeHandler {
                 return;
             }
 
-            if (user.getHomes().isEmpty()) {
+            List<UserHomes> homes = user.getHomes();
+            if (homes == null || homes.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "User does not have access to any home");
                 return;
             }
 
-            homeId = user.getHomes().get(0).getId().longValue();
+            Integer id = homes.get(0).getId();
+            if (id == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Missing Home Id");
+                return;
+            }
+
+            homeId = id.longValue();
 
             HomeInfo homeInfo = api.showHome(homeId);
             TemperatureUnit temperatureUnit = org.openhab.binding.tado.internal.api.model.TemperatureUnit.FAHRENHEIT == homeInfo
@@ -131,8 +140,8 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         return api;
     }
 
-    public long getHomeId() {
-        return homeId;
+    public Long getHomeId() {
+        return homeId != null ? homeId : 0;
     }
 
     public HomeState getHomeState() throws IOException, ApiException {
