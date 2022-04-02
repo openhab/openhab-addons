@@ -51,7 +51,7 @@ public class InsightParserTest {
                 result.get(WemoBindingConstants.CHANNEL_LAST_CHANGED_AT));
         assertEquals(new DecimalType(109_676), result.get(WemoBindingConstants.CHANNEL_LAST_ON_FOR));
         assertEquals(new DecimalType(80_323), result.get(WemoBindingConstants.CHANNEL_ON_TODAY));
-        assertEquals(new DecimalType(1_196_960), result.get(WemoBindingConstants.CHANNEL_ONTOTAL));
+        assertEquals(new DecimalType(1_196_960), result.get(WemoBindingConstants.CHANNEL_ON_TOTAL));
         assertEquals(new DecimalType(1_209_600), result.get(WemoBindingConstants.CHANNEL_TIMESPAN));
         assertEquals(new QuantityType<>(44, Units.WATT), result.get(WemoBindingConstants.CHANNEL_AVERAGE_POWER));
         assertEquals(new QuantityType<>(41.4, Units.WATT), result.get(WemoBindingConstants.CHANNEL_CURRENT_POWER_RAW));
@@ -73,7 +73,7 @@ public class InsightParserTest {
                 result.get(WemoBindingConstants.CHANNEL_LAST_CHANGED_AT));
         assertEquals(new DecimalType(0), result.get(WemoBindingConstants.CHANNEL_LAST_ON_FOR));
         assertEquals(new DecimalType(0), result.get(WemoBindingConstants.CHANNEL_ON_TODAY));
-        assertEquals(new DecimalType(0), result.get(WemoBindingConstants.CHANNEL_ONTOTAL));
+        assertEquals(new DecimalType(0), result.get(WemoBindingConstants.CHANNEL_ON_TOTAL));
         assertEquals(new DecimalType(1_209_600), result.get(WemoBindingConstants.CHANNEL_TIMESPAN));
         assertEquals(new QuantityType<>(13, Units.WATT), result.get(WemoBindingConstants.CHANNEL_AVERAGE_POWER));
         assertEquals(new QuantityType<>(0, Units.WATT), result.get(WemoBindingConstants.CHANNEL_CURRENT_POWER_RAW));
@@ -96,7 +96,7 @@ public class InsightParserTest {
                 result.get(WemoBindingConstants.CHANNEL_LAST_CHANGED_AT));
         assertEquals(new DecimalType(109_676), result.get(WemoBindingConstants.CHANNEL_LAST_ON_FOR));
         assertEquals(new DecimalType(80_323), result.get(WemoBindingConstants.CHANNEL_ON_TODAY));
-        assertEquals(new DecimalType(1_196_960), result.get(WemoBindingConstants.CHANNEL_ONTOTAL));
+        assertEquals(new DecimalType(1_196_960), result.get(WemoBindingConstants.CHANNEL_ON_TOTAL));
         assertEquals(new DecimalType(1_209_600), result.get(WemoBindingConstants.CHANNEL_TIMESPAN));
         assertEquals(new QuantityType<>(44, Units.WATT), result.get(WemoBindingConstants.CHANNEL_AVERAGE_POWER));
         assertEquals(new QuantityType<>(41.4, Units.WATT), result.get(WemoBindingConstants.CHANNEL_CURRENT_POWER_RAW));

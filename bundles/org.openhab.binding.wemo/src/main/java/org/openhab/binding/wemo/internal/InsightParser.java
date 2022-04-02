@@ -79,7 +79,7 @@ public class InsightParser {
                     result.put(WemoBindingConstants.CHANNEL_ON_TODAY, getNumber(value));
                     break;
                 case INSIGHT_POSITION_ONTOTAL:
-                    result.put(WemoBindingConstants.CHANNEL_ONTOTAL, getNumber(value));
+                    result.put(WemoBindingConstants.CHANNEL_ON_TOTAL, getNumber(value));
                     break;
                 case INSIGHT_POSITION_TIMESPAN:
                     result.put(WemoBindingConstants.CHANNEL_TIMESPAN, getNumber(value));

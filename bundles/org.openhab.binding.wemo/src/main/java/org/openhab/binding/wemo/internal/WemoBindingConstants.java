@@ -54,7 +54,7 @@ public class WemoBindingConstants {
     public static final String CHANNEL_LAST_CHANGED_AT = "lastChangedAt";
     public static final String CHANNEL_LAST_ON_FOR = "lastOnFor";
     public static final String CHANNEL_ON_TODAY = "onToday";
-    public static final String CHANNEL_ONTOTAL = "onTotal";
+    public static final String CHANNEL_ON_TOTAL = "onTotal";
     public static final String CHANNEL_TIMESPAN = "timespan";
     public static final String CHANNEL_AVERAGE_POWER = "averagePower";
     public static final String CHANNEL_CURRENT_POWER = "currentPower";
