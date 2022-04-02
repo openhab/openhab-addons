@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.Future;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
@@ -419,7 +420,7 @@ public class HomematicThingHandler extends BaseThingHandler {
         }
     }
 
-    private Object getValueForConfiguration(HmDatapoint dp) {
+    private @Nullable Object getValueForConfiguration(HmDatapoint dp) {
         if (dp.getValue() == null) {
             return null;
         }
@@ -434,12 +435,12 @@ public class HomematicThingHandler extends BaseThingHandler {
             final boolean minValid, maxValid;
             if (dp.isFloatType()) {
                 Double numValue = dp.getDoubleValue();
-                minValid = dp.getMinValue() == null || numValue >= dp.getMaxValue().doubleValue();
-                maxValid = dp.getMinValue() == null || numValue <= dp.getMinValue().doubleValue();
+                minValid = dp.getMinValue() == null || numValue >= dp.getMinValue().doubleValue();
+                maxValid = dp.getMaxValue() == null || numValue <= dp.getMaxValue().doubleValue();
             } else {
                 Integer numValue = dp.getIntegerValue();
-                minValid = dp.getMinValue() == null || numValue >= dp.getMaxValue().intValue();
-                maxValid = dp.getMinValue() == null || numValue <= dp.getMinValue().intValue();
+                minValid = dp.getMinValue() == null || numValue >= dp.getMinValue().intValue();
+                maxValid = dp.getMaxValue() == null || numValue <= dp.getMaxValue().intValue();
             }
             if (minValid && maxValid) {
                 return dp.getValue();

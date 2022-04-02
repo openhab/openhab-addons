@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 
 /**
@@ -148,17 +149,15 @@ public class HmDatapoint implements Cloneable {
     /**
      * Returns the value of a option list.
      */
-    public String getOptionValue() {
-        if (options != null && value != null) {
-            int idx = getIntegerValue();
-            if (idx < options.length) {
-                return options[idx];
-            }
+    public @Nullable String getOptionValue() {
+        Integer idx = getIntegerValue();
+        if (options != null && idx != null && idx < options.length) {
+            return options[idx];
         }
         return null;
     }
 
-    public Integer getIntegerValue() {
+    public @Nullable Integer getIntegerValue() {
         if (value instanceof Integer) {
             return (int) value;
         } else if (value != null) {
@@ -168,7 +167,7 @@ public class HmDatapoint implements Cloneable {
         }
     }
 
-    public Double getDoubleValue() {
+    public @Nullable Double getDoubleValue() {
         if (value instanceof Double) {
             return (double) value;
         } else if (value != null) {
