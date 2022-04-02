@@ -31,7 +31,15 @@ public class LinkyException extends Exception {
         super(message);
     }
 
-    public LinkyException(String message, Exception e) {
+    public LinkyException(Exception e, String message) {
         super(message, e);
+    }
+
+    public LinkyException(String message, Object... params) {
+        this(String.format(message, params));
+    }
+
+    public LinkyException(Exception e, String message, Object... params) {
+        this(e, String.format(message, params));
     }
 }

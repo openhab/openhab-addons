@@ -107,7 +107,7 @@ public class LinkyHandler extends BaseThingHandler {
         });
 
         this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-            LocalDate to = LocalDate.now().plusDays(0);
+            LocalDate to = LocalDate.now();
             LocalDate from = to.minusDays(1);
             Consumption consumption = getPowerData(from, to);
             if (consumption != null) {
@@ -474,28 +474,28 @@ public class LinkyHandler extends BaseThingHandler {
 
     private void checkData(Consumption consumption) throws LinkyException {
         if (consumption.aggregats.days.periodes.size() == 0) {
-            throw new LinkyException("invalid consumptions data: no day period");
+            throw new LinkyException("Invalid consumptions data: no day period");
         }
         if (consumption.aggregats.days.periodes.size() != consumption.aggregats.days.datas.size()) {
-            throw new LinkyException("invalid consumptions data: not one data for each day period");
+            throw new LinkyException("Invalid consumptions data: not any data for each day period");
         }
         if (consumption.aggregats.weeks.periodes.size() == 0) {
-            throw new LinkyException("invalid consumptions data: no week period");
+            throw new LinkyException("Invalid consumptions data: no week period");
         }
         if (consumption.aggregats.weeks.periodes.size() != consumption.aggregats.weeks.datas.size()) {
-            throw new LinkyException("invalid consumptions data: not one data for each week period");
+            throw new LinkyException("Invalid consumptions data: not any data for each week period");
         }
         if (consumption.aggregats.months.periodes.size() == 0) {
-            throw new LinkyException("invalid consumptions data: no month period");
+            throw new LinkyException("Invalid consumptions data: no month period");
         }
         if (consumption.aggregats.months.periodes.size() != consumption.aggregats.months.datas.size()) {
-            throw new LinkyException("invalid consumptions data: not one data for each month period");
+            throw new LinkyException("Invalid consumptions data: not any data for each month period");
         }
         if (consumption.aggregats.years.periodes.size() == 0) {
-            throw new LinkyException("invalid consumptions data: no year period");
+            throw new LinkyException("Invalid consumptions data: no year period");
         }
         if (consumption.aggregats.years.periodes.size() != consumption.aggregats.years.datas.size()) {
-            throw new LinkyException("invalid consumptions data: not one data for each year period");
+            throw new LinkyException("Invalid consumptions data: not any data for each year period");
         }
     }
 

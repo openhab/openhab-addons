@@ -113,7 +113,7 @@ public class EnedisHttpApi {
             result = httpClient.POST(url).header("X-NoSession", "true").header("X-Password", "anonymous")
                     .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous").send();
             if (result.getStatus() != 200) {
-                throw new LinkyException("Connection failed step 3 - auth1 : " + result.getContentAsString());
+                throw new LinkyException("Connection failed step 3 - auth1 : %s", result.getContentAsString());
             }
 
             AuthData authData = gson.fromJson(result.getContentAsString(), AuthData.class);
@@ -136,7 +136,7 @@ public class EnedisHttpApi {
                     .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous")
                     .content(new StringContentProvider(gson.toJson(authData))).send();
             if (result.getStatus() != 200) {
-                throw new LinkyException("Connection failed step 3 - auth2 : " + result.getContentAsString());
+                throw new LinkyException("Connection failed step 3 - auth2 : %s", result.getContentAsString());
             }
 
             AuthResult authResult = gson.fromJson(result.getContentAsString(), AuthResult.class);
@@ -161,7 +161,7 @@ public class EnedisHttpApi {
             }
             connected = true;
         } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
-            throw new LinkyException("Error opening connection with Enedis webservice", e);
+            throw new LinkyException(e, "Error opening connection with Enedis webservice");
         }
     }
 
@@ -179,7 +179,7 @@ public class EnedisHttpApi {
                 cookieStore.removeAll();
                 connected = false;
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                throw new LinkyException("Error while disconnecting from Enedis webservice", e);
+                throw new LinkyException(e, "Error while disconnecting from Enedis webservice");
             }
         }
     }
@@ -209,11 +209,11 @@ public class EnedisHttpApi {
         try {
             ContentResponse result = httpClient.GET(url);
             if (result.getStatus() != 200) {
-                throw new LinkyException(String.format("Error requesting '%s' : %s", url, result.getContentAsString()));
+                throw new LinkyException("Error requesting '%s' : %s", url, result.getContentAsString());
             }
             return result.getContentAsString();
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw new LinkyException(String.format("Error getting url : '%s'", url), e);
+            throw new LinkyException(e, "Error getting url : '%s'", url);
         }
     }
 
@@ -224,7 +224,7 @@ public class EnedisHttpApi {
         final String prmInfoUrl = URL_APPS_LINCS + "/mes-mesures/api/private/v1/personnes/null/prms";
         String data = getData(prmInfoUrl);
         if (data.isEmpty()) {
-            throw new LinkyException(String.format("Requesting '%s' returned an empty response", prmInfoUrl));
+            throw new LinkyException("Requesting '%s' returned an empty response", prmInfoUrl);
         }
         try {
             PrmInfo[] prms = gson.fromJson(data, PrmInfo[].class);
@@ -234,9 +234,7 @@ public class EnedisHttpApi {
             return prms[0];
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
-            throw new LinkyException(
-                    String.format("Requesting '%s' returned an invalid JSON response : %s", prmInfoUrl, e.getMessage()),
-                    e);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", prmInfoUrl);
         }
     }
 
@@ -247,14 +245,13 @@ public class EnedisHttpApi {
         final String userInfoUrl = URL_APPS_LINCS + "/userinfos";
         String data = getData(userInfoUrl);
         if (data.isEmpty()) {
-            throw new LinkyException(String.format("Requesting '%s' returned an empty response", userInfoUrl));
+            throw new LinkyException("Requesting '%s' returned an empty response", userInfoUrl);
         }
         try {
             return Objects.requireNonNull(gson.fromJson(data, UserInfo.class));
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching UserInfo.class: {}", data);
-            throw new LinkyException(String.format("Requesting '%s' returned an invalid JSON response : %s",
-                    userInfoUrl, e.getMessage()), e);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", userInfoUrl);
         }
     }
 
@@ -266,7 +263,7 @@ public class EnedisHttpApi {
                 to.format(API_DATE_FORMAT));
         String data = getData(url);
         if (data.isEmpty()) {
-            throw new LinkyException(String.format("Requesting '%s' returned an empty response", url));
+            throw new LinkyException("Requesting '%s' returned an empty response", url);
         }
         logger.trace("getData returned {}", data);
         try {
@@ -277,8 +274,7 @@ public class EnedisHttpApi {
             return report.firstLevel.consumptions;
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching ConsumptionReport.class: {}", data);
-            throw new LinkyException(
-                    String.format("Requesting '%s' returned an invalid JSON response : %s", url, e.getMessage()), e);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
         }
     }
 
