@@ -23,8 +23,12 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * The {@link StationDbService} makes available a list of known Synop stations.
@@ -35,15 +39,19 @@ import com.google.gson.Gson;
 @Component(service = StationDbService.class)
 @NonNullByDefault
 public class StationDbService {
-    private final List<Station> stations;
+    private final Logger logger = LoggerFactory.getLogger(StationDbService.class);
+
+    private List<Station> stations;
 
     @Activate
     public StationDbService() {
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/db/stations.json");
                 Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);) {
-            stations = Arrays.asList(new Gson().fromJson(reader, Station[].class));
+            Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+            stations = Arrays.asList(gson.fromJson(reader, Station[].class));
         } catch (IOException e) {
-            throw new IllegalArgumentException(e);
+            logger.warn("Enable to load station list : {}", e.getMessage());
+            stations = List.of();
         }
     }
 
