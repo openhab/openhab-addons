@@ -14,10 +14,10 @@ package org.openhab.binding.synopanalyzer.internal.discovery;
 
 import static org.openhab.binding.synopanalyzer.internal.SynopAnalyzerBindingConstants.THING_SYNOP;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -82,8 +82,9 @@ public class SynopAnalyzerDiscoveryService extends AbstractDiscoveryService {
             }
         });
 
-        try {
-            Entry<Double, Station> nearest = distances.entrySet().iterator().next();
+        Iterator<Entry<Double, Station>> stationIterator = distances.entrySet().iterator();
+        if (stationIterator.hasNext()) {
+            Entry<Double, Station> nearest = stationIterator.next();
             Station station = nearest.getValue();
             radius = nearest.getKey();
 
@@ -91,7 +92,7 @@ public class SynopAnalyzerDiscoveryService extends AbstractDiscoveryService {
                     .withLabel(String.format("Synop : %s", station.usualName))
                     .withProperty(SynopAnalyzerConfiguration.STATION_ID, station.idOmm)
                     .withRepresentationProperty(SynopAnalyzerConfiguration.STATION_ID).build());
-        } catch (NoSuchElementException e) {
+        } else {
             logger.info("No Synop station available at a radius higher than {} m - resetting to 0 m", radius);
             radius = 0;
         }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.synopanalyzer.internal.stationdb;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -23,9 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * The {@link StationDbService} makes available a list of known Synop stations.
@@ -40,10 +39,12 @@ public class StationDbService {
 
     @Activate
     public StationDbService() {
-        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/db/stations.json");
-        Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
-        Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-        stations = Arrays.asList(gson.fromJson(reader, Station[].class));
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/db/stations.json");
+                Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);) {
+            stations = Arrays.asList(new Gson().fromJson(reader, Station[].class));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     public List<Station> getStations() {
