@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link StationDbService} makes available a list of known Synop stations.
@@ -49,8 +51,8 @@ public class StationDbService {
                 Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);) {
             Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
             stations = Arrays.asList(gson.fromJson(reader, Station[].class));
-        } catch (IOException e) {
-            logger.warn("Enable to load station list : {}", e.getMessage());
+        } catch (IOException | JsonSyntaxException | JsonIOException e) {
+            logger.warn("Unable to load station list : {}", e.getMessage());
             stations = List.of();
         }
     }
