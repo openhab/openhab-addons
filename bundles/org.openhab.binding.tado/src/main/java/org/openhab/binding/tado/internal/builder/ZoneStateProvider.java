@@ -34,7 +34,7 @@ public class ZoneStateProvider {
         this.zoneHandler = zoneHandler;
     }
 
-    ZoneState getZoneState() throws IOException, ApiException {
+    public ZoneState getZoneState() throws IOException, ApiException {
         ZoneState zoneState = this.zoneState;
         if (zoneState == null) {
             zoneState = this.zoneState = zoneHandler.getZoneState();
