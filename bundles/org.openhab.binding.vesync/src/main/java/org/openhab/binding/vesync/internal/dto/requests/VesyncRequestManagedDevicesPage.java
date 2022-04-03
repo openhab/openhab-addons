@@ -28,14 +28,6 @@ public class VesyncRequestManagedDevicesPage extends VesyncAuthenticatedRequest 
     @SerializedName("pageNo")
     public String pageNo;
 
-    public String getPageNo() {
-        return pageNo;
-    }
-
-    public String getPageSize() {
-        return pageSize;
-    }
-
     @SerializedName("pageSize")
     public String pageSize;
 
@@ -50,5 +42,13 @@ public class VesyncRequestManagedDevicesPage extends VesyncAuthenticatedRequest 
         this(user);
         this.pageNo = String.valueOf(pageNo);
         this.pageSize = String.valueOf(pageSize);
+    }
+
+    public String getPageNo() {
+        return pageNo;
+    }
+
+    public String getPageSize() {
+        return pageSize;
     }
 }

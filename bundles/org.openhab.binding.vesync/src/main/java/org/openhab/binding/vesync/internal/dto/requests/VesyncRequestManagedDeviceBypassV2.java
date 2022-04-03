@@ -22,11 +22,6 @@ import com.google.gson.annotations.SerializedName;
  */
 public class VesyncRequestManagedDeviceBypassV2 extends VesyncAuthenticatedRequest {
 
-    public VesyncRequestManagedDeviceBypassV2() {
-        super();
-        method = "bypassV2";
-    }
-
     @SerializedName("deviceRegion")
     public String deviceRegion = "";
 
@@ -160,5 +155,10 @@ public class VesyncRequestManagedDeviceBypassV2 extends VesyncAuthenticatedReque
 
         @SerializedName("mode")
         public String mode = "";
+    }
+
+    public VesyncRequestManagedDeviceBypassV2() {
+        super();
+        method = "bypassV2";
     }
 }

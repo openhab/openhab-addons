@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
-		<label>Vesync Bridge</label>
-		<description>The Vesync bridge represents the Vesync cloud service.</description>
+		<label>VeSync Bridge</label>
+		<description>The VeSync bridge represents the VeSync cloud service.</description>
 
 		<properties>
 			<property name="Registration Time"/>
@@ -16,7 +16,6 @@
 
 		<config-description>
 			<parameter name="username" type="text">
-				<context>password</context>
 				<label>Username</label>
 				<description>Name of a registered VeSync user, that allows to access the mobile application.</description>
 			</parameter>
@@ -162,7 +161,7 @@
 
 	<channel-type id="airPurifierModeType">
 		<item-type>String</item-type>
-		<label>Operation mode</label>
+		<label>Operation Mode</label>
 		<description>The operating mode the air purifier is currently set to</description>
 		<state readOnly="false">
 			<options>
@@ -258,29 +257,29 @@
 
 	<channel-type id="deviceWaterLackingType">
 		<item-type>Switch</item-type>
-		<label>Water Low or Empty</label>
-		<description>Indicator if the devices water is low or empty?</description>
+		<label>Water Low/Empty</label>
+		<description>Indicator if the devices water is low or empty</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="deviceHighHumidityType">
 		<item-type>Switch</item-type>
 		<label>High Humidity</label>
-		<description>Indicator if the device is measuring high humidity?</description>
+		<description>Indicator if the device is measuring high humidity</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="deviceWaterTankLiftedType">
 		<item-type>Switch</item-type>
 		<label>Water Tank Removed</label>
-		<description>Indicator if the device is reporting the water tank as removed?</description>
+		<description>Indicator if the device is reporting the water tank as removed</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="deviceAutomaticStopReachTargetType">
 		<item-type>Switch</item-type>
 		<label>Stop @ Target</label>
-		<description>Indicator if the device is set to stop when the target has been reached</description>
+		<description>Indicator if the device is set to stop when the target humidity has been reached</description>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -307,7 +306,7 @@
 
 	<channel-type id="airHumidifierModeType">
 		<item-type>String</item-type>
-		<label>Operation mode</label>
+		<label>Operation Mode</label>
 		<description>The operating mode the air humidifier is currently set to</description>
 		<state readOnly="false">
 			<options>

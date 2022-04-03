@@ -74,6 +74,8 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIR_PURIFIER);
 
+    private final Object pollLock = new Object();
+
     public VeSyncDeviceAirPurifierHandler(Thing thing) {
         super(thing);
     }
@@ -416,6 +418,4 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
             updateState(DEVICE_CHANNEL_AF_NIGHT_LIGHT, new DecimalType(purifierStatus.result.result.nightLight));
         }
     }
-
-    private final Object pollLock = new Object();
 }

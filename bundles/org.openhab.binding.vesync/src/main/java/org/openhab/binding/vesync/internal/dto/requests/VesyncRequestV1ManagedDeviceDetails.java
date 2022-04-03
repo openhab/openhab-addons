@@ -31,14 +31,6 @@ public class VesyncRequestV1ManagedDeviceDetails extends VesyncAuthenticatedRequ
     @SerializedName("uuid")
     public String uuid = null;
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public String getMobileId() {
-        return mobileId;
-    }
-
     public VesyncRequestV1ManagedDeviceDetails(final String deviceUuid) {
         uuid = deviceUuid;
         method = "deviceDetail";
@@ -54,5 +46,13 @@ public class VesyncRequestV1ManagedDeviceDetails extends VesyncAuthenticatedRequ
             throws AuthenticationException {
         this(user);
         uuid = deviceUuid;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public String getMobileId() {
+        return mobileId;
     }
 }

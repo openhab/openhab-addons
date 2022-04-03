@@ -67,13 +67,13 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
 
     protected final @NotNull VesyncV2ApiHelper api;
 
-    public ThingUID getUID() {
-        return thing.getUID();
-    }
-
     public VeSyncBridgeHandler(Bridge bridge, VesyncV2ApiHelper api) {
         super(bridge);
         this.api = api;
+    }
+
+    public ThingUID getUID() {
+        return thing.getUID();
     }
 
     private volatile int backgroundScanTime = -1;
@@ -202,8 +202,9 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
                 updateStatus(ThingStatus.ONLINE);
             } catch (final AuthenticationException ae) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Check login credentials");
-                // setBackgroundScanInterval(DEFAULT_DEVICE_SCAN_DISABLED); -- Let the system keep checking in case the
-                // user updates their password externally to match openhab
+                // The background scan will keep trying to authenticate in case the users credentials are updated on the
+                // veSync servers,
+                // to match the binding's configuration.
             }
         });
     }

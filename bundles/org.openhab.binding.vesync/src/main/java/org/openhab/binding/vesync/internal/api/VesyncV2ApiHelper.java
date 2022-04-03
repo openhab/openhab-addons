@@ -60,11 +60,11 @@ public class VesyncV2ApiHelper {
 
     private volatile VesyncLoginResponse.@Nullable VesyncUserSession loggedInSession;
 
+    private Map<String, VesyncManagedDevicesPage.Result.@NotNull VesyncManagedDeviceBase> macLookup;
+
     public VesyncV2ApiHelper() {
         macLookup = new HashMap<>();
     }
-
-    private Map<String, VesyncManagedDevicesPage.Result.@NotNull VesyncManagedDeviceBase> macLookup;
 
     public Map<String, VesyncManagedDevicesPage.Result.@NotNull VesyncManagedDeviceBase> getMacLookupMap() {
         return macLookup;

@@ -61,6 +61,9 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
 
     private static final String MARKER_INVALID_DEVICE_KEY = "---INVALID---";
 
+    @NotNull
+    protected String deviceLookupKey = MARKER_INVALID_DEVICE_KEY;
+
     private static final int CACHE_TIMEOUT_SECOND = 5;
 
     private int activePollRate = -2; // -1 is used to deactivate the poll, so default to a different value
@@ -68,8 +71,21 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> backgroundPollingScheduler;
     private final Object pollConfigLock = new Object();
 
+    protected @Nullable VeSyncClient veSyncClient;
+
+    private volatile long latestReadBackMillis = 0;
+
+    @Nullable
+    ScheduledFuture<?> initialPollingTask = null;
+
+    @Nullable
+    ScheduledFuture<?> readbackPollTask = null;
+
+    public VeSyncBaseDeviceHandler(Thing thing) {
+        super(thing);
+    }
+
     protected @Nullable Channel findChannelById(final String channelGroupId) {
-        // return getThing().getChannels().stream().anyMatch(x -> x.getUID().getId().equals(channelGroupId));
         return getThing().getChannel(channelGroupId);
     }
 
@@ -110,11 +126,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         }
     }
 
-    @NotNull
-    protected String deviceLookupKey = MARKER_INVALID_DEVICE_KEY;
-
     public void configurationUpdated(Thing thing) {
-        logger.debug("DETECTED CONFIG UPDATE FOR : {}", thing);
         // Get the new addressing lookup data
         deviceLookupKey = getValidatedIdString();
         initialize();
@@ -178,7 +190,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             this.updateProperties(newProps);
             removeChannels();
             if (!isDeviceSupported()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Device Model or Type not supported by this thing");
             }
         }
@@ -223,16 +235,9 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         newProps.put(DEVICE_PROP_DEVICE_MAC_ID, metadata.getMacId());
         newProps.put(DEVICE_PROP_DEVICE_NAME, metadata.getDeviceName());
         newProps.put(DEVICE_PROP_DEVICE_TYPE, metadata.getDeviceType());
-        // newProps.put(DEVICE_PROP_DEVICE_UUID, metadata.getUuid().replace("-", ""));
         newProps.put(DEVICE_PROP_DEVICE_UUID, metadata.getUuid());
         return newProps;
     }
-
-    public VeSyncBaseDeviceHandler(Thing thing) {
-        super(thing);
-    }
-
-    protected @Nullable VeSyncClient veSyncClient;
 
     protected synchronized @Nullable VeSyncClient getVeSyncClient() {
         if (veSyncClient == null) {
@@ -329,16 +334,48 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         bridge.updateThing(this);
 
         // Give the bridge time to build the datamaps of the devices
-        scheduler.schedule(this::pollForUpdate, 10, TimeUnit.SECONDS);
+        scheduleInitialPoll();
+    }
+
+    private void scheduleInitialPoll() {
+        cancelInitialPoll(false);
+        initialPollingTask = scheduler.schedule(this::pollForUpdate, 10, TimeUnit.SECONDS);
+    }
+
+    private void cancelInitialPoll(final boolean interruptAllowed) {
+        final ScheduledFuture<?> pollJob = initialPollingTask;
+        if (pollJob != null && !pollJob.isCancelled()) {
+            pollJob.cancel(interruptAllowed);
+            initialPollingTask = null;
+        }
+    }
+
+    private void cancelReadbackPoll(final boolean interruptAllowed) {
+        final ScheduledFuture<?> pollJob = readbackPollTask;
+        if (pollJob != null && !pollJob.isCancelled()) {
+            pollJob.cancel(interruptAllowed);
+            readbackPollTask = null;
+        }
+    }
+
+    @Override
+    public void dispose() {
+        cancelReadbackPoll(true);
+        cancelInitialPoll(true);
     }
 
     public void pollForUpdate() {
         pollForDeviceData(lastPollResultCache);
     }
 
-    protected void pollForDeviceData(final ExpiringCache<String> cachedResponse) {
-        // Each device should implement this to get the latest data that is not part of the meta data.
-    }
+    /**
+     * This should be implemented by subclasses to provide the implementation for polling the specific
+     * data for the type the class is responsible for. (Excluding meta data).
+     *
+     * @param cachedResponse - An Expiring cache that can be utilised to store the responses, to prevent poll bursts by
+     *            coalescing the requests.
+     */
+    protected abstract void pollForDeviceData(final ExpiringCache<String> cachedResponse);
 
     /**
      * Send a BypassV2 command to the device. The body of the response is returned, a poll is done if the request
@@ -393,7 +430,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         } catch (final DeviceUnknownException e) {
             logger.debug("Device unknown exception {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
-                    "Check configuration details");
+                    "Check configuration details - " + e.getMessage());
             // In case the name is updated server side - request the scan rate is increased
             requestBridgeFreqScanMetadataIfReq();
             return EMPTY_STRING;
@@ -413,13 +450,6 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             logger.debug("Command blocked as device is offline");
             return EMPTY_STRING;
         }
-
-        /*
-         * if (deviceLookupKey == null) {
-         * logger.debug("No key for addressing data");
-         * return EMPTY_STRING;
-         * }
-         */
 
         VesyncRequestManagedDeviceBypassV2 readReq = new VesyncRequestManagedDeviceBypassV2();
         readReq.payload.method = method;
@@ -453,7 +483,8 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
     public void performReadbackPoll() {
         final long requestSystemMillis = System.currentTimeMillis();
         latestReadBackMillis = requestSystemMillis;
-        scheduler.schedule(() -> {
+        cancelReadbackPoll(false);
+        readbackPollTask = scheduler.schedule(() -> {
             // This is a historical poll, ignore it
             if (requestSystemMillis != latestReadBackMillis) {
                 logger.trace("Poll read-back cancelled, another later one is scheduled to happen");
@@ -467,13 +498,15 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         }, 1L, TimeUnit.SECONDS);
     }
 
-    private volatile long latestReadBackMillis = 0;
-
     public void updateBridgeBasedPolls(VeSyncBridgeConfiguration config) {
     }
 
-    // Sub-classes should override this to return true, if the meta-data supports the device data read.
-    protected boolean isDeviceSupported() {
-        return false;
-    }
+    /**
+     * Subclasses should implement this method, and return true if the device is a model it can support
+     * interoperability with. If it cannot be determind to be a mode
+     *
+     * @return - true if the device is supported, false if the device isn't. E.g. Unknown model id in meta-data would
+     *         return false.
+     */
+    protected abstract boolean isDeviceSupported();
 }

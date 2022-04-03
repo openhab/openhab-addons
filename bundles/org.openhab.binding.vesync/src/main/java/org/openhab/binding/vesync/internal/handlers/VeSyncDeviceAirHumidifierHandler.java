@@ -54,16 +54,23 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
     public static final String DEV_TYPE_CORE_301S = "LUH-D301S-WEU";
     public static final String DEV_TYPE_CLASSIC_300S = "Classic300S";
     public static final String DEV_TYPE_600S = "LUH-A602S-WUS";
+    public static final String DEV_TYPE_600S_EU = "LUH-A602S-WEU";
 
     private static final List<String> CLASSIC_300S_600S_MODES = Arrays.asList(MODE_AUTO, MODE_MANUAL, MODE_SLEEP);
     private static final List<String> CLASSIC_300S_NIGHT_LIGHT_MODES = Arrays.asList(MODE_ON, MODE_DIM, MODE_OFF);
 
     public static final List<String> SUPPORTED_DEVICE_TYPES = List.of(DEV_TYPE_DUAL_200S, DEV_TYPE_CLASSIC_200S,
-            DEV_TYPE_CLASSIC_300S, DEV_TYPE_CORE_301S, DEV_TYPE_600S);
+            DEV_TYPE_CLASSIC_300S, DEV_TYPE_CORE_301S, DEV_TYPE_600S, DEV_TYPE_600S_EU);
 
     private final Logger logger = LoggerFactory.getLogger(VeSyncDeviceAirHumidifierHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIR_HUMIDIFIER);
+
+    private final Object pollLock = new Object();
+
+    public VeSyncDeviceAirHumidifierHandler(Thing thing) {
+        super(thing);
+    }
 
     @Override
     protected String[] getChannelsToRemove() {
@@ -81,15 +88,12 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                             DEVICE_CHANNEL_AF_NIGHT_LIGHT };
                     break;
                 case DEV_TYPE_600S:
+                case DEV_TYPE_600S_EU:
                     toRemove = new String[] { DEVICE_CHANNEL_AF_NIGHT_LIGHT };
                     break;
             }
         }
         return toRemove;
-    }
-
-    public VeSyncDeviceAirHumidifierHandler(Thing thing) {
-        super(thing);
     }
 
     @Override
@@ -333,7 +337,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             } else {
                 updateState(DEVICE_CHANNEL_AF_NIGHT_LIGHT, new StringType(MODE_DIM));
             }
-        } else if (DEV_TYPE_600S.equals(deviceType)) {
+        } else if (DEV_TYPE_600S.equals(deviceType) || DEV_TYPE_600S_EU.equals(deviceType)) {
             updateState(DEVICE_CHANNEL_WARM_ENABLED, OnOffType.from(humidifierStatus.result.result.warnEnabled));
             updateState(DEVICE_CHANNEL_WARM_LEVEL, new DecimalType(humidifierStatus.result.result.warmLevel));
         }
@@ -341,6 +345,4 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
         updateState(DEVICE_CHANNEL_CONFIG_TARGET_HUMIDITY,
                 new DecimalType(humidifierStatus.result.result.configuration.autoTargetHumidity));
     }
-
-    private final Object pollLock = new Object();
 }

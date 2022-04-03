@@ -1,6 +1,6 @@
 # VeSync Binding
 
-It's current support is for the Air purifiers & Humidifer's branded as Levoit which utilise the VeSync app based on the V2 protocol.
+Its current support is for the Air Purifiers & Humidifer's branded as Levoit which utilise the VeSync app based on the V2 protocol.
 
 ### Verified Models
 
@@ -19,13 +19,6 @@ Air Humidifier Classic 200S (Same as 300S without the nightlight from initial ch
 3. Add remaining write commands to complete Humidifier 600S support, if warm mode is controllable.
 4. Adjust Filtering Core200S & Core600S support based on feedback, given initial conversion.
 5. Adjust Humidifier 200S support based on feedback, given initial conversion.
-
-### Credits
-
-The binding code is based on a lot of work done by other developers:
-
-- Contributors of (https://github.com/webdjoe/pyvesync) - Python interface for VeSync
-- Rene Scherer, Holger Eisold - (https://www.openhab.org/addons/bindings/surepetcare) Sure Petcare Binding for OpenHab as a reference point for the starting blocks of this code
 
 ## Supported Things
 
@@ -46,15 +39,7 @@ The ***Classic 300S Humidifier*** has been tested, and ***600S with current warm
 
 Once the bridge is configured auto discovery will discover supported devices from the VeSync API.
 
-## Binding Configuration
-
-The binding consists of a Bridge (the API connection), and at the moment one Thing for each Air Purifier, which relates to the individual hardware devices supported. VeSync things can be configured either through the online configuration utility via discovery, or manually through a 'vesync.things' configuration file. The Bridge is not automatically discovered and must be added manually. That is because the VeSync API requires authentication credentials to communicate with the service.
-
-After adding the Bridge and setting the config, it will go ONLINE. After a short while, the discovery process for the VeSync devices will start. When supported hardware is discovered it will appear in the Inbox.
-
 ## Thing Configuration
-
-Details for the manual configuration are below, using the OpenHab3 UI hopefully it is self-explanatory.
 
 ## Channels
 
@@ -108,7 +93,7 @@ Channel names in **bold** are read/write, everything else is read-only
 | password               | String                  | The password as used in the VeSync mobile application |
 | airPurifierPollInterval| String                  | The poll interval for air filters / humidifers        |
 
-* Note Air PPM Levels don't usually change quickly - 60s seems reasonable if OpenHab is controlling it and your don't want near instant feedback of physical interactions with the devices.
+* Note Air PPM Levels don't usually change quickly - 60s seems reasonable if openHab is controlling it and your don't want near instant feedback of physical interactions with the devices.
 
 #### AirPurifier configuration parameters
 
@@ -306,3 +291,10 @@ Frame {
    Slider item=LoungeAHMistLevel minValue=1 maxValue=3
 }
 ```
+
+### Credits
+
+The binding code is based on a lot of work done by other developers:
+
+- Contributors of (https://github.com/webdjoe/pyvesync) - Python interface for VeSync
+- Rene Scherer, Holger Eisold - (https://www.openhab.org/addons/bindings/surepetcare) Sure Petcare Binding for openHab as a reference point for the starting blocks of this code
