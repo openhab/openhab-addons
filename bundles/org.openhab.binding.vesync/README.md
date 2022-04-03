@@ -12,14 +12,6 @@ Air Humidifier models supported are Dual 200S, Classic 300S, 600S.
 Air Filtering models supported are Core200S and Core600S.
 Air Humidifier Classic 200S (Same as 300S without the nightlight from initial checks)
 
-### Restrictions / TODO
-
-1. Look at protocol mapping the V1 specification for the LV prefixed model.
-2. Look at potentially other equipment supported by the VeSync API.
-3. Add remaining write commands to complete Humidifier 600S support, if warm mode is controllable.
-4. Adjust Filtering Core200S & Core600S support based on feedback, given initial conversion.
-5. Adjust Humidifier 200S support based on feedback, given initial conversion.
-
 ## Supported Things
 
 This binding supports the follow thing types:
