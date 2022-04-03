@@ -90,7 +90,7 @@ Channel names in **bold** are read/write, everything else is read-only
 |-------------------------|--------|-------------------------------------------------------|
 | username                | String | The username as used in the VeSync mobile application |
 | password                | String | The password as used in the VeSync mobile application |
-| airPurifierPollInterval | String | The poll interval for air filters / humidifers        |
+| airPurifierPollInterval | Number | The poll interval for air filters / humidifers        |
 
 * Note Air PPM Levels don't usually change quickly - 60s seems reasonable if openHab is controlling it and your don't want near instant feedback of physical interactions with the devices.
 
