@@ -86,11 +86,13 @@ Channel names in **bold** are read/write, everything else is read-only
 
 #### Bridge configuration parameters
 
-| Name                    | Type   | Description                                           |
-|-------------------------|--------|-------------------------------------------------------|
-| username                | String | The username as used in the VeSync mobile application |
-| password                | String | The password as used in the VeSync mobile application |
-| airPurifierPollInterval | Number | The poll interval for air filters / humidifers        |
+| Name                             | Type   | Description                                               | Recommended Values |
+|----------------------------------|--------|-----------------------------------------------------------|--------------------|
+| username                         | String | The username as used in the VeSync mobile application     |                    |
+| password                         | String | The password as used in the VeSync mobile application     |                    |
+| airPurifierPollInterval          | Number | The poll interval (seconds) for air filters / humidifiers | 60                 |
+| backgroundDeviceDiscovery        | Switch | Should the system scan periodically for new devices       | ON                 |
+| refreshBackgroundDeviceDiscovery | Number | Frequency (seconds) of scans for new new devices          | 120                |
 
 * Note Air PPM Levels don't usually change quickly - 60s seems reasonable if openHab is controlling it and your don't want near instant feedback of physical interactions with the devices.
 
