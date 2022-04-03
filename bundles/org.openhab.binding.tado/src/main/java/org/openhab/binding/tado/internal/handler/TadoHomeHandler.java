@@ -105,13 +105,13 @@ public class TadoHomeHandler extends BaseBridgeHandler {
                 return;
             }
 
-            Integer id = homes.get(0).getId();
-            if (id == null) {
+            Integer firstHomeId = homes.get(0).getId();
+            if (firstHomeId == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Missing Home Id");
                 return;
             }
 
-            homeId = id.longValue();
+            homeId = firstHomeId.longValue();
 
             HomeInfo homeInfo = api.showHome(homeId);
             TemperatureUnit temperatureUnit = org.openhab.binding.tado.internal.api.model.TemperatureUnit.FAHRENHEIT == homeInfo
@@ -140,8 +140,8 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         return api;
     }
 
-    public Long getHomeId() {
-        return homeId != null ? homeId : 0;
+    public @Nullable Long getHomeId() {
+        return homeId;
     }
 
     public HomeState getHomeState() throws IOException, ApiException {

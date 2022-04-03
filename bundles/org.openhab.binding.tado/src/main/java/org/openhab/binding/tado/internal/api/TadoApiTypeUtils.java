@@ -46,7 +46,7 @@ import org.openhab.binding.tado.internal.api.model.TimerTerminationConditionTemp
 public class TadoApiTypeUtils {
 
     public static OverlayTerminationCondition getTerminationCondition(OverlayTerminationConditionType type,
-            int timerDurationInSeconds) {
+            @Nullable Integer timerDurationInSeconds) {
         switch (type) {
             case TIMER:
                 return timerTermination(timerDurationInSeconds);
@@ -61,9 +61,9 @@ public class TadoApiTypeUtils {
 
     public static OverlayTerminationCondition cleanTerminationCondition(
             OverlayTerminationCondition terminationCondition) {
-        int timerDuration = terminationCondition.getType() == OverlayTerminationConditionType.TIMER
+        Integer timerDuration = terminationCondition.getType() == OverlayTerminationConditionType.TIMER
                 ? ((TimerTerminationCondition) terminationCondition).getRemainingTimeInSeconds()
-                : 0;
+                : null;
 
         return getTerminationCondition(terminationCondition.getType(), timerDuration);
     }
@@ -72,12 +72,12 @@ public class TadoApiTypeUtils {
             OverlayTerminationConditionTemplate template) {
         Integer timerDuration = template.getType() == OverlayTerminationConditionType.TIMER
                 ? ((TimerTerminationConditionTemplate) template).getDurationInSeconds()
-                : 0;
+                : null;
 
         return getTerminationCondition(template.getType(), timerDuration);
     }
 
-    public static TimerTerminationCondition timerTermination(int durationInSeconds) {
+    public static TimerTerminationCondition timerTermination(@Nullable Integer durationInSeconds) {
         TimerTerminationCondition terminationCondition = new TimerTerminationCondition();
         terminationCondition.setType(OverlayTerminationConditionType.TIMER);
         terminationCondition.setDurationInSeconds(durationInSeconds);

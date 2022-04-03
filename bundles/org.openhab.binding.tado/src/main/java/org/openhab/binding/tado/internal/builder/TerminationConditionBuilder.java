@@ -36,7 +36,7 @@ public class TerminationConditionBuilder {
     private final TadoZoneHandler zoneHandler;
 
     private @Nullable OverlayTerminationConditionType terminationType;
-    private int timerDurationInSeconds;
+    private @Nullable Integer timerDurationInSeconds;
 
     protected TerminationConditionBuilder(TadoZoneHandler zoneHandler) {
         this.zoneHandler = zoneHandler;
@@ -49,12 +49,12 @@ public class TerminationConditionBuilder {
     public TerminationConditionBuilder withTerminationType(OverlayTerminationConditionType terminationType) {
         this.terminationType = terminationType;
         if (terminationType != OverlayTerminationConditionType.TIMER) {
-            timerDurationInSeconds = 0;
+            timerDurationInSeconds = null;
         }
         return this;
     }
 
-    public TerminationConditionBuilder withTimerDurationInSeconds(Integer timerDurationInSeconds) {
+    public TerminationConditionBuilder withTimerDurationInSeconds(@Nullable Integer timerDurationInSeconds) {
         this.terminationType = OverlayTerminationConditionType.TIMER;
         this.timerDurationInSeconds = timerDurationInSeconds;
         return this;
@@ -65,7 +65,7 @@ public class TerminationConditionBuilder {
 
         OverlayTerminationConditionType terminationType = this.terminationType;
         if (terminationType != null) {
-            if (terminationType != OverlayTerminationConditionType.TIMER || timerDurationInSeconds != 0) {
+            if (terminationType != OverlayTerminationConditionType.TIMER || timerDurationInSeconds != null) {
                 terminationCondition = getTerminationCondition(terminationType, timerDurationInSeconds);
             } else {
                 terminationCondition = getCurrentOrDefaultTimerTermination(zoneStateProvider);
@@ -91,7 +91,7 @@ public class TerminationConditionBuilder {
     private TimerTerminationCondition getCurrentOrDefaultTimerTermination(ZoneStateProvider zoneStateProvider)
             throws IOException, ApiException {
         // Timer without duration
-        int duration = zoneHandler.getFallbackTimerDuration() * 60;
+        Integer duration = zoneHandler.getFallbackTimerDuration() * 60;
 
         ZoneState zoneState = zoneStateProvider.getZoneState();
 

@@ -206,7 +206,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 scheduleHvacChange();
                 break;
             case TadoBindingConstants.CHANNEL_ZONE_TIMER_DURATION:
-                pendingHvacChange.activeFor(((DecimalType) command).intValue());
+                pendingHvacChange.activeForMinutes(((DecimalType) command).intValue());
                 scheduleHvacChange();
                 break;
         }

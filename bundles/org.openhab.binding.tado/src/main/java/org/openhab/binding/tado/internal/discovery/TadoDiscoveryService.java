@@ -75,7 +75,7 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        if (homeHandler.getHomeId() <= 0) {
+        if (homeHandler.getHomeId() == null) {
             return;
         }
 
@@ -104,6 +104,11 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
 
     private void discoverZones() {
         Long homeId = homeHandler.getHomeId();
+
+        if (homeId == null) {
+            logger.debug("Could not discover tado zones: Missing home id");
+            return;
+        }
 
         try {
             List<Zone> zoneList = homeHandler.getApi().listZones(homeId);
@@ -137,6 +142,12 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
 
     private void discoverMobileDevices() {
         Long homeId = homeHandler.getHomeId();
+
+        if (homeId == null) {
+            logger.debug("Could not discover mobile devices: Missing home id");
+            return;
+        }
+
         try {
             List<MobileDevice> mobileDeviceList = homeHandler.getApi().listMobileDevices(homeId);
 
@@ -148,7 +159,7 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         } catch (IOException | ApiException e) {
-            logger.debug("Could not discover tado zones: {}", e.getMessage(), e);
+            logger.debug("Could not discover mobile devices: {}", e.getMessage(), e);
         }
     }
 

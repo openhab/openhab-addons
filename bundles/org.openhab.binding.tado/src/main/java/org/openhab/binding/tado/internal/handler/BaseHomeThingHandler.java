@@ -13,6 +13,7 @@
 package org.openhab.binding.tado.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.api.client.HomeApi;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -32,7 +33,7 @@ public abstract class BaseHomeThingHandler extends BaseThingHandler {
         super(thing);
     }
 
-    public Long getHomeId() {
+    public @Nullable Long getHomeId() {
         TadoHomeHandler handler = getHomeHandler();
         return handler.getHomeId();
     }

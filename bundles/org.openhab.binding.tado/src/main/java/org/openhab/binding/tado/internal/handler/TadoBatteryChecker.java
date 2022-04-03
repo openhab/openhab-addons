@@ -57,8 +57,8 @@ public class TadoBatteryChecker {
             calendar.add(Calendar.HOUR, 1);
             refreshTime = calendar.getTime();
 
-            long homeId = homeHandler.getHomeId();
-            if (homeId > 0) {
+            Long homeId = homeHandler.getHomeId();
+            if (homeId != null) {
                 logger.debug("Fetching (battery state) zone list for HomeId {}", homeId);
                 zoneList.clear();
                 try {
