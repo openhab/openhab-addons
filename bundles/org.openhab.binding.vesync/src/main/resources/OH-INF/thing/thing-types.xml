@@ -16,23 +16,26 @@
 
 		<config-description>
 			<parameter name="username" type="text">
+				<context>email</context>
+				<required>true</required>
 				<label>Username</label>
 				<description>Name of a registered VeSync user, that allows to access the mobile application.</description>
 			</parameter>
 			<parameter name="password" type="text">
 				<context>password</context>
+				<required>true</required>
 				<label>Password</label>
 				<description>Password for the registered VeSync username, that allows to access the mobile application.</description>
 			</parameter>
 			<parameter name="backgroundDeviceDiscovery" type="boolean">
 				<label>Enable Background Device Scans</label>
 				<description>Enable background scanning for new devices.</description>
-				<default>false</default>
+				<default>true</default>
 			</parameter>
 			<parameter name="airPurifierPollInterval" type="integer" min="5" step="1" unit="s">
 				<label>Polling Interval For Air Filters / Humidifiers</label>
 				<description>Seconds between fetching background updates about the air purifiers / humidifiers.</description>
-				<default>5</default>
+				<default>60</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -72,12 +75,10 @@
 
 		<config-description>
 			<parameter name="macId" type="text">
-				<context>text</context>
 				<label>MAC Id</label>
 				<description>The MAC Id of the device as reported by the API.</description>
 			</parameter>
 			<parameter name="deviceName" type="text">
-				<context>text</context>
 				<label>Device Name</label>
 				<description>The name allocated to the device by the app. (Must be unique if used)</description>
 			</parameter>
@@ -118,12 +119,10 @@
 
 		<config-description>
 			<parameter name="macId" type="text">
-				<context>text</context>
 				<label>MAC Id</label>
 				<description>The MAC Id of the device as reported by the API.</description>
 			</parameter>
 			<parameter name="deviceName" type="text">
-				<context>text</context>
 				<label>Device Name</label>
 				<description>The name allocated to the device by the app. (Must be unique if used)</description>
 			</parameter>
