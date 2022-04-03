@@ -35,6 +35,34 @@ Once the bridge is configured auto discovery will discover supported devices fro
 
 ## Thing Configuration
 
+### Bridge configuration parameters
+
+| Name                             | Type   | Description                                               | Recommended Values |
+|----------------------------------|--------|-----------------------------------------------------------|--------------------|
+| username                         | String | The username as used in the VeSync mobile application     |                    |
+| password                         | String | The password as used in the VeSync mobile application     |                    |
+| airPurifierPollInterval          | Number | The poll interval (seconds) for air filters / humidifiers | 60                 |
+| backgroundDeviceDiscovery        | Switch | Should the system scan periodically for new devices       | ON                 |
+| refreshBackgroundDeviceDiscovery | Number | Frequency (seconds) of scans for new new devices          | 120                |
+
+* Note Air PPM Levels don't usually change quickly - 60s seems reasonable if openHab is controlling it and your don't want near instant feedback of physical interactions with the devices.
+
+### AirPurifier configuration parameters
+
+It is recommended to use the device name, for locating devices. For this to work all the devices should have a unique
+name in the VeSync mobile application.
+
+The mac address from the VeSync mobile application may not align to the one the API
+uses, therefore it's best left not configured or taken from auto-discovered information.
+
+Device's will be found communicated with via the MAC Id first and if unsuccessful then by the deviceName.
+
+| Name                   | Type                    | Description                                                         |
+|------------------------|-------------------------|---------------------------------------------------------------------|
+| deviceName             | String                  | The name given to the device under Settings -> Device Name          |
+| macId                  | String                  | The mac for the device under Settings -> Device Info -> MAC Address |
+
+
 ## Channels
 
 Channel names in **bold** are read/write, everything else is read-only
@@ -83,33 +111,6 @@ Channel names in **bold** are read/write, everything else is read-only
 ## Full Example
 
 ### Configuration (*.things)
-
-#### Bridge configuration parameters
-
-| Name                             | Type   | Description                                               | Recommended Values |
-|----------------------------------|--------|-----------------------------------------------------------|--------------------|
-| username                         | String | The username as used in the VeSync mobile application     |                    |
-| password                         | String | The password as used in the VeSync mobile application     |                    |
-| airPurifierPollInterval          | Number | The poll interval (seconds) for air filters / humidifiers | 60                 |
-| backgroundDeviceDiscovery        | Switch | Should the system scan periodically for new devices       | ON                 |
-| refreshBackgroundDeviceDiscovery | Number | Frequency (seconds) of scans for new new devices          | 120                |
-
-* Note Air PPM Levels don't usually change quickly - 60s seems reasonable if openHab is controlling it and your don't want near instant feedback of physical interactions with the devices.
-
-#### AirPurifier configuration parameters
-
-It is recommended to use the device name, for locating devices. For this to work all the devices should have a unique
-name in the VeSync mobile application.
-
-The mac address from the VeSync mobile application may not align to the one the API
-uses, therefore it's best left not configured or taken from auto-discovered information.
-
-Device's will be found communicated with via the MAC Id first and if unsuccessful then by the deviceName.
-
-| Name                   | Type                    | Description                                                         |
-|------------------------|-------------------------|---------------------------------------------------------------------|
-| deviceName             | String                  | The name given to the device under Settings -> Device Name          |
-| macId                  | String                  | The mac for the device under Settings -> Device Info -> MAC Address |
 
 #### Air Purifiers Core 200S/300S/400S Models & Air Humidifier Classic300S/600S Models
 
