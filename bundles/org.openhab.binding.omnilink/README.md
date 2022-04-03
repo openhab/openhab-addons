@@ -309,13 +309,12 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 =Unknown
 ```
 
-### Example `omnilink.rules`
+### Example EMCAScript rule
 
-```
-rule "Update OmniPro Time"
-when
-  Time cron "0 0 0/1 1/1 * ? *"
-then
-  OmniProTime.sendCommand( new DateTimeType() )
-end
+``` javascript
+var ZonedDateTime = Java.type("java.time.ZonedDateTime");
+var ZoneId = Java.type("java.time.ZoneId");
+var zdt = ZonedDateTime.now(ZoneId.of("America/Denver"));
+
+events.sendCommand('DateTime', new StringType(zdt));
 ```
