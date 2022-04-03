@@ -71,7 +71,7 @@
 			<property name="Device Type"/>
 			<property name="MAC Id"/>
 		</properties>
-		<representation-property>mac</representation-property>
+		<representation-property>macId</representation-property>
 
 		<config-description>
 			<parameter name="macId" type="text">
@@ -115,7 +115,7 @@
 			<property name="Device Type"/>
 			<property name="MAC Id"/>
 		</properties>
-		<representation-property>mac</representation-property>
+		<representation-property>macId</representation-property>
 
 		<config-description>
 			<parameter name="macId" type="text">

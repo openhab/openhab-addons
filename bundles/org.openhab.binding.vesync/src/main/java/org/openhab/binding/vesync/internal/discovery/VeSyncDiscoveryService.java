@@ -112,9 +112,9 @@ public class VeSyncDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void handleMetadataRetrieved(VeSyncBridgeHandler handler) {
+
         bridgeHandler.getAirPurifiersMetadata().map(apMeta -> {
             final Map<String, Object> properties = new HashMap<>(6);
-            // final String deviceUUID = apMeta.getUuid().replace("-", "");
             final String deviceUUID = apMeta.getUuid();
             properties.put(DEVICE_PROP_DEVICE_NAME, apMeta.getDeviceName());
             properties.put(DEVICE_PROP_DEVICE_TYPE, apMeta.getDeviceType());
@@ -123,12 +123,12 @@ public class VeSyncDiscoveryService extends AbstractDiscoveryService
             properties.put(DEVICE_PROP_CONFIG_DEVICE_MAC, apMeta.getMacId());
             properties.put(DEVICE_PROP_CONFIG_DEVICE_NAME, apMeta.getDeviceName());
             return DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_AIR_PURIFIER, bridgeUID, deviceUUID))
-                    .withLabel(apMeta.getDeviceName()).withBridge(bridgeUID).withProperties(properties).build();
+                    .withLabel(apMeta.getDeviceName()).withBridge(bridgeUID).withProperties(properties)
+                    .withRepresentationProperty(DEVICE_PROP_DEVICE_MAC_ID).build();
         }).forEach(this::thingDiscovered);
-        // Temporary until refactoring
+
         bridgeHandler.getAirHumidifiersMetadata().map(apMeta -> {
             final Map<String, Object> properties = new HashMap<>(6);
-            // final String deviceUUID = apMeta.getUuid().replace("-", "");
             final String deviceUUID = apMeta.getUuid();
             properties.put(DEVICE_PROP_DEVICE_NAME, apMeta.getDeviceName());
             properties.put(DEVICE_PROP_DEVICE_TYPE, apMeta.getDeviceType());
@@ -137,7 +137,8 @@ public class VeSyncDiscoveryService extends AbstractDiscoveryService
             properties.put(DEVICE_PROP_CONFIG_DEVICE_MAC, apMeta.getMacId());
             properties.put(DEVICE_PROP_CONFIG_DEVICE_NAME, apMeta.getDeviceName());
             return DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_AIR_HUMIDIFIER, bridgeUID, deviceUUID))
-                    .withLabel(apMeta.getDeviceName()).withBridge(bridgeUID).withProperties(properties).build();
+                    .withLabel(apMeta.getDeviceName()).withBridge(bridgeUID).withProperties(properties)
+                    .withRepresentationProperty(DEVICE_PROP_DEVICE_MAC_ID).build();
         }).forEach(this::thingDiscovered);
     }
 }
