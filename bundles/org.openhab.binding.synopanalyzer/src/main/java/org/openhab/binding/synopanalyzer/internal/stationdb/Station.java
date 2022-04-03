@@ -10,18 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.synopanalyzer.internal.config;
+package org.openhab.binding.synopanalyzer.internal.stationdb;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SynopAnalyzerConfiguration} holds configuration informations needed for the Synop thing
+ * The {@link Station} is a DTO for stations.json database.
  *
- * @author Gaël L'hopital - Initial contribution
+ * @author Gaël L'hopital - Initial Contribution
  */
 @NonNullByDefault
-public class SynopAnalyzerConfiguration {
-    public static final String STATION_ID = "stationId";
-    public long refreshInterval = 60;
-    public int stationId;
+public class Station {
+    public int idOmm;
+    public String usualName = "";
+    private double latitude;
+    private double longitude;
+
+    public String getLocation() {
+        return Double.toString(latitude) + "," + Double.toString(longitude);
+    }
 }
