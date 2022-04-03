@@ -304,8 +304,7 @@ public class AndroidDebugBridgeDevice {
 
     public String getMacAddress() throws AndroidDebugBridgeDeviceException, InterruptedException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
-        var mac = runAdbShell("cat", "/sys/class/net/wlan0/address").replace("\n", "").replace("\r", "");
-        return mac;
+        return runAdbShell("cat", "/sys/class/net/wlan0/address").replace("\n", "").replace("\r", "");
     }
 
     private String getDeviceProp(String name) throws AndroidDebugBridgeDeviceException, InterruptedException,
@@ -383,26 +382,21 @@ public class AndroidDebugBridgeDevice {
     public void startIntent(String command) throws NumberFormatException, AndroidDebugBridgeDeviceException,
             ExecutionException, InterruptedException, TimeoutException {
         String[] commandParts = command.split("\\|\\|");
+        if (commandParts.length == 0) {
+            throw new AndroidDebugBridgeDeviceException("Empty command");
+        }
         String targetPackage = commandParts[0];
         var targetPackageParts = targetPackage.split("/");
-        var packageName = targetPackageParts[0];
-        var activityName = targetPackageParts[1];
-        if (targetPackageParts.length == 1) {
-            if (!PACKAGE_NAME_PATTERN.matcher(packageName).matches()) {
-                logger.warn("{} is not a valid package name", packageName);
-                return;
-            }
-        } else if (targetPackageParts.length == 2) {
-            if (!PACKAGE_NAME_PATTERN.matcher(packageName).matches()) {
-                logger.warn("{} is not a valid package name", packageName);
-                return;
-            }
-            if (!SECURE_SHELL_INPUT_PATTERN.matcher(activityName).matches()) {
-                logger.warn("{} is not a valid activity name", activityName);
-                return;
-            }
-        } else {
+        if (targetPackageParts.length > 2) {
             throw new AndroidDebugBridgeDeviceException("Invalid target package " + targetPackage);
+        }
+        if (!PACKAGE_NAME_PATTERN.matcher(targetPackageParts[0]).matches()) {
+            logger.warn("{} is not a valid package name", targetPackageParts[0]);
+            return;
+        }
+        if (targetPackageParts.length == 2 && !SECURE_SHELL_INPUT_PATTERN.matcher(targetPackageParts[1]).matches()) {
+            logger.warn("{} is not a valid activity name", targetPackageParts[1]);
+            return;
         }
         @Nullable
         String action = null;

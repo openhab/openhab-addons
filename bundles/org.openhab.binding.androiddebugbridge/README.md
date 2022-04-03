@@ -104,13 +104,13 @@ Please note that events could fail if the input method is removed, for example i
 
 #### Start Intent
 
-This channel allows to call am start, the sintax por it is:
+This channel allows to invoke the 'am start' command, the syntax for it is:
 <package/activity>||<<arg name>> <arg value>||...
 
 This is a sample:
 com.netflix.ninja/.MainActivity||<a>android.intent.action.VIEW||<d>netflix://title/80025384||<f>0x10000020||<es>amzn_deeplink_data 80025384
 
-Not all the (arguments)[https://developer.android.com/studio/command-line/adb#IntentSpec] are supported, open an issue or pr if you need more.
+Not all the (arguments)[https://developer.android.com/studio/command-line/adb#IntentSpec] are supported. Please open an issue or pull request if you need more.
 
 #### Available key-event values:
 
