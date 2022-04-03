@@ -16,11 +16,12 @@ Air Humidifier Classic 200S (Same as 300S without the nightlight from initial ch
 
 This binding supports the follow thing types:
 
-| Thing        | Thing Type | Discovery | Description                                                          |  
-|--------------|------------|-----------|----------------------------------------------------------------------|
-| Bridge       | Bridge     | Manual    | A single connection to the VeSync API                                |
-| AirPurifier  | Thing      | Automatic | A Air Purifier supporting V2 e.g. Core200S/Core300S or Core400S unit |
-| AirHumidifier| Thing      | Automatic | A Air Humidifier supporting V2 e.g. Classic300S or 600s               |
+| Thing         | Thing Type | Discovery | Description                                                          |
+|---------------|------------|-----------|----------------------------------------------------------------------|
+| Bridge        | Bridge     | Manual    | A single connection to the VeSync API                                |
+| AirPurifier   | Thing      | Automatic | A Air Purifier supporting V2 e.g. Core200S/Core300S or Core400S unit |
+| AirHumidifier | Thing      | Automatic | A Air Humidifier supporting V2 e.g. Classic300S or 600s              |
+
 
 This binding was developed from the great work in the listed projects.
 
@@ -39,23 +40,24 @@ Channel names in **bold** are read/write, everything else is read-only
 
 ### AirPurifier Thing
 
-| Channel                | Type                    | Description                                               | Model's Supported |  
-|------------------------|-------------------------|-----------------------------------------------------------|-------------------|
-| **enabled**            | Switch                  | Whether the hardware device is enabled (Switched on)      | 600S, 400S, 300S  |
-| **childLock**         | Switch                  | Whether the child lock (display lock is enabled)          | 600S, 400S, 300S  |
-| **display**            | Switch                  | Whether the display is enabled (display is shown)         | 600S, 400S, 300S  |
-| **fanMode**           | String                  | The operation mode of the fan                             | 600S, 400S, 300S  |
-| **manualFanSpeed**   | String                  | The speed of the fan when in manual mode                  | 600S, 400S, 300S  |
-| **nightLightMode**   | String                  | The night lights mode                                     | 600S, 400S, 300S  |
-| filterLifePercentage | Number:Dimensionless    | The remaining filter life as a percentage                 | 600S, 400S, 300S  |
-| airQuality            | Number                  | The air quality as represented by the Core200S / Core300S | 600S, 400S, 300S  |
-| airQualityPPM25      | Number:Dimensionless    | The air quality as represented by the Core400S            | 600S, 400S, 300S  |
-| errorCode             | Number                  | The error code reported by the device                     | 600S, 400S, 300S  |
-| timerExpiry           | DateTime                | The expected expiry time of the current timer             | 600S, 400S        |
-| schedulesCount        | Number                  | The number schedules configured                           | 600S, 400S        |
-| configDisplayForever | Switch                  | Config: Whether the display will disable when not active  | 600S, 400S, 300S  |
-| configAutoMode       | String                  | Config: The mode of operation when auto is active         | 600S, 400S, 300S  |
-| configAutoRoomSize  | Number                  | Config: The room size set when auto utilises the room size| 600S, 400S, 300S  |
+| Channel              | Type                 | Description                                                | Model's Supported |
+|----------------------|----------------------|------------------------------------------------------------|-------------------|
+| **enabled**          | Switch               | Whether the hardware device is enabled (Switched on)       | 600S, 400S, 300S  |
+| **childLock**        | Switch               | Whether the child lock (display lock is enabled)           | 600S, 400S, 300S  |
+| **display**          | Switch               | Whether the display is enabled (display is shown)          | 600S, 400S, 300S  |
+| **fanMode**          | String               | The operation mode of the fan                              | 600S, 400S, 300S  |
+| **manualFanSpeed**   | String               | The speed of the fan when in manual mode                   | 600S, 400S, 300S  |
+| **nightLightMode**   | String               | The night lights mode                                      | 600S, 400S, 300S  |
+| filterLifePercentage | Number:Dimensionless | The remaining filter life as a percentage                  | 600S, 400S, 300S  |
+| airQuality           | Number               | The air quality as represented by the Core200S / Core300S  | 600S, 400S, 300S  |
+| airQualityPPM25      | Number:Dimensionless | The air quality as represented by the Core400S             | 600S, 400S, 300S  |
+| errorCode            | Number               | The error code reported by the device                      | 600S, 400S, 300S  |
+| timerExpiry          | DateTime             | The expected expiry time of the current timer              | 600S, 400S        |
+| schedulesCount       | Number               | The number schedules configured                            | 600S, 400S        |
+| configDisplayForever | Switch               | Config: Whether the display will disable when not active   | 600S, 400S, 300S  |
+| configAutoMode       | String               | Config: The mode of operation when auto is active          | 600S, 400S, 300S  |
+| configAutoRoomSize   | Number               | Config: The room size set when auto utilises the room size | 600S, 400S, 300S  |
+
 
 ### AirHumidifier Thing
 
@@ -79,11 +81,11 @@ Channel names in **bold** are read/write, everything else is read-only
 
 #### Bridge configuration parameters
 
-| Name                   | Type                    | Description                                           |
-|------------------------|-------------------------|-------------------------------------------------------|
-| username               | String                  | The username as used in the VeSync mobile application |
-| password               | String                  | The password as used in the VeSync mobile application |
-| airPurifierPollInterval| String                  | The poll interval for air filters / humidifers        |
+| Name                    | Type   | Description                                           |
+|-------------------------|--------|-------------------------------------------------------|
+| username                | String | The username as used in the VeSync mobile application |
+| password                | String | The password as used in the VeSync mobile application |
+| airPurifierPollInterval | String | The poll interval for air filters / humidifers        |
 
 * Note Air PPM Levels don't usually change quickly - 60s seems reasonable if openHab is controlling it and your don't want near instant feedback of physical interactions with the devices.
 
