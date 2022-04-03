@@ -21,7 +21,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -37,7 +36,6 @@ import org.openhab.binding.linky.internal.api.ExpiringDayCache;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport.Aggregate;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport.Consumption;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
-import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
@@ -154,13 +152,9 @@ public class LinkyHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
 
                     if (thing.getProperties().isEmpty()) {
-                        Map<String, String> properties = new HashMap<>();
                         PrmInfo prmInfo = api.getPrmInfo();
-                        UserInfo userInfo = api.getUserInfo();
-                        properties.put(USER_ID, userInfo.userProperties.internId);
-                        properties.put(PUISSANCE, prmInfo.puissanceSouscrite + " kVA");
-                        properties.put(PRM_ID, prmInfo.prmId);
-                        updateProperties(properties);
+                        updateProperties(Map.of(USER_ID, api.getUserInfo().userProperties.internId, PUISSANCE,
+                                prmInfo.puissanceSouscrite + " kVA", PRM_ID, prmInfo.prmId));
                     }
 
                     prmId = thing.getProperties().get(PRM_ID);

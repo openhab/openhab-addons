@@ -55,31 +55,39 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class EnedisHttpApi {
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-    private static final String URL_APPS_LINCS = "https://apps.lincs.enedis.fr";
-    private static final String URL_MON_COMPTE = "https://mon-compte.enedis.fr";
-    private static final String URL_ENEDIS_AUTHENTICATE = URL_APPS_LINCS
-            + "/authenticate?target=https://mon-compte-particulier.enedis.fr/suivi-de-mesure/";
-    private static final String URL_COOKIE = "https://mon-compte-particulier.enedis.fr";
+    private static final String ENEDIS_DOMAIN = ".enedis.fr";
+    private static final String URL_APPS_LINCS = "https://apps.lincs" + ENEDIS_DOMAIN;
+    private static final String URL_MON_COMPTE = "https://mon-compte" + ENEDIS_DOMAIN;
+    private static final String URL_COMPTE_PART = URL_MON_COMPTE.replace("compte", "compte-particulier");
+    private static final String URL_ENEDIS_AUTHENTICATE = URL_APPS_LINCS + "/authenticate?target=" + URL_COMPTE_PART;
+    private static final String USER_INFO_URL = URL_APPS_LINCS + "/userinfos";
+    private static final String PRM_INFO_BASE_URL = URL_APPS_LINCS + "/mes-mesures/api/private/v1/personnes/";
+    private static final String PRM_INFO_URL = PRM_INFO_BASE_URL + "null/prms";
+    private static final String MEASURE_URL = PRM_INFO_BASE_URL
+            + "%s/prms/%s/donnees-%s?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
+    private static final URI COOKIE_URI = URI.create(URL_COMPTE_PART);
+    private static final Pattern REQ_PATTERN = Pattern.compile("ReqID%(.*?)%26");
 
     private final Logger logger = LoggerFactory.getLogger(EnedisHttpApi.class);
     private final Gson gson;
     private final HttpClient httpClient;
-    private boolean connected = false;
     private final CookieStore cookieStore;
     private final LinkyConfiguration config;
+
+    private boolean connected = false;
 
     public EnedisHttpApi(LinkyConfiguration config, Gson gson, HttpClient httpClient) {
         this.gson = gson;
         this.httpClient = httpClient;
         this.config = config;
         this.cookieStore = httpClient.getCookieStore();
-        addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, config.internalAuthId);
     }
 
     public void initialize() throws LinkyException {
         logger.debug("Starting login process for user : {}", config.username);
 
         try {
+            addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, config.internalAuthId);
             logger.debug("Step 1 : getting authentification");
             String data = getData(URL_ENEDIS_AUTHENTICATE);
 
@@ -96,21 +104,19 @@ public class EnedisHttpApi {
             }
 
             logger.debug("Get the location and the ReqID");
-            Pattern p = Pattern.compile("ReqID%(.*?)%26");
-            Matcher m = p.matcher(getLocation(result));
+            Matcher m = REQ_PATTERN.matcher(getLocation(result));
             if (!m.find()) {
                 throw new LinkyException("Unable to locate ReqId in header");
             }
 
             String reqId = m.group(1);
-            String url = URL_MON_COMPTE
+            String authenticateUrl = URL_MON_COMPTE
                     + "/auth/json/authenticate?realm=/enedis&forward=true&spEntityID=SP-ODW-PROD&goto=/auth/SSOPOST/metaAlias/enedis/providerIDP?ReqID%"
-                    + reqId
-                    + "%26index%3Dnull%26acsURL%3Dhttps://apps.lincs.enedis.fr/saml/SSO%26spEntityID%3DSP-ODW-PROD%26binding%3Durn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST&AMAuthCookie=";
+                    + reqId + "%26index%3Dnull%26acsURL%3D" + URL_APPS_LINCS
+                    + "/saml/SSO%26spEntityID%3DSP-ODW-PROD%26binding%3Durn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST&AMAuthCookie=";
 
-            logger.debug(
-                    "Step 3 : auth1 - retrieve the template, thanks to cookie internalAuthId, user is already set");
-            result = httpClient.POST(url).header("X-NoSession", "true").header("X-Password", "anonymous")
+            logger.debug("Step 3 : auth1 - retrieve the template, thanks to cookie internalAuthId user is already set");
+            result = httpClient.POST(authenticateUrl).header("X-NoSession", "true").header("X-Password", "anonymous")
                     .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous").send();
             if (result.getStatus() != 200) {
                 throw new LinkyException("Connection failed step 3 - auth1 : %s", result.getContentAsString());
@@ -125,13 +131,8 @@ public class EnedisHttpApi {
             }
 
             authData.callbacks.get(1).input.get(0).value = config.password;
-            url = URL_MON_COMPTE
-                    + "/auth/json/authenticate?realm=/enedis&spEntityID=SP-ODW-PROD&goto=/auth/SSOPOST/metaAlias/enedis/providerIDP?ReqID%"
-                    + reqId
-                    + "%26index%3Dnull%26acsURL%3Dhttps://apps.lincs.enedis.fr/saml/SSO%26spEntityID%3DSP-ODW-PROD%26binding%3Durn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST&AMAuthCookie=";
-
-            logger.debug("Step 3 : auth2 - send the auth data");
-            result = httpClient.POST(url).header(HttpHeader.CONTENT_TYPE, "application/json")
+            logger.debug("Step 4 : auth2 - send the auth data");
+            result = httpClient.POST(authenticateUrl).header(HttpHeader.CONTENT_TYPE, "application/json")
                     .header("X-NoSession", "true").header("X-Password", "anonymous")
                     .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous")
                     .content(new StringContentProvider(gson.toJson(authData))).send();
@@ -147,13 +148,13 @@ public class EnedisHttpApi {
             logger.debug("Add the tokenId cookie");
             addCookie("enedisExt", authResult.tokenId);
 
-            logger.debug("Step 4 : retrieve the SAMLresponse");
+            logger.debug("Step 5 : retrieve the SAMLresponse");
             data = getData(URL_MON_COMPTE + "/" + authResult.successUrl);
             htmlDocument = Jsoup.parse(data);
             el = htmlDocument.select("form").first();
             samlInput = el.select("input[name=SAMLResponse]").first();
 
-            logger.debug("Step 5 : post the SAMLresponse to finish the authentication");
+            logger.debug("Step 6 : post the SAMLresponse to finish the authentication");
             result = httpClient.POST(el.attr("action")).content(getFormContent("SAMLResponse", samlInput.attr("value")))
                     .send();
             if (result.getStatus() != 302) {
@@ -172,12 +173,12 @@ public class EnedisHttpApi {
     private void disconnect() throws LinkyException {
         if (connected) {
             logger.debug("Logout process");
+            connected = false;
             try { // Three times in a row to get disconnected
                 String location = getLocation(httpClient.GET(URL_APPS_LINCS + "/logout"));
                 location = getLocation(httpClient.GET(location));
-                location = getLocation(httpClient.GET(location));
+                getLocation(httpClient.GET(location));
                 cookieStore.removeAll();
-                connected = false;
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 throw new LinkyException(e, "Error while disconnecting from Enedis webservice");
             }
@@ -194,9 +195,9 @@ public class EnedisHttpApi {
 
     private void addCookie(String key, String value) {
         HttpCookie cookie = new HttpCookie(key, value);
-        cookie.setDomain(".enedis.fr");
+        cookie.setDomain(ENEDIS_DOMAIN);
         cookie.setPath("/");
-        cookieStore.add(URI.create(URL_COOKIE), cookie);
+        cookieStore.add(COOKIE_URI, cookie);
     }
 
     private FormContentProvider getFormContent(String fieldName, String fieldValue) {
@@ -221,10 +222,9 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        final String prmInfoUrl = URL_APPS_LINCS + "/mes-mesures/api/private/v1/personnes/null/prms";
-        String data = getData(prmInfoUrl);
+        String data = getData(PRM_INFO_URL);
         if (data.isEmpty()) {
-            throw new LinkyException("Requesting '%s' returned an empty response", prmInfoUrl);
+            throw new LinkyException("Requesting '%s' returned an empty response", PRM_INFO_URL);
         }
         try {
             PrmInfo[] prms = gson.fromJson(data, PrmInfo[].class);
@@ -234,7 +234,7 @@ public class EnedisHttpApi {
             return prms[0];
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", prmInfoUrl);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", PRM_INFO_URL);
         }
     }
 
@@ -242,25 +242,25 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        final String userInfoUrl = URL_APPS_LINCS + "/userinfos";
-        String data = getData(userInfoUrl);
+        String data = getData(USER_INFO_URL);
         if (data.isEmpty()) {
-            throw new LinkyException("Requesting '%s' returned an empty response", userInfoUrl);
+            throw new LinkyException("Requesting '%s' returned an empty response", USER_INFO_URL);
         }
         try {
             return Objects.requireNonNull(gson.fromJson(data, UserInfo.class));
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching UserInfo.class: {}", data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", userInfoUrl);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", USER_INFO_URL);
         }
     }
 
     private Consumption getMeasures(String userId, String prmId, LocalDate from, LocalDate to, String request)
             throws LinkyException {
-        final String measureUrl = URL_APPS_LINCS
-                + "/mes-mesures/api/private/v1/personnes/%s/prms/%s/donnees-%s?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
-        String url = String.format(measureUrl, userId, prmId, request, from.format(API_DATE_FORMAT),
+        String url = String.format(MEASURE_URL, userId, prmId, request, from.format(API_DATE_FORMAT),
                 to.format(API_DATE_FORMAT));
+        if (!connected) {
+            initialize();
+        }
         String data = getData(url);
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", url);
@@ -279,16 +279,10 @@ public class EnedisHttpApi {
     }
 
     public Consumption getEnergyData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
-        if (!connected) {
-            initialize();
-        }
         return getMeasures(userId, prmId, from, to, "energie");
     }
 
     public Consumption getPowerData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
-        if (!connected) {
-            initialize();
-        }
         return getMeasures(userId, prmId, from, to, "pmax");
     }
 }

@@ -8,7 +8,7 @@
 	<config-description>
 		<parameter name="requestBufferSize" type="integer" min="6000">
 			<label>Request Buffer Size</label>
-			<description>The size of the buffer used to write requests</description>
+			<description>Size of the buffer used to write requests (in bytes)</description>
 			<default>6000</default>
 		</parameter>
 	</config-description>
