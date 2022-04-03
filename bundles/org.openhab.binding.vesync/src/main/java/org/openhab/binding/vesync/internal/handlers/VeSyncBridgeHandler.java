@@ -26,7 +26,9 @@ import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
+import org.openhab.binding.vesync.internal.api.HttpClientMonitor;
 import org.openhab.binding.vesync.internal.api.VesyncV2ApiHelper;
 import org.openhab.binding.vesync.internal.discovery.DeviceMetaDataUpdatedHandler;
 import org.openhab.binding.vesync.internal.discovery.VeSyncDiscoveryService;
@@ -55,7 +57,8 @@ import org.slf4j.LoggerFactory;
  * @author David Goodyear - Initial Contribution
  */
 @NonNullByDefault
-public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClient {
+public class VeSyncBridgeHandler extends BaseBridgeHandler
+        implements VeSyncClient, HttpClientMonitor.IHttpClientWatcher {
 
     private static final int DEFAULT_DEVICE_SCAN_INTERVAL = 600;
     private static final int DEFAULT_DEVICE_SCAN_RECOVERY_INTERVAL = 60;
@@ -65,11 +68,13 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
 
     private @Nullable ScheduledFuture<?> backgroundDiscoveryPollingJob;
 
-    protected final @NotNull VesyncV2ApiHelper api;
+    protected final VesyncV2ApiHelper api = new VesyncV2ApiHelper();
+    private @Nullable HttpClientMonitor httpClientMonitor = null;
 
-    public VeSyncBridgeHandler(Bridge bridge, VesyncV2ApiHelper api) {
+    public VeSyncBridgeHandler(Bridge bridge, @NotNull HttpClientMonitor httpClientMonitor) {
         super(bridge);
-        this.api = api;
+        this.httpClientMonitor = httpClientMonitor;
+        httpClientMonitor.addWatcher(this);
     }
 
     public ThingUID getUID() {
@@ -212,6 +217,10 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
     @Override
     public void dispose() {
         setBackgroundScanInterval(DEFAULT_DEVICE_SCAN_DISABLED);
+        HttpClientMonitor httpClientMonitorRef = httpClientMonitor;
+        if (httpClientMonitorRef != null) {
+            httpClientMonitorRef.removeWatcher(this);
+        }
     }
 
     @Override
@@ -232,5 +241,10 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
     public String reqV2Authorized(final String url, final String macId, final VesyncAuthenticatedRequest requestData)
             throws AuthenticationException, DeviceUnknownException {
         return api.reqV2Authorized(url, macId, requestData);
+    }
+
+    @Override
+    public void handleNewHttpClient(final @Nullable HttpClient newClientRef) {
+        api.setHttpClient(newClientRef);
     }
 }

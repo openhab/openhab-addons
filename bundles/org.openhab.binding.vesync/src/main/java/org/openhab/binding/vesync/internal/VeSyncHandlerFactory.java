@@ -18,7 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.vesync.internal.api.VesyncV2ApiHelper;
+import org.openhab.binding.vesync.internal.api.HttpClientMonitor;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirHumidifierHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirPurifierHandler;
@@ -47,7 +47,7 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
             THING_TYPE_AIR_PURIFIER, THING_TYPE_AIR_HUMIDIFIER);
 
-    private final VesyncV2ApiHelper api = new VesyncV2ApiHelper();
+    private HttpClientMonitor httpClientMonitor = new HttpClientMonitor();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -63,7 +63,7 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory {
         } else if (VeSyncDeviceAirHumidifierHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new VeSyncDeviceAirHumidifierHandler(thing);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new VeSyncBridgeHandler((Bridge) thing, api);
+            return new VeSyncBridgeHandler((Bridge) thing, httpClientMonitor);
         }
 
         return null;
@@ -101,10 +101,10 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory {
 
     @Reference
     protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        api.setHttpClient(httpClientFactory.getCommonHttpClient());
+        httpClientMonitor.setNewHttpClient(httpClientFactory.getCommonHttpClient());
     }
 
     protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        api.setHttpClient(null);
+        httpClientMonitor.setNewHttpClient(null);
     }
 }
