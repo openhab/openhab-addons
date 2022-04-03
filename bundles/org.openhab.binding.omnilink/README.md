@@ -316,5 +316,5 @@ var ZonedDateTime = Java.type("java.time.ZonedDateTime");
 var ZoneId = Java.type("java.time.ZoneId");
 var zdt = ZonedDateTime.now(ZoneId.of("America/Denver"));
 
-events.sendCommand('DateTime', new StringType(zdt));
+events.sendCommand('OmniProTime', new StringType(zdt));
 ```
