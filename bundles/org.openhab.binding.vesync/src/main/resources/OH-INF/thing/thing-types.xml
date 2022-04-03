@@ -28,12 +28,12 @@
 				<description>Password for the registered VeSync username, that allows to access the mobile application.</description>
 			</parameter>
 			<parameter name="backgroundDeviceDiscovery" type="boolean">
-				<label>Enable Background Device Scans</label>
+				<label>Background Device Scans</label>
 				<description>Enable background scanning for new devices.</description>
 				<default>true</default>
 			</parameter>
 			<parameter name="airPurifierPollInterval" type="integer" min="5" step="1" unit="s">
-				<label>Polling Interval For Air Filters / Humidifiers</label>
+				<label>Air Filters/Humidifiers Poll Rate</label>
 				<description>Seconds between fetching background updates about the air purifiers / humidifiers.</description>
 				<default>60</default>
 			</parameter>
@@ -208,7 +208,7 @@
 
 	<channel-type id="airQualityPPM25">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Air Quality PPM 2.5</label>
+		<label>Air Quality PPM2.5</label>
 		<description>Indicator of current air quality</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
@@ -221,7 +221,7 @@
 
 	<channel-type id="deviceAFConfigAutoPrefType">
 		<item-type>String</item-type>
-		<label>Config: Auto Mode Preference</label>
+		<label>Config: Auto Mode</label>
 		<description>The operating mode when the air purifier is set to auto</description>
 		<state readOnly="true">
 			<options>
@@ -234,21 +234,21 @@
 
 	<channel-type id="deviceAFTimerExpiry">
 		<item-type>DateTime</item-type>
-		<label>Auto Off Timer Expiry</label>
+		<label>Auto Off Expiry</label>
 		<description>The time when the auto off timer will be reached</description>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="deviceAFConfigAutoPrefRoomSizeType">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Config: Room size (foot sq)</label>
-		<description>Room size for efficient auto mode</description>
+		<label>Config: Room size</label>
+		<description>Room size (foot sq) for efficient auto mode</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="deviceAFConfigAutoScheduleCountType">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Config: Number of schedules</label>
+		<label>Config: Schedules Count</label>
 		<description>The current number of schedules configured</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
