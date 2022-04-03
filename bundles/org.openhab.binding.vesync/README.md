@@ -40,23 +40,25 @@ Channel names in **bold** are read/write, everything else is read-only
 
 ### AirPurifier Thing
 
-| Channel              | Type                 | Description                                                | Model's Supported |
-|----------------------|----------------------|------------------------------------------------------------|-------------------|
-| **enabled**          | Switch               | Whether the hardware device is enabled (Switched on)       | 600S, 400S, 300S  |
-| **childLock**        | Switch               | Whether the child lock (display lock is enabled)           | 600S, 400S, 300S  |
-| **display**          | Switch               | Whether the display is enabled (display is shown)          | 600S, 400S, 300S  |
-| **fanMode**          | String               | The operation mode of the fan                              | 600S, 400S, 300S  |
-| **manualFanSpeed**   | String               | The speed of the fan when in manual mode                   | 600S, 400S, 300S  |
-| **nightLightMode**   | String               | The night lights mode                                      | 600S, 400S, 300S  |
-| filterLifePercentage | Number:Dimensionless | The remaining filter life as a percentage                  | 600S, 400S, 300S  |
-| airQuality           | Number               | The air quality as represented by the Core200S / Core300S  | 600S, 400S, 300S  |
-| airQualityPPM25      | Number:Dimensionless | The air quality as represented by the Core400S             | 600S, 400S, 300S  |
-| errorCode            | Number               | The error code reported by the device                      | 600S, 400S, 300S  |
-| timerExpiry          | DateTime             | The expected expiry time of the current timer              | 600S, 400S        |
-| schedulesCount       | Number               | The number schedules configured                            | 600S, 400S        |
-| configDisplayForever | Switch               | Config: Whether the display will disable when not active   | 600S, 400S, 300S  |
-| configAutoMode       | String               | Config: The mode of operation when auto is active          | 600S, 400S, 300S  |
-| configAutoRoomSize   | Number               | Config: The room size set when auto utilises the room size | 600S, 400S, 300S  |
+| Channel              | Type                 | Description                                                | Model's Supported | Controllable Values   |
+|----------------------|----------------------|------------------------------------------------------------|-------------------|-----------------------|
+| **enabled**          | Switch               | Whether the hardware device is enabled (Switched on)       | 600S, 400S, 300S  | [ON, OFF]             |
+| **childLock**        | Switch               | Whether the child lock (display lock is enabled)           | 600S, 400S, 300S  | [ON, OFF]             |
+| **display**          | Switch               | Whether the display is enabled (display is shown)          | 600S, 400S, 300S  | [ON, OFF]             |
+| **fanMode**          | String               | The operation mode of the fan                              | 600S, 400S        | [auto, manual, sleep] |
+| **fanMode**          | String               | The operation mode of the fan                              | 200S, 300S,       | [manual, sleep]       |
+| **manualFanSpeed**   | Number:Dimensionless | The speed of the fan when in manual mode                   | 600S, 400S        | [1...4]               |
+| **manualFanSpeed**   | Number:Dimensionless | The speed of the fan when in manual mode                   | 300S              | [1...3]               |
+| **nightLightMode**   | String               | The night lights mode                                      | 200S, 300S        | [on, dim, off]        |
+| filterLifePercentage | Number:Dimensionless | The remaining filter life as a percentage                  | 600S, 400S, 300S  |                       |
+| airQuality           | Number:Dimensionless | The air quality as represented by the Core200S / Core300S  | 600S, 400S, 300S  |                       |
+| airQualityPPM25      | Number:Dimensionless | The air quality as represented by the Core400S             | 600S, 400S, 300S  |                       |
+| errorCode            | Number:Dimensionless | The error code reported by the device                      | 600S, 400S, 300S  |                       |
+| timerExpiry          | DateTime             | The expected expiry time of the current timer              | 600S, 400S        |                       |
+| schedulesCount       | Number:Dimensionless | The number schedules configured                            | 600S, 400S        |                       |
+| configDisplayForever | Switch               | Config: Whether the display will disable when not active   | 600S, 400S, 300S  |                       |
+| configAutoMode       | String               | Config: The mode of operation when auto is active          | 600S, 400S, 300S  |                       |
+| configAutoRoomSize   | Number:Dimensionless | Config: The room size set when auto utilises the room size | 600S, 400S, 300S  |                       |
 
 
 ### AirHumidifier Thing

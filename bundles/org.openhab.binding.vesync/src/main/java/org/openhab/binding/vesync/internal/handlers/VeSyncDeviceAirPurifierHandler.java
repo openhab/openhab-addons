@@ -224,7 +224,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
 
                         int requestedLevel = ((QuantityType<?>) command).intValue();
                         if (requestedLevel < 1) {
-                            logger.warn("Fan speed command less than 0 - adjusting to 0 as the valid API value");
+                            logger.warn("Fan speed command less than 1 - adjusting to 1 as the valid API value");
                             requestedLevel = 1;
                         }
 
