@@ -83,7 +83,7 @@ public class PIDControllerTriggerType extends TriggerType {
                 .withMinimum(BigDecimal.ZERO) //
                 .withDefault("1.0") //
                 .withLabel("Derivative Time Constant") //
-                .withDescription("Slows the rate of change of the D part (T1) in seconds.") //
+                .withDescription("Slows the rate of change of the D-part (T1) in seconds.") //
                 .withUnit("s") //
                 .build());
         configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_LOOP_TIME, Type.DECIMAL) //
@@ -93,6 +93,18 @@ public class PIDControllerTriggerType extends TriggerType {
                 .withLabel("Loop Time") //
                 .withDescription("The interval the output value is updated in ms") //
                 .withUnit("ms") //
+                .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_I_MIN, Type.DECIMAL) //
+                .withRequired(false) //
+                .withMultiple(false) //
+                .withLabel("I-part Lower Limit") //
+                .withDescription("The I-part will be min this value. Can be left empty for no limit.") //
+                .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_I_MAX, Type.DECIMAL) //
+                .withRequired(false) //
+                .withMultiple(false) //
+                .withLabel("I-part Upper Limit") //
+                .withDescription("The I-part will be max this value. Can be left empty for no limit.") //
                 .build());
         configDescriptions.add(ConfigDescriptionParameterBuilder.create(P_INSPECTOR, Type.TEXT) //
                 .withRequired(false) //
