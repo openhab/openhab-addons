@@ -43,6 +43,8 @@ class PIDController {
         this.ki = kiAdjuster;
         this.kd = kdAdjuster;
         this.derivativeTimeConstantSec = derivativeTimeConstantSec;
+        this.iMinResult = Double.NaN;
+        this.iMaxResult = Double.NaN;
 
         // prepare min/max for the integral result accumulator
         if (Double.isFinite(kiAdjuster) && Math.abs(kiAdjuster) > 0.0) {
