@@ -48,7 +48,7 @@ import org.openhab.binding.network.internal.utils.PingResult;
  * @author David Graeff - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class PresenceDetectionTest {
     private static final long CACHETIME = 2000L;
 

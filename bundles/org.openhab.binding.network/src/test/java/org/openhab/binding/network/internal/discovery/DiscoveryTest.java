@@ -38,7 +38,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
  * @author David Graeff - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class DiscoveryTest {
     private final String ip = "127.0.0.1";
 

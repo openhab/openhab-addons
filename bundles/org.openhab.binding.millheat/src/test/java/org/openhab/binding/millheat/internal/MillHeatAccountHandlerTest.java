@@ -45,7 +45,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
  * @author Arne Seime - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class MillHeatAccountHandlerTest {
 
     private WireMockServer wireMockServer;

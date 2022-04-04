@@ -66,7 +66,7 @@ import org.openhab.transform.jinja.internal.profiles.JinjaTransformationProfile;
  */
 @SuppressWarnings({ "ConstantConditions" })
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public abstract class AbstractHomeAssistantTests extends JavaTest {
     public static final String BINDING_ID = "mqtt";

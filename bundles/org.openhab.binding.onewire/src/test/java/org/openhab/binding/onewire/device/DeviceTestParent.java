@@ -50,7 +50,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  * @author Jan N. Klug - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public abstract class DeviceTestParent<T extends AbstractOwDevice> {
     private @Nullable Class<T> deviceTestClazz;

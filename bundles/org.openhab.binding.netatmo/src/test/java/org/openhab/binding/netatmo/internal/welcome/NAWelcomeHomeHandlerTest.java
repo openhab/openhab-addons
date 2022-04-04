@@ -49,7 +49,7 @@ import io.swagger.client.model.NAWelcomeSubEvent;
  * @author Sven Strohschein - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class NAWelcomeHomeHandlerTest {
 
     private static final String DUMMY_HOME_ID = "1";
