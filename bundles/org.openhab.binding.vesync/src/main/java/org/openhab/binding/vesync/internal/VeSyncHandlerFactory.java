@@ -69,29 +69,14 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    private ThingUID getDeviceUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID, Configuration configuration,
-            @Nullable ThingUID bridgeUID) {
-        if (thingUID != null) {
-            return thingUID;
-        } else {
-            if (bridgeUID != null) {
-                return new ThingUID(thingTypeUID, configuration.get(DEVICE_MAC_ID).toString(), bridgeUID.getId());
-            } else {
-                return new ThingUID(thingTypeUID, configuration.get(DEVICE_MAC_ID).toString());
-            }
-        }
-    }
-
     @Override
     public @Nullable Thing createThing(final ThingTypeUID thingTypeUID, final Configuration configuration,
             final @Nullable ThingUID thingUID, final @Nullable ThingUID bridgeUID) {
         // Use the specific Handler Factory if required
         // otherwise fallback to the default
         if (VeSyncDeviceAirPurifierHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
-                || VeSyncDeviceAirHumidifierHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            final ThingUID deviceUID = getDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
-            return super.createThing(thingTypeUID, configuration, deviceUID, bridgeUID);
-        } else if (VeSyncHandlerFactory.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+                || VeSyncDeviceAirHumidifierHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
+                || VeSyncHandlerFactory.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         } else {
             throw new IllegalArgumentException(
