@@ -318,16 +318,13 @@ public class ShellyComponents {
                         getOnOff(t.schedule));
                 if (t.tmp != null) {
                     Double temp = convertToC(t.tmp.value, getString(t.tmp.units));
+                    // Some devices report values = -999 or 99 during fw update
+                    boolean valid = temp.intValue() > -50 && temp.intValue() < 90;
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
                             toQuantityType(temp.doubleValue(), DIGITS_TEMP, SIUnits.CELSIUS));
                     temp = convertToC(t.targetTemp.value, getString(t.targetTemp.unit));
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
-                            /* t.targetTemp.enabled ? */toQuantityType(t.targetTemp.value, DIGITS_TEMP, SIUnits.CELSIUS)
-                    /*
-                     * toQuantityType(t.targetTemp.value, DIGITS_NONE,
-                     * Units.PERCENT)
-                     * : UnDefType.UNDEF
-                     */);
+                            toQuantityType(t.targetTemp.value, DIGITS_TEMP, SIUnits.CELSIUS));
                 }
                 if (t.pos != null) {
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_POSITION,

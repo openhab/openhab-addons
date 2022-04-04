@@ -158,9 +158,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                         messages.get("status.unknown.initializing"));
                 start = initializeThing();
-
-                // Promote Shelly Manager usage
-                logger.info("{}: {}", thingName, messages.get("status.managerstarted", localIP, localPort));
             } catch (ShellyApiException e) {
                 ShellyApiResult res = e.getApiResult();
                 if (isAuthorizationFailed(res)) {
@@ -534,7 +531,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
             // request 3 updates in a row (during the first 2+3*3 sec)
             logger.debug("{}: Thing went online, request status update", thingName);
-            ;
             requestUpdates(profile.alwaysOn ? 3 : 1, !channelsCreated);
         }
         restartWatchdog();
@@ -648,15 +644,15 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         if (force || !lastAlarm.equals(event)
                 || (lastAlarm.equals(event) && now() > stats.lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC)) {
             switch (event) {
-                case "":
                 case "0": // DW2 1.8
-                case ALARM_TYPE_NONE:
                 case SHELLY_WAKEUPT_SENSOR:
                 case SHELLY_WAKEUPT_PERIODIC:
                 case SHELLY_WAKEUPT_BUTTON:
                 case SHELLY_WAKEUPT_POWERON:
                 case SHELLY_WAKEUPT_UNKNOWN:
                     logger.debug("{}: {}", thingName, messages.get("event.filtered", event));
+                case "":
+                case ALARM_TYPE_NONE:
                     break;
                 default:
                     logger.info("{}: {}", thingName, messages.get("event.triggered", event));

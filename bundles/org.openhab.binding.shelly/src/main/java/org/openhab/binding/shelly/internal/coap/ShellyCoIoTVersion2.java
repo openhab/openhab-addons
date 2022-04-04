@@ -114,13 +114,12 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                             value != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                     break;
                 case "3121": // valvePos, Type=S, Range=0/100;
-                    boolean updated = updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_POSITION,
+                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_POSITION,
                             s.value != -1 ? toQuantityType(getDouble(s.value), 0, Units.PERCENT) : UnDefType.UNDEF);
-                    if (updated && s.value >= 0 && s.value != thingHandler.getChannelDouble(CHANNEL_GROUP_CONTROL,
-                            CHANNEL_CONTROL_POSITION)) {
-                        logger.debug("{}: Valve position changed, force update", thingName);
-                        thingHandler.requestUpdates(1, false);
-                    }
+                    break;
+                case "3122": // boostMinutes
+                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BTIMER,
+                            s.value != -1 ? toQuantityType(s.value, DIGITS_NONE, Units.MINUTE) : UnDefType.UNDEF);
                     break;
                 default:
                     processed = false;
@@ -197,8 +196,10 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 if (idx >= 0) {
                     // H&T, Fllod, DW only have 1 channel, 1/1PM with Addon have up to to 3 sensors
                     String channel = profile.isSensor ? CHANNEL_SENSOR_TEMP : CHANNEL_SENSOR_TEMP + idx;
+                    // Some devices report values = -999 or 99 during fw update
+                    boolean valid = value > -50 && value < 90;
                     updateChannel(updates, CHANNEL_GROUP_SENSOR, channel,
-                            toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                            valid ? toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS) : UnDefType.UNDEF);
                 } else {
                     logger.debug("{}: Unable to get extSensorId {} from {}/{}", thingName, sen.id, sen.type, sen.desc);
                 }
