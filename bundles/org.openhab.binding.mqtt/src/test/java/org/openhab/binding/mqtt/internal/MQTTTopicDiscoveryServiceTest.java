@@ -44,7 +44,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
  * @author David Graeff - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class MQTTTopicDiscoveryServiceTest {
 
