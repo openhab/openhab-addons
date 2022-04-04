@@ -70,14 +70,14 @@ public class VeSyncConstants {
     public static final String DEVICE_CHANNEL_WATER_LACKS = "waterLacking";
     public static final String DEVICE_CHANNEL_HUMIDITY_HIGH = "humidityHigh";
     public static final String DEVICE_CHANNEL_WATER_TANK_LIFTED = "waterTankLifted";
-    public static final String DEVICE_CHANNEL_STOP_AT_TARGET = "stopAtTargetLevel";
+    public static final String DEVICE_CHANNEL_STOP_AT_TARGET = "stopAtHumiditySetpoint";
     public static final String DEVICE_CHANNEL_HUMIDITY = "humidity";
     public static final String DEVICE_CHANNEL_MIST_LEVEL = "mistLevel";
     public static final String DEVICE_CHANNEL_HUMIDIFIER_MODE = "humidifierMode";
     public static final String DEVICE_CHANNEL_WARM_ENABLED = "warmEnabled";
     public static final String DEVICE_CHANNEL_WARM_LEVEL = "warmLevel";
 
-    public static final String DEVICE_CHANNEL_CONFIG_TARGET_HUMIDITY = "configTargetHumidity";
+    public static final String DEVICE_CHANNEL_CONFIG_TARGET_HUMIDITY = "humiditySetpoint";
 
     // Property name constants
     public static final String DEVICE_PROP_DEVICE_NAME = "Device Name";

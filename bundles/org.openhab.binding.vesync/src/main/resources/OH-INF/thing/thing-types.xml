@@ -100,12 +100,12 @@
 			<channel id="waterLacking" typeId="deviceWaterLackingType"/>
 			<channel id="humidityHigh" typeId="deviceHighHumidityType"/>
 			<channel id="waterTankLifted" typeId="deviceWaterTankLiftedType"/>
-			<channel id="stopAtTargetLevel" typeId="deviceAutomaticStopReachTargetType"/>
+			<channel id="stopAtHumiditySetpoint" typeId="deviceAutomaticStopReachTargetType"/>
 			<channel id="humidity" typeId="deviceHumidityType"/>
 			<channel id="mistLevel" typeId="deviceMistLevelType"/>
 			<channel id="humidifierMode" typeId="airHumidifierModeType"/>
 			<channel id="nightLightMode" typeId="deviceAFNightLight"/>
-			<channel id="configTargetHumidity" typeId="deviceConfigTargetHumidity"/>
+			<channel id="humiditySetpoint" typeId="deviceConfigTargetHumidity"/>
 			<channel id="warmEnabled" typeId="warmModeEnabled"/>
 			<channel id="warmLevel" typeId="warmLevel"/>
 		</channels>
@@ -277,8 +277,8 @@
 
 	<channel-type id="deviceAutomaticStopReachTargetType">
 		<item-type>Switch</item-type>
-		<label>Stop @ Target</label>
-		<description>Indicator if the device is set to stop when the target humidity has been reached</description>
+		<label>Stop @ Set Point</label>
+		<description>Indicator if the device is set to stop when the humidity set point has been reached</description>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -291,8 +291,8 @@
 
 	<channel-type id="deviceConfigTargetHumidity">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Target Humidity Level</label>
-		<description>Config: Target Humidity Level</description>
+		<label>Humidity Set Point</label>
+		<description>Humidity Set Point</description>
 		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 

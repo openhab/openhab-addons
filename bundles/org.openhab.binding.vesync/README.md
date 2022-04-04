@@ -92,21 +92,22 @@ Channel names in **bold** are read/write, everything else is read-only
 
 ### AirHumidifier Thing
 
-| Channel                  | Type                 | Description                                                | Model's Supported          | Controllable Values |
-|--------------------------|----------------------|------------------------------------------------------------|----------------------------|---------------------|
-| **enabled**              | Switch               | Whether the hardware device is enabled (Switched on)       | 200S, Dual200S, 300S, 600S | [ON, OFF]           |
-| **display**              | Switch               | Whether the display is enabled (display is shown)          | 200S, Dual200S, 300S, 600S | [ON, OFF]           |
-| waterLacking             | Switch               | Indicator whether the unit is lacking water                | 200S, Dual200S, 300S, 600S |                     |
-| humidityHigh             | Switch               | Indicator for high humidity                                | 200S, Dual200S, 300S, 600S |                     |
-| waterTankLifted          | Switch               | Indicator for whether the water tank is removed            | 200S, Dual200S, 300S, 600S |                     |
-| **stopAtTargetLevel**    | Switch               | Whether the unit is set to stop when the target is reached | 200S, Dual200S, 300S, 600S | [ON, OFF]           |
-| humidity                 | Number:Dimensionless | Indicator for the currently measured humidity % level      | 200S, Dual200S, 300S, 600S |                     |
-| **mistLevel**            | Number:Dimensionless | The current mist level set                                 | 300S                       | [1...2]             |
-| **mistLevel**            | Number:Dimensionless | The current mist level set                                 | 200S, Dual200S, 600S       | [1...3]             |
-| **humidifierMode**       | String               | The current mode of operation                              | 200S, Dual200S, 300S, 600S | [auto, sleep]       |
-| **nightLightMode**       | String               | The night light mode                                       | 200S, Dual200S, 300S       | [on, dim, off]      |
-| **configTargetHumidity** | Number:Dimensionless | Config: What the % target humidity is set to reach         | 200S, Dual200S, 300S, 600S | [30...80]           |
-| warmEnabled              | Switch               | Indicator for warm mist mode                               | 600S                       |                     |
+| Channel                    | Type                 | Description                                                   | Model's Supported          | Controllable Values |
+|----------------------------|----------------------|---------------------------------------------------------------|----------------------------|---------------------|
+| **enabled**                | Switch               | Whether the hardware device is enabled (Switched on)          | 200S, Dual200S, 300S, 600S | [ON, OFF]           |
+| **display**                | Switch               | Whether the display is enabled (display is shown)             | 200S, Dual200S, 300S, 600S | [ON, OFF]           |
+| waterLacking               | Switch               | Indicator whether the unit is lacking water                   | 200S, Dual200S, 300S, 600S |                     |
+| humidityHigh               | Switch               | Indicator for high humidity                                   | 200S, Dual200S, 300S, 600S |                     |
+| waterTankLifted            | Switch               | Indicator for whether the water tank is removed               | 200S, Dual200S, 300S, 600S |                     |
+| **stopAtHumiditySetpoint** | Switch               | Whether the unit is set to stop when the set point is reached | 200S, Dual200S, 300S, 600S | [ON, OFF]           |
+| humidity                   | Number:Dimensionless | Indicator for the currently measured humidity % level         | 200S, Dual200S, 300S, 600S |                     |
+| **mistLevel**              | Number:Dimensionless | The current mist level set                                    | 300S                       | [1...2]             |
+| **mistLevel**              | Number:Dimensionless | The current mist level set                                    | 200S, Dual200S, 600S       | [1...3]             |
+| **humidifierMode**         | String               | The current mode of operation                                 | 200S, Dual200S, 300S, 600S | [auto, sleep]       |
+| **nightLightMode**         | String               | The night light mode                                          | 200S, Dual200S, 300S       | [on, dim, off]      |
+| **humiditySetpoint**       | Number:Dimensionless | Humidity % set point to reach                                 | 200S, Dual200S, 300S, 600S | [30...80]           |
+| warmEnabled                | Switch               | Indicator for warm mist mode                                  | 600S                       |                     |
+
 
 ## Full Example
 
@@ -172,7 +173,7 @@ Switch               LoungeAHHighHumidity      "Lounge Air Humidifier High Humid
 Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank Removed"                     { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:waterTankLifted" }
 Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity"                      { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidity" }
 Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
-Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity"                        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:configTargetHumidity" }
+Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity"                        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
 Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
 ```
 
@@ -188,7 +189,7 @@ Switch               LoungeAHHighHumidity      "Lounge Air Humidifier High Humid
 Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank Removed"                     { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:waterTankLifted" }
 Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity"                      { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidity" }
 Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
-Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity"                        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:configTargetHumidity" }
+Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity"                        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
 Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
 ```
 
@@ -203,7 +204,7 @@ Switch               LoungeAHHighHumidity      "Lounge Air Humidifier High Humid
 Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank Removed"                     { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:waterTankLifted" }
 Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity"                      { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidity" }
 Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
-Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity"                        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:configTargetHumidity" }
+Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity"                        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
 Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
 ```
 
