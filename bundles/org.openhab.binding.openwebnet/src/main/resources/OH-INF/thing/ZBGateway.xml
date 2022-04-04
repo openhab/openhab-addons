@@ -22,6 +22,7 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
 				<description>Serial port where the OpenWebNet ZigBee USB Gateway is connected. Example: COM3 (Win), /dev/ttyUSB0
 					(Linux), etc.</description>
