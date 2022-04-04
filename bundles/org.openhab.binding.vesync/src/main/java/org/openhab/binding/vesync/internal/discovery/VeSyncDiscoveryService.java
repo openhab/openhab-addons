@@ -112,7 +112,6 @@ public class VeSyncDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void handleMetadataRetrieved(VeSyncBridgeHandler handler) {
-
         bridgeHandler.getAirPurifiersMetadata().map(apMeta -> {
             final Map<String, Object> properties = new HashMap<>(6);
             final String deviceUUID = apMeta.getUuid();

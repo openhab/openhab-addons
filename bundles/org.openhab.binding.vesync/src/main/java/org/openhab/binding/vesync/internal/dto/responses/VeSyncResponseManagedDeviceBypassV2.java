@@ -15,17 +15,17 @@ package org.openhab.binding.vesync.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VesyncResponseManagedDeviceBypassV2} is a Java class used as a DTO to hold the Vesync's API's common
+ * The {@link VeSyncResponseManagedDeviceBypassV2} is a Java class used as a DTO to hold the Vesync's API's common
  * response data.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VesyncResponseManagedDeviceBypassV2 extends VesyncResponse {
+public class VeSyncResponseManagedDeviceBypassV2 extends VeSyncResponse {
 
     @SerializedName("result")
     public ManagedDeviceByPassV2Payload result;
 
-    public class ManagedDeviceByPassV2Payload extends VesyncResponse {
+    public class ManagedDeviceByPassV2Payload extends VeSyncResponse {
 
     }
 }

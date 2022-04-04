@@ -26,10 +26,10 @@ import javax.validation.constraints.NotNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
-import org.openhab.binding.vesync.internal.dto.requests.VesyncRequestManagedDeviceBypassV2;
-import org.openhab.binding.vesync.internal.dto.requests.VesyncRequestV1ManagedDeviceDetails;
-import org.openhab.binding.vesync.internal.dto.responses.VesyncV2BypassPurifierStatus;
-import org.openhab.binding.vesync.internal.dto.responses.v1.VesyncV1AirPurifierDeviceDetailsResponse;
+import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
+import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestV1ManagedDeviceDetails;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassPurifierStatus;
+import org.openhab.binding.vesync.internal.dto.responses.v1.VeSyncV1AirPurifierDeviceDetailsResponse;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.types.DateTimeType;
@@ -150,16 +150,16 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                 switch (channelUID.getId()) {
                     case DEVICE_CHANNEL_ENABLED:
                         sendV2BypassControlCommand(DEVICE_SET_SWITCH,
-                                new VesyncRequestManagedDeviceBypassV2.SetSwitchPayload(command.equals(OnOffType.ON),
+                                new VeSyncRequestManagedDeviceBypassV2.SetSwitchPayload(command.equals(OnOffType.ON),
                                         0));
                         break;
                     case DEVICE_CHANNEL_DISPLAY_ENABLED:
                         sendV2BypassControlCommand(DEVICE_SET_DISPLAY,
-                                new VesyncRequestManagedDeviceBypassV2.SetState(command.equals(OnOffType.ON)));
+                                new VeSyncRequestManagedDeviceBypassV2.SetState(command.equals(OnOffType.ON)));
                         break;
                     case DEVICE_CHANNEL_CHILD_LOCK_ENABLED:
                         sendV2BypassControlCommand(DEVICE_SET_CHILD_LOCK,
-                                new VesyncRequestManagedDeviceBypassV2.SetChildLock(command.equals(OnOffType.ON)));
+                                new VeSyncRequestManagedDeviceBypassV2.SetChildLock(command.equals(OnOffType.ON)));
                         break;
                 }
             } else if (command instanceof StringType) {
@@ -189,7 +189,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                         }
 
                         sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE,
-                                new VesyncRequestManagedDeviceBypassV2.SetMode(targetFanMode));
+                                new VeSyncRequestManagedDeviceBypassV2.SetMode(targetFanMode));
                         break;
                     case DEVICE_CHANNEL_AF_NIGHT_LIGHT:
                         final String targetNightLightMode = command.toString().toLowerCase();
@@ -209,7 +209,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                                 }
 
                                 sendV2BypassControlCommand(DEVICE_SET_NIGHT_LIGHT,
-                                        new VesyncRequestManagedDeviceBypassV2.SetNightLight(targetNightLightMode));
+                                        new VeSyncRequestManagedDeviceBypassV2.SetNightLight(targetNightLightMode));
 
                                 break;
                         }
@@ -220,7 +220,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                     case DEVICE_CHANNEL_FAN_SPEED_ENABLED:
                         // If the fan speed is being set enforce manual mode
                         sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE,
-                                new VesyncRequestManagedDeviceBypassV2.SetMode(MODE_MANUAL), false);
+                                new VeSyncRequestManagedDeviceBypassV2.SetMode(MODE_MANUAL), false);
 
                         int requestedLevel = ((QuantityType<?>) command).intValue();
                         if (requestedLevel < 1) {
@@ -249,7 +249,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                         }
 
                         sendV2BypassControlCommand(DEVICE_SET_LEVEL,
-                                new VesyncRequestManagedDeviceBypassV2.SetLevelPayload(0, DEVICE_LEVEL_TYPE_WIND,
+                                new VeSyncRequestManagedDeviceBypassV2.SetLevelPayload(0, DEVICE_LEVEL_TYPE_WIND,
                                         requestedLevel));
                         break;
                 }
@@ -289,14 +289,14 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
         }
 
         String response;
-        VesyncV1AirPurifierDeviceDetailsResponse purifierStatus;
+        VeSyncV1AirPurifierDeviceDetailsResponse purifierStatus;
         synchronized (pollLock) {
             response = cachedResponse.getValue();
             boolean cachedDataUsed = response != null;
             if (response == null) {
                 logger.trace("Requesting fresh response");
                 response = sendV1Command("POST", "https://smartapi.vesync.com/131airPurifier/v1/device/deviceDetail",
-                        new VesyncRequestV1ManagedDeviceDetails(deviceUuid));
+                        new VeSyncRequestV1ManagedDeviceDetails(deviceUuid));
             } else {
                 logger.trace("Using cached response {}", response);
             }
@@ -305,7 +305,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                 return;
             }
 
-            purifierStatus = VeSyncConstants.GSON.fromJson(response, VesyncV1AirPurifierDeviceDetailsResponse.class);
+            purifierStatus = VeSyncConstants.GSON.fromJson(response, VeSyncV1AirPurifierDeviceDetailsResponse.class);
 
             if (purifierStatus == null) {
                 return;
@@ -340,14 +340,14 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
 
     private void processV2BypassPoll(final ExpiringCache<String> cachedResponse) {
         String response;
-        VesyncV2BypassPurifierStatus purifierStatus;
+        VeSyncV2BypassPurifierStatus purifierStatus;
         synchronized (pollLock) {
             response = cachedResponse.getValue();
             boolean cachedDataUsed = response != null;
             if (response == null) {
                 logger.trace("Requesting fresh response");
                 response = sendV2BypassCommand(DEVICE_GET_PURIFIER_STATUS,
-                        new VesyncRequestManagedDeviceBypassV2.EmptyPayload());
+                        new VeSyncRequestManagedDeviceBypassV2.EmptyPayload());
             } else {
                 logger.trace("Using cached response {}", response);
             }
@@ -356,7 +356,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                 return;
             }
 
-            purifierStatus = VeSyncConstants.GSON.fromJson(response, VesyncV2BypassPurifierStatus.class);
+            purifierStatus = VeSyncConstants.GSON.fromJson(response, VeSyncV2BypassPurifierStatus.class);
 
             if (purifierStatus == null) {
                 return;

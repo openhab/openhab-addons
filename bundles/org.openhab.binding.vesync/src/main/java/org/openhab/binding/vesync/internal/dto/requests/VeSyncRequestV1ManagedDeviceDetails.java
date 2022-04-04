@@ -12,18 +12,18 @@
  */
 package org.openhab.binding.vesync.internal.dto.requests;
 
-import org.openhab.binding.vesync.internal.dto.responses.VesyncLoginResponse;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VesyncRequestV1ManagedDeviceDetails} is the Java class as a DTO to hold login credentials for the Vesync
+ * The {@link VeSyncRequestV1ManagedDeviceDetails} is the Java class as a DTO to hold login credentials for the Vesync
  * API.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VesyncRequestV1ManagedDeviceDetails extends VesyncAuthenticatedRequest {
+public class VeSyncRequestV1ManagedDeviceDetails extends VeSyncAuthenticatedRequest {
 
     @SerializedName("mobileId")
     public String mobileId = "1234567890123456";
@@ -31,18 +31,17 @@ public class VesyncRequestV1ManagedDeviceDetails extends VesyncAuthenticatedRequ
     @SerializedName("uuid")
     public String uuid = null;
 
-    public VesyncRequestV1ManagedDeviceDetails(final String deviceUuid) {
+    public VeSyncRequestV1ManagedDeviceDetails(final String deviceUuid) {
         uuid = deviceUuid;
         method = "deviceDetail";
     }
 
-    public VesyncRequestV1ManagedDeviceDetails(final VesyncLoginResponse.VesyncUserSession user)
-            throws AuthenticationException {
+    public VeSyncRequestV1ManagedDeviceDetails(final VeSyncUserSession user) throws AuthenticationException {
         super(user);
         method = "deviceDetail";
     }
 
-    public VesyncRequestV1ManagedDeviceDetails(final VesyncLoginResponse.VesyncUserSession user, String deviceUuid)
+    public VeSyncRequestV1ManagedDeviceDetails(final VeSyncUserSession user, String deviceUuid)
             throws AuthenticationException {
         this(user);
         uuid = deviceUuid;

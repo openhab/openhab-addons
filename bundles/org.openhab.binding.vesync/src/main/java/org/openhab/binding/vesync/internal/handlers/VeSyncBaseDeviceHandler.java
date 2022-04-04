@@ -29,9 +29,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncDeviceConfiguration;
-import org.openhab.binding.vesync.internal.dto.requests.VesyncAuthenticatedRequest;
-import org.openhab.binding.vesync.internal.dto.requests.VesyncRequestManagedDeviceBypassV2;
-import org.openhab.binding.vesync.internal.dto.responses.VesyncManagedDevicesPage;
+import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
+import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
 import org.openhab.core.cache.ExpiringCache;
@@ -149,8 +149,8 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         BridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null && bridgeHandler instanceof VeSyncBridgeHandler) {
             VeSyncBridgeHandler vesyncBridgeHandler = (VeSyncBridgeHandler) bridgeHandler;
-            VesyncManagedDevicesPage.Result.@Nullable VesyncManagedDeviceBase metadata = vesyncBridgeHandler.api
-                    .getMacLookupMap().get(deviceLookupKey);
+            @Nullable
+            VeSyncManagedDeviceBase metadata = vesyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
 
             if (metadata == null) {
                 return false;
@@ -167,8 +167,8 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         BridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null && bridgeHandler instanceof VeSyncBridgeHandler) {
             VeSyncBridgeHandler vesyncBridgeHandler = (VeSyncBridgeHandler) bridgeHandler;
-            VesyncManagedDevicesPage.Result.@Nullable VesyncManagedDeviceBase metadata = vesyncBridgeHandler.api
-                    .getMacLookupMap().get(deviceLookupKey);
+            @Nullable
+            VeSyncManagedDeviceBase metadata = vesyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
 
             if (metadata == null) {
                 return;
@@ -226,8 +226,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
      * @param metadata - the meta-data of a device
      * @return - Map of common props
      */
-    public Map<String, String> getMetadataProperities(
-            final VesyncManagedDevicesPage.Result.@Nullable VesyncManagedDeviceBase metadata) {
+    public Map<String, String> getMetadataProperities(final @Nullable VeSyncManagedDeviceBase metadata) {
         if (metadata == null) {
             return Map.of();
         }
@@ -278,8 +277,9 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             // Try to use the mac directly
             if (configMac != null) {
                 logger.debug("Searching for device mac id : {}", configMac);
-                VesyncManagedDevicesPage.Result.@Nullable VesyncManagedDeviceBase metadata = vesyncBridgeHandler.api
-                        .getMacLookupMap().get(configMac.toLowerCase());
+                @Nullable
+                VeSyncManagedDeviceBase metadata = vesyncBridgeHandler.api.getMacLookupMap()
+                        .get(configMac.toLowerCase());
 
                 if (metadata != null && metadata.macId != null) {
                     return metadata.macId;
@@ -390,7 +390,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
      * @return - The body of the response, or EMPTY_STRING if the command could not be issued.
      */
     protected final String sendV2BypassControlCommand(final String method,
-            final VesyncRequestManagedDeviceBypassV2.EmptyPayload payload) {
+            final VeSyncRequestManagedDeviceBypassV2.EmptyPayload payload) {
         return sendV2BypassControlCommand(method, payload, true);
     }
 
@@ -404,7 +404,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
      * @return - The body of the response, or EMPTY_STRING if the command could not be issued.
      */
     protected final String sendV2BypassControlCommand(final String method,
-            final VesyncRequestManagedDeviceBypassV2.EmptyPayload payload, final boolean readbackDevice) {
+            final VeSyncRequestManagedDeviceBypassV2.EmptyPayload payload, final boolean readbackDevice) {
         final String result = sendV2BypassCommand(method, payload);
         if (!result.equals(EMPTY_STRING) && readbackDevice) {
             performReadbackPoll();
@@ -412,7 +412,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         return result;
     }
 
-    public final String sendV1Command(final String method, final String url, final VesyncAuthenticatedRequest request) {
+    public final String sendV1Command(final String method, final String url, final VeSyncAuthenticatedRequest request) {
         if (ThingStatus.OFFLINE.equals(this.thing.getStatus())) {
             logger.debug("Command blocked as device is offline");
             return EMPTY_STRING;
@@ -449,13 +449,13 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
      * @return - The body of the response, or EMPTY_STRING if the command could not be issued.
      */
     protected final String sendV2BypassCommand(final String method,
-            final VesyncRequestManagedDeviceBypassV2.EmptyPayload payload) {
+            final VeSyncRequestManagedDeviceBypassV2.EmptyPayload payload) {
         if (ThingStatus.OFFLINE.equals(this.thing.getStatus())) {
             logger.debug("Command blocked as device is offline");
             return EMPTY_STRING;
         }
 
-        VesyncRequestManagedDeviceBypassV2 readReq = new VesyncRequestManagedDeviceBypassV2();
+        VeSyncRequestManagedDeviceBypassV2 readReq = new VeSyncRequestManagedDeviceBypassV2();
         readReq.payload.method = method;
         readReq.payload.data = payload;
 

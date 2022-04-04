@@ -12,18 +12,18 @@
  */
 package org.openhab.binding.vesync.internal.dto.requests;
 
-import org.openhab.binding.vesync.internal.dto.responses.VesyncLoginResponse;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VesyncRequestManagedDevicesPage} is the Java class as a DTO to hold login credentials for the Vesync
+ * The {@link VeSyncRequestManagedDevicesPage} is the Java class as a DTO to hold login credentials for the Vesync
  * API.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VesyncRequestManagedDevicesPage extends VesyncAuthenticatedRequest {
+public class VeSyncRequestManagedDevicesPage extends VeSyncAuthenticatedRequest {
 
     @SerializedName("pageNo")
     public String pageNo;
@@ -31,13 +31,12 @@ public class VesyncRequestManagedDevicesPage extends VesyncAuthenticatedRequest 
     @SerializedName("pageSize")
     public String pageSize;
 
-    public VesyncRequestManagedDevicesPage(final VesyncLoginResponse.VesyncUserSession user)
-            throws AuthenticationException {
+    public VeSyncRequestManagedDevicesPage(final VeSyncUserSession user) throws AuthenticationException {
         super(user);
         method = "devices";
     }
 
-    public VesyncRequestManagedDevicesPage(final VesyncLoginResponse.VesyncUserSession user, int pageNo, int pageSize)
+    public VeSyncRequestManagedDevicesPage(final VeSyncUserSession user, int pageNo, int pageSize)
             throws AuthenticationException {
         this(user);
         this.pageNo = String.valueOf(pageNo);

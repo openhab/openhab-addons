@@ -29,12 +29,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.api.HttpClientMonitor;
-import org.openhab.binding.vesync.internal.api.VesyncV2ApiHelper;
+import org.openhab.binding.vesync.internal.api.VeSyncV2ApiHelper;
 import org.openhab.binding.vesync.internal.discovery.DeviceMetaDataUpdatedHandler;
 import org.openhab.binding.vesync.internal.discovery.VeSyncDiscoveryService;
-import org.openhab.binding.vesync.internal.dto.requests.VesyncAuthenticatedRequest;
-import org.openhab.binding.vesync.internal.dto.responses.VesyncLoginResponse;
-import org.openhab.binding.vesync.internal.dto.responses.VesyncManagedDevicesPage;
+import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
 import org.openhab.core.thing.Bridge;
@@ -68,7 +68,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler
 
     private @Nullable ScheduledFuture<?> backgroundDiscoveryPollingJob;
 
-    protected final VesyncV2ApiHelper api = new VesyncV2ApiHelper();
+    protected final VeSyncV2ApiHelper api = new VeSyncV2ApiHelper();
     private @Nullable HttpClientMonitor httpClientMonitor = null;
 
     public VeSyncBridgeHandler(Bridge bridge, @NotNull HttpClientMonitor httpClientMonitor) {
@@ -161,12 +161,12 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler
         this.updateThings();
     }
 
-    public java.util.stream.Stream<VesyncManagedDevicesPage.Result.@NotNull VesyncManagedDeviceBase> getAirPurifiersMetadata() {
+    public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getAirPurifiersMetadata() {
         return api.getMacLookupMap().values().stream()
                 .filter(x -> VeSyncDeviceAirPurifierHandler.SUPPORTED_DEVICE_TYPES.contains(x.deviceType));
     }
 
-    public java.util.stream.Stream<VesyncManagedDevicesPage.Result.@NotNull VesyncManagedDeviceBase> getAirHumidifiersMetadata() {
+    public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getAirHumidifiersMetadata() {
         return api.getMacLookupMap().values().stream()
                 .filter(x -> VeSyncDeviceAirHumidifierHandler.SUPPORTED_DEVICE_TYPES.contains(x.deviceType));
     }
@@ -198,7 +198,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler
         VeSyncBridgeConfiguration config = getConfigAs(VeSyncBridgeConfiguration.class);
 
         scheduler.submit(() -> {
-            final String passwordMd5 = VesyncV2ApiHelper.calculateMd5(config.password);
+            final String passwordMd5 = VeSyncV2ApiHelper.calculateMd5(config.password);
 
             try {
                 api.login(config.username, passwordMd5, "Europe/London");
@@ -228,7 +228,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler
         logger.warn("Handling command for VeSync bridge handler.");
     }
 
-    public void handleNewUserSession(final VesyncLoginResponse.@Nullable VesyncUserSession userSessionData) {
+    public void handleNewUserSession(final @Nullable VeSyncUserSession userSessionData) {
         final Map<String, String> newProps = new HashMap<>();
         if (userSessionData != null) {
             newProps.put(DEVICE_PROP_BRIDGE_REG_TS, userSessionData.registerTime);
@@ -238,7 +238,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler
         this.updateProperties(newProps);
     }
 
-    public String reqV2Authorized(final String url, final String macId, final VesyncAuthenticatedRequest requestData)
+    public String reqV2Authorized(final String url, final String macId, final VeSyncAuthenticatedRequest requestData)
             throws AuthenticationException, DeviceUnknownException {
         return api.reqV2Authorized(url, macId, requestData);
     }

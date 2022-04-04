@@ -15,12 +15,12 @@ package org.openhab.binding.vesync.internal.dto.requests;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VesyncLoginCredentials} is the Java class as a DTO to hold login credentials for the Vesync
+ * The {@link VeSyncLoginCredentials} is the Java class as a DTO to hold login credentials for the Vesync
  * API.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VesyncLoginCredentials extends VesyncRequest {
+public class VeSyncLoginCredentials extends VeSyncRequest {
 
     @SerializedName("email")
     public String email;
@@ -31,13 +31,13 @@ public class VesyncLoginCredentials extends VesyncRequest {
     @SerializedName("devToken")
     public String devToken = "";
 
-    public VesyncLoginCredentials() {
+    public VeSyncLoginCredentials() {
         super();
         userType = "1";
         method = "login";
     }
 
-    public VesyncLoginCredentials(String email, String password) {
+    public VeSyncLoginCredentials(String email, String password) {
         this();
         this.email = email;
         this.passwordMd5 = password;

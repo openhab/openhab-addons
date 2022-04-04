@@ -13,7 +13,7 @@
 package org.openhab.binding.vesync.internal.handlers;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.vesync.internal.dto.requests.VesyncAuthenticatedRequest;
+import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
 
@@ -24,6 +24,6 @@ import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
  */
 @NonNullByDefault
 public interface VeSyncClient {
-    String reqV2Authorized(final String url, final String macId, final VesyncAuthenticatedRequest requestData)
+    String reqV2Authorized(final String url, final String macId, final VeSyncAuthenticatedRequest requestData)
             throws AuthenticationException, DeviceUnknownException;
 }

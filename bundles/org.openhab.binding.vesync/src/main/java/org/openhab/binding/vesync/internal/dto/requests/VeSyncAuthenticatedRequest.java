@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.vesync.internal.dto.requests;
 
-import org.openhab.binding.vesync.internal.dto.responses.VesyncLoginResponse;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VesyncAuthenticatedRequest} is a Java class used as a DTO to hold the Vesync's API's common request data.
+ * The {@link VeSyncAuthenticatedRequest} is a Java class used as a DTO to hold the Vesync's API's common request data.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VesyncAuthenticatedRequest extends VesyncRequest {
+public class VeSyncAuthenticatedRequest extends VeSyncRequest {
 
     @SerializedName("accountID")
     public String accountId;
@@ -30,11 +30,11 @@ public class VesyncAuthenticatedRequest extends VesyncRequest {
     @SerializedName("token")
     public String token;
 
-    public VesyncAuthenticatedRequest() {
+    public VeSyncAuthenticatedRequest() {
         super();
     }
 
-    public VesyncAuthenticatedRequest(final VesyncLoginResponse.VesyncUserSession user) throws AuthenticationException {
+    public VeSyncAuthenticatedRequest(final VeSyncUserSession user) throws AuthenticationException {
         super();
         if (user == null) {
             throw new AuthenticationException("User is not logged in");
@@ -43,8 +43,7 @@ public class VesyncAuthenticatedRequest extends VesyncRequest {
         this.accountId = user.getAccountId();
     }
 
-    public void applyAuthentication(final VesyncLoginResponse.VesyncUserSession userSession)
-            throws AuthenticationException {
+    public void applyAuthentication(final VeSyncUserSession userSession) throws AuthenticationException {
         if (userSession == null) {
             throw new AuthenticationException("User is not logged in");
         }

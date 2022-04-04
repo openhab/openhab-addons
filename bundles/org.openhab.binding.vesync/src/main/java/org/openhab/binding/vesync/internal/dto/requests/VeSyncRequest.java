@@ -15,11 +15,11 @@ package org.openhab.binding.vesync.internal.dto.requests;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VesyncRequest} is a Java class used as a DTO to hold the Vesync's API's common request data.
+ * The {@link VeSyncRequest} is a Java class used as a DTO to hold the Vesync's API's common request data.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VesyncRequest {
+public class VeSyncRequest {
 
     @SerializedName("timeZone")
     public String timeZone = "America/New_York";
@@ -42,7 +42,7 @@ public class VesyncRequest {
     @SerializedName("method")
     public String method;
 
-    public VesyncRequest() {
+    public VeSyncRequest() {
         traceId = String.valueOf(System.currentTimeMillis());
     }
 }

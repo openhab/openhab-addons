@@ -15,12 +15,12 @@ package org.openhab.binding.vesync.internal.dto.requests;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VesyncRequestManagedDeviceBypassV2} is a Java class used as a DTO to hold the Vesync's API's common
+ * The {@link VeSyncRequestManagedDeviceBypassV2} is a Java class used as a DTO to hold the Vesync's API's common
  * request data for V2 ByPass payloads.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VesyncRequestManagedDeviceBypassV2 extends VesyncAuthenticatedRequest {
+public class VeSyncRequestManagedDeviceBypassV2 extends VeSyncAuthenticatedRequest {
 
     @SerializedName("deviceRegion")
     public String deviceRegion = "";
@@ -157,7 +157,7 @@ public class VesyncRequestManagedDeviceBypassV2 extends VesyncAuthenticatedReque
         public String mode = "";
     }
 
-    public VesyncRequestManagedDeviceBypassV2() {
+    public VeSyncRequestManagedDeviceBypassV2() {
         super();
         method = "bypassV2";
     }

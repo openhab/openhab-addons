@@ -35,13 +35,15 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
-import org.openhab.binding.vesync.internal.dto.requests.VesyncAuthenticatedRequest;
-import org.openhab.binding.vesync.internal.dto.requests.VesyncLoginCredentials;
-import org.openhab.binding.vesync.internal.dto.requests.VesyncRequestManagedDeviceBypassV2;
-import org.openhab.binding.vesync.internal.dto.requests.VesyncRequestManagedDevicesPage;
-import org.openhab.binding.vesync.internal.dto.responses.VesyncLoginResponse;
-import org.openhab.binding.vesync.internal.dto.responses.VesyncManagedDevicesPage;
-import org.openhab.binding.vesync.internal.dto.responses.VesyncResponse;
+import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
+import org.openhab.binding.vesync.internal.dto.requests.VeSyncLoginCredentials;
+import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
+import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDevicesPage;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncLoginResponse;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDevicesPage;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
@@ -52,21 +54,21 @@ import org.slf4j.LoggerFactory;
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
-public class VesyncV2ApiHelper {
+public class VeSyncV2ApiHelper {
 
-    private final Logger logger = LoggerFactory.getLogger(VesyncV2ApiHelper.class);
+    private final Logger logger = LoggerFactory.getLogger(VeSyncV2ApiHelper.class);
 
     private @NonNullByDefault({}) HttpClient httpClient;
 
-    private volatile VesyncLoginResponse.@Nullable VesyncUserSession loggedInSession;
+    private volatile @Nullable VeSyncUserSession loggedInSession;
 
-    private Map<String, VesyncManagedDevicesPage.Result.@NotNull VesyncManagedDeviceBase> macLookup;
+    private Map<String, @NotNull VeSyncManagedDeviceBase> macLookup;
 
-    public VesyncV2ApiHelper() {
+    public VeSyncV2ApiHelper() {
         macLookup = new HashMap<>();
     }
 
-    public Map<String, VesyncManagedDevicesPage.Result.@NotNull VesyncManagedDeviceBase> getMacLookupMap() {
+    public Map<String, @NotNull VeSyncManagedDeviceBase> getMacLookupMap() {
         return macLookup;
     }
 
@@ -99,25 +101,25 @@ public class VesyncV2ApiHelper {
 
     public void discoverDevices() throws AuthenticationException {
         try {
-            VesyncRequestManagedDevicesPage reqDevPage = new VesyncRequestManagedDevicesPage(loggedInSession);
+            VeSyncRequestManagedDevicesPage reqDevPage = new VeSyncRequestManagedDevicesPage(loggedInSession);
             boolean finished = false;
             int pageNo = 1;
-            HashMap<String, VesyncManagedDevicesPage.Result.VesyncManagedDeviceBase> generatedMacLookup = new HashMap<>();
+            HashMap<String, VeSyncManagedDeviceBase> generatedMacLookup = new HashMap<>();
             while (!finished) {
                 reqDevPage.pageNo = String.valueOf(pageNo);
                 reqDevPage.pageSize = String.valueOf(100);
                 final String result = reqV1Authorized(V1_MANAGED_DEVICES_ENDPOINT, reqDevPage);
 
-                VesyncManagedDevicesPage resultsPage = VeSyncConstants.GSON.fromJson(result,
-                        VesyncManagedDevicesPage.class);
-                if (resultsPage == null || !resultsPage.result.getTotal().equals(resultsPage.result.getPageSize())) {
+                VeSyncManagedDevicesPage resultsPage = VeSyncConstants.GSON.fromJson(result,
+                        VeSyncManagedDevicesPage.class);
+                if (resultsPage == null || !resultsPage.outcome.getTotal().equals(resultsPage.outcome.getPageSize())) {
                     finished = true;
                 } else {
                     ++pageNo;
                 }
 
                 if (resultsPage != null) {
-                    for (VesyncManagedDevicesPage.Result.VesyncManagedDeviceBase device : resultsPage.result.list) {
+                    for (VeSyncManagedDeviceBase device : resultsPage.outcome.list) {
                         logger.debug(
                                 "Found device : {}, type: {}, deviceType: {}, connectionState: {}, deviceStatus: {}, deviceRegion: {}, cid: {}, configModule: {}, macID: {}, uuid: {}",
                                 device.getDeviceName(), device.getType(), device.getDeviceType(),
@@ -136,7 +138,7 @@ public class VesyncV2ApiHelper {
         }
     }
 
-    public String reqV2Authorized(final String url, final String macId, final VesyncAuthenticatedRequest requestData)
+    public String reqV2Authorized(final String url, final String macId, final VeSyncAuthenticatedRequest requestData)
             throws AuthenticationException, DeviceUnknownException {
         if (loggedInSession == null) {
             throw new AuthenticationException("User is not logged in");
@@ -145,19 +147,19 @@ public class VesyncV2ApiHelper {
         requestData.applyAuthentication(loggedInSession);
 
         // Apply specific addressing parameters
-        if (requestData instanceof VesyncRequestManagedDeviceBypassV2) {
-            final VesyncManagedDevicesPage.Result.VesyncManagedDeviceBase deviceData = macLookup.get(macId);
+        if (requestData instanceof VeSyncRequestManagedDeviceBypassV2) {
+            final VeSyncManagedDeviceBase deviceData = macLookup.get(macId);
             if (deviceData == null) {
                 throw new DeviceUnknownException(String.format("Device not discovered with mac id: %s", macId));
             }
-            ((VesyncRequestManagedDeviceBypassV2) requestData).cid = deviceData.cid;
-            ((VesyncRequestManagedDeviceBypassV2) requestData).configModule = deviceData.configModule;
-            ((VesyncRequestManagedDeviceBypassV2) requestData).deviceRegion = deviceData.deviceRegion;
+            ((VeSyncRequestManagedDeviceBypassV2) requestData).cid = deviceData.cid;
+            ((VeSyncRequestManagedDeviceBypassV2) requestData).configModule = deviceData.configModule;
+            ((VeSyncRequestManagedDeviceBypassV2) requestData).deviceRegion = deviceData.deviceRegion;
         }
         return reqV1Authorized(url, requestData);
     }
 
-    public String reqV1Authorized(final String url, final VesyncAuthenticatedRequest requestData)
+    public String reqV1Authorized(final String url, final VeSyncAuthenticatedRequest requestData)
             throws AuthenticationException {
         try {
             return directReqV1Authorized(url, requestData);
@@ -166,7 +168,7 @@ public class VesyncV2ApiHelper {
         }
     }
 
-    private String directReqV1Authorized(final String url, final VesyncAuthenticatedRequest requestData)
+    private String directReqV1Authorized(final String url, final VeSyncAuthenticatedRequest requestData)
             throws AuthenticationException {
         try {
             Request request = httpClient.POST(url);
@@ -180,8 +182,8 @@ public class VesyncV2ApiHelper {
 
             ContentResponse response = request.timeout(5, TimeUnit.SECONDS).send();
             if (response.getStatus() == HttpURLConnection.HTTP_OK) {
-                VesyncResponse commResponse = VeSyncConstants.GSON.fromJson(response.getContentAsString(),
-                        VesyncResponse.class);
+                VeSyncResponse commResponse = VeSyncConstants.GSON.fromJson(response.getContentAsString(),
+                        VeSyncResponse.class);
 
                 if (commResponse != null && (commResponse.isMsgSuccess() || commResponse.isMsgDeviceOffline())) {
                     logger.debug("Got OK response {}", response.getContentAsString());
@@ -219,21 +221,21 @@ public class VesyncV2ApiHelper {
         bridge.handleNewUserSession(loggedInSession);
     }
 
-    private VesyncLoginResponse processLogin(String username, String password, String timezone)
+    private VeSyncLoginResponse processLogin(String username, String password, String timezone)
             throws AuthenticationException {
         try {
             Request request = httpClient.POST(V1_LOGIN_ENDPOINT);
 
             // No headers for login
             request.content(new StringContentProvider(
-                    VeSyncConstants.GSON.toJson(new VesyncLoginCredentials(username, password))));
+                    VeSyncConstants.GSON.toJson(new VeSyncLoginCredentials(username, password))));
 
             request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
 
             ContentResponse response = request.timeout(5, TimeUnit.SECONDS).send();
             if (response.getStatus() == HttpURLConnection.HTTP_OK) {
-                VesyncLoginResponse loginResponse = VeSyncConstants.GSON.fromJson(response.getContentAsString(),
-                        VesyncLoginResponse.class);
+                VeSyncLoginResponse loginResponse = VeSyncConstants.GSON.fromJson(response.getContentAsString(),
+                        VeSyncLoginResponse.class);
                 if (loginResponse != null && loginResponse.isMsgSuccess()) {
                     logger.debug("Login successful");
                     return loginResponse;

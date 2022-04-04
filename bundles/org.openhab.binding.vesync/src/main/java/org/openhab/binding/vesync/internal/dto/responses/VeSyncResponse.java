@@ -15,11 +15,11 @@ package org.openhab.binding.vesync.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VesyncResponse} is a Java class used as a DTO to hold the Vesync's API's common response data.
+ * The {@link VeSyncResponse} is a Java class used as a DTO to hold the Vesync's API's common response data.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VesyncResponse {
+public class VeSyncResponse {
 
     @SerializedName("traceId")
     public String traceId;
