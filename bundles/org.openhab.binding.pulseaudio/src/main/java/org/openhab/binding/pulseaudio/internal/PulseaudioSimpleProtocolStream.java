@@ -63,7 +63,7 @@ public abstract class PulseaudioSimpleProtocolStream {
         if (clientSocketLocal == null || !clientSocketLocal.isConnected() || clientSocketLocal.isClosed()) {
             logger.debug("Simple TCP Stream connecting");
             String host = pulseaudioHandler.getHost();
-            int port = pulseaudioHandler.getSimpleTcpPort();
+            int port = pulseaudioHandler.getSimpleTcpPortAndLoadModuleIfNecessary();
             clientSocket = new Socket(host, port);
             clientSocket.setSoTimeout(pulseaudioHandler.getBasicProtocolSOTimeout());
         }

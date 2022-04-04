@@ -153,11 +153,14 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                                     if (pipeOutputs.contains(output)) {
                                         output.flush();
                                     }
-                                } catch (IOException e) {
-                                    if (e instanceof InterruptedIOException && pipeOutputs.isEmpty()) {
+                                } catch (InterruptedIOException e) {
+                                    if (pipeOutputs.isEmpty()) {
                                         // task has been ended while writing
                                         return;
                                     }
+                                    logger.warn("InterruptedIOException while writing to from pulse source pipe: {}",
+                                            getExceptionMessage(e));
+                                } catch (IOException e) {
                                     logger.warn("IOException while writing to from pulse source pipe: {}",
                                             getExceptionMessage(e));
                                 } catch (RuntimeException e) {
@@ -264,11 +267,14 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
 
         @Override
         public int read(byte @Nullable [] b) throws IOException {
-            return read(b, 0, b.length);
+            return read(b, 0, b == null ? 0 : b.length);
         }
 
         @Override
         public int read(byte @Nullable [] b, int off, int len) throws IOException {
+            if (b == null) {
+                return 0;
+            }
             logger.trace("reading from pulseaudio stream");
             if (closed) {
                 throw new IOException("Stream is closed");
