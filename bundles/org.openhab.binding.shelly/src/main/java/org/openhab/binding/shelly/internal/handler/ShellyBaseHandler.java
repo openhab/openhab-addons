@@ -270,7 +270,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     api.setCoIoTPeer(ourpeer);
                     logger.info("{}: CoIoT peer updated to {}", thingName, ourpeer);
                 } catch (ShellyApiException e) {
-                    logger.debug("{}: Unable to set CoIoT peer: {}", thingName, e.toString());
+                    logger.warn("{}: Unable to set CoIoT peer: {}", thingName, e.toString());
                 }
             } else if (!devpeer.isEmpty() && !devpeer.equals(ourpeer)) {
                 logger.warn("{}: CoIoT peer in device settings does not point this to this host", thingName);
@@ -353,7 +353,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     logger.debug("{}: Select profile {}", thingName, command);
                     int profile = (int) getNumber(command);
                     if (profile < 0 || profile > 5) {
-                        logger.info("{}: Invalid profile Id {} requested", thingName, profile);
+                        logger.warn("{}: Invalid profile Id {} requested", thingName, profile);
                         break;
                     }
                     api.setProfile(0, profile);
@@ -539,7 +539,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     @Override
     public void setThingOffline(ThingStatusDetail detail, String messageKey) {
         if (!isThingOffline()) {
-            logger.info("{}: Thing goes OFFLINE: {}", thingName, messages.get(messageKey));
+            logger.debug("{}: Thing goes OFFLINE: {}", thingName, messages.get(messageKey));
             updateStatus(ThingStatus.OFFLINE, detail, "@text/" + messageKey);
             watchdog = 0;
             channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
@@ -655,7 +655,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 case ALARM_TYPE_NONE:
                     break;
                 default:
-                    logger.info("{}: {}", thingName, messages.get("event.triggered", event));
+                    logger.debug("{}: {}", thingName, messages.get("event.triggered", event));
                     triggerChannel(channelId, event);
                     cache.updateChannel(channelId, getStringType(event));
                     stats.lastAlarm = event;
@@ -809,7 +809,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
         config = getConfigAs(ShellyThingConfiguration.class);
         if (config.deviceIp.isEmpty()) {
-            logger.info("{}: IP address for the device must not be empty", thingName); // may not set in .things file
+            logger.warn("{}: IP address for the device must not be empty", thingName); // may not set in .things file
             return;
         }
         try {
@@ -867,7 +867,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             if (bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
                     || (prf.fwVersion.equalsIgnoreCase("production_test"))) {
                 if (!config.eventsCoIoT) {
-                    logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
+                    logger.debug("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
                 }
                 autoCoIoT = true;
             }
@@ -891,7 +891,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private boolean isAuthorizationFailed(ShellyApiResult result) {
         if (result.isHttpAccessUnauthorized()) {
             // If the device is password protected the API doesn't provide settings to the device settings
-            logger.info("{}: {}", thingName, messages.get("init.protected"));
+            logger.warn("{}: {}", thingName, messages.get("init.protected"));
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-access-denied");
             changeThingType(THING_TYPE_SHELLYPROTECTED_STR, "");
             return true;
