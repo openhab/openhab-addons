@@ -31,12 +31,12 @@ public class Energy {
      */
     public enum EnergyMode {
         EnergySavingOff,
-        EnergySavingAllwaysOn,
+        EnergySavingAlwaysOn,
         EnergySavingOnBattery
     }
 
     private SensorValue<Integer> stateOfCharge = new SensorValue<Integer>();
-    private EnergyMode energyMode = EnergyMode.EnergySavingAllwaysOn;
+    private EnergyMode energyMode = EnergyMode.EnergySavingAlwaysOn;
     @JsonProperty("isPowered")
     private boolean powered = false;
 

@@ -90,7 +90,6 @@ class SpexorAPIServiceTest {
         assertEquals(ObservationType.Burglary, burglaryStatus.getObservationType());
         assertEquals(SensorMode.Deactivated, burglaryStatus.getSensorMode());
         ObservationStatus coStatus = actual.getStatus().getObservationStatus().get(1);
-        assertEquals(ObservationType.CO, coStatus.getObservationType());
         assertEquals(SensorMode.Deactivated, coStatus.getSensorMode());
         ObservationStatus fireStatus = actual.getStatus().getObservationStatus().get(2);
         assertEquals(ObservationType.Fire, fireStatus.getObservationType());
@@ -99,7 +98,7 @@ class SpexorAPIServiceTest {
 
     @Test
     void testSpexorByID() throws InterruptedException, TimeoutException, ExecutionException {
-        String testResponse = "{\"id\":\"860906043381800\",\"name\":\"dev\",\"profile\":{\"name\":\"Vehicle\",\"profileType\":\"Car\"},\"status\":{\"energy\":{\"stateOfCharge\":{\"value\":94,\"unit\":\"%\"},\"energyMode\":\"EnergySavingOff\",\"isPowered\":true},\"connection\":{\"lastConnected\":\"2021-12-15T11:12:41.738Z\",\"online\":false,\"connectionType\":\"Wifi\"},\"firmware\":{\"currentVersion\":\"10.6.3\",\"state\":\"UpToDate\",\"availableVersion\":\"10.6.3\"},\"observation\":[{\"observationType\":\"Burglary\",\"sensorMode\":\"Deactivated\"},{\"observationType\":\"CO\",\"sensorMode\":\"Deactivated\"},{\"observationType\":\"Fire\",\"sensorMode\":\"Activated\"}]},\"sensors\":[\"AirQuality\",\"AirQualityLevel\",\"Temperature\",\"Pressure\",\"Acceleration\",\"Light\",\"Gas\",\"Humidity\",\"Microphone\",\"PassiveInfrared\",\"CO\"]}";
+        String testResponse = "{\"id\":\"860906043381800\",\"name\":\"dev\",\"profile\":{\"name\":\"Vehicle\",\"profileType\":\"Car\"},\"status\":{\"energy\":{\"stateOfCharge\":{\"value\":94,\"unit\":\"%\"},\"energyMode\":\"EnergySavingOff\",\"isPowered\":true},\"connection\":{\"lastConnected\":\"2021-12-15T11:12:41.738Z\",\"online\":false,\"connectionType\":\"Wifi\"},\"firmware\":{\"currentVersion\":\"10.6.3\",\"state\":\"UpToDate\",\"availableVersion\":\"10.6.3\"},\"observation\":[{\"observationType\":\"Burglary\",\"sensorMode\":\"Deactivated\"},{\"observationType\":\"Fire\",\"sensorMode\":\"Activated\"}]},\"sensors\":[\"AirQuality\",\"AirQualityLevel\",\"Temperature\",\"Pressure\",\"Acceleration\",\"Light\",\"Gas\",\"Humidity\",\"Microphone\",\"PassiveInfrared\",\"CO\"]}";
         when(authService.newRequest(any())).thenReturn(Optional.of(request));
         when(request.send()).thenReturn(response);
         when(response.getContentAsString()).thenReturn(testResponse);
@@ -130,14 +129,12 @@ class SpexorAPIServiceTest {
         assertFalse(connection.isOnline());
         assertEquals(ConnectionType.Wifi, connection.getConnectionType());
 
-        assertEquals(3, spexor.getStatus().getObservation().size());
+        assertEquals(2, spexor.getStatus().getObservation().size());
         ObservationStatus burglaryStatus = spexor.getStatus().getObservation().get(0);
         assertEquals(ObservationType.Burglary, burglaryStatus.getObservationType());
         assertEquals(SensorMode.Deactivated, burglaryStatus.getSensorMode());
-        ObservationStatus coStatus = spexor.getStatus().getObservation().get(1);
-        assertEquals(ObservationType.CO, coStatus.getObservationType());
-        assertEquals(SensorMode.Deactivated, coStatus.getSensorMode());
-        ObservationStatus fireStatus = spexor.getStatus().getObservation().get(2);
+
+        ObservationStatus fireStatus = spexor.getStatus().getObservation().get(1);
         assertEquals(ObservationType.Fire, fireStatus.getObservationType());
         assertEquals(SensorMode.Activated, fireStatus.getSensorMode());
     }

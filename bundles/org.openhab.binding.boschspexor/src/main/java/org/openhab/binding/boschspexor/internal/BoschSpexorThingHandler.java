@@ -171,14 +171,16 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
 
                 // OBSERVATION
                 for (ObservationStatus observationStatus : spexor.getStatus().getObservation()) {
-                    String observationType = observationStatus.getObservationType().name();
-                    Channel channel = getThing().getChannel(getChannelID(GROUP_ID_OBSERVATIONS, observationType));
-                    if (channel == null) {
-                        channel = createObservationChannel(observationType);
-                        thingBuilder.withoutChannel(channel.getUID()).withChannel(channel);
-                        thingStructureChanged = true;
+                    if (observationStatus.getObservationType() != null) {
+                        String observationType = observationStatus.getObservationType().name();
+                        Channel channel = getThing().getChannel(getChannelID(GROUP_ID_OBSERVATIONS, observationType));
+                        if (channel == null) {
+                            channel = createObservationChannel(observationType);
+                            thingBuilder.withoutChannel(channel.getUID()).withChannel(channel);
+                            thingStructureChanged = true;
+                        }
+                        updateState(channel.getUID(), new StringType(observationStatus.getSensorMode().name()));
                     }
-                    updateState(channel.getUID(), new StringType(observationStatus.getSensorMode().name()));
                 }
 
                 // SENSORS

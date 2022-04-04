@@ -29,9 +29,7 @@ public class ObservationStatus {
      */
     public enum ObservationType {
         Burglary,
-        Fire,
-        CO,
-        Narcotics
+        Fire
     }
 
     /**

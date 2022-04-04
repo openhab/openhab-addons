@@ -101,7 +101,7 @@ public class AuthProcessingStatus {
      * @return
      */
     public boolean isError() {
-        return errorMessage.isEmpty();
+        return !errorMessage.isEmpty();
     }
 
     public void valid(SpexorAuthorizationProcessListener authListener) {
@@ -141,6 +141,11 @@ public class AuthProcessingStatus {
         setDeviceCode(deviceCode);
         setUserCode(userCode);
         authListener.changedState(oldState, state);
+    }
+
+    public void bridgeNotConfigured() {
+        clear();
+        setState(SpexorAuthGrantState.BRIDGE_NOT_CONFIGURED);
     }
 
     public void expiredDeviceToken(SpexorAuthorizationProcessListener authListener) {

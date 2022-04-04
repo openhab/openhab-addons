@@ -95,6 +95,7 @@ public class SpexorAuthServlet extends HttpServlet {
         SpexorAuthorizationService authService = grantService.getAuthService();
         if (authService == null) {
             result = new AuthProcessingStatus();
+            result.bridgeNotConfigured();
             logger.error("openHAB spexorGrantService grant process is null");
         } else {
             result = authService.getStatus();

@@ -82,6 +82,10 @@ public class SpexorAuthorizationService {
      */
     public enum SpexorAuthGrantState {
         /**
+         * openHAB bosch spexor bridge thing not initalized
+         */
+        BRIDGE_NOT_CONFIGURED,
+        /**
          * openHAB authorization against Bosch spexor backend is not known
          */
         UNINITIALIZED,
@@ -153,6 +157,27 @@ public class SpexorAuthorizationService {
         return result;
     }
 
+    public boolean isRequestPending() {
+        String deviceCode = getConstantBinding(DEVICE_CODE);
+        boolean result = !isEmpty(storage.get(deviceCode));
+        if (result) {
+            // device was registered but not completed by user flow - timeout needs to be checked
+            LocalDateTime deviceCodeRequestTime = getDeviceCodeRequestTime();
+            String requestLifetime = storage.get(getConstantBinding(DEVICE_CODE_REQUEST_TIME_LIFETIME));
+            long lifeTime = 10L;
+
+            if (requestLifetime != null && isNumeric(requestLifetime)) {
+                lifeTime = Long.valueOf(requestLifetime);
+            }
+            if (!isExpired(deviceCodeRequestTime, lifeTime)) {
+                loadAccessToken();
+            } else {
+                result = false;
+            }
+        }
+        return result;
+    }
+
     /**
      * requests the state of the device (openHAB) - dependent on the state the authorization is polling for access token
      * or is already synced
@@ -211,6 +236,7 @@ public class SpexorAuthorizationService {
                 DeviceAuthorizationResponse resp = DeviceAuthorizationResponse.parse(response);
                 if (resp.indicatesSuccess()) {
                     storage.put(getConstantBinding(DEVICE_CODE), resp.toSuccessResponse().getDeviceCode().getValue());
+                    storage.put(getConstantBinding(USER_CODE), resp.toSuccessResponse().getUserCode().getValue());
                     storage.put(getConstantBinding(DEVICE_CODE_REQUEST_TIME), LocalDateTime.now().toString());
                     storage.put(getConstantBinding(DEVICE_CODE_REQUEST_TIME_LIFETIME),
                             String.valueOf(resp.toSuccessResponse().getLifetime()));
@@ -248,15 +274,19 @@ public class SpexorAuthorizationService {
     }
 
     private void loadAccessToken() {
+        String deviceCode = storage.get(getConstantBinding(DEVICE_CODE));
+        String userCode = storage.get(getConstantBinding(USER_CODE));
         if (processingStatus.getState() == SpexorAuthGrantState.AWAITING_USER_ACCEPTANCE) {
-            AuthorizationGrant authorizationGrant = new DeviceCodeGrant(
-                    new DeviceCode(storage.get(getConstantBinding(DEVICE_CODE))));
-            processingStatus.setDeviceCode(storage.get(getConstantBinding(DEVICE_CODE)));
+            AuthorizationGrant authorizationGrant = new DeviceCodeGrant(new DeviceCode(deviceCode));
+            processingStatus.setDeviceCode(deviceCode);
             String tokenUrl = bridgeConfig.get().buildTokenUrl();
             requestAuthorizationGrant(authorizationGrant, tokenUrl, "token");
+        } else if (processingStatus.getState() == SpexorAuthGrantState.UNINITIALIZED && deviceCode != null
+                && userCode != null) {
+            processingStatus.awaitingUserAcceptance(deviceCode, userCode, authListener);
         } else {
             processingStatus.expiredDeviceToken(authListener);
-            processingStatus.setDeviceCode(storage.get(getConstantBinding(DEVICE_CODE)));
+            processingStatus.setDeviceCode(deviceCode);
         }
     }
 
@@ -321,7 +351,8 @@ public class SpexorAuthorizationService {
 
     private void refreshAccessToken() {
 
-        if (processingStatus.getState() == SpexorAuthGrantState.AUTHORIZED) {
+        if (processingStatus.getState() == SpexorAuthGrantState.AUTHORIZED
+                || processingStatus.getState() == SpexorAuthGrantState.UNINITIALIZED) {
             if (token.isPresent() && token.get().getRefreshToken().isPresent()) {
                 AuthorizationGrant authorizationGrant = new RefreshTokenGrant(
                         new RefreshToken(token.get().getRefreshToken().get()));

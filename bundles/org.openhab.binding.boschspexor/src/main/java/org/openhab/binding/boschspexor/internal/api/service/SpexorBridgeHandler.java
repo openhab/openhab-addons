@@ -70,6 +70,11 @@ public class SpexorBridgeHandler extends BaseBridgeHandler implements SpexorAuth
         if (authService.isRegistered()) {
             authService.authorize();
             updateStatus();
+        } else if (authService.isRequestPending()) {
+            authService.authorize();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Please register your openHAB and visit this website: http(s)://<YOUROPENHAB>:<YOURPORT>"
+                            + SPEXOR_OPENHAB_URL);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Please register your openHAB and visit this website: http(s)://<YOUROPENHAB>:<YOURPORT>"
