@@ -71,10 +71,10 @@ Thing switch switchLiving1 [address="A,02"]
 
 The following is a summary of channels for all Luxom things:
 
-| Thing               | Channel           | Item Type     | Description                                  |
-|---------------------|-------------------|---------------|--------------------------------------------- |
-| dimmer              | brightness        | Dimmer        | Increase/decrease the light level            |
-| switch              | switchstatus      | Switch        | On/off status of the switch                  |
+| Thing               | Channel        | Item Type     | Description                       |
+|---------------------|----------------|---------------|-----------------------------------|
+| dimmer              | brightness     | Dimmer        | Increase/decrease the light level |
+| switch              | switch         | Switch        | Switch the device on/off          |
 
 
 ### Full Example
