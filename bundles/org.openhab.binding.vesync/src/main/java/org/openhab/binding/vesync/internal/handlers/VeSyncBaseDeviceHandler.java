@@ -129,7 +129,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
     public void configurationUpdated(Thing thing) {
         // Get the new addressing lookup data
         deviceLookupKey = getValidatedIdString();
-        initialize();
+        intializeDeviceForUse();
     }
 
     public boolean requiresMetaDataFrequentUpdates() {
@@ -312,6 +312,10 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        intializeDeviceForUse();
+    }
+
+    private void intializeDeviceForUse() {
         // Sanity check basic setup
         final VeSyncBridgeHandler bridge = (VeSyncBridgeHandler) getBridgeHandler();
         if (bridge == null) {
