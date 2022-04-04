@@ -67,16 +67,17 @@ Thing configuration file example:
 Thing switch switchLiving1 [address="A,02"]
 ```
 
-## Channels
+### Channels
 
-### Bridge channels
+The following is a summary of channels for all Luxom things:
 
-| channel           | type   | description            |
-|-------------------|--------|------------------------|
-| button            | Switch | Push button is pressed |
-| system.brightness | Number | % of light intensity   |
+| Thing               | Channel           | Item Type     | Description                                  |
+|---------------------|-------------------|---------------|--------------------------------------------- |
+| dimmer              | brightness        | Dimmer        | Increase/decrease the light level            |
+| switch              | switchstatus      | Switch        | On/off status of the switch                  |
 
-## Full Example
+
+### Full Example
 
 demo.things:
 
