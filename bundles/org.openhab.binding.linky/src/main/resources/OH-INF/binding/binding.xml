@@ -5,12 +5,5 @@
 
 	<name>Linky Binding</name>
 	<description>Retrieves your energy consumption data from Enedis website</description>
-	<config-description>
-		<parameter name="requestBufferSize" type="integer" min="6000">
-			<label>Request Buffer Size</label>
-			<description>The size of the buffer used to write requests</description>
-			<default>6000</default>
-		</parameter>
-	</config-description>
 
 </binding:binding>
