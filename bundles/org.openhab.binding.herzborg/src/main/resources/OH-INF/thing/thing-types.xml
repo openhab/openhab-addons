@@ -12,7 +12,6 @@
 				<context>serial-port</context>
 				<limitToOptions>false</limitToOptions>
 				<description>Serial port to use, for example /dev/ttyS0 or COM1</description>
-				<default>/dev/ttyS0</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
