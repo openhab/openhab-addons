@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.linky.internal;
 
-import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
+import static org.openhab.binding.linky.internal.LinkyBindingConstants.THING_TYPE_LINKY;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -49,29 +48,28 @@ import com.google.gson.JsonDeserializer;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.linky")
 public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private static final DateTimeFormatter LINKY_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
+    private static final int REQUEST_BUFFER_SIZE = 8000;
 
     private final Logger logger = LoggerFactory.getLogger(LinkyHandlerFactory.class);
-
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
+            (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
+                    .parse(json.getAsJsonPrimitive().getAsString(), LINKY_FORMATTER))
+            .create();
     private final LocaleProvider localeProvider;
-    private final Gson gson;
     private final HttpClient httpClient;
 
     @Activate
     public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
             final @Reference HttpClientFactory httpClientFactory) {
         this.localeProvider = localeProvider;
-        this.gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
-                (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
-                        .parse(json.getAsJsonPrimitive().getAsString(), LINKY_FORMATTER))
-                .create();
         this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID);
     }
 
-    @Activate
-    protected void activate(ComponentContext componentContext, Map<String, Object> config) {
+    @Override
+    protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
         httpClient.setFollowRedirects(false);
-        httpClient.setRequestBufferSize(Integer.parseInt((String) config.getOrDefault(REQUEST_BUFFER_SIZE, "6000")));
+        httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
         try {
             httpClient.start();
         } catch (Exception e) {
@@ -96,8 +94,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        return supportsThingType(thingTypeUID) ? new LinkyHandler(thing, localeProvider, gson, httpClient) : null;
+        return supportsThingType(thing.getThingTypeUID()) ? new LinkyHandler(thing, localeProvider, gson, httpClient)
+                : null;
     }
 }

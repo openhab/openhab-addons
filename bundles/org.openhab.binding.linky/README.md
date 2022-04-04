@@ -17,7 +17,7 @@ This binding does not provide discovery service.
 
 ## Binding Configuration
 
-Request buffer size can be set at binding configuration level. Parameter name is "requestBufferSize" defaulted to 6000 bytes.
+The binding has no configuration options, all configuration is done at Thing level.
 
 ## Thing Configuration
 
