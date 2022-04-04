@@ -41,7 +41,7 @@ import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class DeviceTestBase<T extends SmartHomeDevice> {
 

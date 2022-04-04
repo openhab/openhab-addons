@@ -73,7 +73,7 @@ import org.slf4j.LoggerFactory;
  * @author Sami Salonen - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
 

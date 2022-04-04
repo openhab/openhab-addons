@@ -39,7 +39,7 @@ import org.openhab.binding.mycroft.internal.api.dto.MessageSpeak;
  * @author Gwendal Roulleau - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class MycroftConnectionTest {
 

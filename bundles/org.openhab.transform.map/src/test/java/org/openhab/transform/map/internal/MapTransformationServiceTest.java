@@ -42,7 +42,7 @@ import org.osgi.framework.BundleContext;
  * @author Gaël L'hopital - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class MapTransformationServiceTest {
 
     private static final String SOURCE_CLOSED = "CLOSED";
