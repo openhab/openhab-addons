@@ -210,7 +210,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Air Quality PPM2.5</label>
 		<description>Indicator of current air quality</description>
-		<state readOnly="true" pattern="%.0f"/>
+		<state readOnly="true" pattern="%.0f PPM 2.5"/>
 	</channel-type>
 
 	<channel-type id="deviceAFConfigDisplayForever">
@@ -243,7 +243,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Config: Room size</label>
 		<description>Room size (foot sq) for efficient auto mode</description>
-		<state readOnly="true" pattern="%.0f"/>
+		<state readOnly="true" pattern="%.0f sq ft"/>
 	</channel-type>
 
 	<channel-type id="deviceAFConfigAutoScheduleCountType">
@@ -286,14 +286,14 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity Level</label>
 		<description>System representation of humidity</description>
-		<state readOnly="true" pattern="%.0f"/>
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
 	<channel-type id="deviceConfigTargetHumidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity Set Point</label>
 		<description>Humidity Set Point</description>
-		<state readOnly="false" pattern="%.0f"/>
+		<state readOnly="false" pattern="%.0f %%"/>
 	</channel-type>
 
 	<channel-type id="deviceMistLevelType">
