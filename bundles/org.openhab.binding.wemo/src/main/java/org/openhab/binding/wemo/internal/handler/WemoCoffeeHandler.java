@@ -161,7 +161,7 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
                         wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
                         updateState(CHANNEL_STATE, OnOffType.ON);
                         State newMode = new StringType("Brewing");
-                        updateState(CHANNEL_COFFEEMODE, newMode);
+                        updateState(CHANNEL_COFFEE_MODE, newMode);
                         updateStatus(ThingStatus.ONLINE);
                     } catch (Exception e) {
                         logger.warn("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
@@ -244,69 +244,69 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
                                 case "0":
                                     updateState(CHANNEL_STATE, OnOffType.ON);
                                     newMode = new StringType("Refill");
-                                    updateState(CHANNEL_COFFEEMODE, newMode);
+                                    updateState(CHANNEL_COFFEE_MODE, newMode);
                                     break;
                                 case "1":
                                     updateState(CHANNEL_STATE, OnOffType.OFF);
                                     newMode = new StringType("PlaceCarafe");
-                                    updateState(CHANNEL_COFFEEMODE, newMode);
+                                    updateState(CHANNEL_COFFEE_MODE, newMode);
                                     break;
                                 case "2":
                                     updateState(CHANNEL_STATE, OnOffType.OFF);
                                     newMode = new StringType("RefillWater");
-                                    updateState(CHANNEL_COFFEEMODE, newMode);
+                                    updateState(CHANNEL_COFFEE_MODE, newMode);
                                     break;
                                 case "3":
                                     updateState(CHANNEL_STATE, OnOffType.OFF);
                                     newMode = new StringType("Ready");
-                                    updateState(CHANNEL_COFFEEMODE, newMode);
+                                    updateState(CHANNEL_COFFEE_MODE, newMode);
                                     break;
                                 case "4":
                                     updateState(CHANNEL_STATE, OnOffType.ON);
                                     newMode = new StringType("Brewing");
-                                    updateState(CHANNEL_COFFEEMODE, newMode);
+                                    updateState(CHANNEL_COFFEE_MODE, newMode);
                                     break;
                                 case "5":
                                     updateState(CHANNEL_STATE, OnOffType.OFF);
                                     newMode = new StringType("Brewed");
-                                    updateState(CHANNEL_COFFEEMODE, newMode);
+                                    updateState(CHANNEL_COFFEE_MODE, newMode);
                                     break;
                                 case "6":
                                     updateState(CHANNEL_STATE, OnOffType.OFF);
                                     newMode = new StringType("CleaningBrewing");
-                                    updateState(CHANNEL_COFFEEMODE, newMode);
+                                    updateState(CHANNEL_COFFEE_MODE, newMode);
                                     break;
                                 case "7":
                                     updateState(CHANNEL_STATE, OnOffType.OFF);
                                     newMode = new StringType("CleaningSoaking");
-                                    updateState(CHANNEL_COFFEEMODE, newMode);
+                                    updateState(CHANNEL_COFFEE_MODE, newMode);
                                     break;
                                 case "8":
                                     updateState(CHANNEL_STATE, OnOffType.OFF);
                                     newMode = new StringType("BrewFailCarafeRemoved");
-                                    updateState(CHANNEL_COFFEEMODE, newMode);
+                                    updateState(CHANNEL_COFFEE_MODE, newMode);
                                     break;
                             }
                             break;
                         case "ModeTime":
                             newAttributeValue = new DecimalType(attributeValue);
-                            updateState(CHANNEL_MODETIME, newAttributeValue);
+                            updateState(CHANNEL_MODE_TIME, newAttributeValue);
                             break;
                         case "TimeRemaining":
                             newAttributeValue = new DecimalType(attributeValue);
-                            updateState(CHANNEL_TIMEREMAINING, newAttributeValue);
+                            updateState(CHANNEL_TIME_REMAINING, newAttributeValue);
                             break;
                         case "WaterLevelReached":
                             newAttributeValue = new DecimalType(attributeValue);
-                            updateState(CHANNEL_WATERLEVELREACHED, newAttributeValue);
+                            updateState(CHANNEL_WATER_LEVEL_REACHED, newAttributeValue);
                             break;
                         case "CleanAdvise":
                             newAttributeValue = "0".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
-                            updateState(CHANNEL_CLEANADVISE, newAttributeValue);
+                            updateState(CHANNEL_CLEAN_ADVISE, newAttributeValue);
                             break;
                         case "FilterAdvise":
                             newAttributeValue = "0".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
-                            updateState(CHANNEL_FILTERADVISE, newAttributeValue);
+                            updateState(CHANNEL_FILTER_ADVISE, newAttributeValue);
                             break;
                         case "Brewed":
                             newAttributeValue = getDateTimeState(attributeValue);
@@ -317,7 +317,7 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
                         case "LastCleaned":
                             newAttributeValue = getDateTimeState(attributeValue);
                             if (newAttributeValue != null) {
-                                updateState(CHANNEL_LASTCLEANED, newAttributeValue);
+                                updateState(CHANNEL_LAST_CLEANED, newAttributeValue);
                             }
                             break;
                     }

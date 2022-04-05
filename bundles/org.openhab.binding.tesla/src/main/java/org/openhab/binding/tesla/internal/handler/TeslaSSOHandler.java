@@ -14,6 +14,7 @@ package org.openhab.binding.tesla.internal.handler;
 
 import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
+import java.time.Instant;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -68,6 +69,7 @@ public class TeslaSSOHandler {
             TokenResponse tokenResponse = gson.fromJson(refreshTokenResponse.trim(), TokenResponse.class);
 
             if (tokenResponse != null && tokenResponse.access_token != null && !tokenResponse.access_token.isEmpty()) {
+                tokenResponse.created_at = Instant.now().getEpochSecond();
                 return tokenResponse;
             } else {
                 logger.debug("An error occurred while exchanging SSO auth token for API access token.");

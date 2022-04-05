@@ -18,6 +18,7 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
 				<description>The serial port to use (e.g. Linux: /dev/ttyUSB0, Windows: COM1)</description>
 			</parameter>

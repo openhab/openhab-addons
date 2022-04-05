@@ -17,6 +17,7 @@
 			<channel id="timespan" typeId="timespan"/>
 			<channel id="averagePower" typeId="averagePower"/>
 			<channel id="currentPower" typeId="currentPower"/>
+			<channel id="currentPowerRaw" typeId="currentPowerRaw"/>
 			<channel id="energyToday" typeId="energyToday"/>
 			<channel id="energyTotal" typeId="energyTotal"/>
 			<channel id="standByLimit" typeId="standByLimit"/>
@@ -25,7 +26,7 @@
 
 		<representation-property>udn</representation-property>
 
-		<config-description-ref uri="thing-type:wemo:device"/>
+		<config-description-ref uri="thing-type:wemo:insight"/>
 	</thing-type>
 
 </thing:thing-descriptions>

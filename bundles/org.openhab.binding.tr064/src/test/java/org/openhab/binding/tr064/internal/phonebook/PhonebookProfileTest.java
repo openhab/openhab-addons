@@ -50,7 +50,7 @@ import org.openhab.core.util.UIDUtils;
  * @author Christoph Weitkamp - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class PhonebookProfileTest {
 
     private static final String INTERNAL_PHONE_NUMBER = "999";

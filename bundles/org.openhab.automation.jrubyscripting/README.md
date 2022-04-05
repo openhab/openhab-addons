@@ -1,6 +1,6 @@
 # JRuby Scripting
 
-This add-on provides [JRuby](https://www.jruby.org/) 9.3.2 that can be used as a scripting language within automation rules.
+This add-on provides [JRuby](https://www.jruby.org/) scripting language for automation rules.
 
 ## JRuby Scripting Configuration
 
@@ -14,8 +14,8 @@ Alternatively, JRuby configuration parameters may be set by creating a `jruby.cf
 | org.openhab.automation.jrubyscripting:rubylib         | $OPENHAB_CONF/automation/lib/ruby/      | Search path for user libraries. Separate each path with a colon (semicolon in Windows).                                                                                                                     |
 | org.openhab.automation.jrubyscripting:local_context   | singlethread                            | The local context holds Ruby runtime, name-value pairs for sharing variables between Java and Ruby. See [this](https://github.com/jruby/jruby/wiki/RedBridge#Context_Instance_Type) for options and details |
 | org.openhab.automation.jrubyscripting:local_variables | transient                               | Defines how variables are shared between Ruby and Java. See [this](https://github.com/jruby/jruby/wiki/RedBridge#local-variable-behavior-options) for options and details                                   |
-| org.openhab.automation.jrubyscripting:gems            |                                         | A comma separated list of [Ruby Gems](https://rubygems.org/) to install.                                                                                                                                      |
-| org.openhab.automation.jrubyscripting:require            |                                         | A comma separated list of script names to be required by the JRuby Scripting Engine at the beginning of user scripts.                                                                                                                                      |
+| org.openhab.automation.jrubyscripting:gems            |                                         | A comma separated list of [Ruby Gems](https://rubygems.org/) to install.                                                                                                                                    |
+| org.openhab.automation.jrubyscripting:require         |                                         | A comma separated list of script names to be required by the JRuby Scripting Engine at the beginning of user scripts.                                                                                       |
 
 ## Ruby Gems
 

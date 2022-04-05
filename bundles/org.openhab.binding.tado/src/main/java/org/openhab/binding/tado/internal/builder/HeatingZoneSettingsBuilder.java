@@ -16,8 +16,11 @@ import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.temperature
 
 import java.io.IOException;
 
+import org.openhab.binding.tado.internal.TadoBindingConstants.FanLevel;
 import org.openhab.binding.tado.internal.TadoBindingConstants.FanSpeed;
+import org.openhab.binding.tado.internal.TadoBindingConstants.HorizontalSwing;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
+import org.openhab.binding.tado.internal.TadoBindingConstants.VerticalSwing;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
@@ -41,8 +44,28 @@ public class HeatingZoneSettingsBuilder extends ZoneSettingsBuilder {
     }
 
     @Override
+    public ZoneSettingsBuilder withLight(boolean lightOn) {
+        throw new IllegalArgumentException("Heating zones don't support LIGHT");
+    }
+
+    @Override
     public ZoneSettingsBuilder withFanSpeed(FanSpeed fanSpeed) {
         throw new IllegalArgumentException("Heating zones don't support FAN SPEED");
+    }
+
+    @Override
+    public ZoneSettingsBuilder withFanLevel(FanLevel fanLevel) {
+        throw new IllegalArgumentException("Heating zones don't support FAN LEVEL");
+    }
+
+    @Override
+    public ZoneSettingsBuilder withHorizontalSwing(HorizontalSwing horizontalSwing) {
+        throw new IllegalArgumentException("Heating zones don't support HORIZONTAL SWING");
+    }
+
+    @Override
+    public ZoneSettingsBuilder withVerticalSwing(VerticalSwing verticalSwing) {
+        throw new IllegalArgumentException("Heating zones don't support VERTICAL SWING");
     }
 
     @Override
