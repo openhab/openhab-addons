@@ -111,13 +111,16 @@ public class ServerHandler extends FreeDeviceHandler {
         QuantityType<DataTransferRate> rateUp = new QuantityType<>(connectionStatus.getRateUp() * 8,
                 Units.BIT_PER_SECOND);
         updateChannelQuantity(CONNECTION_STATUS, RATE_UP, rateUp, KILOBIT_PER_SECOND);
-        updateChannelQuantity(CONNECTION_STATUS, PCT_BW_UP, rateUp.multiply(HUNDRED).divide(bandwidthUp),
+        updateChannelQuantity(CONNECTION_STATUS, PCT_BW_UP,
+                !bandwidthUp.equals(QuantityType.ZERO) ? rateUp.multiply(HUNDRED).divide(bandwidthUp)
+                        : QuantityType.ZERO,
                 Units.PERCENT);
-
         QuantityType<DataTransferRate> rateDown = new QuantityType<>(connectionStatus.getRateDown() * 8,
                 Units.BIT_PER_SECOND);
         updateChannelQuantity(CONNECTION_STATUS, RATE_DOWN, rateDown, KILOBIT_PER_SECOND);
-        updateChannelQuantity(CONNECTION_STATUS, PCT_BW_DOWN, rateDown.multiply(HUNDRED).divide(bandwidthDown),
+        updateChannelQuantity(CONNECTION_STATUS, PCT_BW_DOWN,
+                !bandwidthDown.equals(QuantityType.ZERO) ? rateDown.multiply(HUNDRED).divide(bandwidthDown)
+                        : QuantityType.ZERO,
                 Units.PERCENT);
 
         updateChannelQuantity(CONNECTION_STATUS, BYTES_UP, new QuantityType<>(connectionStatus.getBytesUp(), OCTET),

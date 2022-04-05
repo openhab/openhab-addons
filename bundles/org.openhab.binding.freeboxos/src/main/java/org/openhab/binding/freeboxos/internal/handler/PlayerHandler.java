@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.action.PlayerActions;
@@ -102,20 +100,11 @@ public class PlayerHandler extends FreeDeviceHandler {
         } else if (VALID_REMOTE_KEYS.contains(aKey)) {
             String remoteCode = (String) getConfig().get(PlayerConfiguration.REMOTE_CODE);
             if (remoteCode != null) {
-                UriBuilder uriBuilder = UriBuilder.fromPath("pub").scheme("http").host(ip).path("remote_control");
-                uriBuilder.queryParam("code", remoteCode).queryParam("key", aKey);
-                if (longPress) {
-                    uriBuilder.queryParam("long", true);
+                try {
+                    getManager(PlayerManager.class).sendKey(ip, remoteCode, aKey, longPress, count);
+                } catch (FreeboxException e) {
+                    logger.info("Error sending key", e.getMessage());
                 }
-                if (count > 1) {
-                    uriBuilder.queryParam("repeat", count);
-                }
-                // try {
-                // TODO : s Correct this
-                // getApi().execute(uriBuilder.build(), HttpMethod.GET, null, null, false);
-                // } catch (FreeboxException e) {
-                // logger.warn("Error calling Player url : {}", e.getMessage());
-                // }
             } else {
                 logger.warn("A remote code must be configured in the on the player thing.");
             }

@@ -100,7 +100,7 @@ public abstract class FreeDeviceHandler extends HostHandler {
         super.initialize();
         Map<String, String> properties = editProperties();
         String upnpName = properties.get(NameSource.UPNP.name());
-        if (upnpName != null && Boolean.parseBoolean(properties.get(MediaType.AUDIO.name()))) {
+        if (upnpName != null && Boolean.parseBoolean(properties.get(MediaType.AUDIO.name())) && reg == null) {
             reg = (ServiceRegistration<AudioSink>) bundleContext.registerService(AudioSink.class.getName(),
                     new AirMediaSink(this, audioHTTPServer, ohIP, bundleContext, "", upnpName), new Hashtable<>());
         }
@@ -161,9 +161,9 @@ public abstract class FreeDeviceHandler extends HostHandler {
         try {
             internalCallReboot();
             triggerChannel(new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT), "reboot_requested");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "System rebooting, will wait 2 minutes.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "System rebooting, will wait 3 minutes.");
             stopRefreshJob();
-            scheduler.schedule(this::initialize, 2, TimeUnit.MINUTES);
+            scheduler.schedule(this::initialize, 3, TimeUnit.MINUTES);
         } catch (FreeboxException e) {
             logger.warn("Error rebooting device : {}", e.getMessage());
         }

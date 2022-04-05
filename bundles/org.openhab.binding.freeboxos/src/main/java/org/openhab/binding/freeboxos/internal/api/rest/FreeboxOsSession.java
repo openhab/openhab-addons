@@ -134,7 +134,7 @@ public class FreeboxOsSession {
         }
     }
 
-    <F, T extends Response<F>> @Nullable F execute(URI uri, HttpMethod method, Class<T> clazz,
+    public <F, T extends Response<F>> @Nullable F execute(URI uri, HttpMethod method, Class<T> clazz,
             @Nullable Object aPayload) throws FreeboxException {
         boolean retryAuth = sessionToken() != null;
         return execute(uri, method, clazz, retryAuth, 3, aPayload);
