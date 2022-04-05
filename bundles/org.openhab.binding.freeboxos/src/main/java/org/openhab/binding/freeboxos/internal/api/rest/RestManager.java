@@ -167,7 +167,6 @@ public class RestManager {
         return assemblePath(getUriBuilder(), pathElements).build();
     }
 
-    @SuppressWarnings("null")
     protected <F, T extends Response<List<F>>> List<F> getList(Class<T> clazz, String... pathElements)
             throws FreeboxException {
         // GetList may return null object because API does not return anything for empty lists
@@ -206,7 +205,11 @@ public class RestManager {
         return session.execute(buildUri(pathElements), PUT, clazz, payload);
     }
 
+<<<<<<< Upstream, based on origin/main
     private class GenericResponse extends Response<Object> {
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+    public class GenericResponse extends Response<Object> {
+>>>>>>> bbab2f7 Reintroducing missing capability to send keys to player. Solving an NPE
     }
 }
