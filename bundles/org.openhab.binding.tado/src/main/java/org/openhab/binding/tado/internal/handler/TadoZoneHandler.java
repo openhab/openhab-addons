@@ -274,6 +274,10 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     private void updateZoneState(boolean forceUpdate) {
+        if (thing.getStatus() != ThingStatus.ONLINE) {
+            return;
+        }
+
         getHomeHandler().updateHomeState();
 
         // No update during HVAC change debounce
