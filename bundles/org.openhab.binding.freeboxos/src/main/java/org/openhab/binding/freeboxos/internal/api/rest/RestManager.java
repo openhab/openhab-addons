@@ -71,7 +71,6 @@ public class RestManager {
         return assemblePath(getUriBuilder(), pathElements).build();
     }
 
-    @SuppressWarnings("null")
     protected <F, T extends Response<List<F>>> List<F> getList(Class<T> clazz, String... pathElements)
             throws FreeboxException {
         // GetList may return null object because API does not return anything for empty lists
@@ -110,6 +109,6 @@ public class RestManager {
         return session.execute(buildUri(pathElements), PUT, clazz, payload);
     }
 
-    private class GenericResponse extends Response<Object> {
+    public class GenericResponse extends Response<Object> {
     }
 }
