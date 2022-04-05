@@ -28,11 +28,11 @@ public class MeasureTest {
 
     @Test
     public void testMeasurePrecision() {
-        State value = toQuantityType(25.0, MeasureClass.INTERIOR_TEMPERATURE);
+        State value = toQuantityType(25.0, MeasureClass.INSIDE_TEMPERATURE);
         assertEquals("25 °C", value.toString());
-        value = toQuantityType(52.0, MeasureClass.INTERIOR_TEMPERATURE);
+        value = toQuantityType(52.0, MeasureClass.INSIDE_TEMPERATURE);
         assertEquals("50 °C", value.toString());
-        value = toQuantityType(-10.0, MeasureClass.INTERIOR_TEMPERATURE);
+        value = toQuantityType(-10.0, MeasureClass.INSIDE_TEMPERATURE);
         assertEquals("0 °C", value.toString());
     }
 }

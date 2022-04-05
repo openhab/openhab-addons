@@ -58,7 +58,7 @@ public class SetpointChannelHelper extends ChannelHelper {
                         case SCHEDULE:
                         case FROST_GUARD:
                         case PROGRAM:
-                            return toQuantityType(room.getSetpointTemp(), MeasureClass.INTERIOR_TEMPERATURE);
+                            return toQuantityType(room.getSetpointTemp(), MeasureClass.INSIDE_TEMPERATURE);
                         case UNKNOWN:
                             return UnDefType.NULL;
                     }

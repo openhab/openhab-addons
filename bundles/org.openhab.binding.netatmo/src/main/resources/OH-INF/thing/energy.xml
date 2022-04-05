@@ -11,20 +11,10 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="th-temperature">
-		<label>Temperature</label>
-		<channels>
-			<channel id="value" typeId="temperature"/>
-			<channel id="timestamp" typeId="timestamp">
-				<label>Measurement Time</label>
-			</channel>
-		</channels>
-	</channel-group-type>
-
 	<channel-group-type id="room-temperature">
 		<label>Room temperature</label>
 		<channels>
-			<channel id="value" typeId="temperature"/>
+			<channel id="value" typeId="system.indoor-temperature"/>
 		</channels>
 	</channel-group-type>
 

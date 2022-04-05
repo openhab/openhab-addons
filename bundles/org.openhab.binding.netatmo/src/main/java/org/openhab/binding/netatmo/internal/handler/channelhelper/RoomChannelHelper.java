@@ -48,7 +48,7 @@ public class RoomChannelHelper extends ChannelHelper {
                 case CHANNEL_ROOM_HEATING_POWER:
                     return toQuantityType(room.getHeatingPowerRequest(), Units.PERCENT);
                 case CHANNEL_VALUE:
-                    return toQuantityType(room.getMeasuredTemp(), MeasureClass.INTERIOR_TEMPERATURE);
+                    return toQuantityType(room.getMeasuredTemp(), MeasureClass.INSIDE_TEMPERATURE);
             }
         }
         return null;

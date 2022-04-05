@@ -22,16 +22,16 @@ import org.openhab.binding.netatmo.internal.api.dto.Dashboard;
 import org.openhab.core.types.State;
 
 /**
- * The {@link TemperatureExtChannelHelper} handles specific channels of modules measuring temperature
+ * The {@link TemperatureOutChannelHelper} handles specific channels of modules measuring temperature
  * with temp trend capability
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class TemperatureExtChannelHelper extends TemperatureChannelHelper {
-    public TemperatureExtChannelHelper() {
-        super(GROUP_TEMPERATURE_EXTENDED, MeasureClass.INSIDE_TEMPERATURE);
+public class TemperatureOutChannelHelper extends TemperatureChannelHelper {
+    public TemperatureOutChannelHelper() {
+        super(GROUP_TEMPERATURE_OUTSIDE, MeasureClass.OUTSIDE_TEMPERATURE);
     }
 
     @Override

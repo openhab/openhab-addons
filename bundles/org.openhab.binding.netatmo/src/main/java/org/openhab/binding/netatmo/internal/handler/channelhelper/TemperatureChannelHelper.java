@@ -30,24 +30,23 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class TemperatureChannelHelper extends ChannelHelper {
-
     public TemperatureChannelHelper() {
-        this(GROUP_TEMPERATURE);
+        this(GROUP_TEMPERATURE, MeasureClass.INSIDE_TEMPERATURE);
     }
 
-    protected TemperatureChannelHelper(String groupName) {
-        super(groupName, MeasureClass.EXTERIOR_TEMPERATURE);
+    protected TemperatureChannelHelper(String groupName, MeasureClass measureClass) {
+        super(groupName, measureClass);
     }
 
     @Override
     protected @Nullable State internalGetDashboard(String channelId, Dashboard dashboard) {
         switch (channelId) {
             case CHANNEL_VALUE:
-                return toQuantityType(dashboard.getTemperature(), MeasureClass.EXTERIOR_TEMPERATURE);
+                return toQuantityType(dashboard.getTemperature(), MeasureClass.OUTSIDE_TEMPERATURE);
             case CHANNEL_MIN_VALUE:
-                return toQuantityType(dashboard.getMinTemp(), MeasureClass.EXTERIOR_TEMPERATURE);
+                return toQuantityType(dashboard.getMinTemp(), MeasureClass.OUTSIDE_TEMPERATURE);
             case CHANNEL_MAX_VALUE:
-                return toQuantityType(dashboard.getMaxTemp(), MeasureClass.EXTERIOR_TEMPERATURE);
+                return toQuantityType(dashboard.getMaxTemp(), MeasureClass.OUTSIDE_TEMPERATURE);
             case CHANNEL_MIN_TIME:
                 return toDateTimeType(dashboard.getDateMinTemp());
             case CHANNEL_MAX_TIME:
@@ -57,11 +56,11 @@ public class TemperatureChannelHelper extends ChannelHelper {
                         MeasureClass.HEAT_INDEX);
             case CHANNEL_DEWPOINT:
                 return toQuantityType(dewPoint(dashboard.getTemperature(), dashboard.getHumidity()),
-                        MeasureClass.EXTERIOR_TEMPERATURE);
+                        MeasureClass.OUTSIDE_TEMPERATURE);
             case CHANNEL_DEWPOINT_DEP:
                 double dewPoint = dewPoint(dashboard.getTemperature(), dashboard.getHumidity());
                 return toQuantityType(dewPointDep(dashboard.getTemperature(), dewPoint),
-                        MeasureClass.EXTERIOR_TEMPERATURE);
+                        MeasureClass.OUTSIDE_TEMPERATURE);
         }
         return null;
     }

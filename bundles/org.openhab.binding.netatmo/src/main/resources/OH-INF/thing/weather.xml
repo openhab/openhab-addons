@@ -7,7 +7,30 @@
 	<channel-group-type id="temperature-extended">
 		<label>Temperature</label>
 		<channels>
-			<channel id="value" typeId="temperature"/>
+			<channel id="value" typeId="system.indoor-temperature"/>
+			<channel id="min-today" typeId="min-temp"/>
+			<channel id="max-today" typeId="max-temp"/>
+			<channel id="min-time" typeId="timestamp-advanced">
+				<label>Today Min Timestamp</label>
+				<description>Moment when temperature was measured at its minimum today.</description>
+			</channel>
+			<channel id="max-time" typeId="timestamp-advanced">
+				<label>Today Max Timestamp</label>
+				<description>Moment when temperature was measured at its maximum today.</description>
+			</channel>
+			<channel id="trend" typeId="trend">
+				<label>Temperature Trend</label>
+			</channel>
+			<channel id="heat-index" typeId="heat-index"/>
+			<channel id="dewpoint" typeId="dewpoint"/>
+			<channel id="dewpoint-depression" typeId="dewpoint-depression"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="temperature-outside">
+		<label>Temperature</label>
+		<channels>
+			<channel id="value" typeId="system.outdoor-temperature"/>
 			<channel id="min-today" typeId="min-temp"/>
 			<channel id="max-today" typeId="max-temp"/>
 			<channel id="min-time" typeId="timestamp-advanced">

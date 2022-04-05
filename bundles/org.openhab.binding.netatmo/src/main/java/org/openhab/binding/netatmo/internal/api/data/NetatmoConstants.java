@@ -78,8 +78,8 @@ public class NetatmoConstants {
     }
 
     public enum MeasureClass {
-        INTERIOR_TEMPERATURE(0, 50, 0.3, SIUnits.CELSIUS, "temp", true),
-        EXTERIOR_TEMPERATURE(-40, 65, 0.3, SIUnits.CELSIUS, "temp", true),
+        INSIDE_TEMPERATURE(0, 50, 0.3, SIUnits.CELSIUS, "temp", true),
+        OUTSIDE_TEMPERATURE(-40, 65, 0.3, SIUnits.CELSIUS, "temp", true),
         HEAT_INDEX(-40, 65, 1, SIUnits.CELSIUS, "", false),
         PRESSURE(260, 1260, 1, HECTO(SIUnits.PASCAL), "pressure", true),
         CO2(0, 5000, 50, Units.PARTS_PER_MILLION, "co2", true),

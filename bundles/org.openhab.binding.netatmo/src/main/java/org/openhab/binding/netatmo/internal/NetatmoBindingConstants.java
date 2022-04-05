@@ -69,6 +69,7 @@ public class NetatmoBindingConstants {
     public static final String GROUP_PRESSURE_EXTENDED = GROUP_PRESSURE + GROUP_EXTENSION;
     public static final String GROUP_TEMPERATURE_EXTENDED = GROUP_TEMPERATURE + GROUP_EXTENSION;
     public static final String GROUP_AIR_QUALITY_EXTENDED = GROUP_AIR_QUALITY + GROUP_EXTENSION;
+    public static final String GROUP_TEMPERATURE_OUTSIDE = GROUP_TEMPERATURE + "-outside";
 
     // Channel ids
     public static final String CHANNEL_VALUE = "value";

@@ -15,7 +15,7 @@
 	<channel-group-type id="temperature">
 		<label>Temperature</label>
 		<channels>
-			<channel id="value" typeId="temperature"/>
+			<channel id="value" typeId="system.indoor-temperature"/>
 			<channel id="min-today" typeId="min-temp"/>
 			<channel id="max-today" typeId="max-temp"/>
 			<channel id="min-time" typeId="timestamp-advanced">

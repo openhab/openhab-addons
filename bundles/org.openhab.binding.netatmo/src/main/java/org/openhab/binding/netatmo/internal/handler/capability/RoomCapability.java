@@ -55,7 +55,7 @@ public class RoomCapability extends Capability {
                         .ifPresent(cap -> cap.setRoomThermMode(handler.getId(), targetMode));
             }
         } else if (CHANNEL_VALUE.equals(channelName)) {
-            QuantityType<?> quantity = commandToQuantity(command, MeasureClass.INTERIOR_TEMPERATURE);
+            QuantityType<?> quantity = commandToQuantity(command, MeasureClass.INSIDE_TEMPERATURE);
             if (quantity != null) {
                 handler.getHomeCapability(EnergyCapability.class)
                         .ifPresent(cap -> cap.setRoomThermTemp(handler.getId(), quantity.doubleValue()));

@@ -223,8 +223,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Request timedout, retry counter : {}", retryCount);
                 return executeUri(uri, method, clazz, payload, retryCount - 1);
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Request timedout - will attempt to reconnect later");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/request-time-out");
             prepareReconnection();
             throw new NetatmoException(String.format("%s: \"%s\"", e.getClass().getName(), e.getMessage()));
         }

@@ -57,6 +57,7 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.SetpointChanne
 import org.openhab.binding.netatmo.internal.handler.channelhelper.SignalChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.TemperatureChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.TemperatureExtChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.channelhelper.TemperatureOutChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.Therm1ChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.TimestampChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.TimestampExtChannelHelper;
@@ -101,7 +102,7 @@ public enum ModuleType {
                     TimestampExtChannelHelper.class, MeasuresChannelHelper.class, SignalChannelHelper.class)),
     @SerializedName("NAModule1")
     OUTDOOR(FeatureArea.WEATHER, "NAModule1", WEATHER_STATION, List.of(ModuleCapability.class),
-            List.of(HumidityChannelHelper.class, TemperatureExtChannelHelper.class, BatteryChannelHelper.class,
+            List.of(HumidityChannelHelper.class, TemperatureOutChannelHelper.class, BatteryChannelHelper.class,
                     MeasuresChannelHelper.class, TimestampExtChannelHelper.class, SignalChannelHelper.class)),
     @SerializedName("NAModule2")
     WIND(FeatureArea.WEATHER, "NAModule2", WEATHER_STATION, List.of(ModuleCapability.class),
@@ -135,12 +136,12 @@ public enum ModuleType {
 
     public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);
 
+    private final @Nullable ModuleType bridgeType;
     public final List<String> groups = new LinkedList<>();
     public final List<String> extensions = new LinkedList<>();
     public final List<Class<? extends ChannelHelper>> channelHelpers;
     public final List<Class<? extends Capability>> capabilities;
     public final ThingTypeUID thingTypeUID;
-    private final @Nullable ModuleType bridgeType;
     public final FeatureArea feature;
     public final @Nullable String apiName;
 
