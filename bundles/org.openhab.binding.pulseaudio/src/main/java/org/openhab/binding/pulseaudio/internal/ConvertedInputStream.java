@@ -56,7 +56,6 @@ public class ConvertedInputStream extends InputStream {
 
     public ConvertedInputStream(AudioStream innerInputStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioFileException, IOException {
-
         this.audioFormat = innerInputStream.getFormat();
 
         if (innerInputStream instanceof FixedLengthAudioStream) {
@@ -109,7 +108,6 @@ public class ConvertedInputStream extends InputStream {
      * @return A PCM normalized stream (2 channel, 44100hz, 16 bit signed)
      */
     private AudioInputStream getPCMStreamNormalized(AudioInputStream pcmInputStream) {
-
         javax.sound.sampled.AudioFormat format = pcmInputStream.getFormat();
         if (format.getChannels() != 2
                 || !format.getEncoding().equals(javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED)
@@ -139,7 +137,6 @@ public class ConvertedInputStream extends InputStream {
      */
     private AudioInputStream getPCMStream(InputStream resetableInnerInputStream)
             throws UnsupportedAudioFileException, IOException, UnsupportedAudioFormatException {
-
         if (AudioFormat.MP3.isCompatible(audioFormat)) {
             MpegAudioFileReader mpegAudioFileReader = new MpegAudioFileReader();
 
@@ -171,7 +168,6 @@ public class ConvertedInputStream extends InputStream {
                     sourceFormat.getChannels(), sourceFormat.getChannels() * 2, sourceFormat.getSampleRate(), false);
 
             return mpegconverter.getAudioInputStream(convertFormat, sourceAIS);
-
         } else if (AudioFormat.WAV.isCompatible(audioFormat)) {
             // return the same input stream, but try to compute the duration first
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(resetableInnerInputStream);

@@ -686,8 +686,9 @@ public class PulseaudioClient {
         if (clientSocket == null || clientSocket.isClosed() || !clientSocket.isConnected()) {
             logger.trace("Try to connect...");
             try {
-                client = new Socket(host, port);
-                client.setSoTimeout(500);
+                var clientFinal = new Socket(host, port);
+                clientFinal.setSoTimeout(500);
+                client = clientFinal;
                 logger.trace("connected");
             } catch (UnknownHostException e) {
                 client = null;

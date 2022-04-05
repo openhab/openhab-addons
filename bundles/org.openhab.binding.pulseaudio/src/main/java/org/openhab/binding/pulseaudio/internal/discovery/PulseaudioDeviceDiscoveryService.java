@@ -70,7 +70,6 @@ public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService i
 
     @Override
     public void onDeviceAdded(Thing bridge, AbstractAudioDeviceConfig device) {
-
         if (getAlreadyConfiguredThings().contains(device.getPaName())) {
             return;
         }

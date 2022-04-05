@@ -107,7 +107,9 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                 } catch (IOException e) {
                     disconnect(); // disconnect to force clear connection in case of socket not cleanly shutdown
                     if (countAttempt == 2) { // we won't retry : log and quit
-                        String port = clientSocket != null ? Integer.toString(clientSocket.getPort()) : "unknown";
+                        final Socket clientSocketLocal = clientSocket;
+                        String port = clientSocketLocal != null ? Integer.toString(clientSocketLocal.getPort())
+                                : "unknown";
                         logger.warn(
                                 "Error while trying to get audio from pulseaudio audio source. Cannot connect to {}:{}, error: {}",
                                 pulseaudioHandler.getHost(), port, e.getMessage());
@@ -224,7 +226,8 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
         } catch (IOException | InterruptedException ignored) {
         }
         try {
-            return (clientSocket != null) ? clientSocket.getInputStream() : null;
+            var clientSocketFinal = clientSocket;
+            return (clientSocketFinal != null) ? clientSocketFinal.getInputStream() : null;
         } catch (IOException ignored) {
             return null;
         }

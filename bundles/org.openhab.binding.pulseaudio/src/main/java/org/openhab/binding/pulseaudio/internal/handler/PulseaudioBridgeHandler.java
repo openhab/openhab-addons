@@ -187,8 +187,9 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
             job.cancel(true);
             pollingJob = null;
         }
-        if (client != null) {
-            client.disconnect();
+        var clientFinal = client;
+        if (clientFinal != null) {
+            clientFinal.disconnect();
         }
         super.dispose();
     }
