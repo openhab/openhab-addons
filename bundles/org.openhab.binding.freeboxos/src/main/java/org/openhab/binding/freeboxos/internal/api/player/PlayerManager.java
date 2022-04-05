@@ -15,7 +15,11 @@ package org.openhab.binding.freeboxos.internal.api.player;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriBuilderException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
 import org.openhab.binding.freeboxos.internal.api.player.Player.PlayerResponse;
@@ -60,7 +64,26 @@ public class PlayerManager extends ListableRest<Player, PlayerResponse, PlayersR
         throw new FreeboxException("Player config is null");
     }
 
+    public void sendKey(String ip, String code, String key, boolean longPress, int count) {
+        UriBuilder uriBuilder = UriBuilder.fromPath("pub").scheme("http").host(ip).path("remote_control");
+        uriBuilder.queryParam("code", code).queryParam("key", key);
+        if (longPress) {
+            uriBuilder.queryParam("long", true);
+        }
+        if (count > 1) {
+            uriBuilder.queryParam("repeat", count);
+        }
+        try {
+            session.execute(uriBuilder.build(), HttpMethod.GET, GenericResponse.class, null);
+        } catch (IllegalArgumentException | UriBuilderException e) {
+            // This call does not answer anything, we can safely ignore
+        } catch (FreeboxException ignore) {
+            // This call does not answer anything, we can safely ignore
+        }
+    }
+
     public void reboot(int id) throws FreeboxException {
         post(subPaths.get(id), SYSTEM_SUB_PATH, REBOOT_SUB_PATH);
     }
+
 }
