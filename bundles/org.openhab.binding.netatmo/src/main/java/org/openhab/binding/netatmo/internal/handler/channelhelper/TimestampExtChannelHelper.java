@@ -31,7 +31,7 @@ import org.openhab.core.types.State;
 public class TimestampExtChannelHelper extends TimestampChannelHelper {
 
     public TimestampExtChannelHelper() {
-        super(GROUP_EXTENDED_TIMESTAMP);
+        super(GROUP_TYPE_TIMESTAMP_EXTENDED);
     }
 
     @Override

@@ -34,7 +34,7 @@ import org.openhab.core.types.State;
 public class BatteryExtChannelHelper extends BatteryChannelHelper {
 
     public BatteryExtChannelHelper() {
-        super(GROUP_BATTERY_EXTENDED);
+        super(GROUP_TYPE_BATTERY_EXTENDED);
     }
 
     @Override

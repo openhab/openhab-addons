@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_EXTENSION;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,6 +22,7 @@ import org.openhab.binding.netatmo.internal.api.dto.Dashboard;
 import org.openhab.binding.netatmo.internal.api.dto.Event;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
+import org.openhab.binding.netatmo.internal.providers.NetatmoThingTypeProvider;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.types.State;
 
@@ -42,8 +41,7 @@ public abstract class ChannelHelper {
 
     ChannelHelper(String... providedGroups) {
         this.channelGroupTypes = Set.of(providedGroups);
-        // Sets the list of served groups base on group type names minus '-extended'
-        channelGroupTypes.forEach(groupType -> channelGroups.add(groupType.replace(GROUP_EXTENSION, "")));
+        channelGroupTypes.forEach(groupType -> channelGroups.add(NetatmoThingTypeProvider.toGroupName(groupType)));
     }
 
     ChannelHelper(String providedGroup, MeasureClass measureClass) {

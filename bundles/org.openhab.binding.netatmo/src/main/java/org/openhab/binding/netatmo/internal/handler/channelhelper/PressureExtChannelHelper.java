@@ -31,7 +31,7 @@ import org.openhab.core.types.State;
 public class PressureExtChannelHelper extends PressureChannelHelper {
 
     public PressureExtChannelHelper() {
-        super(GROUP_PRESSURE_EXTENDED);
+        super(GROUP_TYPE_PRESSURE_EXTENDED);
     }
 
     @Override

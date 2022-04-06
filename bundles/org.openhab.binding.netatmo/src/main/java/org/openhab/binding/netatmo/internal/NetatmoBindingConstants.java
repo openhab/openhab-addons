@@ -63,13 +63,14 @@ public class NetatmoBindingConstants {
     public static final String GROUP_LOCATION = "location";
 
     // Alternative extended groups
-    public static final String GROUP_EXTENSION = "-extended";
-    public static final String GROUP_EXTENDED_TIMESTAMP = GROUP_TIMESTAMP + GROUP_EXTENSION;
-    public static final String GROUP_BATTERY_EXTENDED = GROUP_BATTERY + GROUP_EXTENSION;
-    public static final String GROUP_PRESSURE_EXTENDED = GROUP_PRESSURE + GROUP_EXTENSION;
-    public static final String GROUP_TEMPERATURE_EXTENDED = GROUP_TEMPERATURE + GROUP_EXTENSION;
-    public static final String GROUP_AIR_QUALITY_EXTENDED = GROUP_AIR_QUALITY + GROUP_EXTENSION;
-    public static final String GROUP_TEMPERATURE_OUTSIDE = GROUP_TEMPERATURE + "-outside";
+    public static final String OPTION_EXTENDED = "-extended";
+    public static final String OPTION_OUTSIDE = "-outside";
+    public static final String GROUP_TYPE_TIMESTAMP_EXTENDED = GROUP_TIMESTAMP + OPTION_EXTENDED;
+    public static final String GROUP_TYPE_BATTERY_EXTENDED = GROUP_BATTERY + OPTION_EXTENDED;
+    public static final String GROUP_TYPE_PRESSURE_EXTENDED = GROUP_PRESSURE + OPTION_EXTENDED;
+    public static final String GROUP_TYPE_TEMPERATURE_EXTENDED = GROUP_TEMPERATURE + OPTION_EXTENDED;
+    public static final String GROUP_TYPE_AIR_QUALITY_EXTENDED = GROUP_AIR_QUALITY + OPTION_EXTENDED;
+    public static final String GROUP_TYPE_TEMPERATURE_OUTSIDE = GROUP_TEMPERATURE + OPTION_OUTSIDE;
 
     // Channel ids
     public static final String CHANNEL_VALUE = "value";

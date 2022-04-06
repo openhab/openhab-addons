@@ -396,7 +396,6 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
-
 	<channel-type id="heat-index">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Index</label>
@@ -408,7 +407,6 @@
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-
 
 	<channel-type id="dewpoint" advanced="true">
 		<item-type>Number:Temperature</item-type>
@@ -429,7 +427,6 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-
 	<channel-type id="max-temp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Max Temp</label>
@@ -441,7 +438,6 @@
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-
 
 	<channel-type id="min-temp" advanced="true">
 		<item-type>Number:Temperature</item-type>
@@ -479,18 +475,6 @@
 		<label>Max Wind Strength</label>
 		<description>Maximum wind strength recorded</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<description>Current temperature</description>
-		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 

@@ -31,7 +31,7 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class TemperatureOutChannelHelper extends TemperatureChannelHelper {
     public TemperatureOutChannelHelper() {
-        super(GROUP_TEMPERATURE_OUTSIDE, MeasureClass.OUTSIDE_TEMPERATURE);
+        super(GROUP_TYPE_TEMPERATURE_OUTSIDE, MeasureClass.OUTSIDE_TEMPERATURE);
     }
 
     @Override

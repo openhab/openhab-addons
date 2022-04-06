@@ -30,7 +30,7 @@ import org.openhab.core.types.State;
 public class AirQualityExtChannelHelper extends AirQualityChannelHelper {
 
     public AirQualityExtChannelHelper() {
-        super(GROUP_AIR_QUALITY_EXTENDED);
+        super(GROUP_TYPE_AIR_QUALITY_EXTENDED);
     }
 
     @Override

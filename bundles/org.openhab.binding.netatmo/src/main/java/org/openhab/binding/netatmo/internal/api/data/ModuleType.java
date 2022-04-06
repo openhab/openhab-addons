@@ -137,7 +137,7 @@ public enum ModuleType {
     public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);
 
     private final @Nullable ModuleType bridgeType;
-    public final List<String> groups = new LinkedList<>();
+    public final List<String> groupTypes = new LinkedList<>();
     public final List<String> extensions = new LinkedList<>();
     public final List<Class<? extends ChannelHelper>> channelHelpers;
     public final List<Class<? extends Capability>> capabilities;
@@ -156,7 +156,7 @@ public enum ModuleType {
         try {
             for (Class<? extends ChannelHelper> helperClass : helpers) {
                 ChannelHelper helper = helperClass.getConstructor().newInstance();
-                groups.addAll(helper.getChannelGroupTypes());
+                groupTypes.addAll(helper.getChannelGroupTypes());
                 extensions.addAll(helper.getMeasureChannels());
             }
         } catch (RuntimeException | ReflectiveOperationException e) {
