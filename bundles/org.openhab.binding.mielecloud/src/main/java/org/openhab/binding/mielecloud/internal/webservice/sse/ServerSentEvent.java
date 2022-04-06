@@ -27,7 +27,7 @@ public final class ServerSentEvent {
     private final String event;
     private final String data;
 
-    ServerSentEvent(String event, String data) {
+    public ServerSentEvent(String event, String data) {
         this.event = event;
         this.data = data;
     }
