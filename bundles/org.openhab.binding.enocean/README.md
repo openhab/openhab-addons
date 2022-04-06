@@ -59,6 +59,7 @@ This binding is developed on and tested with the following devices
  * NodOn: 
     * Smart Plug (ASP-2-1-10)
     * In Wall Switch (SIN-2-2-00, SIN-2-1-0x)
+    * In Wall Rollershutter (SIN-2-RS-01)
     * Temperature & humidity sensor (STPH-2-1-05)
  * Permundo 
     * PSC234 (smart plug with metering) = Afriso APR234
@@ -224,9 +225,9 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | suppressRepeating | Suppress repeating of msg   | true, false |
 | rollershutter                   | senderIdOffset    |                             | 1-127 |
 |                                 | enoceanId         | | |
-|                                 | sendingEEPId      |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_38_08_07, D2_05_00 |
+|                                 | sendingEEPId      |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_38_08_07, D2_05_00_NODON |
 |                                 | broadcastMessages |                             | true, false |
-|                                 | receivingEEPId¹   |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_11_03, D2_05_00 |
+|                                 | receivingEEPId¹   |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_11_03, D2_05_00_NODON |
 |                                 | suppressRepeating |                             | true, false |
 |                                 | pollingInterval   | Refresh interval in seconds | Integer |
 | measurementSwitch               | senderIdOffset    |                             | 1-127 |

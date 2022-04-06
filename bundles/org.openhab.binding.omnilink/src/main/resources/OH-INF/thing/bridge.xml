@@ -9,7 +9,7 @@
 		<label>OmniLink Controller</label>
 		<description>An OmniLink controller.</description>
 		<channels>
-			<channel id="sysdate" typeId="sysDate"/>
+			<channel id="system_date" typeId="system_date"/>
 			<channel id="enable_disable_beeper" typeId="console_enable_disable_beeper">
 				<label>Console Beepers</label>
 			</channel>
@@ -26,13 +26,6 @@
 			<channel id="upb_link_activated_event" typeId="upb_link_activated_event"/>
 			<channel id="upb_link_deactivated_event" typeId="upb_link_deactivated_event"/>
 		</channels>
-		<properties>
-			<property name="model number"/>
-			<property name="major version"/>
-			<property name="minor version"/>
-			<property name="revision"/>
-			<property name="phone number"/>
-		</properties>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
@@ -62,7 +55,7 @@
 
 
 	<!-- Controller Channels -->
-	<channel-type id="sysDate">
+	<channel-type id="system_date">
 		<item-type>DateTime</item-type>
 		<label>Date/Time</label>
 		<description>Set controller date/time.</description>

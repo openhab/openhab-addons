@@ -19,10 +19,12 @@ import org.eclipse.jdt.annotation.Nullable;
  * The {@link GoEChargerConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Samuel Brucksch - Initial contribution
+ * @author Reinhard Plaim - Add apiVersion
  */
 @NonNullByDefault
 public class GoEChargerConfiguration {
 
     public @Nullable String ip;
     public Integer refreshInterval = 5;
+    public Integer apiVersion = 1;
 }

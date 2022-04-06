@@ -47,6 +47,8 @@ public class HDPowerViewBindingConstants {
     public static final String CHANNEL_SHADE_BATTERY_VOLTAGE = "batteryVoltage";
     public static final String CHANNEL_SHADE_SIGNAL_STRENGTH = "signalStrength";
 
+    public static final String CHANNEL_REPEATER_COLOR = "color";
+    public static final String CHANNEL_REPEATER_BRIGHTNESS = "brightness";
     public static final String CHANNEL_REPEATER_IDENTIFY = "identify";
     public static final String CHANNEL_REPEATER_BLINKING_ENABLED = "blinkingEnabled";
 

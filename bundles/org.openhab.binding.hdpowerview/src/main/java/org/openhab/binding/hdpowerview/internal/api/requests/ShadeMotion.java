@@ -24,6 +24,7 @@ class ShadeMotion {
 
     public enum Type {
         STOP("stop"),
+        JOG("jog"),
         CALIBRATE("calibrate");
 
         private String motion;

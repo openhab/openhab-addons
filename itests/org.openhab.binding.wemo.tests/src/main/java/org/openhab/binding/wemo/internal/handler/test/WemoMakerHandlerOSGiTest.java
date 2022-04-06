@@ -70,13 +70,13 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
 
     @Test
     public void assertThatThingHandlesOnOffCommandCorrectly()
-            throws MalformedURLException, URISyntaxException, ValidationException {
+            throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         Command command = OnOffType.OFF;
 
         Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE);
 
         waitForAssert(() -> {
-            assertThat(thing.getStatus(), is(ThingStatus.ONLINE));
+            assertThat(thing.getStatus(), is(ThingStatus.OFFLINE));
         });
 
         // The Device is registered as UPnP Device after the initialization, this will ensure that the polling job will
@@ -106,13 +106,13 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
 
     @Test
     public void assertThatThingHandlesREFRESHCommand()
-            throws MalformedURLException, URISyntaxException, ValidationException {
+            throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         Command command = RefreshType.REFRESH;
 
         Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE);
 
         waitForAssert(() -> {
-            assertThat(thing.getStatus(), is(ThingStatus.ONLINE));
+            assertThat(thing.getStatus(), is(ThingStatus.OFFLINE));
         });
 
         // The Device is registered as UPnP Device after the initialization, this will ensure that the polling job will

@@ -157,6 +157,8 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
         switch (device.getUiClass()) {
             case CLASS_AWNING:
                 // widget: PositionableHorizontalAwning
+                // widget: DynamicAwning
+                // widget: UpDownHorizontalAwning
                 deviceDiscovered(device, THING_TYPE_AWNING, place);
                 break;
             case CLASS_CONTACT_SENSOR:
@@ -178,8 +180,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                 deviceDiscovered(device, THING_TYPE_GARAGEDOOR, place);
                 break;
             case CLASS_LIGHT:
-                if ("DimmerLight".equals(device.getWidget())) {
+                if ("DimmerLight".equals(device.getWidget()) || "DynamicLight".equals(device.getWidget())) {
                     // widget: DimmerLight
+                    // widget: DynamicLight
                     deviceDiscovered(device, THING_TYPE_DIMMER_LIGHT, place);
                 } else {
                     // widget: TimedOnOffLight
@@ -211,6 +214,10 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                     deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER, place);
                 }
                 break;
+            case CLASS_SHUTTER:
+                // widget: DynamicShutter
+                deviceDiscovered(device, THING_TYPE_SHUTTER, place);
+                break;
             case CLASS_SCREEN:
                 // widget: PositionableTiltedScreen
                 deviceDiscovered(device, THING_TYPE_SCREEN, place);
@@ -220,7 +227,13 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                 deviceDiscovered(device, THING_TYPE_SMOKESENSOR, place);
                 break;
             case CLASS_VENETIAN_BLIND:
-                deviceDiscovered(device, THING_TYPE_VENETIANBLIND, place);
+                // widget: DynamicVenetianBlind
+                if (hasCommmand(device, "setOrientation")) {
+                    deviceDiscovered(device, THING_TYPE_VENETIANBLIND, place);
+                } else {
+                    // simple venetian blind without orientation
+                    deviceDiscovered(device, THING_TYPE_SHUTTER, place);
+                }
                 break;
             case CLASS_WINDOW:
                 // widget: PositionableTiltedWindow
@@ -326,10 +339,33 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                     logUnsupportedDevice(device);
                 }
                 break;
+            case CLASS_HITACHI_HEATING_SYSTEM:
+                if ("HitachiAirToWaterHeatingZone".equals(device.getWidget())) {
+                    // widget: HitachiAirToWaterHeatingZone
+                    deviceDiscovered(device, THING_TYPE_HITACHI_ATWHZ, place);
+                } else if ("HitachiAirToWaterMainComponent".equals(device.getWidget())) {
+                    // widget: HitachiAirToWaterMainComponent
+                    deviceDiscovered(device, THING_TYPE_HITACHI_ATWMC, place);
+                } else if ("HitachiDHW".equals(device.getWidget())) {
+                    // widget: HitachiDHW
+                    deviceDiscovered(device, THING_TYPE_HITACHI_DHW, place);
+                } else {
+                    logUnsupportedDevice(device);
+                }
+                break;
+            case CLASS_RAIN_SENSOR:
+                if ("RainSensor".equals(device.getWidget())) {
+                    // widget: RainSensor
+                    deviceDiscovered(device, THING_TYPE_RAINSENSOR, place);
+                } else {
+                    logUnsupportedDevice(device);
+                }
             case THING_PROTOCOL_GATEWAY:
             case THING_REMOTE_CONTROLLER:
                 // widget: AlarmRemoteController
             case THING_NETWORK_COMPONENT:
+            case THING_GENERIC:
+                // widget: unknown
                 break;
 
             default:
@@ -355,16 +391,16 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
 
     private void logUnsupportedDevice(SomfyTahomaDevice device) {
         if (!isStateLess(device)) {
-            logger.info("Detected a new unsupported device: {} with widgetName: {}", device.getUiClass(),
+            logger.debug("Detected a new unsupported device: {} with widgetName: {}", device.getUiClass(),
                     device.getWidget());
-            logger.info("If you want to add the support, please create a new issue and attach the information below");
-            logger.info("Device definition:\n{}", device.getDefinition());
+            logger.debug("If you want to add the support, please create a new issue and attach the information below");
+            logger.debug("Device definition:\n{}", device.getDefinition());
 
             StringBuilder sb = new StringBuilder().append('\n');
             for (SomfyTahomaState state : device.getStates()) {
                 sb.append(state.toString()).append('\n');
             }
-            logger.info("Current device states: {}", sb);
+            logger.debug("Current device states: {}", sb);
         }
     }
 

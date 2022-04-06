@@ -40,7 +40,7 @@ import org.openhab.core.thing.ThingUID;
  * @author Kai Kreuzer - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TradfriDiscoveryParticipantOSGITest extends JavaOSGiTest {
 
     private MDNSDiscoveryParticipant discoveryParticipant;
@@ -114,7 +114,7 @@ public class TradfriDiscoveryParticipantOSGITest extends JavaOSGiTest {
         assertThat(result.getProperties().get(Thing.PROPERTY_VENDOR), is("IKEA of Sweden"));
         assertThat(result.getProperties().get(GATEWAY_CONFIG_HOST), is("192.168.0.5"));
         assertThat(result.getProperties().get(GATEWAY_CONFIG_PORT), is(1234));
-        assertThat(result.getRepresentationProperty(), is(GATEWAY_CONFIG_HOST));
+        assertThat(result.getRepresentationProperty(), is(Thing.PROPERTY_SERIAL_NUMBER));
     }
 
     @Test

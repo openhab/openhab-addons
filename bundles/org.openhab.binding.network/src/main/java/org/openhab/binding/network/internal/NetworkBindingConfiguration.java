@@ -29,11 +29,11 @@ import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 @NonNullByDefault
 public class NetworkBindingConfiguration {
 
-    public Boolean allowSystemPings = true;
-    public Boolean allowDHCPlisten = true;
+    public boolean allowSystemPings = true;
+    public boolean allowDHCPlisten = true;
     public BigDecimal cacheDeviceStateTimeInMS = BigDecimal.valueOf(2000);
     public String arpPingToolPath = "arping";
-    public @NonNullByDefault({}) ArpPingUtilEnum arpPingUtilMethod;
+    public ArpPingUtilEnum arpPingUtilMethod = ArpPingUtilEnum.DISABLED;
     // For backwards compatibility reasons, the default is to use the ping method execution time as latency value
     public boolean preferResponseTimeAsLatency = false;
 

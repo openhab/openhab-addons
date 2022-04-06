@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Path;
 import java.util.Map;
 
 import javax.mail.MessagingException;
@@ -74,7 +75,8 @@ public class MailBuilderTest {
     public void withURLAttachmentReturnsMultiPartEmail()
             throws AddressException, EmailException, MalformedURLException {
         MailBuilder builder = new MailBuilder(TEST_EMAIL);
-        Email mail = builder.withText("boo").withURLAttachment("http://www.openhab.org").build();
+        String url = Path.of("src/test/resources/attachment.txt").toUri().toURL().toString();
+        Email mail = builder.withText("boo").withURLAttachment(url).build();
         assertThat(mail, instanceOf(MultiPartEmail.class));
     }
 

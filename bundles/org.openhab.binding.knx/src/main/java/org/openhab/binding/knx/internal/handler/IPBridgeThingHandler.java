@@ -72,11 +72,11 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         boolean useNAT = false;
         int ipConnectionType;
         if (MODE_TUNNEL.equalsIgnoreCase(connectionTypeString)) {
-            useNAT = config.getUseNAT() != null ? config.getUseNAT() : false;
+            useNAT = config.getUseNAT();
             ipConnectionType = CustomKNXNetworkLinkIP.TUNNELING;
         } else if (MODE_ROUTER.equalsIgnoreCase(connectionTypeString)) {
             useNAT = false;
-            if (ip == null || ip.isEmpty()) {
+            if (ip.isEmpty()) {
                 ip = KNXBindingConstants.DEFAULT_MULTICAST_IP;
             }
             ipConnectionType = CustomKNXNetworkLinkIP.ROUTING;
@@ -86,13 +86,8 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
                             connectionTypeString));
             return;
         }
-        if (ip == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The 'ipAddress' of the gateway must be configured in 'TUNNEL' mode");
-            return;
-        }
 
-        if (config.getLocalIp() != null && !config.getLocalIp().isEmpty()) {
+        if (!config.getLocalIp().isEmpty()) {
             localEndPoint = new InetSocketAddress(config.getLocalIp(), 0);
         } else {
             localEndPoint = new InetSocketAddress(networkAddressService.getPrimaryIpv4HostAddress(), 0);
@@ -103,14 +98,18 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
                 thing.getUID(), config.getResponseTimeout().intValue(), config.getReadingPause().intValue(),
                 config.getReadRetriesLimit().intValue(), getScheduler(), this);
 
-        client.initialize();
+        final var tmpClient = client;
+        if (tmpClient != null) {
+            tmpClient.initialize();
+        }
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        if (client != null) {
-            client.dispose();
+        final var tmpClient = client;
+        if (tmpClient != null) {
+            tmpClient.dispose();
             client = null;
         }
     }

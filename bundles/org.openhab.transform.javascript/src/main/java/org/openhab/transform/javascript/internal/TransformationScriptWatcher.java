@@ -25,6 +25,8 @@ import org.openhab.core.transform.TransformationService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link TransformationScriptWatcher} watches the transformation directory for files. If a deleted/modified file is
@@ -35,9 +37,10 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component
 public class TransformationScriptWatcher extends AbstractWatchService {
-
     public static final String TRANSFORM_FOLDER = OpenHAB.getConfigFolder() + File.separator
             + TransformationService.TRANSFORM_FOLDER_NAME;
+
+    private final Logger logger = LoggerFactory.getLogger(TransformationScriptWatcher.class);
 
     private final JavaScriptEngineManager manager;
 

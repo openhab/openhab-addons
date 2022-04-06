@@ -93,10 +93,10 @@ public class TradfriDiscoveryParticipant implements MDNSDiscoveryParticipant {
                     properties.put(PROPERTY_FIRMWARE_VERSION, fwVersion);
                 }
                 return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withLabel("@text/discovery.gateway.label").withRepresentationProperty(GATEWAY_CONFIG_HOST)
+                        .withLabel("@text/discovery.gateway.label").withRepresentationProperty(PROPERTY_SERIAL_NUMBER)
                         .build();
             } else {
-                logger.warn("Discovered Tradfri gateway doesn't have an IP address: {}", service);
+                logger.debug("Discovered Tradfri gateway doesn't have an IP address: {}", service);
             }
         }
         return null;

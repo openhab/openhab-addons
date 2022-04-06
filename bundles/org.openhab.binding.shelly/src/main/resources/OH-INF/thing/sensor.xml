@@ -251,6 +251,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Relative humidity in % (0..100%)</description>
+		<category>Humidity</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Humidity</tag>

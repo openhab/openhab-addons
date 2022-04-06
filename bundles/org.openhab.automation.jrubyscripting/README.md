@@ -1,6 +1,6 @@
 # JRuby Scripting
 
-This add-on provides [JRuby](https://www.jruby.org/) 9.3.2 that can be used as a scripting language within automation rules.
+This add-on provides [JRuby](https://www.jruby.org/) scripting language for automation rules.
 
 ## JRuby Scripting Configuration
 
@@ -14,7 +14,8 @@ Alternatively, JRuby configuration parameters may be set by creating a `jruby.cf
 | org.openhab.automation.jrubyscripting:rubylib         | $OPENHAB_CONF/automation/lib/ruby/      | Search path for user libraries. Separate each path with a colon (semicolon in Windows).                                                                                                                     |
 | org.openhab.automation.jrubyscripting:local_context   | singlethread                            | The local context holds Ruby runtime, name-value pairs for sharing variables between Java and Ruby. See [this](https://github.com/jruby/jruby/wiki/RedBridge#Context_Instance_Type) for options and details |
 | org.openhab.automation.jrubyscripting:local_variables | transient                               | Defines how variables are shared between Ruby and Java. See [this](https://github.com/jruby/jruby/wiki/RedBridge#local-variable-behavior-options) for options and details                                   |
-| org.openhab.automation.jrubyscripting:gems            |                                         | Comma separated list of [Ruby Gems](https://rubygems.org/) to install.                                                                                                                                      |
+| org.openhab.automation.jrubyscripting:gems            |                                         | A comma separated list of [Ruby Gems](https://rubygems.org/) to install.                                                                                                                                    |
+| org.openhab.automation.jrubyscripting:require         |                                         | A comma separated list of script names to be required by the JRuby Scripting Engine at the beginning of user scripts.                                                                                       |
 
 ## Ruby Gems
 
@@ -22,10 +23,11 @@ This automation add-on will install user specified gems and make them available 
 Gem versions may be specified using the standard ruby gem_name=version format.
 The version number follows the [pessimistic version constraint](https://guides.rubygems.org/patterns/#pessimistic-version-constraint) syntax.
 
-For example this configuration will install version 4 or higher of the [openHAB JRuby Scripting Library](https://boc-tothefuture.github.io/openhab-jruby/).
+For example this configuration will install the latest version of the [openHAB JRuby Scripting Library](https://boc-tothefuture.github.io/openhab-jruby/), and instruct the scripting engine to automatically insert `require 'openhab'` at the start of the script. 
 
 ```text
-org.openhab.automation.jrubyscripting:gems=openhab-scripting=~>4.0
+org.openhab.automation.jrubyscripting:gems=openhab-scripting
+org.openhab.automation.jrubyscripting:require=openhab
 ```
 
 ## Creating JRuby Scripts
@@ -51,8 +53,8 @@ log:set DEBUG org.openhab.automation.jrubyscripting
 
 All [ScriptExtensions]({{base}}/configuration/jsr223.html#scriptextension-objects-all-jsr223-languages) are available in JRuby with the following exceptions/modifications:
 
-- The File variable, referencing java.io.File is not available as it conflicts with Ruby's File class preventing Ruby from initializing
-- Globals scriptExtension, automationManager, ruleRegistry, items, voice, rules, things, events, itemRegistry, ir, actions, se, audio, lifecycleTracker are prepended with a $ (e.g. $automationManager) making them available as a global objects in Ruby.
+- The `File` variable, referencing `java.io.File` is not available as it conflicts with Ruby's File class preventing Ruby from initializing
+- Globals `scriptExtension`, `automationManager`, `ruleRegistry`, `items`, `voice`, `rules`, `things`, `events`, `itemRegistry`, `ir`, `actions`, `se`, `audio`, `lifecycleTracker` are prepended with a `$` (e.g. `$automationManager`) making them available as global objects in Ruby.
 
 ## Script Examples
 
@@ -65,8 +67,10 @@ The openHAB server uses the [SLF4J](https://www.slf4j.org/) library for logging.
 require 'java'
 java_import org.slf4j.LoggerFactory
 
-LoggerFactory.getLogger("org.openhab.core.automation.examples").info("Hello world!")
+LoggerFactory.getLogger("org.openhab.automation.examples").info("Hello world!")
 ```
 
 JRuby can [import Java classes](https://github.com/jruby/jruby/wiki/CallingJavaFromJRuby).
-Depending on the openHAB logging configuration, you may need to prefix logger names with `org.openhab.core.automation` for them to show up in the log file (or you modify the logging configuration).
+Depending on the openHAB logging configuration, you may need to prefix logger names with `org.openhab.automation` for them to show up in the log file (or you modify the logging configuration).
+
+**Note**: Installing the [JRuby Scripting Library](https://boc-tothefuture.github.io/openhab-jruby/installation/) will provide enhanced capabilities with simpler rule syntax.

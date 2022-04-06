@@ -25,7 +25,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.util.HexUtils;
 
@@ -34,6 +34,7 @@ import org.openhab.core.util.HexUtils;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class PinningSSLContextProviderTest {
 
     @Test
@@ -61,7 +62,7 @@ public class PinningSSLContextProviderTest {
     @Test
     public void certPinCallsX509CertificateGetEncoded() throws NoSuchAlgorithmException, CertificateException {
         PinTrustManager pinTrustManager = new PinTrustManager();
-        pinTrustManager.addPinning(Pin.LearningPin(PinType.CERTIFICATE_TYPE));
+        pinTrustManager.addPinning(Pin.learningPin(PinType.CERTIFICATE_TYPE));
 
         // Mock a certificate
         X509Certificate certificate = mock(X509Certificate.class);
@@ -77,7 +78,7 @@ public class PinningSSLContextProviderTest {
     @Test
     public void pubKeyPinCallsX509CertificateGetPublicKey() throws NoSuchAlgorithmException, CertificateException {
         PinTrustManager pinTrustManager = new PinTrustManager();
-        pinTrustManager.addPinning(Pin.LearningPin(PinType.PUBLIC_KEY_TYPE));
+        pinTrustManager.addPinning(Pin.learningPin(PinType.PUBLIC_KEY_TYPE));
 
         // Mock a certificate
         PublicKey publicKey = mock(PublicKey.class);
@@ -102,8 +103,7 @@ public class PinningSSLContextProviderTest {
         }
 
         @Override
-        @NonNull
-        PinMessageDigest getMessageDigestForSigAlg(@NonNull String sigAlg) throws CertificateException {
+        PinMessageDigest getMessageDigestForSigAlg(String sigAlg) throws CertificateException {
             return pinMessageDigest;
         }
     }
@@ -116,7 +116,7 @@ public class PinningSSLContextProviderTest {
         byte[] digestOfTestCert = pinMessageDigest.digest(testCert);
 
         // Add a certificate pin in learning mode to a trust manager
-        Pin pin = Pin.LearningPin(PinType.CERTIFICATE_TYPE);
+        Pin pin = Pin.learningPin(PinType.CERTIFICATE_TYPE);
         pinTrustManager.addPinning(pin);
         assertThat(pinTrustManager.pins.size(), is(1));
 
@@ -150,7 +150,7 @@ public class PinningSSLContextProviderTest {
         byte[] digestOfTestCert = pinMessageDigest.digest(testCert);
 
         // Add a certificate pin in checking mode to a trust manager
-        Pin pin = Pin.CheckingPin(PinType.CERTIFICATE_TYPE, pinMessageDigest, digestOfTestCert);
+        Pin pin = Pin.checkingPin(PinType.CERTIFICATE_TYPE, pinMessageDigest, digestOfTestCert);
         pinTrustManager.addPinning(pin);
         assertThat(pinTrustManager.pins.size(), is(1));
 

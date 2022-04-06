@@ -278,21 +278,14 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             if (dp.isNumberType()) {
                 BigDecimal min = MetadataUtils.createBigDecimal(dp.getMinValue());
                 BigDecimal max = MetadataUtils.createBigDecimal(dp.getMaxValue());
-                BigDecimal step = MetadataUtils.createBigDecimal(dp.getStep());
                 if (ITEM_TYPE_DIMMER.equals(itemType)
                         && (max.compareTo(new BigDecimal("1.0")) == 0 || max.compareTo(new BigDecimal("1.01")) == 0)) {
                     // For dimmers with a max value of 1.01 or 1.0 the values must be corrected
                     min = MetadataUtils.createBigDecimal(0);
                     max = MetadataUtils.createBigDecimal(100);
-                    step = MetadataUtils.createBigDecimal(1);
-                } else {
-                    if (step == null) {
-                        step = MetadataUtils
-                                .createBigDecimal(dp.isFloatType() ? Float.valueOf(0.1f) : Long.valueOf(1L));
-                    }
                 }
-                stateFragment.withMinimum(min).withMaximum(max).withStep(step)
-                        .withPattern(MetadataUtils.getStatePattern(dp)).withReadOnly(dp.isReadOnly());
+                stateFragment.withMinimum(min).withMaximum(max).withPattern(MetadataUtils.getStatePattern(dp))
+                        .withReadOnly(dp.isReadOnly());
             } else {
                 stateFragment.withPattern(MetadataUtils.getStatePattern(dp)).withReadOnly(dp.isReadOnly());
             }
@@ -349,6 +342,33 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                                     }
                                 });
                         builder.withOptions(options);
+                        if (dp.isEnumType()) {
+                            logger.trace("Checking if default option {} is valid",
+                                    Objects.toString(dp.getDefaultValue(), ""));
+                            boolean needsChange = true;
+                            for (ParameterOption option : options) {
+                                if (option.getValue().equals(Objects.toString(dp.getDefaultValue(), ""))) {
+                                    needsChange = false;
+                                    break;
+                                }
+                            }
+                            if (needsChange) {
+                                String defStr = Objects.toString(dp.getDefaultValue(), "0");
+                                if (defStr == null) {
+                                    defStr = "0";
+                                }
+                                int offset = Integer.parseInt(defStr);
+                                if (offset >= 0 && offset < options.size()) {
+                                    ParameterOption defaultOption = options.get(offset);
+                                    logger.trace("Changing default option to {} (offset {})", defaultOption, defStr);
+                                    builder.withDefault(defaultOption.getValue());
+                                } else if (options.size() > 0) {
+                                    ParameterOption defaultOption = options.get(0);
+                                    logger.trace("Changing default option to {} (first value)", defaultOption);
+                                    builder.withDefault(defaultOption.getValue());
+                                }
+                            }
+                        }
                     }
 
                     if (dp.isNumberType()) {
@@ -361,8 +381,6 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                         }
                         builder.withMinimum(MetadataUtils.createBigDecimal(dp.getMinValue()));
                         builder.withMaximum(MetadataUtils.createBigDecimal(maxValue));
-                        builder.withStepSize(MetadataUtils
-                                .createBigDecimal(dp.isFloatType() ? Float.valueOf(0.1f) : Long.valueOf(1L)));
                         builder.withUnitLabel(MetadataUtils.getUnit(dp));
                     }
 

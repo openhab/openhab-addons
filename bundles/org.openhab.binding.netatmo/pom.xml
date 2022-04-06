@@ -112,6 +112,14 @@
             </configuration>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <!-- Required for JDK 17 compatibility, see: https://github.com/swagger-api/swagger-codegen/issues/11253 -->
+            <groupId>com.github.jknack</groupId>
+            <artifactId>handlebars</artifactId>
+            <version>4.3.0</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

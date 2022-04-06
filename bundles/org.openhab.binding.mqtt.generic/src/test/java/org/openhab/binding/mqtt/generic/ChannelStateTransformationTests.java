@@ -20,8 +20,8 @@ import static org.openhab.binding.mqtt.generic.internal.handler.ThingChannelCons
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.naming.ConfigurationException;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +33,6 @@ import org.openhab.binding.mqtt.generic.internal.handler.GenericMQTTThingHandler
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
-import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -48,44 +47,45 @@ import org.openhab.core.transform.TransformationService;
  * @author David Graeff - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@NonNullByDefault
 public class ChannelStateTransformationTests {
 
-    private @Mock TransformationService jsonPathService;
-    private @Mock TransformationServiceProvider transformationServiceProvider;
-    private @Mock ThingHandlerCallback callback;
-    private @Mock Thing thing;
-    private @Mock AbstractBrokerHandler bridgeHandler;
-    private @Mock MqttBrokerConnection connection;
+    private @Mock @NonNullByDefault({}) TransformationService jsonPathServiceMock;
+    private @Mock @NonNullByDefault({}) TransformationServiceProvider transformationServiceProviderMock;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback callbackMock;
+    private @Mock @NonNullByDefault({}) Thing thingMock;
+    private @Mock @NonNullByDefault({}) AbstractBrokerHandler bridgeHandlerMock;
+    private @Mock @NonNullByDefault({}) MqttBrokerConnection connectionMock;
 
-    private GenericMQTTThingHandler thingHandler;
+    private @NonNullByDefault({}) GenericMQTTThingHandler thingHandler;
 
     @BeforeEach
-    public void setUp() throws ConfigurationException, MqttException {
+    public void setUp() throws Exception {
         ThingStatusInfo thingStatus = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
 
         // Mock the thing: We need the thingUID and the bridgeUID
-        when(thing.getUID()).thenReturn(testGenericThing);
-        when(thing.getChannels()).thenReturn(thingChannelListWithJson);
-        when(thing.getStatusInfo()).thenReturn(thingStatus);
-        when(thing.getConfiguration()).thenReturn(new Configuration());
+        when(thingMock.getUID()).thenReturn(TEST_GENERIC_THING);
+        when(thingMock.getChannels()).thenReturn(THING_CHANNEL_LIST_WITH_JSON);
+        when(thingMock.getStatusInfo()).thenReturn(thingStatus);
+        when(thingMock.getConfiguration()).thenReturn(new Configuration());
 
         // Return the mocked connection object if the bridge handler is asked for it
-        when(bridgeHandler.getConnectionAsync()).thenReturn(CompletableFuture.completedFuture(connection));
+        when(bridgeHandlerMock.getConnectionAsync()).thenReturn(CompletableFuture.completedFuture(connectionMock));
 
-        CompletableFuture<Void> voidFutureComplete = new CompletableFuture<>();
+        CompletableFuture<@Nullable Void> voidFutureComplete = new CompletableFuture<>();
         voidFutureComplete.complete(null);
-        doReturn(voidFutureComplete).when(connection).unsubscribeAll();
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).subscribe(any(), any());
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).unsubscribe(any(), any());
+        doReturn(voidFutureComplete).when(connectionMock).unsubscribeAll();
+        doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).subscribe(any(), any());
+        doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).unsubscribe(any(), any());
 
-        thingHandler = spy(new GenericMQTTThingHandler(thing, mock(MqttChannelStateDescriptionProvider.class),
-                transformationServiceProvider, 1500));
-        when(transformationServiceProvider.getTransformationService(anyString())).thenReturn(jsonPathService);
+        thingHandler = spy(new GenericMQTTThingHandler(thingMock, mock(MqttChannelStateDescriptionProvider.class),
+                transformationServiceProviderMock, 1500));
+        when(transformationServiceProviderMock.getTransformationService(anyString())).thenReturn(jsonPathServiceMock);
 
-        thingHandler.setCallback(callback);
+        thingHandler.setCallback(callbackMock);
         // Return the bridge handler if the thing handler asks for it
-        doReturn(bridgeHandler).when(thingHandler).getBridgeHandler();
+        doReturn(bridgeHandlerMock).when(thingHandler).getBridgeHandler();
 
         // We are by default online
         doReturn(thingStatus).when(thingHandler).getBridgeStatus();
@@ -93,31 +93,31 @@ public class ChannelStateTransformationTests {
 
     @SuppressWarnings("null")
     @Test
-    public void initialize() throws MqttException {
-        when(thing.getChannels()).thenReturn(thingChannelListWithJson);
+    public void initialize() throws Exception {
+        when(thingMock.getChannels()).thenReturn(THING_CHANNEL_LIST_WITH_JSON);
 
         thingHandler.initialize();
-        ChannelState channelConfig = thingHandler.getChannelState(textChannelUID);
-        assertThat(channelConfig.transformationsIn.get(0).pattern, is(jsonPathPattern));
+        ChannelState channelConfig = thingHandler.getChannelState(TEXT_CHANNEL_UID);
+        assertThat(channelConfig.transformationsIn.get(0).pattern, is(JSON_PATH_PATTERN));
     }
 
     @SuppressWarnings("null")
     @Test
     public void processMessageWithJSONPath() throws Exception {
-        when(jsonPathService.transform(jsonPathPattern, jsonPathJSON)).thenReturn("23.2");
+        when(jsonPathServiceMock.transform(JSON_PATH_PATTERN, JSON_PATH_JSON)).thenReturn("23.2");
 
         thingHandler.initialize();
-        ChannelState channelConfig = thingHandler.getChannelState(textChannelUID);
+        ChannelState channelConfig = thingHandler.getChannelState(TEXT_CHANNEL_UID);
         channelConfig.setChannelStateUpdateListener(thingHandler);
 
         ChannelStateTransformation transformation = channelConfig.transformationsIn.get(0);
 
-        byte payload[] = jsonPathJSON.getBytes();
-        assertThat(transformation.pattern, is(jsonPathPattern));
+        byte payload[] = JSON_PATH_JSON.getBytes();
+        assertThat(transformation.pattern, is(JSON_PATH_PATTERN));
         // Test process message
         channelConfig.processMessage(channelConfig.getStateTopic(), payload);
 
-        verify(callback).stateUpdated(eq(textChannelUID), argThat(arg -> "23.2".equals(arg.toString())));
+        verify(callbackMock).stateUpdated(eq(TEXT_CHANNEL_UID), argThat(arg -> "23.2".equals(arg.toString())));
         assertThat(channelConfig.getCache().getChannelState().toString(), is("23.2"));
     }
 }

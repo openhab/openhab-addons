@@ -229,7 +229,7 @@ You optionally can define a `userName` and a `password` parameter if the access 
 
 ### Second generation devices (PIKO 10-20, PIKO NEW GENERATION)
 
-Second generation inverters require 5 mandatory parameters:
+Second generation inverters require 4 mandatory parameters and 1 optional (hasBattery):
 
 | Parameter                | Description                                            | Type    |  Unit   | Default value | Example value |
 |--------------------------|--------------------------------------------------------|---------|---------|---------------|---------------|

@@ -20,7 +20,7 @@
 		<parameter name="source" type="boolean">
 			<label>Import Sources</label>
 			<description>Activate the import of source elements.</description>
-			<default>false</default>
+			<default>true</default>
 		</parameter>
 		<parameter name="sourceOutput" type="boolean">
 			<label>Import Source Outputs</label>

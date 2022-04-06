@@ -38,4 +38,9 @@ public class GenericThingConfiguration {
      * payload for the availability topic when the device is *not* available.
      */
     public String payloadNotAvailable = OnOffType.OFF.toString();
+
+    /**
+     * transformation pattern for the availability payload
+     */
+    public @Nullable String transformationPattern;
 }

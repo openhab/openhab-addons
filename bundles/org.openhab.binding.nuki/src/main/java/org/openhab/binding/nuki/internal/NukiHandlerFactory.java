@@ -21,7 +21,6 @@ import org.openhab.binding.nuki.internal.dataexchange.NukiApiServlet;
 import org.openhab.binding.nuki.internal.handler.NukiBridgeHandler;
 import org.openhab.binding.nuki.internal.handler.NukiOpenerHandler;
 import org.openhab.binding.nuki.internal.handler.NukiSmartLockHandler;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.id.InstanceUUID;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
@@ -86,11 +85,6 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
         }
         logger.warn("No valid Handler found for Thing[{}]!", thingTypeUID);
         return null;
-    }
-
-    @Override
-    protected @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID) {
-        return super.createThing(thingTypeUID, configuration, thingUID);
     }
 
     @Override

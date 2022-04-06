@@ -777,7 +777,7 @@ public class LifxLightHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateProperties(Map<String, String> properties) {
+    protected void updateProperties(@Nullable Map<String, String> properties) {
         String oldHostVersion = getThing().getProperties().get(LifxBindingConstants.PROPERTY_HOST_VERSION);
         super.updateProperties(properties);
         String newHostVersion = getThing().getProperties().get(LifxBindingConstants.PROPERTY_HOST_VERSION);

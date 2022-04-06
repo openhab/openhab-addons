@@ -47,4 +47,13 @@ class GoveeModelTest {
 
         Assertions.assertEquals(GoveeModel.H5074, GoveeModel.getGoveeModel(new BluetoothDiscoveryDevice(mockDevice)));
     }
+
+    @Test
+    void testGVH5102_77E9() {
+        MockBluetoothAdapter adapter = new MockBluetoothAdapter();
+        MockBluetoothDevice mockDevice = adapter.getDevice(TestUtils.randomAddress());
+        mockDevice.setName("GVH5102_77E9");
+
+        Assertions.assertEquals(GoveeModel.H5102, GoveeModel.getGoveeModel(new BluetoothDiscoveryDevice(mockDevice)));
+    }
 }

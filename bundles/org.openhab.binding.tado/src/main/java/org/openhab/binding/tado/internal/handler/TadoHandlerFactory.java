@@ -32,7 +32,9 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link TadoHandlerFactory} is responsible for creating things and thing
@@ -48,6 +50,13 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
+    private final TadoStateDescriptionProvider stateDescriptionProvider;
+
+    @Activate
+    public TadoHandlerFactory(final @Reference TadoStateDescriptionProvider stateDescriptionProvider) {
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -62,7 +71,7 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
             registerTadoDiscoveryService(tadoHomeHandler);
             return tadoHomeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_ZONE)) {
-            return new TadoZoneHandler(thing);
+            return new TadoZoneHandler(thing, stateDescriptionProvider);
         } else if (thingTypeUID.equals(THING_TYPE_MOBILE_DEVICE)) {
             return new TadoMobileDeviceHandler(thing);
         }

@@ -12,21 +12,29 @@
  */
 package org.openhab.binding.daikin.internal.api;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for parsing the comma separated values and array values returned by the Daikin Controller.
  *
  * @author Jimmy Tanagra - Initial Contribution
+ *         urldecode the parsed value
  *
  */
 @NonNullByDefault
 public class InfoParser {
+    private static final Logger logger = LoggerFactory.getLogger(InfoParser.class);
+
     private InfoParser() {
     }
 
@@ -34,7 +42,7 @@ public class InfoParser {
         return Stream.of(response.split(",")).filter(kv -> kv.contains("=")).map(kv -> {
             String[] keyValue = kv.split("=");
             String key = keyValue[0];
-            String value = keyValue.length > 1 ? keyValue[1] : "";
+            String value = keyValue.length > 1 ? urldecode(keyValue[1]) : "";
             return new String[] { key, value };
         }).collect(Collectors.toMap(x -> x[0], x -> x[1]));
     }
@@ -61,7 +69,7 @@ public class InfoParser {
         }
     }
 
-    public static Optional<Integer[]> parseArrayofInt(String value) {
+    public static Optional<Integer[]> parseArrayOfInt(String value) {
         if ("-".equals(value)) {
             return Optional.empty();
         }
@@ -72,11 +80,20 @@ public class InfoParser {
         }
     }
 
-    public static Optional<Integer[]> parseArrayofInt(String value, int expectedArraySize) {
-        Optional<Integer[]> result = parseArrayofInt(value);
+    public static Optional<Integer[]> parseArrayOfInt(String value, int expectedArraySize) {
+        Optional<Integer[]> result = parseArrayOfInt(value);
         if (result.isPresent() && result.get().length == expectedArraySize) {
             return result;
         }
         return Optional.empty();
+    }
+
+    public static String urldecode(String value) {
+        try {
+            return URLDecoder.decode(value, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            logger.warn("Unsupported encoding error in '{}'", value, e);
+            return value;
+        }
     }
 }

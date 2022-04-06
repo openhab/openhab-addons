@@ -88,7 +88,7 @@ The devices support some of the following channels:
 | `zone_volume`               | Dimmer               | Volume level of this audio zone.                                                     | `audio_zone`                                        |
 | `zone_source`               | Number               | Source for this audio zone.                                                          | `audio_zone`                                        |
 | `zone_control`              | Player               | Control the audio zone, e.g. start/stop/next/previous.                               | `audio_zone`                                        |
-| `sysdate`                   | DateTime             | Set controller date/time.                                                            | `controller`                                        |
+| `system_date`               | DateTime             | Set controller date/time.                                                            | `controller`                                        |
 | `last_log`                  | String               | Last log message on the controller, represented in JSON.                             | `controller`                                        |
 | `enable_disable_beeper`     | Switch               | Enable/Disable the beeper for this/all console(s).                                   | `controller`, `console`                             |
 | `beep`                      | Switch               | Send a beep command to this/all console(s).                                          | `controller`, `console`                             |
@@ -253,7 +253,7 @@ Switch   MainButton   "Toggle button [%s]"   <switch>   {channel="omnilink:butto
 /*
  * Other OmniPro items
  */
-DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="omnilink:controller:home:sysdate"}
+DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="omnilink:controller:home:system_date"}
 ```
 
 ### Example `therm-status.map`
