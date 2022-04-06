@@ -169,15 +169,16 @@ public enum AmplifierModel {
 
         if (matcher.find()) {
             zoneData.setZone(matcher.group(1));
-            zoneData.setPower(matcher.group(2));
-            zoneData.setSource(matcher.group(3));
-            zoneData.setVolume(Integer.parseInt(matcher.group(4)));
-            zoneData.setMute(matcher.group(5));
-            zoneData.setTreble(Integer.parseInt(matcher.group(6)));
-            zoneData.setBass(Integer.parseInt(matcher.group(7)));
-            zoneData.setBalance(Integer.parseInt(matcher.group(8)));
-            zoneData.setKeypad(matcher.group(9));
-            zoneData.setPage(matcher.group(10));
+            zoneData.setPage(matcher.group(2));
+            zoneData.setPower(matcher.group(3));
+            zoneData.setMute(matcher.group(4));
+            zoneData.setDnd(matcher.group(5));
+            zoneData.setVolume(Integer.parseInt(matcher.group(6)));
+            zoneData.setTreble(Integer.parseInt(matcher.group(7)));
+            zoneData.setBass(Integer.parseInt(matcher.group(8)));
+            zoneData.setBalance(Integer.parseInt(matcher.group(9)));
+            zoneData.setSource(matcher.group(10));
+            zoneData.setKeypad(matcher.group(11));
         }
         return zoneData;
     }
