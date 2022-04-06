@@ -130,7 +130,6 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
         modified(config);
     }
 
-    @SuppressWarnings("null")
     @Modified
     protected void modified(Map<String, Object> config) {
         configuration.update(new Configuration(config).as(PulseAudioBindingConfiguration.class));

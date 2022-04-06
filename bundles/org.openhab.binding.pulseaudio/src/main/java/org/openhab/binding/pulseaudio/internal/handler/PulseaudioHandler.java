@@ -216,8 +216,6 @@ public class PulseaudioHandler extends BaseThingHandler {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE
                 || bridgeStatusInfo.getStatus() == ThingStatus.UNKNOWN) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        } else if (bridgeStatusInfo.getStatus() == ThingStatus.UNINITIALIZED) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -230,7 +228,7 @@ public class PulseaudioHandler extends BaseThingHandler {
         if (handler instanceof PulseaudioBridgeHandler) {
             return (PulseaudioBridgeHandler) handler;
         } else {
-            throw new IllegalStateException("bridge Handler is of the wrong type");
+            throw new IllegalStateException("bridge Handler is null or of the wrong type");
         }
     }
 
@@ -372,8 +370,9 @@ public class PulseaudioHandler extends BaseThingHandler {
         if (device != null && device.getPaName().equals(name)) {
             updateStatus(ThingStatus.ONLINE);
             logger.debug("Updating states of {} id: {}", device, VOLUME_CHANNEL);
-            savedVolume = device.getVolume();
-            updateState(VOLUME_CHANNEL, new PercentType(device.getVolume()));
+            int actualVolume = device.getVolume();
+            savedVolume = actualVolume;
+            updateState(VOLUME_CHANNEL, new PercentType(actualVolume));
             updateState(MUTE_CHANNEL, device.isMuted() ? OnOffType.ON : OnOffType.OFF);
             org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig.State state = device.getState();
             updateState(STATE_CHANNEL, state != null ? new StringType(state.toString()) : new StringType("-"));

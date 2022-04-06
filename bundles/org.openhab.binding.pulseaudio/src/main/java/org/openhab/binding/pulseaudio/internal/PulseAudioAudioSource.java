@@ -276,7 +276,7 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
         @Override
         public int read(byte @Nullable [] b, int off, int len) throws IOException {
             if (b == null) {
-                return 0;
+                throw new IOException("Buffer is null");
             }
             logger.trace("reading from pulseaudio stream");
             if (closed) {

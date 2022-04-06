@@ -151,7 +151,6 @@ public class PulseaudioClient {
             modules = new ArrayList<Module>(Parser.parseModules(listModules()));
 
             List<AbstractAudioDeviceConfig> newItems = new ArrayList<>(); // prepare new list before assigning it
-            newItems.clear();
             if (configuration.sink) {
                 logger.debug("reading sinks");
                 newItems.addAll(Parser.parseSinks(listSinks(), this));

@@ -163,7 +163,7 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
             this.refreshInterval = ((BigDecimal) conf.get(BRIDGE_PARAMETER_REFRESH_INTERVAL)).intValue();
         }
 
-        if (!host.isEmpty()) {
+        if (!host.isBlank()) {
             client = new PulseaudioClient(host, port, configuration);
             updateStatus(ThingStatus.UNKNOWN);
             final ScheduledFuture<?> pollingJobFinal = pollingJob;
