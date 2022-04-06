@@ -12,27 +12,29 @@
  */
 package org.openhab.binding.openwebnet.internal.handler;
 
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_AUX;
-
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.message.Auxiliary;
 import org.openwebnet4j.message.BaseOpenMessage;
+import org.openwebnet4j.message.MalformedFrameException;
+import org.openwebnet4j.message.OpenMessage;
+import org.openwebnet4j.message.UnsupportedFrameException;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereAuxiliary;
 import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Set;
+
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_AUX;
 
 /**
  * The {@link OpenWebNetAuxiliaryHandler} is responsible for handling Auxiliary (AUX) commands/messages
@@ -51,6 +53,17 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
         super(thing);
     }
 
+    @Override
+    public void initialize() {
+        super.initialize();
+        try {
+            OpenMessage msg = BaseOpenMessage.parse("*#9##");
+            send(msg);
+        } catch (MalformedFrameException | UnsupportedFrameException | OWNException e) {
+            logger.warn("Exception while processing command {}: ", e.getMessage());
+        }
+    }
+
     /**
      * Handles Auxiliary command for a channel
      *
@@ -64,7 +77,6 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
         if (w != null) {
             if (channel.getId().equals(CHANNEL_AUX)) {
                 if (command instanceof StringType) {
-                    updateStatus(ThingStatus.ONLINE);
                     try {
                         if (command.toString().equals(Auxiliary.WhatAuxiliary.ON.name())) {
                             send(Auxiliary.requestTurnOn(w.value()));
@@ -76,7 +88,6 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
                     }
                 } else {
                     logger.warn("Unsupported command {} for channel {}", command, channel);
-                    updateStatus(ThingStatus.UNKNOWN);
                 }
             } else {
                 logger.warn("Unsupported ChannelUID {}", channel);
@@ -110,13 +121,7 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
         return Who.AUX.value().toString();
     }
 
-    @Override
     protected void handleMessage(BaseOpenMessage msg) {
         super.handleMessage(msg);
-        if (msg.isCommand()) {
-            updateState(CHANNEL_AUX, (State) msg.getWhat());
-        } else {
-            logger.debug("handleMessage() Ignoring unsupported DIM for thing {}. Frame={}", getThing().getUID(), msg);
-        }
     }
 }
