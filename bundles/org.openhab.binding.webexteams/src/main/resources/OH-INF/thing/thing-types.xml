@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="webexteams"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Account Thing Type -->
+	<thing-type id="account">
+		<!-- Comment this in for Things which need a Bridge to function.
+			<supported-bridge-type-refs>
+			<bridge-type-ref id="WebexTeamsBridge" />
+			</supported-bridge-type-refs>
+		-->
+
+		<label>WebexTeams Account</label>
+		<description>WebexTeams account used to send messages.</description>
+
+		<channels>
+			<channel id="botname" typeId="botname"/>
+			<channel id="status" typeId="status"/>
+			<channel id="lastactivity" typeId="lastactivity"/>
+		</channels>
+
+		<properties>
+			<property name="personType">Unknown type</property>
+		</properties>
+
+		<config-description>
+			<parameter name="token" type="text" required="false">
+				<context>password</context>
+				<label>Token</label>
+				<description>Authentication token (Bot)</description>
+			</parameter>
+			<parameter name="clientId" type="text" required="false">
+				<label>Client Id</label>
+				<description>OAuth client Id (Integration)</description>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="false">
+				<context>password</context>
+				<label>Client Secret</label>
+				<description>OAuth client secret (Integration)</description>
+			</parameter>
+			<parameter name="authCode" type="text" required="false">
+				<label>Auth Code</label>
+				<description>OAuth auth code (Integration)</description>
+			</parameter>
+			<parameter name="redirectUrl" type="text" required="false">
+				<label>Redirect URL</label>
+				<description>OAuth redirect url (Integration)</description>
+			</parameter>
+			<parameter name="refreshToken" type="text" required="false">
+				<context>password</context>
+				<label>Refresh Token</label>
+				<description>OAuth refresh token (Integration)</description>
+			</parameter>
+			<parameter name="roomId" type="text" required="false">
+				<label>Default room Id</label>
+				<description>Id of the default room to send messages</description>
+			</parameter>
+			<!--> <parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>600</default>
+				<advanced>true</advanced>
+				</parameter> -->
+		</config-description>
+	</thing-type>
+
+	<!-- Botname Channel Type -->
+	<channel-type id="botname">
+		<item-type>String</item-type>
+		<label>Bot Name</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<description>Name of the Webex Teams bot</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Status</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<description>Status of the identity</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="lastactivity">
+		<item-type>DateTime</item-type>
+		<label>Last Activity</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<description>Last Activity</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
