@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.openwebnet.internal.handler;
 
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_AUX;
+
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openwebnet4j.communication.OWNException;
@@ -31,10 +34,6 @@ import org.openwebnet4j.message.WhereAuxiliary;
 import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Set;
-
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_AUX;
 
 /**
  * The {@link OpenWebNetAuxiliaryHandler} is responsible for handling Auxiliary (AUX) commands/messages
