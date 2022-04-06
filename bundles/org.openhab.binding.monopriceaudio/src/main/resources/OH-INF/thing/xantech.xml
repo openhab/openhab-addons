@@ -85,6 +85,7 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="false">
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
 				<description>Serial Port to Use for Connecting to the Xantech Amplifier</description>
 			</parameter>
