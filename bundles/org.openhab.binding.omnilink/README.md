@@ -312,9 +312,7 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 ### Example EMCAScript rule
 
 ``` javascript
-var ZonedDateTime = Java.type("java.time.ZonedDateTime");
-var ZoneId = Java.type("java.time.ZoneId");
-var zdt = ZonedDateTime.now(ZoneId.of("America/Denver"));
+var omnilinkAction = actions.get("omnilink", "omnilink:controller:home");
 
-events.sendCommand('OmniProTime', new StringType(zdt));
+omnilinkAction.setDateTime("America/Denver");
 ```

@@ -17,22 +17,25 @@ import static org.openhab.binding.omnilink.internal.OmnilinkBindingConstants.*;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.omnilink.internal.AudioPlayer;
 import org.openhab.binding.omnilink.internal.SystemType;
 import org.openhab.binding.omnilink.internal.TemperatureFormat;
+import org.openhab.binding.omnilink.internal.action.OmnilinkActions;
 import org.openhab.binding.omnilink.internal.config.OmnilinkBridgeConfig;
 import org.openhab.binding.omnilink.internal.discovery.OmnilinkDiscoveryService;
 import org.openhab.binding.omnilink.internal.exceptions.BridgeOfflineException;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -105,7 +108,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(OmnilinkDiscoveryService.class);
+        return Collections.unmodifiableSet(
+                Stream.of(OmnilinkDiscoveryService.class, OmnilinkActions.class).collect(Collectors.toSet()));
     }
 
     public void sendOmnilinkCommand(final int message, final int param1, final int param2)
@@ -158,6 +162,17 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
     }
 
+    public void setDateTime(ZonedDateTime zdt) {
+        boolean inDaylightSavings = zdt.getZone().getRules().isDaylightSavings(zdt.toInstant());
+        try {
+            getOmniConnection().setTimeCommand(zdt.getYear() - 2000, zdt.getMonthValue(), zdt.getDayOfMonth(),
+                    zdt.getDayOfWeek().getValue(), zdt.getHour(), zdt.getMinute(), inDaylightSavings);
+        } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
+                | OmniUnknownMessageTypeException e) {
+            logger.debug("Could not send set date time command to OmniLink Controller: {}", e.getMessage());
+        }
+    }
+
     private SystemFeatures reqSystemFeatures()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         try {
@@ -178,23 +193,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
 
         switch (channelUID.getId()) {
-            case CHANNEL_SYSTEM_DATE:
-                if (command instanceof StringType) {
-                    ZonedDateTime zdt = ZonedDateTime.parse(((StringType) command).toString(),
-                            DateTimeFormatter.ISO_ZONED_DATE_TIME);
-                    boolean inDaylightSavings = zdt.getZone().getRules().isDaylightSavings(zdt.toInstant());
-                    try {
-                        getOmniConnection().setTimeCommand(zdt.getYear() - 2000, zdt.getMonthValue(),
-                                zdt.getDayOfMonth(), zdt.getDayOfWeek().getValue(), zdt.getHour(), zdt.getMinute(),
-                                inDaylightSavings);
-                    } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
-                            | OmniUnknownMessageTypeException e) {
-                        logger.debug("Could not send Set Time command to OmniLink Controller: {}", e.getMessage());
-                    }
-                } else {
-                    logger.debug("Invalid command: {}, must be StringType", command);
-                }
-                break;
             case CHANNEL_CONSOLE_ENABLE_DISABLE_BEEPER:
                 if (command instanceof StringType) {
                     try {
@@ -486,14 +484,14 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             OmniUnknownMessageTypeException {
         SystemStatus status = getOmniConnection().reqSystemStatus();
         logger.debug("Received system status: {}", status);
-        // Let's update system time
+        // Update controller's reported time
         String dateString = new StringBuilder().append(2000 + status.getYear()).append("-")
                 .append(String.format("%02d", status.getMonth())).append("-")
                 .append(String.format("%02d", status.getDay())).append("T")
                 .append(String.format("%02d", status.getHour())).append(":")
                 .append(String.format("%02d", status.getMinute())).append(":")
                 .append(String.format("%02d", status.getSecond())).toString();
-        updateState(CHANNEL_SYSTEM_DATE, new StringType(dateString));
+        updateState(CHANNEL_SYSTEM_DATE, new DateTimeType(dateString));
     }
 
     public Message reqObjectProperties(int objectType, int objectNum, int direction, int filter1, int filter2,
