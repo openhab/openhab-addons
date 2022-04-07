@@ -32,6 +32,7 @@ All other things are connected to the bridge.
 
 Testing was only done with smoke and water detectors connected to a K1 connector.
 The firmware version of the K1 connector was 2.0.3.30 at the time of testing.
+The binding only works with firmware versions above 2.0.3.14.
 Older versions of the firmware are known to have differences in the communication protocol.
 
 ## Discovery
@@ -52,7 +53,6 @@ It will not be possible to receive alarms and control them from openHAB in this 
 | `connectorId` |          | Required parameter, should be set to ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector. This parameter can also be found in the ELRO Connects mobile application |
 | `ipAdress`     | Y        | IP address of the ELRO Connects K1 Connector, not required if connector and openHAB server in same subnet |
 | `refreshInterval` | Y      |  This parameter controls the connection refresh heartbeat interval. The default is 60s |
-| `deviceConfigDuration` | Y      |  Duration for the ELRO Connects K1 Connector to remain in mode that allows configuring devices in seconds, default 60s |
 
 ### Devices connected to K1 connected hub
 
@@ -69,7 +69,6 @@ The `connector` bridge thing has only one channel:
 | Channel ID         | Item Type      | Access Mode | Advanced | Description                                        |
 |--------------------|----------------|:-----------:|:--------:|----------------------------------------------------|
 | `scene`            | String         | RW          |         | current scene                                      |
-| `joindevice`      | Switch         | RW          |    Y    | put the ELRO K1 hub in device join mode: 3 short presses on the physical device button will then link the device to the hub and make it available for configuration in openHAB. Device join mode will automatically time out after the refresh interval |
 
 The `scene` channel has a dynamic state options list with all possible scene choices available in the hub.
 
@@ -185,5 +184,3 @@ then
     ...
 end
 ```
-
-

@@ -41,7 +41,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.ElroDeviceType;
 import org.openhab.binding.elroconnects.internal.ElroConnectsDynamicStateDescriptionProvider;
 import org.openhab.binding.elroconnects.internal.ElroConnectsMessage;
-import org.openhab.binding.elroconnects.internal.console.ElroConnectsCommandExtension;
 import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDevice;
 import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDeviceCxsmAlarm;
 import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDeviceEntrySensor;
@@ -52,8 +51,6 @@ import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDeviceTempe
 import org.openhab.binding.elroconnects.internal.discovery.ElroConnectsDiscoveryService;
 import org.openhab.binding.elroconnects.internal.util.ElroConnectsUtil;
 import org.openhab.core.common.NamedThreadFactory;
-import org.openhab.core.io.console.Console;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -122,7 +119,6 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     private static final Pattern CTRL_KEY_PATTERN = Pattern.compile("KEY:([0-9a-f]*)");
 
     private int refreshInterval = 60;
-    private int deviceConfigDuration = 60;
     private volatile @Nullable InetAddress addr;
     private volatile String ctrlKey = "";
 
@@ -130,7 +126,6 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     private volatile @Nullable DatagramPacket ackPacket;
 
     private volatile @Nullable ScheduledFuture<?> syncFuture;
-    private volatile @Nullable ScheduledFuture<?> cancelJoinDeviceFuture;
     private volatile @Nullable CompletableFuture<Boolean> awaitResponse;
 
     private ElroConnectsDynamicStateDescriptionProvider stateDescriptionProvider;
@@ -159,7 +154,6 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         ElroConnectsBridgeConfiguration config = getConfigAs(ElroConnectsBridgeConfiguration.class);
         connectorId = config.connectorId;
         refreshInterval = config.refreshInterval;
-        deviceConfigDuration = config.deviceConfigDuration;
 
         if (connectorId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.no-device-id");
@@ -852,44 +846,10 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                         logger.debug("Cannot interpret scene command {}", command);
                     }
                 }
-            } else if (JOIN_DEVICE.equals(channelUID.getId())) {
-                if (OnOffType.ON.equals(command)) {
-                    joinDevice();
-                    updateState(JOIN_DEVICE, OnOffType.ON);
-                    scheduleCancelJoinDevice();
-                } else {
-                    cancelJoinDevice();
-                    updateState(JOIN_DEVICE, OnOffType.OFF);
-                }
             }
         } catch (IOException e) {
             restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
         }
-    }
-
-    private void scheduleCancelJoinDevice() {
-        scheduleCancelJoinDevice(null, null);
-    }
-
-    private void scheduleCancelJoinDevice(@Nullable ElroConnectsCommandExtension commandExtension,
-            @Nullable Console console) {
-        ScheduledFuture<?> future = cancelJoinDeviceFuture;
-        if (future != null) {
-            future.cancel(false);
-        }
-        cancelJoinDeviceFuture = scheduler.schedule(() -> {
-            try {
-                cancelJoinDevice();
-                getDeviceStatuses();
-                getDeviceNames();
-                if ((commandExtension != null) && (console != null)) {
-                    commandExtension.joinDeviceCancelled(console);
-                }
-            } catch (IOException e) {
-                restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
-            }
-            updateState(JOIN_DEVICE, OnOffType.OFF);
-        }, deviceConfigDuration, TimeUnit.SECONDS);
     }
 
     /**
@@ -997,11 +957,9 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public void joinDeviceFromConsole(ElroConnectsCommandExtension commandExtension, Console console) {
+    public void joinDeviceFromConsole() {
         try {
             joinDevice();
-            updateState(JOIN_DEVICE, OnOffType.ON);
-            scheduleCancelJoinDevice(commandExtension, console);
         } catch (IOException e) {
             restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
         }
@@ -1010,7 +968,6 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     public void cancelJoinDeviceFromConsole() {
         try {
             cancelJoinDevice();
-            updateState(JOIN_DEVICE, OnOffType.OFF);
         } catch (IOException e) {
             restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
         }

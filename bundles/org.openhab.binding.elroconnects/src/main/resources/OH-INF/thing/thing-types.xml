@@ -10,7 +10,6 @@
 		<channels>
 			<channel id="scene" typeId="scene"/>
 			<channel id="alarm" typeId="alarm"/>
-			<channel id="joindevice" typeId="joindevice"/>
 		</channels>
 		<representation-property>connectorId</representation-property>
 		<config-description>
@@ -30,13 +29,6 @@
 				<label>Refresh Interval</label>
 				<description>Heartbeat device refresh interval for communication with ELRO Connects K1 Connector in seconds, default
 					60s</description>
-				<default>60</default>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="deviceConfigDuration" type="integer">
-				<label>Configuration Duration</label>
-				<description>Duration for the ELRO Connects K1 Connector to remain in mode that allows configuring devices in
-					seconds, default 60s</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -222,13 +214,6 @@
 		<item-type>String</item-type>
 		<label>Scene</label>
 		<description>Scene selection from scenes configured in the ELRO Connects app, enables configuring alarm modes</description>
-	</channel-type>
-	<channel-type id="joindevice" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Join Device</label>
-		<description>Put the ELRO K1 hub in device join mode. 3 short presses on the physical device button will then link the
-			device to the hub and make it available for configuration in openHAB. Device join mode will automatically time out
-			after the refresh interval</description>
 	</channel-type>
 
 	<channel-type id="alarm">

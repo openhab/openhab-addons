@@ -120,7 +120,7 @@ public class ElroConnectsCommandExtension extends AbstractConsoleCommandExtensio
                     console.println("No extra argument allowed after '" + args[1] + "'");
                     printUsage(console);
                 } else {
-                    bridgeHandler.joinDeviceFromConsole(this, console);
+                    bridgeHandler.joinDeviceFromConsole();
                     console.println("Device join mode active");
                 }
                 break;
