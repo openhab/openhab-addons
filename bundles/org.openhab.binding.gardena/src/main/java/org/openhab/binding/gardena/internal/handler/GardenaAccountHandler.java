@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaSmartEventListener {
     private final Logger logger = LoggerFactory.getLogger(GardenaAccountHandler.class);
-    private final long REINITIALIZE_DELAY_SECONDS = 10;
+    private final long REINITIALIZE_DELAY_SECONDS = 120;
     private final long REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED = 24;
 
     private @Nullable GardenaDeviceDiscoveryService discoveryService;
