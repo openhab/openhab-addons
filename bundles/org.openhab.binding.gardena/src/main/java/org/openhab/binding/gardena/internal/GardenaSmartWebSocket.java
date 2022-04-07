@@ -112,8 +112,8 @@ public class GardenaSmartWebSocket {
     }
 
     public void restart(String newUrl) throws Exception {
-        session = (WebSocketSession) webSocketClient.connect(this, new URI(newUrl)).get();
         logger.debug("Reconnecting to Gardena Webservice ({})", socketId);
+        session = (WebSocketSession) webSocketClient.connect(this, new URI(newUrl)).get();
     }
 
     @OnWebSocketConnect
