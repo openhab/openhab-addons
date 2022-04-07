@@ -102,7 +102,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                     // if there was an error 429 (Too Many Requests), wait for 24 hours before trying again
                     scheduleReinitialize(REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED, TimeUnit.HOURS);
                 } else {
-                    // otherwise reinitialize after 10 seconds
+                    // otherwise reinitialize after 120 seconds
                     scheduleReinitialize(REINITIALIZE_DELAY_SECONDS, TimeUnit.SECONDS);
                 }
                 logger.warn("{}", ex.getMessage());
