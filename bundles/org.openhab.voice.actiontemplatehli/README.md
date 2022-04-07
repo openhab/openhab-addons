@@ -35,7 +35,7 @@ Two important notes:
 
 ## Action Template Scoring
 
-The scoring mechanism scores each action config to look for the best scored.
+The scoring mechanism scores each action configuration to look for the best scored.
 If a token fails the comparison, the action scores 0.
 If all actions scored 0, none is executed.
 
