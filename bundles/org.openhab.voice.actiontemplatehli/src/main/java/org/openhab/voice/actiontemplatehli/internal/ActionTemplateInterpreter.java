@@ -220,7 +220,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             }
             String response = processAction(words, checkActionConfigs(words, info.tokens, info.tags, info.lemmas));
             if (response == null) {
-                logger.debug("silence mode; no response");
+                logger.debug("silent mode; no response");
                 return "";
             }
             if (!config.fallbackHLI.isBlank() && config.unhandledMessage.equals(response)) {
@@ -593,7 +593,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     private @Nullable String sendItemCommand(Item item, String text, ActionTemplateConfiguration actionConfiguration,
             Map<String, String> placeholderValues) throws IOException {
         Object valueTemplate = actionConfiguration.value;
-        boolean silence = actionConfiguration.silence;
+        boolean silent = actionConfiguration.silent;
         String replacedValue = null;
         Command command = null;
         // Special type handling
@@ -623,17 +623,17 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                     if (!targetMembers.isEmpty()) {
                         // swap the command target by the matched members
                         boolean ok = true;
-                        boolean groupsilence = true;
+                        boolean groupsilent = true;
                         for (var targetMember : targetMembers) {
                             var response = sendItemCommand(targetMember, text, actionConfiguration, placeholderValues);
                             if (config.failMessage.equals(response)) {
                                 ok = false;
                             }
                             if (response != null) {
-                                groupsilence = false;
+                                groupsilent = false;
                             }
                         }
-                        return ok ? (groupsilence ? null : config.commandSentMessage) : config.failMessage;
+                        return ok ? (groupsilent ? null : config.commandSentMessage) : config.failMessage;
                     } else {
                         logger.warn("configured targetMembers were not found in group '{}'", groupItem.getName());
                         return config.failMessage;
@@ -653,7 +653,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), replacedValue);
             } else if ("String".equals(item.getType())) {
                 // We interpret processing will continue in a rule
-                silence = true;
+                silent = true;
                 command = new StringType(text);
             }
         }
@@ -662,8 +662,8 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             return config.failMessage;
         }
         eventPublisher.post(ItemEventFactory.createCommandEvent(item.getName(), command));
-        if (silence) {
-            // when silence mode give no result
+        if (silent) {
+            // when silent mode give no result
             return null;
         } else {
             return config.commandSentMessage;

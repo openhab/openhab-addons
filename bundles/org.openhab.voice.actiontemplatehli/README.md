@@ -23,29 +23,47 @@ I will briefly explain some terms that will be used:
 
 ## Action Template Target:
 
-This interpreter allows two ways of target and item:
+This interpreter allows two ways to target items:
 
-* You can link an action to a specific item by adding it the custom metadata namespace 'actiontemplatehli'.
+* You can link an action to a specific item by adding the custom metadata namespace 'actiontemplatehli' to it.
 * You can link an action to all items of a type by providing the file '<OPENHAB_USERDATA>/actiontemplatehli/type_actions/<ITEM_TYPE_NAME>.json' (here you can restrict each action by item tags).
 
 Two important notes:
 
 * Actions linked to items have prevalence over actions linked to a whole item type.
-* On actions linked to an item type the itemLabel placeholder will always be applied (explained bellow), if there are multiple item label detected in the text this part will be aborted.
+* On actions linked to an item type the itemLabel placeholder will always be applied (explained bellow). If there are multiple item labels detected on the input the actions linked to both will be scored, each using the correct itemLabel value, so there should be no collisions in case a template contains a token that matches an item label.
 
-## Action Templates Configuration:
+## Action Template Scoring
 
-Actions can read from an item or send a command to it.
+The scoring mechanism scores each action config to look for the best scored.
+If a token fails the comparison, the action scores 0.
+If all actions scored 0, none is executed.
+
+The action configuration field 'type' defines if the template should be compared using tokens or lemmas.
+Please note that the captured placeholder value is extracted from the tokens not from the lemmas, but the equivalent lemmas are replaced before scoring.
+
+The action template string is a list of tokens separated by white space.
+You can use the ';' separator to provide alternative templates and the '|' to provide alternative tokens.
+Here is an example of string: "what app|application is open on $itemLabel;what app|application is on $itemLabel".
+
+Take in account that, as this is a token basis comparison, matching depends on the tokenizer you are using as they can produce different tokens for the same text.
+
+## Action Template Options:
+
+The location were action configurations are placed changes whetter you are targeting an item or many, so take a look to the 'Action Template Target' to understand were to put this configurations.
+Also you can check the paths indicated on the examples at the end.
+
+Actions can read the state from an item or send a command to it.
 This is defined by the boolean field read which is 'false' by default.
 
 When read is false:
 
 * template: action template. (Required)
-* value: value to by send. It can be used to capture the transformed placeholder values. (Required unless if the target item type is String in that case silence mode is assumed true and the whole text is passed to item).
-* type: action template type.
-* requiredTags: allow to restrict the item targets by its tags.
+* value: value to be sent. It can be used to capture the transformed placeholder values. (Required unless the target item type is String, in which case silent mode is assumed to be true and the whole text is passed to the item).
+* type: action template type, either "tokens" or "lemmas".
+* requiredTags: allow to restrict the items targeted by its tags.
 * placeholders: defined placeholders that can be used on the template and replaced on the value.
-* silence: boolean used to avoid confirmation message.
+* silent: boolean used to avoid confirmation message.
 * targetMembers: when targeting a Group item, can be used to send the command to its member items instead.
 
 When read is true:
@@ -54,26 +72,27 @@ When read is true:
 * value: read template, can use the placeholders symbols $itemLabel and $state.
 * emptyValue: An alternative template. Is used when the state value is empty or NULL after the post transformation. The $itemLabel is available.
 * type: action template type.
-* requiredTags: allow to restrict the item targets by its tags.
+* requiredTags: allow to restrict the items targeted by its tags.
 * placeholders: only the placeholder with label state will be used, to process its POS transformation on the state.
-* targetMembers: when targeting a Group item, can be used access the state of one of its members, if multiples matches a warning is shown and the first one is used.
+* targetMembers: when targeting a Group item, can be used to access the state of one of its members. In case of multiple matches, a warning is shown and the first one is used.
 
 ## Placeholders
 
-This configuration allow you to define a symbols to use on your templates.
+This configuration allow you to define symbols to use on your templates.
 You can define the sets of tokens to match using ner, and a transformation using pos.
 Those are its fields:
 
- * label: label for the placeholder, is prefixed by '$' and spaces are replaced by '_' to create the symbol you can use on the template (Required).
- * nerValues: list of string containing parts of the text to look for. Takes precedence over the ner field.
+ * label: label for the placeholder, is prefixed with '$' and spaces are replaced by '_' to create the symbol you can use on the template (Required).
+ * nerValues: list of strings containing parts of the text to look for. Takes precedence over the ner field.
  * ner: name for a file under the ner folder (<OPENHAB_USERDATA>/actiontemplatehli/ner), first it will look for a <ner>.bin model and then for a <ner>.xml dictionary for applying ner (prevalence over 'nerValues').
  * posValues: apply a pos transformation with static values. Takes precedence over the pos field.
  * pos: name for a file under the pos folder (<OPENHAB_USERDATA>/actiontemplatehli/pos), first it will look for a <pos>.bin model and then for a <pos>.xml dictionary (prevalence over 'posValues').
 
 The placeholder symbol replaces the text tokens matched using NER (before scoring the actions) and the captured value could be transformed using POS and will be accessible to the value under its symbol.
 As a summary, using the placeholders you can configure how parts of the speech are converted into valid item values and backward.
+The examples at the end of the document can help you to see it clearer.
 
-There are some special placeholders, described in another section.
+There are some special placeholders, described in their own sections bellow.
 
 ### POS Transformation
 
@@ -82,15 +101,15 @@ That's the reason why the whitespace character should be replaced by '__' in the
 
 ### Target members:
 
-When the target of an action is group item you can target its members instead.
+When the target of an action is group item, you can target its members instead.
 
 You can use the following fields:
 
 * itemName: name of the item member to target. If present the other fields are ignored.
 * itemType: type of the item members to target.
-* requiredTags: allow to restrict the member targets by its tags when matching by type.
+* requiredTags: allow to restrict the members targeted by its tags when matching by type.
 * recursive: when matching by itemType, look for group members in a recursive way, default true.
-* mergeState: on a read action when matching by itemType, merge the item states, only allowed for 'Switch' and 'Contact' item types, default false.
+* mergeState: on a read action when matching by itemType, merge the item states by performing an AND operation, only allowed for 'Switch' and 'Contact' item types, default false.
 
 ## Special Placeholders
 
@@ -114,14 +133,24 @@ It has some restrictions:
 
 * Can not be the only token on the template.
 * Can not be used as an optional token.
-* Can not be used multiple type on the same template alternative.
+* Can not be used multiple times on the same template alternative.
 
-Note that the dynamic placeholder does not score.
+Note that the dynamic placeholder does not score. This way you can use it to fallback other sentences.
+
+This example can help you to understand how this works:
+
+You have an action with the template "play $* on living room" and another action with the template "play $musicAuthor on living room" and assuming 'mozart' is a valid value for the placeholder '$musicAuthor'.
+
+The sentence "play mozart on living room" will score 4 when compared with the template containing the dynamic placeholder and 5 when compared with the one without it.
+The action with template "play $musicAuthor on living room" will be executed.
+
+The sentence "play beethoven on living room" will score 4 when compared with the template containing the dynamic placeholder and 0 when compared with the one without it.
+The action with template "play $* on living room" will be executed.
 
 ## Text Preprocessing
 
-The interpreter needs to match the input text with a target item and action config, to know what to do.
-To do so, it need the tokens and optionally the POS tags and the lemmas.
+The interpreter needs to match the input text with a target item and action configuration, to know what to do.
+To do so, it needs the tokens and optionally the POS tags and the lemmas.
 
 ### Tokenizer
 
@@ -133,26 +162,24 @@ Tokenizing the text is enough to use the action type 'tokens' as tokens are the 
 
 You need to provide a model for POS tagging at '<OPENHAB_USERDATA>/actiontemplatehli/pos.bin' for your language. 
 This will produce a language tag for each token, that can be used in 'optionalLanguageTags' to make some optional for scoring.
-Note that you need the correct language tags for the lemmatizer to work.
+As an example:
+
+The tokens "that,sounds,good" produces the tags "DT,VBZ,JJ".
+
+Assuming optionalLanguageTags is empty, if we have an action with template "sounds good" it will get a 0 score when compared to the text "that sounds good" because the token "that" is not in the template.
+
+But if we set optionalLanguageTags to "DT", the action template "sounds good" will score 2 against the text "that sounds good" as the tokens with the tag "DT" are considered optional when scoring.
+
+Note that if we have another action with the template "that sounds good" it will score 3 and take prevalence.
+
+You need the correct language tags for the lemmatizer to work.
 
 ### Lemmatizer
 
 You need to provide a model for the lemmatizer at '<OPENHAB_USERDATA>/actiontemplatehli/lemma.bin' for your language. 
-This will produce a lemma for each token, now you can use the action type 'lemmas'
+This will produce a lemma for each token, then you can use the action type 'lemmas'.
 
-## Action Scoring
-
-The scoring mechanism scores each action config to look for the best scored.
-If some token fails the comparison the action scores 0.
-If all action scored 0 none is executed.
-
-By the value of the field 'type' it defines if the template should by compared with the tokens or the lemmas.
-Please note that the captured placeholder value is extracted from the tokens not from the lemmas, but the equivalent lemmas are replaced before scoring.
-
-The action template string is a list of tokens separated by white space.
-You can use the ';' separator to provide alternative templates and the '|' to provide alternative tokens.
-
-Take in account that, as this is a token basis comparison, matching changes depending on the tokenizer you are using as they can produce different tokens for the same text.
+Note that you need the POS language tags for your language, the ones covered on the previous section, for the lemmatizer to work.
 
 ### Interpreter Configuration
 
@@ -171,7 +198,7 @@ Take in account that, as this is a token basis comparison, matching changes depe
 
 ### String type action configs example:
 
-This example contain the files to add actions for open an android application and check what is open.
+This example contains the files to add actions for opening an android application and checking what application is opened.
 These actions will target all String items with the tag 'launch_android_app'.
 
 These are the files needed:
@@ -183,7 +210,7 @@ These are the files needed:
     {
         "template": "launch|open $app on $itemLabel",
         "value": "$app",
-	      "type": "tokens",
+        "type": "tokens",
         "requiredTags": ["launch_android_app"],
         "placeholders": [
             {
@@ -198,7 +225,7 @@ These are the files needed:
         "read": true,
         "value": "the open app is $state",
         "emptyValue": "no app open on $itemLabel",
-	      "type": "tokens",
+        "type": "tokens",
         "requiredTags": ["launch_android_app"],
         "placeholders": [
             {
@@ -273,7 +300,7 @@ These are the files needed:
 
 ### Switch type action configs example:
 
-This example contain the files to add actions for turn a switch on or off.
+This example contains the files to add actions for turning a switch on or off.
 These actions will target all Switch items.
 
 #### File '<OPENHAB_USERDATA>/actiontemplatehli/type_actions/Switch.json'
@@ -307,9 +334,9 @@ These actions will target all Switch items.
 ]
 ```
 
-### Dynamic placeholder example:
+### Dynamic placeholder, sending a message example:
 
-This example contain the item metadata to add an action that uses the dynamic placeholder.
+This example contains the item metadata to add an action that uses the dynamic placeholder.
 Add a custom metadata 'actiontemplatehli' to a String item with the following:
 
 ```yaml
@@ -321,7 +348,7 @@ config:
         - Andrea
         - Jacob
         - Raquel
-  silence: true
+  silent: true
   template: send message $* to $contact
   type: tokens
   value: $contact:$*

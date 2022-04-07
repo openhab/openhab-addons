@@ -46,8 +46,8 @@ public class ActionTemplateConfiguration {
     public List<ActionTemplatePlaceholder> placeholders = List.of();
     @JsonProperty("requiredTags")
     public String[] requiredItemTags = new String[] {};
-    @JsonProperty("silence")
-    public boolean silence = false;
+    @JsonProperty("silent")
+    public boolean silent = false;
     @JsonProperty("memberTargets")
     public @Nullable ActionTemplateGroupTargets memberTargets = null;
 
