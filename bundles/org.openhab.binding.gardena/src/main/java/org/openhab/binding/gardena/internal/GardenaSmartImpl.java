@@ -364,32 +364,37 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     }
 
     @Override
-    public synchronized void onWebSocketClose(String id) {
+    public void onWebSocketClose(String id) {
         restartWebsocket(webSockets.get(id));
     }
 
     @Override
-    public synchronized void onWebSocketError(String id) {
+    public void onWebSocketError(String id) {
         restartWebsocket(webSockets.get(id));
     }
 
-    private synchronized void restartWebsocket(@Nullable GardenaSmartWebSocket socket) {
-        if (socket != null && !socket.isClosing()) {
-            logger.warn("Restarting GardenaSmart Webservice ({})", socket.getSocketID());
-            socket.stop();
-            // restart after 3 seconds
-            scheduler.schedule(() -> {
-                try {
-                    WebSocketCreatedResponse webSocketCreatedResponse = getWebsocketInfo(socket.getLocationID());
-                    // only restart single socket, do not restart binding
-                    socket.restart(webSocketCreatedResponse.data.attributes.url);
-                } catch (Exception ex) {
-                    // restart binding on error
-                    logger.warn("Restarting GardenaSmart Webservice failed ({}): {}, restarting binding",
-                            socket.getSocketID(), ex.getMessage());
-                    eventListener.onError();
-                }
-            }, 3, TimeUnit.SECONDS);
+    private void restartWebsocket(@Nullable GardenaSmartWebSocket socket) {
+        synchronized (this) {
+            if (socket != null && !socket.isClosing()) {
+                // close socket, if still open
+                logger.warn("Restarting GardenaSmart Webservice ({})", socket.getSocketID());
+                socket.stop();
+            } else {
+                // if socket is already closing, exit function and do not restart socket
+                return;
+            }
+        }
+
+        try {
+            Thread.sleep(3000);
+            WebSocketCreatedResponse webSocketCreatedResponse = getWebsocketInfo(socket.getLocationID());
+            // only restart single socket, do not restart binding
+            socket.restart(webSocketCreatedResponse.data.attributes.url);
+        } catch (Exception ex) {
+            // restart binding on error
+            logger.warn("Restarting GardenaSmart Webservice failed ({}): {}, restarting binding", socket.getSocketID(),
+                    ex.getMessage());
+            eventListener.onError();
         }
     }
 
