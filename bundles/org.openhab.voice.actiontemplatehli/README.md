@@ -101,7 +101,7 @@ That's the reason why the whitespace character should be replaced by '__' in the
 
 ### Target members:
 
-When the target of an action is group item, you can target its members instead.
+When the target of an action is a group item, you can target its members instead.
 
 You can use the following fields:
 
