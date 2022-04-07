@@ -139,6 +139,10 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
 
             startWebsockets();
             initialized = true;
+        } catch (GardenaException ex) {
+            dispose();
+            // pass GardenaException to calling function
+            throw ex;
         } catch (Exception ex) {
             dispose();
             throw new GardenaException(ex.getMessage(), ex);
@@ -210,7 +214,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
 
             if (status != 200 && status != 204 && status != 201 && status != 202) {
                 throw new GardenaException(String.format("Error %s %s, %s", status, contentResponse.getReason(),
-                        contentResponse.getContentAsString()));
+                        contentResponse.getContentAsString()), status);
             }
 
             if (result == null) {
