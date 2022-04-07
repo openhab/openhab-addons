@@ -20,9 +20,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.omnilink.internal.handler.OmnilinkBridgeHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +37,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OmnilinkActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(OmnilinkActions.class);
+    private final TimeZoneProvider timeZoneProvider;
     private @Nullable OmnilinkBridgeHandler handler;
+
+    public OmnilinkActions(final @Reference TimeZoneProvider timeZoneProvider) {
+        this.timeZoneProvider = timeZoneProvider;
+    }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
@@ -51,18 +58,18 @@ public class OmnilinkActions implements ThingActions {
 
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
     public void setDateTime(
-            @ActionInput(name = "locale", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable String locale) {
+            @ActionInput(name = "zone", label = "@text/actionInputZoneLabel", description = "@text/actionInputZoneDesc") @Nullable String zone) {
         OmnilinkBridgeHandler actionsHandler = handler;
         ZonedDateTime zdt;
-        if (locale != null) {
-            zdt = ZonedDateTime.now(ZoneId.of(locale));
-            if (actionsHandler == null) {
-                logger.info("Action service ThingHandler is null!");
-            } else {
-                actionsHandler.setDateTime(zdt);
-            }
+        if (zone != null) {
+            zdt = ZonedDateTime.now(ZoneId.of(zone));
         } else {
-            logger.info("Locale provided was null, no command was sent!");
+            zdt = ZonedDateTime.now(timeZoneProvider.getTimeZone());
+        }
+        if (actionsHandler == null) {
+            logger.info("Action service ThingHandler is null!");
+        } else {
+            actionsHandler.setDateTime(zdt);
         }
     }
 }
