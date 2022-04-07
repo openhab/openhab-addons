@@ -14,6 +14,7 @@ package org.openhab.binding.pulseaudio.internal.items;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,8 +32,8 @@ public class Sink extends AbstractAudioDeviceConfig {
     protected List<String> combinedSinkNames;
     protected List<Sink> combinedSinks;
 
-    public Sink(int id, String name, @Nullable Module module) {
-        super(id, name, module);
+    public Sink(int id, String name, String description, Map<String, String> properties, @Nullable Module module) {
+        super(id, name, description, properties, module);
         combinedSinkNames = new ArrayList<>();
         combinedSinks = new ArrayList<>();
     }
