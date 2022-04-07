@@ -58,7 +58,7 @@ It will not be possible to receive alarms and control them from openHAB in this 
 
 | Parameter         | Description            |
 |--------------------|----------------------|
-| `deviceId` | Required parameter, set by discovery and cannot easily be found manually. It should be a number |
+| `deviceId` | Required parameter, set by discovery. For manual configuration, use the ´elroconnects <connectorId> devices´ console command to get a list of available devices. It should be a number |
 
 ## Channels
 
