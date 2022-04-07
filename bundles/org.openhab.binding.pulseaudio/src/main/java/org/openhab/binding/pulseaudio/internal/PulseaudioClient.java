@@ -60,7 +60,6 @@ public class PulseaudioClient {
     private @Nullable Socket client;
 
     private List<AbstractAudioDeviceConfig> items;
-    private boolean itemsHasBeenUpdatedAtLeastOnce = false;
     private List<Module> modules;
 
     /**
@@ -146,33 +145,28 @@ public class PulseaudioClient {
      * updates the item states and their relationships
      */
     public synchronized void update() {
-        try {
-            // one step copy
-            modules = new ArrayList<Module>(Parser.parseModules(listModules()));
+        // one step copy
+        modules = new ArrayList<Module>(Parser.parseModules(listModules()));
 
-            List<AbstractAudioDeviceConfig> newItems = new ArrayList<>(); // prepare new list before assigning it
-            if (configuration.sink) {
-                logger.debug("reading sinks");
-                newItems.addAll(Parser.parseSinks(listSinks(), this));
-            }
-            if (configuration.source) {
-                logger.debug("reading sources");
-                newItems.addAll(Parser.parseSources(listSources(), this));
-            }
-            if (configuration.sinkInput) {
-                logger.debug("reading sink-inputs");
-                newItems.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
-            }
-            if (configuration.sourceOutput) {
-                logger.debug("reading source-outputs");
-                newItems.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
-            }
-            logger.debug("Pulseaudio server {}: {} modules and {} items updated", host, modules.size(),
-                    newItems.size());
-            items = newItems;
-        } finally {
-            itemsHasBeenUpdatedAtLeastOnce = true;
+        List<AbstractAudioDeviceConfig> newItems = new ArrayList<>(); // prepare new list before assigning it
+        if (configuration.sink) {
+            logger.debug("reading sinks");
+            newItems.addAll(Parser.parseSinks(listSinks(), this));
         }
+        if (configuration.source) {
+            logger.debug("reading sources");
+            newItems.addAll(Parser.parseSources(listSources(), this));
+        }
+        if (configuration.sinkInput) {
+            logger.debug("reading sink-inputs");
+            newItems.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
+        }
+        if (configuration.sourceOutput) {
+            logger.debug("reading source-outputs");
+            newItems.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
+        }
+        logger.debug("Pulseaudio server {}: {} modules and {} items updated", host, modules.size(), newItems.size());
+        items = newItems;
     }
 
     private String listModules() {
@@ -227,7 +221,7 @@ public class PulseaudioClient {
      * @return the corresponding {@link Sink} to the given <code>name</code>
      */
     public @Nullable Sink getSink(String name) {
-        for (AbstractAudioDeviceConfig item : getItems()) {
+        for (AbstractAudioDeviceConfig item : items) {
             if (item.getPaName().equalsIgnoreCase(name) && item instanceof Sink) {
                 return (Sink) item;
             }
@@ -241,7 +235,7 @@ public class PulseaudioClient {
      * @return the corresponding {@link Sink} to the given <code>id</code>
      */
     public @Nullable Sink getSink(int id) {
-        for (AbstractAudioDeviceConfig item : getItems()) {
+        for (AbstractAudioDeviceConfig item : items) {
             if (item.getId() == id && item instanceof Sink) {
                 return (Sink) item;
             }
@@ -255,7 +249,7 @@ public class PulseaudioClient {
      * @return the corresponding {@link Source} to the given <code>id</code>
      */
     public @Nullable Source getSource(int id) {
-        for (AbstractAudioDeviceConfig item : getItems()) {
+        for (AbstractAudioDeviceConfig item : items) {
             if (item.getId() == id && item instanceof Source) {
                 return (Source) item;
             }
@@ -269,7 +263,7 @@ public class PulseaudioClient {
      * @return the corresponding {@link AbstractAudioDeviceConfig} to the given <code>name</code>
      */
     public @Nullable AbstractAudioDeviceConfig getGenericAudioItem(String name) {
-        for (AbstractAudioDeviceConfig item : getItems()) {
+        for (AbstractAudioDeviceConfig item : items) {
             if (item.getPaName().equalsIgnoreCase(name)) {
                 return item;
             }
@@ -279,21 +273,13 @@ public class PulseaudioClient {
 
     /**
      * Get all items previously parsed from the pulseaudio server.
-     * If no scan has occured, then wait an extra 2 seconds before retrying.
+     * If no scan has occured, then wait an extra 5 seconds before retrying.
      * (the wait can prevent error on startup)
      *
      * @return All items parsed from the pulseaudio server
      */
     public List<AbstractAudioDeviceConfig> getItems() {
-        if (itemsHasBeenUpdatedAtLeastOnce) {
-            return items;
-        } else {
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-            }
-            return items;
-        }
+        return items;
     }
 
     /**

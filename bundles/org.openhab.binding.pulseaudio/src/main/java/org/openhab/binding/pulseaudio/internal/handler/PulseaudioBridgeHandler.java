@@ -19,12 +19,12 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,6 +41,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -77,10 +78,11 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
     @Nullable
     private ScheduledFuture<?> pollingJob;
 
-    private List<PulseaudioHandler> getChildHandlers() {
-        return getThing().getThings().stream().map(Thing::getHandler).map(PulseaudioHandler.class::cast)
-                .filter(Objects::nonNull).filter(pah -> Objects.nonNull(pah.getName())).collect(Collectors.toList());
-    }
+    private boolean initializationCompleted = false;
+    private ReentrantLock initializationCompletedLock = new ReentrantLock();
+    private Condition initializationCompletedCondition = initializationCompletedLock.newCondition();
+
+    private Set<PulseaudioHandler> childHandlersInitialized = new HashSet<>();
 
     public synchronized void update() {
         try {
@@ -99,7 +101,7 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
 
         getClient().update();
         // browse all child handlers to update status according to the result of the query to the pulse audio server
-        for (PulseaudioHandler pulseaudioHandler : getChildHandlers()) {
+        for (PulseaudioHandler pulseaudioHandler : childHandlersInitialized) {
             AbstractAudioDeviceConfig audioItemDevice = getClient().getGenericAudioItem(pulseaudioHandler.getName());
             if (audioItemDevice != null) {
                 pulseaudioHandler.deviceUpdate(audioItemDevice);
@@ -118,6 +120,15 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
                     }
                     lastActiveDevices.add(device.getPaName());
                 }
+            }
+        }
+        if (!initializationCompleted) {
+            try {
+                initializationCompletedLock.lock();
+                initializationCompleted = true;
+                initializationCompletedCondition.signalAll();
+            } finally {
+                initializationCompletedLock.unlock();
             }
         }
     }
@@ -191,6 +202,7 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
         if (clientFinal != null) {
             clientFinal.disconnect();
         }
+        this.initializationCompleted = false;
         super.dispose();
     }
 
@@ -210,5 +222,37 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
     public void resetKnownActiveDevices() {
         lastActiveDevices = new HashSet<>();
         update();
+    }
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        if (childHandler instanceof PulseaudioHandler) {
+            this.childHandlersInitialized.add((PulseaudioHandler) childHandler);
+        } else {
+            logger.error("This bridge can only support PulseaudioHandler child");
+        }
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        this.childHandlersInitialized.remove(childHandler);
+    }
+
+    public void waitForInitialization() {
+        if (initializationCompleted) {
+            logger.debug("No need to wait for initialization");
+            return;
+        }
+        try {
+            logger.debug("Waiting for initialization end");
+            initializationCompletedLock.lock();
+            if (!initializationCompleted && !initializationCompletedCondition.await(10, TimeUnit.SECONDS)) {
+                logger.info("Abnormal wait : too long initialization");
+            }
+        } catch (InterruptedException e) {
+        } finally {
+            logger.debug("End of initialization wait");
+            initializationCompletedLock.unlock();
+        }
     }
 }

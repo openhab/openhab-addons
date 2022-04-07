@@ -78,7 +78,7 @@ public class PulseaudioHandler extends BaseThingHandler {
                     SOURCE_THING_TYPE, SOURCE_OUTPUT_THING_TYPE).collect(Collectors.toSet()));
     private final Logger logger = LoggerFactory.getLogger(PulseaudioHandler.class);
 
-    private @NonNullByDefault({}) String name;
+    private String name = "";
     private @Nullable PulseAudioAudioSink audioSink;
     private @Nullable PulseAudioAudioSource audioSource;
     private @Nullable Integer savedVolume;
@@ -101,6 +101,7 @@ public class PulseaudioHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
         PulseaudioBridgeHandler pulseaudioBridgeHandler = getPulseaudioBridgeHandler();
         if (pulseaudioBridgeHandler != null) {
+            pulseaudioBridgeHandler.waitForInitialization();
             deviceUpdate(pulseaudioBridgeHandler.getDevice(name));
         } else {
             logger.warn("Bridge doesn't exist, cannot initialize pulseaudio device named {}", name);
