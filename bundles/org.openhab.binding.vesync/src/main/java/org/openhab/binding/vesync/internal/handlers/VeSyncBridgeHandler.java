@@ -26,9 +26,8 @@ import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
-import org.openhab.binding.vesync.internal.api.HttpClientMonitor;
+import org.openhab.binding.vesync.internal.api.IHttpClientProvider;
 import org.openhab.binding.vesync.internal.api.VeSyncV2ApiHelper;
 import org.openhab.binding.vesync.internal.discovery.DeviceMetaDataUpdatedHandler;
 import org.openhab.binding.vesync.internal.discovery.VeSyncDiscoveryService;
@@ -57,8 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author David Goodyear - Initial Contribution
  */
 @NonNullByDefault
-public class VeSyncBridgeHandler extends BaseBridgeHandler
-        implements VeSyncClient, HttpClientMonitor.IHttpClientWatcher {
+public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClient {
 
     private static final int DEFAULT_DEVICE_SCAN_INTERVAL = 600;
     private static final int DEFAULT_DEVICE_SCAN_RECOVERY_INTERVAL = 60;
@@ -69,20 +67,19 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler
     private @Nullable ScheduledFuture<?> backgroundDiscoveryPollingJob;
 
     protected final VeSyncV2ApiHelper api = new VeSyncV2ApiHelper();
-    private @Nullable HttpClientMonitor httpClientMonitor = null;
+    private IHttpClientProvider httpClientProvider;
 
-    public VeSyncBridgeHandler(Bridge bridge, @NotNull HttpClientMonitor httpClientMonitor) {
+    private volatile int backgroundScanTime = -1;
+    private final Object scanConfigLock = new Object();
+
+    public VeSyncBridgeHandler(Bridge bridge, @NotNull IHttpClientProvider httpClientProvider) {
         super(bridge);
-        this.httpClientMonitor = httpClientMonitor;
-        httpClientMonitor.addWatcher(this);
+        this.httpClientProvider = httpClientProvider;
     }
 
     public ThingUID getUID() {
         return thing.getUID();
     }
-
-    private volatile int backgroundScanTime = -1;
-    private final Object scanConfigLock = new Object();
 
     protected void checkIfIncreaseScanRateRequired() {
         logger.trace("Checking if increased background scanning for new devices / base information is required");
@@ -195,6 +192,8 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void initialize() {
+        api.setHttpClient(httpClientProvider.getHttpClient());
+
         VeSyncBridgeConfiguration config = getConfigAs(VeSyncBridgeConfiguration.class);
 
         scheduler.submit(() -> {
@@ -217,10 +216,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler
     @Override
     public void dispose() {
         setBackgroundScanInterval(DEFAULT_DEVICE_SCAN_DISABLED);
-        HttpClientMonitor httpClientMonitorRef = httpClientMonitor;
-        if (httpClientMonitorRef != null) {
-            httpClientMonitorRef.removeWatcher(this);
-        }
+        api.setHttpClient(null);
     }
 
     @Override
@@ -241,10 +237,5 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler
     public String reqV2Authorized(final String url, final String macId, final VeSyncAuthenticatedRequest requestData)
             throws AuthenticationException, DeviceUnknownException {
         return api.reqV2Authorized(url, macId, requestData);
-    }
-
-    @Override
-    public void handleNewHttpClient(final @Nullable HttpClient newClientRef) {
-        api.setHttpClient(newClientRef);
     }
 }

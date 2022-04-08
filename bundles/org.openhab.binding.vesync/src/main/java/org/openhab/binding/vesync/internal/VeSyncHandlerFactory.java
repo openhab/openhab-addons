@@ -18,7 +18,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.vesync.internal.api.HttpClientMonitor;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.vesync.internal.api.IHttpClientProvider;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirHumidifierHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirPurifierHandler;
@@ -42,12 +43,12 @@ import org.osgi.service.component.annotations.Reference;
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.vesync", service = ThingHandlerFactory.class)
-public class VeSyncHandlerFactory extends BaseThingHandlerFactory {
+public class VeSyncHandlerFactory extends BaseThingHandlerFactory implements IHttpClientProvider {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
             THING_TYPE_AIR_PURIFIER, THING_TYPE_AIR_HUMIDIFIER);
 
-    private HttpClientMonitor httpClientMonitor = new HttpClientMonitor();
+    private @Nullable HttpClient httpClientRef = null;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -63,7 +64,7 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory {
         } else if (VeSyncDeviceAirHumidifierHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new VeSyncDeviceAirHumidifierHandler(thing);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new VeSyncBridgeHandler((Bridge) thing, httpClientMonitor);
+            return new VeSyncBridgeHandler((Bridge) thing, this);
         }
 
         return null;
@@ -86,10 +87,11 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory {
 
     @Reference
     protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        httpClientMonitor.setNewHttpClient(httpClientFactory.getCommonHttpClient());
+        httpClientRef = httpClientFactory.getCommonHttpClient();
     }
 
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        httpClientMonitor.setNewHttpClient(null);
+    @Override
+    public @Nullable HttpClient getHttpClient() {
+        return httpClientRef;
     }
 }
