@@ -23,8 +23,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -78,19 +76,11 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
     @Nullable
     private ScheduledFuture<?> pollingJob;
 
-    private boolean initializationCompleted = false;
-    private ReentrantLock initializationCompletedLock = new ReentrantLock();
-    private Condition initializationCompletedCondition = initializationCompletedLock.newCondition();
-
     private Set<PulseaudioHandler> childHandlersInitialized = new HashSet<>();
 
     public synchronized void update() {
         try {
             getClient().connect();
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-                logger.debug("Established connection to Pulseaudio server on Host '{}':'{}'.", host, port);
-            }
         } catch (IOException e) {
             logger.debug("{}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -100,6 +90,10 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
         }
 
         getClient().update();
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+            logger.debug("Established connection to Pulseaudio server on Host '{}':'{}'.", host, port);
+        }
         // browse all child handlers to update status according to the result of the query to the pulse audio server
         for (PulseaudioHandler pulseaudioHandler : childHandlersInitialized) {
             AbstractAudioDeviceConfig audioItemDevice = getClient().getGenericAudioItem(pulseaudioHandler.getName());
@@ -120,15 +114,6 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
                     }
                     lastActiveDevices.add(device.getPaName());
                 }
-            }
-        }
-        if (!initializationCompleted) {
-            try {
-                initializationCompletedLock.lock();
-                initializationCompleted = true;
-                initializationCompletedCondition.signalAll();
-            } finally {
-                initializationCompletedLock.unlock();
             }
         }
     }
@@ -202,7 +187,6 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
         if (clientFinal != null) {
             clientFinal.disconnect();
         }
-        this.initializationCompleted = false;
         super.dispose();
     }
 
@@ -236,23 +220,5 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         this.childHandlersInitialized.remove(childHandler);
-    }
-
-    public void waitForInitialization() {
-        if (initializationCompleted) {
-            logger.debug("No need to wait for initialization");
-            return;
-        }
-        try {
-            logger.debug("Waiting for initialization end");
-            initializationCompletedLock.lock();
-            if (!initializationCompleted && !initializationCompletedCondition.await(10, TimeUnit.SECONDS)) {
-                logger.info("Abnormal wait : too long initialization");
-            }
-        } catch (InterruptedException e) {
-        } finally {
-            logger.debug("End of initialization wait");
-            initializationCompletedLock.unlock();
-        }
     }
 }

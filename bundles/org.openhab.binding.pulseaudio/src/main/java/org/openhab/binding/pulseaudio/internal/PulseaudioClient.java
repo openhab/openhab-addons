@@ -273,8 +273,6 @@ public class PulseaudioClient {
 
     /**
      * Get all items previously parsed from the pulseaudio server.
-     * If no scan has occured, then wait an extra 5 seconds before retrying.
-     * (the wait can prevent error on startup)
      *
      * @return All items parsed from the pulseaudio server
      */
