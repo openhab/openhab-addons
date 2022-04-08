@@ -1,13 +1,19 @@
-This content is produced and maintained by the openHAB project.
+INITIAL Commit
+--------------
 
-* Project home: https://www.openhab.org
+This bundle is released the first time with the openHAB 3.2.1 
 
-== Declared Project Licenses
+The contained functionality is:
 
-This program and the accompanying materials are made available under the terms
-of the Eclipse Public License 2.0 which is available at
-https://www.eclipse.org/legal/epl-2.0/.
+- Authorization mechanism to permit the openHAB system to retrieve data from Bosch spexor API via an OAuth 2.0 OAuth Device Code Flow.
 
-== Source Code
+- Management UI to setup the Account binding to a specific customer account.
 
-https://github.com/openhab/openhab-addons
+- Discovery Service to create new "Things" in openHAB
+
+- Supported Fields:
+    - device information
+    - sensor data
+    - observation types
+    - profiles
+
