@@ -23,7 +23,8 @@ Each Thing provides one or more warnings for a city.
 ### Cell ID
 <!-- See page 10-13 (in German) of https://www.dwd.de/DE/wetter/warnungen_aktuell/objekt_einbindung/einbindung_karten_geodienste.pdf?__blob=publicationFile&v=14 for Cell ID documentation. -->
 Use [this list](https://www.dwd.de/DE/leistungen/opendata/help/warnungen/cap_warncellids_csv.csv) of valid IDs, please notice that **only IDs starting with an eight (8) and nine digits are supported** by this binding.
-Execept Berlin, where the ID starting with seven (7) of the city's districts are used.
+Exeception for Berlin, where the ID of the city's districts are used. Those start with a seven (7).
+
 Using the percent sign (%) as a wildcard, it is possible to query multiple cells. 
 For example, the value `8111%` retrieves all cell IDs that start with `8111`.
 
@@ -167,4 +168,4 @@ NULL=undefiniert
 UNDEF=undefiniert
 ```
 
-If you're unsure if the binding is working correctly, you can access the data directly by visitting https://maps.dwd.de/geoserver/dwd/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=dwd:Warnungen_Gemeinden&CQL_FILTER=WARNCELLID%20LIKE%20%27CELL_ID%27 (replace `CELL_ID` with your Cell ID), allowing the download and opening the downloaded file.
+If you're unsure if the binding is working correctly, you can access the data directly by visitting https://maps.dwd.de/geoserver/dwd/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=dwd:Warnungen_Gemeinden&CQL_FILTER=WARNCELLID%20LIKE%20%27CELL_ID%27 (replace `CELL_ID` with your Cell ID), allowing the download and opening the downloaded `.xml` file.
