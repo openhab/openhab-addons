@@ -19,8 +19,4 @@ package org.openhab.binding.boschspexor.internal;
  */
 public class BoschSpexorThingConfiguration {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
-    public int refreshInterval;
 }

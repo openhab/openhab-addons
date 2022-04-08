@@ -303,7 +303,6 @@ button[disabled]:hover {
             } else if(progress == 'requestCode') {
                 $('#createBridge').attr('class', 'check');
                 $('#requestCode').attr('class', 'check');
-                
             } else if(progress == 'createBridge') {
 	            $('#createBridge').attr('class', 'check');
 	            $('#requestCode').attr('class', 'open');
@@ -354,6 +353,7 @@ button[disabled]:hover {
                 }
                 if (data.message !== undefined) {
                     $('#error').html(data.message);
+                    $('#reset').show();
                 }
                 setTimeout(refresh, 5000);
             }

@@ -75,7 +75,7 @@
 		<description>Status information about the spexor sensors</description>
 	</channel-group-type>
 
-	<channel-group-type id="observatrions">
+	<channel-group-type id="observations">
 		<label>spexor observation information</label>
 		<description>Status information about the spexor observations</description>
 	</channel-group-type>

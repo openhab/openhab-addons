@@ -69,6 +69,7 @@ public class BoschSpexorBindingConstants {
     public static final String OAUTH_FLOW_AUTHORIZATION_PENDING = "authorization_pending";
     public static final String OAUTH_FLOW_AUTHORIZATION_DECLINED = "authorization_declined";
     public static final String OAUTH_FLOW_BAD_VERIFICATION_CODE = "bad_verification_code";
+    public static final String OAUTH_FLOW_INVALID_GRANT_CODE = "invalid_grant";
     public static final String OAUTH_FLOW_EXPIRED_TOKEN = "expired_token";
 
     public static final String ENDPOINT_SPEXORS = "api/public/v1/spexors/";

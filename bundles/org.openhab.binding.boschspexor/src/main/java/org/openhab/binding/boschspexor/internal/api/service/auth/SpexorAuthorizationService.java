@@ -247,6 +247,18 @@ public class SpexorAuthorizationService {
                     pollStatus();
                 } else {
                     logger.error("error reported with code '{}'", resp.toErrorResponse().getErrorObject().getCode());
+                    if (OAUTH_FLOW_INVALID_GRANT_CODE
+                            .equalsIgnoreCase(resp.toErrorResponse().getErrorObject().getCode())) {
+                        storage.remove(getConstantBinding(DEVICE_CODE));
+                        storage.remove(getConstantBinding(USER_CODE));
+                        storage.remove(getConstantBinding(DEVICE_CODE_REQUEST_TIME));
+                        storage.remove(getConstantBinding(DEVICE_CODE_REQUEST_TIME_LIFETIME));
+                        storage.remove(getConstantBinding(DEVICE_CODE_REQUEST_INTERVAL));
+                        if (token.isPresent()) {
+                            token.get().reset(storage);
+                        }
+                        processingStatus.uninitialized(authListener);
+                    }
                     processingStatus.error(MessageFormat.format("Server responded with {0} \"{1}\"",
                             resp.toErrorResponse().getErrorObject().getCode(),
                             resp.toErrorResponse().getErrorObject().getDescription()), authListener);
@@ -332,10 +344,21 @@ public class SpexorAuthorizationService {
                     } else if (OAUTH_FLOW_BAD_VERIFICATION_CODE.equalsIgnoreCase(error)) {
                         // bad_verification_code
                         // -- The device_code sent to the /token endpoint wasn't recognized. Verify that the client
-                        // is
-                        // -- sending the correct device_code in the request.
+                        // -- is sending the correct device_code in the request.
                         //
                         processingStatus.error(error, authListener);
+                    } else if (OAUTH_FLOW_INVALID_GRANT_CODE.equalsIgnoreCase(error)) {
+                        // invalid_grant
+                        // -- The request is not permitted so it needs a reset
+                        storage.remove(getConstantBinding(DEVICE_CODE));
+                        storage.remove(getConstantBinding(USER_CODE));
+                        storage.remove(getConstantBinding(DEVICE_CODE_REQUEST_TIME));
+                        storage.remove(getConstantBinding(DEVICE_CODE_REQUEST_TIME_LIFETIME));
+                        storage.remove(getConstantBinding(DEVICE_CODE_REQUEST_INTERVAL));
+                        if (token.isPresent()) {
+                            token.get().reset(storage);
+                        }
+                        processingStatus.uninitialized(authListener);
                     } else {
                         processingStatus.error("Unknown state '" + error + "'", authListener);
                     }

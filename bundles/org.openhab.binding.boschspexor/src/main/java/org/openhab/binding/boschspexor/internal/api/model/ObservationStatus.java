@@ -13,6 +13,7 @@
 package org.openhab.binding.boschspexor.internal.api.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Representation of Observation Status
@@ -50,6 +51,7 @@ public class ObservationStatus {
     private ObservationType observationType = ObservationType.Burglary;
     private SensorMode sensorMode = SensorMode.Deactivated;
 
+    @Nullable
     public ObservationType getObservationType() {
         return observationType;
     }

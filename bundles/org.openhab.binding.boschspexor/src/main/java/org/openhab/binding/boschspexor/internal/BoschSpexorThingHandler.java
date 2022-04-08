@@ -101,7 +101,7 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
                 updateStatus();
             }
         } else if (channelUID.getId().contains(GROUP_ID_OBSERVATIONS + "#")) {
-            logger.info("received {} command {}", channelUID, command);
+            logger.debug("received {} command {}", channelUID, command);
             if (command instanceof StringType) {
                 try {
                     SensorMode mode = SensorMode.valueOf(command.toString());
@@ -113,6 +113,10 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
                         logger.info("setting new observation state for {} to {} was {}", type, mode,
                                 newObservationState.getStatusCode());
                         updateState(channelUID, new StringType(newObservationState.getSensorMode().name()));
+                    } else {
+                        logger.info(
+                                "setting observation state for {} to {} not allowed. Only 'Activated' and 'Deactivated' are valid options ",
+                                channelUID, mode);
                     }
                 } catch (Exception e) {
                     logger.error("no supported command for observation");
@@ -172,6 +176,7 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
                 // OBSERVATION
                 for (ObservationStatus observationStatus : spexor.getStatus().getObservation()) {
                     if (observationStatus.getObservationType() != null) {
+                        @SuppressWarnings("null")
                         String observationType = observationStatus.getObservationType().name();
                         Channel channel = getThing().getChannel(getChannelID(GROUP_ID_OBSERVATIONS, observationType));
                         if (channel == null) {
