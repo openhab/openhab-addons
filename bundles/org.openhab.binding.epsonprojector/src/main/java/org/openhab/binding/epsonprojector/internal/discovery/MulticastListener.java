@@ -26,6 +26,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -111,7 +112,7 @@ public class MulticastListener {
         String beacon = (new String(packet.getData(), StandardCharsets.UTF_8)).trim();
         logger.trace("Multicast listener parsing announcement packet: {}", beacon);
 
-        if (beacon.contains("EPSON") && beacon.contains("VideoProjector")) {
+        if (beacon.toUpperCase(Locale.ENGLISH).contains("EPSON") && beacon.contains("VideoProjector")) {
             String[] parameterList = beacon.replace(">", "").split("<-");
 
             for (String parameter : parameterList) {
