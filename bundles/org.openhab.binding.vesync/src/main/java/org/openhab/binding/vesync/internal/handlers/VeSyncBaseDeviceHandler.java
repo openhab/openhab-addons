@@ -126,12 +126,6 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         }
     }
 
-    public void configurationUpdated(Thing thing) {
-        // Get the new addressing lookup data
-        deviceLookupKey = getValidatedIdString();
-        intializeDeviceForUse();
-    }
-
     public boolean requiresMetaDataFrequentUpdates() {
         return (MARKER_INVALID_DEVICE_KEY.equals(deviceLookupKey));
     }
