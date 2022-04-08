@@ -118,7 +118,7 @@ public class MulticastListener {
             for (String parameter : parameterList) {
                 String[] keyValue = parameter.split("=");
 
-                if (keyValue.length == 2 && keyValue[0].contains("UUID") && !"".equals(keyValue[1])) {
+                if (keyValue.length == 2 && keyValue[0].contains("UUID") && !keyValue[1].isEmpty()) {
                     Map<String, Object> properties = new HashMap<>();
                     properties.put(THING_PROPERTY_MAC, keyValue[1]);
                     properties.put(THING_PROPERTY_HOST, packet.getAddress().getHostAddress());
