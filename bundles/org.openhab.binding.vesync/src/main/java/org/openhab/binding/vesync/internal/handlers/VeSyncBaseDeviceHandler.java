@@ -285,7 +285,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             // Check if the device name can be matched to a single device
             if (deviceName != null) {
                 final String[] matchedMacIds = vesyncBridgeHandler.api.getMacLookupMap().values().stream()
-                        .filter(x -> deviceName.equals(x.deviceName)).map(x -> x.macId).toArray(String[]::new); // .collect();//.toArray(String[]::new)
+                        .filter(x -> deviceName.equals(x.deviceName)).map(x -> x.macId).toArray(String[]::new);
 
                 for (String val : matchedMacIds) {
                     logger.debug("Found MAC match on name with : {}", val);
