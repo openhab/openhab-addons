@@ -334,6 +334,27 @@ These actions will target all Switch items.
 ]
 ```
 
+### Switch item action configs example:
+
+This example contains the item metadata to add an action to an item with type 'Switch''.
+Add a custom metadata 'actiontemplatehli' to the 'Switch' item with the following:
+
+```yaml
+value: ""
+config:
+  placeholders:
+    - label: onOff
+      nerValues:
+        - turn on
+        - turn off
+      posValues:
+        turn__on: ON
+        turn__off: OFF
+  template: $onOff $itemLabel
+  type: tokens
+  value: $onOff
+```
+
 ### Dynamic placeholder, sending a message example:
 
 This example contains the item metadata to add an action that uses the dynamic placeholder.
