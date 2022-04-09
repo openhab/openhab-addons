@@ -18,13 +18,11 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -108,8 +106,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.unmodifiableSet(
-                Stream.of(OmnilinkDiscoveryService.class, OmnilinkActions.class).collect(Collectors.toSet()));
+        return Set.of(OmnilinkDiscoveryService.class, OmnilinkActions.class);
     }
 
     public void sendOmnilinkCommand(final int message, final int param1, final int param2)

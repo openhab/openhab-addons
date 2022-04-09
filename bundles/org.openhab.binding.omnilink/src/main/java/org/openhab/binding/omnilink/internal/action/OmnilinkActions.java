@@ -14,6 +14,7 @@ package org.openhab.binding.omnilink.internal.action;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,7 +25,6 @@ import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,12 +37,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OmnilinkActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(OmnilinkActions.class);
-    private final TimeZoneProvider timeZoneProvider;
+    public static Optional<TimeZoneProvider> timeZoneProvider = Optional.empty();
     private @Nullable OmnilinkBridgeHandler handler;
-
-    public OmnilinkActions(final @Reference TimeZoneProvider timeZoneProvider) {
-        this.timeZoneProvider = timeZoneProvider;
-    }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
@@ -61,15 +57,28 @@ public class OmnilinkActions implements ThingActions {
             @ActionInput(name = "zone", label = "@text/actionInputZoneLabel", description = "@text/actionInputZoneDesc") @Nullable String zone) {
         OmnilinkBridgeHandler actionsHandler = handler;
         ZonedDateTime zdt;
-        if (zone != null) {
+        if (ZoneId.getAvailableZoneIds().contains(zone)) {
             zdt = ZonedDateTime.now(ZoneId.of(zone));
         } else {
-            zdt = ZonedDateTime.now(timeZoneProvider.getTimeZone());
+            logger.debug("Time zone provided invalid, using system default!");
+            if (timeZoneProvider.isPresent()) {
+                zdt = ZonedDateTime.now(timeZoneProvider.get().getTimeZone());
+            } else {
+                zdt = ZonedDateTime.now(ZoneId.systemDefault());
+            }
         }
         if (actionsHandler == null) {
             logger.info("Action service ThingHandler is null!");
         } else {
             actionsHandler.setDateTime(zdt);
         }
+    }
+
+    public static void setDateTime(ThingActions actions, @Nullable String zone) {
+        ((OmnilinkActions) actions).setDateTime(zone);
+    }
+
+    public static void setTimeZoneProvider(TimeZoneProvider tzp) {
+        timeZoneProvider = Optional.of(tzp);
     }
 }
