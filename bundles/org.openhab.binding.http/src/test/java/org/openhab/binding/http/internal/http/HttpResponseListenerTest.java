@@ -256,7 +256,6 @@ public class HttpResponseListenerTest {
     /**
      * When the remote side response with a HTTP/204 and no payload, the future completes normally
      * and contains a empty Content.
-     * At least that is what should happen, right now the future finishes exceptionally.
      */
     @Test
     public void nocontent() {
@@ -265,15 +264,13 @@ public class HttpResponseListenerTest {
         CompletableFuture<@Nullable Content> future = run();
 
         assertTrue(future.isDone());
-        assertTrue(future.isCompletedExceptionally());
+        assertFalse(future.isCompletedExceptionally());
 
-        CompletionException exceptionWrapper = assertThrows(CompletionException.class, () -> future.join());
-        assertNotNull(exceptionWrapper);
-
-        Throwable exception = exceptionWrapper.getCause();
-        assertNotNull(exception);
-        assertTrue(exception instanceof IllegalStateException);
-        assertEquals("Response - Code204", exception.getMessage());
+        Content content = future.join();
+        assertNotNull(content);
+        assertNotNull(content.getRawContent());
+        assertEquals(0, content.getRawContent().length);
+        assertNull(content.getMediaType());
     }
 
     /**
