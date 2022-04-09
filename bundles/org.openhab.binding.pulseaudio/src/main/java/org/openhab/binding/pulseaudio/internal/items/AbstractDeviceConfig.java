@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.pulseaudio.internal.items;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Abstract root class for all items in an pulseaudio server. Every item in a
  * pulseaudio server has a name and a unique id which can be inherited by this
@@ -19,6 +21,7 @@ package org.openhab.binding.pulseaudio.internal.items;
  *
  * @author Tobias Bräutigam - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractDeviceConfig {
 
     protected int id;

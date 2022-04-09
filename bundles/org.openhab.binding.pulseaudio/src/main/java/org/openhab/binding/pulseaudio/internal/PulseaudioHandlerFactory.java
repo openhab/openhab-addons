@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pulseaudio.internal.discovery.PulseaudioDeviceDiscoveryService;
 import org.openhab.binding.pulseaudio.internal.handler.PulseaudioBridgeHandler;
 import org.openhab.binding.pulseaudio.internal.handler.PulseaudioHandler;
@@ -47,6 +49,7 @@ import org.slf4j.LoggerFactory;
  * @author Tobias Bräutigam - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.pulseaudio")
+@NonNullByDefault
 public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(PulseaudioHandlerFactory.class);
 
@@ -64,8 +67,8 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-            ThingUID bridgeUID) {
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
         if (PulseaudioBridgeHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
         }
@@ -83,11 +86,11 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
                 bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
-    private ThingUID getPulseaudioDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
-            ThingUID bridgeUID) {
+    private ThingUID getPulseaudioDeviceUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
+            Configuration configuration, @Nullable ThingUID bridgeUID) {
         if (thingUID == null) {
             String name = (String) configuration.get(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME);
-            return new ThingUID(thingTypeUID, name, bridgeUID.getId());
+            return new ThingUID(thingTypeUID, name, bridgeUID == null ? null : bridgeUID.getId());
         }
         return thingUID;
     }
@@ -106,8 +109,7 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
-
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (PulseaudioBridgeHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
