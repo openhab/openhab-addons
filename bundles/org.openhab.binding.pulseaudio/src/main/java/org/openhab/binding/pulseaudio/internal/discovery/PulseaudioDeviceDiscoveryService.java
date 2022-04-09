@@ -15,7 +15,9 @@ package org.openhab.binding.pulseaudio.internal.discovery;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants;
 import org.openhab.binding.pulseaudio.internal.handler.DeviceStatusListener;
 import org.openhab.binding.pulseaudio.internal.handler.PulseaudioBridgeHandler;
@@ -28,7 +30,7 @@ import org.openhab.binding.pulseaudio.internal.items.SourceOutput;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -40,6 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tobias Bräutigam - Initial contribution
  */
+@NonNullByDefault
 public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService implements DeviceStatusListener {
 
     private final Logger logger = LoggerFactory.getLogger(PulseaudioDeviceDiscoveryService.class);
@@ -66,7 +69,11 @@ public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService i
     }
 
     @Override
-    public void onDeviceAdded(Bridge bridge, AbstractAudioDeviceConfig device) {
+    public void onDeviceAdded(Thing bridge, AbstractAudioDeviceConfig device) {
+        if (getAlreadyConfiguredThings().contains(device.getPaName())) {
+            return;
+        }
+
         String uidName = device.getPaName();
         logger.debug("device {} found", device);
         ThingTypeUID thingType = null;
@@ -97,18 +104,14 @@ public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService i
         }
     }
 
+    public Set<String> getAlreadyConfiguredThings() {
+        return pulseaudioBridgeHandler.getThing().getThings().stream().map(Thing::getConfiguration)
+                .map(conf -> (String) conf.get(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME))
+                .collect(Collectors.toSet());
+    }
+
     @Override
     protected void startScan() {
-        // this can be ignored here as we discover via the PulseaudioClient.update() mechanism
-    }
-
-    @Override
-    public void onDeviceStateChanged(ThingUID bridge, AbstractAudioDeviceConfig device) {
-        // this can be ignored here
-    }
-
-    @Override
-    public void onDeviceRemoved(PulseaudioBridgeHandler bridge, AbstractAudioDeviceConfig device) {
-        // this can be ignored here
+        pulseaudioBridgeHandler.resetKnownActiveDevices();
     }
 }

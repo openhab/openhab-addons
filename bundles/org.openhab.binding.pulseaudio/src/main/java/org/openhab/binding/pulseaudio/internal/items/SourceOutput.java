@@ -12,24 +12,29 @@
  */
 package org.openhab.binding.pulseaudio.internal.items;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * A SourceOutput is the audio stream which is produced by a (@link Source}
  *
  * @author Tobias Bräutigam - Initial contribution
  */
+@NonNullByDefault
 public class SourceOutput extends AbstractAudioDeviceConfig {
 
+    @Nullable
     private Source source;
 
-    public SourceOutput(int id, String name, Module module) {
+    public SourceOutput(int id, String name, @Nullable Module module) {
         super(id, name, module);
     }
 
-    public Source getSource() {
+    public @Nullable Source getSource() {
         return source;
     }
 
-    public void setSource(Source source) {
+    public void setSource(@Nullable Source source) {
         this.source = source;
     }
 }
