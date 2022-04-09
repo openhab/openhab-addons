@@ -16,7 +16,6 @@ import static org.openhab.binding.epsonprojector.internal.EpsonProjectorBindingC
 
 import java.io.IOException;
 import java.net.SocketException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -115,31 +114,27 @@ public class EpsonProjectorDiscoveryService extends AbstractDiscoveryService {
         }
 
         while (!terminate) {
-            boolean beaconReceived;
             try {
-                // Wait for a discovery beacon.
-                beaconReceived = epsonMulticastListener.waitForBeacon();
+                // Wait for a discovery beacon to return properties for an Epson projector.
+                Map<String, Object> thingProperties = epsonMulticastListener.waitForBeacon();
+
+                if (thingProperties != null) {
+                    // The MulticastListener found a projector, add it as new thing
+                    String uid = (String) thingProperties.get(THING_PROPERTY_MAC);
+                    String ipAddress = (String) thingProperties.get(THING_PROPERTY_HOST);
+
+                    if (uid != null) {
+                        logger.trace("Projector with UID {} discovered at IP: {}", uid, ipAddress);
+
+                        ThingUID thingUid = new ThingUID(THING_TYPE_PROJECTOR_TCP, uid);
+                        logger.trace("Creating epson projector discovery result for: {}, IP={}", uid, ipAddress);
+                        thingDiscovered(DiscoveryResultBuilder.create(thingUid).withProperties(thingProperties)
+                                .withLabel("Epson Projector " + uid).withRepresentationProperty(THING_PROPERTY_MAC)
+                                .build());
+                    }
+                }
             } catch (IOException ioe) {
                 logger.debug("Discovery job got exception waiting for beacon: {}", ioe.getMessage());
-                beaconReceived = false;
-            }
-
-            if (beaconReceived) {
-                // We got a discovery beacon. Process it as a potential new thing
-                Map<String, Object> properties = new HashMap<>();
-                String uid = epsonMulticastListener.getUID();
-
-                properties.put(THING_PROPERTY_HOST, epsonMulticastListener.getIPAddress());
-                properties.put(THING_PROPERTY_PORT, DEFAULT_PORT);
-
-                logger.trace("Projector with UID {} discovered at IP: {}", uid, epsonMulticastListener.getIPAddress());
-
-                ThingUID thingUid = new ThingUID(THING_TYPE_PROJECTOR_TCP, uid);
-                logger.trace("Creating epson projector discovery result for: {}, IP={}", uid,
-                        epsonMulticastListener.getIPAddress());
-                thingDiscovered(DiscoveryResultBuilder.create(thingUid).withProperties(properties)
-                        .withLabel("Epson Projector " + uid).withProperty(THING_PROPERTY_MAC, uid)
-                        .withRepresentationProperty(THING_PROPERTY_MAC).build());
             }
         }
         epsonMulticastListener.shutdown();
