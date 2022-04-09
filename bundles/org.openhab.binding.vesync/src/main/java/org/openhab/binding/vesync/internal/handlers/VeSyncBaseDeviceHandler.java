@@ -469,7 +469,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         } catch (final DeviceUnknownException e) {
             logger.debug("Device unknown exception {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Check configuration details - "+e.getMessage());
+                    "Check configuration details - " + e.getMessage());
             // In case the name is updated server side - request the scan rate is increased
             requestBridgeFreqScanMetadataIfReq();
             return EMPTY_STRING;
