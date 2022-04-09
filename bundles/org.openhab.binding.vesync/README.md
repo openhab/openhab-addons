@@ -45,7 +45,7 @@ Once the bridge is configured auto discovery will discover supported devices fro
 | backgroundDeviceDiscovery        | Switch | Should the system scan periodically for new devices       | ON                 |
 | refreshBackgroundDeviceDiscovery | Number | Frequency (seconds) of scans for new new devices          | 120                |
 
-* Note Air PPM Levels don't usually change quickly - 60s seems reasonable if openHab is controlling it and your don't want near instant feedback of physical interactions with the devices.
+* Note Air PPM Levels don't usually change quickly - 60s seems reasonable if openHAB is controlling it and your don't want near instant feedback of physical interactions with the devices.
 
 ### AirPurifier configuration parameters
 
@@ -300,4 +300,4 @@ Frame {
 The binding code is based on a lot of work done by other developers:
 
 - Contributors of (https://github.com/webdjoe/pyvesync) - Python interface for VeSync
-- Rene Scherer, Holger Eisold - (https://www.openhab.org/addons/bindings/surepetcare) Sure Petcare Binding for openHab as a reference point for the starting blocks of this code
+- Rene Scherer, Holger Eisold - (https://www.openhab.org/addons/bindings/surepetcare) Sure Petcare Binding for openHAB as a reference point for the starting blocks of this code
