@@ -427,7 +427,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             return EMPTY_STRING;
         } catch (final DeviceUnknownException e) {
             logger.debug("Device unknown exception {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Check configuration details - " + e.getMessage());
             // In case the name is updated server side - request the scan rate is increased
             requestBridgeFreqScanMetadataIfReq();
@@ -468,8 +468,8 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             return EMPTY_STRING;
         } catch (final DeviceUnknownException e) {
             logger.debug("Device unknown exception {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
-                    "Check configuration details");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Check configuration details - "+e.getMessage());
             // In case the name is updated server side - request the scan rate is increased
             requestBridgeFreqScanMetadataIfReq();
             return EMPTY_STRING;
