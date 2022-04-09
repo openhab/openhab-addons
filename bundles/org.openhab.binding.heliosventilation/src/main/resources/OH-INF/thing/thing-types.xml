@@ -41,6 +41,7 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<label>RS485 Interface Serial Port</label>
 				<description>The serial port name for the RS485 interfaces. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or
 					/dev/ttyUSB0 for Linux.</description>

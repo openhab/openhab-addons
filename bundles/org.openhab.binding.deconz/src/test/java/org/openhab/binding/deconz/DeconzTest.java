@@ -60,7 +60,7 @@ import com.google.gson.GsonBuilder;
  * @author Jan N. Klug - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class DeconzTest {
     private @NonNullByDefault({}) Gson gson;

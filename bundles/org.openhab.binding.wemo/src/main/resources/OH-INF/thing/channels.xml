@@ -74,10 +74,18 @@
 
 	<channel-type id="currentPower">
 		<item-type>Number:Power</item-type>
-		<label>Power</label>
+		<label>Current Power</label>
 		<description>The current power consumption</description>
 		<category>Energy</category>
 		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="currentPowerRaw" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Current Power Raw</label>
+		<description>The current power consumption with full precision</description>
+		<category>Energy</category>
+		<state pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="energyToday" advanced="true">

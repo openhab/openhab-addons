@@ -38,7 +38,7 @@ import org.osgi.framework.BundleContext;
  * @author Pauli Anttila - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class JavaScriptTransformationServiceTest {
 
     private static final boolean NASHORN_AVAILABLE = isNashornAvailable();

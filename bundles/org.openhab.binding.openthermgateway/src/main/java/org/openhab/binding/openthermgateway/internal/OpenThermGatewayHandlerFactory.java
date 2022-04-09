@@ -24,6 +24,8 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OpenThermGatewayHandlerFactory} is responsible for creating things and thing
@@ -34,6 +36,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.openthermgateway")
 @NonNullByDefault
 public class OpenThermGatewayHandlerFactory extends BaseThingHandlerFactory {
+    private final Logger logger = LoggerFactory.getLogger(OpenThermGatewayHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -50,6 +53,10 @@ public class OpenThermGatewayHandlerFactory extends BaseThingHandlerFactory {
             return new BoilerHandler(thing);
         } else if (thingTypeUID.equals(OpenThermGatewayBindingConstants.VENTILATION_HEATRECOVERY_THING_TYPE_UID)) {
             return new VentilationHeatRecoveryHandler(thing);
+        } else if (thingTypeUID.equals(OpenThermGatewayBindingConstants.LEGACY_THING_TYPE_UID)) {
+            logger.warn(
+                    "Thing type {} is no longer supported by the OpenThermGateway binding. You need to create new Things according to the documentation.",
+                    thingTypeUID);
         }
 
         return null;
