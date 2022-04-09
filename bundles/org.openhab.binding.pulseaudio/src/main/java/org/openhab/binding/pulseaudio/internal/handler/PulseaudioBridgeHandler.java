@@ -93,14 +93,11 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
             logger.debug("Established connection to Pulseaudio server on Host '{}':'{}'.", host, port);
-        }
-        // browse all child handlers to update status according to the result of the query to the pulse audio server
-        for (PulseaudioHandler pulseaudioHandler : childHandlersInitialized) {
-            AbstractAudioDeviceConfig audioItemDevice = getClient().getGenericAudioItem(pulseaudioHandler.getName());
-            if (audioItemDevice != null) {
-                pulseaudioHandler.deviceUpdate(audioItemDevice);
-            } else {
-                pulseaudioHandler.deviceOffline();
+            // The framework will automatically notify the child handlers as the bridge status is changed
+        } else {
+            // browse all child handlers to update status according to the result of the query to the pulse audio server
+            for (PulseaudioHandler pulseaudioHandler : childHandlersInitialized) {
+                pulseaudioHandler.deviceUpdate(getDevice(pulseaudioHandler.getName()));
             }
         }
         // browse query result to notify add event
@@ -200,12 +197,20 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
 
     @Override
     public void bindingConfigurationChanged() {
-        update();
+        // If the bridge thing is not well setup, we do nothing
+        if (getThing().getStatus() != ThingStatus.OFFLINE
+                || getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR) {
+            update();
+        }
     }
 
     public void resetKnownActiveDevices() {
-        lastActiveDevices = new HashSet<>();
-        update();
+        // If the bridge thing is not well setup, we do nothing
+        if (getThing().getStatus() != ThingStatus.OFFLINE
+                || getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR) {
+            lastActiveDevices = new HashSet<>();
+            update();
+        }
     }
 
     @Override

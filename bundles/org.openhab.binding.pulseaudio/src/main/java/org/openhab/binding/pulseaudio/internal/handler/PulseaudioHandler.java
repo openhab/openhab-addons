@@ -97,9 +97,6 @@ public class PulseaudioHandler extends BaseThingHandler {
     public void initialize() {
         Configuration config = getThing().getConfiguration();
         name = (String) config.get(DEVICE_PARAMETER_NAME);
-
-        updateStatus(ThingStatus.UNKNOWN);
-
         initializeWithTheBridge();
     }
 
@@ -108,6 +105,18 @@ public class PulseaudioHandler extends BaseThingHandler {
     }
 
     private void audioSinkSetup() {
+        if (audioSink != null) {
+            // Audio sink is already setup
+            return;
+        }
+        if (!SINK_THING_TYPE.equals(thing.getThingTypeUID())) {
+            return;
+        }
+        // check the property to see if it's enabled :
+        Boolean sinkActivated = (Boolean) thing.getConfiguration().get(DEVICE_PARAMETER_AUDIO_SINK_ACTIVATION);
+        if (sinkActivated == null || !sinkActivated.booleanValue()) {
+            return;
+        }
         final PulseaudioHandler thisHandler = this;
         PulseAudioAudioSink audioSink = new PulseAudioAudioSink(thisHandler, scheduler);
         scheduler.submit(new Runnable() {
@@ -135,7 +144,33 @@ public class PulseaudioHandler extends BaseThingHandler {
         audioSinkRegistrations.put(thing.getUID().toString(), reg);
     }
 
+    private void audioSinkUnsetup() {
+        PulseAudioAudioSink sink = audioSink;
+        if (sink != null) {
+            sink.disconnect();
+            audioSink = null;
+        }
+        // Unregister the potential pulse audio sink's audio sink
+        ServiceRegistration<AudioSink> sinkReg = audioSinkRegistrations.remove(getThing().getUID().toString());
+        if (sinkReg != null) {
+            logger.trace("Unregistering the audio sync service for pulse audio sink thing {}", getThing().getUID());
+            sinkReg.unregister();
+        }
+    }
+
     private void audioSourceSetup() {
+        if (audioSource != null) {
+            // Audio source is already setup
+            return;
+        }
+        if (!SOURCE_THING_TYPE.equals(thing.getThingTypeUID())) {
+            return;
+        }
+        // check the property to see if it's enabled :
+        Boolean sourceActivated = (Boolean) thing.getConfiguration().get(DEVICE_PARAMETER_AUDIO_SOURCE_ACTIVATION);
+        if (sourceActivated == null || !sourceActivated.booleanValue()) {
+            return;
+        }
         final PulseaudioHandler thisHandler = this;
         PulseAudioAudioSource audioSource = new PulseAudioAudioSource(thisHandler, scheduler);
         scheduler.submit(new Runnable() {
@@ -163,23 +198,11 @@ public class PulseaudioHandler extends BaseThingHandler {
         audioSourceRegistrations.put(thing.getUID().toString(), reg);
     }
 
-    @Override
-    public void dispose() {
-        logger.trace("Thing {} {} disposed.", getThing().getUID(), name);
-        super.dispose();
-        PulseAudioAudioSink sink = audioSink;
-        if (sink != null) {
-            sink.disconnect();
-        }
+    private void audioSourceUnsetup() {
         PulseAudioAudioSource source = audioSource;
         if (source != null) {
             source.disconnect();
-        }
-        // Unregister the potential pulse audio sink's audio sink
-        ServiceRegistration<AudioSink> sinkReg = audioSinkRegistrations.remove(getThing().getUID().toString());
-        if (sinkReg != null) {
-            logger.trace("Unregistering the audio sync service for pulse audio sink thing {}", getThing().getUID());
-            sinkReg.unregister();
+            audioSource = null;
         }
         // Unregister the potential pulse audio source's audio sources
         ServiceRegistration<AudioSource> sourceReg = audioSourceRegistrations.remove(getThing().getUID().toString());
@@ -190,38 +213,26 @@ public class PulseaudioHandler extends BaseThingHandler {
     }
 
     @Override
+    public void dispose() {
+        logger.trace("Thing {} {} disposed.", getThing().getUID(), name);
+        super.dispose();
+        audioSinkUnsetup();
+        audioSourceUnsetup();
+    }
+
+    @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            initializeWithTheBridge();
-        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE
-                || bridgeStatusInfo.getStatus() == ThingStatus.UNKNOWN) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
+        initializeWithTheBridge();
     }
 
     private void initializeWithTheBridge() {
         PulseaudioBridgeHandler pulseaudioBridgeHandler = getPulseaudioBridgeHandler();
-        if (pulseaudioBridgeHandler != null && pulseaudioBridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+        if (pulseaudioBridgeHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        } else if (pulseaudioBridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else {
             deviceUpdate(pulseaudioBridgeHandler.getDevice(name));
-
-            // if it's a SINK thing, then maybe we have to activate the audio sink
-            if (SINK_THING_TYPE.equals(thing.getThingTypeUID())) {
-                // check the property to see if we it's enabled :
-                Boolean sinkActivated = (Boolean) thing.getConfiguration().get(DEVICE_PARAMETER_AUDIO_SINK_ACTIVATION);
-                if (sinkActivated != null && sinkActivated) {
-                    audioSinkSetup();
-                }
-            }
-
-            // if it's a SOURCE thing, then maybe we have to activate the audio source
-            if (SOURCE_THING_TYPE.equals(thing.getThingTypeUID())) {
-                // check the property to see if we it's enabled :
-                Boolean sourceActivated = (Boolean) thing.getConfiguration()
-                        .get(DEVICE_PARAMETER_AUDIO_SOURCE_ACTIVATION);
-                if (sourceActivated != null && sourceActivated) {
-                    audioSourceSetup();
-                }
-            }
         }
     }
 
@@ -255,7 +266,7 @@ public class PulseaudioHandler extends BaseThingHandler {
         AbstractAudioDeviceConfig device = briHandler.getDevice(name);
         if (device == null) {
             logger.warn("device {} not found", name);
-            updateStatus(ThingStatus.OFFLINE);
+            deviceUpdate(null);
             return;
         } else {
             State updateState = UnDefType.UNDEF;
@@ -381,7 +392,7 @@ public class PulseaudioHandler extends BaseThingHandler {
             int actualVolume = device.getVolume();
             savedVolume = actualVolume;
             updateState(VOLUME_CHANNEL, new PercentType(actualVolume));
-            updateState(MUTE_CHANNEL, device.isMuted() ? OnOffType.ON : OnOffType.OFF);
+            updateState(MUTE_CHANNEL, OnOffType.from(device.isMuted()));
             org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig.State state = device.getState();
             updateState(STATE_CHANNEL, state != null ? new StringType(state.toString()) : new StringType("-"));
             if (device instanceof SinkInput) {
@@ -391,21 +402,22 @@ public class PulseaudioHandler extends BaseThingHandler {
             if (device instanceof Sink && ((Sink) device).isCombinedSink()) {
                 updateState(SLAVES_CHANNEL, new StringType(String.join(",", ((Sink) device).getCombinedSinkNames())));
             }
+            audioSinkSetup();
+            audioSourceSetup();
+        } else if (device == null) {
+            updateState(VOLUME_CHANNEL, UnDefType.UNDEF);
+            updateState(MUTE_CHANNEL, UnDefType.UNDEF);
+            updateState(STATE_CHANNEL, UnDefType.UNDEF);
+            if (SINK_INPUT_THING_TYPE.equals(thing.getThingTypeUID())) {
+                updateState(ROUTE_TO_SINK_CHANNEL, UnDefType.UNDEF);
+            }
+            if (COMBINED_SINK_THING_TYPE.equals(thing.getThingTypeUID())) {
+                updateState(SLAVES_CHANNEL, UnDefType.UNDEF);
+            }
+            audioSinkUnsetup();
+            audioSourceUnsetup();
+            updateStatus(ThingStatus.OFFLINE);
         }
-    }
-
-    public void deviceOffline() {
-        PulseAudioAudioSink audioSinkFinal = audioSink;
-        if (audioSinkFinal != null) {
-            audioSinkFinal.disconnect();
-            audioSink = null;
-        }
-        PulseAudioAudioSource audioSourceFinal = audioSource;
-        if (audioSourceFinal != null) {
-            audioSourceFinal.disconnect();
-            audioSource = null;
-        }
-        updateStatus(ThingStatus.OFFLINE);
     }
 
     public String getHost() {
