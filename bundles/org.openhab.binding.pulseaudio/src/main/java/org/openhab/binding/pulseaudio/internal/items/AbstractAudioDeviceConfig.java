@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.pulseaudio.internal.items;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * GenericAudioItems are any kind of items that deal with audio data and can be
  * muted or their volume can be changed.
  *
  * @author Tobias Bräutigam - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractAudioDeviceConfig extends AbstractDeviceConfig {
 
     public enum State {
@@ -28,25 +32,21 @@ public abstract class AbstractAudioDeviceConfig extends AbstractDeviceConfig {
         DRAINED
     }
 
-    protected State state;
+    protected @Nullable State state;
     protected boolean muted;
     protected int volume;
-    protected Module module;
+    protected @Nullable Module module;
 
-    public AbstractAudioDeviceConfig(int id, String name, Module module) {
+    public AbstractAudioDeviceConfig(int id, String name, @Nullable Module module) {
         super(id, name);
         this.module = module;
     }
 
-    public Module getModule() {
+    public @Nullable Module getModule() {
         return module;
     }
 
-    public void setModule(Module module) {
-        this.module = module;
-    }
-
-    public State getState() {
+    public @Nullable State getState() {
         return state;
     }
 
