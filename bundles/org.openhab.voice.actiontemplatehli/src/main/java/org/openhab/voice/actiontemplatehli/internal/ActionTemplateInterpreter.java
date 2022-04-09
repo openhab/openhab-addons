@@ -73,7 +73,11 @@ import org.openhab.core.types.UnDefType;
 import org.openhab.core.voice.text.HumanLanguageInterpreter;
 import org.openhab.core.voice.text.InterpretationException;
 import org.osgi.framework.Constants;
-import org.osgi.service.component.annotations.*;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,7 +128,6 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     private ExpiringCacheMap<String, NLPInfo> cacheMap = new ExpiringCacheMap<>(Duration.of(1, ChronoUnit.MINUTES));
     private ActionTemplateInterpreter.@Nullable NLPItemMaps nlpItemMaps;
     private List<String> optionalLanguageTags = List.of();
-    private final Map<String, HumanLanguageInterpreter> humanLanguageInterpreters = new HashMap<>();
 
     private final RegistryChangeListener<Item> registryChangeListener = new RegistryChangeListener<>() {
         @Override
@@ -187,14 +190,6 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
 
     @Override
     public Set<Locale> getSupportedLocales() {
-        if (!config.fallbackHLI.isBlank()) {
-            var fallbackInterpreter = humanLanguageInterpreters.get(config.fallbackHLI);
-            if (fallbackInterpreter != null) {
-                logger.debug("fallback interpreter '{}' is configured, assuming its supported locales",
-                        config.fallbackHLI);
-                return fallbackInterpreter.getSupportedLocales();
-            }
-        }
         // all are supported
         return Set.of();
     }
@@ -207,7 +202,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     @Override
     public String interpret(Locale locale, String words) throws InterpretationException {
         if (words.isEmpty()) {
-            return config.unhandledMessage;
+            new InterpretationException(config.unhandledMessage);
         }
         try {
             if (config.lowerText) {
@@ -223,14 +218,6 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 logger.debug("silent mode; no response");
                 return "";
             }
-            if (!config.fallbackHLI.isBlank() && config.unhandledMessage.equals(response)) {
-                var fallbackInterpreter = humanLanguageInterpreters.get(config.fallbackHLI);
-                if (fallbackInterpreter == null) {
-                    logger.warn("unable to load fallback interpreter '{}'", config.fallbackHLI);
-                    return config.failMessage;
-                }
-                return fallbackInterpreter.interpret(locale, words);
-            }
             logger.debug("response: {}", response);
             return response;
         } catch (IOException e) {
@@ -244,7 +231,8 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         }
     }
 
-    private @Nullable String processAction(String words, @Nullable NLPInterpretationResult result) throws IOException {
+    private @Nullable String processAction(String words, @Nullable NLPInterpretationResult result)
+            throws InterpretationException, IOException {
         if (result != null) {
             if (!result.actionConfig.read) {
                 return sendItemCommand(result.targetItem, words, result.actionConfig, result.placeholderValues);
@@ -252,7 +240,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 return readItemState(result.targetItem, result.actionConfig);
             }
         } else {
-            return config.unhandledMessage;
+            throw new InterpretationException(config.unhandledMessage);
         }
     }
 
@@ -1089,15 +1077,6 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 tokenizer = WhitespaceTokenizer.INSTANCE;
             }
         }
-    }
-
-    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
-    protected void addHumanLanguageInterpreter(HumanLanguageInterpreter humanLanguageInterpreter) {
-        this.humanLanguageInterpreters.put(humanLanguageInterpreter.getId(), humanLanguageInterpreter);
-    }
-
-    protected void removeHumanLanguageInterpreter(HumanLanguageInterpreter humanLanguageInterpreter) {
-        this.humanLanguageInterpreters.remove(humanLanguageInterpreter.getId());
     }
 
     public static class NLPInfo {

@@ -154,7 +154,7 @@ To do so, it needs the tokens and optionally the POS tags and the lemmas.
 
 ### Tokenizer
 
-You can provide a custom model at '<OPENHAB_USERDATA>/actiontemplatehli/token.bin', otherwise it will use the build in simple tokenizer or whitespace tokenizer (configurable).
+You can provide a custom model at '<OPENHAB_USERDATA>/actiontemplatehli/token.bin', otherwise it will use the build in [simple tokenizer](https://opennlp.apache.org/docs/1.9.4/manual/opennlp.html#tools.cli.tokenizer.SimpleTokenizer) or whitespace tokenizer (configurable).
 
 Tokenizing the text is enough to use the action type 'tokens' as tokens are the only ones required for scoring (but the option 'optionalLanguageTags' will not take effect unless you have the POS language tags).
 

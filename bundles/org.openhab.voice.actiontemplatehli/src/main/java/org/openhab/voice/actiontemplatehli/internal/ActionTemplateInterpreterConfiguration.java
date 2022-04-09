@@ -53,8 +53,4 @@ public class ActionTemplateInterpreterConfiguration {
      * Enables build-in detokenization based on original text, other way string join by space is used
      */
     public boolean detokenizeOptimization = true;
-    /**
-     * Human language interpreter to use if command is unhandled
-     */
-    public String fallbackHLI = "";
 }

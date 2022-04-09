@@ -39,7 +39,6 @@ import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.voice.text.HumanLanguageInterpreter;
 import org.openhab.core.voice.text.InterpretationException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,7 +54,6 @@ public class ActionTemplateInterpreterTest {
     private @Mock @NonNullByDefault({}) MetadataRegistry metadataRegistryMock;
     private @Mock @NonNullByDefault({}) LocaleService localeServiceMock;
     private @Mock @NonNullByDefault({}) EventPublisher eventPublisherMock;
-    private @Mock @NonNullByDefault({}) HumanLanguageInterpreter fallbackHLIMock;
     private @NonNullByDefault({}) ActionTemplateInterpreter interpreter;
 
     @BeforeEach
@@ -186,21 +184,6 @@ public class ActionTemplateInterpreterTest {
     public void groupItemMemberReadTest() throws InterpretationException {
         var response = interpreter.interpret(Locale.ENGLISH, "how is the light in the bedroom");
         assertThat(response, is("bedroom light in bedroom is off"));
-    }
-
-    /**
-     * Test group read action targeting members
-     */
-    @Test
-    public void fallbackInterpreterTest() throws InterpretationException {
-        var exampleUnhandledText = "this is an unknown sample";
-        interpreter.config.fallbackHLI = "mocked_interpreter";
-        Mockito.when(fallbackHLIMock.getId()).thenReturn(interpreter.config.fallbackHLI);
-        Mockito.when(fallbackHLIMock.interpret(Locale.ENGLISH, exampleUnhandledText))
-                .thenReturn("mocked fallback response");
-        interpreter.addHumanLanguageInterpreter(fallbackHLIMock);
-        var response = interpreter.interpret(Locale.ENGLISH, exampleUnhandledText);
-        assertThat(response, is("mocked fallback response"));
     }
 
     /**
