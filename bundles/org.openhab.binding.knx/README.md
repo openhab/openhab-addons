@@ -52,6 +52,7 @@ The *serial* bridge accepts the following configuration parameters:
 | responseTimeout     | N        | Timeout in seconds to wait for a response from the KNX bus                                                   | 10            |
 | readRetriesLimit    | N        | Limits the read retries while initialization from the KNX bus                                                | 3             |
 | autoReconnectPeriod | N        | Seconds between connect retries when KNX link has been lost, 0 means never retry                             | 0             |
+| useCemi             | N        | Use newer CEMI message format, useful for newer devices like KNX RF sticks, kBerry, etc.                     | false         |
 
 ## Things
 
