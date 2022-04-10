@@ -28,9 +28,9 @@ public enum BondDeviceType {
     @SerializedName("CF")
     CeilingFan(THING_TYPE_BOND_FAN),
     @SerializedName("MS")
-    Fireplace(THING_TYPE_BOND_SHADES),
+    MotorizedShades(THING_TYPE_BOND_SHADES),
     @SerializedName("FP")
-    MotorizedShades(THING_TYPE_BOND_FIREPLACE),
+    Fireplace(THING_TYPE_BOND_FIREPLACE),
     @SerializedName("GX")
     GenericDevice(THING_TYPE_BOND_GENERIC);
 
