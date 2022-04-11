@@ -80,7 +80,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     private Logger logger = LoggerFactory.getLogger(TadoZoneHandler.class);
 
     private final TadoStateDescriptionProvider stateDescriptionProvider;
-    private final TadoZoneConfig configuration;
+    private TadoZoneConfig configuration;
 
     private @Nullable ScheduledFuture<?> refreshTimer;
     private @Nullable ScheduledFuture<?> scheduledHvacChange;
@@ -214,6 +214,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
     @Override
     public void initialize() {
+        configuration = getConfigAs(TadoZoneConfig.class);
         if (configuration.refreshInterval <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Refresh interval of zone "
                     + getZoneId() + " of home " + getHomeId() + " must be greater than zero");

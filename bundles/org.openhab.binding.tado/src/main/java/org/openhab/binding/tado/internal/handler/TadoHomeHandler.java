@@ -54,7 +54,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(TadoHomeHandler.class);
 
-    private final TadoHomeConfig configuration;
+    private TadoHomeConfig configuration;
     private final HomeApi api;
 
     private @Nullable Long homeId;
@@ -76,6 +76,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        configuration = getConfigAs(TadoHomeConfig.class);
         ScheduledFuture<?> initializationFuture = this.initializationFuture;
         if (initializationFuture == null || initializationFuture.isDone()) {
             this.initializationFuture = scheduler.scheduleWithFixedDelay(
