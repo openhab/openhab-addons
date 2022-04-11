@@ -62,6 +62,12 @@ public class ActionTemplateConfiguration {
         public @Nullable String posFile = null;
         @JsonProperty("posValues")
         public @Nullable Map<String, String> posStaticValues = null;
+
+        public static ActionTemplatePlaceholder withLabel(String label) {
+            var placeholder = new ActionTemplatePlaceholder();
+            placeholder.label = label;
+            return placeholder;
+        }
     }
 
     public static class ActionTemplateGroupTargets {

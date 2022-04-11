@@ -17,6 +17,8 @@ import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpr
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.GROUP_LABEL_PLACEHOLDER_SYMBOL;
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.ITEM_LABEL_PLACEHOLDER;
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.ITEM_LABEL_PLACEHOLDER_SYMBOL;
+import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.ITEM_OPTION_PLACEHOLDER;
+import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.ITEM_OPTION_PLACEHOLDER_SYMBOL;
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.NER_FOLDER;
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.NLP_FOLDER;
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.POS_FOLDER;
@@ -43,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -292,8 +295,8 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 for (var template : templates) {
                     List<NLPPlaceholderData> currentPlaceholderValues = new ArrayList<>();
                     var currentItem = entry.getKey();
-                    var scoreResult = getScoreWithPlaceholders(text, tokens, tags, lemmas, actionConfig, template,
-                            currentPlaceholderValues);
+                    var scoreResult = getScoreWithPlaceholders(text, currentItem, actionConfig.memberTargets,
+                            actionConfig.read, tokens, tags, lemmas, actionConfig, template, currentPlaceholderValues);
                     if (scoreResult.score != 0 && scoreResult.score == matchScore) {
                         if (targetItem == currentItem) {
                             logger.warn("multiple alternative templates with same score '{}' item '{}'", template,
@@ -370,8 +373,9 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                         .collect(Collectors.toList());
                 for (var template : templates) {
                     var replacedValues = new ArrayList<NLPPlaceholderData>();
-                    var scoreResult = getScoreWithPlaceholders(text, tokensWithGenericLabel, tagsWithGenericLabel,
-                            lemmasWithGenericLabel, actionConfig, template, replacedValues);
+                    var scoreResult = getScoreWithPlaceholders(text, targetItem, actionConfig.memberTargets,
+                            actionConfig.read, tokensWithGenericLabel, tagsWithGenericLabel, lemmasWithGenericLabel,
+                            actionConfig, template, replacedValues);
                     if (scoreResult.score != 0 && scoreResult.score == matchScore
                             && actionConfig.requiredItemTags.length == targetActionConfig.requiredItemTags.length) {
                         if (targetActionConfig == actionConfig) {
@@ -455,7 +459,6 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
 
     private String readItemState(Item targetItem, ActionTemplateConfiguration actionConfigMatch) throws IOException {
         var memberTargets = actionConfigMatch.memberTargets;
-        // we check groupLabel is null to avoid deeper recursion
         String state = null;
         String itemLabel = targetItem.getLabel();
         String groupLabel = null;
@@ -487,7 +490,8 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                     // only one target in the group, adding groupLabel placeholder value
                     groupLabel = itemLabel;
                     itemLabel = targetMember.getLabel();
-                    state = targetMembers.iterator().next().getState().toFullString();
+                    state = targetMember.getState().toFullString();
+                    targetItem = targetMember;
                 } else {
                     logger.warn("configured targetMembers were not found in group '{}'", targetItem.getName());
                     return config.failMessage;
@@ -499,6 +503,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         }
         var statePlaceholder = actionConfigMatch.placeholders.stream().filter(p -> p.label.equals(STATE_PLACEHOLDER))
                 .findFirst();
+        var itemState = state;
         if (statePlaceholder.isPresent()) {
             state = applyPOSTransformation(state, statePlaceholder.get());
         }
@@ -510,17 +515,33 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         }
         if (template instanceof String) {
             String templateText = (String) template;
+            if (templateText.contains(ITEM_OPTION_PLACEHOLDER)) {
+                var itemOptionPlaceholder = getItemOptionPlaceholder(targetItem, true, null);
+                if (itemOptionPlaceholder != null) {
+                    itemState = applyPOSTransformation(itemState, itemOptionPlaceholder);
+                }
+            }
             return templateText.replace(STATE_PLACEHOLDER_SYMBOL, state)
+                    .replace(ITEM_OPTION_PLACEHOLDER_SYMBOL, itemState)
                     .replace(ITEM_LABEL_PLACEHOLDER_SYMBOL, itemLabel != null ? itemLabel : "")
                     .replace(GROUP_LABEL_PLACEHOLDER_SYMBOL, groupLabel != null ? groupLabel : "");
         }
         return state;
     }
 
-    private NLPTokenComparisonResult getScoreWithPlaceholders(String text, String[] tokens, String[] tags,
-            String[] lemmas, ActionTemplateConfiguration actionConfiguration, String template,
-            List<NLPPlaceholderData> placeholderValues) throws IOException {
-        for (var placeholder : actionConfiguration.placeholders) {
+    private NLPTokenComparisonResult getScoreWithPlaceholders(String text, Item targetItem,
+            ActionTemplateConfiguration.@Nullable ActionTemplateGroupTargets targetMembers, boolean isRead,
+            String[] tokens, String[] tags, String[] lemmas, ActionTemplateConfiguration actionConfiguration,
+            String template, List<NLPPlaceholderData> placeholderValues) throws IOException {
+        var placeholders = new ArrayList<>(actionConfiguration.placeholders);
+        if (template.contains(ITEM_OPTION_PLACEHOLDER_SYMBOL)) {
+            var itemOptionPlaceholder = getItemOptionPlaceholder(targetItem, isRead, targetMembers);
+            if (itemOptionPlaceholder == null) {
+                return NLPTokenComparisonResult.ZERO;
+            }
+            placeholders.add(itemOptionPlaceholder);
+        }
+        for (var placeholder : placeholders) {
             if (actionConfiguration.read && placeholder.label.equals(STATE_PLACEHOLDER)) {
                 // This placeholder is reserved on read mode should not be replaced now
                 continue;
@@ -529,10 +550,10 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 logger.warn("the name {} is reserved for the dynamic placeholder", DYNAMIC_PLACEHOLDER);
                 continue;
             }
-            Span[] nerSpans;
-            Map<String[], String> possibleValuesByTokensMap = null;
             var nerStaticValues = placeholder.nerStaticValues;
             var nerFile = placeholder.nerFile;
+            Span[] nerSpans;
+            Map<String[], String> possibleValuesByTokensMap = null;
             if (nerStaticValues != null) {
                 possibleValuesByTokensMap = getStringsByTokensMap(nerStaticValues);
                 nerSpans = nerValues(tokens, possibleValuesByTokensMap.keySet().toArray(String[][]::new),
@@ -589,7 +610,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             case "Color":
                 var colorValue = valueTemplate;
                 if (colorValue instanceof String) {
-                    replacedValue = templatePlaceholders((String) colorValue, placeholderValues,
+                    replacedValue = templatePlaceholders((String) colorValue, item, placeholderValues,
                             actionConfiguration.placeholders);
                     if (COLOR_HEX_PATTERN.matcher(replacedValue).matches()) {
                         Color rgb = Color.decode(replacedValue);
@@ -635,7 +656,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             if (objectValue != null) {
                 if (replacedValue == null) {
                     var stringValue = String.valueOf(objectValue);
-                    replacedValue = templatePlaceholders(stringValue, placeholderValues,
+                    replacedValue = templatePlaceholders(stringValue, item, placeholderValues,
                             actionConfiguration.placeholders);
                 }
                 command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), replacedValue);
@@ -656,6 +677,61 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         } else {
             return config.commandSentMessage;
         }
+    }
+
+    private ActionTemplateConfiguration.@Nullable ActionTemplatePlaceholder getItemOptionPlaceholder(Item targetItem,
+            boolean isRead, ActionTemplateConfiguration.@Nullable ActionTemplateGroupTargets memberTargets) {
+        if (targetItem.getType() == "Group" && memberTargets != null) {
+            var targetMembers = getTargetMembers((GroupItem) targetItem, memberTargets);
+            logger.debug("{} target members were found in group {}", targetMembers.size(), targetItem.getName());
+            if (!targetMembers.isEmpty()) {
+                return targetMembers.stream().map(member -> getItemOptionPlaceholder(member, isRead, null)).reduce(
+                        ActionTemplateConfiguration.ActionTemplatePlaceholder.withLabel(ITEM_OPTION_PLACEHOLDER),
+                        (a, b) -> {
+                            a.nerStaticValues = a.nerStaticValues != null
+                                    ? Stream.concat(Arrays.stream(a.nerStaticValues), Arrays.stream(b.nerStaticValues))
+                                            .distinct().toArray(String[]::new)
+                                    : b.nerStaticValues;
+                            return a;
+                        });
+            }
+        }
+        var cmdDescription = targetItem.getCommandDescription();
+        var stateDescription = targetItem.getStateDescription();
+        var itemOptionPlaceholder = ActionTemplateConfiguration.ActionTemplatePlaceholder
+                .withLabel(ITEM_OPTION_PLACEHOLDER);
+        if (!isRead && cmdDescription != null) {
+            itemOptionPlaceholder.nerStaticValues = cmdDescription.getCommandOptions().stream()
+                    .map(option -> option.getLabel() != null ? option.getLabel() : option.getCommand())
+                    .filter(Objects::nonNull).toArray(String[]::new);
+            itemOptionPlaceholder.posStaticValues = cmdDescription.getCommandOptions().stream()
+                    .collect(Collectors.toMap(
+                            option -> option.getLabel() != null ? option.getLabel().replaceAll(" ", "__")
+                                    : option.getCommand().replaceAll(" ", "__"),
+                            option -> option.getCommand().replaceAll(" ", "__")));
+            return itemOptionPlaceholder;
+        } else if (stateDescription != null) {
+            itemOptionPlaceholder.nerStaticValues = stateDescription.getOptions().stream()
+                    .map(option -> option.getLabel() != null ? option.getLabel() : option.getValue())
+                    .filter(Objects::nonNull).toArray(String[]::new);
+            if (isRead) {
+                itemOptionPlaceholder.posStaticValues = stateDescription.getOptions().stream()
+                        .collect(Collectors.toMap(option -> option.getValue().replaceAll(" ", "__"),
+                                option -> option.getLabel() != null ? option.getLabel().replaceAll(" ", "__")
+                                        : option.getValue().replaceAll(" ", "__")));
+            } else {
+                itemOptionPlaceholder.posStaticValues = stateDescription.getOptions().stream()
+                        .collect(Collectors.toMap(
+                                option -> option.getLabel() != null ? option.getLabel().replaceAll(" ", "__")
+                                        : option.getValue().replaceAll(" ", "__"),
+                                option -> option.getValue().replaceAll(" ", "__")));
+            }
+            return itemOptionPlaceholder;
+        }
+        logger.warn(
+                "'{}' is the target item for an action that uses the '{}' placeholder but hasn't got any state/command description",
+                targetItem.getName(), ITEM_OPTION_PLACEHOLDER_SYMBOL);
+        return null;
     }
 
     private Set<Item> getTargetMembers(GroupItem groupItem,
@@ -680,10 +756,17 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return childrenItems;
     }
 
-    private String templatePlaceholders(String text, Map<String, String> placeholderValues,
+    private String templatePlaceholders(String text, Item targetItem, Map<String, String> placeholderValues,
             List<ActionTemplateConfiguration.ActionTemplatePlaceholder> placeholders) throws IOException {
+        var placeholdersCopy = new ArrayList<>(placeholders);
+        if (placeholderValues.containsKey(ITEM_OPTION_PLACEHOLDER)) {
+            var itemOptionPlaceholder = getItemOptionPlaceholder(targetItem, false, null);
+            if (itemOptionPlaceholder != null) {
+                placeholdersCopy.add(itemOptionPlaceholder);
+            }
+        }
         // replace placeholder symbols
-        for (var placeholder : placeholders) {
+        for (var placeholder : placeholdersCopy) {
             var placeholderValue = placeholderValues.getOrDefault(placeholder.label, "");
             if (!placeholderValue.isBlank()) {
                 placeholderValue = applyPOSTransformation(placeholderValue, placeholder);

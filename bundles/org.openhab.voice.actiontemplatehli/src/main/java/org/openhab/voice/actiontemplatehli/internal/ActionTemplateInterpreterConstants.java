@@ -77,6 +77,14 @@ public class ActionTemplateInterpreterConstants {
      */
     public static final String STATE_PLACEHOLDER_SYMBOL = getPlaceholderSymbol(STATE_PLACEHOLDER);
     /**
+     * Item option placeholder name
+     */
+    public static final String ITEM_OPTION_PLACEHOLDER = "itemOption";
+    /**
+     * State placeholder symbol
+     */
+    public static final String ITEM_OPTION_PLACEHOLDER_SYMBOL = getPlaceholderSymbol(ITEM_OPTION_PLACEHOLDER);
+    /**
      * Dynamic placeholder name
      */
     public static final String DYNAMIC_PLACEHOLDER = "*";

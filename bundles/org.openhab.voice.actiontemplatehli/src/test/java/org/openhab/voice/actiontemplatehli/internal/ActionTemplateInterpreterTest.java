@@ -35,10 +35,14 @@ import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.items.events.ItemEventFactory;
+import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.openhab.core.types.StateOption;
 import org.openhab.core.voice.text.InterpretationException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -85,6 +89,17 @@ public class ActionTemplateInterpreterTest {
         groupItem.setLabel("bedroom");
         groupItem.addTag("Location");
         Mockito.when(itemRegistryMock.get(groupItem.getName())).thenReturn(groupItem);
+        // TV channel
+        var numberItem = new NumberItem("testNumber");
+        numberItem.setState(DecimalType.valueOf("1"));
+        numberItem.setLabel("channel");
+        numberItem.addTag("tv_channel");
+        numberItem
+                .setStateDescriptionService((text, locale) -> StateDescriptionFragmentBuilder
+                        .create().withOptions(List.of(new StateOption("1", "channel one"),
+                                new StateOption("2", "channel two"), new StateOption("3", "channel three")))
+                        .build().toStateDescription());
+        Mockito.when(itemRegistryMock.get(numberItem.getName())).thenReturn(numberItem);
         // Prepare Group Write action
         var groupNPLWriteAction = new ActionTemplateConfiguration();
         groupNPLWriteAction.template = "turn on $itemLabel lights";
@@ -106,8 +121,27 @@ public class ActionTemplateInterpreterTest {
         groupNPLReadAction.memberTargets = new ActionTemplateConfiguration.ActionTemplateGroupTargets();
         groupNPLReadAction.memberTargets.itemName = switchItem.getName();
         groupNPLReadAction.memberTargets.requiredItemTags = new String[] { "Light" };
+        // Prepare group write action using item option
+        var groupNPLOptionWriteAction = new ActionTemplateConfiguration();
+        groupNPLOptionWriteAction.template = "set $itemLabel channel to $itemOption";
+        groupNPLOptionWriteAction.requiredItemTags = new String[] { "Location" };
+        groupNPLOptionWriteAction.value = "$itemOption";
+        groupNPLOptionWriteAction.memberTargets = new ActionTemplateConfiguration.ActionTemplateGroupTargets();
+        groupNPLOptionWriteAction.memberTargets.itemType = "Number";
+        groupNPLOptionWriteAction.memberTargets.requiredItemTags = new String[] { "tv_channel" };
+        // Prepare group read action using item option
+        var groupNPLOptionReadAction = new ActionTemplateConfiguration();
+        groupNPLOptionReadAction.read = true;
+        groupNPLOptionReadAction.requiredItemTags = new String[] { "Location" };
+        groupNPLOptionReadAction.template = "what channel is the on the $itemLabel tv";
+        groupNPLOptionReadAction.value = "$groupLabel tv is on $itemOption";
+        groupNPLOptionReadAction.memberTargets = new ActionTemplateConfiguration.ActionTemplateGroupTargets();
+        groupNPLOptionReadAction.memberTargets.itemType = "Number";
+        groupNPLOptionReadAction.memberTargets.requiredItemTags = new String[] { "tv_channel" };
         // Add switch member to group
         groupItem.addMember(switchItem);
+        // Add number member to group
+        groupItem.addMember(numberItem);
         // Prepare string
         var stringItem = new StringItem("testString");
         stringItem.setLabel("message example");
@@ -127,7 +161,7 @@ public class ActionTemplateInterpreterTest {
         Mockito.when(metadataRegistryMock.get(new MetadataKey(SERVICE_ID, stringItem.getName())))
                 .thenReturn(new Metadata(new MetadataKey(SERVICE_ID, stringItem.getName()), "", stringConfig));
         // Mock items
-        Mockito.when(itemRegistryMock.getAll()).thenReturn(List.of(switchItem, stringItem, groupItem));
+        Mockito.when(itemRegistryMock.getAll()).thenReturn(List.of(switchItem, stringItem, groupItem, numberItem));
 
         interpreter = new ActionTemplateInterpreter(itemRegistryMock, localeServiceMock, metadataRegistryMock,
                 eventPublisherMock) {
@@ -138,7 +172,8 @@ public class ActionTemplateInterpreterTest {
                     return new ActionTemplateConfiguration[] { switchNPLWriteAction, switchNPLReadAction };
                 }
                 if ("Group".equals(itemType)) {
-                    return new ActionTemplateConfiguration[] { groupNPLWriteAction, groupNPLReadAction };
+                    return new ActionTemplateConfiguration[] { groupNPLWriteAction, groupNPLReadAction,
+                            groupNPLOptionReadAction, groupNPLOptionWriteAction };
                 }
                 return new ActionTemplateConfiguration[] {};
             }
@@ -184,6 +219,19 @@ public class ActionTemplateInterpreterTest {
     public void groupItemMemberReadTest() throws InterpretationException {
         var response = interpreter.interpret(Locale.ENGLISH, "how is the light in the bedroom");
         assertThat(response, is("bedroom light in bedroom is off"));
+    }
+
+    /**
+     * Test target a group member item using the itemOption placeholder
+     */
+    @Test
+    public void groupItemOptionTest() throws InterpretationException {
+        var response = interpreter.interpret(Locale.ENGLISH, "what channel is the on the bedroom tv");
+        assertThat(response, is("bedroom tv is on channel one"));
+        response = interpreter.interpret(Locale.ENGLISH, "set bedroom channel to channel two");
+        assertThat(response, is(interpreter.config.commandSentMessage));
+        Mockito.verify(eventPublisherMock)
+                .post(ItemEventFactory.createCommandEvent("testNumber", new DecimalType("2")));
     }
 
     /**

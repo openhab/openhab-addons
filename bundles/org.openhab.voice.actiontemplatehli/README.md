@@ -126,6 +126,16 @@ When it's present, the 'itemLabel' placeholder will take the value of the target
 
 It's used to access the value on the read actions, you can configure a POS transformation for it.
 
+### The 'itemOption' Placeholder
+
+This placeholder is available for both write and read actions and doesn't need to be configured.
+
+When read is false, the 'itemOption' placeholder will be computed from the item command description options, or from the state description options if the command description options are not present.
+
+When read is true, the 'itemOption' placeholder will be computed from the item state description options.
+
+Note that, when targeting multiple group members, 'ner' (value matching) is done by merging all available member options but 'pos' (value transformation) is done using just the target member item options.
+
 ### The '*' Placeholder (the dynamic placeholder)
 
 The dynamic placeholder is designed to capture free text. The captured value is exposed to the value under the symbol '$*' as other placeholders.
