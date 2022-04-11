@@ -23,6 +23,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
+import org.openwebnet4j.OpenGateway;
 import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.message.Auxiliary;
 import org.openwebnet4j.message.BaseOpenMessage;
@@ -55,11 +56,21 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-        try {
-            OpenMessage msg = BaseOpenMessage.parse("*#9##");
-            send(msg);
-        } catch (MalformedFrameException | UnsupportedFrameException | OWNException e) {
-            logger.warn("Exception while processing command {}: ", e.getMessage());
+        OpenWebNetBridgeHandler h = bridgeHandler;
+        if (h != null && h.isBusGateway()) {
+            OpenGateway gw = h.gateway;
+            if (gw != null && gw.isConnected()) {
+                try {
+                    OpenMessage msg = BaseOpenMessage.parse("*#9##");
+                    send(msg);
+                } catch (MalformedFrameException | UnsupportedFrameException | OWNException e) {
+                    logger.warn("Exception while processing command {}: ", e.getMessage());
+                }
+            } else {
+                logger.warn("Gateway is not connected");
+            }
+        } else {
+            logger.warn("Gateway is not available");
         }
     }
 
