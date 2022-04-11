@@ -122,7 +122,7 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
             this.instanceKey = instanceKey;
 
             updateProperty("instanceKey", instanceKey.representationProperty());
-            bridgeHandler.newDevice(instanceKey, config.pollIntervalMs, config.pollIntervalMs, this);
+            bridgeHandler.newDevice(instanceKey, config.pollIntervalMs, config.retryTimeoutMs, this);
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             logger.error("Failed to configure {}", config, e);
