@@ -33,7 +33,7 @@ to common openHAB functionality within rules including items, things, actions, l
 
 This add-on includes by default the [openhab-js](https://github.com/openhab/openhab-js/) NPM library and exports it's namespaces onto the global namespace. This allows the use of `items`, `actions`, `cache` and other objects without the need to explicitly import using `require()`.  This functionality can be disabled for users who prefer to manage their own imports via the add-on configuration options. 
 
-![openHAB Rule Configuration](./doc/settings.png)
+![openHAB Rule Configuration](doc/settings.png)
 
 ## UI Based Rules
 
@@ -44,7 +44,7 @@ Advanced users, or users migrating scripts from existing systems may want to use
 ### Adding Triggers
 Using the openHAB UI, first create a new rule and set a trigger condition
 
-![openHAB Rule Configuration](./doc/rule-config.png)
+![openHAB Rule Configuration](doc/rule-config.png)
 
 
 ### Adding Actions
@@ -52,11 +52,11 @@ Select "Add Action" and then select "ECMAScript 262 Edition 11".
 Its important this is "Edition 11" or higher, earlier versions will not work.
 This will bring up a empty script editor where you can enter your javascript.
 
-![openHAB Rule Engines](./doc/rule-engines.png)
+![openHAB Rule Engines](doc/rule-engines.png)
 
 You can now write rules using standard ES6 Javascript along with the included openHAB [standard library](#standard-library).
 
-![openHAB Rule Script](./doc/rule-script.png)
+![openHAB Rule Script](doc/rule-script.png)
 
 For example, turning a light on:
 ```javascript

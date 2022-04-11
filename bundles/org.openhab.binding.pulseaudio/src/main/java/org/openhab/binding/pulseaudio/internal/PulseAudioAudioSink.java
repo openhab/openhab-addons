@@ -91,7 +91,9 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
                 } catch (IOException e) {
                     disconnect(); // disconnect force to clear connection in case of socket not cleanly shutdown
                     if (countAttempt == 2) { // we won't retry : log and quit
-                        String port = clientSocket != null ? Integer.toString(clientSocket.getPort()) : "unknown";
+                        final Socket clientSocketLocal = clientSocket;
+                        String port = clientSocketLocal != null ? Integer.toString(clientSocketLocal.getPort())
+                                : "unknown";
                         logger.warn(
                                 "Error while trying to send audio to pulseaudio audio sink. Cannot connect to {}:{}, error: {}",
                                 pulseaudioHandler.getHost(), port, e.getMessage());

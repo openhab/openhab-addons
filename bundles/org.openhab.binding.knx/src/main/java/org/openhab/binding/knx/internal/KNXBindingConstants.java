@@ -53,6 +53,7 @@ public class KNXBindingConstants {
     public static final String LOCAL_SOURCE_ADDRESS = "localSourceAddr";
     public static final String PORT_NUMBER = "portNumber";
     public static final String SERIAL_PORT = "serialPort";
+    public static final String USE_CEMI = "useCemi";
 
     // The default multicast ip address (see <a
     // href="http://www.iana.org/assignments/multicast-addresses/multicast-addresses.xml">iana</a> EIBnet/IP
