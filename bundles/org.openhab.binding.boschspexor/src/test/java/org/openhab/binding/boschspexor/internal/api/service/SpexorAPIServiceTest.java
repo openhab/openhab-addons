@@ -13,11 +13,13 @@
 package org.openhab.binding.boschspexor.internal.api.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,8 +29,12 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.MimeTypes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -39,6 +45,8 @@ import org.openhab.binding.boschspexor.internal.api.model.Energy;
 import org.openhab.binding.boschspexor.internal.api.model.Energy.EnergyMode;
 import org.openhab.binding.boschspexor.internal.api.model.Firmware;
 import org.openhab.binding.boschspexor.internal.api.model.Firmware.FirmwareState;
+import org.openhab.binding.boschspexor.internal.api.model.ObservationChangeStatus;
+import org.openhab.binding.boschspexor.internal.api.model.ObservationChangeStatus.StatusCode;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus.ObservationType;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus.SensorMode;
@@ -48,6 +56,8 @@ import org.openhab.binding.boschspexor.internal.api.model.SensorValue;
 import org.openhab.binding.boschspexor.internal.api.model.Spexor;
 import org.openhab.binding.boschspexor.internal.api.model.SpexorInfo;
 import org.openhab.binding.boschspexor.internal.api.service.auth.SpexorAuthorizationService;
+
+import com.nimbusds.common.contenttype.ContentType;
 
 /**
  * SpexorAPI Tests for the Bosch spexor backend
@@ -152,5 +162,105 @@ class SpexorAPIServiceTest {
                 Arrays.asList(SensorType.values()));
         assertNotNull(sensorValues);
         assertTrue(sensorValues.size() > 0);
+    }
+
+    @Test
+    void testSetObservationFailedResponse() throws InterruptedException, TimeoutException, ExecutionException {
+        String testResponse = "[{\"key\":\"AirQuality\",\"timestamp\":\"2021-12-15T21:05:54.000Z\",\"value\":212,\"minValue\":211,\"maxValue\":212,\"unit\":\"IAQ Index Table\"},{\"key\":\"AirQualityLevel\",\"timestamp\":\"2021-12-15T21:05:48.000Z\",\"value\":3,\"unit\":\"Air Quality Level\"},{\"key\":\"Temperature\",\"timestamp\":\"2021-12-15T21:05:54.000Z\",\"value\":22,\"minValue\":21,\"maxValue\":22,\"unit\":\"°C\"},{\"key\":\"Pressure\",\"timestamp\":\"2021-12-15T21:05:54.000Z\",\"value\":96650,\"minValue\":96650,\"maxValue\":96650,\"unit\":\"Pa\"},{\"key\":\"Acceleration\",\"timestamp\":\"2021-12-15T21:05:54.000Z\",\"value\":1006,\"minValue\":975,\"maxValue\":1012,\"unit\":\"mG\"},{\"key\":\"Light\",\"timestamp\":\"2021-12-15T21:05:54.000Z\",\"value\":6,\"minValue\":6,\"maxValue\":6,\"unit\":\"Light index\"},{\"key\":\"Humidity\",\"timestamp\":\"2021-12-15T21:05:54.000Z\",\"value\":50303,\"minValue\":49677,\"maxValue\":50303,\"unit\":\"% r.H.\"},{\"key\":\"Microphone\",\"timestamp\":\"2021-12-15T21:05:54.000Z\",\"value\":0,\"minValue\":0,\"maxValue\":0,\"unit\":\"Volume %\"},{\"key\":\"PassiveInfrared\",\"timestamp\":\"2021-12-15T21:05:54.000Z\",\"value\":2,\"unit\":\"event counter\"}]";
+        when(authService.newRequest(any(), eq("123456"), any())).thenReturn(Optional.of(request));
+        when(request.send()).thenReturn(response);
+        when(response.getContentAsString()).thenReturn(testResponse);
+        when(response.getContent()).thenReturn(testResponse.getBytes(StandardCharsets.UTF_8));
+        SpexorAPIService apiService = new SpexorAPIService(authService);
+
+        ObservationChangeStatus observationChange = apiService.setObservation("123456", ObservationType.Burglary, true);
+        assertNotNull(observationChange);
+        assertEquals(ObservationType.Burglary, observationChange.getObservationType());
+        assertEquals(SensorMode.Deactivated, observationChange.getSensorMode());
+        assertEquals(StatusCode.FAILURE, observationChange.getStatusCode());
+        verify(request).method(HttpMethod.PATCH);
+        verify(request, times(2)).accept(MimeTypes.Type.APPLICATION_JSON.toString());
+        verify(request).content(
+                argThat(matches("[{\"observationType\":\"Burglary\", \"sensorMode\":\"Activated\"}]", "UTF-8")),
+                eq(ContentType.APPLICATION_JSON.toString()));
+
+    }
+
+    @Test
+    void testGetSensorValues() throws InterruptedException, TimeoutException, ExecutionException {
+        String testResponse = "[{\"key\":\"AirQuality\", \"timestamp\":\"2022-02-02T20:46:05.763Z\",\"value\":815, \"minValue\": null, \"maxValue\": 2, \"unit\": \"fake\"},"
+                + "{\"key\":\"Fire\", \"timestamp\":\"2022-02-02T20:46:05.764Z\",\"value\":50, \"minValue\": 49, \"unit\": \"fake2\"}]";
+        when(authService.newRequest(any(), eq("123456"), any(), eq("AirQuality,Fire,AirQualityLevel")))
+                .thenReturn(Optional.of(request));
+        when(request.send()).thenReturn(response);
+        when(response.getContentAsString()).thenReturn(testResponse);
+        when(response.getContent()).thenReturn(testResponse.getBytes(StandardCharsets.UTF_8));
+        SpexorAPIService apiService = new SpexorAPIService(authService);
+
+        Map<@NonNull SensorType, @NonNull SensorValue<?>> sensorValues = apiService.getSensorValues("123456",
+                Arrays.asList(SensorType.AirQuality, SensorType.Fire, SensorType.AirQualityLevel));
+        assertNotNull(sensorValues);
+
+        assertTrue(sensorValues.containsKey(SensorType.AirQuality));
+        assertTrue(sensorValues.containsKey(SensorType.Fire));
+        assertFalse(sensorValues.containsKey(SensorType.AirQualityLevel));
+
+        assertNotNull(sensorValues.get(SensorType.AirQuality));
+        assertEquals("fake", sensorValues.get(SensorType.AirQuality).getUnit());
+        assertEquals(815, sensorValues.get(SensorType.AirQuality).getValue());
+        assertFalse(sensorValues.get(SensorType.AirQuality).hasMinValue());
+        assertEquals(2, sensorValues.get(SensorType.AirQuality).getMaxValue());
+        assertEquals("2022-02-02T20:46:05.763Z", sensorValues.get(SensorType.AirQuality).getTimestamp());
+
+        assertNotNull(sensorValues.get(SensorType.Fire));
+        assertEquals("fake2", sensorValues.get(SensorType.Fire).getUnit());
+        assertEquals(50, sensorValues.get(SensorType.Fire).getValue());
+        assertEquals(49, sensorValues.get(SensorType.Fire).getMinValue());
+        assertFalse(sensorValues.get(SensorType.Fire).hasMaxValue());
+        assertEquals("2022-02-02T20:46:05.764Z", sensorValues.get(SensorType.Fire).getTimestamp());
+
+    }
+
+    @Test
+    void testSetObservationSuccess() throws InterruptedException, TimeoutException, ExecutionException {
+        String testResponse = "[{\"observationType\":\"Burglary\", \"sensorMode\":\"InActivation\",\"statusCode\":\"SUCCESS\", \"message\": null}]";
+        when(authService.newRequest(any(), eq("123456"), any())).thenReturn(Optional.of(request));
+        when(request.send()).thenReturn(response);
+        when(response.getContentAsString()).thenReturn(testResponse);
+        when(response.getContent()).thenReturn(testResponse.getBytes(StandardCharsets.UTF_8));
+        SpexorAPIService apiService = new SpexorAPIService(authService);
+
+        ObservationChangeStatus observationChange = apiService.setObservation("123456", ObservationType.Burglary, true);
+        assertNotNull(observationChange);
+        assertEquals(ObservationType.Burglary, observationChange.getObservationType());
+        assertEquals(SensorMode.InActivation, observationChange.getSensorMode());
+        assertEquals(StatusCode.SUCCESS, observationChange.getStatusCode());
+        verify(request).method(HttpMethod.PATCH);
+        verify(request, times(2)).accept(MimeTypes.Type.APPLICATION_JSON.toString());
+
+        verify(request).content(
+                argThat(matches("[{\"observationType\":\"Burglary\", \"sensorMode\":\"Activated\"}]", "UTF-8")),
+                eq(ContentType.APPLICATION_JSON.toString()));
+
+    }
+
+    private ArgumentMatcher<StringContentProvider> matches(String json, String encoding) {
+        StringContentProvider expectedContent = new StringContentProvider(json, encoding);
+        return new ArgumentMatcher<StringContentProvider>() {
+
+            @Override
+            public boolean matches(StringContentProvider actualObj) {
+                boolean result = actualObj.getContentType().contentEquals(expectedContent.getContentType());
+                Iterator<ByteBuffer> actualItr = actualObj.iterator();
+                Iterator<ByteBuffer> expectedItr = expectedContent.iterator();
+                while (result && actualItr.hasNext() && expectedItr.hasNext()) {
+                    ByteBuffer actual = actualItr.next();
+                    ByteBuffer expected = expectedItr.next();
+                    result = actual.equals(expected) && actualItr.hasNext() == expectedItr.hasNext();
+                }
+                return result;
+            }
+
+        };
     }
 }
