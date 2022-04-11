@@ -26,7 +26,6 @@ The OmniPro/Lumina controller acts as a "bridge" for accessing other connected d
 | Access Control Reader Lock | Leviton Access Control Reader                    | `lock`                            |
 
 
-
 ## Discovery
 
 ### Controller
@@ -88,7 +87,7 @@ The devices support some of the following channels:
 | `zone_volume`               | Dimmer               | Volume level of this audio zone.                                                     | `audio_zone`                                        |
 | `zone_source`               | Number               | Source for this audio zone.                                                          | `audio_zone`                                        |
 | `zone_control`              | Player               | Control the audio zone, e.g. start/stop/next/previous.                               | `audio_zone`                                        |
-| `system_date`               | DateTime             | Set controller date/time.                                                            | `controller`                                        |
+| `system_date`               | DateTime             | Controller date/time.                                                            | `controller`                                        |
 | `last_log`                  | String               | Last log message on the controller, represented in JSON.                             | `controller`                                        |
 | `enable_disable_beeper`     | Switch               | Enable/Disable the beeper for this/all console(s).                                   | `controller`, `console`                             |
 | `beep`                      | Switch               | Send a beep command to this/all console(s).                                          | `controller`, `console`                             |
@@ -146,6 +145,56 @@ The devices support some of the following trigger channels:
 | `activated_event`             | Event sent when a button is activated.                                               | `button`                            |
 | `switch_press_event`          | Event sent when an ALC, UPB, Radio RA, or Starlite switch is pressed.                | `dimmable`, `upb`                   |
 
+
+## Rule Actions
+
+This binding includes a rule action, which allows synchronizing the controller time to match the openHAB system time with a user specified zone.
+There is a separate instance for each contoller, which can be retrieved through:
+
+:::: tabs
+
+::: tab JavaScript
+
+``` javascript
+var omnilinkActions = actions.get("omnilink", "omnilink:controller:home");
+```
+
+:::
+
+::: tab DSL
+
+``` php
+val omnilinkActions = getActions("omnilink", "omnilink:controller:home")
+
+```
+
+:::
+
+::::
+
+where the first parameter always has to be `omnilink` and the second is the full Thing UID of the controller that should be used.
+Once this action instance is retrieved, you can invoke the `synchronizeControllerTime(String zone)` method on it:
+
+:::: tabs
+
+::: tab JavaScript
+
+``` javascript
+omnilinkAction.synchronizeControllerTime("America/Denver");
+```
+
+:::
+
+::: tab DSL
+
+``` php
+omnilinkAction.synchronizeControllerTime("America/Denver")
+
+```
+
+:::
+
+::::
 
 ## Full Example
 
@@ -307,12 +356,4 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 13=Arming day instant
 14=Arming night delay
 =Unknown
-```
-
-### Example EMCAScript rule
-
-``` javascript
-var omnilinkAction = actions.get("omnilink", "omnilink:controller:home");
-
-omnilinkAction.setDateTime("America/Denver");
 ```

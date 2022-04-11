@@ -159,7 +159,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
     }
 
-    public void setDateTime(ZonedDateTime zdt) {
+    public void synchronizeControllerTime(ZonedDateTime zdt) {
         boolean inDaylightSavings = zdt.getZone().getRules().isDaylightSavings(zdt.toInstant());
         try {
             getOmniConnection().setTimeCommand(zdt.getYear() - 2000, zdt.getMonthValue(), zdt.getDayOfMonth(),

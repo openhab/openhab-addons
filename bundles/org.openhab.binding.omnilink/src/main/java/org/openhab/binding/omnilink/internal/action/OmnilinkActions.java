@@ -53,7 +53,7 @@ public class OmnilinkActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
-    public void setDateTime(
+    public void synchronizeControllerTime(
             @ActionInput(name = "zone", label = "@text/actionInputZoneLabel", description = "@text/actionInputZoneDesc") @Nullable String zone) {
         OmnilinkBridgeHandler actionsHandler = handler;
         ZonedDateTime zdt;
@@ -68,14 +68,14 @@ public class OmnilinkActions implements ThingActions {
             }
         }
         if (actionsHandler == null) {
-            logger.info("Action service ThingHandler is null!");
+            logger.debug("Action service ThingHandler is null!");
         } else {
-            actionsHandler.setDateTime(zdt);
+            actionsHandler.synchronizeControllerTime(zdt);
         }
     }
 
-    public static void setDateTime(ThingActions actions, @Nullable String zone) {
-        ((OmnilinkActions) actions).setDateTime(zone);
+    public static void synchronizeSystemTime(ThingActions actions, @Nullable String zone) {
+        ((OmnilinkActions) actions).synchronizeControllerTime(zone);
     }
 
     public static void setTimeZoneProvider(TimeZoneProvider tzp) {
