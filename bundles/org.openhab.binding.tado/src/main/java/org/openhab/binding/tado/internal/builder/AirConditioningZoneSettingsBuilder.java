@@ -52,7 +52,7 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
     private static final float DEFAULT_TEMPERATURE_C = 20.0f;
     private static final float DEFAULT_TEMPERATURE_F = 68.0f;
 
-    private static final String VALUE_NOT_ALLOWED_FORMAT_STRING = "Device does not allow setting '%s' to value '%s' when it is in mode %s";
+    private static final String VALUE_NOT_ALLOWED_FORMAT_STRING = "Device does not allow setting '%s' to value '%s' when it is in '%s' mode.";
 
     @Override
     public GenericZoneSetting build(ZoneStateProvider zoneStateProvider, GenericZoneCapabilities genericCapabilities)
@@ -77,13 +77,13 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
             newSetting.setSwing(swing ? Power.ON : Power.OFF);
         }
 
+        if (light != null) {
+            newSetting.setLight(light ? Power.ON : Power.OFF);
+        }
+
         FanSpeed fanSpeed = this.fanSpeed;
         if (fanSpeed != null) {
             newSetting.setFanSpeed(getAcFanSpeed(fanSpeed));
-        }
-
-        if (light != null) {
-            newSetting.setLight(light ? Power.ON : Power.OFF);
         }
 
         /*
