@@ -63,9 +63,14 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
 
         CoolingZoneSetting newSetting = coolingSetting(true);
 
+        AcMode targetMode;
         HvacMode mode = this.mode;
         if (mode != null) {
-            newSetting.setMode(getAcMode(mode));
+            targetMode = getAcMode(mode);
+            newSetting.setMode(targetMode);
+        } else {
+            // if mode not changing, so the reference is the current (or default) mode
+            targetMode = getCurrentOrDefaultAcMode(zoneStateProvider);
         }
 
         Float temperature = this.temperature;
@@ -73,12 +78,14 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
             newSetting.setTemperature(temperature(temperature, temperatureUnit));
         }
 
+        Boolean swing = this.swing;
         if (swing != null) {
-            newSetting.setSwing(swing ? Power.ON : Power.OFF);
+            newSetting.setSwing(swing.booleanValue() ? Power.ON : Power.OFF);
         }
 
+        Boolean light = this.light;
         if (light != null) {
-            newSetting.setLight(light ? Power.ON : Power.OFF);
+            newSetting.setLight(light.booleanValue() ? Power.ON : Power.OFF);
         }
 
         FanSpeed fanSpeed = this.fanSpeed;
@@ -90,42 +97,42 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
          * In the latest API release Tado introduced extra AC settings that have an open ended list of possible
          * supported state values. And for any particular device, its specific list of supported values is available
          * via its 'capabilities' structure. So before setting a new value, we check if the respective new value is in
-         * this capabilities list. And if not, an exception is thrown.
+         * the capabilities list that corresponds to the target AC mode. And if not, an exception is thrown.
          */
-        AcMode acMode = newSetting.getMode();
-        AcModeCapabilities acCapabilities = TadoApiTypeUtils.getModeCapabilities(acMode, genericCapabilities);
+        AcModeCapabilities targetModeCapabilities = TadoApiTypeUtils.getModeCapabilities(targetMode,
+                genericCapabilities);
 
         FanLevel fanLevel = this.fanLevel;
         if (fanLevel != null) {
-            ACFanLevel acFanLevel = getFanLevel(fanLevel);
-            List<ACFanLevel> acFanLevels = acCapabilities.getFanLevel();
-            if (acFanLevels == null || !acFanLevels.contains(acFanLevel)) {
+            ACFanLevel targetFanLevel = getFanLevel(fanLevel);
+            List<ACFanLevel> targetFanLevels = targetModeCapabilities.getFanLevel();
+            if (targetFanLevels == null || !targetFanLevels.contains(targetFanLevel)) {
                 throw new IllegalArgumentException(String.format(VALUE_NOT_ALLOWED_FORMAT_STRING,
-                        acFanLevel.getClass().getName(), acFanLevel.name(), acMode.name()));
+                        targetFanLevel.getClass().getName(), targetFanLevel.name(), targetMode.name()));
             }
-            newSetting.setFanLevel(acFanLevel);
+            newSetting.setFanLevel(targetFanLevel);
         }
 
         HorizontalSwing horizontalSwing = this.horizontalSwing;
         if (horizontalSwing != null) {
-            ACHorizontalSwing acHorizontalSwing = getHorizontalSwing(horizontalSwing);
-            List<ACHorizontalSwing> acHorizontalSwings = acCapabilities.getHorizontalSwing();
-            if (acHorizontalSwings == null || !acHorizontalSwings.contains(acHorizontalSwing)) {
+            ACHorizontalSwing targetHorizontalSwing = getHorizontalSwing(horizontalSwing);
+            List<ACHorizontalSwing> targetHorizontalSwings = targetModeCapabilities.getHorizontalSwing();
+            if (targetHorizontalSwings == null || !targetHorizontalSwings.contains(targetHorizontalSwing)) {
                 throw new IllegalArgumentException(String.format(VALUE_NOT_ALLOWED_FORMAT_STRING,
-                        acHorizontalSwing.getClass().getName(), acHorizontalSwing.name(), acMode.name()));
+                        targetHorizontalSwing.getClass().getName(), targetHorizontalSwing.name(), targetMode.name()));
             }
-            newSetting.setHorizontalSwing(acHorizontalSwing);
+            newSetting.setHorizontalSwing(targetHorizontalSwing);
         }
 
         VerticalSwing verticalSwing = this.verticalSwing;
         if (verticalSwing != null) {
-            ACVerticalSwing acVerticalSwing = getVerticalSwing(verticalSwing);
-            List<ACVerticalSwing> acVerticalSwings = acCapabilities.getVerticalSwing();
-            if (acVerticalSwings == null || !acVerticalSwings.contains(acVerticalSwing)) {
+            ACVerticalSwing targetVerticalSwing = getVerticalSwing(verticalSwing);
+            List<ACVerticalSwing> targetVerticalSwings = targetModeCapabilities.getVerticalSwing();
+            if (targetVerticalSwings == null || !targetVerticalSwings.contains(targetVerticalSwing)) {
                 throw new IllegalArgumentException(String.format(VALUE_NOT_ALLOWED_FORMAT_STRING,
-                        acVerticalSwing.getClass().getName(), acVerticalSwing.name(), acMode.name()));
+                        targetVerticalSwing.getClass().getName(), targetVerticalSwing.name(), targetMode.name()));
             }
-            newSetting.setVerticalSwing(acVerticalSwing);
+            newSetting.setVerticalSwing(targetVerticalSwing);
         }
 
         addMissingSettingParts(zoneStateProvider, genericCapabilities, newSetting);
@@ -141,19 +148,19 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
             newSetting.setMode(targetMode);
         }
 
-        AcModeCapabilities capabilities = getModeCapabilities(newSetting.getMode(), genericCapabilities);
+        AcModeCapabilities targetCapabilities = getModeCapabilities(newSetting.getMode(), genericCapabilities);
 
-        TemperatureRange temperatures = capabilities.getTemperatures();
+        TemperatureRange temperatures = targetCapabilities.getTemperatures();
         if (temperatures != null && newSetting.getTemperature() == null) {
             newSetting.setTemperature(getCurrentOrDefaultTemperature(zoneStateProvider, temperatures));
         }
 
-        List<AcFanSpeed> fanSpeeds = capabilities.getFanSpeeds();
+        List<AcFanSpeed> fanSpeeds = targetCapabilities.getFanSpeeds();
         if (fanSpeeds != null && !fanSpeeds.isEmpty() && newSetting.getFanSpeed() == null) {
             newSetting.setFanSpeed(getCurrentOrDefaultFanSpeed(zoneStateProvider, fanSpeeds));
         }
 
-        List<Power> swings = capabilities.getSwings();
+        List<Power> swings = targetCapabilities.getSwings();
         if (swings != null && !swings.isEmpty() && newSetting.getSwing() == null) {
             newSetting.setSwing(getCurrentOrDefaultSwing(zoneStateProvider, swings));
         }
