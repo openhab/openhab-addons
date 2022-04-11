@@ -50,8 +50,8 @@ Take in account that, as this is a token basis comparison, matching depends on t
 
 ## Action Template Options:
 
-The location were action configurations are placed changes whetter you are targeting an item or many, so take a look to the 'Action Template Target' to understand were to put this configurations.
-Also you can check the paths indicated on the examples at the end.
+The location where action configurations are placed changes whether you are targeting an item or many, so take a look to the 'Action Template Target' to understand where to put those configurations.
+Also, you can check the paths indicated on the examples at the end.
 
 Actions can read the state from an item or send a command to it.
 This is defined by the boolean field read which is 'false' by default.
@@ -61,7 +61,7 @@ When read is false:
 * template: action template. (Required)
 * value: value to be sent. It can be used to capture the transformed placeholder values. (Required unless the target item type is String, in which case silent mode is assumed to be true and the whole text is passed to the item).
 * type: action template type, either "tokens" or "lemmas".
-* requiredTags: allow to restrict the items targeted by its tags.
+* requiredTags: allow to restrict the items targeted by its tags by ignoring items not having all these tags.
 * placeholders: defined placeholders that can be used on the template and replaced on the value.
 * silent: boolean used to avoid confirmation message.
 * targetMembers: when targeting a Group item, can be used to send the command to its member items instead.
@@ -72,7 +72,7 @@ When read is true:
 * value: read template, can use the placeholders symbols $itemLabel and $state.
 * emptyValue: An alternative template. Is used when the state value is empty or NULL after the post transformation. The $itemLabel is available.
 * type: action template type.
-* requiredTags: allow to restrict the items targeted by its tags.
+* requiredTags: allow to restrict the items targeted by its tags by ignoring items not having all these tags.
 * placeholders: only the placeholder with label state will be used, to process its POS transformation on the state.
 * targetMembers: when targeting a Group item, can be used to access the state of one of its members. In case of multiple matches, a warning is shown and the first one is used.
 
@@ -107,7 +107,7 @@ You can use the following fields:
 
 * itemName: name of the item member to target. If present the other fields are ignored.
 * itemType: type of the item members to target.
-* requiredTags: allow to restrict the members targeted by its tags when matching by type.
+* requiredTags: allow to restrict the members targeted by tags when matching by type.
 * recursive: when matching by itemType, look for group members in a recursive way, default true.
 * mergeState: on a read action when matching by itemType, merge the item states by performing an AND operation, only allowed for 'Switch' and 'Contact' item types, default false.
 
@@ -164,7 +164,12 @@ To do so, it needs the tokens and optionally the POS tags and the lemmas.
 
 ### Tokenizer
 
-You can provide a custom model at '<OPENHAB_USERDATA>/actiontemplatehli/token.bin', otherwise it will use the build in [simple tokenizer](https://opennlp.apache.org/docs/1.9.4/manual/opennlp.html#tools.cli.tokenizer.SimpleTokenizer) or whitespace tokenizer (configurable).
+You can provide a custom model at '<OPENHAB_USERDATA>/actiontemplatehli/token.bin', otherwise it will use the built-in simple tokenizer or whitespace tokenizer (configurable).
+
+Here you have an example of the built-in ones:
+
+* Using the white space tokenizer "What time is it?" produces the tokens "what" "time" "is" "it?"
+* Using the simple tokenizer "What time is it?" produces the tokens "what" "time" "is" "it" "?"
 
 Tokenizing the text is enough to use the action type 'tokens' as tokens are the only ones required for scoring (but the option 'optionalLanguageTags' will not take effect unless you have the POS language tags).
 
@@ -191,18 +196,18 @@ This will produce a lemma for each token, then you can use the action type 'lemm
 
 Note that you need the POS language tags for your language, the ones covered on the previous section, for the lemmatizer to work.
 
-### Interpreter Configuration
+## Interpreter Configuration
 
-| Config   |  Group  |  Type  |   Default  | Description  |
-|----------|----------|----------|----------|------------------------------|
-| lowerText | nlp | boolean | false | Convert the input text to lowercase before processing |
-| caseSensitive | nlp | boolean | false | Enable case sensitivity, do not apply to dictionaries and models, do not apply to the 'itemLabel' placeholder |
-| useSimpleTokenizer | nlp | boolean | false | Prefer simple tokenizer over white space tokenizer |
-| optionalLanguageTags | nlp | text |  | Comma separated POS language tags that will be optional when comparing |
-| fallbackHLI | nlp | text |  | Human language interpreter to use if command is unhandled |
-| commandSentMessage | messages | text | Done | Message for successful command |
-| unhandledMessage | messages | text | I can not do that | Message for unsuccessful action |
-| failMessage | messages | text | There was an error | Message for error during processing |
+| Config                  |  Group   |  Type   |   Default            | Description                                                                                                   |
+|-------------------------|----------|---------|----------------------|---------------------------------------------------------------------------------------------------------------|
+| lowerText               | nlp      | boolean | false                | Convert the input text to lowercase before processing                                                         |
+| caseSensitive           | nlp      | boolean | false                | Enable case sensitivity, do not apply to dictionaries and models, do not apply to the 'itemLabel' placeholder |
+| useSimpleTokenizer      | nlp      | boolean | false                | Prefer simple tokenizer over white space tokenizer                                                            |
+| detokenizeOptimization  | nlp      | boolean | true                 | Enables build-in detokenization based on original text, otherwise string join by space is used                |
+| optionalLanguageTags    | nlp      | text    |                      | Comma separated POS language tags that will be optional when comparing                                        |
+| commandSentMessage      | messages | text    | Done                 | Message for successful command                                                                                |
+| unhandledMessage        | messages | text    | I can not do that    | Message for unsuccessful action                                                                               |
+| failureMessage          | messages | text    | There was an error   | Message for error during processing                                                                           |
 
 ## Examples:
 
@@ -384,11 +389,3 @@ config:
   type: tokens
   value: $contact:$*
 ```
-
-# Note From The Original Author
-
-This human language interpreter takes advantage of just a subset of the capabilities offered by OpenNLP.
-
-Don't hesitate on creating an issue proposing how to take advance of capabilities or opening a PR with any improvements.
-
-And feel free to ping me if you need something, I'm not an expert on this field but I will try to help, @GiviMAD.

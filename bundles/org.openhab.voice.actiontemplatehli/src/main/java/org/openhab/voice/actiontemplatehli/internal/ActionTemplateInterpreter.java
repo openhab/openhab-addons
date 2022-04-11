@@ -120,13 +120,13 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         createFolder(logger, POS_FOLDER);
         createFolder(logger, TYPE_ACTION_CONFIGS_FOLDER);
     }
-    protected ActionTemplateInterpreterConfiguration config = new ActionTemplateInterpreterConfiguration();
     private static final Pattern COLOR_HEX_PATTERN = Pattern.compile("^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$");
     private final Logger logger = LoggerFactory.getLogger(ActionTemplateInterpreter.class);
     private final LocaleService localeService;
     private final ItemRegistry itemRegistry;
     private final MetadataRegistry metadataRegistry;
     private final EventPublisher eventPublisher;
+    protected ActionTemplateInterpreterConfiguration config = new ActionTemplateInterpreterConfiguration();
     private Tokenizer tokenizer = WhitespaceTokenizer.INSTANCE;
     private ExpiringCacheMap<String, NLPInfo> cacheMap = new ExpiringCacheMap<>(Duration.of(1, ChronoUnit.MINUTES));
     private ActionTemplateInterpreter.@Nullable NLPItemMaps nlpItemMaps;
@@ -205,7 +205,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     @Override
     public String interpret(Locale locale, String words) throws InterpretationException {
         if (words.isEmpty()) {
-            new InterpretationException(config.unhandledMessage);
+            throw new InterpretationException(config.unhandledMessage);
         }
         try {
             if (config.lowerText) {
@@ -213,8 +213,8 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             }
             var info = getNLPInfo(words);
             if (info.tokens.length == 0) {
-                logger.warn("no tokens produced; aborting");
-                return config.failMessage;
+                logger.debug("no tokens produced; aborting");
+                throw new InterpretationException(config.failureMessage);
             }
             String response = processAction(words, checkActionConfigs(words, info.tokens, info.tags, info.lemmas));
             if (response == null) {
@@ -457,7 +457,8 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return result;
     }
 
-    private String readItemState(Item targetItem, ActionTemplateConfiguration actionConfigMatch) throws IOException {
+    private String readItemState(Item targetItem, ActionTemplateConfiguration actionConfigMatch)
+            throws IOException, InterpretationException {
         var memberTargets = actionConfigMatch.memberTargets;
         String state = null;
         String itemLabel = targetItem.getLabel();
@@ -476,7 +477,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                         break;
                     default:
                         logger.warn("state merge is not available for members of type {}", memberTargets.itemType);
-                        return config.failMessage;
+                        throw new InterpretationException(config.failureMessage);
                 }
             }
             if (state == null) {
@@ -494,7 +495,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                     targetItem = targetMember;
                 } else {
                     logger.warn("configured targetMembers were not found in group '{}'", targetItem.getName());
-                    return config.failMessage;
+                    throw new InterpretationException(config.failureMessage);
                 }
             }
         }
@@ -600,7 +601,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     }
 
     private @Nullable String sendItemCommand(Item item, String text, ActionTemplateConfiguration actionConfiguration,
-            Map<String, String> placeholderValues) throws IOException {
+            Map<String, String> placeholderValues) throws IOException, InterpretationException {
         Object valueTemplate = actionConfiguration.value;
         boolean silent = actionConfiguration.silent;
         String replacedValue = null;
@@ -618,7 +619,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                             command = HSBType.fromRGB(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
                         } catch (NumberFormatException e) {
                             logger.warn("Unable to parse value '{}' as color", replacedValue);
-                            return config.failMessage;
+                            throw new InterpretationException(config.failureMessage);
                         }
                     }
                 }
@@ -635,17 +636,17 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                         boolean groupsilent = true;
                         for (var targetMember : targetMembers) {
                             var response = sendItemCommand(targetMember, text, actionConfiguration, placeholderValues);
-                            if (config.failMessage.equals(response)) {
+                            if (config.failureMessage.equals(response)) {
                                 ok = false;
                             }
                             if (response != null) {
                                 groupsilent = false;
                             }
                         }
-                        return ok ? (groupsilent ? null : config.commandSentMessage) : config.failMessage;
+                        return ok ? (groupsilent ? null : config.commandSentMessage) : config.failureMessage;
                     } else {
                         logger.warn("configured targetMembers were not found in group '{}'", groupItem.getName());
-                        return config.failMessage;
+                        throw new InterpretationException(config.failureMessage);
                     }
                 }
                 break;
@@ -668,7 +669,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         }
         if (command == null) {
             logger.warn("Command '{}' is not valid for item '{}'.", actionConfiguration.value, item.getName());
-            return config.failMessage;
+            throw new InterpretationException(config.failureMessage);
         }
         eventPublisher.post(ItemEventFactory.createCommandEvent(item.getName(), command));
         if (silent) {
@@ -858,24 +859,35 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return String.join(" ", tokens);
     }
 
-    private Tokenizer getTokenizer() throws IOException {
-        Tokenizer tokenizer;
-        var tokenModelFile = Path.of(NLP_FOLDER, "token.bin").toFile();
-        if (tokenModelFile.exists()) {
-            logger.debug("Tokenizing with model {}", tokenModelFile);
-            InputStream inputStream = new FileInputStream(tokenModelFile);
-            TokenizerModel model = new TokenizerModel(inputStream);
-            tokenizer = new TokenizerME(model);
-        } else {
-            if (config.useSimpleTokenizer) {
-                logger.debug("Using simple tokenizer");
-                tokenizer = SimpleTokenizer.INSTANCE;
+    private Tokenizer getTokenizer() {
+        try {
+            Tokenizer tokenizer;
+            var tokenModelFile = Path.of(NLP_FOLDER, "token.bin").toFile();
+            if (tokenModelFile.exists()) {
+                logger.debug("Tokenizing with model {}", tokenModelFile);
+                InputStream inputStream = new FileInputStream(tokenModelFile);
+                TokenizerModel model = new TokenizerModel(inputStream);
+                tokenizer = new TokenizerME(model);
             } else {
-                logger.debug("Using white space tokenizer");
-                tokenizer = WhitespaceTokenizer.INSTANCE;
+                if (config.useSimpleTokenizer) {
+                    logger.debug("Using simple tokenizer");
+                    tokenizer = SimpleTokenizer.INSTANCE;
+                } else {
+                    logger.debug("Using white space tokenizer");
+                    tokenizer = WhitespaceTokenizer.INSTANCE;
+                }
+            }
+            return tokenizer;
+        } catch (IOException e) {
+            logger.warn("IOException while loading tokenizer: {}", e.getMessage());
+            if (config.useSimpleTokenizer) {
+                logger.warn("Fallback to simple tokenizer");
+                return SimpleTokenizer.INSTANCE;
+            } else {
+                logger.warn("Fallback to white space tokenizer");
+                return WhitespaceTokenizer.INSTANCE;
             }
         }
-        return tokenizer;
     }
 
     private String[] tokenizeText(String text) {
@@ -1013,19 +1025,11 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     }
 
     private Map<String[], Item> getItemsByLabelTokensMap() throws IOException {
-        var maps = this.nlpItemMaps;
-        if (maps == null) {
-            return getItemsMaps().itemLabelByTokens;
-        }
-        return maps.itemLabelByTokens;
+        return getItemsMaps().itemLabelByTokens;
     }
 
     private Map<Item, ActionTemplateConfiguration[]> getItemsWithActionConfigs() throws IOException {
-        var maps = this.nlpItemMaps;
-        if (maps == null) {
-            return getItemsMaps().itemsWithActionConfigs;
-        }
-        return maps.itemsWithActionConfigs;
+        return getItemsMaps().itemsWithActionConfigs;
     }
 
     private NLPItemMaps getItemsMaps() throws IOException {
@@ -1033,10 +1037,17 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         if (itemMaps == null) {
             var itemByLabelTokens = new HashMap<String[], Item>();
             var itemsWithActionConfigs = new HashMap<Item, ActionTemplateConfiguration[]>();
+            var labelList = new ArrayList<>();
             for (Item item : itemRegistry.getAll()) {
                 var label = item.getLabel();
                 if (label != null) {
                     var lowerLabel = label.toLowerCase();
+                    if (labelList.contains(lowerLabel)) {
+                        logger.warn("Multiple items with label '{}', this is not supported, ignoring '{}'", lowerLabel,
+                                item.getName());
+                        continue;
+                    }
+                    labelList.add(lowerLabel);
                     itemByLabelTokens.put(tokenizeText(lowerLabel), item);
                 }
                 var metadata = metadataRegistry.get(new MetadataKey(SERVICE_ID, item.getName()));
@@ -1148,21 +1159,10 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         optionalLanguageTags = Arrays.stream(this.config.optionalLanguageTags.split(",")).filter(i -> !i.isEmpty())
                 .collect(Collectors.toList());
         cacheMap.invalidateAll();
-        try {
-            tokenizer = getTokenizer();
-        } catch (IOException e) {
-            logger.warn("IOException while loading tokenizer: {}", e.getMessage());
-            if (config.useSimpleTokenizer) {
-                logger.warn("Fallback to simple tokenizer");
-                tokenizer = SimpleTokenizer.INSTANCE;
-            } else {
-                logger.warn("Fallback to white space tokenizer");
-                tokenizer = WhitespaceTokenizer.INSTANCE;
-            }
-        }
+        tokenizer = getTokenizer();
     }
 
-    public static class NLPInfo {
+    private static class NLPInfo {
         public final String[] tokens;
         public final String[] lemmas;
         public final String[] tags;

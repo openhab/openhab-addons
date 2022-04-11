@@ -31,7 +31,7 @@
 		</parameter>
 		<parameter name="detokenizeOptimization" type="boolean" groupName="nlp">
 			<label>Detokenize Optimization</label>
-			<description>Enables build-in detokenization based on original text, other way string join by space is used.</description>
+			<description>Enables build-in detokenization based on original text, otherwise string join by space is used.</description>
 			<default>true</default>
 		</parameter>
 		<parameter name="optionalLanguageTags" type="text" groupName="nlp">
@@ -48,8 +48,8 @@
 			<description>Message for unsuccessful processing.</description>
 			<default>I can not do that</default>
 		</parameter>
-		<parameter name="failMessage" type="text" groupName="messages">
-			<label>Fail Message</label>
+		<parameter name="failureMessage" type="text" groupName="messages">
+			<label>Failure Message</label>
 			<description>Message for error during processing.</description>
 			<default>There was an error</default>
 		</parameter>

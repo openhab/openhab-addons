@@ -40,7 +40,7 @@ public class ActionTemplateInterpreterConfiguration {
     /**
      * Message for error during processing
      */
-    public String failMessage = "There was an error";
+    public String failureMessage = "There was an error";
     /**
      * POS tags that will be optional when comparing
      */
@@ -50,7 +50,7 @@ public class ActionTemplateInterpreterConfiguration {
      */
     public boolean useSimpleTokenizer = false;
     /**
-     * Enables build-in detokenization based on original text, other way string join by space is used
+     * Enables build-in detokenization based on original text, otherwise string join by space is used
      */
     public boolean detokenizeOptimization = true;
 }

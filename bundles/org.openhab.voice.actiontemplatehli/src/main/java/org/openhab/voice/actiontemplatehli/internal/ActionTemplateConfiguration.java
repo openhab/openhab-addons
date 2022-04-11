@@ -26,7 +26,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * The {@link ActionTemplateConfiguration} represent each configured action
+ * The {@link ActionTemplateConfiguration} represents each configured action
  *
  * @author Miguel Álvarez - Initial contribution
  */
@@ -78,9 +78,9 @@ public class ActionTemplateConfiguration {
         @JsonProperty("requiredTags")
         public String[] requiredItemTags = new String[] {};
         @JsonProperty("mergeState")
-        public Boolean mergeState = false;
+        public boolean mergeState = false;
         @JsonProperty("recursive")
-        public Boolean recursive = true;
+        public boolean recursive = true;
     }
 
     public static ActionTemplateConfiguration[] fromMetadata(Metadata metadata) throws JsonProcessingException {
