@@ -107,7 +107,9 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                 } catch (IOException e) {
                     disconnect(); // disconnect to force clear connection in case of socket not cleanly shutdown
                     if (countAttempt == 2) { // we won't retry : log and quit
-                        String port = clientSocket != null ? Integer.toString(clientSocket.getPort()) : "unknown";
+                        final Socket clientSocketLocal = clientSocket;
+                        String port = clientSocketLocal != null ? Integer.toString(clientSocketLocal.getPort())
+                                : "unknown";
                         logger.warn(
                                 "Error while trying to get audio from pulseaudio audio source. Cannot connect to {}:{}, error: {}",
                                 pulseaudioHandler.getHost(), port, e.getMessage());
@@ -153,11 +155,14 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                                     if (pipeOutputs.contains(output)) {
                                         output.flush();
                                     }
-                                } catch (IOException e) {
-                                    if (e instanceof InterruptedIOException && pipeOutputs.isEmpty()) {
+                                } catch (InterruptedIOException e) {
+                                    if (pipeOutputs.isEmpty()) {
                                         // task has been ended while writing
                                         return;
                                     }
+                                    logger.warn("InterruptedIOException while writing to from pulse source pipe: {}",
+                                            getExceptionMessage(e));
+                                } catch (IOException e) {
                                     logger.warn("IOException while writing to from pulse source pipe: {}",
                                             getExceptionMessage(e));
                                 } catch (RuntimeException e) {
@@ -221,7 +226,8 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
         } catch (IOException | InterruptedException ignored) {
         }
         try {
-            return (clientSocket != null) ? clientSocket.getInputStream() : null;
+            var clientSocketFinal = clientSocket;
+            return (clientSocketFinal != null) ? clientSocketFinal.getInputStream() : null;
         } catch (IOException ignored) {
             return null;
         }
@@ -264,11 +270,14 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
 
         @Override
         public int read(byte @Nullable [] b) throws IOException {
-            return read(b, 0, b.length);
+            return read(b, 0, b == null ? 0 : b.length);
         }
 
         @Override
         public int read(byte @Nullable [] b, int off, int len) throws IOException {
+            if (b == null) {
+                throw new IOException("Buffer is null");
+            }
             logger.trace("reading from pulseaudio stream");
             if (closed) {
                 throw new IOException("Stream is closed");

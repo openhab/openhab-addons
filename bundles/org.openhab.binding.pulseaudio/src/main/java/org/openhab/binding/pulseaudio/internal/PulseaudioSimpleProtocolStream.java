@@ -63,9 +63,10 @@ public abstract class PulseaudioSimpleProtocolStream {
         if (clientSocketLocal == null || !clientSocketLocal.isConnected() || clientSocketLocal.isClosed()) {
             logger.debug("Simple TCP Stream connecting");
             String host = pulseaudioHandler.getHost();
-            int port = pulseaudioHandler.getSimpleTcpPort();
-            clientSocket = new Socket(host, port);
-            clientSocket.setSoTimeout(pulseaudioHandler.getBasicProtocolSOTimeout());
+            int port = pulseaudioHandler.getSimpleTcpPortAndLoadModuleIfNecessary();
+            var clientSocketFinal = new Socket(host, port);
+            clientSocketFinal.setSoTimeout(pulseaudioHandler.getBasicProtocolSOTimeout());
+            clientSocket = clientSocketFinal;
         }
     }
 
@@ -86,8 +87,9 @@ public abstract class PulseaudioSimpleProtocolStream {
     }
 
     public void scheduleDisconnect() {
-        if (scheduledDisconnection != null) {
-            scheduledDisconnection.cancel(true);
+        var scheduledDisconnectionFinal = scheduledDisconnection;
+        if (scheduledDisconnectionFinal != null) {
+            scheduledDisconnectionFinal.cancel(true);
         }
         int idleTimeout = pulseaudioHandler.getIdleTimeout();
         if (idleTimeout > -1) {
