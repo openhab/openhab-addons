@@ -25,7 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public class EchonetLiteBindingConstants {
 
     public static final long DEFAULT_POLL_INTERVAL_MS = 30_000;
-    public static final long DEFAULT_RETRY_TIMEOUT_MS = 1_000;
+    public static final long DEFAULT_RETRY_TIMEOUT_MS = 2_000;
     public static final int NETWORK_WAIT_TIMEOUT = 250;
 
     // List of all Thing Type UIDs

@@ -42,7 +42,6 @@ public abstract class EchonetObject {
     protected InflightRequest inflightSetRequest;
 
     protected long pollIntervalMs;
-    protected long retryTimeoutMs;
 
     public EchonetObject(final InstanceKey instanceKey, final Epc initialProperty) {
         this.instanceKey = instanceKey;
@@ -94,9 +93,8 @@ public abstract class EchonetObject {
 
     protected void setTimeouts(long pollIntervalMs, long retryTimeoutMs) {
         this.pollIntervalMs = pollIntervalMs;
-        this.retryTimeoutMs = retryTimeoutMs;
-        this.inflightGetRequest = new InflightRequest(TimeUnit.SECONDS.toMillis(1), inflightGetRequest, "GET");
-        this.inflightSetRequest = new InflightRequest(TimeUnit.SECONDS.toMillis(1), inflightSetRequest, "SET");
+        this.inflightGetRequest = new InflightRequest(retryTimeoutMs, inflightGetRequest, "GET");
+        this.inflightSetRequest = new InflightRequest(retryTimeoutMs, inflightSetRequest, "SET");
     }
 
     public boolean buildUpdateMessage(final EchonetMessageBuilder messageBuilder, final ShortSupplier tid,
