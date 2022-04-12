@@ -248,7 +248,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         }
     }
 
-    public NLPInfo getNLPInfo(String text) throws IOException {
+    private NLPInfo getNLPInfo(String text) throws IOException {
         logger.debug("Processing: '{}'", text);
         var nlpInfo = cacheMap.get(text);
         if (nlpInfo == null) {
