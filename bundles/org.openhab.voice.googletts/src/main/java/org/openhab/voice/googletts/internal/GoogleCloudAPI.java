@@ -77,7 +77,7 @@ class GoogleCloudAPI {
 
     private static final String GCP_AUTH_URI = "https://accounts.google.com/o/oauth2/auth";
     private static final String GCP_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
-    private static final String GCP_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
+    private static final String GCP_REDIRECT_URI = "https://www.google.com";
     /**
      * Google Cloud Platform authorization scope
      */
