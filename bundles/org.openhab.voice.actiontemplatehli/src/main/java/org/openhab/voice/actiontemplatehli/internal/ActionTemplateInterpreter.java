@@ -36,8 +36,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,7 +51,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
@@ -129,7 +126,6 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     private final EventPublisher eventPublisher;
     protected ActionTemplateInterpreterConfiguration config = new ActionTemplateInterpreterConfiguration();
     private Tokenizer tokenizer = WhitespaceTokenizer.INSTANCE;
-    private ExpiringCacheMap<String, NLPInfo> cacheMap = new ExpiringCacheMap<>(Duration.of(1, ChronoUnit.MINUTES));
     private ActionTemplateInterpreter.@Nullable NLPItemMaps nlpItemMaps;
     private List<String> optionalLanguageTags = List.of();
 
@@ -250,21 +246,13 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
 
     private NLPInfo getNLPInfo(String text) throws IOException {
         logger.debug("Processing: '{}'", text);
-        var nlpInfo = cacheMap.get(text);
-        if (nlpInfo == null) {
-            var tokens = tokenizeText(text);
-            var tags = languagePOSTagging(tokens);
-            var lemmas = languageLemmatize(tokens, tags);
-            nlpInfo = new NLPInfo(tokens, lemmas, tags);
-        } else {
-            logger.debug("resolved from cache");
-        }
-        logger.debug("tokens: {}", List.of(nlpInfo.tokens));
-        logger.debug("tags: {}", List.of(nlpInfo.tags));
-        logger.debug("lemmas: {}", List.of(nlpInfo.lemmas));
-        var finalNlpInfo = nlpInfo;
-        cacheMap.put(text, () -> finalNlpInfo);
-        return nlpInfo;
+        var tokens = tokenizeText(text);
+        var tags = languagePOSTagging(tokens);
+        var lemmas = languageLemmatize(tokens, tags);
+        logger.debug("tokens: {}", List.of(tokens));
+        logger.debug("tags: {}", List.of(tags));
+        logger.debug("lemmas: {}", List.of(lemmas));
+        return new NLPInfo(tokens, lemmas, tags);
     }
 
     private @Nullable NLPInterpretationResult checkActionConfigs(String text, String[] tokens, String[] tags,
@@ -300,10 +288,13 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                             actionConfig.read, tokens, tags, lemmas, actionConfig, template, currentPlaceholderValues);
                     if (scoreResult.score != 0 && scoreResult.score == matchScore) {
                         if (targetItem == currentItem) {
-                            logger.warn("multiple alternative templates with same score '{}' item '{}'", template,
-                                    currentItem);
+                            logger.warn(
+                                    "multiple alternative templates for item '{}' has the same score, '{}' can be removed",
+                                    targetItem.getName(), template);
                         } else {
-                            logger.warn("multiple templates with same score '{}' item '{}'", template, currentItem);
+                            logger.warn(
+                                    "multiple templates with same score for items '{}' and '{}', the action with template '{}' can be removed",
+                                    targetItem.getName(), currentItem.getName(), template);
                         }
                     }
                     if (scoreResult.score > matchScore) {
@@ -380,9 +371,13 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                     if (scoreResult.score != 0 && scoreResult.score == matchScore
                             && actionConfig.requiredItemTags.length == targetActionConfig.requiredItemTags.length) {
                         if (targetActionConfig == actionConfig) {
-                            logger.warn("multiple alternative templates with same score '{}' ", template);
+                            logger.warn(
+                                    "multiple alternative templates with same score, you can remove the alternative '{}'",
+                                    template);
                         } else {
-                            logger.warn("multiple templates with same score '{}' ", template);
+                            logger.warn(
+                                    "multiple templates with same score, the action with template '{}' can be removed",
+                                    template);
                         }
                     }
                     // for rules with same score the one with more restrictions have prevalence
@@ -1173,7 +1168,6 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     private void reloadConfigs() {
         optionalLanguageTags = Arrays.stream(this.config.optionalLanguageTags.split(",")).filter(i -> !i.isEmpty())
                 .collect(Collectors.toList());
-        cacheMap.invalidateAll();
         tokenizer = getTokenizer();
     }
 

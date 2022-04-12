@@ -92,26 +92,7 @@ The placeholder symbol replaces the text tokens matched using NER (before scorin
 As a summary, using the placeholders you can configure how parts of the speech are converted into valid item values and backward.
 The examples at the end of the document can help you to see it clearer.
 
-There are some special placeholders, described in their own sections bellow.
-
-### POS Transformation
-
-POS is a technique which produces tags for each token, here though we are going to use it to match a group of words with a value so we should transform those words to a single token.
-That's the reason why the whitespace character should be replaced by '__' in the POS dictionaries and static values, you can see some examples bellow.
-
-### Target members:
-
-When the target of an action is a group item, you can target its members instead.
-
-You can use the following fields:
-
-* itemName: name of the item member to target. If present the other fields are ignored.
-* itemType: type of the item members to target.
-* requiredTags: allow to restrict the members targeted by tags when matching by type.
-* recursive: when matching by itemType, look for group members in a recursive way, default true.
-* mergeState: on a read action when matching by itemType, merge the item states by performing an AND operation, only allowed for 'Switch' and 'Contact' item types, default false.
-
-## Special Placeholders
+There are some special placeholders:
 
 ### The 'itemLabel' Placeholder
 
@@ -156,6 +137,23 @@ The action with template "play $musicAuthor on living room" will be executed.
 
 The sentence "play beethoven on living room" will score 4 when compared with the template containing the dynamic placeholder and 0 when compared with the one without it.
 The action with template "play $* on living room" will be executed.
+
+### POS Transformation
+
+POS is a technique which produces tags for each token, here though we are going to use it to match a group of words with a value so we should transform those words to a single token.
+That's the reason why the whitespace character should be replaced by '__' in the POS dictionaries and static values, you can see some examples bellow.
+
+### Target members:
+
+When the target of an action is a group item, you can target its members instead.
+
+You can use the following fields:
+
+* itemName: name of the item member to target. If present the other fields are ignored.
+* itemType: type of the item members to target.
+* requiredTags: allow to restrict the members targeted by tags when matching by type.
+* recursive: when matching by itemType, look for group members in a recursive way, default true.
+* mergeState: on a read action when matching by itemType, merge the item states by performing an AND operation, only allowed for 'Switch' and 'Contact' item types, default false.
 
 ## Text Preprocessing
 
