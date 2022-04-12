@@ -123,4 +123,9 @@ public class EVCCBindingConstants {
     public static final String CHANNEL_LOADPOINT_VEHICLE_RANGE = "vehicleRange";
     public static final String CHANNEL_LOADPOINT_VEHICLE_SOC = "vehicleSoC";
     public static final String CHANNEL_LOADPOINT_VEHICLE_TITLE = "vehicleTitle";
+
+    public static final int CONNECTION_TIMEOUT_MILLISEC = 5000;
+    public static final int LONG_CONNECTION_TIMEOUT_MILLISEC = 60000;
+    public static final String HTTP = "http://";
+    public static final String EVCC_REST_API = "/api/";
 }
