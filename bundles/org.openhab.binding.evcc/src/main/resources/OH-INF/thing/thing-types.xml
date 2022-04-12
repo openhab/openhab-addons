@@ -20,15 +20,10 @@
 		</channels>
 
 		<config-description>
-			<parameter name="hostname" type="text" required="true">
+			<parameter name="host" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password to access the device</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>

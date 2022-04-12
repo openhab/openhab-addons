@@ -13,6 +13,7 @@
 package org.openhab.binding.evcc.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link EVCCConfiguration} class contains fields mapping thing configuration parameters.
@@ -23,9 +24,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class EVCCConfiguration {
 
     /**
-     * Sample configuration parameters. Replace with your own.
+     * Hostname or IP address of the evcc instance.
      */
-    public String hostname = "";
-    public String password = "";
+    public @Nullable String host;
+    /**
+     * Interval for state fetching.
+     */
     public int refreshInterval = 600;
 }
