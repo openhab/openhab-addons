@@ -18,6 +18,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.evcc.internal.dto.*;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -31,6 +32,8 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link EVCCHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -39,8 +42,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EVCCHandler extends BaseThingHandler {
-
     private final Logger logger = LoggerFactory.getLogger(EVCCHandler.class);
+    private final Gson gson = new Gson();
 
     private @Nullable EVCCConfiguration config;
 
@@ -198,5 +201,61 @@ public class EVCCHandler extends BaseThingHandler {
             return "{\"response_code\":\"999\"}";
         }
     }
+
     // End utility functions
+    // API calls to evcc
+    /**
+     * Get the status from evcc.
+     * 
+     * @param host hostname of IP address of the evcc instance
+     * @return Status object or null if request failed
+     */
+    private @Nullable Status getStatus(@Nullable String host) {
+        final String reponse = httpRequest("Status", host + EVCC_REST_API + "state", "GET");
+        return gson.fromJson(reponse, Status.class);
+    }
+
+    /**
+     * Get the number of loadpoints.
+     * 
+     * @param host hostname of IP address of the evcc instance
+     * @param status Status object returned from evcc (/api/state)
+     * @return number of loadpoints
+     */
+    private @Nullable Integer getNumberOfLoadpoints(@Nullable String host, @Nullable Status status) {
+        return status.getResult().getLoadpoints().length;
+    }
+
+    // Loadpoint specific API calls.
+    private @Nullable String setMode(@Nullable String host, int loadpoint, String mode) {
+        return httpRequest("Set mode of loadpoint " + loadpoint, host + EVCC_REST_API + loadpoint + "/mode/" + mode,
+                "POST");
+    }
+
+    private @Nullable String setMinSoC(@Nullable String host, int loadpoint, int minSoC) {
+        return httpRequest("Set minSoC of loadpoint " + loadpoint,
+                host + EVCC_REST_API + loadpoint + "/minsoc/" + minSoC, "POST");
+    }
+
+    private @Nullable String setTargetSoC(@Nullable String host, int loadpoint, int targetSoC) {
+        return httpRequest("Set targetSoC of loadpoint " + loadpoint,
+                host + EVCC_REST_API + loadpoint + "/targetsoc/" + targetSoC, "POST");
+    }
+
+    private @Nullable String setPhases(@Nullable String host, int loadpoint, int phases) {
+        return httpRequest("Set phases of loadpoint " + loadpoint,
+                host + EVCC_REST_API + loadpoint + "/phases/" + phases, "POST");
+    }
+
+    private @Nullable String setMinCurrent(@Nullable String host, int loadpoint, int minCurrent) {
+        return httpRequest("Set minCurrent of loadpoint " + loadpoint,
+                host + EVCC_REST_API + loadpoint + "/mincurrent/" + minCurrent, "POST");
+    }
+
+    private @Nullable String setMaxCurrent(@Nullable String host, int loadpoint, int maxCurrent) {
+        return httpRequest("Set maxCurrent of loadpoint " + loadpoint,
+                host + EVCC_REST_API + loadpoint + "/maxcurrent/" + maxCurrent, "POST");
+    }
+    // End loadpoint specific API calls
+    // End API calls to evcc
 }
