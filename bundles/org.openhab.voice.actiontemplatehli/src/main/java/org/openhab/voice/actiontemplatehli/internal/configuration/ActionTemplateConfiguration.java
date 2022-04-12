@@ -10,12 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.voice.actiontemplatehli.internal;
+package org.openhab.voice.actiontemplatehli.internal.configuration;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,38 +49,6 @@ public class ActionTemplateConfiguration {
     public boolean silent = false;
     @JsonProperty("memberTargets")
     public @Nullable ActionTemplateGroupTargets memberTargets = null;
-
-    public static class ActionTemplatePlaceholder {
-        @JsonProperty(value = "label", required = true)
-        public String label = "";
-        @JsonProperty("ner")
-        public @Nullable String nerFile = null;
-        @JsonProperty("nerValues")
-        public String @Nullable [] nerStaticValues = null;
-        @JsonProperty("pos")
-        public @Nullable String posFile = null;
-        @JsonProperty("posValues")
-        public @Nullable Map<String, String> posStaticValues = null;
-
-        public static ActionTemplatePlaceholder withLabel(String label) {
-            var placeholder = new ActionTemplatePlaceholder();
-            placeholder.label = label;
-            return placeholder;
-        }
-    }
-
-    public static class ActionTemplateGroupTargets {
-        @JsonProperty("itemName")
-        public String itemName = "";
-        @JsonProperty("itemType")
-        public String itemType = "";
-        @JsonProperty("requiredTags")
-        public String[] requiredItemTags = new String[] {};
-        @JsonProperty("mergeState")
-        public boolean mergeState = false;
-        @JsonProperty("recursive")
-        public boolean recursive = true;
-    }
 
     public static ActionTemplateConfiguration[] fromMetadata(Metadata metadata) throws JsonProcessingException {
         var configuration = metadata.getConfiguration();

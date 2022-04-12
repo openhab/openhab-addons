@@ -44,6 +44,9 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.voice.text.InterpretationException;
+import org.openhab.voice.actiontemplatehli.internal.configuration.ActionTemplateConfiguration;
+import org.openhab.voice.actiontemplatehli.internal.configuration.ActionTemplateGroupTargets;
+import org.openhab.voice.actiontemplatehli.internal.configuration.ActionTemplatePlaceholder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -74,7 +77,7 @@ public class ActionTemplateInterpreterTest {
         var switchNPLWriteAction = new ActionTemplateConfiguration();
         switchNPLWriteAction.template = "$onOff $itemLabel";
         switchNPLWriteAction.value = "$onOff";
-        var onOffPlaceholder = new ActionTemplateConfiguration.ActionTemplatePlaceholder();
+        var onOffPlaceholder = new ActionTemplatePlaceholder();
         onOffPlaceholder.label = "onOff";
         onOffPlaceholder.nerStaticValues = new String[] { "turn on", "turn off" };
         onOffPlaceholder.posStaticValues = Map.of("turn__on", "ON", "turn__off", "OFF");
@@ -105,7 +108,7 @@ public class ActionTemplateInterpreterTest {
         groupNPLWriteAction.template = "turn on $itemLabel lights";
         groupNPLWriteAction.requiredItemTags = new String[] { "Location" };
         groupNPLWriteAction.value = "ON";
-        groupNPLWriteAction.memberTargets = new ActionTemplateConfiguration.ActionTemplateGroupTargets();
+        groupNPLWriteAction.memberTargets = new ActionTemplateGroupTargets();
         groupNPLWriteAction.memberTargets.itemType = "Switch";
         groupNPLWriteAction.memberTargets.requiredItemTags = new String[] { "Light" };
         // Prepare Group Read action
@@ -114,11 +117,11 @@ public class ActionTemplateInterpreterTest {
         groupNPLReadAction.requiredItemTags = new String[] { "Location" };
         groupNPLReadAction.template = "how is the light in the $itemLabel";
         groupNPLReadAction.value = "$itemLabel in $groupLabel is $state";
-        var statePlaceholder = new ActionTemplateConfiguration.ActionTemplatePlaceholder();
+        var statePlaceholder = new ActionTemplatePlaceholder();
         statePlaceholder.label = "state";
         statePlaceholder.posStaticValues = Map.of("ON", "on", "OFF", "off");
         groupNPLReadAction.placeholders = List.of(statePlaceholder);
-        groupNPLReadAction.memberTargets = new ActionTemplateConfiguration.ActionTemplateGroupTargets();
+        groupNPLReadAction.memberTargets = new ActionTemplateGroupTargets();
         groupNPLReadAction.memberTargets.itemName = switchItem.getName();
         groupNPLReadAction.memberTargets.requiredItemTags = new String[] { "Light" };
         // Prepare group write action using item option
@@ -126,7 +129,7 @@ public class ActionTemplateInterpreterTest {
         groupNPLOptionWriteAction.template = "set $itemLabel channel to $itemOption";
         groupNPLOptionWriteAction.requiredItemTags = new String[] { "Location" };
         groupNPLOptionWriteAction.value = "$itemOption";
-        groupNPLOptionWriteAction.memberTargets = new ActionTemplateConfiguration.ActionTemplateGroupTargets();
+        groupNPLOptionWriteAction.memberTargets = new ActionTemplateGroupTargets();
         groupNPLOptionWriteAction.memberTargets.itemType = "Number";
         groupNPLOptionWriteAction.memberTargets.requiredItemTags = new String[] { "tv_channel" };
         // Prepare group read action using item option
@@ -135,7 +138,7 @@ public class ActionTemplateInterpreterTest {
         groupNPLOptionReadAction.requiredItemTags = new String[] { "Location" };
         groupNPLOptionReadAction.template = "what channel is the on the $itemLabel tv";
         groupNPLOptionReadAction.value = "$groupLabel tv is on $itemOption";
-        groupNPLOptionReadAction.memberTargets = new ActionTemplateConfiguration.ActionTemplateGroupTargets();
+        groupNPLOptionReadAction.memberTargets = new ActionTemplateGroupTargets();
         groupNPLOptionReadAction.memberTargets.itemType = "Number";
         groupNPLOptionReadAction.memberTargets.requiredItemTags = new String[] { "tv_channel" };
         // Add switch member to group
@@ -151,7 +154,7 @@ public class ActionTemplateInterpreterTest {
         stringNPLWriteAction.template = "send message $* to $contact";
         stringNPLWriteAction.value = "$contact:$*";
         stringNPLWriteAction.silent = true;
-        var contactPlaceholder = new ActionTemplateConfiguration.ActionTemplatePlaceholder();
+        var contactPlaceholder = new ActionTemplatePlaceholder();
         contactPlaceholder.label = "contact";
         contactPlaceholder.nerStaticValues = new String[] { "Mark", "Andrea" };
         contactPlaceholder.posStaticValues = Map.of("Mark", "+34000000000", "Andrea", "+34000000001");

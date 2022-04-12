@@ -73,6 +73,9 @@ import org.openhab.core.types.TypeParser;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.voice.text.HumanLanguageInterpreter;
 import org.openhab.core.voice.text.InterpretationException;
+import org.openhab.voice.actiontemplatehli.internal.configuration.ActionTemplateConfiguration;
+import org.openhab.voice.actiontemplatehli.internal.configuration.ActionTemplateGroupTargets;
+import org.openhab.voice.actiontemplatehli.internal.configuration.ActionTemplatePlaceholder;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -126,8 +129,9 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     private final EventPublisher eventPublisher;
     protected ActionTemplateInterpreterConfiguration config = new ActionTemplateInterpreterConfiguration();
     private Tokenizer tokenizer = WhitespaceTokenizer.INSTANCE;
-    private ActionTemplateInterpreter.@Nullable NLPItemMaps nlpItemMaps;
     private List<String> optionalLanguageTags = List.of();
+    @Nullable
+    private NLPItemMaps nlpItemMaps;
 
     private final RegistryChangeListener<Item> registryChangeListener = new RegistryChangeListener<>() {
         @Override
@@ -527,9 +531,9 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     }
 
     private NLPTokenComparisonResult getScoreWithPlaceholders(String text, Item targetItem,
-            ActionTemplateConfiguration.@Nullable ActionTemplateGroupTargets targetMembers, boolean isRead,
-            String[] tokens, String[] tags, String[] lemmas, ActionTemplateConfiguration actionConfiguration,
-            String template, List<NLPPlaceholderData> placeholderValues) throws IOException {
+            @Nullable ActionTemplateGroupTargets targetMembers, boolean isRead, String[] tokens, String[] tags,
+            String[] lemmas, ActionTemplateConfiguration actionConfiguration, String template,
+            List<NLPPlaceholderData> placeholderValues) throws IOException {
         var placeholders = new ArrayList<>(actionConfiguration.placeholders);
         if (template.contains(ITEM_OPTION_PLACEHOLDER_SYMBOL)) {
             var itemOptionPlaceholder = getItemOptionPlaceholder(targetItem, isRead, targetMembers);
@@ -676,15 +680,14 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         }
     }
 
-    private ActionTemplateConfiguration.@Nullable ActionTemplatePlaceholder getItemOptionPlaceholder(Item targetItem,
-            boolean isRead, ActionTemplateConfiguration.@Nullable ActionTemplateGroupTargets memberTargets) {
-        if (targetItem.getType() == "Group" && memberTargets != null) {
+    private @Nullable ActionTemplatePlaceholder getItemOptionPlaceholder(Item targetItem, boolean isRead,
+            @Nullable ActionTemplateGroupTargets memberTargets) {
+        if ("Group".equals(targetItem.getType()) && memberTargets != null) {
             var targetMembers = getTargetMembers((GroupItem) targetItem, memberTargets);
             logger.debug("{} target members were found in group {}", targetMembers.size(), targetItem.getName());
             if (!targetMembers.isEmpty()) {
-                return targetMembers.stream().map(member -> getItemOptionPlaceholder(member, isRead, null)).reduce(
-                        ActionTemplateConfiguration.ActionTemplatePlaceholder.withLabel(ITEM_OPTION_PLACEHOLDER),
-                        (a, b) -> {
+                return targetMembers.stream().map(member -> getItemOptionPlaceholder(member, isRead, null))
+                        .reduce(ActionTemplatePlaceholder.withLabel(ITEM_OPTION_PLACEHOLDER), (a, b) -> {
                             a.nerStaticValues = a.nerStaticValues != null
                                     ? Stream.concat(Arrays.stream(a.nerStaticValues), Arrays.stream(b.nerStaticValues))
                                             .distinct().toArray(String[]::new)
@@ -695,8 +698,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         }
         var cmdDescription = targetItem.getCommandDescription();
         var stateDescription = targetItem.getStateDescription();
-        var itemOptionPlaceholder = ActionTemplateConfiguration.ActionTemplatePlaceholder
-                .withLabel(ITEM_OPTION_PLACEHOLDER);
+        var itemOptionPlaceholder = ActionTemplatePlaceholder.withLabel(ITEM_OPTION_PLACEHOLDER);
         if (!isRead && cmdDescription != null) {
             itemOptionPlaceholder.nerStaticValues = cmdDescription.getCommandOptions().stream()
                     .map(option -> option.getLabel() != null ? option.getLabel() : option.getCommand())
@@ -731,8 +733,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return null;
     }
 
-    private Set<Item> getTargetMembers(GroupItem groupItem,
-            ActionTemplateConfiguration.ActionTemplateGroupTargets memberTargets) {
+    private Set<Item> getTargetMembers(GroupItem groupItem, ActionTemplateGroupTargets memberTargets) {
         var childName = memberTargets.itemName;
         if (!childName.isEmpty()) {
             return groupItem.getMembers(i -> i.getName().equals(childName));
@@ -754,7 +755,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     }
 
     private String templatePlaceholders(String text, Item targetItem, Map<String, String> placeholderValues,
-            List<ActionTemplateConfiguration.ActionTemplatePlaceholder> placeholders) throws IOException {
+            List<ActionTemplatePlaceholder> placeholders) throws IOException {
         var placeholdersCopy = new ArrayList<>(placeholders);
         if (placeholderValues.containsKey(ITEM_OPTION_PLACEHOLDER)) {
             var itemOptionPlaceholder = getItemOptionPlaceholder(targetItem, false, null);
@@ -979,8 +980,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return map;
     }
 
-    private String applyPOSTransformation(String text,
-            ActionTemplateConfiguration.ActionTemplatePlaceholder placeholderConfig) throws IOException {
+    private String applyPOSTransformation(String text, ActionTemplatePlaceholder placeholderConfig) throws IOException {
         var singleWorldText = text.replaceAll("\\s", "__");
         String tag = null;
         if (placeholderConfig.posFile != null) {
