@@ -62,6 +62,7 @@ import org.openhab.core.io.rest.LocaleService;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.items.events.ItemEventFactory;
@@ -1037,18 +1038,32 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         if (itemMaps == null) {
             var itemByLabelTokens = new HashMap<String[], Item>();
             var itemsWithActionConfigs = new HashMap<Item, ActionTemplateConfiguration[]>();
-            var labelList = new ArrayList<>();
+            var labelList = new ArrayList<String>();
             for (Item item : itemRegistry.getAll()) {
+                var alternativeNames = new ArrayList<String>();
                 var label = item.getLabel();
                 if (label != null) {
-                    var lowerLabel = label.toLowerCase();
-                    if (labelList.contains(lowerLabel)) {
-                        logger.warn("Multiple items with label '{}', this is not supported, ignoring '{}'", lowerLabel,
-                                item.getName());
-                        continue;
+                    alternativeNames.add(label);
+                }
+                MetadataKey key = new MetadataKey("synonyms", item.getName());
+                Metadata synonymsMetadata = metadataRegistry.get(key);
+                if (synonymsMetadata != null) {
+                    String[] synonyms = synonymsMetadata.getValue().split(",");
+                    if (synonyms.length > 0) {
+                        alternativeNames.addAll(List.of(synonyms));
                     }
-                    labelList.add(lowerLabel);
-                    itemByLabelTokens.put(tokenizeText(lowerLabel), item);
+                }
+                if (!alternativeNames.isEmpty()) {
+                    for (var alternative : alternativeNames) {
+                        var lowerLabel = alternative.toLowerCase();
+                        if (labelList.contains(lowerLabel)) {
+                            logger.debug("Multiple items with label '{}', this is not supported, ignoring '{}'",
+                                    lowerLabel, item.getName());
+                            continue;
+                        }
+                        labelList.add(lowerLabel);
+                        itemByLabelTokens.put(tokenizeText(lowerLabel), item);
+                    }
                 }
                 var metadata = metadataRegistry.get(new MetadataKey(SERVICE_ID, item.getName()));
                 if (metadata != null) {

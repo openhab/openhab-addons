@@ -115,7 +115,7 @@ You can use the following fields:
 
 ### The 'itemLabel' Placeholder
 
-The itemLabel placeholder is always applied when scoring actions linked to item types. It's replaced using NER (no case-sensitive) with your item labels. Its value is only available for read actions.
+The itemLabel placeholder is always applied when scoring actions linked to item types. It's replaced using NER (no case-sensitive) with your item labels and synonyms (collisions will be reported in debug logs). Its value is only available for read actions.
 
 ### The 'groupLabel' Placeholder
 
