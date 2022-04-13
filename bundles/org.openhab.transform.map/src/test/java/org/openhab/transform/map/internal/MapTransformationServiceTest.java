@@ -70,7 +70,7 @@ public class MapTransformationServiceTest extends JavaTest {
                 String content = new String(Files.readAllBytes(file));
                 String uid = Path.of(SRC_FOLDER).relativize(file).toString();
                 TransformationConfiguration transformationConfiguration = new TransformationConfiguration(uid, uid,
-                        "map", null, content, false);
+                        "map", null, content);
                 configurationMap.put(uid, transformationConfiguration);
             } catch (IOException ignored) {
             }
@@ -129,7 +129,7 @@ public class MapTransformationServiceTest extends JavaTest {
         TransformationConfiguration transformationConfigurationModified = new TransformationConfiguration(
                 transformationConfigurationDE.getUID(), transformationConfigurationDE.getLabel(),
                 transformationConfigurationDE.getType(), transformationConfigurationDE.getLanguage(),
-                transformationConfigurationFR.getContent(), false);
+                transformationConfigurationFR.getContent());
         processor.updated(transformationConfigurationDE, transformationConfigurationModified);
 
         // assert there is no modified cached version
@@ -149,7 +149,7 @@ public class MapTransformationServiceTest extends JavaTest {
         TransformationConfiguration transformationConfigurationModified = new TransformationConfiguration(
                 transformationConfigurationDE.getUID(), transformationConfigurationDE.getLabel(),
                 transformationConfigurationDE.getType(), transformationConfigurationDE.getLanguage(),
-                transformationConfigurationFR.getContent(), false);
+                transformationConfigurationFR.getContent());
         processor.updated(transformationConfigurationDE, transformationConfigurationModified);
 
         // ensure modified configuration is applied
