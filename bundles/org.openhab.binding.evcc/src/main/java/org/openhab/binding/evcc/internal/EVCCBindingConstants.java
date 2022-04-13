@@ -62,6 +62,7 @@ public class EVCCBindingConstants {
             "maxCurrent");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MIN_CURRENT = new ChannelTypeUID(BINDING_ID,
             "minCurrent");
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MIN_SOC = new ChannelTypeUID(BINDING_ID, "minSoC");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MODE = new ChannelTypeUID(BINDING_ID, "mode");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_PHASES = new ChannelTypeUID(BINDING_ID, "phases");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_PV_ACTION = new ChannelTypeUID(BINDING_ID,
@@ -127,5 +128,6 @@ public class EVCCBindingConstants {
     public static final int CONNECTION_TIMEOUT_MILLISEC = 5000;
     public static final int LONG_CONNECTION_TIMEOUT_MILLISEC = 60000;
     public static final String HTTP = "http://";
+    public static final String HTTPS = "https://";
     public static final String EVCC_REST_API = "/api/";
 }

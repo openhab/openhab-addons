@@ -15,6 +15,8 @@ package org.openhab.binding.evcc.internal;
 import static org.openhab.binding.evcc.internal.EVCCBindingConstants.*;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,6 +26,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -44,8 +47,18 @@ import com.google.gson.Gson;
 public class EVCCHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EVCCHandler.class);
     private final Gson gson = new Gson();
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     private @Nullable EVCCConfiguration config;
+    private @Nullable String thingLabel;
+
+    private @Nullable Status status;
+
+    private int numberOfLoadpoints = 0;
+    private @Nullable String sitename;
+    private @Nullable Boolean batteryConfigured;
+    private @Nullable Boolean gridConfigured;
+    private @Nullable Boolean pvConfigured;
 
     public EVCCHandler(Thing thing) {
         super(thing);
@@ -64,45 +77,64 @@ public class EVCCHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(EVCCConfiguration.class);
-
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly, i.e. any network access must be done in
-        // the background initialization below.
-        // Also, before leaving this method a thing status from one of ONLINE, OFFLINE or UNKNOWN must be set. This
-        // might already be the real thing status in case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
-
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
+        thingLabel = getThing().getLabel();
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        });
+        if ("".equals(config.host)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "No host configured");
+        } else {
+            // Background initialization:
+            scheduler.execute(() -> {
+                status = getStatus(config.host);
+                if (status != null) {
+                    sitename = status.getResult().getSiteTitle();
+                    numberOfLoadpoints = status.getResult().getLoadpoints().length;
+                    logger.info("Found {} loadpoints on site {} (host: {}).", numberOfLoadpoints, sitename,
+                            config.host);
+                    updateStatus(ThingStatus.ONLINE);
+                    batteryConfigured = status.getResult().getBatteryConfigured();
+                    gridConfigured = status.getResult().getGridConfigured();
+                    pvConfigured = status.getResult().getPvConfigured();
+                    pollingJob = scheduler.scheduleWithFixedDelay(this::pollingJob, 0, config.refreshInterval,
+                            TimeUnit.SECONDS);
+                    refreshOnStartup();
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                            "Failed to contact evcc!");
+                }
+            });
+        }
+    }
 
-        // These logging types should be primarily used by bindings
-        // logger.trace("Example trace message");
-        // logger.debug("Example debug message");
-        // logger.warn("Example warn message");
-        //
-        // Logging to INFO should be avoided normally.
-        // See https://www.openhab.org/docs/developer/guidelines.html#f-logging
+    private void pollingJob() {
+        this.thingLabel = getThing().getLabel();
+        this.status = getStatus(config.host);
+        numberOfLoadpoints = status.getResult().getLoadpoints().length;
+        batteryConfigured = status.getResult().getBatteryConfigured();
+        gridConfigured = status.getResult().getGridConfigured();
+        pvConfigured = status.getResult().getPvConfigured();
+        // updateStatusGeneral();
+        for (int i = 0; i < numberOfLoadpoints; i++) {
+            // updateStatusLoadpoint(i);
+        }
+    }
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+    private void refreshOnStartup() {
+        createChannelsGeneral();
+        // updateStatusGeneral();
+        for (int i = 0; i < this.numberOfLoadpoints; i++) {
+            createChannelsLoadpoint("loadpoint" + i);
+            // updateStatusLoadpoint(i);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        ScheduledFuture<?> job = pollingJob;
+        if (job != null) {
+            job.cancel(true);
+            pollingJob = null;
+        }
     }
 
     // Utility functions
@@ -145,6 +177,8 @@ public class EVCCHandler extends BaseThingHandler {
                 "Number:ElectricCurrent");
         createChannel(CHANNEL_LOADPOINT_MIN_CURRENT, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_MIN_CURRENT,
                 "Number:ElectricCurrent");
+        createChannel(CHANNEL_LOADPOINT_MIN_SOC, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_MIN_SOC,
+                "Number:Dimensionless");
         createChannel(CHANNEL_LOADPOINT_MODE, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_MODE, "String");
         createChannel(CHANNEL_LOADPOINT_PHASES, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_PHASES, "Number");
         createChannel(CHANNEL_LOADPOINT_PV_ACTION, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_PV_ACTION, "String");
@@ -193,11 +227,11 @@ public class EVCCHandler extends BaseThingHandler {
     private String httpRequest(@Nullable String description, String url, String method) {
         String response = "";
         try {
-            response = HttpUtil.executeUrl(method, HTTP + url, LONG_CONNECTION_TIMEOUT_MILLISEC);
-            logger.trace("{} - {}", description, response);
+            response = HttpUtil.executeUrl(method, HTTPS + url, LONG_CONNECTION_TIMEOUT_MILLISEC);
+            logger.info("{} - {}", description, response);
             return response;
         } catch (IOException e) {
-            logger.trace("IO Exception - {} - {}", description, e.getMessage());
+            logger.warn("IO Exception - {} - {}", description, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }

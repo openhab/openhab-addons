@@ -28,31 +28,31 @@ public class Loadpoint {
     private float chargeCurrent;
 
     @SerializedName("chargeDuration")
-    private int chargeDuration;
+    private long chargeDuration;
 
     @SerializedName("chargePower")
     private float chargePower;
 
     @SerializedName("chargeRemainingDuration")
-    private int chargeRemainingDuration;
+    private long chargeRemainingDuration;
 
     @SerializedName("chargedEnergy")
-    private float chargedEnergy;
+    private double chargedEnergy;
 
     @SerializedName("charging")
-    private Boolean charging;
+    private boolean charging;
 
     @SerializedName("connected")
-    private Boolean connected;
+    private boolean connected;
 
     @SerializedName("connectedDuration")
-    private int connectedDuration;
+    private long connectedDuration;
 
     @SerializedName("enabled")
-    private Boolean enabled;
+    private boolean enabled;
 
     @SerializedName("hasVehicle")
-    private Boolean hasVehicle;
+    private boolean hasVehicle;
 
     @SerializedName("loadpoint")
     private int loadpoint;
@@ -67,7 +67,7 @@ public class Loadpoint {
     private int minSoC;
 
     @SerializedName("mode")
-    private int mode;
+    private String mode;
 
     @SerializedName("phases")
     private int phases;
@@ -76,7 +76,7 @@ public class Loadpoint {
     private String pvAction;
 
     @SerializedName("pvRemaining")
-    private int pvRemaining;
+    private long pvRemaining;
 
     @SerializedName("targetSoC")
     private int targetSoC;
@@ -85,7 +85,7 @@ public class Loadpoint {
     private String targetTime;
 
     @SerializedName("targetTimeActive")
-    private Boolean targetTimeActive;
+    private boolean targetTimeActive;
 
     @SerializedName("targetTimeHourSuggestion")
     private int targetTimeHourSuggestion;
@@ -97,7 +97,7 @@ public class Loadpoint {
     private int vehicleCapacity;
 
     @SerializedName("vehicleOdometer")
-    private int vehicleOdometer;
+    private long vehicleOdometer;
 
     @SerializedName("vehiclePresent")
     private Boolean vehiclePresent;
@@ -128,7 +128,7 @@ public class Loadpoint {
     /**
      * @return the charge duration
      */
-    public int getChargeDuration() {
+    public long getChargeDuration() {
         return chargeDuration;
     }
 
@@ -142,14 +142,14 @@ public class Loadpoint {
     /**
      * @return the charge remaining duration
      */
-    public int getChargeRemainingDuration() {
+    public long getChargeRemainingDuration() {
         return chargeRemainingDuration;
     }
 
     /**
      * @return the charged energy
      */
-    public float getChargedEnergy() {
+    public double getChargedEnergy() {
         return chargedEnergy;
     }
 
@@ -170,7 +170,7 @@ public class Loadpoint {
     /**
      * @return the connected duration
      */
-    public int getConnectedDuration() {
+    public long getConnectedDuration() {
         return connectedDuration;
     }
 
@@ -219,7 +219,7 @@ public class Loadpoint {
     /**
      * @return the mode: off, now, minpv, pv
      */
-    public int getMode() {
+    public String getMode() {
         return mode;
     }
 
@@ -240,7 +240,7 @@ public class Loadpoint {
     /**
      * @return the pv remaining
      */
-    public int getPvRemaining() {
+    public long getPvRemaining() {
         return pvRemaining;
     }
 
@@ -289,7 +289,7 @@ public class Loadpoint {
     /**
      * @return the vehicle's odometer
      */
-    public int getVehicleOdometer() {
+    public long getVehicleOdometer() {
         return vehicleOdometer;
     }
 

@@ -34,9 +34,6 @@ public class Result {
     @SerializedName("batterySoC")
     private int batterySoC;
 
-    @SerializedName("currency")
-    private String currency;
-
     @SerializedName("gridConfigured")
     private Boolean gridConfigured;
 
@@ -58,35 +55,8 @@ public class Result {
     @SerializedName("pvPower")
     private float pvPower;
 
-    @SerializedName("savingsAmount")
-    private float savingsAmount;
-
-    @SerializedName("savingsEffectivePrice")
-    private float savingsEffectivePrice;
-
-    @SerializedName("savingsGridCharged")
-    private float savingsGridCharged;
-
-    @SerializedName("savingsSelfConsumptionCharged")
-    private float savingsSelfConsumptionCharged;
-
-    @SerializedName("savingsSelfConsumptionPercent")
-    private float savingsSelfConsumptionPercent;
-
-    @SerializedName("savingsSince")
-    private int savingsSince;
-
-    @SerializedName("savingsTotalCharged")
-    private float savingsTotalCharged;
-
     @SerializedName("siteTitle")
     private String siteTitle;
-
-    @SerializedName("tariffFeedIn")
-    private float tariffFeedIn;
-
-    @SerializedName("tariffGrid")
-    private float tariffGrid;
 
     /**
      * @return whether battery is configured
@@ -114,13 +84,6 @@ public class Result {
      */
     public int getBatterySoC() {
         return batterySoC;
-    }
-
-    /**
-     * @return the currency used for savings calculation
-     */
-    public String getCurrency() {
-        return currency;
     }
 
     /**
@@ -166,72 +129,9 @@ public class Result {
     }
 
     /**
-     * @return the savings amount
-     */
-    public float getSavingsAmount() {
-        return savingsAmount;
-    }
-
-    /**
-     * @return the savings effective price
-     */
-    public float getSavingsEffectivePrice() {
-        return savingsEffectivePrice;
-    }
-
-    /**
-     * @return the savings grid charged
-     */
-    public float getSavingsGridCharged() {
-        return savingsGridCharged;
-    }
-
-    /**
-     * @return the savings self consumption charged
-     */
-    public float getSavingsSelfConsumptionCharged() {
-        return savingsSelfConsumptionCharged;
-    }
-
-    /**
-     * @return the savings self consumption percent
-     */
-    public float getSavingsSelfConsumptionPercent() {
-        return savingsSelfConsumptionPercent;
-    }
-
-    /**
-     * @return the UNIX timestamp since the savings
-     */
-    public int getSavingsSince() {
-        return savingsSince;
-    }
-
-    /**
-     * @return the savings total charged
-     */
-    public float getSavingsTotalCharged() {
-        return savingsTotalCharged;
-    }
-
-    /**
      * @return the site's title
      */
     public String getSiteTitle() {
         return siteTitle;
-    }
-
-    /**
-     * @return the feed-in tariff
-     */
-    public float getTariffFeedIn() {
-        return tariffFeedIn;
-    }
-
-    /**
-     * @return the grid's tariff
-     */
-    public float getTariffGrid() {
-        return tariffGrid;
     }
 }

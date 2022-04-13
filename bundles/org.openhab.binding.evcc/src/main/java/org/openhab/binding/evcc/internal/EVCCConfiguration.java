@@ -28,7 +28,7 @@ public class EVCCConfiguration {
      */
     public @Nullable String host;
     /**
-     * Interval for state fetching.
+     * Interval for state fetching in seconds.
      */
-    public int refreshInterval = 600;
+    public int refreshInterval = 60;
 }
