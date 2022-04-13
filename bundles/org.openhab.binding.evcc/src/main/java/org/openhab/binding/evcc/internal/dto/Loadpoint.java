@@ -20,18 +20,19 @@ import com.google.gson.annotations.SerializedName;
  * @author Florian Hotze - Initial contribution
  */
 public class Loadpoint {
+    // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
 
     @SerializedName("activePhases")
     private int activePhases;
 
     @SerializedName("chargeCurrent")
-    private float chargeCurrent;
+    private double chargeCurrent;
 
     @SerializedName("chargeDuration")
     private long chargeDuration;
 
     @SerializedName("chargePower")
-    private float chargePower;
+    private double chargePower;
 
     @SerializedName("chargeRemainingDuration")
     private long chargeRemainingDuration;
@@ -58,10 +59,10 @@ public class Loadpoint {
     private int loadpoint;
 
     @SerializedName("maxCurrent")
-    private int maxCurrent;
+    private double maxCurrent;
 
     @SerializedName("minCurrent")
-    private int minCurrent;
+    private double minCurrent;
 
     @SerializedName("minSoC")
     private int minSoC;
@@ -94,16 +95,16 @@ public class Loadpoint {
     private String title;
 
     @SerializedName("vehicleCapacity")
-    private int vehicleCapacity;
+    private long vehicleCapacity;
 
     @SerializedName("vehicleOdometer")
-    private long vehicleOdometer;
+    private double vehicleOdometer;
 
     @SerializedName("vehiclePresent")
-    private Boolean vehiclePresent;
+    private boolean vehiclePresent;
 
     @SerializedName("vehicleRange")
-    private int vehicleRange;
+    private long vehicleRange;
 
     @SerializedName("vehicleSoC")
     private int vehicleSoC;
@@ -121,7 +122,7 @@ public class Loadpoint {
     /**
      * @return the charge current
      */
-    public float getChargeCurrent() {
+    public double getChargeCurrent() {
         return chargeCurrent;
     }
 
@@ -135,7 +136,7 @@ public class Loadpoint {
     /**
      * @return the charge power
      */
-    public float getChargePower() {
+    public double getChargePower() {
         return chargePower;
     }
 
@@ -156,14 +157,14 @@ public class Loadpoint {
     /**
      * @return wtether loadpoint is charging a vehicle
      */
-    public Boolean getCharging() {
+    public boolean getCharging() {
         return charging;
     }
 
     /**
      * @return whether a vehicle is connected to the loadpoint
      */
-    public Boolean getConnected() {
+    public boolean getConnected() {
         return connected;
     }
 
@@ -177,14 +178,14 @@ public class Loadpoint {
     /**
      * @return whether loadpoint is enabled
      */
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 
     /**
      * @return whether loadpoint has vehicle
      */
-    public Boolean getHasVehicle() {
+    public boolean getHasVehicle() {
         return hasVehicle;
     }
 
@@ -198,14 +199,14 @@ public class Loadpoint {
     /**
      * @return the maximum current
      */
-    public int getMaxCurrent() {
+    public double getMaxCurrent() {
         return maxCurrent;
     }
 
     /**
      * @return the minimum current
      */
-    public int getMinCurrent() {
+    public double getMinCurrent() {
         return minCurrent;
     }
 
@@ -261,7 +262,7 @@ public class Loadpoint {
     /**
      * @return whether the target time is active
      */
-    public Boolean getTargetTimeActive() {
+    public boolean getTargetTimeActive() {
         return targetTimeActive;
     }
 
@@ -282,28 +283,28 @@ public class Loadpoint {
     /**
      * @return the vehicle's capacity
      */
-    public int getVehicleCapacity() {
+    public double getVehicleCapacity() {
         return vehicleCapacity;
     }
 
     /**
      * @return the vehicle's odometer
      */
-    public long getVehicleOdometer() {
+    public double getVehicleOdometer() {
         return vehicleOdometer;
     }
 
     /**
      * @return whether a vehicle is present
      */
-    public Boolean getVehiclePresent() {
+    public boolean getVehiclePresent() {
         return vehiclePresent;
     }
 
     /**
      * @return the vehicle's range
      */
-    public int getVehicleRange() {
+    public long getVehicleRange() {
         return vehicleRange;
     }
 

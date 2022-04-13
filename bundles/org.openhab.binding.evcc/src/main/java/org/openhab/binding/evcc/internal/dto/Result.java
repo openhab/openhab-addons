@@ -20,40 +20,41 @@ import com.google.gson.annotations.SerializedName;
  * @author Florian Hotze - Initial contribution
  */
 public class Result {
+    // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
 
     // TO DO LATER
     // @SerializedName("auth")
     // private Auth auth;
 
     @SerializedName("batteryConfigured")
-    private Boolean batteryConfigured;
+    private boolean batteryConfigured;
 
     @SerializedName("batteryPower")
-    private float batteryPower;
+    private double batteryPower;
 
     @SerializedName("batterySoC")
     private int batterySoC;
 
     @SerializedName("gridConfigured")
-    private Boolean gridConfigured;
+    private boolean gridConfigured;
 
     @SerializedName("gridPower")
-    private float gridPower;
+    private double gridPower;
 
     @SerializedName("homePower")
-    private float homePower;
+    private double homePower;
 
     @SerializedName("loadpoints")
     private Loadpoint[] loadpoints;
 
     @SerializedName("prioritySoC")
-    private int batteryPrioritySoC;
+    private double batteryPrioritySoC;
 
     @SerializedName("pvConfigured")
-    private Boolean pvConfigured;
+    private boolean pvConfigured;
 
     @SerializedName("pvPower")
-    private float pvPower;
+    private double pvPower;
 
     @SerializedName("siteTitle")
     private String siteTitle;
@@ -61,21 +62,21 @@ public class Result {
     /**
      * @return whether battery is configured
      */
-    public Boolean getBatteryConfigured() {
+    public boolean getBatteryConfigured() {
         return batteryConfigured;
     }
 
     /**
      * @return the battery's power
      */
-    public float getBatteryPower() {
+    public double getBatteryPower() {
         return batteryPower;
     }
 
     /**
      * @return the battery's priority state of charge
      */
-    public int getBatteryPrioritySoC() {
+    public double getBatteryPrioritySoC() {
         return batteryPrioritySoC;
     }
 
@@ -89,21 +90,21 @@ public class Result {
     /**
      * @return whether grid is configured
      */
-    public Boolean getGridConfigured() {
+    public boolean getGridConfigured() {
         return gridConfigured;
     }
 
     /**
      * @return the grid's power
      */
-    public float getGridPower() {
+    public double getGridPower() {
         return gridPower;
     }
 
     /**
      * @return the home's power
      */
-    public float getHomePower() {
+    public double getHomePower() {
         return homePower;
     }
 
@@ -117,14 +118,14 @@ public class Result {
     /**
      * @return whether pv is configured
      */
-    public Boolean getPvConfigured() {
+    public boolean getPvConfigured() {
         return pvConfigured;
     }
 
     /**
      * @return the pv's power
      */
-    public float getPvPower() {
+    public double getPvPower() {
         return pvPower;
     }
 

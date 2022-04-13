@@ -243,18 +243,18 @@
 		<state min="0" step="1" max="100" pattern="%d %%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="targetTime">
-		<item-type>Number:Time</item-type>
+		<item-type>DateTime</item-type>
 		<label>Charging target time</label>
 		<description>Target time for charging</description>
 		<category>Time</category>
-		<state pattern="%.1f %unit%" readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="targetTimeActive">
 		<item-type>Switch</item-type>
 		<label>Charging target enabled</label>
 		<description>Target time for charging enabled or not</description>
 		<category>Switch</category>
-		<state readOnly="true">
+		<state readOnly="false">
 			<options>
 				<option value="ON">Enabled</option>
 				<option value="OFF">Disabled</option>
