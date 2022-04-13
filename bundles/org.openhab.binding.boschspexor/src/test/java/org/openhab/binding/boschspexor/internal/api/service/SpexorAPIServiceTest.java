@@ -183,7 +183,6 @@ class SpexorAPIServiceTest {
         verify(request).content(
                 argThat(matches("[{\"observationType\":\"Burglary\", \"sensorMode\":\"Activated\"}]", "UTF-8")),
                 eq(ContentType.APPLICATION_JSON.toString()));
-
     }
 
     @Test
@@ -218,7 +217,6 @@ class SpexorAPIServiceTest {
         assertEquals(49, sensorValues.get(SensorType.Fire).getMinValue());
         assertFalse(sensorValues.get(SensorType.Fire).hasMaxValue());
         assertEquals("2022-02-02T20:46:05.764Z", sensorValues.get(SensorType.Fire).getTimestamp());
-
     }
 
     @Test
@@ -241,7 +239,6 @@ class SpexorAPIServiceTest {
         verify(request).content(
                 argThat(matches("[{\"observationType\":\"Burglary\", \"sensorMode\":\"Activated\"}]", "UTF-8")),
                 eq(ContentType.APPLICATION_JSON.toString()));
-
     }
 
     private ArgumentMatcher<StringContentProvider> matches(String json, String encoding) {
@@ -260,7 +257,6 @@ class SpexorAPIServiceTest {
                 }
                 return result;
             }
-
         };
     }
 }
