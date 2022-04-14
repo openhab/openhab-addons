@@ -72,8 +72,12 @@ public class MeaterRestAPI {
             List<Device> devices = dto.getData().getDevices();
 
             if (devices != null) {
-                for (Device meaterProbe : devices) {
-                    meaterProbeThings.put(meaterProbe.id, meaterProbe);
+                if (devices.size() != 0) {
+                    for (Device meaterProbe : devices) {
+                        meaterProbeThings.put(meaterProbe.id, meaterProbe);
+                    }
+                } else {
+                    meaterProbeThings.clear();
                 }
             }
             return true;

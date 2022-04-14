@@ -33,6 +33,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -81,7 +82,8 @@ public class MeaterHandler extends BaseThingHandler {
         if (meaterProbe != null) {
             update(meaterProbe);
         } else {
-            logger.warn("Meater probe is null!");
+            logger.debug("Meater probe is offline!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
