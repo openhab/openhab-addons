@@ -127,7 +127,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     private final ItemRegistry itemRegistry;
     private final MetadataRegistry metadataRegistry;
     private final EventPublisher eventPublisher;
-    protected ActionTemplateInterpreterConfiguration config = new ActionTemplateInterpreterConfiguration();
+    private ActionTemplateInterpreterConfiguration config = new ActionTemplateInterpreterConfiguration();
     private Tokenizer tokenizer = WhitespaceTokenizer.INSTANCE;
     private List<String> optionalLanguageTags = List.of();
     @Nullable

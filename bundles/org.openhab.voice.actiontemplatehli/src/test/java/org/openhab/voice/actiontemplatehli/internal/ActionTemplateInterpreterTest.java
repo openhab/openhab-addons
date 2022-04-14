@@ -189,10 +189,10 @@ public class ActionTemplateInterpreterTest {
     @Test
     public void switchItemOnOffTest() throws InterpretationException {
         var response = interpreter.interpret(Locale.ENGLISH, "turn on bedroom light");
-        assertThat(response, is(interpreter.config.commandSentMessage));
+        assertThat(response, is("Done"));
         Mockito.verify(eventPublisherMock).post(ItemEventFactory.createCommandEvent("testSwitch", OnOffType.ON));
         response = interpreter.interpret(Locale.ENGLISH, "turn off bedroom light");
-        assertThat(response, is(interpreter.config.commandSentMessage));
+        assertThat(response, is("Done"));
         Mockito.verify(eventPublisherMock).post(ItemEventFactory.createCommandEvent("testSwitch", OnOffType.OFF));
     }
 
@@ -232,7 +232,7 @@ public class ActionTemplateInterpreterTest {
         var response = interpreter.interpret(Locale.ENGLISH, "what channel is the on the bedroom tv");
         assertThat(response, is("bedroom tv is on channel one"));
         response = interpreter.interpret(Locale.ENGLISH, "set bedroom channel to channel two");
-        assertThat(response, is(interpreter.config.commandSentMessage));
+        assertThat(response, is("Done"));
         Mockito.verify(eventPublisherMock)
                 .post(ItemEventFactory.createCommandEvent("testNumber", new DecimalType("2")));
     }
