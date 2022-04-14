@@ -16,6 +16,8 @@ import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConst
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.elroconnects.internal.handler.ElroConnectsAccountHandler;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsBridgeHandler;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsCOAlarmHandler;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsDeviceHandler;
@@ -25,6 +27,7 @@ import org.openhab.binding.elroconnects.internal.handler.ElroConnectsMotionSenso
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsPowerSocketHandler;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsSmokeAlarmHandler;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsWaterAlarmHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -32,6 +35,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -47,6 +51,12 @@ public class ElroConnectsHandlerFactory extends BaseThingHandlerFactory {
 
     private @NonNullByDefault({}) NetworkAddressService networkAddressService;
     private @NonNullByDefault({}) ElroConnectsDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
+    private final HttpClient httpClient;
+
+    @Activate
+    public ElroConnectsHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
+        httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -56,6 +66,8 @@ public class ElroConnectsHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         switch (thing.getThingTypeUID().getId()) {
+            case TYPE_ACCOUNT:
+                return new ElroConnectsAccountHandler((Bridge) thing, httpClient);
             case TYPE_CONNECTOR:
                 return new ElroConnectsBridgeHandler((Bridge) thing, networkAddressService,
                         dynamicStateDescriptionProvider);

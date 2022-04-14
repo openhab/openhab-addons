@@ -4,7 +4,8 @@ The ELRO Connects binding provides integration with the [ELRO Connects](https://
 
 The system uses a Wi-Fi Hub (K1 Connector) to enable communication with various smart home devices.
 The devices communicate with the hub using 868MHz RF.
-The binding only communicates with the ELRO Connects system and K1 Connector using UDP in the local network.
+The binding communicates with the ELRO Connects system and K1 Connector using UDP in the local network.
+Optionally, the Elro Connects account can be used to retrieve the available K1 Connectors with their properties from the ELRO Connects cloud.
 
 The binding exposes the devices' status and controls to openHAB.
 Console commands support adding and configuring devices on the hub.
@@ -17,6 +18,7 @@ Many of the sensor devices are battery powered.
 
 The ELRO Connects supported device types are:
 
+* Elro Connects account: `account`
 * K1 connector hub: `connector`
 * Smoke detector: `smokealarm`
 * Carbon monoxide detector: `coalarm`
@@ -27,8 +29,14 @@ The ELRO Connects supported device types are:
 * Temperature and humidity monitor: `temperaturesensor`
 * Plug-in switch: `powersocket`
 
-The `connector` is the bridge thing.
-All other things are connected to the bridge.
+`account`is a bridge thing type that will allow allow automatic discovery and configuration of the available K1 connectors on the specified ELRO Connects account.
+This bridge is optional.
+It is used to discover the required K1 connector hub(s), using a call to the ELRO Connects cloud.
+Without the `account` bridge, the `connector` bridge needs to be defined manually.
+If no `account` bridge is defined, all communication between openHAB and the ELRO Connects system will be local, not using the ELRO Connects cloud.
+
+The `connector` is the bridge thing representing a K1 connector.
+All other things are connected to the `connector` bridge.
 
 Testing was only done with smoke and water detectors connected to a K1 connector.
 The firmware version of the K1 connector was 2.0.3.30 at the time of testing.
@@ -37,7 +45,13 @@ Older versions of the firmware are known to have differences in the communicatio
 
 ## Discovery
 
-The K1 connector `connector` cannot be auto-discovered.
+The ELRO Connects `account` cannot be auto-discovered.
+The `account` bridge is optional, but helpful to discover the K1 connectors on an ELRO Connects account and configure them.
+All online K1 connectors configured on the account will be discovered.
+Notice that K1 connectors in another network than the LAN will also get discovered, but will not go online when accepted from the inbox without adjusting the `connector` configuration (set the IP address).
+
+The K1 connector `connector` will be auto-discovered when an ELRO Connects `account` bridge has been created and initialized.
+It can also be configured manually without first setting up an `account` bridge and linking it to that `account` bridge. 
 Once the bridge thing representing the K1 connector is correctly set up and online, discovery will allow discovering all devices connected to the K1 connector (as set up in the Elro Connects app).
 
 If devices are outside reliable RF range, devices known to the K1 hub will be discovered but may stay offline when added as a thing.
@@ -46,11 +60,18 @@ It will not be possible to receive alarms and control them from openHAB in this 
 
 ## Thing Configuration
 
+### ELRO Connects account
+
+| Parameter         | Advanced | Description            |
+|-------------------|:--------:|------------------------|
+| `username`     |          | Username for the ELRO Connects cloud account, required |
+| `password`     |          | Password for the ELRO Connects cloud account, required |
+
 ### K1 connector hub
 
 | Parameter         | Advanced | Description            |
 |-------------------|:--------:|------------------------|
-| `connectorId` |          | Required parameter, should be set to ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector. This parameter can also be found in the ELRO Connects mobile application |
+| `connectorId` |          | Required parameter, should be set to ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector. It will be discovered when an `account` bridge has been initialized. This parameter can also be found in the ELRO Connects mobile application |
 | `ipAdress`     | Y        | IP address of the ELRO Connects K1 Connector, not required if connector and openHAB server in same subnet |
 | `refreshInterval` | Y      |  This parameter controls the connection refresh heartbeat interval. The default is 60s |
 
@@ -61,6 +82,10 @@ It will not be possible to receive alarms and control them from openHAB in this 
 | `deviceId` | Required parameter, set by discovery. For manual configuration, use the ´elroconnects <connectorId> devices´ console command to get a list of available devices. It should be a number |
 
 ## Channels
+
+### ELRO Connects account
+
+The `account` bridge thing does not have any channels.
 
 ### K1 connector hub
 

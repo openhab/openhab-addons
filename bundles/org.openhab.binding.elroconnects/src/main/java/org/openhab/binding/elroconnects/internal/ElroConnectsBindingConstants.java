@@ -15,6 +15,7 @@ package org.openhab.binding.elroconnects.internal;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -31,6 +32,9 @@ public class ElroConnectsBindingConstants {
     private static final String BINDING_ID = "elroconnects";
 
     // List of all Thing Type UIDs
+    public static final String TYPE_ACCOUNT = "account";
+    public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, TYPE_ACCOUNT);
+
     public static final String TYPE_CONNECTOR = "connector";
     public static final ThingTypeUID THING_TYPE_CONNECTOR = new ThingTypeUID(BINDING_ID, TYPE_CONNECTOR);
 
@@ -51,10 +55,17 @@ public class ElroConnectsBindingConstants {
     public static final ThingTypeUID THING_TYPE_THSENSOR = new ThingTypeUID(BINDING_ID, TYPE_THSENSOR);
     public static final ThingTypeUID THING_TYPE_POWERSOCKET = new ThingTypeUID(BINDING_ID, TYPE_POWERSOCKET);
 
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Set.of(THING_TYPE_CONNECTOR);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CONNECTOR,
-            THING_TYPE_SMOKEALARM, THING_TYPE_COALARM, THING_TYPE_HEATALARM, THING_TYPE_WATERALARM,
-            THING_TYPE_ENTRYSENSOR, THING_TYPE_MOTIONSENSOR, THING_TYPE_THSENSOR, THING_TYPE_POWERSOCKET);
+    public static final Set<ThingTypeUID> SUPPORTED_ACCOUNT_TYPE_UIDS = Set.of(THING_TYPE_ACCOUNT);
+    public static final Set<ThingTypeUID> SUPPORTED_CONNECTOR_TYPES_UIDS = Set.of(THING_TYPE_CONNECTOR);
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_TYPES_UIDS = Set.of(THING_TYPE_SMOKEALARM,
+            THING_TYPE_COALARM, THING_TYPE_HEATALARM, THING_TYPE_WATERALARM, THING_TYPE_ENTRYSENSOR,
+            THING_TYPE_MOTIONSENSOR, THING_TYPE_THSENSOR, THING_TYPE_POWERSOCKET);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Stream
+            .concat(SUPPORTED_ACCOUNT_TYPE_UIDS.stream(), SUPPORTED_CONNECTOR_TYPES_UIDS.stream())
+            .collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .concat(SUPPORTED_BRIDGE_TYPES_UIDS.stream(), SUPPORTED_DEVICE_TYPES_UIDS.stream())
+            .collect(Collectors.toSet());
 
     // List of all Channel ids
     public static final String SCENE = "scene";
@@ -82,6 +93,8 @@ public class ElroConnectsBindingConstants {
     public static final String MOTION_ALARM = "motionAlarm";
 
     // Config properties
+    public static final String CONFIG_USERNAME = "username";
+    public static final String CONFIG_PASSWORD = "password";
     public static final String CONFIG_CONNECTOR_ID = "connectorId";
     public static final String CONFIG_REFRESH_INTERVAL_S = "refreshInterval";
     public static final String CONFIG_DEVICE_ID = "deviceId";
