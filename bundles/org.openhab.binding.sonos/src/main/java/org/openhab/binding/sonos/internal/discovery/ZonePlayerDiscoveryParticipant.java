@@ -100,22 +100,26 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
                         ignored = true;
                         break;
                     default:
+                        modelName = modelName.replaceAll("[^a-zA-Z0-9_]", "_");
                         break;
                 }
                 if (!ignored) {
-                    ThingTypeUID thingUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, modelName);
-                    if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingUID)) {
+                    ThingTypeUID thingTypeUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, modelName);
+                    if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingTypeUID)) {
                         // Try with the model name all in uppercase
-                        thingUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, modelName.toUpperCase());
+                        thingTypeUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, modelName.toUpperCase());
                         // In case a new "unknown" Sonos player is discovered a generic ThingTypeUID will be used
-                        if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingUID)) {
-                            thingUID = SonosBindingConstants.ZONEPLAYER_THING_TYPE_UID;
+                        if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingTypeUID)) {
+                            thingTypeUID = SonosBindingConstants.ZONEPLAYER_THING_TYPE_UID;
+                            logger.warn(
+                                    "'{}' is not yet a supported model, thing type '{}' is considered as default; please open an issue",
+                                    device.getDetails().getModelDetails().getModelName(), thingTypeUID);
                         }
                     }
 
-                    logger.debug("Discovered a Sonos '{}' thing with UDN '{}'", thingUID,
+                    logger.debug("Discovered a Sonos '{}' thing with UDN '{}'", thingTypeUID,
                             device.getIdentity().getUdn().getIdentifierString());
-                    return new ThingUID(thingUID, device.getIdentity().getUdn().getIdentifierString());
+                    return new ThingUID(thingTypeUID, device.getIdentity().getUdn().getIdentifierString());
                 }
             }
         }

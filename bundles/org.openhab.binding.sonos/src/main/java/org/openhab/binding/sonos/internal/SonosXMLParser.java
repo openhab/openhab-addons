@@ -1021,9 +1021,15 @@ public class SonosXMLParser {
      */
     public static String extractModelName(String sonosModelName) {
         String ret = sonosModelName;
+        // Remove until the first space (in practice, it removes the leading "Sonos " form the model name)
         Matcher matcher = Pattern.compile("\\s(.*)").matcher(ret);
         if (matcher.find()) {
             ret = matcher.group(1);
+            // Remove a potential ending text surrounded with parenthesis
+            matcher = Pattern.compile("(.*)\\s\\(.*\\)").matcher(ret);
+            if (matcher.find()) {
+                ret = matcher.group(1);
+            }
         }
         if (ret.contains(":")) {
             ret = ret.replace(":", "");
