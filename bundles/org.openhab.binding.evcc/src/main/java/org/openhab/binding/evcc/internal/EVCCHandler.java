@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -29,7 +30,6 @@ import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
@@ -45,6 +45,7 @@ import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,13 +74,71 @@ public class EVCCHandler extends BaseThingHandler {
     private boolean gridConfigured = false;
     private boolean pvConfigured = false;
 
+    private boolean targetTimeEnabled = false;
+    private int targetSoC = 0;
+    private ZonedDateTime targetTimeZDT = ZonedDateTime.now();
+
     public EVCCHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO: handle command
+        if (command.equals(RefreshType.REFRESH)) {
+            refresh();
+        } else {
+            logger.debug("Handling command {} for channel {}", command, channelUID);
+            String channelIdWithoutGroup = channelUID.getIdWithoutGroup();
+            int loadpoint = Integer.parseInt(channelUID.getGroupId().toString().substring(9));
+            targetSoC = status.getResult().getLoadpoints()[loadpoint].getTargetSoC();
+            switch (channelIdWithoutGroup) {
+                case CHANNEL_LOADPOINT_MODE:
+                    setMode(config.url, loadpoint, command.toString());
+                    refresh();
+                    break;
+                case CHANNEL_LOADPOINT_MIN_SOC:
+                    setMinSoC(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
+                    refresh();
+                    break;
+                case CHANNEL_LOADPOINT_TARGET_SOC:
+                    setTargetSoC(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
+                    refresh();
+                    break;
+                case CHANNEL_LOADPOINT_TARGET_TIME:
+                    if (targetTimeEnabled == true) {
+                        targetTimeZDT = new DateTimeType(command.toString()).getZonedDateTime();
+                        setTargetCharge(config.url, loadpoint, targetSoC, targetTimeZDT);
+                        ChannelUID channel = new ChannelUID(getThing().getUID(), "loadpoint" + loadpoint,
+                                CHANNEL_LOADPOINT_TARGET_TIME);
+                        updateState(channel, new DateTimeType(targetTimeZDT));
+                    }
+                    refresh();
+                    break;
+                case CHANNEL_LOADPOINT_TARGET_TIME_ENABLED:
+                    if (command == OnOffType.ON) {
+                        targetTimeEnabled = true;
+                        setTargetCharge(config.url, loadpoint, targetSoC, targetTimeZDT);
+                    } else {
+                        targetTimeEnabled = false;
+                        unsetTargetCharge(config.url, loadpoint);
+                    }
+                    refresh();
+                    break;
+                case CHANNEL_LOADPOINT_PHASES:
+                    setPhases(config.url, loadpoint, Integer.parseInt(command.toString()));
+                    refresh();
+                    break;
+                case CHANNEL_LOADPOINT_MIN_CURRENT:
+                    setMinCurrent(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
+                    refresh();
+                    break;
+                case CHANNEL_LOADPOINT_MAX_CURRENT:
+                    setMaxCurrent(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
+                    refresh();
+                    break;
+            }
+
+        }
 
         // Note: if communication with thing fails for some reason,
         // indicate that by setting the status with detail information:
@@ -93,22 +152,22 @@ public class EVCCHandler extends BaseThingHandler {
         thingLabel = getThing().getLabel();
         updateStatus(ThingStatus.UNKNOWN);
 
-        if ("".equals(config.host)) {
+        if ("".equals(config.url)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "No host configured");
         } else {
             // Background initialization:
             scheduler.execute(() -> {
-                status = getStatus(config.host);
-                if (status != null) {
+                status = getStatus(config.url);
+                try {
                     sitename = status.getResult().getSiteTitle();
                     numberOfLoadpoints = status.getResult().getLoadpoints().length;
-                    logger.info("Found {} loadpoints on site {} (host: {}).", numberOfLoadpoints, sitename,
-                            config.host);
+                    logger.debug("Found {} loadpoints on site {} (host: {}).", numberOfLoadpoints, sitename,
+                            config.url);
                     updateStatus(ThingStatus.ONLINE);
                     refreshOnStartup();
-                } else {
+                } catch (Exception e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                            "Failed to connect to evcc!");
+                            "Failed to connect to evcc: " + e);
                 }
             });
         }
@@ -116,11 +175,15 @@ public class EVCCHandler extends BaseThingHandler {
 
     private void statePolling() {
         logger.debug("Running polling job ...");
-        status = getStatus(config.host);
-        if (status != null) {
+        refresh();
+    }
+
+    private void refresh() {
+        status = getStatus(config.url);
+        try {
             sitename = status.getResult().getSiteTitle();
             numberOfLoadpoints = status.getResult().getLoadpoints().length;
-            logger.debug("Found {} loadpoints on site {} (host: {}).", numberOfLoadpoints, sitename, config.host);
+            logger.debug("Found {} loadpoints on site {} (host: {}).", numberOfLoadpoints, sitename, config.url);
             updateStatus(ThingStatus.ONLINE);
             batteryConfigured = status.getResult().getBatteryConfigured();
             gridConfigured = status.getResult().getGridConfigured();
@@ -129,9 +192,9 @@ public class EVCCHandler extends BaseThingHandler {
             for (int i = 0; i < numberOfLoadpoints; i++) {
                 updateChannelsLoadpoint(i);
             }
-        } else {
+        } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Failed to connect to evcc!");
+                    "Failed to connect to evcc: " + e);
         }
     }
 
@@ -140,11 +203,12 @@ public class EVCCHandler extends BaseThingHandler {
         gridConfigured = status.getResult().getGridConfigured();
         pvConfigured = status.getResult().getPvConfigured();
         createChannelsGeneral();
-        // updateStatusGeneral();
+        updateChannelsGeneral();
         for (int i = 0; i < this.numberOfLoadpoints; i++) {
             createChannelsLoadpoint(i);
             updateChannelsLoadpoint(i);
         }
+        logger.debug("Setting up polling job ...");
         statePollingJob = scheduler.scheduleWithFixedDelay(this::statePolling, 60, 60, TimeUnit.SECONDS);
     }
 
@@ -201,15 +265,16 @@ public class EVCCHandler extends BaseThingHandler {
                 "Number:Dimensionless");
         createChannel(CHANNEL_LOADPOINT_MODE, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_MODE, "String");
         createChannel(CHANNEL_LOADPOINT_PHASES, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_PHASES, "Number");
-        createChannel(CHANNEL_LOADPOINT_PV_ACTION, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_PV_ACTION, "Switch");
+        // createChannel(CHANNEL_LOADPOINT_PV_ACTION, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_PV_ACTION, "Switch");
         // createChannel(CHANNEL_LOADPOINT_PV_REMAINING, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_PV_REMAINING,
         // "Number");
         createChannel(CHANNEL_LOADPOINT_TARGET_SOC, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_TARGET_SOC,
                 "Number:Dimensionless");
-        createChannel(CHANNEL_LOADPOINT_TARGET_TIME, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME,
-                "Number:Time");
+        createChannel(CHANNEL_LOADPOINT_TARGET_TIME, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME, "DateTime");
         createChannel(CHANNEL_LOADPOINT_TARGET_TIME_ACTIVE, loadpointName,
                 CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME_ACTIVE, "Switch");
+        createChannel(CHANNEL_LOADPOINT_TARGET_TIME_ENABLED, loadpointName,
+                CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME_ENABLED, "Switch");
         createChannel(CHANNEL_LOADPOINT_TITLE, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_TITLE, "String");
         createChannel(CHANNEL_LOADPOINT_VEHICLE_CAPACITY, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_CAPACITY,
                 "Number:Energy");
@@ -225,6 +290,7 @@ public class EVCCHandler extends BaseThingHandler {
                 "String");
     }
 
+    // Units and description for vars: https://docs.evcc.io/docs/reference/configuration/messaging/#msg
     private void updateChannelsGeneral() {
         ChannelUID channel;
         if (batteryConfigured == true) {
@@ -233,10 +299,10 @@ public class EVCCHandler extends BaseThingHandler {
             updateState(channel, new QuantityType<>(batteryPower, Units.WATT));
             int batterySoC = status.getResult().getBatterySoC();
             channel = new ChannelUID(getThing().getUID(), "general", CHANNEL_BATTERY_SOC);
-            updateState(channel, new PercentType(batterySoC));
+            updateState(channel, new QuantityType<>(batterySoC, Units.PERCENT));
             int batteryPrioritySoC = status.getResult().getBatterySoC();
             channel = new ChannelUID(getThing().getUID(), "general", CHANNEL_BATTERY_PRIORITY_SOC);
-            updateState(channel, new PercentType(batteryPrioritySoC));
+            updateState(channel, new QuantityType<>(batteryPrioritySoC, Units.PERCENT));
         }
         if (gridConfigured == true) {
             double gridPower = status.getResult().getGridPower();
@@ -265,16 +331,16 @@ public class EVCCHandler extends BaseThingHandler {
         updateState(channel, new QuantityType<>(chargeCurrent, Units.AMPERE));
         long chargeDuration = loadpoint.getChargeDuration();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CHARGE_DURATION);
-        updateState(channel, new QuantityType<>(chargeDuration, Units.SECOND));
+        updateState(channel, new QuantityType<>(chargeDuration, MetricPrefix.NANO(Units.SECOND)));
         double chargePower = loadpoint.getChargePower();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CHARGE_POWER);
         updateState(channel, new QuantityType<>(chargePower, Units.WATT));
         long chargeRemainingDuration = loadpoint.getChargeRemainingDuration();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CHARGE_REMAINING_DURATION);
-        updateState(channel, new QuantityType<>(chargeRemainingDuration, Units.SECOND));
+        updateState(channel, new QuantityType<>(chargeRemainingDuration, MetricPrefix.NANO(Units.SECOND)));
         double chargedEnergy = loadpoint.getChargedEnergy();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CHARGED_ENERGY);
-        updateState(channel, new QuantityType<>(chargedEnergy, Units.KILOWATT_HOUR));
+        updateState(channel, new QuantityType<>(chargedEnergy, Units.WATT_HOUR));
         boolean charging = loadpoint.getCharging();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CHARGING);
         if (charging == true) {
@@ -291,7 +357,7 @@ public class EVCCHandler extends BaseThingHandler {
         }
         long connectedDuration = loadpoint.getConnectedDuration();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CONNECTED_DURATION);
-        updateState(channel, new QuantityType<>(connectedDuration, Units.SECOND));
+        updateState(channel, new QuantityType<>(connectedDuration, MetricPrefix.NANO(Units.SECOND)));
         boolean enabled = loadpoint.getEnabled();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_ENABLED);
         if (enabled == true) {
@@ -314,28 +380,50 @@ public class EVCCHandler extends BaseThingHandler {
         updateState(channel, new QuantityType<>(minCurrent, Units.AMPERE));
         int minSoC = loadpoint.getMinSoC();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_MIN_SOC);
-        updateState(channel, new PercentType(minSoC));
+        updateState(channel, new QuantityType<>(minSoC, Units.PERCENT));
         String mode = loadpoint.getMode();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_MODE);
         updateState(channel, new StringType(mode));
         int phases = loadpoint.getPhases();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_PHASES);
         updateState(channel, new DecimalType(phases));
-        String pvAction = loadpoint.getPvAction();
-        channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_PV_ACTION);
-        if (pvAction == "active") {
-            updateState(channel, OnOffType.ON);
-        } else {
-            updateState(channel, OnOffType.OFF);
-        }
-        int targetSoC = loadpoint.getTargetSoC();
+        /*
+         * String pvAction = loadpoint.getPvAction();
+         * channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_PV_ACTION);
+         * if (pvAction == "active") {
+         * updateState(channel, OnOffType.ON);
+         * } else {
+         * updateState(channel, OnOffType.OFF);
+         * }
+         */
+        targetSoC = loadpoint.getTargetSoC();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_SOC);
-        updateState(channel, new PercentType(targetSoC));
+        updateState(channel, new QuantityType<>(targetSoC, Units.PERCENT));
         String targetTime = loadpoint.getTargetTime();
-        Instant instant = Instant.parse(targetTime);
-        ZonedDateTime time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
-        channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_TIME);
-        updateState(channel, new DateTimeType(time));
+        ZonedDateTime newTargetTimeZDT = ZonedDateTime.now().plusSeconds(30);
+        try {
+            Instant instant = Instant.parse(targetTime);
+            newTargetTimeZDT = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+        } catch (Exception e) {
+            try {
+                newTargetTimeZDT = ZonedDateTime.parse(targetTime);
+            } catch (Exception f) {
+                logger.debug("Failed parsing targetTime {}. Error: {}", targetTime, f);
+            }
+        }
+        if (newTargetTimeZDT.isAfter(ZonedDateTime.now())) {
+            targetTimeZDT = newTargetTimeZDT;
+            logger.debug("Updating targetTime to {}", targetTimeZDT);
+            channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_TIME);
+            updateState(channel, new DateTimeType(targetTimeZDT));
+            channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_TIME_ENABLED);
+            updateState(channel, OnOffType.ON);
+            targetTimeEnabled = true;
+        } else {
+            channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_TIME_ENABLED);
+            updateState(channel, OnOffType.OFF);
+            targetTimeEnabled = false;
+        }
         boolean targetTimeActive = loadpoint.getTargetTimeActive();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_TIME_ACTIVE);
         if (targetTimeActive == true) {
@@ -348,7 +436,7 @@ public class EVCCHandler extends BaseThingHandler {
         updateState(channel, new StringType(title));
         double vehicleCapacity = loadpoint.getVehicleCapacity();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_VEHICLE_CAPACITY);
-        updateState(channel, new QuantityType<>(vehicleCapacity, Units.KILOWATT_HOUR));
+        updateState(channel, new QuantityType<>(vehicleCapacity, Units.WATT_HOUR));
         double vehicleOdometer = loadpoint.getVehicleOdometer();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_VEHICLE_ODOMETER);
         updateState(channel, new QuantityType<>(vehicleOdometer, MetricPrefix.KILO(SIUnits.METRE)));
@@ -364,7 +452,7 @@ public class EVCCHandler extends BaseThingHandler {
         updateState(channel, new QuantityType<>(vehicleRange, MetricPrefix.KILO(SIUnits.METRE)));
         int vehicleSoC = loadpoint.getVehicleSoC();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_VEHICLE_SOC);
-        updateState(channel, new PercentType(vehicleSoC));
+        updateState(channel, new QuantityType<>(vehicleSoC, Units.PERCENT));
         String vehicleTitle = loadpoint.getVehicleTitle();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_VEHICLE_TITLE);
         updateState(channel, new StringType(vehicleTitle));
@@ -386,18 +474,18 @@ public class EVCCHandler extends BaseThingHandler {
      * Make a HTTP request.
      * 
      * @param description request description for logger
-     * @param url request URL
+     * @param url full request URL
      * @param method reguest method, e.g. GET, POST
      * @return the response body or response_code 999 if request faild
      */
     private String httpRequest(@Nullable String description, String url, String method) {
         String response = "";
         try {
-            response = HttpUtil.executeUrl(method, HTTPS + url, LONG_CONNECTION_TIMEOUT_MILLISEC);
-            logger.trace("{} - {}", description, response);
+            response = HttpUtil.executeUrl(method, url, LONG_CONNECTION_TIMEOUT_MILLISEC);
+            logger.trace("{} - {}, {} - {}", description, url, method, response);
             return response;
         } catch (IOException e) {
-            logger.debug("IO Exception - {} - {}", description, e.getMessage());
+            logger.warn("IO Exception - {} - {}, {} - {}", description, url, method, e);
             return "{\"response_code\":\"999\"}";
         }
     }
@@ -411,8 +499,8 @@ public class EVCCHandler extends BaseThingHandler {
      * @return Status object or null if request failed
      */
     private @Nullable Status getStatus(@Nullable String host) {
-        final String reponse = httpRequest("Status", host + EVCC_REST_API + "state", "GET");
-        return gson.fromJson(reponse, Status.class);
+        final String response = httpRequest("Status", host + EVCC_REST_API + "state", "GET");
+        return gson.fromJson(response, Status.class);
     }
 
     /**
@@ -428,33 +516,45 @@ public class EVCCHandler extends BaseThingHandler {
 
     // Loadpoint specific API calls.
     private @Nullable String setMode(@Nullable String host, int loadpoint, String mode) {
-        return httpRequest("Set mode of loadpoint " + loadpoint, host + EVCC_REST_API + loadpoint + "/mode/" + mode,
-                "POST");
+        return httpRequest("Set mode of loadpoint " + loadpoint,
+                host + EVCC_REST_API + "loadpoints/" + loadpoint + "/mode/" + mode, "POST");
     }
 
     private @Nullable String setMinSoC(@Nullable String host, int loadpoint, int minSoC) {
         return httpRequest("Set minSoC of loadpoint " + loadpoint,
-                host + EVCC_REST_API + loadpoint + "/minsoc/" + minSoC, "POST");
+                host + EVCC_REST_API + "loadpoints/" + loadpoint + "/minsoc/" + minSoC, "POST");
     }
 
     private @Nullable String setTargetSoC(@Nullable String host, int loadpoint, int targetSoC) {
         return httpRequest("Set targetSoC of loadpoint " + loadpoint,
-                host + EVCC_REST_API + loadpoint + "/targetsoc/" + targetSoC, "POST");
+                host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetsoc/" + targetSoC, "POST");
     }
 
     private @Nullable String setPhases(@Nullable String host, int loadpoint, int phases) {
         return httpRequest("Set phases of loadpoint " + loadpoint,
-                host + EVCC_REST_API + loadpoint + "/phases/" + phases, "POST");
+                host + EVCC_REST_API + "loadpoints/" + loadpoint + "/phases/" + phases, "POST");
     }
 
     private @Nullable String setMinCurrent(@Nullable String host, int loadpoint, int minCurrent) {
         return httpRequest("Set minCurrent of loadpoint " + loadpoint,
-                host + EVCC_REST_API + loadpoint + "/mincurrent/" + minCurrent, "POST");
+                host + EVCC_REST_API + "loadpoints/" + loadpoint + "/mincurrent/" + minCurrent, "POST");
     }
 
     private @Nullable String setMaxCurrent(@Nullable String host, int loadpoint, int maxCurrent) {
         return httpRequest("Set maxCurrent of loadpoint " + loadpoint,
-                host + EVCC_REST_API + loadpoint + "/maxcurrent/" + maxCurrent, "POST");
+                host + EVCC_REST_API + "loadpoints/" + loadpoint + "/maxcurrent/" + maxCurrent, "POST");
+    }
+
+    private @Nullable String setTargetCharge(@Nullable String host, int loadpoint, int targetSoC,
+            ZonedDateTime targetTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        return httpRequest("Set targetTime of loadpoint " + loadpoint, host + EVCC_REST_API + "loadpoints/" + loadpoint
+                + "/targetcharge/" + targetSoC + "/" + targetTime.toLocalDateTime().format(formatter), "POST");
+    }
+
+    private @Nullable String unsetTargetCharge(@Nullable String host, int loadpoint) {
+        return httpRequest("Unset targetTime of loadpoint " + loadpoint,
+                host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetcharge", "DELETE");
     }
     // End loadpoint specific API calls
     // End API calls to evcc

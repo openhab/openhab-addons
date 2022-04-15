@@ -28,7 +28,7 @@ public class EVCCBindingConstants {
     private static final String BINDING_ID = "evcc";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "device");
+    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
     // List of all Channel Type UIDs
     public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_POWER = new ChannelTypeUID(BINDING_ID, "batteryPower");
@@ -52,9 +52,9 @@ public class EVCCBindingConstants {
             "chargedEnergy");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGING = new ChannelTypeUID(BINDING_ID, "charging");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CONNECTED = new ChannelTypeUID(BINDING_ID,
-            "connected");
+            "vehicleConnected");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CONNECTED_DURATION = new ChannelTypeUID(BINDING_ID,
-            "connectedDuration");
+            "vehicleConnectedDuration");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_ENABLED = new ChannelTypeUID(BINDING_ID, "enabled");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_HAS_VEHICLE = new ChannelTypeUID(BINDING_ID,
             "hasVehicle");
@@ -73,6 +73,8 @@ public class EVCCBindingConstants {
             "targetSoC");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME = new ChannelTypeUID(BINDING_ID,
             "targetTime");
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME_ENABLED = new ChannelTypeUID(BINDING_ID,
+            "targetTimeEnabled");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME_ACTIVE = new ChannelTypeUID(BINDING_ID,
             "targetTimeActive");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TITLE = new ChannelTypeUID(BINDING_ID, "title");
@@ -103,8 +105,8 @@ public class EVCCBindingConstants {
     public static final String CHANNEL_LOADPOINT_CHARGE_REMAINING_DURATION = "chargeRemainingDuration";
     public static final String CHANNEL_LOADPOINT_CHARGED_ENERGY = "chargedEnergy";
     public static final String CHANNEL_LOADPOINT_CHARGING = "charging";
-    public static final String CHANNEL_LOADPOINT_CONNECTED = "connected";
-    public static final String CHANNEL_LOADPOINT_CONNECTED_DURATION = "connectedDuration";
+    public static final String CHANNEL_LOADPOINT_CONNECTED = "vehicleConnected";
+    public static final String CHANNEL_LOADPOINT_CONNECTED_DURATION = "vehicleConnectedDuration";
     public static final String CHANNEL_LOADPOINT_ENABLED = "enabled";
     public static final String CHANNEL_LOADPOINT_HAS_VEHICLE = "hasVehicle";
     public static final String CHANNEL_LOADPOINT_MAX_CURRENT = "maxCurrent";
@@ -116,7 +118,14 @@ public class EVCCBindingConstants {
     public static final String CHANNEL_LOADPOINT_PV_REMAINING = "pvRemaining";
     public static final String CHANNEL_LOADPOINT_TARGET_SOC = "targetSoC";
     public static final String CHANNEL_LOADPOINT_TARGET_TIME = "targetTime";
+    /**
+     * Whether loadpoint is currently charging to the target.
+     */
     public static final String CHANNEL_LOADPOINT_TARGET_TIME_ACTIVE = "targetTimeActive";
+    /**
+     * Whether a target time is set on loadpoint.
+     */
+    public static final String CHANNEL_LOADPOINT_TARGET_TIME_ENABLED = "targetTimeEnabled";
     public static final String CHANNEL_LOADPOINT_TITLE = "title";
     public static final String CHANNEL_LOADPOINT_VEHICLE_CAPACITY = "vehicleCapacity";
     public static final String CHANNEL_LOADPOINT_VEHICLE_ODOMETER = "vehicleOdometer";
@@ -127,7 +136,5 @@ public class EVCCBindingConstants {
 
     public static final int CONNECTION_TIMEOUT_MILLISEC = 5000;
     public static final int LONG_CONNECTION_TIMEOUT_MILLISEC = 60000;
-    public static final String HTTP = "http://";
-    public static final String HTTPS = "https://";
     public static final String EVCC_REST_API = "/api/";
 }

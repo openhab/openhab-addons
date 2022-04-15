@@ -6,27 +6,33 @@
 
 	<thing-type id="device">
 
-		<label>EVCC Binding Thing</label>
-		<description>Sample thing for EVCC Binding</description>
+		<label>evcc installation</label>
+		<description>A running evcc installation</description>
 
 		<channel-groups>
 			<channel-group id="general" typeId="general"/>
+			<channel-group id="loadpoint0" typeId="loadpoint"/>
 			<channel-group id="loadpoint1" typeId="loadpoint"/>
 			<channel-group id="loadpoint2" typeId="loadpoint"/>
 			<channel-group id="loadpoint3" typeId="loadpoint"/>
 			<channel-group id="loadpoint4" typeId="loadpoint"/>
-			<channel-group id="loadpoint0" typeId="loadpoint"/>
+			<channel-group id="loadpoint5" typeId="loadpoint"/>
+			<channel-group id="loadpoint6" typeId="loadpoint"/>
+			<channel-group id="loadpoint7" typeId="loadpoint"/>
+			<channel-group id="loadpoint8" typeId="loadpoint"/>
+			<channel-group id="loadpoint9" typeId="loadpoint"/>
 		</channel-groups>
 
 		<config-description>
-			<parameter name="host" type="text" required="true">
+			<parameter name="url" type="text" required="true">
 				<context>network-address</context>
-				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+				<label>URL</label>
+				<description>URL of evcc web UI, e.g. https://demo.evcc.io</description>
+				<default>https://demo.evcc.io</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
+				<description>Interval the status is polled in sec.</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -40,45 +46,46 @@
 		<label>Loadpoint</label>
 	</channel-group-type>
 
+	<!-- Units and description on: https://docs.evcc.io/docs/reference/configuration/messaging/#msg -->
 	<channel-type id="batteryPower">
 		<item-type>Number:Power</item-type>
 		<label>Battery Power</label>
-		<description>Power the battery delivers</description>
+		<description>Current power from battery</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="batterySoC">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery SoC</label>
-		<description>Battery State of Charge</description>
+		<description>Current State of Charge of battery</description>
 		<category>batterylevel</category>
-		<state pattern="%d %%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryPrioritySoC">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Priority SoC</label>
-		<description>Battery Priority State of Charge</description>
+		<description>State of Charge for which the battery has priority over charging the ev when charging mode is "pv".</description>
 		<category>batterylevel</category>
-		<state pattern="%d %%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="gridPower">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power</label>
-		<description>Power from grid (negative on feed-in)</description>
+		<description>Current power from grid (negative means feed-in)</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="homePower">
 		<item-type>Number:Power</item-type>
 		<label>Home Power</label>
-		<description>Power the home takes</description>
+		<description>Current power taken by home</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pvPower">
 		<item-type>Number:Power</item-type>
 		<label>PV Power</label>
-		<description>Power from photovoltaik</description>
+		<description> Current power from photovoltaik</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -86,50 +93,50 @@
 	<!-- Channels for loadpoints -->
 	<channel-type id="activePhases">
 		<item-type>Number</item-type>
-		<label>Active phases</label>
-		<description>Number of active phases on loadpoint</description>
+		<label>Charging active phases</label>
+		<description>Current number of active phases</description>
 		<category></category>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 	<channel-type id="chargeCurrent">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Charging current</label>
-		<description>Electric current of charging</description>
+		<description>Current electric current of charging</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="chargeDuration">
 		<item-type>Number:Time</item-type>
 		<label>Charging duration</label>
-		<description>Charging duration from beginning until now</description>
+		<description>Charging duration</description>
 		<category>Time</category>
-		<state pattern="%.1f %unit%" readOnly="true"/>
+		<state pattern="%.1f min" readOnly="true"/>
 	</channel-type>
 	<channel-type id="chargePower">
 		<item-type>Number:Power</item-type>
 		<label>Charging power</label>
-		<description>Charging power</description>
+		<description>Current power of charging</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="chargeRemainingDuration">
 		<item-type>Number:Time</item-type>
 		<label>Charging remaining duration</label>
-		<description>Remaining duration until charging is completed</description>
+		<description>Remaining duration until target SoC is reached</description>
 		<category>Time</category>
-		<state pattern="%.1f %unit%" readOnly="true"/>
+		<state pattern="%.1f min" readOnly="true"/>
 	</channel-type>
 	<channel-type id="chargedEnergy">
 		<item-type>Number:Energy</item-type>
 		<label>Charged energy</label>
-		<description>Energy charged during this charging process</description>
+		<description>Energy charged since plugged-in</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="charging">
 		<item-type>Switch</item-type>
 		<label>Charging state</label>
-		<description>Charging or not</description>
+		<description>Currently charging or not</description>
 		<category>Energy</category>
 		<state pattern="%f %unit%" readOnly="true">
 			<options>
@@ -138,29 +145,10 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="connected">
-		<item-type>Switch</item-type>
-		<label>Connected state</label>
-		<description>Pluged-in or not</description>
-		<category>Switch</category>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Connected</option>
-				<option value="OFF">Not connected</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="connectedDuration">
-		<item-type>Number:Time</item-type>
-		<label>Connected duration</label>
-		<description>Plugged-in duration</description>
-		<category>Time</category>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
 	<channel-type id="enabled">
 		<item-type>Switch</item-type>
-		<label>Loadpoint enabled</label>
-		<description>Loadpoint enabed or not</description>
+		<label>Charging enabled</label>
+		<description>Charging enabled or not</description>
 		<category>Switch</category>
 		<state readOnly="true">
 			<options>
@@ -171,40 +159,43 @@
 	</channel-type>
 	<channel-type id="hasVehicle">
 		<item-type>Switch</item-type>
-		<label>Has vehicle</label>
-		<description></description>
+		<label>Loadpoint has vehicle configuration</label>
+		<description>Whether vehicle is configured for loadpoint</description>
 		<category>Switch</category>
 		<state readOnly="true">
 			<options>
-				<option value="ON">Has vehicle</option>
-				<option value="OFF">Has no vehicle</option>
+				<option value="ON">Configured</option>
+				<option value="OFF">Not configured</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="maxCurrent">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Max current</label>
-		<description>Maximum electric current</description>
+		<label>Charging max current</label>
+		<description>Maximum electric current for charging</description>
 		<category>Energy</category>
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="minCurrent">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Min current</label>
-		<description>Minimum electric current</description>
+		<label>Charging min current</label>
+		<description>Minimum electric current for charging</description>
 		<category>Energy</category>
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="minSoC">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Min SoC</label>
-		<description>Minimum state of charge</description>
+		<label>Charging min SoC</label>
+		<description>Minimum State of Charge of EV to charge; limited by targetSoC</description>
 		<category>Batterylevel</category>
-		<state min="0" step="1" max="100" pattern="%d %%" readOnly="false"/>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="mode">
 		<item-type>String</item-type>
-		<label>Charge mode</label>
+		<label>Charging mode</label>
 		<description>Mode of charging</description>
 		<category>String</category>
 		<state readOnly="false">
@@ -215,17 +206,19 @@
 				<option value="pv">Only PV</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="phases">
 		<item-type>Number</item-type>
-		<label>Phases</label>
-		<description>Maximum of phases to use</description>
+		<label>Charging enabled Phases</label>
+		<description>Number of enabled phases for charging</description>
 		<category>Energy</category>
 		<state min="0" step="1" max="3" pattern="%d" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="pvAction">
 		<item-type>Switch</item-type>
-		<label>PV action</label>
+		<label>CHarging PV action</label>
 		<description>PV (solarplant) activity</description>
 		<category>Solarplant</category>
 		<state readOnly="true">
@@ -238,20 +231,34 @@
 	<channel-type id="targetSoC">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Charging target SoC</label>
-		<description>Target state of charge of electric vehicle</description>
+		<description>Target State of Charge for EV battery</description>
 		<category>Batterylevel</category>
-		<state min="0" step="1" max="100" pattern="%d %%" readOnly="false"/>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="targetTime">
 		<item-type>DateTime</item-type>
 		<label>Charging target time</label>
-		<description>Target time for charging</description>
+		<description>When the target SoC should be reached</description>
 		<category>Time</category>
 		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="targetTimeActive">
 		<item-type>Switch</item-type>
-		<label>Charging target enabled</label>
+		<label>Charging to target time</label>
+		<description>Whether the loadpoint is currently charging to target SoC until target time</description>
+		<category>Switch</category>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Charging</option>
+				<option value="OFF">Not charging</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="targetTimeEnabled">
+		<item-type>Switch</item-type>
+		<label>Charging target time enabled</label>
 		<description>Target time for charging enabled or not</description>
 		<category>Switch</category>
 		<state readOnly="false">
@@ -260,37 +267,57 @@
 				<option value="OFF">Disabled</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="title">
 		<item-type>String</item-type>
-		<label>Title</label>
+		<label>Loadpoint title</label>
 		<description>Title of loadpoint</description>
 		<category>Text</category>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="vehicleConnected">
+		<item-type>Switch</item-type>
+		<label>Vehicle connected</label>
+		<description>Whether vehicle is connected to loadpoint or not</description>
+		<category>Switch</category>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Connected</option>
+				<option value="OFF">Not connected</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="vehicleConnectedDuration">
+		<item-type>Number:Time</item-type>
+		<label>Vehicle connected duration</label>
+		<description>Duration the vehicle is connected to loadpoint</description>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicleCapacity">
 		<item-type>Number:Energy</item-type>
 		<label>Vehicle capacity</label>
 		<description>Capacity of EV battery</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicleOdometer">
 		<item-type>Number:Length</item-type>
 		<label>Vehicle odometer</label>
-		<description>Total distance travelled EV</description>
+		<description>Total distance travelled by EV</description>
 		<category></category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehiclePresent">
 		<item-type>Switch</item-type>
-		<label>Vehicle present</label>
-		<description>Vehicle is present or not</description>
+		<label>Vehicle data access</label>
+		<description>Whether evcc is able to get data from vehicle or not</description>
 		<category>Switch</category>
 		<state readOnly="true">
 			<options>
-				<option value="ON">Present</option>
-				<option value="OFF">Not present</option>
+				<option value="ON">Data access</option>
+				<option value="OFF">No data access</option>
 			</options>
 		</state>
 	</channel-type>
@@ -304,9 +331,9 @@
 	<channel-type id="vehicleSoC">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Vehicle SoC</label>
-		<description>Current state of charge of electric vehicle</description>
+		<description>Current State of Charge of EV</description>
 		<category>Batterylevel</category>
-		<state min="0" step="1" max="100" pattern="%d %%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicleTitle">
 		<item-type>String</item-type>

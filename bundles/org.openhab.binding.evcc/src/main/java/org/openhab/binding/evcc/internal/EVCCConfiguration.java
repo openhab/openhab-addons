@@ -24,9 +24,9 @@ import org.eclipse.jdt.annotation.Nullable;
 public class EVCCConfiguration {
 
     /**
-     * Hostname or IP address of the evcc instance.
+     * URL of the evcc instance, e.g. https://demo.evcc.io
      */
-    public @Nullable String host;
+    public @Nullable String url;
     /**
      * Interval for state fetching in seconds.
      */

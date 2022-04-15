@@ -21,6 +21,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Loadpoint {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
+    // and from https://docs.evcc.io/docs/reference/configuration/messaging/#msg
 
     @SerializedName("activePhases")
     private int activePhases;
