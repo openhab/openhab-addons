@@ -1,76 +1,173 @@
-# EVCC Binding
+# evcc Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding integrates [evcc - electric vehicle charging control](https://evcc.io), a project that provides a control center for electric vehicle charging.
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
+evcc controls your wallbox(es) with multiple charging modes and allows you to charge your ev with your photovoltaik's excess current.
+To provide an intelligent charging control, evcc supports over 30 wallboxes and over 20 energy meters/home energy managment systems from many manufacturers as well as electric vehicles from over 20 car manufacturers.
+Furthermore, evcc calculates your money savings.
 
-_Put each sentence in a separate line to improve readability of diffs._
+This binding enables openHAB to retrieve status data from your evcc installation and to control the charging process.
+For more advanced features like calculated savings, you have to visit the web UI of evcc.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+- `device`: A running evcc installation.
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
+No auto discovery supported.
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
-
-```
-# Configuration for the EVCC Binding
-#
-# Default secret key for the pairing of the EVCC Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
-
+No binding configuration required.
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+### `device` Thing Configuration
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Parameter       | Type   | Description                                     | Advanced | Required |
+|-----------------|--------|-------------------------------------------------|----------|----------|
+| url             | String | URL of evcc web UI, e.g. *https://demo.evcc.io* | false    | true     |
+| refreshInterval | Number | Interval the status is polled in sec.           | true     | false    |
 
-### `sample` Thing Configuration
-
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+Default value for *refreshInterval* is 60 seconds.
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+### General channels
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+Those channels exist only once.
+Please note that some of them are only available when evcc is properly configured.
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+| Channel                    | Type                 | Read/Write | Description                                                                                                  |
+|----------------------------|----------------------|------------|--------------------------------------------------------------------------------------------------------------|
+| general#batteryPower       | Number:Power         | R          | Current power from battery.                                                                                  |
+| general#batterySoC         | Number:Dimensionless | R          | Current State of Charge of battery.                                                                          |
+| general#batteryPrioritySoC | Number:Dimensionless | R          | State of State of Charge for which the battery has priority over charging the ev when charging mode is "pv". |
+| general#gridPower          | Number:Power         | R          | Current power from grid (negative means feed-in)                                                             |
+| general#homePower          | Number:Power         | R          | Current power taken by home.                                                                                 |
+| general#pvPower            | Number:Power         | R          | Current power from photovoltaik.                                                                             |
+
+
+### Loadpoint channels
+
+Those channels exist per configured loadpoint.
+Please note that you have to replace *N* with your loadpoint number.
+
+| Channel                             | Type                   | Read/Write | Description                                                                  |
+|-------------------------------------|------------------------|------------|------------------------------------------------------------------------------|
+| loadpointN#activePhases             | Number                 | R          | Current number of active phases.                                             |
+| loadpointN#chargeCurrent            | Number:ElectricCurrent | R          | Current electric current of charging.                                        |
+| loadpointN#chargeDuration           | Number:Time            | R          | Charging duration.                                                           |
+| loadpointN#chargeRemainingDuration  | Number:Time            | R          | Remaining duration until target SoC is reached.                              |
+| loadpointN#chargePower              | Number:Power           | R          | Current power of charging.                                                   |
+| loadpointN#chargedEnergy            | Number:Energy          | R          | Energy charged since plugged-in.                                             |
+| loadpointN#charging                 | Switch                 | R          | Currently charging or not.                                                   |
+| loadpointN#enabled                  | Switch                 | R          | Charging enabled or not.                                                     |
+| loadpointN#hasVehicle               | Switch                 | R          | Whether vehicle is configured for loadpoint.                                 |
+| loadpointN#maxCurrent               | Number:ElectricCurrent | RW         | Maximum electric current for charging.                                       |
+| loadpointN#minCurrent               | Number:ElectricCurrent | RW         | Minimum electric current for charging.                                       |
+| loadpointN#minSoC                   | Number:Dimensionless   | RW         | Minimum State of Charge of ev battery to retain.                             |
+| loadpointN#mode                     | String                 | RW         | Mode of charging: "off", "now", "minpv", "pv".                               |
+| loadpointN#phases                   | Number                 | RW         | Number of enabled phases for charging.                                       |
+| loadpointN#targetSoC                | Number:Dimensionless   | RW         | Target State of Charge for EV battery.                                       |
+| loadpointN#targetTime               | DateTime               | RW         | When the target SoC should be reached.                                       |
+| loadpointN#targetTimeActive         | Switch                 | R          | Whether the loadpoint is currently charging to target SoC until target time. |
+| loadpointN#targetTimeEnabled        | Switch                 | RW         | Target time for charging enabled or not.                                     |
+| loadpointN#title                    | String                 | R          | Title of loadpoint.                                                          |
+| loadpointN#vehicleConnected         | Switch                 | R          | Whether vehicle is connected to loadpoint or not.                            |
+| loadpointN#vehicleConnectedDuration | Number:Time            | R          | Duration the vehicle is connected to loadpoint.                              |
+| loadpointN#vehicleCapacity          | Number:Energy          | R          | Capacity of EV battery.                                                      |
+| loadpointN#vehicleOdometer          | Number:Length          | R          | Total distance travelled by EV.                                              |
+| loadpointN#vehiclePresent           | Switch                 | R          | Whether evcc is able to get data from vehicle or not.                        |
+| loadpointN#vehicleRange             | Number:Length          | R          | Battery range for EV.                                                        |
+| loadpointN#vehicleSoC               | Number:Dimensionless   | R          | Current State of Charge of EV.                                               |
+| loadpointN#vehicleTitle             | String                 | R          | Name of EV.                                                                  |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
+### Thing(s)
 
-## Any custom content here!
+```
+Thing evcc:device:demo "evcc Demo" [url="https://demo.evcc.io", refreshInterval=60]
+```
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+### Items
+
+```
+// General
+Number:Power              evcc_demo_batteryPower                           "Battery Power [%.1f kW]"                         <energy>          {channel="evcc:device:demo:general#batteryPower"}
+Number:Dimensionless      evcc_demo_batterySoC                             "Battery SoC [%d %%]"                             <batterylevel>    {channel="evcc:device:demo:general#batterySoC"}
+Number:Dimensionless      evcc_demo_batteryPrioritySoC                     "Battery Priority SoC [%d %%]"                    <batterylevel>    {channel="evcc:device:demo:general#batteryPrioritySoC"}
+Number:Power              evcc_demo_gridPower                              "Grid Power [%.1f kW]"                            <energy>          {channel="evcc:device:demo:general#gridPower"}
+Number:Power              evcc_demo_homePower                              "Home Power [%.1f kW]"                            <energy>          {channel="evcc:device:demo:general#homePower"}
+Number:Power              evcc_demo_pvPower                                "PV Power [%.1f kW]"                              <energy>          {channel="evcc:device:demo:general#pvPower"}
+
+// Loadpoint
+Number                    evcc_demo_loadpoint0_activePhases                "Active Phases [%d]"                                                {channel="evcc:device:demo:loadpoint0#activePhases"}
+Number:ElectricCurrent    evcc_demo_loadpoint0_chargeCurrent               "Charging current [%.0f A]"                       <energy>          {channel="evcc:device:demo:loadpoint0#chargeCurrent"}
+Number:Time               evcc_demo_loadpoint0_chargeDuration              "Charging duration [%1$tH:%1$tM]"                 <time>            {channel="evcc:device:demo:loadpoint0#chargeDuration"}
+Number:Time               evcc_demo_loadpoint0_chargeRemainingDuration     "Charging remaining duration [%1$tH:%1$tM]"       <time>            {channel="evcc:device:demo:loadpoint0#chargeRemainingDuration"}
+Number:Power              evcc_demo_loadpoint0_chargePower                 "Charging power [%.1f kW]"                        <energy>          {channel="evcc:device:demo:loadpoint0#chargePower"}
+Number:Energy             evcc_demo_loadpoint0_chargedEnergy               "Charged energy [%.1f kWh]"                       <energy>          {channel="evcc:device:demo:loadpoint0#chargedEnergy"}
+Switch                    evcc_demo_loadpoint0_charging                    "Currently charging [%s]"                         <battery>         {channel="evcc:device:demo:loadpoint0#charging"}
+Switch                    evcc_demo_loadpoint0_enabled                     "Charging enabled [%s]"                           <switch>          {channel="evcc:device:demo:loadpoint0#enabled"}
+Switch                    evcc_demo_loadpoint0_hasVehicle                  "Vehicle configured [%s]"                         <switch>          {channel="evcc:device:demo:loadpoint0#hasVehicle"}
+Number:ElectricCurrent    evcc_demo_loadpoint0_maxCurrent                  "Maximum current [%.0f A]"                        <energy>          {channel="evcc:device:demo:loadpoint0#maxCurrent"}
+Number:ElectricCurrent    evcc_demo_loadpoint0_minCurrent                  "Minimum current [%.0f A]"                        <energy>          {channel="evcc:device:demo:loadpoint0#minCurrent"}
+Number:Dimensionless      evcc_demo_loadpoint0_minSoC                      "Minimum SoC [%d %%]"                             <batterylevel>    {channel="evcc:device:demo:loadpoint0#minSoC"}
+String                    evcc_demo_loadpoint0_mode                        "Mode [%s]"                                                         {channel="evcc:device:demo:loadpoint0#mode"}
+Number                    evcc_demo_loadpoint0_phases                      "Enabled phases [%d]"                                               {channel="evcc:device:demo:loadpoint0#phases"}
+Number:Dimensionless      evcc_demo_loadpoint0_targetSoC                   "Target SoC [%d %%]"                              <batterylevel>    {channel="evcc:device:demo:loadpoint0#targetSoC"}
+DateTime                  evcc_demo_loadpoint0_targetTime                  "Target time [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]"    <time>            {channel="evcc:device:demo:loadpoint0#targetTime"}
+Switch                    evcc_demo_loadpoint0_targetTimeActive            "Charging for target time [%s]"                   <switch>          {channel="evcc:device:demo:loadpoint0#targetTimeActive"}
+Switch                    evcc_demo_loadpoint0_targetTimeEnabled           "Target time enabled [%s]"                        <switch>          {channel="evcc:device:demo:loadpoint0#targetTimeEnabled"}
+String                    evcc_demo_loadpoint0_title                       "Loadpoint title [%s]"                            <text>            {channel="evcc:device:demo:loadpoint0#title"}
+// Vehicle on loadpoint
+Switch                    evcc_demo_loadpoint0_vehicleConnected            "Vehicle connected [%s]"                          <switch>          {channel="evcc:device:demo:loadpoint0#vehicleConnected"}
+Number:Time               evcc_demo_loadpoint0_vehicleConnectedDuration    "Vehicle connected duration [%.1f h]"             <time>            {channel="evcc:device:demo:loadpoint0#vehicleConnectedDuration"}
+Number:Energy             evcc_demo_loadpoint0_vehicleCapacity             "Vehicle capacity [%.0f kWH]"                     <batterylevel>    {channel="evcc:device:demo:loadpoint0#vehicleCapacity"}
+Number:Length             evcc_demo_loadpoint0_vehicleOdometer             "Vehicle odometer [%.1f km]"                                        {channel="evcc:device:demo:loadpoint0#vehicleOdometer"}
+Switch                    evcc_demo_loadpoint0_vehiclePresent              "Vehicle present [%s]"                            <switch>          {channel="evcc:device:demo:loadpoint0#vehiclePresent"}
+Number:Length             evcc_demo_loadpoint0_vehicleRange                "Vehicle Range [%.0f km]"                                           {channel="evcc:device:demo:loadpoint0#vehicleRange"}
+Number:Dimensionless      evcc_demo_loadpoint0_vehicleSoC                  "Vehicle SoC [%d %%]"                             <batterylevel>    {channel="evcc:device:demo:loadpoint0#vehicleSoC"}
+String                    evcc_demo_loadpoint0_vehicleName                 "Vehicle name [%s]"                               <text>            {channel="evcc:device:demo:loadpoint0#vehicleTitle"}
+```
+
+### Sitemap
+
+This example Sitemap is not complete!
+```
+sitemap evcc label="evcc Demo" {
+    Frame label="General" {
+        Text item=evcc_demo_batteryPower
+        Text item=evcc_demo_batterySoC
+        Text item=evcc_demo_gridPower
+        Text item=evcc_demo_homePower
+        Text item=evcc_demo_pvPower
+    }
+    Frame label="Loadpoint 0" {
+        Text item=evcc_demo_loadpoint0_title
+        Text item=evcc_demo_loadpoint0_enabled label="Charging" {
+            Text item=evcc_demo_loadpoint0_charging
+            Text item=evcc_demo_loadpoint0_chargePower
+            Text item=evcc_demo_loadpoint0_chargeCurrent
+            Text item=evcc_demo_loadpoint0_activePhases
+            Text item=evcc_demo_loadpoint0_chargeDuration
+            Text item=evcc_demo_loadpoint0_chargeRemainingDuration
+        }
+        Switch item=evcc_demo_loadpoint0_mode mappings=["off"="Stop","now"="Now","minpv"="Min + PV", "pv"="Only PV"]
+        Text label="Charging settings" icon="settings" {
+            Setpoint item=evcc_demo_loadpoint0_minCurrent minValue=6 maxValue=96 step=2
+            Setpoint item=evcc_demo_loadpoint0_maxCurrent minValue=6 maxValue=96 step=2
+            Setpoint item=evcc_demo_loadpoint0_minSoC minValue=0 maxValue=100 step=5
+            Setpoint item=evcc_demo_loadpoint0_phases minValue=1 maxValue=3 step=2
+        }
+        Text item=evcc_demo_loadpoint0_vehicleName label="Vehicle" {
+            Text item=evcc_demo_loadpoint0_vehicleCapacity
+            Text item=evcc_demo_loadpoint0_vehicleOdometer
+            Text item=evcc_demo_loadpoint0_vehicleRange
+            Text item=evcc_demo_loadpoint0_vehicleSoC
+        }
+    }
+}
+```
