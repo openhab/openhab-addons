@@ -1031,9 +1031,8 @@ public class SonosXMLParser {
                 ret = matcher.group(1);
             }
         }
-        if (ret.contains(":")) {
-            ret = ret.replace(":", "");
-        }
+        // Finally remove any : and any space
+        ret = ret.replaceAll(":", "").replaceAll(" ", "");
         return ret;
     }
 

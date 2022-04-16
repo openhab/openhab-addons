@@ -28,8 +28,8 @@ public class SonosXMLParserTest {
     public void extractModelName() {
         assertEquals("Move", SonosXMLParser.extractModelName("Sonos Move"));
         assertEquals("PLAY5", SonosXMLParser.extractModelName("Sonos PLAY:5"));
-        assertEquals("Roam SL", SonosXMLParser.extractModelName("Sonos Roam SL"));
+        assertEquals("RoamSL", SonosXMLParser.extractModelName("Sonos Roam SL"));
         assertEquals("Five", SonosXMLParser.extractModelName("Sonos Five (OpenHome)"));
-        assertEquals("One SL", SonosXMLParser.extractModelName("Sonos One SL (OpenHome)"));
+        assertEquals("OneSL", SonosXMLParser.extractModelName("Sonos One SL (OpenHome)"));
     }
 }
