@@ -3292,7 +3292,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         URL descriptor = service.getDescriptorURL(this);
         if (descriptor != null) {
             String sonosModelDescription = SonosXMLParser.parseModelDescription(descriptor);
-            return sonosModelDescription == null ? null : SonosXMLParser.extractModelName(sonosModelDescription);
+            return sonosModelDescription == null ? null
+                    : SonosXMLParser.buildThingTypeIdFromModelName(sonosModelDescription);
         } else {
             return null;
         }
