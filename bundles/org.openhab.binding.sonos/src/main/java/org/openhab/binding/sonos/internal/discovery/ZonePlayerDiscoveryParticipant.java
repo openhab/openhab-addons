@@ -89,17 +89,12 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
                     case "ZP100":
                         modelName = "CONNECTAMP";
                         break;
-                    case "One SL":
-                    case "Arc SL":
-                    case "Roam SL":
-                        modelName = modelName.replaceAll(" ", "");
-                        break;
                     case "Sub":
                         // The Sonos Sub is ignored
                         ignored = true;
                         break;
                     default:
-                        modelName = modelName.replaceAll("[^a-zA-Z0-9_]", "_");
+                        modelName = modelName.replaceAll("[^a-zA-Z0-9_]", "");
                         break;
                 }
                 if (!ignored) {
