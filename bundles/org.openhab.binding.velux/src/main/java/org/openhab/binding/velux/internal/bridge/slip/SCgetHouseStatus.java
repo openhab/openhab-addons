@@ -112,13 +112,9 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
                 ntfState = responseData.getOneByteValue(1);
                 ntfCurrentPosition = responseData.getTwoByteValue(2);
                 ntfTarget = responseData.getTwoByteValue(4);
-                @SuppressWarnings("unused")
                 int ntfFP1CurrentPosition = responseData.getTwoByteValue(6);
-                @SuppressWarnings("unused")
                 int ntfFP2CurrentPosition = responseData.getTwoByteValue(8);
-                @SuppressWarnings("unused")
                 int ntfFP3CurrentPosition = responseData.getTwoByteValue(10);
-                @SuppressWarnings("unused")
                 int ntfFP4CurrentPosition = responseData.getTwoByteValue(12);
                 int ntfRemainingTime = responseData.getTwoByteValue(14);
                 int ntfTimeStamp = responseData.getFourByteValue(16);
@@ -127,6 +123,10 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
                 logger.trace("setResponse(): ntfState={}.", ntfState);
                 logger.trace("setResponse(): ntfCurrentPosition={}.", ntfCurrentPosition);
                 logger.trace("setResponse(): ntfTarget={}.", ntfTarget);
+                logger.trace("setResponse(): ntfFP1CurrentPosition={}.", ntfFP1CurrentPosition);
+                logger.trace("setResponse(): ntfFP2CurrentPosition={}.", ntfFP2CurrentPosition);
+                logger.trace("setResponse(): ntfFP3CurrentPosition={}.", ntfFP3CurrentPosition);
+                logger.trace("setResponse(): ntfFP4CurrentPosition={}.", ntfFP4CurrentPosition);
                 logger.trace("setResponse(): ntfRemainingTime={}.", ntfRemainingTime);
                 logger.trace("setResponse(): ntfTimeStamp={}.", ntfTimeStamp);
                 success = true;
