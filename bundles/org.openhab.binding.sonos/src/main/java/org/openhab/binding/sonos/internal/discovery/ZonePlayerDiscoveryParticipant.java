@@ -95,6 +95,9 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
                     case "Arc SL":
                         modelName = "ArcSL";
                         break;
+                    case "Roam SL":
+                        modelName = "RoamSL";
+                        break;
                     case "Sub":
                         // The Sonos Sub is ignored
                         ignored = true;
