@@ -17,13 +17,13 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
- * The {@link EVCCBindingConstants} class defines common constants, which are
+ * The {@link EvccBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Florian Hotze - Initial contribution
  */
 @NonNullByDefault
-public class EVCCBindingConstants {
+public class EvccBindingConstants {
 
     private static final String BINDING_ID = "evcc";
 

@@ -16,12 +16,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link EVCCConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link EvccConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Florian Hotze - Initial contribution
  */
 @NonNullByDefault
-public class EVCCConfiguration {
+public class EvccConfiguration {
 
     /**
      * URL of the evcc instance, e.g. https://demo.evcc.io

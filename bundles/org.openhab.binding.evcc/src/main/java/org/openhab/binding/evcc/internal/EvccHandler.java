@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.evcc.internal;
 
-import static org.openhab.binding.evcc.internal.EVCCBindingConstants.*;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -52,19 +52,18 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * The {@link EVCCHandler} is responsible for handling commands, which are
+ * The {@link EvccHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Florian Hotze - Initial contribution
  */
 @NonNullByDefault
-public class EVCCHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(EVCCHandler.class);
+public class EvccHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(EvccHandler.class);
     private final Gson gson = new Gson();
     private @Nullable ScheduledFuture<?> statePollingJob;
 
-    private @Nullable EVCCConfiguration config;
-    private @Nullable String thingLabel;
+    private @Nullable EvccConfiguration config;
 
     private @Nullable Status status;
 
@@ -78,7 +77,7 @@ public class EVCCHandler extends BaseThingHandler {
     private int targetSoC = 0;
     private ZonedDateTime targetTimeZDT = ZonedDateTime.now();
 
-    public EVCCHandler(Thing thing) {
+    public EvccHandler(Thing thing) {
         super(thing);
     }
 
@@ -137,7 +136,6 @@ public class EVCCHandler extends BaseThingHandler {
                     refresh();
                     break;
             }
-
         }
 
         // Note: if communication with thing fails for some reason,
@@ -148,8 +146,7 @@ public class EVCCHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(EVCCConfiguration.class);
-        thingLabel = getThing().getLabel();
+        config = getConfigAs(EvccConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
 
         if ("".equals(config.url)) {
@@ -408,7 +405,7 @@ public class EVCCHandler extends BaseThingHandler {
             try {
                 newTargetTimeZDT = ZonedDateTime.parse(targetTime);
             } catch (Exception f) {
-                logger.debug("Failed parsing targetTime {}. Error: {}", targetTime, f);
+                logger.debug("Failed parsing targetTime {}. Error: {}.", targetTime, f.toString());
             }
         }
         if (newTargetTimeZDT.isAfter(ZonedDateTime.now())) {
@@ -485,7 +482,7 @@ public class EVCCHandler extends BaseThingHandler {
             logger.trace("{} - {}, {} - {}", description, url, method, response);
             return response;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}, {} - {}", description, url, method, e);
+            logger.warn("IO Exception - {} - {}, {} - {}", description, url, method, e.toString());
             return "{\"response_code\":\"999\"}";
         }
     }
@@ -501,17 +498,6 @@ public class EVCCHandler extends BaseThingHandler {
     private @Nullable Status getStatus(@Nullable String host) {
         final String response = httpRequest("Status", host + EVCC_REST_API + "state", "GET");
         return gson.fromJson(response, Status.class);
-    }
-
-    /**
-     * Get the number of loadpoints.
-     * 
-     * @param host hostname of IP address of the evcc instance
-     * @param status Status object returned from evcc (/api/state)
-     * @return number of loadpoints
-     */
-    private @Nullable Integer getNumberOfLoadpoints(@Nullable String host, @Nullable Status status) {
-        return status.getResult().getLoadpoints().length;
     }
 
     // Loadpoint specific API calls.

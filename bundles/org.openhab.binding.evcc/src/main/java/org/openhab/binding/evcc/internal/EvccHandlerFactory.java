@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.evcc.internal;
 
-import static org.openhab.binding.evcc.internal.EVCCBindingConstants.*;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.Set;
 
@@ -26,14 +26,14 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link EVCCHandlerFactory} is responsible for creating things and thing
+ * The {@link EvccHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Florian Hotze - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.evcc", service = ThingHandlerFactory.class)
-public class EVCCHandlerFactory extends BaseThingHandlerFactory {
+public class EvccHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE);
 
@@ -47,7 +47,7 @@ public class EVCCHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return new EVCCHandler(thing);
+            return new EvccHandler(thing);
         }
 
         return null;

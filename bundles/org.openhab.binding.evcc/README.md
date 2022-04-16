@@ -136,6 +136,7 @@ String                    evcc_demo_loadpoint0_vehicleName                 "Vehi
 ### Sitemap
 
 This example Sitemap is not complete!
+
 ```
 sitemap evcc label="evcc Demo" {
     Frame label="General" {
@@ -157,6 +158,7 @@ sitemap evcc label="evcc Demo" {
         }
         Switch item=evcc_demo_loadpoint0_mode mappings=["off"="Stop","now"="Now","minpv"="Min + PV", "pv"="Only PV"]
         Text label="Charging settings" icon="settings" {
+            Setpoint item=evcc_demo_loadpoint0_targetSoC minValue=5 maxValue=100 step=5
             Setpoint item=evcc_demo_loadpoint0_minCurrent minValue=6 maxValue=96 step=2
             Setpoint item=evcc_demo_loadpoint0_maxCurrent minValue=6 maxValue=96 step=2
             Setpoint item=evcc_demo_loadpoint0_minSoC minValue=0 maxValue=100 step=5

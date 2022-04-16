@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.evcc</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: EVCC Binding</name>
+  <name>openHAB Add-ons :: Bundles :: evcc Binding</name>
 
 </project>
