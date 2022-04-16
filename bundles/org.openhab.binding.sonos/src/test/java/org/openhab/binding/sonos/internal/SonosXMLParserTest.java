@@ -25,11 +25,39 @@ import org.junit.jupiter.api.Test;
 public class SonosXMLParserTest {
 
     @Test
-    public void extractModelName() {
-        assertEquals("Move", SonosXMLParser.extractModelName("Sonos Move"));
-        assertEquals("PLAY5", SonosXMLParser.extractModelName("Sonos PLAY:5"));
-        assertEquals("RoamSL", SonosXMLParser.extractModelName("Sonos Roam SL"));
-        assertEquals("Five", SonosXMLParser.extractModelName("Sonos Five (OpenHome)"));
-        assertEquals("OneSL", SonosXMLParser.extractModelName("Sonos One SL (OpenHome)"));
+    public void buildThingTypeIdFromModelWithoutSpace() {
+        assertEquals("Move", SonosXMLParser.buildThingTypeIdFromModelName("Sonos Move"));
+    }
+
+    @Test
+    public void buildThingTypeIdFromModelWithSpace() {
+        assertEquals("RoamSL", SonosXMLParser.buildThingTypeIdFromModelName("Sonos Roam SL"));
+    }
+
+    @Test
+    public void buildThingTypeIdFromModelWithColon() {
+        assertEquals("PLAY5", SonosXMLParser.buildThingTypeIdFromModelName("Sonos PLAY:5"));
+    }
+
+    @Test
+    public void buildThingTypeIdFromSymfoniskModel() {
+        assertEquals("SYMFONISK", SonosXMLParser.buildThingTypeIdFromModelName("SYMFONISK Table lamp"));
+        assertEquals("SYMFONISK", SonosXMLParser.buildThingTypeIdFromModelName("Symfonisk Table lamp"));
+        assertEquals("SYMFONISK", SonosXMLParser.buildThingTypeIdFromModelName("Sonos Symfonisk"));
+    }
+
+    @Test
+    public void buildThingTypeIdFromZP80Model() {
+        assertEquals("CONNECT", SonosXMLParser.buildThingTypeIdFromModelName("Sonos ZP80"));
+    }
+
+    @Test
+    public void buildThingTypeIdFromZP100Model() {
+        assertEquals("CONNECTAMP", SonosXMLParser.buildThingTypeIdFromModelName("Sonos ZP100"));
+    }
+
+    @Test
+    public void buildThingTypeIdFromModelWithAdditionalTextInParenthesis() {
+        assertEquals("OneSL", SonosXMLParser.buildThingTypeIdFromModelName("Sonos One SL (OpenHome)"));
     }
 }
