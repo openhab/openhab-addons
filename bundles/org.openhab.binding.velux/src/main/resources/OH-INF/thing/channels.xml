@@ -140,10 +140,11 @@
 	</channel-type>
 
 	<channel-type id="vanePosition">
-		<item-type>Rollershutter</item-type>
+		<item-type>Dimmer</item-type>
 		<label>@text/channel-type.velux.vanePosition.label</label>
 		<description>@text/channel-type.velux.vanePosition.description</description>
 		<category>Blinds</category>
+		<state min="0" max="100"/>
 	</channel-type>
 
 	<channel-type id="state">
