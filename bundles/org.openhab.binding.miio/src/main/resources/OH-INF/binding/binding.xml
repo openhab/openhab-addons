@@ -27,7 +27,7 @@
 			<options>
 				<option value="disabled">Local discovery only (Default)</option>
 				<option value="supportedOnly">Discover online supported devices from Xiaomi cloud</option>
-				<option value="all">Discover all online devices from Xiaomi cloud</option>
+				<option value="all">Discover all on &amp; offline devices from Xiaomi cloud (advanced, see readme for usage)</option>
 			</options>
 		</parameter>
 	</config-description>

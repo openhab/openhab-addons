@@ -282,7 +282,7 @@ public class KM200Device {
             object = serviceTreeMap.get(servicePath[1]);
         }
         for (int i = 2; i < len; i++) {
-            if (object.serviceTreeMap.containsKey(servicePath[i])) {
+            if (object != null && object.serviceTreeMap.containsKey(servicePath[i])) {
                 object = object.serviceTreeMap.get(servicePath[i]);
                 continue;
             } else {
@@ -313,7 +313,7 @@ public class KM200Device {
             }
         }
         for (int i = 2; i < len; i++) {
-            if (object.serviceTreeMap.containsKey(servicePath[i])) {
+            if (object != null && object.serviceTreeMap.containsKey(servicePath[i])) {
                 object = object.serviceTreeMap.get(servicePath[i]);
                 continue;
             } else {

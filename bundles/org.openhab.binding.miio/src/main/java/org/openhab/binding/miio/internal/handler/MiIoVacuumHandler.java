@@ -279,6 +279,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
 
     private boolean updateVacuumStatus(JsonObject statusData) {
         StatusDTO statusInfo = GSON.fromJson(statusData, StatusDTO.class);
+        if (statusInfo == null) {
+            return false;
+        }
         safeUpdateState(CHANNEL_BATTERY, statusInfo.getBattery());
         if (statusInfo.getCleanArea() != null) {
             updateState(CHANNEL_CLEAN_AREA,

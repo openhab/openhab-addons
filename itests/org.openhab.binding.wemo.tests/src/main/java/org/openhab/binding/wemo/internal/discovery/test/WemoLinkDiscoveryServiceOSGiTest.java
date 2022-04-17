@@ -50,7 +50,7 @@ public class WemoLinkDiscoveryServiceOSGiTest extends GenericWemoLightOSGiTestPa
 
     @Test
     public void assertSupportedThingIsDiscovered()
-            throws MalformedURLException, URISyntaxException, ValidationException {
+            throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         String model = WemoBindingConstants.THING_TYPE_MZ100.getId();
         addUpnpDevice(SERVICE_ID, SERVICE_NUMBER, model);
 

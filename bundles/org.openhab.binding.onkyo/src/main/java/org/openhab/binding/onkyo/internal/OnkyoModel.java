@@ -35,6 +35,7 @@ public enum OnkyoModel {
     TX_NR555("TX-NR555"),
     TX_NR575("TX-NR575"),
     TX_NR575E("TX-NR575E"),
+    TX_NR609("TX-NR609"),
     TX_NR616("TX-NR616"),
     TX_NR626("TX-NR626"),
     TX_NR636("TX-NR636"),

@@ -12,17 +12,25 @@
  */
 package org.openhab.binding.knx.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Serial Bridge configuration object.
  *
  * @author Simon Kaufmann - initial contribution and API.
  *
  */
+@NonNullByDefault
 public class SerialBridgeConfiguration extends BridgeConfiguration {
 
-    private String serialPort;
+    private String serialPort = "";
+    private boolean useCemi = false;
 
     public String getSerialPort() {
         return serialPort;
+    }
+
+    public boolean useCemi() {
+        return useCemi;
     }
 }

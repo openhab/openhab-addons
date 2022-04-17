@@ -19,9 +19,9 @@ import org.eclipse.jdt.annotation.Nullable;
  * Shade coordinate system (a.k.a. position kind), as returned by the HD PowerView hub.
  *
  * @param NONE a coordinate system that does not refer to any type of physical rail.
- * @param PRIMARY_ZERO_IS_CLOSED primary rail, whose coordinate value 0 means shade is closed.
- * @param SECONDARY_ZERO_IS_OPEN secondary rail, whose coordinate value 0 means shade is open.
- * @param VANE_TILT_COORDS vane/tilt operator, whose coordinate system is for vanes.
+ * @param PRIMARY_POSITION primary rail, whose coordinate value 0 means shade is closed.
+ * @param SECONDARY_POSITION secondary rail, whose coordinate value 0 means shade is open.
+ * @param VANE_TILT_POSITION vane/tilt operator, whose coordinate system is for vanes.
  * @param ERROR_UNKNOWN unsupported coordinate system.
  *
  * @author Andy Lintner - Initial contribution of the original enum called
@@ -77,9 +77,9 @@ public enum CoordinateSystem {
      *
      */
     NONE,
-    PRIMARY_ZERO_IS_CLOSED,
-    SECONDARY_ZERO_IS_OPEN,
-    VANE_TILT_COORDS,
+    PRIMARY_POSITION,
+    SECONDARY_POSITION,
+    VANE_TILT_POSITION,
     ERROR_UNKNOWN;
 
     public static final int MAX_SHADE = 65535;

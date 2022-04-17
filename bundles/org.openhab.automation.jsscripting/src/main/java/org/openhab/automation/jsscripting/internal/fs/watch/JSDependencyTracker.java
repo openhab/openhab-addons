@@ -16,9 +16,6 @@ import java.io.File;
 
 import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.rulesupport.loader.DependencyTracker;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +24,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jonathan Gilbert - Initial contribution
  */
-@Component(immediate = true, service = JSDependencyTracker.class)
 public class JSDependencyTracker extends DependencyTracker {
 
     private final Logger logger = LoggerFactory.getLogger(JSDependencyTracker.class);
@@ -39,7 +35,6 @@ public class JSDependencyTracker extends DependencyTracker {
         super(LIB_PATH);
     }
 
-    @Activate
     public void activate() {
         File directory = new File(LIB_PATH);
         if (!directory.exists()) {
@@ -51,10 +46,5 @@ public class JSDependencyTracker extends DependencyTracker {
         }
 
         super.activate();
-    }
-
-    @Deactivate
-    public void deactivate() {
-        super.deactivate();
     }
 }

@@ -34,12 +34,27 @@ class PIDController {
     private double ki;
     private double kd;
     private double derivativeTimeConstantSec;
+    private double iMinResult;
+    private double iMaxResult;
 
-    public PIDController(double kpAdjuster, double kiAdjuster, double kdAdjuster, double derivativeTimeConstantSec) {
+    public PIDController(double kpAdjuster, double kiAdjuster, double kdAdjuster, double derivativeTimeConstantSec,
+            double iMinValue, double iMaxValue) {
         this.kp = kpAdjuster;
         this.ki = kiAdjuster;
         this.kd = kdAdjuster;
         this.derivativeTimeConstantSec = derivativeTimeConstantSec;
+        this.iMinResult = Double.NaN;
+        this.iMaxResult = Double.NaN;
+
+        // prepare min/max for the integral result accumulator
+        if (Double.isFinite(kiAdjuster) && Math.abs(kiAdjuster) > 0.0) {
+            if (Double.isFinite(iMinValue)) {
+                this.iMinResult = iMinValue / kiAdjuster;
+            }
+            if (Double.isFinite(iMaxValue)) {
+                this.iMaxResult = iMaxValue / kiAdjuster;
+            }
+        }
     }
 
     public PIDOutputDTO calculate(double input, double setpoint, long lastInvocationMs, int loopTimeMs) {
@@ -55,11 +70,20 @@ class PIDController {
 
         // integral calculation
         integralResult += error * lastInvocationMs / loopTimeMs;
+        if (Double.isFinite(iMinResult)) {
+            integralResult = Math.max(integralResult, iMinResult);
+        }
+        if (Double.isFinite(iMaxResult)) {
+            integralResult = Math.min(integralResult, iMaxResult);
+        }
 
         // calculate parts
         final double proportionalPart = kp * error;
-        final double integralPart = ki * integralResult;
+
+        double integralPart = ki * integralResult;
+
         final double derivativePart = kd * derivativeResult;
+
         output = proportionalPart + integralPart + derivativePart;
 
         return new PIDOutputDTO(output, proportionalPart, integralPart, derivativePart, error);

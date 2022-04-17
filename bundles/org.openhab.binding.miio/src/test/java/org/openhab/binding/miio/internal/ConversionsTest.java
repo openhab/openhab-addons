@@ -80,7 +80,6 @@ public class ConversionsTest {
 
     @Test
     public void getJsonElementTest() {
-
         Map<String, Object> deviceVariables = Collections.emptyMap();
 
         // test invalid missing element

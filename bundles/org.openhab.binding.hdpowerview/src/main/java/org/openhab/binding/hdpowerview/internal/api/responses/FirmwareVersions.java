@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hdpowerview.internal.api.responses;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.api.Firmware;
 
 /**
@@ -19,7 +21,10 @@ import org.openhab.binding.hdpowerview.internal.api.Firmware;
  *
  * @author Jacob Laursen - Initial contribution
  */
+@NonNullByDefault
 public class FirmwareVersions {
+    @Nullable
     public Firmware mainProcessor;
+    @Nullable
     public Firmware radio;
 }

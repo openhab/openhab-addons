@@ -114,7 +114,12 @@ public class NukiApiServlet extends HttpServlet {
             responseEntity = new ResponseEntity(HttpStatus.BAD_REQUEST_400,
                     new NukiHttpServerStatusResponseDto("Invalid BCB-Request!"));
         } else {
-            responseEntity = doHandle(bridgeApiLockStateRequestDto, request.getParameter("bridgeId"));
+            try {
+                responseEntity = doHandle(bridgeApiLockStateRequestDto);
+            } catch (Exception e) {
+                logger.warn("Error processing request '{}'", gson.toJson(bridgeApiLockStateRequestDto), e);
+                throw e;
+            }
         }
 
         setHeaders(response);
@@ -122,7 +127,7 @@ public class NukiApiServlet extends HttpServlet {
         response.getWriter().write(gson.toJson(responseEntity.getData()));
     }
 
-    private ResponseEntity doHandle(BridgeApiLockStateRequestDto request, @Nullable String bridgeId) {
+    private ResponseEntity doHandle(BridgeApiLockStateRequestDto request) {
         String nukiId = request.getNukiId().toString();
         for (NukiBridgeHandler nukiBridgeHandler : nukiBridgeHandlers) {
             logger.trace("Searching Bridge[{}] with NukiBridgeHandler[{}] for nukiId[{}].",

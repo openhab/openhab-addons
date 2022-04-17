@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.fronius.internal.api;
 
-import org.openhab.binding.fronius.internal.math.KilowattConverter;
+import javax.measure.Unit;
+
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.types.util.UnitUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -21,12 +26,14 @@ import com.google.gson.annotations.SerializedName;
  * a value
  *
  * @author Thomas Rokohl - Initial contribution
+ * @author Jimmy Tanagra - Add conversion to QuantityType
  */
 public class ValueUnit {
+
     @SerializedName("Value")
     private double value;
     @SerializedName("Unit")
-    private String unit;
+    private String unit = "";
 
     public double getValue() {
         return value;
@@ -37,14 +44,20 @@ public class ValueUnit {
     }
 
     public String getUnit() {
-        if (unit == null) {
-            unit = "";
-        }
-        return unit;
+        return this.unit == null ? "" : this.unit;
     }
 
     public void setUnit(String unit) {
-        this.setValue(KilowattConverter.convertTo(this.getValue(), this.getUnit(), unit));
         this.unit = unit;
+    }
+
+    public QuantityType<?> asQuantityType() {
+        Unit<?> unit = UnitUtils.parseUnit(getUnit());
+        if (unit == null) {
+            final Logger logger = LoggerFactory.getLogger(ValueUnit.class);
+            logger.debug("The unit for ValueUnit ({})/({}) cannot be parsed", value, this.unit);
+            unit = QuantityType.ONE.getUnit();
+        }
+        return new QuantityType<>(value, unit);
     }
 }

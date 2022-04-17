@@ -27,6 +27,7 @@
 			<channel id="centerrearseatheater" typeId="centerrearseatheater"/>
 			<channel id="charge" typeId="charge"/>
 			<channel id="chargecable" typeId="chargecable"/>
+			<channel id="chargingamps" typeId="chargingamps"/>
 			<channel id="chargecurrent" typeId="chargecurrent"/>
 			<channel id="chargeenablerequest" typeId="chargeenablerequest"/>
 			<channel id="chargeenergyadded" typeId="chargeenergyadded"/>
@@ -102,6 +103,8 @@
 			<channel id="rightseatheater" typeId="rightseatheater"/>
 			<channel id="scheduledchargingpending" typeId="scheduledchargingpending"/>
 			<channel id="scheduledchargingstart" typeId="scheduledchargingstart"/>
+			<channel id="sentrymode" typeId="sentrymode"/>
+			<channel id="sentrymodeavailable" typeId="sentrymodeavailable"/>
 			<channel id="shiftstate" typeId="shiftstate"/>
 			<channel id="sidemirrorheaters" typeId="sidemirrorheaters"/>
 			<channel id="smartpreconditioning" typeId="smartpreconditioning"/>
@@ -132,6 +135,12 @@
 				<default>false</default>
 				<label>Allow Wake-Up</label>
 				<description>Allows waking up the vehicle. Caution: This can result in huge vampire drain!</description>
+			</parameter>
+			<parameter name="allowWakeupForCommands" type="boolean" required="false">
+				<default>false</default>
+				<label>Allow Wake-Up For Commands</label>
+				<description>Allows waking up the vehicle, when commands are sent to it. Execution of commands will be delayed in
+					this case and you could cause the vehicle to stay awake very long.</description>
 			</parameter>
 		</config-description>
 

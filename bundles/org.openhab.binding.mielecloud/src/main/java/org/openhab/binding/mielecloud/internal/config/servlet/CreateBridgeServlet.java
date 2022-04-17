@@ -53,7 +53,6 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
 
     private static final String DEFAULT_LOCALE = "en";
 
-    private static final long ONLINE_WAIT_TIMEOUT_IN_MILLISECONDS = 5000;
     private static final long DISCOVERY_COMPLETION_TIMEOUT_IN_MILLISECONDS = 5000;
     private static final long CHECK_INTERVAL_IN_MILLISECONDS = 100;
 
@@ -61,6 +60,8 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
 
     private final Inbox inbox;
     private final ThingRegistry thingRegistry;
+
+    private long onlineWaitTimeoutInMilliseconds = 5000;
 
     /**
      * Creates a new {@link CreateBridgeServlet}.
@@ -71,6 +72,10 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
     public CreateBridgeServlet(Inbox inbox, ThingRegistry thingRegistry) {
         this.inbox = inbox;
         this.thingRegistry = thingRegistry;
+    }
+
+    public void setOnlineWaitTimeoutInMilliseconds(long onlineWaitTimeoutInMilliseconds) {
+        this.onlineWaitTimeoutInMilliseconds = onlineWaitTimeoutInMilliseconds;
     }
 
     @Override
@@ -175,7 +180,7 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
     private void waitForBridgeToComeOnline(Thing bridge) {
         try {
             waitForConditionWithTimeout(() -> bridge.getStatus() == ThingStatus.ONLINE,
-                    ONLINE_WAIT_TIMEOUT_IN_MILLISECONDS);
+                    onlineWaitTimeoutInMilliseconds);
             waitForConditionWithTimeout(new DiscoveryResultCountDoesNotChangeCondition(),
                     DISCOVERY_COMPLETION_TIMEOUT_IN_MILLISECONDS);
         } catch (InterruptedException e) {

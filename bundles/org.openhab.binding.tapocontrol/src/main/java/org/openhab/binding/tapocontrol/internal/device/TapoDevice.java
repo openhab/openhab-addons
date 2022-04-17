@@ -28,6 +28,8 @@ import org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 import org.openhab.binding.tapocontrol.internal.structures.TapoDeviceConfiguration;
 import org.openhab.binding.tapocontrol.internal.structures.TapoDeviceInfo;
+import org.openhab.binding.tapocontrol.internal.structures.TapoEnergyData;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -319,6 +321,10 @@ public abstract class TapoDevice extends BaseThingHandler {
         deviceError.reset();
         if (connector.loggedIn()) {
             connector.queryInfo(ignoreGap);
+            // query energy usage
+            if (SUPPORTED_ENERGY_DATA_UIDS.contains(getThing().getThingTypeUID())) {
+                connector.getEnergyUsage();
+            }
         } else {
             logger.debug("({}) tried to query DeviceInfo but not loggedIn", uid);
             connect();
@@ -340,6 +346,20 @@ public abstract class TapoDevice extends BaseThingHandler {
                     "found type:'" + deviceInfo.getModel() + "' with mac:'" + deviceInfo.getRepresentationProperty()
                             + "'. Check IP-Address");
         }
+    }
+
+    /**
+     * Set Device EnergyData to device
+     * 
+     * @param energyData
+     */
+    public void setEnergyData(TapoEnergyData energyData) {
+        publishState(getChannelID(CHANNEL_GROUP_ENERGY, CHANNEL_NRG_POWER),
+                getPowerType(energyData.getCurrentPower(), Units.WATT));
+        publishState(getChannelID(CHANNEL_GROUP_ENERGY, CHANNEL_NRG_USAGE_TODAY),
+                getEnergyType(energyData.getTodayEnergy(), Units.WATT_HOUR));
+        publishState(getChannelID(CHANNEL_GROUP_ENERGY, CHANNEL_NRG_RUNTIME_TODAY),
+                getTimeType(energyData.getTodayRuntime(), Units.MINUTE));
     }
 
     /**
@@ -474,6 +494,7 @@ public abstract class TapoDevice extends BaseThingHandler {
         channel = channel.replace(CHANNEL_GROUP_ACTUATOR + "#", "");
         channel = channel.replace(CHANNEL_GROUP_DEVICE + "#", "");
         channel = channel.replace(CHANNEL_GROUP_EFFECTS + "#", "");
+        channel = channel.replace(CHANNEL_GROUP_ENERGY + "#", "");
         return channel;
     }
 }

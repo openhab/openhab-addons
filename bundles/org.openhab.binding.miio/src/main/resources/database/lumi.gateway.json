@@ -76,7 +76,7 @@
 				]
 			}
 		],
-		"readmeComment": "Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.",
+		"readmeComment": "Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway if you have the developer key. Otherwise this binding provides experimental support for lumi subdevices",
 		"experimental": true
 	}
 }

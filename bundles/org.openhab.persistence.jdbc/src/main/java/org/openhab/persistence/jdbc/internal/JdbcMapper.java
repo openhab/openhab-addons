@@ -12,6 +12,8 @@
  */
 package org.openhab.persistence.jdbc.internal;
 
+import java.sql.SQLInvalidAuthorizationSpecException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,17 +21,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
+import org.openhab.core.types.State;
 import org.openhab.persistence.jdbc.dto.ItemVO;
 import org.openhab.persistence.jdbc.dto.ItemsVO;
 import org.openhab.persistence.jdbc.dto.JdbcPersistenceItemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 
 /**
  * Mapper class
@@ -145,15 +151,19 @@ public class JdbcMapper {
         return vo;
     }
 
-    public Item storeItemValue(Item item) {
-        logger.debug("JDBC::storeItemValue: item={}", item);
+    public Item storeItemValue(Item item, State itemState, @Nullable ZonedDateTime date) {
+        logger.debug("JDBC::storeItemValue: item={} state={} date={}", item, itemState, date);
         String tableName = getTable(item);
         if (tableName == null) {
             logger.error("JDBC::store: Unable to store item '{}'.", item.getName());
             return item;
         }
         long timerStart = System.currentTimeMillis();
-        conf.getDBDAO().doStoreItemValue(item, new ItemVO(tableName, null));
+        if (date == null) {
+            conf.getDBDAO().doStoreItemValue(item, itemState, new ItemVO(tableName, null));
+        } else {
+            conf.getDBDAO().doStoreItemValue(item, itemState, new ItemVO(tableName, null), date);
+        }
         logTime("storeItemValue", timerStart, System.currentTimeMillis());
         errCnt = 0;
         return item;
@@ -177,16 +187,43 @@ public class JdbcMapper {
         return null;
     }
 
+    @SuppressWarnings("null")
+    public boolean deleteItemValues(FilterCriteria filter, String table) {
+        logger.debug("JDBC::deleteItemValues filter='{}' table='{}' itemName='{}'", (filter != null), table,
+                filter.getItemName());
+        if (table != null) {
+            long timerStart = System.currentTimeMillis();
+            conf.getDBDAO().doDeleteItemValues(filter, table, timeZoneProvider.getTimeZone());
+            logTime("deleteItemValues", timerStart, System.currentTimeMillis());
+            errCnt = 0;
+            return true;
+        } else {
+            logger.error("JDBC::deleteItemValues: TABLE is NULL; cannot delete data from non-existent table.");
+            return false;
+        }
+    }
+
     /***********************
      * DATABASE CONNECTION *
      ***********************/
+    @SuppressWarnings("null")
     protected boolean openConnection() {
         logger.debug("JDBC::openConnection isDriverAvailable: {}", conf.isDriverAvailable());
         if (conf.isDriverAvailable() && !conf.isDbConnected()) {
             logger.info("JDBC::openConnection: Driver is available::Yank setupDataSource");
-            Yank.setupDefaultConnectionPool(conf.getHikariConfiguration());
-            conf.setDbConnected(true);
-            return true;
+            try {
+                Yank.setupDefaultConnectionPool(conf.getHikariConfiguration());
+                conf.setDbConnected(true);
+                return true;
+            } catch (PoolInitializationException e) {
+                if (e.getCause() instanceof SQLInvalidAuthorizationSpecException) {
+                    logger.warn("JDBC::openConnection: failed to open connection: {}", e.getCause().getMessage());
+                } else {
+                    logger.warn("JDBC::openConnection: failed to open connection: {}", e.getMessage());
+                }
+                initialized = false;
+                return false;
+            }
         } else if (!conf.isDriverAvailable()) {
             logger.warn("JDBC::openConnection: no driver available!");
             initialized = false;

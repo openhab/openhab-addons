@@ -45,6 +45,10 @@
 			<channel typeId="targetTemperature" id="targetTemperature"></channel>
 			<channel typeId="fanspeed" id="fanspeed"></channel>
 			<channel typeId="swing" id="swing"></channel>
+			<channel typeId="light" id="light"></channel>
+			<channel typeId="fanLevel" id="fanLevel"></channel>
+			<channel typeId="horizontalSwing" id="horizontalSwing"></channel>
+			<channel typeId="verticalSwing" id="verticalSwing"></channel>
 
 			<channel typeId="overlayExpiry" id="overlayExpiry"></channel>
 			<channel typeId="timerDuration" id="timerDuration"></channel>
@@ -193,6 +197,65 @@
 		<item-type>Switch</item-type>
 		<label>Swing</label>
 		<description>State of AC swing (only if supported by AC)</description>
+	</channel-type>
+
+	<channel-type id="light">
+		<item-type>Switch</item-type>
+		<label>Light</label>
+		<description>State of control panel light (only if supported by AC)</description>
+	</channel-type>
+
+	<channel-type id="fanLevel">
+		<item-type>String</item-type>
+		<label>Fan Speed</label>
+		<description>AC fan level (only if supported by AC)</description>
+		<state readOnly="false">
+			<options>
+				<option value="SILENT">SILENT</option>
+				<option value="LEVEL1">LEVEL1</option>
+				<option value="LEVEL2">LEVEL2</option>
+				<option value="LEVEL3">LEVEL3</option>
+				<option value="LEVEL4">LEVEL4</option>
+				<option value="LEVEL5">LEVEL5</option>
+				<option value="AUTO">AUTO</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="horizontalSwing">
+		<item-type>String</item-type>
+		<label>Horizontal Swing</label>
+		<description>State of AC horizontal swing (only if supported by AC)</description>
+		<state readOnly="false">
+			<options>
+				<option value="AUTO">AUTO</option>
+				<option value="LEFT">LEFT</option>
+				<option value="MID_LEFT">MID-LEFT</option>
+				<option value="MID">MID</option>
+				<option value="MID_RIGHT">MID-RIGHT</option>
+				<option value="RIGHT">RIGHT</option>
+				<option value="ON">ON</option>
+				<option value="OFF">OFF</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="verticalSwing">
+		<item-type>String</item-type>
+		<label>Vertical Swing</label>
+		<description>State of AC vertical swing (only if supported by AC)</description>
+		<state readOnly="false">
+			<options>
+				<option value="AUTO">AUTO</option>
+				<option value="UP">UP</option>
+				<option value="MID_UP">UP</option>
+				<option value="MID">MID</option>
+				<option value="MID_DOWN">MID-DOWN</option>
+				<option value="DOWN">DOWN</option>
+				<option value="ON">ON</option>
+				<option value="OFF">OFF</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="operationMode">

@@ -34,6 +34,7 @@
 				<options>
 					<option value="HUM1">LaCrosse TX3</option>
 					<option value="HUM2">LaCrosse WS2300</option>
+					<option value="HUM3">Inovalley S80 plant humidity sensor</option>
 				</options>
 			</parameter>
 		</config-description>

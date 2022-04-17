@@ -12,7 +12,9 @@ There is exactly one supported thing, which represents a Synop message. It has t
 
 ## Discovery
 
-If a system location is set, the nearest availabble Synop station be automatically discovered for this location.
+If a system location is set, the nearest available Synop station be automatically discovered for this location.
+The search radius will expand at each successive scan.
+
 
 ## Thing Configuration
 
@@ -26,7 +28,7 @@ The weather information that is retrieved is available as these channels:
 
 | Channel Type ID       | Item Type          | Description                                |
 |-----------------------|--------------------|--------------------------------------------|
-| temperature           | Number:Temperature | Current temperature                        |
+| temperature           | Number:Temperature | Current outdoor temperature                |
 | pressure              | Number:Pressure    | Current pressure                           |
 | wind-speed            | Number:Speed       | Current wind speed                         |
 | wind-speed-beaufort   | Number             | Wind speed according to Beaufort scale     |

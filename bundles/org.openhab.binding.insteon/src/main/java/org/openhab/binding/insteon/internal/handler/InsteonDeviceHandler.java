@@ -394,7 +394,15 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 logger.debug("removed {} address = {}", getThing().getUID().getAsString(), address);
             }
 
-            getInsteonNetworkHandler().disposed(getThing().getUID());
+            InsteonNetworkHandler handler = null;
+            try {
+                handler = getInsteonNetworkHandler();
+            } catch (IllegalArgumentException e) {
+            }
+
+            if (handler != null) {
+                handler.disposed(getThing().getUID());
+            }
         }
 
         super.dispose();

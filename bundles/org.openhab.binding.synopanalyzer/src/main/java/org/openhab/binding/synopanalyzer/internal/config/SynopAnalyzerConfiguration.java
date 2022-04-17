@@ -13,11 +13,9 @@
 package org.openhab.binding.synopanalyzer.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.synopanalyzer.internal.handler.SynopAnalyzerHandler;
 
 /**
- * The {@link SynopAnalyzerConfiguration} is responsible for holding configuration
- * informations needed for {@link SynopAnalyzerHandler}
+ * The {@link SynopAnalyzerConfiguration} holds configuration informations needed for the Synop thing
  *
  * @author Gaël L'hopital - Initial contribution
  */

@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.core.library.types.QuantityType;
@@ -29,6 +30,7 @@ import org.openhab.core.types.UnDefType;
  * @author Anton Kharuzhy - Initial contribution
  */
 @SuppressWarnings("ConstantConditions")
+@NonNullByDefault
 public class SensorTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "sensor/0x0000000000000000_sensor_zigbee2mqtt";
 

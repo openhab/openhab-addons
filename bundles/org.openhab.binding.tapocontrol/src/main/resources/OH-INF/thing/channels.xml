@@ -62,6 +62,17 @@
 		</channels>
 	</channel-group-type>
 
+	<!-- Energy Monitor -->
+	<channel-group-type id="energyMonitor">
+		<label>Energy Usage</label>
+		<description>Energy and Power usage</description>
+		<channels>
+			<channel id="actualPower" typeId="actualPowerChannel"></channel>
+			<channel id="todayEnergyUsage" typeId="todayEnergyUsageChannel"></channel>
+			<channel id="todayRuntime" typeId="todayRuntimeChannel"></channel>
+		</channels>
+	</channel-group-type>
+
 	<!-- Lightning Effect -->
 	<channel-group-type id="lightEffect">
 		<label>Lightning Effect</label>
@@ -148,8 +159,36 @@
 	</channel-type>
 
 
+	<!-- DEVICE-STATE CHANNEL TYPES -->
+	<!-- actual power usage -->
+	<channel-type id="actualPowerChannel">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description>Actual power usage</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
 
-	<!-- LightningEffect Channel Type -->
+	<!-- today energy usage -->
+	<channel-type id="todayEnergyUsageChannel">
+		<item-type>Number:Energy</item-type>
+		<label>Today Usage</label>
+		<description>Today energy usage</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
+	<!-- today runtime -->
+	<channel-type id="todayRuntimeChannel">
+		<item-type>Number:Time</item-type>
+		<label>Today Runtime</label>
+		<description>Today runtime (On-Time)</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+
+
+	<!-- LIGHTNING EFFECT CHANNEL TYPES -->
 	<!-- effect on -->
 	<channel-type id="effectOn">
 		<item-type>Switch</item-type>

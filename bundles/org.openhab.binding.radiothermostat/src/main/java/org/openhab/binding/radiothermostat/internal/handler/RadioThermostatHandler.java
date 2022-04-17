@@ -478,7 +478,12 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             case STATUS:
                 return data.getThermostatData().getStatus();
             case FAN_STATUS:
-                return data.getThermostatData().getFanStatus();
+                // workaround for some thermostats that don't report that the fan is on during heating or cooling
+                if (data.getThermostatData().getStatus() > 0) {
+                    return 1;
+                } else {
+                    return data.getThermostatData().getFanStatus();
+                }
             case DAY:
                 return data.getThermostatData().getTime().getDayOfWeek();
             case HOUR:

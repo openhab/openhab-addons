@@ -24,8 +24,6 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.UnsupportedComponentException;
 import org.openhab.core.thing.ThingUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -37,8 +35,6 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ComponentFactory {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ComponentFactory.class);
-
     /**
      * Create a HA MQTT component. The configuration JSon string is required.
      *

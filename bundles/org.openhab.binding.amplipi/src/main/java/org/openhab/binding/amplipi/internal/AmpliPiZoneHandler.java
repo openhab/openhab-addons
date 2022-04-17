@@ -27,6 +27,7 @@ import org.openhab.binding.amplipi.internal.model.Status;
 import org.openhab.binding.amplipi.internal.model.Zone;
 import org.openhab.binding.amplipi.internal.model.ZoneUpdate;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Bridge;
@@ -58,6 +59,8 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
 
     private @Nullable AmpliPiHandler bridgeHandler;
 
+    private @Nullable Zone zoneState;
+
     public AmpliPiZoneHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
@@ -88,6 +91,10 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
         return Integer.valueOf(thing.getConfiguration().get(AmpliPiBindingConstants.CFG_PARAM_ID).toString());
     }
 
+    private int getVolumeDelta(Thing thing) {
+        return Integer.valueOf(thing.getConfiguration().get(AmpliPiBindingConstants.CFG_PARAM_VOLUME_DELTA).toString());
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
@@ -104,6 +111,17 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
             case AmpliPiBindingConstants.CHANNEL_VOLUME:
                 if (command instanceof PercentType) {
                     update.setVol(AmpliPiUtils.percentTypeToVolume((PercentType) command));
+                } else if (command instanceof IncreaseDecreaseType) {
+                    if (zoneState != null) {
+                        if (IncreaseDecreaseType.INCREASE.equals(command)) {
+                            zoneState.setVol(
+                                    Math.min(zoneState.getVol() + getVolumeDelta(thing), AmpliPiUtils.MAX_VOLUME_DB));
+                        } else {
+                            zoneState.setVol(
+                                    Math.max(zoneState.getVol() - getVolumeDelta(thing), AmpliPiUtils.MIN_VOLUME_DB));
+                        }
+                        update.setVol(zoneState.getVol());
+                    }
                 }
                 break;
             case AmpliPiBindingConstants.CHANNEL_SOURCE:
@@ -135,13 +153,18 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
     public void receive(Status status) {
         int id = getId(thing);
         Optional<Zone> zone = status.getZones().stream().filter(z -> z.getId().equals(id)).findFirst();
-        if (zone.isPresent()) {
-            Boolean mute = zone.get().getMute();
-            Integer volume = zone.get().getVol();
-            Integer source = zone.get().getSourceId();
-            updateState(AmpliPiBindingConstants.CHANNEL_MUTE, mute ? OnOffType.ON : OnOffType.OFF);
-            updateState(AmpliPiBindingConstants.CHANNEL_VOLUME, AmpliPiUtils.volumeToPercentType(volume));
-            updateState(AmpliPiBindingConstants.CHANNEL_SOURCE, new DecimalType(source));
-        }
+        zone.ifPresent(this::updateZoneState);
+    }
+
+    private void updateZoneState(Zone state) {
+        this.zoneState = state;
+
+        Boolean mute = zoneState.getMute();
+        Integer vol = zoneState.getVol();
+        Integer sourceId = zoneState.getSourceId();
+
+        updateState(AmpliPiBindingConstants.CHANNEL_MUTE, mute ? OnOffType.ON : OnOffType.OFF);
+        updateState(AmpliPiBindingConstants.CHANNEL_VOLUME, AmpliPiUtils.volumeToPercentType(vol));
+        updateState(AmpliPiBindingConstants.CHANNEL_SOURCE, new DecimalType(sourceId));
     }
 }

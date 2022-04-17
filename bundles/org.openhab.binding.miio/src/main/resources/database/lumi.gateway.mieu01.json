@@ -223,7 +223,7 @@
 				"category": "settings"
 			}
 		],
-		"readmeComment": "Used to control the gateway itself. Controlling child devices currently only possible via rules",
+		"readmeComment": "Used to control the gateway itself. Experimental support for controlling lumi subdevices",
 		"experimental": false
 	}
 }

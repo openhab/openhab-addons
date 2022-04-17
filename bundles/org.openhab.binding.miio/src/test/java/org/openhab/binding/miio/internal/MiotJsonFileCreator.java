@@ -57,7 +57,6 @@ public class MiotJsonFileCreator {
 
     @Disabled
     public static void main(String[] args) {
-
         LinkedHashMap<String, String> checksums = new LinkedHashMap<>();
         LinkedHashSet<String> models = new LinkedHashSet<>();
         if (args.length > 0) {

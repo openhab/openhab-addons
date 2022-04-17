@@ -142,7 +142,7 @@ public class TapoErrorConstants {
     // List of Config-Error-Messages
     public static final String ERR_CONF_IP_MSG = "IP-Address not valid"; // 10001;
     public static final String ERR_CONF_CREDENTIALS_MSG = "credentials not set (bridge)"; // 10002;
-    public static final String ERR_NO_BRIDGE_MSG = "no brigde configured"; // 10003;
+    public static final String ERR_NO_BRIDGE_MSG = "no bridge configured"; // 10003;
 
     /****************************************
      * ErrorTypes

@@ -47,6 +47,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -83,11 +84,21 @@ public class GuntamaticHandler extends BaseThingHandler {
             SIUnits.CELSIUS, NUMBER_TEMPERATURE, ImperialUnits.FAHRENHEIT, NUMBER_TEMPERATURE, SIUnits.CUBIC_METRE,
             NUMBER_VOLUME, Units.DAY, NUMBER_TIME, Units.HOUR, NUMBER_TIME);
 
+    private static final Map<String, String> MAP_COMMAND_PARAM_APPROVAL = Map.of("AUTO", "0", "OFF", "1", "ON", "2");
+    private static final Map<String, String> MAP_COMMAND_PARAM_PROG = Map.of("OFF", "0", "NORMAL", "1", "WARMWATER",
+            "2", "MANUAL", "8");
+    private static final Map<String, String> MAP_COMMAND_PARAM_PROG_WOMANU = Map.of("OFF", "0", "NORMAL", "1",
+            "WARMWATER", "2");
+    private static final Map<String, String> MAP_COMMAND_PARAM_HC = Map.of("OFF", "0", "NORMAL", "1", "HEAT", "2",
+            "LOWER", "3");
+    private static final Map<String, String> MAP_COMMAND_PARAM_WW = Map.of("RECHARGE", "0");
+
     private final Logger logger = LoggerFactory.getLogger(GuntamaticHandler.class);
     private final HttpClient httpClient;
 
     private @Nullable ScheduledFuture<?> pollingFuture = null;
 
+    private List<String> staticChannelIDs;
     private GuntamaticConfiguration config = new GuntamaticConfiguration();
     private Boolean channelsInitialized = false;
     private GuntamaticChannelTypeProvider guntamaticChannelTypeProvider;
@@ -96,10 +107,11 @@ public class GuntamaticHandler extends BaseThingHandler {
     private Map<Integer, Unit<?>> units = new HashMap<>();
 
     public GuntamaticHandler(Thing thing, HttpClient httpClient,
-            GuntamaticChannelTypeProvider guntamaticChannelTypeProvider) {
+            GuntamaticChannelTypeProvider guntamaticChannelTypeProvider, List<String> staticChannelIDs) {
         super(thing);
         this.httpClient = httpClient;
         this.guntamaticChannelTypeProvider = guntamaticChannelTypeProvider;
+        this.staticChannelIDs = staticChannelIDs;
     }
 
     @Override
@@ -107,13 +119,25 @@ public class GuntamaticHandler extends BaseThingHandler {
         if (!(command instanceof RefreshType)) {
             if (!config.key.isBlank()) {
                 String param;
+                Map<String, String> map;
                 String channelID = channelUID.getId();
                 switch (channelID) {
                     case CHANNEL_CONTROLBOILERAPPROVAL:
                         param = getThing().getProperties().get(PARAMETER_BOILERAPPROVAL);
+                        map = MAP_COMMAND_PARAM_APPROVAL;
                         break;
                     case CHANNEL_CONTROLPROGRAM:
                         param = getThing().getProperties().get(PARAMETER_PROGRAM);
+                        ThingTypeUID thingTypeUID = getThing().getThingTypeUID();
+
+                        if (THING_TYPE_BIOSTAR.equals(thingTypeUID) || THING_TYPE_POWERCHIP.equals(thingTypeUID)
+                                || THING_TYPE_POWERCORN.equals(thingTypeUID) || THING_TYPE_BIOCOM.equals(thingTypeUID)
+                                || THING_TYPE_PRO.equals(thingTypeUID) || THING_TYPE_THERM.equals(thingTypeUID)) {
+                            map = MAP_COMMAND_PARAM_PROG;
+                        } else {
+                            map = MAP_COMMAND_PARAM_PROG_WOMANU;
+                        }
+
                         break;
                     case CHANNEL_CONTROLHEATCIRCPROGRAM0:
                     case CHANNEL_CONTROLHEATCIRCPROGRAM1:
@@ -126,23 +150,36 @@ public class GuntamaticHandler extends BaseThingHandler {
                     case CHANNEL_CONTROLHEATCIRCPROGRAM8:
                         param = getThing().getProperties().get(PARAMETER_HEATCIRCPROGRAM).replace("x",
                                 channelID.substring(channelID.length() - 1));
+                        map = MAP_COMMAND_PARAM_HC;
                         break;
                     case CHANNEL_CONTROLWWHEAT0:
                     case CHANNEL_CONTROLWWHEAT1:
                     case CHANNEL_CONTROLWWHEAT2:
                         param = getThing().getProperties().get(PARAMETER_WWHEAT).replace("x",
                                 channelID.substring(channelID.length() - 1));
+                        map = MAP_COMMAND_PARAM_WW;
                         break;
                     case CHANNEL_CONTROLEXTRAWWHEAT0:
                     case CHANNEL_CONTROLEXTRAWWHEAT1:
                     case CHANNEL_CONTROLEXTRAWWHEAT2:
                         param = getThing().getProperties().get(PARAMETER_EXTRAWWHEAT).replace("x",
                                 channelID.substring(channelID.length() - 1));
+                        map = MAP_COMMAND_PARAM_WW;
                         break;
                     default:
                         return;
                 }
-                String response = sendGetRequest(PARSET_URL, "syn=" + param, "value=" + command.toString());
+                String cmd = command.toString().trim();
+                if (map.containsValue(cmd)) {
+                    // cmd = cmd;
+                } else if (map.containsKey(cmd)) {
+                    cmd = map.get(cmd);
+                } else {
+                    logger.warn("Invalid command '{}' for channel '{}' received ", cmd, channelID);
+                    return;
+                }
+
+                String response = sendGetRequest(PARSET_URL, "syn=" + param, "value=" + cmd);
                 if (response != null) {
                     State newState = new StringType(response);
                     updateState(channelID, newState);
@@ -232,7 +269,8 @@ public class GuntamaticHandler extends BaseThingHandler {
         String[] daqdesc = html.split("\\n");
         List<Channel> channelList = new ArrayList<>();
 
-        for (String channelID : CHANNELIDS) {
+        // make sure that static channels are present
+        for (String channelID : staticChannelIDs) {
             Channel channel = thing.getChannel(channelID);
             if (channel == null) {
                 logger.warn("Static Channel '{}' is not present: remove and re-add Thing", channelID);
@@ -241,6 +279,7 @@ public class GuntamaticHandler extends BaseThingHandler {
             }
         }
 
+        // add dynamic channels, based on data provided by Guntamatic Heating System
         for (int i = 0; i < daqdesc.length; i++) {
             String[] param = daqdesc[i].split(";");
             String label = param[0].replace("C02", "CO2");
@@ -401,8 +440,10 @@ public class GuntamaticHandler extends BaseThingHandler {
                         parseAndUpdate(response);
                     } else if (url.equals(DAQDESC_URL)) {
                         parseAndInit(response);
+                    } else {
+                        logger.debug(req);
+                        // PARSET_URL via return
                     }
-                    // PARSET_URL via return
                     return response;
                 } catch (IllegalArgumentException e) {
                     errorReason = String.format("IllegalArgumentException: %s",

@@ -49,7 +49,8 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
         ENERGENIE(8),
         ENERGENIE_5(9),
         COCO(10),
-        HQ_COCO20(11);
+        HQ_COCO20(11),
+        OASE_INSCENIO_FM_N(12);
 
         private final int subType;
 

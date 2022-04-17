@@ -110,6 +110,8 @@
 			<channel id="userrating" typeId="rating">
 				<label>User Rating</label>
 			</channel>
+			<channel id="screensaver" typeId="screensaver"/>
+			<channel id="inputrequested" typeId="inputrequested"/>
 		</channels>
 
 		<properties>
@@ -559,5 +561,17 @@
 		<label>Profile</label>
 		<description>Profile of Kodi</description>
 		<state pattern="%s"/>
+	</channel-type>
+	<channel-type id="screensaver">
+		<item-type>Switch</item-type>
+		<label>Screensaver</label>
+		<description>Status of the screensaver</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="inputrequested">
+		<item-type>Switch</item-type>
+		<label>Input requested</label>
+		<description>Status that shows if Kodi is asking for user input.</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

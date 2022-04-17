@@ -48,7 +48,7 @@ import com.google.gson.JsonParser;
  * @author Christoph Weitkamp - Added support for remote controller and motion sensor devices (read-only battery level)
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TradfriDiscoveryServiceTest {
 
     private static final ThingUID GATEWAY_THING_UID = new ThingUID("tradfri:gateway:1");

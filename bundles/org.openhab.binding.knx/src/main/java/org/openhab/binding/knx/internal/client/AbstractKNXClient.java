@@ -14,6 +14,7 @@ package org.openhab.binding.knx.internal.client;
 
 import java.time.Duration;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
@@ -54,6 +55,8 @@ import tuwien.auto.calimero.process.ProcessCommunicator;
 import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
 import tuwien.auto.calimero.process.ProcessEvent;
 import tuwien.auto.calimero.process.ProcessListener;
+import tuwien.auto.calimero.secure.SecureApplicationLayer;
+import tuwien.auto.calimero.secure.Security;
 
 /**
  * KNX Client which encapsulates the communication with the KNX bus via the calimero libary.
@@ -192,7 +195,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             processCommunicator.addProcessListener(processListener);
             this.processCommunicator = processCommunicator;
 
-            ProcessCommunicationResponder responseCommunicator = new ProcessCommunicationResponder(link, null);
+            ProcessCommunicationResponder responseCommunicator = new ProcessCommunicationResponder(link,
+                    new SecureApplicationLayer(link, Security.defaultInstallation()));
             this.responseCommunicator = responseCommunicator;
 
             link.addLinkListener(this);
@@ -241,7 +245,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         });
     }
 
-    private <T> T nullify(T target, @Nullable Consumer<T> lastWill) {
+    private <T> @Nullable T nullify(T target, @Nullable Consumer<T> lastWill) {
         if (target != null && lastWill != null) {
             lastWill.accept(target);
         }
@@ -288,6 +292,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                 logger.trace("Sending a Group Read Request telegram for {}", datapoint.getDatapoint().getMainAddress());
                 processCommunicator.read(datapoint.getDatapoint());
             } catch (KNXException e) {
+                // Note: KnxException does not cover KnxRuntimeException and subclasses KnxSecureException,
+                // KnxIllegArgumentException
                 if (datapoint.getRetries() < datapoint.getLimit()) {
                     readDatapoints.add(datapoint);
                     logger.debug("Could not read value for datapoint {}: {}. Going to retry.",
@@ -296,9 +302,15 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                     logger.warn("Giving up reading datapoint {}, the number of maximum retries ({}) is reached.",
                             datapoint.getDatapoint().getMainAddress(), datapoint.getLimit());
                 }
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | CancellationException e) {
                 logger.debug("Interrupted sending KNX read request");
                 return;
+            } catch (Exception e) {
+                // Any other exception: Fail gracefully, i.e. notify user and continue reading next DP.
+                // Not catching this would end the scheduled read for all DPs in case of an error.
+                // Severity is warning as this is likely caused by a configuration error.
+                logger.warn("Error reading datapoint {}: {}", datapoint.getDatapoint().getMainAddress(),
+                        e.getMessage());
             }
         }
     }
@@ -389,7 +401,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
     @Override
     public boolean isConnected() {
-        return link != null && link.isOpen();
+        final var tmpLink = link;
+        return tmpLink != null && tmpLink.isOpen();
     }
 
     @Override

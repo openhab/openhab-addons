@@ -66,6 +66,11 @@ public class SensorState {
     public @Nullable Float power;
     /** Batttery sensors provide this value */
     public @Nullable Integer battery;
+    /**
+     * Some battery sensors (especially Tuya driven devices) provide this boolean
+     * instead of battery level
+     */
+    public @Nullable Boolean lowbattery;
     /** Consumption sensors provide this value in Watts/hour. */
     public @Nullable Float consumption;
     /** Power sensors provide this value in Volt. */

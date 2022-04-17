@@ -15,6 +15,7 @@
 		<channel-groups>
 			<channel-group id="actuator" typeId="smartPlug"/>
 			<channel-group id="device" typeId="deviceState"/>
+			<channel-group id="energy" typeId="energyMonitor"/>
 		</channel-groups>
 		<representation-property>macAddress</representation-property>
 

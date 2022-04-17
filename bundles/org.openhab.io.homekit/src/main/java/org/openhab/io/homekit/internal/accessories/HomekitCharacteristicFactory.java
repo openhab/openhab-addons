@@ -15,12 +15,16 @@ package org.openhab.io.homekit.internal.accessories;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import javax.measure.Quantity;
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,13 +39,19 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.io.homekit.Homekit;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitCommandType;
 import org.openhab.io.homekit.internal.HomekitException;
+import org.openhab.io.homekit.internal.HomekitImpl;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +103,7 @@ import io.github.hapjava.characteristics.impl.windowcovering.CurrentVerticalTilt
 import io.github.hapjava.characteristics.impl.windowcovering.HoldPositionCharacteristic;
 import io.github.hapjava.characteristics.impl.windowcovering.TargetHorizontalTiltAngleCharacteristic;
 import io.github.hapjava.characteristics.impl.windowcovering.TargetVerticalTiltAngleCharacteristic;
+import tech.units.indriya.unit.UnitDimension;
 
 /**
  * Creates a optional characteristics .
@@ -170,6 +181,12 @@ public class HomekitCharacteristicFactory {
     // METHODS TO CREATE SINGLE CHARACTERISTIC FROM OH ITEM
 
     // supporting methods
+
+    public static boolean useFahrenheit() {
+        return FrameworkUtil.getBundle(HomekitImpl.class).getBundleContext()
+                .getServiceReference(Homekit.class.getName()).getProperty("useFahrenheitTemperature") == Boolean.TRUE;
+    }
+
     private static <T extends CharacteristicEnum> CompletableFuture<T> getEnumFromItem(HomekitTaggedItem item,
             T offEnum, T onEnum, T defaultEnum) {
         final State state = item.getItem().getState();
@@ -239,6 +256,34 @@ public class HomekitCharacteristicFactory {
         return value;
     }
 
+    private static <T extends Quantity<T>> double convertAndRound(double value, Unit<T> from, Unit<T> to) {
+        double rawValue = from.equals(to) ? value : from.getConverterTo(to).convert(value);
+        return new BigDecimal(rawValue).setScale(1, RoundingMode.HALF_UP).doubleValue();
+    }
+
+    public static @Nullable Double stateAsTemperature(@Nullable State state) {
+        if (state == null || state instanceof UnDefType) {
+            return null;
+        }
+
+        if (state instanceof QuantityType<?>) {
+            final QuantityType<?> qt = (QuantityType<?>) state;
+            if (qt.getDimension().equals(UnitDimension.TEMPERATURE)) {
+                return qt.toUnit(SIUnits.CELSIUS).doubleValue();
+            }
+        }
+
+        return convertToCelsius(state.as(DecimalType.class).doubleValue());
+    }
+
+    public static double convertToCelsius(double degrees) {
+        return convertAndRound(degrees, useFahrenheit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS, SIUnits.CELSIUS);
+    }
+
+    public static double convertFromCelsius(double degrees) {
+        return convertAndRound(degrees, SIUnits.CELSIUS, useFahrenheit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS);
+    }
+
     private static Supplier<CompletableFuture<Integer>> getAngleSupplier(HomekitTaggedItem taggedItem,
             int defaultValue) {
         return () -> CompletableFuture.completedFuture(getAngleFromItem(taggedItem, defaultValue));
@@ -289,15 +334,42 @@ public class HomekitCharacteristicFactory {
     private static Supplier<CompletableFuture<Double>> getDoubleSupplier(HomekitTaggedItem taggedItem,
             double defaultValue) {
         return () -> {
-            final @Nullable DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
-            return CompletableFuture.completedFuture(value != null ? value.doubleValue() : defaultValue);
+            final State state = taggedItem.getItem().getState();
+            double value = defaultValue;
+            if (state instanceof PercentType) {
+                value = ((PercentType) state).doubleValue();
+            } else if (state instanceof DecimalType) {
+                value = ((DecimalType) state).doubleValue();
+            }
+            return CompletableFuture.completedFuture(value);
         };
     }
 
     private static ExceptionalConsumer<Double> setDoubleConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
             if (taggedItem.getItem() instanceof NumberItem) {
-                ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
+                ((NumberItem) taggedItem.getItem()).send(new DecimalType(value.doubleValue()));
+            } else if (taggedItem.getItem() instanceof DimmerItem) {
+                ((DimmerItem) taggedItem.getItem()).send(new PercentType(value.intValue()));
+            } else {
+                logger.warn("Item type {} is not supported for {}. Only Number and Dimmer type are supported.",
+                        taggedItem.getItem().getType(), taggedItem.getName());
+            }
+        };
+    }
+
+    private static Supplier<CompletableFuture<Double>> getTemperatureSupplier(HomekitTaggedItem taggedItem,
+            double defaultValue) {
+        return () -> {
+            final @Nullable Double value = stateAsTemperature(taggedItem.getItem().getState());
+            return CompletableFuture.completedFuture(value != null ? value : defaultValue);
+        };
+    }
+
+    private static ExceptionalConsumer<Double> setTemperatureConsumer(HomekitTaggedItem taggedItem) {
+        return (value) -> {
+            if (taggedItem.getItem() instanceof NumberItem) {
+                ((NumberItem) taggedItem.getItem()).send(new DecimalType(convertFromCelsius(value)));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only Number type is supported.",
                         taggedItem.getItem().getType(), taggedItem.getName());
@@ -585,8 +657,14 @@ public class HomekitCharacteristicFactory {
 
     private static RotationSpeedCharacteristic createRotationSpeedCharacteristic(HomekitTaggedItem item,
             HomekitAccessoryUpdater updater) {
-        return new RotationSpeedCharacteristic(getIntSupplier(item, 0), setPercentConsumer(item),
-                getSubscriber(item, ROTATION_SPEED, updater), getUnsubscriber(item, ROTATION_SPEED, updater));
+        return new RotationSpeedCharacteristic(
+                item.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                        RotationSpeedCharacteristic.DEFAULT_MIN_VALUE),
+                item.getConfigurationAsDouble(HomekitTaggedItem.MAX_VALUE,
+                        RotationSpeedCharacteristic.DEFAULT_MAX_VALUE),
+                item.getConfigurationAsDouble(HomekitTaggedItem.STEP, RotationSpeedCharacteristic.DEFAULT_STEP),
+                getDoubleSupplier(item, 0), setDoubleConsumer(item), getSubscriber(item, ROTATION_SPEED, updater),
+                getUnsubscriber(item, ROTATION_SPEED, updater));
     }
 
     private static SetDurationCharacteristic createDurationCharacteristic(HomekitTaggedItem taggedItem,
@@ -624,33 +702,29 @@ public class HomekitCharacteristicFactory {
 
     private static CoolingThresholdTemperatureCharacteristic createCoolingThresholdCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new CoolingThresholdTemperatureCharacteristic(
-                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
-                        CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE),
-                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MAX_VALUE,
-                        CoolingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE),
+        double minValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
+                HomekitTaggedItem.MIN_VALUE, CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE));
+        double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
+                HomekitTaggedItem.MAX_VALUE, CoolingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE));
+        return new CoolingThresholdTemperatureCharacteristic(minValue, maxValue,
                 taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP,
                         CoolingThresholdTemperatureCharacteristic.DEFAULT_STEP),
-                getDoubleSupplier(taggedItem,
-                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
-                                CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE)),
-                setDoubleConsumer(taggedItem), getSubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater),
+                getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
+                getSubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater));
     }
 
     private static HeatingThresholdTemperatureCharacteristic createHeatingThresholdCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new HeatingThresholdTemperatureCharacteristic(
-                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
-                        HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE),
-                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MAX_VALUE,
-                        HeatingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE),
+        double minValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
+                HomekitTaggedItem.MIN_VALUE, HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE));
+        double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
+                HomekitTaggedItem.MAX_VALUE, HeatingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE));
+        return new HeatingThresholdTemperatureCharacteristic(minValue, maxValue,
                 taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP,
                         HeatingThresholdTemperatureCharacteristic.DEFAULT_STEP),
-                getDoubleSupplier(taggedItem,
-                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
-                                HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE)),
-                setDoubleConsumer(taggedItem), getSubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater),
+                getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
+                getSubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater));
     }
 

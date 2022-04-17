@@ -25,7 +25,7 @@
 			<channel id="shutdown" typeId="shutdown-channel"/>
 			<channel id="awake-state" typeId="awake-state-channel"/>
 		</channels>
-		<representation-property>serial</representation-property>
+		<representation-property>macAddress</representation-property>
 		<config-description>
 			<parameter name="ip" type="text" required="true">
 				<context>network-address</context>

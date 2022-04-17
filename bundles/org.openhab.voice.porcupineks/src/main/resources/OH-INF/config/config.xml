@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="voice:porcupineks">
+		<parameter name="apiKey" type="text" required="true">
+			<label>Pico Voice API Key</label>
+			<description>API key from PicoVoice, required to use Porcupine.</description>
+		</parameter>
+		<parameter name="sensitivity" type="decimal" min="0" max="1">
+			<label>Sensitivity</label>
+			<description>Spot sensitivity, a higher sensitivity reduces miss rate at cost of increased false alarm rate.</description>
+			<default>0.5</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

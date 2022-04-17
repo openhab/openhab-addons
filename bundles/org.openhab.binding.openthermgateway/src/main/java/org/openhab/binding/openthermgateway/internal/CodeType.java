@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link CodeType} field is not part of OpenTherm specification, but added by OpenTherm Gateway.
  * It can be any of the following:
@@ -25,6 +27,7 @@ package org.openhab.binding.openthermgateway.internal;
  * @author Arjen Korevaar - Initial contribution
  * @author James Melville - Introduced code filtering functionality
  */
+@NonNullByDefault
 public enum CodeType {
     /**
      * Message received from the thermostat

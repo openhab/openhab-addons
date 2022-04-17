@@ -60,7 +60,7 @@ public class ButtonDatapointTest extends JavaTest {
     }
 
     @Test
-    public void testLongPress() throws IOException, HomematicClientException {
+    public void testLongPressHm() throws IOException, HomematicClientException {
         HmDatapoint longPressDp = createPressDatapoint("PRESS_LONG", Boolean.TRUE);
         HmDatapoint buttonVirtualDatapoint = getButtonVirtualDatapoint(longPressDp);
 
@@ -68,6 +68,23 @@ public class ButtonDatapointTest extends JavaTest {
         assertThat(buttonVirtualDatapoint.getValue(), is(CommonTriggerEvents.LONG_PRESSED));
 
         HmDatapoint contPressDp = createPressDatapointFrom(longPressDp, "PRESS_CONT", Boolean.TRUE);
+        mockEventReceiver.eventReceived(contPressDp);
+        assertThat(buttonVirtualDatapoint.getValue(), is("LONG_REPEATED"));
+
+        HmDatapoint releaseDp = createPressDatapointFrom(longPressDp, "PRESS_LONG_RELEASE", Boolean.TRUE);
+        mockEventReceiver.eventReceived(releaseDp);
+        assertThat(buttonVirtualDatapoint.getValue(), is("LONG_RELEASED"));
+    }
+
+    @Test
+    public void testLongPressHmIp() throws IOException, HomematicClientException {
+        HmDatapoint longPressDp = createPressDatapoint("PRESS_LONG_START", Boolean.TRUE);
+        HmDatapoint buttonVirtualDatapoint = getButtonVirtualDatapoint(longPressDp);
+
+        mockEventReceiver.eventReceived(longPressDp);
+        assertThat(buttonVirtualDatapoint.getValue(), is(CommonTriggerEvents.LONG_PRESSED));
+
+        HmDatapoint contPressDp = createPressDatapointFrom(longPressDp, "PRESS_LONG", Boolean.TRUE);
         mockEventReceiver.eventReceived(contPressDp);
         assertThat(buttonVirtualDatapoint.getValue(), is("LONG_REPEATED"));
 

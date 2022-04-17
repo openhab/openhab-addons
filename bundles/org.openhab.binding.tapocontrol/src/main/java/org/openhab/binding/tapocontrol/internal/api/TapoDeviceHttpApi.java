@@ -94,6 +94,14 @@ public class TapoDeviceHttpApi {
     }
 
     /**
+     * handle JsonResponse (getEnergyData)
+     * 
+     * @param responseBody String with responseBody from device
+     */
+    protected void handleEnergyResult(String responseBody) {
+    }
+
+    /**
      * handle custom response
      * 
      * @param responseBody String with responseBody from device
@@ -345,6 +353,9 @@ public class TapoDeviceHttpApi {
                                 break;
                             case DEVICE_CMD_GETINFO:
                                 handleDeviceResult(rBody);
+                                break;
+                            case DEVICE_CMD_GETENERGY:
+                                handleEnergyResult(rBody);
                                 break;
                             case DEVICE_CMD_CUSTOM:
                                 handleCustomResponse(rBody);

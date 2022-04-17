@@ -73,6 +73,8 @@ public class TapoThingConstants {
                     .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_SMART_PLUG_UIDS, SUPPORTED_WHITE_BULB_UIDS,
                             SUPPORTED_COLOR_BULB_UIDS, SUPPORTED_LIGHT_STRIP_UIDS)
                     .flatMap(Set::stream).collect(Collectors.toSet()));
+    /*** THINGS WITH ENERGY DATA ***/
+    public static final Set<ThingTypeUID> SUPPORTED_ENERGY_DATA_UIDS = Set.of(P110_THING_TYPE);
 
     /*** THINGS WITH CHANNEL GROUPS ***/
     public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections
@@ -125,6 +127,16 @@ public class TapoThingConstants {
     public static final String PROPERTY_LIGHTNING_EFFECT_ENABLE = "enable";
     public static final String PROPERTY_LIGHTNING_EFFECT_ID = "id";
     public static final String PROPERTY_LIGHTNING_EFFECT_NAME = "name";
+    // energy monitoring
+    public static final String ENERGY_PROPERTY_POWER = "current_power";
+    public static final String ENERGY_PROPERTY_RUNTIME_TODAY = "today_runtime";
+    public static final String ENERGY_PROPERTY_RUNTIME_MONTH = "month_runtime";
+    public static final String ENERGY_PROPERTY_ENERGY_TODAY = "today_energy";
+    public static final String ENERGY_PROPERTY_ENERGY_MONTH = "month_energy";
+    public static final String ENERGY_PROPERTY_PAST24H = "past24h";
+    public static final String ENERGY_PROPERTY_PAST7D = "past7d";
+    public static final String ENERGY_PROPERTY_PAST30D = "past30d";
+    public static final String ENERGY_PROPERTY_PAST1Y = "past1y";
 
     /*** DEVICE SETTINGS ***/
     public static final Integer BULB_MIN_COLORTEMP = 2500;
@@ -143,6 +155,11 @@ public class TapoThingConstants {
     public static final String CHANNEL_ONTIME = "onTime";
     public static final String CHANNEL_OVERHEAT = "overheated";
     public static final String CHANNEL_WIFI_STRENGTH = "wifiSignal";
+    // channel group energy monitor
+    public static final String CHANNEL_GROUP_ENERGY = "energy";
+    public static final String CHANNEL_NRG_POWER = "actualPower";
+    public static final String CHANNEL_NRG_USAGE_TODAY = "todayEnergyUsage";
+    public static final String CHANNEL_NRG_RUNTIME_TODAY = "todayRuntime";
     // channel group effect
     public static final String CHANNEL_GROUP_EFFECTS = "effect";
     public static final String CHANNEL_FX_BRIGHTNESS = "brightness";

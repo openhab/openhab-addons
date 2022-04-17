@@ -31,7 +31,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,8 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
  * @author David Graeff - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@NonNullByDefault
 public class SubscribeFieldToMQTTtopicTests {
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ FIELD })
@@ -64,15 +65,15 @@ public class SubscribeFieldToMQTTtopicTests {
         @SuppressWarnings("unused")
         public final String ignoreFinal = "";
 
-        public @TestValue("string") String aString;
-        public @TestValue("false") Boolean aBoolean;
-        public @TestValue("10") Long aLong;
-        public @TestValue("10") Integer aInteger;
-        public @TestValue("10") BigDecimal aDecimal;
+        public @TestValue("string") @Nullable String aString;
+        public @TestValue("false") @Nullable Boolean aBoolean;
+        public @TestValue("10") @Nullable Long aLong;
+        public @TestValue("10") @Nullable Integer aInteger;
+        public @TestValue("10") @Nullable BigDecimal aDecimal;
 
-        public @TestValue("10") @TopicPrefix("a") int Int = 24;
+        public @TestValue("10") @TopicPrefix("a") int aInt = 24;
         public @TestValue("false") boolean aBool = true;
-        public @TestValue("abc,def") @MQTTvalueTransform(splitCharacter = ",") String[] properties;
+        public @TestValue("abc,def") @MQTTvalueTransform(splitCharacter = ",") String @Nullable [] properties;
 
         public enum ReadyState {
             unknown,
@@ -91,53 +92,44 @@ public class SubscribeFieldToMQTTtopicTests {
         public @TestValue("integer") @MQTTvalueTransform(suffix = "_") DataTypeEnum datatype = DataTypeEnum.unknown;
 
         @Override
-        public @NonNull Object getFieldsOf() {
+        public Object getFieldsOf() {
             return this;
         }
     }
 
     Attributes attributes = new Attributes();
 
-    @Mock
-    MqttBrokerConnection connection;
-
-    @Mock
-    SubscribeFieldToMQTTtopic fieldSubscriber;
-
-    @Mock
-    FieldChanged fieldChanged;
+    private @Mock @NonNullByDefault({}) MqttBrokerConnection connectionMock;
+    private @Mock @NonNullByDefault({}) FieldChanged fieldChangedMock;
 
     @BeforeEach
     public void setUp() {
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).subscribe(any(), any());
+        doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).subscribe(any(), any());
     }
 
     @Test
-    public void TimeoutIfNoMessageReceive()
-            throws InterruptedException, NoSuchFieldException, ExecutionException, TimeoutException {
-        final Field field = Attributes.class.getField("Int");
+    public void timeoutIfNoMessageReceive() throws Exception {
+        final Field field = Attributes.class.getField("aInt");
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 
-        SubscribeFieldToMQTTtopic subscriber = new SubscribeFieldToMQTTtopic(scheduler, field, fieldChanged,
+        SubscribeFieldToMQTTtopic subscriber = new SubscribeFieldToMQTTtopic(scheduler, field, fieldChangedMock,
                 "homie/device123", false);
         assertThrows(TimeoutException.class,
-                () -> subscriber.subscribeAndReceive(connection, 1000).get(50, TimeUnit.MILLISECONDS));
+                () -> subscriber.subscribeAndReceive(connectionMock, 1000).get(50, TimeUnit.MILLISECONDS));
     }
 
     @Test
-    public void MandatoryMissing()
-            throws InterruptedException, NoSuchFieldException, ExecutionException, TimeoutException {
-        final Field field = Attributes.class.getField("Int");
+    public void mandatoryMissing() throws Exception {
+        final Field field = Attributes.class.getField("aInt");
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 
-        SubscribeFieldToMQTTtopic subscriber = new SubscribeFieldToMQTTtopic(scheduler, field, fieldChanged,
+        SubscribeFieldToMQTTtopic subscriber = new SubscribeFieldToMQTTtopic(scheduler, field, fieldChangedMock,
                 "homie/device123", true);
-        assertThrows(ExecutionException.class, () -> subscriber.subscribeAndReceive(connection, 50).get());
+        assertThrows(ExecutionException.class, () -> subscriber.subscribeAndReceive(connectionMock, 50).get());
     }
 
     @Test
-    public void MessageReceive()
-            throws InterruptedException, NoSuchFieldException, ExecutionException, TimeoutException {
+    public void messageReceive() throws Exception {
         final FieldChanged changed = (field, value) -> {
             try {
                 field.set(attributes.getFieldsOf(), value);
@@ -145,17 +137,17 @@ public class SubscribeFieldToMQTTtopicTests {
                 fail(e.getMessage());
             }
         };
-        final Field field = Attributes.class.getField("Int");
+        final Field field = Attributes.class.getField("aInt");
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 
         SubscribeFieldToMQTTtopic subscriber = new SubscribeFieldToMQTTtopic(scheduler, field, changed,
                 "homie/device123", false);
-        CompletableFuture<@Nullable Void> future = subscriber.subscribeAndReceive(connection, 1000);
+        CompletableFuture<@Nullable Void> future = subscriber.subscribeAndReceive(connectionMock, 1000);
 
         // Simulate a received MQTT message
         subscriber.processMessage("ignored", "10".getBytes());
         // No timeout should happen
         future.get(50, TimeUnit.MILLISECONDS);
-        assertThat(attributes.Int, is(10));
+        assertThat(attributes.aInt, is(10));
     }
 }

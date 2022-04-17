@@ -6,11 +6,20 @@ This binding adds support to control Tapo (Copyright © TP-Link Corporation Limi
 
 The following Tapo-Devices are supported
 
-### P100/P105/P110 SmartPlug (WiFi)
+### P100/P105 SmartPlug (WiFi)
 
 * Power On/Off
 * Wi-Fi signal (SignalStrength)
 * On-Time (Time in seconds device is switched on)
+
+### P110 EnergyMonitoring SmartPlug (WiFi)
+
+* Power On/Off
+* Wi-Fi signal (SignalStrength)
+* On-Time (Time in seconds device is switched on)
+* actual PowerUsage (Watt)
+* today EnergyUsage (Wh)
+* today Runtime (Time in seconds device was on today)
 
 ### L510(Series) dimmable SmartBulb (WiFi)
 
@@ -87,6 +96,9 @@ All devices support some of the following channels:
 |           | color            | Color                  | Color                        | L530, L900                                  |
 | device    | wifiSignal       | system.signal-strength | WiFi-quality-level           | P100, P105, P110, L510, L530, L900, L920    |
 |           | onTime           | Number:Time            | seconds output is on         | P100, P105, P110, L510, L530, L900, L920    |
+| energy    | actualPower      | Number:Power           | actual Power (Watt)          | P110                                        |
+|           | todayEnergyUsage | Number:Energy          | used energy today (Wh)       | P110                                        |
+|           | todayRuntime      | Number:Time            | seconds output was on today  | P110                                        |
 
 
 ## Channel Refresh
@@ -100,12 +112,16 @@ To minimize network traffic the default refresh-rate is set to 30 seconds. This 
 ### tapocontrol.things:
 
 ```
-tapocontrol:bridge:myTapoBridge                     "Cloud-Login"               [ username="you@yourpovider.com", password="verysecret" ]
-tapocontrol:P100:myTapoBridge:mySocket              "My-Socket"                 [ ipAddress="192.168.178.150", pollingInterval=30 ]
-tapocontrol:L510:myTapoBridge:whiteBulb      		"white-light"               [ ipAddress="192.168.178.151", pollingInterval=30 ]
-tapocontrol:L530:myTapoBridge:colorBulb      		"color-light"               [ ipAddress="192.168.178.152", pollingInterval=30 ]
-tapocontrol:L900:myTapoBridge:myLightStrip          "light-strip"               [ ipAddress="192.168.178.153", pollingInterval=30 ]
-``` 
+tapocontrol:bridge:myTapoBridge                 "Cloud-Login"               [ username="you@yourpovider.com", password="verysecret" ]
+tapocontrol:P100:myTapoBridge:mySocket          "My-Socket"     (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.150", pollingInterval=30 ]
+tapocontrol:L510:myTapoBridge:whiteBulb         "white-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.151", pollingInterval=30 ]
+tapocontrol:L530:myTapoBridge:colorBulb         "color-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.152", pollingInterval=30 ]
+tapocontrol:L900:myTapoBridge:myLightStrip      "light-strip"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.153", pollingInterval=30 ]
+
+Bridge tapocontrol:bridge:secondBridgeExample            "Cloud-Login"        [ username="youtoo@anyprovider.com", password="verysecret" ] {
+   Thing tapocontrol:P110:secondBridgeExample:mySocket   "My-Socket"          [ ipAddress="192.168.101.51", pollingInterval=30 ]
+}
+```
 
 ### tapocontrol.items:
 

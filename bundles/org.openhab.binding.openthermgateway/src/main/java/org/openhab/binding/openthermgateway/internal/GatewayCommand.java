@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class GatewayCommand {
-    private static final Map<String, @Nullable String> supportedCommands = getSupportedCommands();
+    private static final Map<String, @Nullable String> SUPPORTEDCOMMANDS = getSupportedCommands();
 
     private String code;
     private String validationSet;
@@ -83,19 +83,17 @@ public class GatewayCommand {
         if (code != null && code.length() == 2) {
             String codeUpperCase = code.toUpperCase();
 
-            if (supportedCommands.containsKey(codeUpperCase)) {
-                String validateSet = supportedCommands.get(codeUpperCase);
+            if (SUPPORTEDCOMMANDS.containsKey(codeUpperCase)) {
+                String validateSet = SUPPORTEDCOMMANDS.get(codeUpperCase);
 
                 if (validateSet == null) {
                     validateSet = "";
                 }
 
                 return new GatewayCommand(codeUpperCase, message, validateSet);
-            } else {
-                throw new IllegalArgumentException(String.format("Unsupported gateway code '%s'", code.toUpperCase()));
             }
+            throw new IllegalArgumentException(String.format("Unsupported gateway code '%s'", code.toUpperCase()));
         }
-
         throw new IllegalArgumentException(
                 String.format("Unable to parse gateway command with code '%s' and message '%s'", code, message));
     }
@@ -103,45 +101,45 @@ public class GatewayCommand {
     private static Map<String, @Nullable String> getSupportedCommands() {
         Map<String, @Nullable String> c = new HashMap<>();
 
-        c.put(GatewayCommandCode.TemperatureTemporary, null);
-        c.put(GatewayCommandCode.TemperatureConstant, null);
-        c.put(GatewayCommandCode.TemperatureOutside, null);
-        c.put(GatewayCommandCode.SetClock, null);
-        c.put(GatewayCommandCode.HotWater, null);
-        c.put(GatewayCommandCode.PrintReport, "A,B,C,G,I,L,M,O,P,R,S,T,V,W");
-        c.put(GatewayCommandCode.PrintSummary, "0,1");
-        c.put(GatewayCommandCode.GateWay, "0,1,R");
-        c.put(GatewayCommandCode.LedA, "R,X,T,B,O,F,H,W,C,E,M,P");
-        c.put(GatewayCommandCode.LedB, "R,X,T,B,O,F,H,W,C,E,M,P");
-        c.put(GatewayCommandCode.LedC, "R,X,T,B,O,F,H,W,C,E,M,P");
-        c.put(GatewayCommandCode.LedD, "R,X,T,B,O,F,H,W,C,E,M,P");
-        c.put(GatewayCommandCode.LedE, "R,X,T,B,O,F,H,W,C,E,M,P");
-        c.put(GatewayCommandCode.LedF, "R,X,T,B,O,F,H,W,C,E,M,P");
-        c.put(GatewayCommandCode.GpioA, "0,1,2,3,4,5,6,7");
-        c.put(GatewayCommandCode.GpioB, "0,1,2,3,4,5,6,7");
-        c.put(GatewayCommandCode.SetBack, null);
-        c.put(GatewayCommandCode.TemperatureSensor, "O,R");
-        c.put(GatewayCommandCode.AddAlternative, null);
-        c.put(GatewayCommandCode.DeleteAlternative, null);
-        c.put(GatewayCommandCode.UnknownID, null);
-        c.put(GatewayCommandCode.KnownID, null);
-        c.put(GatewayCommandCode.PriorityMessage, null);
-        c.put(GatewayCommandCode.SetResponse, null);
-        c.put(GatewayCommandCode.ClearResponse, null);
-        c.put(GatewayCommandCode.SetpointHeating, null);
-        c.put(GatewayCommandCode.SetpointWater, null);
-        c.put(GatewayCommandCode.MaximumModulation, null);
-        c.put(GatewayCommandCode.ControlSetpoint, null);
-        c.put(GatewayCommandCode.ControlSetpoint2, null);
-        c.put(GatewayCommandCode.CentralHeating, "0,1");
-        c.put(GatewayCommandCode.CentralHeating2, "0,1");
-        c.put(GatewayCommandCode.VentilationSetpoint, null);
-        c.put(GatewayCommandCode.Reset, null);
-        c.put(GatewayCommandCode.IgnoreTransition, "0,1");
-        c.put(GatewayCommandCode.OverrideHighbyte, "0,1");
-        c.put(GatewayCommandCode.ForceThermostat, "0,1");
-        c.put(GatewayCommandCode.VoltageReference, "0,1,2,3,4,5,6,7,8,9");
-        c.put(GatewayCommandCode.DebugPointer, null);
+        c.put(GatewayCommandCode.TEMPERATURETEMPORARY, null);
+        c.put(GatewayCommandCode.TEMPERATURECONSTANT, null);
+        c.put(GatewayCommandCode.TEMPERATUREOUTSIDE, null);
+        c.put(GatewayCommandCode.SETCLOCK, null);
+        c.put(GatewayCommandCode.HOTWATER, null);
+        c.put(GatewayCommandCode.PRINTREPORT, "A,B,C,G,I,L,M,O,P,R,S,T,V,W");
+        c.put(GatewayCommandCode.PRINTSUMMARY, "0,1");
+        c.put(GatewayCommandCode.GATEWAY, "0,1,R");
+        c.put(GatewayCommandCode.LEDA, "R,X,T,B,O,F,H,W,C,E,M,P");
+        c.put(GatewayCommandCode.LEDB, "R,X,T,B,O,F,H,W,C,E,M,P");
+        c.put(GatewayCommandCode.LEDC, "R,X,T,B,O,F,H,W,C,E,M,P");
+        c.put(GatewayCommandCode.LEDD, "R,X,T,B,O,F,H,W,C,E,M,P");
+        c.put(GatewayCommandCode.LEDE, "R,X,T,B,O,F,H,W,C,E,M,P");
+        c.put(GatewayCommandCode.LEDF, "R,X,T,B,O,F,H,W,C,E,M,P");
+        c.put(GatewayCommandCode.GPIOA, "0,1,2,3,4,5,6,7");
+        c.put(GatewayCommandCode.GPIOB, "0,1,2,3,4,5,6,7");
+        c.put(GatewayCommandCode.SETBACK, null);
+        c.put(GatewayCommandCode.TEMPERATURESENSOR, "O,R");
+        c.put(GatewayCommandCode.ADDALTERNATIVE, null);
+        c.put(GatewayCommandCode.DELETEALTERNATIVE, null);
+        c.put(GatewayCommandCode.UNKNOWNID, null);
+        c.put(GatewayCommandCode.KNOWNID, null);
+        c.put(GatewayCommandCode.PRIORITYMESSAGE, null);
+        c.put(GatewayCommandCode.SETRESPONSE, null);
+        c.put(GatewayCommandCode.CLEARRESPONSE, null);
+        c.put(GatewayCommandCode.SETPOINTHEATING, null);
+        c.put(GatewayCommandCode.SETPOINTWATER, null);
+        c.put(GatewayCommandCode.MAXIMUMMODULATION, null);
+        c.put(GatewayCommandCode.CONTROLSETPOINT, null);
+        c.put(GatewayCommandCode.CONTROLSETPOINT2, null);
+        c.put(GatewayCommandCode.CENTRALHEATING, "0,1");
+        c.put(GatewayCommandCode.CENTRALHEATING2, "0,1");
+        c.put(GatewayCommandCode.VENTILATIONSETPOINT, null);
+        c.put(GatewayCommandCode.RESET, null);
+        c.put(GatewayCommandCode.IGNORETRANSITION, "0,1");
+        c.put(GatewayCommandCode.OVERRIDEHIGHBYTE, "0,1");
+        c.put(GatewayCommandCode.FORCETHERMOSTAT, "0,1");
+        c.put(GatewayCommandCode.VOLTAGEREFERENCE, "0,1,2,3,4,5,6,7,8,9");
+        c.put(GatewayCommandCode.DEBUGPOINTER, null);
 
         return c;
     }

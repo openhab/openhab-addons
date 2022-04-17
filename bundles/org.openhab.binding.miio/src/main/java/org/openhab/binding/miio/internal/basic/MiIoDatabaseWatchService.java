@@ -81,7 +81,7 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
     }
 
     @Override
-    protected Kind<?>[] getWatchEventKinds(@Nullable Path directory) {
+    protected Kind<?> @Nullable [] getWatchEventKinds(@Nullable Path directory) {
         return new Kind<?>[] { ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY };
     }
 
@@ -114,6 +114,9 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
             try {
                 JsonObject deviceMapping = Utils.convertFileToJSON(db);
                 MiIoBasicDevice devdb = GSON.fromJson(deviceMapping, MiIoBasicDevice.class);
+                if (devdb == null) {
+                    continue;
+                }
                 for (String id : devdb.getDevice().getId()) {
                     workingDatabaseList.put(id, db);
                 }

@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.RollershutterValue;
 import org.openhab.core.library.types.PercentType;
@@ -28,6 +29,7 @@ import org.openhab.core.library.types.StopMoveType;
  * @author Anton Kharuzhy - Initial contribution
  */
 @SuppressWarnings("ConstantConditions")
+@NonNullByDefault
 public class CoverTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "cover/0x0000000000000000_cover_zigbee2mqtt";
 
@@ -82,6 +84,7 @@ public class CoverTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/cover/set/state", "STOP_", 2);
     }
 
+    @Override
     protected Set<String> getConfigTopics() {
         return Set.of(CONFIG_TOPIC);
     }
