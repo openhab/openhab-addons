@@ -81,14 +81,14 @@ All prices are available in each of the following channel groups:
 
 ### Bestprice Thing
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| active | Switch | `ON` if the current time is within the bestprice period, `OFF` otherwise. If `consecutive` was set to `false`, this channel may change between `ON` and `OFF` multiple times within the bestprice period. |
-| start  | DateTime | The exact start time of the bestprice range. If `consecutive` was `false`, it is the start time of the first hour found.  |
-| end  | DateTime | The exact end time of the bestprice range. If `consecutive` was `false`, it is the end time of the last hour found.  |
-| countdown  | String | The time until start of the bestprice range in format `HH:MM`. If start time passed. the channel will be set to `UNDEFINED` until the values for the next day are available.   |
-| remaining | String | The time until end of the bestprice range in format `HH:MM`. If start time passed. the channel will be set to `UNDEFINED` until the values for the next day are available. |
-| hours | String | A comma separated list of hours this bestprice period contains. |
+| channel  | type        | description                                                                                                                                                                                              |
+|----------|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| active | Switch      | `ON` if the current time is within the bestprice period, `OFF` otherwise. If `consecutive` was set to `false`, this channel may change between `ON` and `OFF` multiple times within the bestprice period. |
+| start  | DateTime    | The exact start time of the bestprice range. If `consecutive` was `false`, it is the start time of the first hour found.                                                                                 |
+| end  | DateTime    | The exact end time of the bestprice range. If `consecutive` was `false`, it is the end time of the last hour found.                                                                                      |
+| countdown  | Number:Time | The time in minutes until start of the bestprice range. If start time passed. the channel will be set to `UNDEFINED` until the values for the next day are available.                   |
+| remaining | Number:Time | The time in minutes until end of the bestprice range. If start time passed. the channel will be set to `UNDEFINED` until the values for the next day are available.                                      |
+| hours | String      | A comma separated list of hours this bestprice period contains.                                                                                                                                          |
 
 
 
