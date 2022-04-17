@@ -19,7 +19,7 @@ This binding supports the following thing types:
 
 The preferred way of adding Meater probe(s) since the probe IDs are not easily found.
 
-**NOTE**: You need to have your Meater probe(s) connected to the cloud before you start the discovery.
+**NOTE**: You need to have your Meater probe(s) connected to the cloud and the Meater app running before you start the discovery.
 
 After the configuration of the Bridge, your Meater probe(s) will be automatically discovered and placed as a thing(s) in the inbox.
 

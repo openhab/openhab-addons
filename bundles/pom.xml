@@ -828,8 +828,6 @@
 
     <module>org.openhab.voice.watsonstt</module>
         
-    <module>org.openhab.voice.voicerss</module>        
-      
   </modules>
     
   <properties>
