@@ -97,7 +97,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 try {
                     VeluxProduct product = bcp.getProduct();
 
-                    // update vane position channel
+                    // update vane position
                     if (CHANNEL_VANE_POSITION.equals(channelId)) {
                         int vanePosition = VeluxProductPosition.VPP_VELUX_UNKNOWN;
                         int[] functionalParameters = product.getFunctionalParameters();
@@ -115,18 +115,18 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                                 }
                             default:
                         }
-                        if (vanePosition != VeluxProductPosition.VPP_VELUX_UNKNOWN) {
+                        if (vanePosition == VeluxProductPosition.VPP_VELUX_UNKNOWN) {
+                            newState = UnDefType.UNDEF;
+                            LOGGER.trace("handleRefresh(): position of vane is 'UNDEFINED'.");
+                        } else {
                             VeluxProductPosition productVanePosition = new VeluxProductPosition(vanePosition);
                             newState = productVanePosition.getPositionAsPercentType(false);
                             LOGGER.trace("handleRefresh(): position of vane is {}%.", newState);
-                        } else {
-                            newState = UnDefType.UNDEF;
-                            LOGGER.trace("handleRefresh(): position of vane is 'UNDEFINED'.");
                         }
                         break;
                     }
 
-                    // update actuator position resp. state channels
+                    // update actuator position resp. state
                     VeluxProductPosition position = new VeluxProductPosition(product.getDisplayPosition());
                     if (position.isValid()) {
                         if (CHANNEL_ACTUATOR_POSITION.equals(channelId)) {
@@ -212,7 +212,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 break;
             }
 
-            // command the actuator position or state
+            // command the actuator position resp. state
             VeluxProductPosition targetLevel = VeluxProductPosition.UNKNOWN;
             if (CHANNEL_ACTUATOR_POSITION.equals(channelId)) {
                 if (command instanceof UpDownType) {
