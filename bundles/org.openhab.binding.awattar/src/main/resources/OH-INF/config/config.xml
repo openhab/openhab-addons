@@ -34,17 +34,17 @@
 	</config-description>
 
 	<config-description uri="thing-type:awattar:bestprice">
-		<parameter name="rangeStart" type="integer">
+		<parameter name="rangeStart" type="integer" min="0" max="23">
 			<label>Range Start</label>
 			<description>Earliest possible hour of bestprice period.</description>
 			<default>0</default>
 		</parameter>
-		<parameter name="rangeDuration" type="integer">
+		<parameter name="rangeDuration" type="integer" min="1" max="24">
 			<label>Range Duration</label>
 			<description>Duration of bestprice candidate range</description>
 			<default>24</default>
 		</parameter>
-		<parameter name="length" type="integer">
+		<parameter name="length" type="integer" min="1" max="23">
 			<label>Length</label>
 			<description>The number of hours the bestprice period should last</description>
 			<default>1</default>

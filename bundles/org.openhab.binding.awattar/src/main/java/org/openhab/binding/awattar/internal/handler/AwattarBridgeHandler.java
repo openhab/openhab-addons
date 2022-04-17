@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,8 +24,10 @@ import java.time.ZonedDateTime;
 import java.time.zone.ZoneRulesException;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +35,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.awattar.internal.AwattarBridgeConfiguration;
 import org.openhab.binding.awattar.internal.AwattarPrice;
-import org.openhab.binding.awattar.internal.connection.AwattarConnectionException;
 import org.openhab.binding.awattar.internal.dto.AwattarApiData;
 import org.openhab.binding.awattar.internal.dto.Datum;
 import org.openhab.core.thing.Bridge;
@@ -47,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link AwattarBridgeHandler} is responsible for retrieving data from the aWATTar API.
@@ -82,7 +84,6 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
 
     public AwattarBridgeHandler(Bridge thing, HttpClient httpClient) {
         super(thing);
-        logger.trace("Creating AwattarBridgeHandler instance {}", this);
         this.httpClient = httpClient;
         url = URLDE;
         zone = ZoneId.systemDefault();
@@ -90,20 +91,16 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.trace("Initializing aWATTar bridge {}", this);
         updateStatus(ThingStatus.UNKNOWN);
         AwattarBridgeConfiguration config = getConfigAs(AwattarBridgeConfiguration.class);
         vatFactor = 1 + (config.vatPercent / 100);
         basePrice = config.basePrice;
         try {
             zone = ZoneId.of(config.timeZone);
-            logger.trace("Using time zone {}", zone);
         } catch (ZoneRulesException ex) {
-            logger.error("Zone ID not found: {}, {}", zone, ex.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.timezone");
             return;
         } catch (DateTimeException ex) {
-            logger.error("Invalid Timezone format: {}, {}", config.timeZone, ex.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.timezone.format");
             return;
         }
@@ -115,20 +112,17 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
                 url = URLAT;
                 break;
             default:
-                logger.error("Invalid country {}, only DE and AT are supported", config.country);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/error.unsupported.country");
                 return;
         }
 
-        logger.trace("Start Data refresh job at interval {} seconds.", dataRefreshInterval);
         dataRefresher = scheduler.scheduleWithFixedDelay(this::refreshIfNeeded, 0, dataRefreshInterval * 1000,
                 TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void dispose() {
-        logger.trace("Disposing aWATTar bridge {}", this);
         ScheduledFuture<?> localRefresher = dataRefresher;
         if (localRefresher != null) {
             localRefresher.cancel(true);
@@ -139,7 +133,6 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     }
 
     public void refreshIfNeeded() {
-        logger.trace("Refresh if needed called");
         if (needRefresh()) {
             refresh();
         }
@@ -183,20 +176,23 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
                         updateStatus(ThingStatus.ONLINE);
                         lastUpdated = Instant.now().toEpochMilli();
                     } else {
-                        logger.warn("No/Invalid data received from aWATTar Server");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/error.invalid.data");
                     }
                     break;
 
                 default:
-                    logger.warn("aWATTar server responded with status code {}: {}", httpStatus, content);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/warn.awattar.statuscode");
             }
-        } catch (Exception e) {
-            String errorMessage = e.getLocalizedMessage();
-            logger.warn("Exception occurred during execution: {}", errorMessage);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.receiving.prices");
-            throw new AwattarConnectionException(errorMessage, e.getCause());
+        } catch (JsonSyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.json");
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.interrupted");
+        } catch (ExecutionException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.execution");
+        } catch (TimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.timeout");
         }
     }
 
@@ -212,7 +208,6 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     }
 
     private void refresh() {
-        logger.trace("Refreshing aWATTar data ...");
         getPrices();
     }
 
@@ -258,13 +253,11 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     }
 
     public boolean containsPriceFor(long timestamp) {
-        logger.trace("containsPriceFor: ts: {}, min: {}, max: {}", timestamp, minTimestamp, maxTimestamp);
         return minTimestamp <= timestamp && maxTimestamp >= timestamp;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Handling command {} for channel {}", command, channelUID);
         if (command instanceof RefreshType) {
             refresh();
         } else {

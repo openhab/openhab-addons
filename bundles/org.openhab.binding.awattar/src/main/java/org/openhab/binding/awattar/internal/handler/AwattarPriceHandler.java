@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
@@ -68,7 +69,6 @@ public class AwattarPriceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Handling command {} for channel {}", command, channelUID);
         if (command instanceof RefreshType) {
             refreshChannel(channelUID);
         } else {
@@ -83,12 +83,9 @@ public class AwattarPriceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.trace("Initializing aWATTar price handler {}", this);
-
         synchronized (this) {
             ScheduledFuture<?> localRefresher = thingRefresher;
             if (localRefresher == null || localRefresher.isCancelled()) {
-                logger.trace("Start Thing refresh job at interval {} seconds.", thingRefreshInterval);
                 /*
                  * The scheduler is required to run exactly at minute borders, hence we can't use scheduleWithFixedDelay
                  * here
@@ -96,13 +93,11 @@ public class AwattarPriceHandler extends BaseThingHandler {
                 thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels,
                         getMillisToNextMinute(1, timeZoneProvider), thingRefreshInterval * 1000, TimeUnit.MILLISECONDS);
             }
-
         }
         updateStatus(ThingStatus.UNKNOWN);
     }
 
     public void dispose() {
-        logger.trace("Diposing aWATTar price handler {}", this);
         ScheduledFuture<?> localRefresher = thingRefresher;
         if (localRefresher != null) {
             localRefresher.cancel(true);
@@ -111,34 +106,32 @@ public class AwattarPriceHandler extends BaseThingHandler {
     }
 
     public void refreshChannels() {
-        logger.trace("Refreshing channels for {}", getThing().getUID());
         updateStatus(ThingStatus.ONLINE);
         for (Channel channel : getThing().getChannels()) {
             ChannelUID channelUID = channel.getUID();
             if (ChannelKind.STATE.equals(channel.getKind()) && channelUID.isInGroup() && channelUID.getGroupId() != null
                     && isLinked(channelUID)) {
-                logger.trace("Refreshing linked channel {}", channelUID);
                 refreshChannel(channel.getUID());
             }
         }
     }
 
     public void refreshChannel(ChannelUID channelUID) {
-        logger.trace("refreshing channel {}", channelUID);
         State state = UnDefType.UNDEF;
         Bridge bridge = getBridge();
         if (bridge == null) {
-            logger.error("No Bridge available. This should not happen.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridge.missing");
             return;
         }
         AwattarBridgeHandler bridgeHandler = (AwattarBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            logger.error("No BridgeHandler available. This should not happen!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridge.missing");
             return;
         }
         String group = channelUID.getGroupId();
         if (group == null) {
-            logger.error("Group for channel {} is null, this should not happen.", channelUID);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.channelgroup.missing");
             return;
         }
 
@@ -155,7 +148,6 @@ public class AwattarPriceHandler extends BaseThingHandler {
             updateState(channelUID, state);
             return;
         }
-        logger.trace("Got target date: {}", target.toString());
 
         AwattarPrice price = bridgeHandler.getPriceFor(target.toInstant().toEpochMilli());
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,22 +83,11 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.trace("Initializing aWATTar bestprice handler {}", this);
         AwattarBestpriceConfiguration config = getConfigAs(AwattarBestpriceConfiguration.class);
-        logger.trace("Got Config: {}", config.toString());
 
         boolean configValid = true;
 
-        if (config.rangeStart < 0 || config.rangeStart > 23) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.start.value");
-            configValid = false;
-        }
-        if (config.rangeDuration < 1 || config.rangeDuration > 24) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.duration.value");
-            configValid = false;
-        }
-
-        if (config.length < 1 || config.length >= config.rangeDuration) {
+        if (config.length >= config.rangeDuration) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.length.value");
             configValid = false;
         }
@@ -110,7 +99,6 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
         synchronized (this) {
             ScheduledFuture<?> localRefresher = thingRefresher;
             if (localRefresher == null || localRefresher.isCancelled()) {
-                logger.trace("Start Thing refresh job at interval {} seconds.", thingRefreshInterval);
                 /*
                  * The scheduler is required to run exactly at minute borders, hence we can't use scheduleWithFixedDelay
                  * here
@@ -125,7 +113,6 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.trace("Diposing aWATTar price handler {}", this);
         ScheduledFuture<?> localRefresher = thingRefresher;
         if (localRefresher != null) {
             localRefresher.cancel(true);
@@ -134,23 +121,20 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
     }
 
     public void refreshChannels() {
-        logger.trace("Refreshing channels for {}", getThing().getUID());
         updateStatus(ThingStatus.ONLINE);
         for (Channel channel : getThing().getChannels()) {
             ChannelUID channelUID = channel.getUID();
             if (ChannelKind.STATE.equals(channel.getKind()) && isLinked(channelUID)) {
-                logger.trace("Refreshing linked channel {}", channelUID);
                 refreshChannel(channel.getUID());
             }
         }
     }
 
     public void refreshChannel(ChannelUID channelUID) {
-        logger.trace("refreshing channel {}", channelUID);
         State state = UnDefType.UNDEF;
         Bridge bridge = getBridge();
         if (bridge == null) {
-            logger.error("No Bridge available. This should not happen!!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridge.missing");
             updateState(channelUID, state);
             return;
         }
@@ -189,7 +173,6 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
                     (o1, o2) -> Double.compare(o1.getPrice(), o2.getPrice()));
             AwattarNonConsecutiveBestPriceResult res = new AwattarNonConsecutiveBestPriceResult(config.length,
                     bridgeHandler.getTimeZone());
-            logger.trace("Bestprice Candidate range: {}", range);
             int ct = 0;
             for (AwattarPrice price : range) {
                 res.addMember(price);
@@ -199,7 +182,6 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
             }
             result = res;
         }
-        logger.trace("refreshChannel {}: result is: {}", channelUID, result);
         String channelId = channelUID.getIdWithoutGroup();
         long diff;
         switch (channelId) {
@@ -235,7 +217,6 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Handling command {} for channel {}", command, channelUID);
         if (command instanceof RefreshType) {
             refreshChannel(channelUID);
         } else {
@@ -248,34 +229,29 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
         ArrayList<AwattarPrice> result = new ArrayList<>();
         SortedMap<Long, AwattarPrice> priceMap = bridgeHandler.getPriceMap();
         if (priceMap == null) {
-            logger.error("No prices available, returning empty result");
+            logger.debug("No prices available, can't compute ranges");
             return result;
         }
         result.addAll(priceMap.values().stream().filter(x -> x.isBetween(range.start, range.end))
                 .collect(Collectors.toSet()));
         result.sort(comparator);
-        logger.trace("getPriceRange result: {}", result);
         return result;
     }
 
     private Timerange getRange(int start, int duration, ZoneId zoneId) {
-
         ZonedDateTime startCal = getCalendarForHour(start, zoneId);
         ZonedDateTime endCal = startCal.plusHours(duration);
-        logger.trace("getRange(1): startCal: {}, endCal: {} ", startCal.toString(), endCal.toString());
         ZonedDateTime now = ZonedDateTime.now(zoneId);
         if (now.getHour() < start) {
             // we are before the range, so we might be still within the last range
             startCal = startCal.minusDays(1);
             endCal = endCal.minusDays(1);
         }
-        logger.trace("getRange(2): startCal: {}, endCal: {} ", startCal.toString(), endCal.toString());
         if (endCal.toInstant().toEpochMilli() < Instant.now().toEpochMilli()) {
             // span is in the past, add one day
             startCal = startCal.plusDays(1);
             endCal = endCal.plusDays(1);
         }
-        logger.trace("getRange(3): startCal: {}, endCal: {} ", startCal.toString(), endCal.toString());
         return new Timerange(startCal.toInstant().toEpochMilli(), endCal.toInstant().toEpochMilli());
     }
 

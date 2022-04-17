@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,8 +24,6 @@ import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Some utility methods
@@ -35,10 +33,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AwattarUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(AwattarUtil.class);
-
     public static long getMillisToNextMinute(int mod, TimeZoneProvider timeZoneProvider) {
-
         long now = Instant.now().toEpochMilli();
         ZonedDateTime dt = ZonedDateTime.now(timeZoneProvider.getTimeZone()).truncatedTo(ChronoUnit.MINUTES);
         int min = dt.getMinute();
@@ -46,7 +41,6 @@ public class AwattarUtil {
         offset = offset == 0 ? mod : offset;
         dt = dt.plusMinutes(offset);
         long result = dt.toInstant().toEpochMilli() - now;
-        logger.trace("Now: {}, mod: {}, Target Time: {}, difference: {}", now, mod, dt.toString(), result);
 
         return result;
     }
