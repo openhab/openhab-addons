@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import static java.time.temporal.ChronoUnit.SECONDS;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
@@ -44,8 +45,8 @@ public class RefreshCapability extends Capability {
     private final ScheduledExecutorService scheduler;
 
     private Duration dataValidity;
-    private ZonedDateTime dataTimeStamp = ZonedDateTime.now();
-    private @Nullable ZonedDateTime dataTimeStamp0;
+    private Instant dataTimeStamp = Instant.now();
+    private @Nullable Instant dataTimeStamp0;
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
     public RefreshCapability(CommonInterface handler, ScheduledExecutorService scheduler, int refreshInterval) {
@@ -64,7 +65,7 @@ public class RefreshCapability extends Capability {
 
     @Override
     public void expireData() {
-        dataTimeStamp = ZonedDateTime.now().minus(dataValidity);
+        dataTimeStamp = Instant.now().minus(dataValidity);
         freeJobAndReschedule(1);
     }
 
@@ -87,20 +88,21 @@ public class RefreshCapability extends Capability {
     @Override
     protected void updateNAThing(NAThing newData) {
         super.updateNAThing(newData);
-        newData.getLastSeen().ifPresent(timeStamp -> {
+        newData.getLastSeen().ifPresent(timestamp -> {
+            Instant tsInstant = timestamp.toInstant();
             if (probing()) { // we're still probin
-                ZonedDateTime firstTimeStamp = dataTimeStamp0;
+                Instant firstTimeStamp = dataTimeStamp0;
                 if (firstTimeStamp == null) {
-                    dataTimeStamp0 = timeStamp;
+                    dataTimeStamp0 = tsInstant;
                     logger.debug("First data timestamp is {}", dataTimeStamp0);
-                } else if (timeStamp.isAfter(firstTimeStamp)) {
-                    dataValidity = Duration.between(firstTimeStamp, timeStamp);
+                } else if (tsInstant.isAfter(firstTimeStamp)) {
+                    dataValidity = Duration.between(firstTimeStamp, tsInstant);
                     logger.debug("Data validity period identified to be {}", dataValidity);
                 } else {
                     logger.debug("Data validity period not yet found - data timestamp unchanged");
                 }
             }
-            dataTimeStamp = timeStamp;
+            dataTimeStamp = tsInstant;
         });
     }
 

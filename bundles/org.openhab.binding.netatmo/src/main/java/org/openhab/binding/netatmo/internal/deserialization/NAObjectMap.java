@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 
 /**
- * The {@link NAObjectMap} defines an hashmap of NAObjects identified by their id.
+ * The {@link NAObjectMap} defines a hashmap of NAObjects identified by their id.
  *
  * @author Gaël L'hopital - Initial contribution
  */

@@ -20,11 +20,11 @@
 			<channel id="max-today" typeId="max-temp"/>
 			<channel id="min-time" typeId="timestamp-advanced">
 				<label>Today Min Timestamp</label>
-				<description>Moment when temperature was measured at his minimum today.</description>
+				<description>Moment when temperature was measured at its minimum today.</description>
 			</channel>
 			<channel id="max-time" typeId="timestamp-advanced">
 				<label>Today Max Timestamp</label>
-				<description>Moment when temperature was measured at his maximum today.</description>
+				<description>Moment when temperature was measured at its maximum today.</description>
 			</channel>
 			<channel id="heat-index" typeId="heat-index"/>
 			<channel id="dewpoint" typeId="dewpoint"/>

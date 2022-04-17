@@ -41,7 +41,6 @@ public class EnergyApi extends RestManager {
      * @param homeId The id of home (required)
      * @param scheduleId The schedule id. It can be found in the getthermstate response, under the keys
      *            therm_program_backup and therm_program. (required)
-     * @return boolean success
      * @throws NetatmoException If fail to call the API, e.g. server error or cannot deserialize the
      *             response body
      */
@@ -61,7 +60,6 @@ public class EnergyApi extends RestManager {
      *
      * @param homeId The id of home (required)
      * @param mode The mode. (required)
-     * @return boolean success
      * @throws NetatmoCommunicationException when call failed, e.g. server error or cannot deserialize
      */
     public void setThermMode(String homeId, String mode) throws NetatmoException {
@@ -78,7 +76,6 @@ public class EnergyApi extends RestManager {
      * @param mode The mode. (required)
      * @param endtime For manual or max setpoint_mode, defines when the setpoint expires.
      * @param temp For manual setpoint_mode, defines the temperature setpoint (in °C)
-     * @return ApiResponse.Ok
      * @throws NetatmoCommunicationException when call failed, e.g. server error or cannot deserialize
      */
     public void setThermpoint(String homeId, String roomId, SetpointMode mode, long endtime, double temp)

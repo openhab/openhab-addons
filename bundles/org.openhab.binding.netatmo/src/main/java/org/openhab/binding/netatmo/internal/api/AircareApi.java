@@ -39,7 +39,7 @@ public class AircareApi extends RestManager {
      * Returns data from Healthy Home Coach Station (measures and device specific data).
      *
      * @param deviceId Id of the device you want to retrieve information of (optional)
-     * @return NAStationDataResponse
+     * @return StationDataResponse
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
     public StationDataResponse getHomeCoachData(@Nullable String deviceId) throws NetatmoException {

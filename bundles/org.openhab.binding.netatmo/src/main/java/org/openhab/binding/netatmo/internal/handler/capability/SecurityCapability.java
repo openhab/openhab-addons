@@ -100,7 +100,6 @@ class SecurityCapability extends RestCapability<SecurityApi> {
 
     Collection<HomeEvent> getCameraEvents(String cameraId) {
         return api.map(api -> {
-
             try {
                 return api.getCameraEvents(handler.getId(), cameraId);
             } catch (NetatmoException | NoSuchElementException e) {

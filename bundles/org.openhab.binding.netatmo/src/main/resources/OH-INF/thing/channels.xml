@@ -277,7 +277,7 @@
 	<channel-type id="humidex" advanced="true">
 		<item-type>Number</item-type>
 		<label>Humidex</label>
-		<description>Computed Humidex : felt temperature.</description>
+		<description>Computed Humidex: felt temperature.</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
@@ -401,10 +401,6 @@
 		<label>Heat Index</label>
 		<description>Apparent computed temperature (based on temperature and humidity).</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -413,10 +409,6 @@
 		<label>Dewpoint</label>
 		<description>Temperature to which air must be cooled to become saturated with water vapor.</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -456,9 +448,6 @@
 		<label>Gust Angle</label>
 		<description>Direction of the last 5 minutes highest gust wind</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-		</tags>
 		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 

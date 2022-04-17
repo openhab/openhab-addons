@@ -17,7 +17,7 @@ import java.util.List;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 
 /**
- * This is the Access Token Response, a simple value-object that holds the result of an Access Token Request, as
+ * This is the Access Token Response, a simple value-object holding the result of an Access Token Request, as
  * provided by Netatmo API.
  *
  * @author Gaël L'hopital - Initial contribution
@@ -66,7 +66,7 @@ public final class AccessTokenResponse {
 
     @Override
     public String toString() {
-        return "NAAccessTokenResponse [accessToken=" + accessToken + ", expiresIn=" + expiresIn + ", refreshToken="
+        return "AccessTokenResponse [accessToken=" + accessToken + ", expiresIn=" + expiresIn + ", refreshToken="
                 + refreshToken + ", scope=" + scope + "]";
     }
 }

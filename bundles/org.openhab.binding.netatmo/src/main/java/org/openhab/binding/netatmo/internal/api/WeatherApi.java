@@ -51,7 +51,7 @@ public class WeatherApi extends RestManager {
      * @param deviceId Id of the device you want to retrieve information of (optional)
      * @param getFavorites Whether to include the user's favorite Weather Stations in addition to the user's
      *            own Weather Stations (optional, default to false)
-     * @return NAStationDataResponse
+     * @return StationDataResponse
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
     public StationDataResponse getStationsData(@Nullable String deviceId, boolean getFavorites)

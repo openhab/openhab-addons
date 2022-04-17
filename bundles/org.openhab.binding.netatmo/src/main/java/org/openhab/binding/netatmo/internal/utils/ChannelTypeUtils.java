@@ -68,7 +68,7 @@ public class ChannelTypeUtils {
     }
 
     public static State toDateTimeType(Optional<ZonedDateTime> zonedDateTime) {
-        return zonedDateTime.isPresent() ? new DateTimeType(zonedDateTime.get()) : UnDefType.NULL;
+        return zonedDateTime.map(zdt -> (State) new DateTimeType(zdt)).orElse(UnDefType.NULL);
     }
 
     public static State toQuantityType(@Nullable Double value, @Nullable MeasureClass measureClass) {
