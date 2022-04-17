@@ -399,7 +399,7 @@ Number          valve_remaining_duration "Valve remaining duration" (gValve)    
 - valve without timer (no item for remaining duration required)
 
 ```xtend
-Group           gValve             "Valve Group"                             {homekit="Valve"  [homekitValveType="Irrigation", homekitTimer="true]}
+Group           gValve             "Valve Group"                             {homekit="Valve"  [homekitValveType="Irrigation", homekitTimer="true"]}
 Switch          valve_active       "Valve active"               (gValve)     {homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
 Number          valve_duration     "Valve duration"             (gValve)     {homekit = "Valve.Duration" [homekitDefaultDuration = 1800]}
 ```
