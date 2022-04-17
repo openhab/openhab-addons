@@ -358,8 +358,8 @@ then
     // example: 'La Touché' becomes 'La Touche' and 'Nöel' becomes 'Noel'
     var trackName = Normalizer::normalize(Item_Containing_TrackName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
 
-    nuvo_s3_display_line4.sendCommand(trackName)
-    nuvo_s3_display_line1.sendCommand("")
+    sendCommand(nuvo_s3_display_line4, trackName)
+    sendCommand(nuvo_s3_display_line1, "")
     
 end
 
@@ -370,7 +370,7 @@ then
     // fix extended ASCII chars
     var albumName = Normalizer::normalize(Item_Containing_AlbumName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
 
-    nuvo_s3_display_line2.sendCommand(albumName)
+    sendCommand(nuvo_s3_display_line2, albumName)
 end
 
 rule "Load artist name for Source 3"
@@ -380,7 +380,7 @@ then
     // fix extended ASCII chars
     var artistName = Normalizer::normalize(Item_Containing_ArtistName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
 
-    nuvo_s3_display_line3.sendCommand(artistName)
+    sendCommand(nuvo_s3_display_line3, artistName)
 end
 
 // In this rule we have three items: Item_Containing_PlayMode, Item_Containing_TrackLength & Item_Containing_TrackPosition
@@ -486,7 +486,7 @@ when
 then
     sendCommand(nuvo_system_sendcmd, source + "DISPLINES0,0,0,\"Hello World\",\"Welcome to openHAB!\",\"Example Text\",\"Displayed On Keypad\"")
     sendCommand(nuvo_system_sendcmd, source + "DISPINFOTWO0,0,1,albumartid,2,1,0")
-    nuvo_s6_art_url.sendCommand("https://icon-library.com/images/sample-icon/sample-icon-22.jpg")
+    sendCommand(nuvo_s6_art_url, "https://icon-library.com/images/sample-icon/sample-icon-22.jpg")
 end
 
 rule "Music Source nuvo button press"
@@ -498,31 +498,31 @@ then
     // If a favorite is selected it will be prepended for easier identification from other buttons
     // ie: 'PLAY_MUSIC_PRESET:Rock'
     if (button.startsWith("PLAY_MUSIC_PRESET:")) {
-        music_Music_PlayFavorite.sendCommand(button.replace("PLAY_MUSIC_PRESET:", ""))
+        sendCommand(music_Music_PlayFavorite, button.replace("PLAY_MUSIC_PRESET:", ""))
     } else {
         // these proxy the Nuvo button presses to the appropriate Music Source button press
         switch button {
             case "PLAYPAUSE": {
-                music_Music_Control.sendCommand(PAUSE)
+                sendCommand(music_Music_Control, PAUSE)
             }
             case "NEXT": {
-                music_Music_Control.sendCommand(NEXT)
+                sendCommand(music_Music_Control, NEXT)
             }
             case "PREV": {
-                music_Music_Control.sendCommand(PREVIOUS)
+                sendCommand(music_Music_Control, PREVIOUS)
             }
             case "SHUFFLETOGGLE": {
-                if (music_Music_Random.state.toString() == "ON") {
-                    music_Music_Random.sendCommand(OFF)
+                if (music_Music_Random.state == ON) {
+                    sendCommand(music_Music_Random, OFF)
                 } else {
-                    music_Music_Random.sendCommand(ON)
+                    sendCommand(music_Music_Random, ON)
                 }
             }
             case "REPEATTOGGLE": {
-                if (music_Music_Repeat.state.toString() == "ON") {
-                    music_Music_Repeat.sendCommand(OFF)
+                if (music_Music_Repeat.state == ON) {
+                    sendCommand(music_Music_Repeat, OFF)
                 } else {
-                    music_Music_Repeat.sendCommand(ON)
+                    sendCommand(music_Music_Repeat, ON)
                 }
             }
             // Handle menu item selections
@@ -547,7 +547,7 @@ then
     // the binding automatically downloads the JPG and converts it to a format that can be displayed on the CTP-36
     // smaller images will yield better performance when the binding resizes the image to 80 x 80 pixels
     // note that the CTP-36 keypad may crash/reboot if it receives an invalid image
-    nuvo_s6_art_url.sendCommand(music_Detail_CoverUrl.state.toString)
+    sendCommand(nuvo_s6_art_url, music_Detail_CoverUrl.state.toString)
 end
 
 // if album, artist and track names are maintained in different items, these three rules are necessary
@@ -594,21 +594,21 @@ then
     // the keypad counts up the time on its own after a DISPINFOTWO message is received 
     var int trackPosition = Integer::parseInt(music_Music_TrackPosition.state.toString.replaceAll("[\\D]", "")) * 10
     var playState = music_Music_PlayMode.state.toString()
-    var randomMode = music_Music_Random.state.toString()
-    var repeatMode = music_Music_Repeat.state.toString()
+    var randomMode = music_Music_Random.state
+    var repeatMode = music_Music_Repeat.state
 
     // the source status mask tells the keypad the button states to display
     // sourcestatus masks for play and pause when random and repeat are both off
     var playMask = "2"
     var pauseMask = "4"
 
-    if (randomMode == "ON" && repeatMode == "OFF") {
+    if (randomMode == ON && repeatMode == OFF) {
        playMask = "34"
        pauseMask = "36"
-    } else if (randomMode == "OFF" && repeatMode == "ON") {
+    } else if (randomMode == OFF && repeatMode == ON) {
        playMask = "66"
        pauseMask = "68"
-    } else if (randomMode == "ON" && repeatMode == "ON") {
+    } else if (randomMode == ON && repeatMode == ON) {
        playMask = "98"
        pauseMask = "100"
     }

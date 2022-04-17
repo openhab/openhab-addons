@@ -241,17 +241,17 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 nuvoNetSrcMap.put("6", config.nuvoNetSrc6);
 
                 favoriteMap.put("1",
-                        !BLANK.equals(config.favoritesSrc1) ? config.favoritesSrc1.split(COMMA) : new String[0]);
+                        !config.favoritesSrc1.isEmpty() ? config.favoritesSrc1.split(COMMA) : new String[0]);
                 favoriteMap.put("2",
-                        !BLANK.equals(config.favoritesSrc2) ? config.favoritesSrc2.split(COMMA) : new String[0]);
+                        !config.favoritesSrc2.isEmpty() ? config.favoritesSrc2.split(COMMA) : new String[0]);
                 favoriteMap.put("3",
-                        !BLANK.equals(config.favoritesSrc3) ? config.favoritesSrc3.split(COMMA) : new String[0]);
+                        !config.favoritesSrc3.isEmpty() ? config.favoritesSrc3.split(COMMA) : new String[0]);
                 favoriteMap.put("4",
-                        !BLANK.equals(config.favoritesSrc4) ? config.favoritesSrc4.split(COMMA) : new String[0]);
+                        !config.favoritesSrc4.isEmpty() ? config.favoritesSrc4.split(COMMA) : new String[0]);
                 favoriteMap.put("5",
-                        !BLANK.equals(config.favoritesSrc5) ? config.favoritesSrc5.split(COMMA) : new String[0]);
+                        !config.favoritesSrc5.isEmpty() ? config.favoritesSrc5.split(COMMA) : new String[0]);
                 favoriteMap.put("6",
-                        !BLANK.equals(config.favoritesSrc6) ? config.favoritesSrc6.split(COMMA) : new String[0]);
+                        !config.favoritesSrc6.isEmpty() ? config.favoritesSrc6.split(COMMA) : new String[0]);
 
                 favPrefixMap.put("1", config.favPrefix1);
                 favPrefixMap.put("2", config.favPrefix2);
@@ -880,32 +880,32 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private void loadMenuConfiguration(NuvoThingConfiguration config) {
         StringBuilder menuXml = new StringBuilder("<menu>");
 
-        if (!BLANK.equals(config.menuXmlSrc1)) {
+        if (!config.menuXmlSrc1.isEmpty()) {
             menuXml.append("<source>" + config.menuXmlSrc1 + "</source>");
         } else {
             menuXml.append("<source/>");
         }
-        if (!BLANK.equals(config.menuXmlSrc2)) {
+        if (!config.menuXmlSrc2.isEmpty()) {
             menuXml.append("<source>" + config.menuXmlSrc2 + "</source>");
         } else {
             menuXml.append("<source/>");
         }
-        if (!BLANK.equals(config.menuXmlSrc3)) {
+        if (!config.menuXmlSrc3.isEmpty()) {
             menuXml.append("<source>" + config.menuXmlSrc3 + "</source>");
         } else {
             menuXml.append("<source/>");
         }
-        if (!BLANK.equals(config.menuXmlSrc4)) {
+        if (!config.menuXmlSrc4.isEmpty()) {
             menuXml.append("<source>" + config.menuXmlSrc4 + "</source>");
         } else {
             menuXml.append("<source/>");
         }
-        if (!BLANK.equals(config.menuXmlSrc5)) {
+        if (!config.menuXmlSrc5.isEmpty()) {
             menuXml.append("<source>" + config.menuXmlSrc5 + "</source>");
         } else {
             menuXml.append("<source/>");
         }
-        if (!BLANK.equals(config.menuXmlSrc6)) {
+        if (!config.menuXmlSrc6.isEmpty()) {
             menuXml.append("<source>" + config.menuXmlSrc6 + "</source>");
         } else {
             menuXml.append("<source/>");
@@ -980,16 +980,19 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     }
 
                     String[] favorites = favoriteMap.get(srcNum);
-                    connector.sendCommand(S + srcNum + "FAVORITES" + (favorites.length < 20 ? favorites.length : 20)
-                            + COMMA + ("1".equals(srcNum) ? ONE : ZERO) + COMMA + ("2".equals(srcNum) ? ONE : ZERO)
-                            + COMMA + ("3".equals(srcNum) ? ONE : ZERO) + COMMA + ("4".equals(srcNum) ? ONE : ZERO)
-                            + COMMA + ("5".equals(srcNum) ? ONE : ZERO) + COMMA + ("6".equals(srcNum) ? ONE : ZERO));
-                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-
-                    for (int i = 0; i < (favorites.length < 20 ? favorites.length : 20); i++) {
-                        connector.sendCommand(S + srcNum + "FAVORITESITEM" + (i + 1000) + ",0,0,\""
-                                + favPrefixMap.get(srcNum) + favorites[i] + "\"");
+                    if (favorites != null) {
+                        connector.sendCommand(S + srcNum + "FAVORITES" + (favorites.length < 20 ? favorites.length : 20)
+                                + COMMA + ("1".equals(srcNum) ? ONE : ZERO) + COMMA + ("2".equals(srcNum) ? ONE : ZERO)
+                                + COMMA + ("3".equals(srcNum) ? ONE : ZERO) + COMMA + ("4".equals(srcNum) ? ONE : ZERO)
+                                + COMMA + ("5".equals(srcNum) ? ONE : ZERO) + COMMA
+                                + ("6".equals(srcNum) ? ONE : ZERO));
                         Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+
+                        for (int i = 0; i < (favorites.length < 20 ? favorites.length : 20); i++) {
+                            connector.sendCommand(S + srcNum + "FAVORITESITEM" + (i + 1000) + ",0,0,\""
+                                    + favPrefixMap.get(srcNum) + favorites[i] + "\"");
+                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                        }
                     }
 
                     if (showReady) {
