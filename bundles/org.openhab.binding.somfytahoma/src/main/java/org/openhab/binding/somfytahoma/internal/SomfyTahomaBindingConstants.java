@@ -321,6 +321,9 @@ public class SomfyTahomaBindingConstants {
     public static final String YUTAKI_TARGET_MODE = "yutaki_target_mode";
     public static final String YUTAKI_MODE = "yutaki_mode";
     public static final String HOLIDAY_MODE = "holiday_mode";
+    public static final String THERMOSTAT_SETTING_ZONE1 = "thermostat_setting_zone1";
+    public static final String WH_SETTING_TEMP_ZONE1 = "wh_setting_temp_zone1";
+    public static final String ROOM_AMBIENT_TEMP_ZONE1 = "room_ambient_temp_zone1";
 
     // Hitachi Air To Water Main Component
     public static final String AUTO_MANU_MODE = "auto_manu_mode";
