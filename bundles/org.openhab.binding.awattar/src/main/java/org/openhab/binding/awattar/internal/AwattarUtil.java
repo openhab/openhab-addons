@@ -17,9 +17,13 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,14 +33,14 @@ import org.slf4j.LoggerFactory;
  * @author Wolfgang Klimt - initial contribution
  */
 @NonNullByDefault
-public class aWATTarUtil {
+public class AwattarUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(aWATTarUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(AwattarUtil.class);
 
-    public static long getMillisToNextMinute(int mod) {
+    public static long getMillisToNextMinute(int mod, TimeZoneProvider timeZoneProvider) {
 
         long now = Instant.now().toEpochMilli();
-        ZonedDateTime dt = ZonedDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        ZonedDateTime dt = ZonedDateTime.now(timeZoneProvider.getTimeZone()).truncatedTo(ChronoUnit.MINUTES);
         int min = dt.getMinute();
         int offset = min % mod;
         offset = offset == 0 ? mod : offset;
@@ -55,10 +59,9 @@ public class aWATTarUtil {
         return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), tz.getTimeZone()));
     }
 
-    public static String getDuration(long millis) {
-        long hours = millis / 3600000;
-        long minutes = (millis % 3600000) / 60000;
-        return String.format("%02d:%02d", hours, minutes);
+    public static QuantityType<Time> getDuration(long millis) {
+        long minutes = millis / 60000;
+        return QuantityType.valueOf(minutes, Units.MINUTE);
     }
 
     public static String formatDate(long date, ZoneId zoneId) {

@@ -9,7 +9,7 @@ There are three supported things.
 
 ### aWATTar Bridge
 
-The `awattar-bridge` reads price data from the aWATTar API and stores the (optional) config values for VAT and energy base price.
+The `bridge` reads price data from the aWATTar API and stores the (optional) config values for VAT and energy base price.
 
 ### Prices Thing
 
@@ -100,7 +100,7 @@ All prices are available in each of the following channel groups:
 awattar.things:
 
 ```
-Bridge awattar:awattar-bridge:bridge1 "aWATTar Bridge" [ country="DE", vatPercent="19", basePrice="17.22"] {
+Bridge awattar:bridge:bridge1 "aWATTar Bridge" [ country="DE", vatPercent="19", basePrice="17.22"] {
 	Thing prices price1 "aWATTar Price" [] 
 // The car should be loaded for 4 hours during the night
 	Thing bestprice carloader "Car Loader" [ rangeStart="22", rangeDuration="8", length="4", consecutive="true" ]

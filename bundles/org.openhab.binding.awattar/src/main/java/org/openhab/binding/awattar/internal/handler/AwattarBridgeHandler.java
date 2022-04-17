@@ -14,8 +14,7 @@ package org.openhab.binding.awattar.internal.handler;
 
 import static org.eclipse.jetty.http.HttpMethod.GET;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.BINDING_ID;
-import static org.openhab.binding.awattar.internal.aWATTarUtil.*;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.BINDING_ID;
 
 import java.time.DateTimeException;
 import java.time.Instant;
@@ -32,9 +31,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.openhab.binding.awattar.internal.aWATTarBridgeConfiguration;
-import org.openhab.binding.awattar.internal.aWATTarPrice;
-import org.openhab.binding.awattar.internal.connection.aWATTarConnectionException;
+import org.openhab.binding.awattar.internal.AwattarBridgeConfiguration;
+import org.openhab.binding.awattar.internal.AwattarPrice;
+import org.openhab.binding.awattar.internal.connection.AwattarConnectionException;
 import org.openhab.binding.awattar.internal.dto.AwattarApiData;
 import org.openhab.binding.awattar.internal.dto.Datum;
 import org.openhab.core.thing.Bridge;
@@ -50,7 +49,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * The {@link aWATTarBridgeHandler} is responsible for retrieving data from the aWATTar API.
+ * The {@link AwattarBridgeHandler} is responsible for retrieving data from the aWATTar API.
  *
  * The API provides hourly prices for the current day and, starting from 14:00, hourly prices for the next day.
  * Check the documentation at https://www.awattar.de/services/api
@@ -60,19 +59,19 @@ import com.google.gson.Gson;
  * @author Wolfgang Klimt - Initial contribution
  */
 @NonNullByDefault
-public class aWATTarBridgeHandler extends BaseBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(aWATTarBridgeHandler.class);
+public class AwattarBridgeHandler extends BaseBridgeHandler {
+    private final Logger logger = LoggerFactory.getLogger(AwattarBridgeHandler.class);
     private final HttpClient httpClient;
     @Nullable
     private ScheduledFuture<?> dataRefresher;
 
-    private final String URL_DE = "https://api.awattar.de/v1/marketdata";
-    private final String URL_AT = "https://api.awattar.at/v1/marketdata";
-    private String URL;
+    private static final String URLDE = "https://api.awattar.de/v1/marketdata";
+    private static final String URLAT = "https://api.awattar.at/v1/marketdata";
+    private String url;
 
     // This cache stores price data for up to two days
     @Nullable
-    private SortedMap<Long, aWATTarPrice> priceMap;
+    private SortedMap<Long, AwattarPrice> priceMap;
     private final int dataRefreshInterval = 60;
     private double vatFactor = 0;
     private long lastUpdated = 0;
@@ -81,11 +80,11 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
     private long maxTimestamp = 0;
     private ZoneId zone;
 
-    public aWATTarBridgeHandler(Bridge thing, HttpClient httpClient) {
+    public AwattarBridgeHandler(Bridge thing, HttpClient httpClient) {
         super(thing);
-        logger.trace("Creating aWATTarBridgeHandler instance {}", this);
+        logger.trace("Creating AwattarBridgeHandler instance {}", this);
         this.httpClient = httpClient;
-        URL = URL_DE;
+        url = URLDE;
         zone = ZoneId.systemDefault();
     }
 
@@ -93,7 +92,7 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.trace("Initializing aWATTar bridge {}", this);
         updateStatus(ThingStatus.UNKNOWN);
-        aWATTarBridgeConfiguration config = getConfigAs(aWATTarBridgeConfiguration.class);
+        AwattarBridgeConfiguration config = getConfigAs(AwattarBridgeConfiguration.class);
         vatFactor = 1 + (config.vatPercent / 100);
         basePrice = config.basePrice;
         try {
@@ -110,10 +109,10 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
         }
         switch (config.country) {
             case "DE":
-                URL = URL_DE;
+                url = URLDE;
                 break;
             case "AT":
-                URL = URL_AT;
+                url = URLAT;
                 break;
             default:
                 logger.error("Invalid country {}, only DE and AT are supported", config.country);
@@ -123,8 +122,8 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
         }
 
         logger.trace("Start Data refresh job at interval {} seconds.", dataRefreshInterval);
-        dataRefresher = scheduler.scheduleAtFixedRate(this::refreshIfNeeded,
-                getMillisToNextMinute(dataRefreshInterval / 60), dataRefreshInterval * 1000, TimeUnit.MILLISECONDS);
+        dataRefresher = scheduler.scheduleWithFixedDelay(this::refreshIfNeeded, 0, dataRefreshInterval * 1000,
+                TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -156,7 +155,7 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
             zdt = zdt.plusDays(3);
             long end = zdt.toInstant().toEpochMilli();
 
-            StringBuilder request = new StringBuilder(URL);
+            StringBuilder request = new StringBuilder(url);
             request.append("?start=").append(start).append("&end=").append(end);
 
             logger.trace("aWATTar API request: = '{}'", request);
@@ -169,14 +168,14 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
             switch (httpStatus) {
                 case OK_200:
                     Gson gson = new Gson();
-                    SortedMap<Long, aWATTarPrice> result = new TreeMap<>();
+                    SortedMap<Long, AwattarPrice> result = new TreeMap<>();
                     minTimestamp = 0;
                     maxTimestamp = 0;
                     AwattarApiData apiData = gson.fromJson(content, AwattarApiData.class);
                     if (apiData != null) {
                         for (Datum d : apiData.data) {
                             result.put(d.startTimestamp,
-                                    new aWATTarPrice(d.marketprice / 10.0, d.startTimestamp, d.endTimestamp, zone));
+                                    new AwattarPrice(d.marketprice / 10.0, d.startTimestamp, d.endTimestamp, zone));
                             updateMin(d.startTimestamp);
                             updateMax(d.endTimestamp);
                         }
@@ -197,7 +196,7 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
             String errorMessage = e.getLocalizedMessage();
             logger.warn("Exception occurred during execution: {}", errorMessage);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.receiving.prices");
-            throw new aWATTarConnectionException(errorMessage, e.getCause());
+            throw new AwattarConnectionException(errorMessage, e.getCause());
         }
     }
 
@@ -205,7 +204,7 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             return true;
         }
-        SortedMap<Long, aWATTarPrice> localMap = priceMap;
+        SortedMap<Long, AwattarPrice> localMap = priceMap;
         if (localMap == null) {
             return true;
         }
@@ -234,7 +233,7 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
     }
 
     @Nullable
-    public synchronized SortedMap<Long, aWATTarPrice> getPriceMap() {
+    public synchronized SortedMap<Long, AwattarPrice> getPriceMap() {
         if (priceMap == null) {
             refresh();
         }
@@ -242,15 +241,15 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
     }
 
     @Nullable
-    public aWATTarPrice getPriceFor(long timestamp) {
-        SortedMap<Long, aWATTarPrice> priceMap = getPriceMap();
+    public AwattarPrice getPriceFor(long timestamp) {
+        SortedMap<Long, AwattarPrice> priceMap = getPriceMap();
         if (priceMap == null) {
             return null;
         }
         if (!containsPriceFor(timestamp)) {
             return null;
         }
-        for (aWATTarPrice price : priceMap.values()) {
+        for (AwattarPrice price : priceMap.values()) {
             if (timestamp >= price.getStartTimestamp() && timestamp < price.getEndTimestamp()) {
                 return price;
             }

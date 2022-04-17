@@ -17,19 +17,19 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 
 /**
- * The {@link aWATTarBindingConstants} class defines common constants, which are
+ * The {@link AwattarBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Wolfgang Klimt - Initial contribution
  */
 @NonNullByDefault
-public class aWATTarBindingConstants {
+public class AwattarBindingConstants {
 
     public static final String BINDING_ID = "awattar";
     public static final String API = "api";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "awattar-bridge");
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_PRICE = new ThingTypeUID(BINDING_ID, "prices");
     public static final ThingTypeUID THING_TYPE_BESTPRICE = new ThingTypeUID(BINDING_ID, "bestprice");
     public static final ThingTypeUID THING_TYPE_BESTNEXT = new ThingTypeUID(BINDING_ID, "bestnext");

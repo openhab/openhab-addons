@@ -12,15 +12,18 @@
  */
 package org.openhab.binding.awattar.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Stores the bridge configuration
  *
  * @author Wolfgang Klimt - initial contribution
  */
-public class aWATTarBridgeConfiguration {
+@NonNullByDefault
+public class AwattarBridgeConfiguration {
 
     public double basePrice;
     public double vatPercent;
-    public String timeZone;
-    public String country;
+    public String timeZone = "";
+    public String country = "";
 }

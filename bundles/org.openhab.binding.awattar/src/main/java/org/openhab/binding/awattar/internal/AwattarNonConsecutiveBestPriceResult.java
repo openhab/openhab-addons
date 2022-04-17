@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.awattar.internal;
 
-import static org.openhab.binding.awattar.internal.aWATTarUtil.*;
+import static org.openhab.binding.awattar.internal.AwattarUtil.*;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -28,19 +28,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Wolfgang Klimt - initial contribution
  */
 @NonNullByDefault
-public class aWATTarNonConsecutiveBestPriceResult extends aWATTarBestPriceResult {
+public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult {
 
-    private List<aWATTarPrice> members;
+    private List<AwattarPrice> members;
     private ZoneId zoneId;
     private boolean sorted = true;
 
-    public aWATTarNonConsecutiveBestPriceResult(int size, ZoneId zoneId) {
+    public AwattarNonConsecutiveBestPriceResult(int size, ZoneId zoneId) {
         super();
         this.zoneId = zoneId;
-        members = new ArrayList<aWATTarPrice>();
+        members = new ArrayList<AwattarPrice>();
     }
 
-    public void addMember(aWATTarPrice member) {
+    public void addMember(AwattarPrice member) {
         sorted = false;
         members.add(member);
         updateStart(member.getStartTimestamp());
@@ -58,9 +58,9 @@ public class aWATTarNonConsecutiveBestPriceResult extends aWATTarBestPriceResult
 
     private void sort() {
         if (!sorted) {
-            members.sort(new Comparator<aWATTarPrice>() {
+            members.sort(new Comparator<AwattarPrice>() {
                 @Override
-                public int compare(aWATTarPrice o1, aWATTarPrice o2) {
+                public int compare(AwattarPrice o1, AwattarPrice o2) {
                     return Long.compare(o1.getStartTimestamp(), o2.getStartTimestamp());
                 }
             });
@@ -71,7 +71,7 @@ public class aWATTarNonConsecutiveBestPriceResult extends aWATTarBestPriceResult
         boolean second = false;
         sort();
         StringBuilder res = new StringBuilder();
-        for (aWATTarPrice price : members) {
+        for (AwattarPrice price : members) {
             if (second) {
                 res.append(',');
             }

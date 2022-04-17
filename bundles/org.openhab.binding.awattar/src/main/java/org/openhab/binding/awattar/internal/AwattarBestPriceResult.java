@@ -20,12 +20,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Wolfgang Klimt - initial contribution
  */
 @NonNullByDefault
-public abstract class aWATTarBestPriceResult {
+public abstract class AwattarBestPriceResult {
 
     private long start;
     private long end;
 
-    public aWATTarBestPriceResult() {
+    public AwattarBestPriceResult() {
     }
 
     public long getStart() {

@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.awattar.internal.handler;
 
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.THING_TYPE_BESTPRICE;
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.THING_TYPE_BRIDGE;
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.THING_TYPE_PRICE;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.THING_TYPE_BESTPRICE;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.THING_TYPE_PRICE;
 
 import java.util.Set;
 
@@ -38,15 +38,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link aWATTarHandlerFactory} is responsible for creating things and thing
+ * The {@link AwattarHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Wolfgang Klimt - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.awattar", service = ThingHandlerFactory.class)
-public class aWATTarHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(aWATTarHandlerFactory.class);
+public class AwattarHandlerFactory extends BaseThingHandlerFactory {
+    private Logger logger = LoggerFactory.getLogger(AwattarHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PRICE, THING_TYPE_BESTPRICE,
             THING_TYPE_BRIDGE);
@@ -54,7 +54,7 @@ public class aWATTarHandlerFactory extends BaseThingHandlerFactory {
     private final TimeZoneProvider timeZoneProvider;
 
     @Activate
-    public aWATTarHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
+    public AwattarHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference LocaleProvider localeProvider, final @Reference TranslationProvider i18nProvider,
             final @Reference TimeZoneProvider timeZoneProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
@@ -73,13 +73,13 @@ public class aWATTarHandlerFactory extends BaseThingHandlerFactory {
         logger.trace("Creating Handler for Thing {}, UID {}", thing, thingTypeUID);
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new aWATTarBridgeHandler((Bridge) thing, httpClient);
+            return new AwattarBridgeHandler((Bridge) thing, httpClient);
         }
         if (THING_TYPE_PRICE.equals(thingTypeUID)) {
-            return new aWATTarPriceHandler(thing);
+            return new AwattarPriceHandler(thing, timeZoneProvider);
         }
         if (THING_TYPE_BESTPRICE.equals(thingTypeUID)) {
-            return new aWATTarBestpriceHandler(thing, timeZoneProvider);
+            return new AwattarBestpriceHandler(thing, timeZoneProvider);
         }
 
         logger.warn("Unknown thing type {}, not creating handler!", thingTypeUID);

@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.awattar.internal.connection;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Thrown if there is a problem with the aWATTar connection
  *
  * @author Wolfgang Klimt - initial contribution
  */
-public class aWATTarConnectionException extends RuntimeException {
+@NonNullByDefault
+public class AwattarConnectionException extends RuntimeException {
     private static final long serialVersionUID = 8682558332358643704L;
 
     /**
@@ -28,7 +32,7 @@ public class aWATTarConnectionException extends RuntimeException {
      * @param message the detail message. The detail message is saved for
      *            later retrieval by the {@link #getMessage()} method.
      */
-    public aWATTarConnectionException(String message) {
+    public AwattarConnectionException(String message) {
         super(message);
     }
 
@@ -48,7 +52,7 @@ public class aWATTarConnectionException extends RuntimeException {
      *            unknown.)
      * @since 1.4
      */
-    public aWATTarConnectionException(String message, Throwable cause) {
+    public AwattarConnectionException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 
@@ -65,7 +69,7 @@ public class aWATTarConnectionException extends RuntimeException {
      *            unknown.)
      * @since 1.4
      */
-    public aWATTarConnectionException(Throwable cause) {
+    public AwattarConnectionException(Throwable cause) {
         super(cause);
     }
 
@@ -83,7 +87,7 @@ public class aWATTarConnectionException extends RuntimeException {
      *            be writable
      * @since 1.7
      */
-    protected aWATTarConnectionException(String message, Throwable cause, boolean enableSuppression,
+    protected AwattarConnectionException(String message, Throwable cause, boolean enableSuppression,
             boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }

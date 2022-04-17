@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.awattar.internal.handler;
 
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.BINDING_ID;
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_GROUP_CURRENT;
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_MARKET_GROSS;
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_MARKET_NET;
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_TOTAL_GROSS;
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_TOTAL_NET;
-import static org.openhab.binding.awattar.internal.aWATTarUtil.getCalendarForHour;
-import static org.openhab.binding.awattar.internal.aWATTarUtil.getMillisToNextMinute;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.BINDING_ID;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_GROUP_CURRENT;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_MARKET_GROSS;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_MARKET_NET;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_TOTAL_GROSS;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_TOTAL_NET;
+import static org.openhab.binding.awattar.internal.AwattarUtil.getCalendarForHour;
+import static org.openhab.binding.awattar.internal.AwattarUtil.getMillisToNextMinute;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -29,7 +29,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.awattar.internal.aWATTarPrice;
+import org.openhab.binding.awattar.internal.AwattarPrice;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -46,21 +47,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link aWATTarPriceHandler} is responsible for handling commands, which are
+ * The {@link AwattarPriceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Wolfgang Klimt - Initial contribution
  */
 @NonNullByDefault
-public class aWATTarPriceHandler extends BaseThingHandler {
+public class AwattarPriceHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(aWATTarPriceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AwattarPriceHandler.class);
 
     private int thingRefreshInterval = 60;
+    private TimeZoneProvider timeZoneProvider;
     private @Nullable ScheduledFuture<?> thingRefresher;
 
-    public aWATTarPriceHandler(Thing thing) {
+    public AwattarPriceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -86,8 +89,12 @@ public class aWATTarPriceHandler extends BaseThingHandler {
             ScheduledFuture<?> localRefresher = thingRefresher;
             if (localRefresher == null || localRefresher.isCancelled()) {
                 logger.trace("Start Thing refresh job at interval {} seconds.", thingRefreshInterval);
-                thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels, getMillisToNextMinute(1),
-                        thingRefreshInterval * 1000, TimeUnit.MILLISECONDS);
+                /*
+                 * The scheduler is required to run exactly at minute borders, hence we can't use scheduleWithFixedDelay
+                 * here
+                 */
+                thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels,
+                        getMillisToNextMinute(1, timeZoneProvider), thingRefreshInterval * 1000, TimeUnit.MILLISECONDS);
             }
 
         }
@@ -124,7 +131,7 @@ public class aWATTarPriceHandler extends BaseThingHandler {
             logger.error("No Bridge available. This should not happen.");
             return;
         }
-        aWATTarBridgeHandler bridgeHandler = (aWATTarBridgeHandler) bridge.getHandler();
+        AwattarBridgeHandler bridgeHandler = (AwattarBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
             logger.error("No BridgeHandler available. This should not happen!");
             return;
@@ -150,7 +157,7 @@ public class aWATTarPriceHandler extends BaseThingHandler {
         }
         logger.trace("Got target date: {}", target.toString());
 
-        aWATTarPrice price = bridgeHandler.getPriceFor(target.toInstant().toEpochMilli());
+        AwattarPrice price = bridgeHandler.getPriceFor(target.toInstant().toEpochMilli());
 
         if (price == null) {
             logger.trace("No price found for hour {}", target.toString());

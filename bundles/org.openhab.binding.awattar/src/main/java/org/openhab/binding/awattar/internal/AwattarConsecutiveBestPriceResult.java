@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.awattar.internal;
 
-import static org.openhab.binding.awattar.internal.aWATTarUtil.formatDate;
-import static org.openhab.binding.awattar.internal.aWATTarUtil.getHourFrom;
+import static org.openhab.binding.awattar.internal.AwattarUtil.formatDate;
+import static org.openhab.binding.awattar.internal.AwattarUtil.getHourFrom;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -27,19 +27,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Wolfgang Klimt - initial contribution
  */
 @NonNullByDefault
-public class aWATTarConsecutiveBestPriceResult extends aWATTarBestPriceResult {
+public class AwattarConsecutiveBestPriceResult extends AwattarBestPriceResult {
 
     private double priceSum = 0;
     private int length = 0;
     private String hours;
     private ZoneId zoneId;
 
-    public aWATTarConsecutiveBestPriceResult(List<aWATTarPrice> prices, ZoneId zoneId) {
+    public AwattarConsecutiveBestPriceResult(List<AwattarPrice> prices, ZoneId zoneId) {
         super();
         this.zoneId = zoneId;
         StringBuilder hours = new StringBuilder();
         boolean second = false;
-        for (aWATTarPrice price : prices) {
+        for (AwattarPrice price : prices) {
             priceSum += price.getPrice();
             length++;
             updateStart(price.getStartTimestamp());

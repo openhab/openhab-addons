@@ -24,14 +24,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Wolfgang Klimt - initial contribution
  */
 @NonNullByDefault
-public class aWATTarPrice implements Comparable<aWATTarPrice> {
+public class AwattarPrice implements Comparable<AwattarPrice> {
     private final Double price;
     private final long endTimestamp;
     private final long startTimestamp;
 
     private final int hour;
 
-    public aWATTarPrice(double price, long startTimestamp, long endTimestamp, ZoneId zoneId) {
+    public AwattarPrice(double price, long startTimestamp, long endTimestamp, ZoneId zoneId) {
         this.price = price;
         this.endTimestamp = endTimestamp;
         this.startTimestamp = startTimestamp;
@@ -59,7 +59,7 @@ public class aWATTarPrice implements Comparable<aWATTarPrice> {
     }
 
     @Override
-    public int compareTo(aWATTarPrice o) {
+    public int compareTo(AwattarPrice o) {
         return price.compareTo(o.price);
     }
 

@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.awattar.internal.handler;
 
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.BINDING_ID;
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_ACTIVE;
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_COUNTDOWN;
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_END;
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_HOURS;
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_REMAINING;
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_START;
-import static org.openhab.binding.awattar.internal.aWATTarUtil.getCalendarForHour;
-import static org.openhab.binding.awattar.internal.aWATTarUtil.getDateTimeType;
-import static org.openhab.binding.awattar.internal.aWATTarUtil.getDuration;
-import static org.openhab.binding.awattar.internal.aWATTarUtil.getMillisToNextMinute;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.BINDING_ID;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_ACTIVE;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_COUNTDOWN;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_END;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_HOURS;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_REMAINING;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_START;
+import static org.openhab.binding.awattar.internal.AwattarUtil.getCalendarForHour;
+import static org.openhab.binding.awattar.internal.AwattarUtil.getDateTimeType;
+import static org.openhab.binding.awattar.internal.AwattarUtil.getDuration;
+import static org.openhab.binding.awattar.internal.AwattarUtil.getMillisToNextMinute;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -37,11 +37,11 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.awattar.internal.aWATTarBestPriceResult;
-import org.openhab.binding.awattar.internal.aWATTarBestpriceConfiguration;
-import org.openhab.binding.awattar.internal.aWATTarConsecutiveBestPriceResult;
-import org.openhab.binding.awattar.internal.aWATTarNonConsecutiveBestPriceResult;
-import org.openhab.binding.awattar.internal.aWATTarPrice;
+import org.openhab.binding.awattar.internal.AwattarBestPriceResult;
+import org.openhab.binding.awattar.internal.AwattarBestpriceConfiguration;
+import org.openhab.binding.awattar.internal.AwattarConsecutiveBestPriceResult;
+import org.openhab.binding.awattar.internal.AwattarNonConsecutiveBestPriceResult;
+import org.openhab.binding.awattar.internal.AwattarPrice;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -61,14 +61,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link aWATTarBestpriceHandler} is responsible for computing the best prices for a given configuration.
+ * The {@link AwattarBestpriceHandler} is responsible for computing the best prices for a given configuration.
  *
  * @author Wolfgang Klimt - Initial contribution
  */
 @NonNullByDefault
-public class aWATTarBestpriceHandler extends BaseThingHandler {
+public class AwattarBestpriceHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(aWATTarBestpriceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AwattarBestpriceHandler.class);
 
     private final int thingRefreshInterval = 60;
     @Nullable
@@ -76,7 +76,7 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
 
     private final TimeZoneProvider timeZoneProvider;
 
-    public aWATTarBestpriceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public AwattarBestpriceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
     }
@@ -84,7 +84,7 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.trace("Initializing aWATTar bestprice handler {}", this);
-        aWATTarBestpriceConfiguration config = getConfigAs(aWATTarBestpriceConfiguration.class);
+        AwattarBestpriceConfiguration config = getConfigAs(AwattarBestpriceConfiguration.class);
         logger.trace("Got Config: {}", config.toString());
 
         boolean configValid = true;
@@ -111,8 +111,12 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
             ScheduledFuture<?> localRefresher = thingRefresher;
             if (localRefresher == null || localRefresher.isCancelled()) {
                 logger.trace("Start Thing refresh job at interval {} seconds.", thingRefreshInterval);
-                thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels, getMillisToNextMinute(1),
-                        thingRefreshInterval * 1000, TimeUnit.MILLISECONDS);
+                /*
+                 * The scheduler is required to run exactly at minute borders, hence we can't use scheduleWithFixedDelay
+                 * here
+                 */
+                thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels,
+                        getMillisToNextMinute(1, timeZoneProvider), thingRefreshInterval * 1000, TimeUnit.MILLISECONDS);
             }
 
         }
@@ -150,30 +154,30 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
             updateState(channelUID, state);
             return;
         }
-        aWATTarBridgeHandler bridgeHandler = (aWATTarBridgeHandler) bridge.getHandler();
+        AwattarBridgeHandler bridgeHandler = (AwattarBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null || bridgeHandler.getPriceMap() == null) {
             logger.debug("No prices available, so can't refresh channel.");
             // no prices available, can't continue
             updateState(channelUID, state);
             return;
         }
-        aWATTarBestpriceConfiguration config = getConfigAs(aWATTarBestpriceConfiguration.class);
+        AwattarBestpriceConfiguration config = getConfigAs(AwattarBestpriceConfiguration.class);
         Timerange timerange = getRange(config.rangeStart, config.rangeDuration, bridgeHandler.getTimeZone());
         if (!(bridgeHandler.containsPriceFor(timerange.start) && bridgeHandler.containsPriceFor(timerange.end))) {
             updateState(channelUID, state);
             return;
         }
 
-        aWATTarBestPriceResult result;
+        AwattarBestPriceResult result;
         if (config.consecutive) {
-            ArrayList<aWATTarPrice> range = new ArrayList<aWATTarPrice>(config.rangeDuration);
+            ArrayList<AwattarPrice> range = new ArrayList<AwattarPrice>(config.rangeDuration);
             range.addAll(getPriceRange(bridgeHandler, timerange,
                     (o1, o2) -> Long.compare(o1.getStartTimestamp(), o2.getStartTimestamp())));
-            aWATTarConsecutiveBestPriceResult res = new aWATTarConsecutiveBestPriceResult(
+            AwattarConsecutiveBestPriceResult res = new AwattarConsecutiveBestPriceResult(
                     range.subList(0, config.length), bridgeHandler.getTimeZone());
 
             for (int i = 1; i <= range.size() - config.length; i++) {
-                aWATTarConsecutiveBestPriceResult res2 = new aWATTarConsecutiveBestPriceResult(
+                AwattarConsecutiveBestPriceResult res2 = new AwattarConsecutiveBestPriceResult(
                         range.subList(i, i + config.length), bridgeHandler.getTimeZone());
                 if (res2.getPriceSum() < res.getPriceSum()) {
                     res = res2;
@@ -181,13 +185,13 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
             }
             result = res;
         } else {
-            List<aWATTarPrice> range = getPriceRange(bridgeHandler, timerange,
+            List<AwattarPrice> range = getPriceRange(bridgeHandler, timerange,
                     (o1, o2) -> Double.compare(o1.getPrice(), o2.getPrice()));
-            aWATTarNonConsecutiveBestPriceResult res = new aWATTarNonConsecutiveBestPriceResult(config.length,
+            AwattarNonConsecutiveBestPriceResult res = new AwattarNonConsecutiveBestPriceResult(config.length,
                     bridgeHandler.getTimeZone());
             logger.trace("Bestprice Candidate range: {}", range);
             int ct = 0;
-            for (aWATTarPrice price : range) {
+            for (AwattarPrice price : range) {
                 res.addMember(price);
                 if (++ct >= config.length) {
                     break;
@@ -211,13 +215,13 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
             case CHANNEL_COUNTDOWN:
                 diff = result.getStart() - Instant.now().toEpochMilli();
                 if (diff >= 0) {
-                    state = new StringType(getDuration(diff));
+                    state = getDuration(diff);
                 }
                 break;
             case CHANNEL_REMAINING:
                 diff = result.getEnd() - Instant.now().toEpochMilli();
                 if (result.isActive()) {
-                    state = new StringType(getDuration(diff));
+                    state = getDuration(diff);
                 }
                 break;
             case CHANNEL_HOURS:
@@ -239,10 +243,10 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
         }
     }
 
-    private List<aWATTarPrice> getPriceRange(aWATTarBridgeHandler bridgeHandler, Timerange range,
-            Comparator<aWATTarPrice> comparator) {
-        ArrayList<aWATTarPrice> result = new ArrayList<>();
-        SortedMap<Long, aWATTarPrice> priceMap = bridgeHandler.getPriceMap();
+    private List<AwattarPrice> getPriceRange(AwattarBridgeHandler bridgeHandler, Timerange range,
+            Comparator<AwattarPrice> comparator) {
+        ArrayList<AwattarPrice> result = new ArrayList<>();
+        SortedMap<Long, AwattarPrice> priceMap = bridgeHandler.getPriceMap();
         if (priceMap == null) {
             logger.error("No prices available, returning empty result");
             return result;

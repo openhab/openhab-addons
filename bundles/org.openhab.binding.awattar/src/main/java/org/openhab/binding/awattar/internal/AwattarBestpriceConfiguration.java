@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Wolfgang Klimt - initial contribution
  */
 @NonNullByDefault
-public class aWATTarBestpriceConfiguration {
+public class AwattarBestpriceConfiguration {
 
     public int rangeStart;
     public int rangeDuration;
