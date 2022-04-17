@@ -44,7 +44,7 @@ public enum VeluxProductType {
     SWITCH,
     UNDEFTYPE;
 
-    private static enum ActuatorType {
+    public static enum ActuatorType {
         UNDEFTYPE((short) 0xffff, VeluxBindingConstants.UNKNOWN, VeluxProductType.SWITCH),
         BLIND_1_0((short) 0x0040, "Interior Venetian Blind", VeluxProductType.SLIDER_SHUTTER),
         ROLLERSHUTTER_2_0((short) 0x0080, "Roller Shutter", VeluxProductType.SLIDER_SHUTTER),
@@ -105,7 +105,7 @@ public enum VeluxProductType {
             return description;
         }
 
-        static ActuatorType get(int nodeType) {
+        public static ActuatorType get(int nodeType) {
             return LOOKUPTYPEID2ENUM.getOrDefault(nodeType, ActuatorType.UNDEFTYPE);
         }
     }

@@ -359,7 +359,8 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                     receiver.setResponse(rxCmd, rxData, isSequentialEnforced);
                     if (receiver.isCommunicationSuccessful()) {
                         bridgeInstance.existingProducts().update(new ProductBridgeIndex(receiver.getNtfNodeID()),
-                                receiver.getNtfState(), receiver.getNtfCurrentPosition(), receiver.getNtfTarget());
+                                receiver.getNtfState(), receiver.getNtfCurrentPosition(), receiver.getNtfTarget(),
+                                receiver.getFuntionalParameters());
                         logger.trace(loggerFmt, rxName, "=> special command", "=> product updated");
                         if (rcvonly) {
                             // receive-only: return success to confirm that product(s) were updated

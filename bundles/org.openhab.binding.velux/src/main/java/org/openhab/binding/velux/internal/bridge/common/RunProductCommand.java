@@ -39,5 +39,6 @@ public abstract class RunProductCommand implements BridgeCommunicationProtocol {
      * @param parameterValue target device state.
      * @return reference to the class instance.
      */
-    public abstract RunProductCommand setNodeAndMainParameter(int actuatorId, int parameterValue);
+    public abstract RunProductCommand setNodeAndMainParameter(int actuatorId, int parameterValue,
+            int[] functionalParameters);
 }

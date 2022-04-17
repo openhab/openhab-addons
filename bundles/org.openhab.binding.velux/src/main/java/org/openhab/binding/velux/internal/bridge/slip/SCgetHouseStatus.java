@@ -13,6 +13,7 @@
 package org.openhab.binding.velux.internal.bridge.slip;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProtocol;
 import org.openhab.binding.velux.internal.bridge.common.GetHouseStatus;
 import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
@@ -75,6 +76,7 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
     private int ntfState;
     private int ntfCurrentPosition;
     private int ntfTarget;
+    private int[] ntfFuntionalParameters = new int[VeluxBindingConstants.FUNCTIONAL_PARAMETER_COUNT];
 
     /*
      * ===========================================================
@@ -112,23 +114,24 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
                 ntfState = responseData.getOneByteValue(1);
                 ntfCurrentPosition = responseData.getTwoByteValue(2);
                 ntfTarget = responseData.getTwoByteValue(4);
-                int ntfFP1CurrentPosition = responseData.getTwoByteValue(6);
-                int ntfFP2CurrentPosition = responseData.getTwoByteValue(8);
-                int ntfFP3CurrentPosition = responseData.getTwoByteValue(10);
-                int ntfFP4CurrentPosition = responseData.getTwoByteValue(12);
+                for (int i = 0; i < ntfFuntionalParameters.length; i++) {
+                    ntfFuntionalParameters[i] = responseData.getTwoByteValue(6 + (i * 2));
+                }
                 int ntfRemainingTime = responseData.getTwoByteValue(14);
                 int ntfTimeStamp = responseData.getFourByteValue(16);
-                // Extracting information items
-                logger.trace("setResponse(): ntfNodeID={}.", ntfNodeID);
-                logger.trace("setResponse(): ntfState={}.", ntfState);
-                logger.trace("setResponse(): ntfCurrentPosition={}.", ntfCurrentPosition);
-                logger.trace("setResponse(): ntfTarget={}.", ntfTarget);
-                logger.trace("setResponse(): ntfFP1CurrentPosition={}.", ntfFP1CurrentPosition);
-                logger.trace("setResponse(): ntfFP2CurrentPosition={}.", ntfFP2CurrentPosition);
-                logger.trace("setResponse(): ntfFP3CurrentPosition={}.", ntfFP3CurrentPosition);
-                logger.trace("setResponse(): ntfFP4CurrentPosition={}.", ntfFP4CurrentPosition);
-                logger.trace("setResponse(): ntfRemainingTime={}.", ntfRemainingTime);
-                logger.trace("setResponse(): ntfTimeStamp={}.", ntfTimeStamp);
+
+                if (logger.isTraceEnabled()) {
+                    logger.trace("setResponse(): ntfNodeID={}.", ntfNodeID);
+                    logger.trace("setResponse(): ntfState={}.", ntfState);
+                    logger.trace("setResponse(): ntfCurrentPosition={}.", ntfCurrentPosition);
+                    logger.trace("setResponse(): ntfTarget={}.", ntfTarget);
+                    for (int i = 0; i < ntfFuntionalParameters.length; i++) {
+                        logger.trace("setResponse(): ntfFuntionalParameter{}={}.", i + 1, ntfFuntionalParameters[i]);
+                    }
+                    logger.trace("setResponse(): ntfRemainingTime={}.", ntfRemainingTime);
+                    logger.trace("setResponse(): ntfTimeStamp={}.", ntfTimeStamp);
+                }
+
                 success = true;
                 break;
 
@@ -179,5 +182,12 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
      */
     public int getNtfTarget() {
         return ntfTarget;
+    }
+
+    /**
+     * @return <b>ntfFuntionalParameters</b> returns the Functional Parameters as an array of int.
+     */
+    public int[] getFuntionalParameters() {
+        return ntfFuntionalParameters;
     }
 }

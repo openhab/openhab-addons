@@ -13,6 +13,8 @@
 package org.openhab.binding.velux.internal.things;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.velux.internal.VeluxBindingConstants;
+import org.openhab.binding.velux.internal.things.VeluxProductType.ActuatorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +81,7 @@ public class VeluxProduct {
 
     private VeluxProductName name;
     private VeluxProductType typeId;
+    private ActuatorType actuatorType;
     private ProductBridgeIndex bridgeProductIndex;
 
     private boolean v2 = false;
@@ -91,6 +94,7 @@ public class VeluxProduct {
     private int state = State.UNKNOWN.value;
     private int currentPosition = 0;
     private int targetPosition = 0;
+    private int[] functionalParameters = new int[VeluxBindingConstants.FUNCTIONAL_PARAMETER_COUNT];
     private int remainingTime = 0;
     private int timeStamp = 0;
 
@@ -106,6 +110,10 @@ public class VeluxProduct {
         this.name = VeluxProductName.UNKNOWN;
         this.typeId = VeluxProductType.UNDEFTYPE;
         this.bridgeProductIndex = ProductBridgeIndex.UNKNOWN;
+        this.actuatorType = ActuatorType.UNDEFTYPE;
+        for (int i = 0; i < functionalParameters.length; i++) {
+            functionalParameters[i] = VeluxProductPosition.VPP_VELUX_UNKNOWN;
+        }
     }
 
     /**
@@ -122,6 +130,7 @@ public class VeluxProduct {
         this.name = name;
         this.typeId = typeId;
         this.bridgeProductIndex = bridgeProductIndex;
+        this.actuatorType = ActuatorType.WINDOW_4_0;
     }
 
     /**
@@ -145,12 +154,14 @@ public class VeluxProduct {
      * @param remainingTime This field indicates the remaining time for a node activation in seconds.
      * @param timeStamp UTC time stamp for last known position.
      */
-    public VeluxProduct(VeluxProductName name, VeluxProductType typeId, ProductBridgeIndex bridgeProductIndex,
-            int order, int placement, int velocity, int variation, int powerMode, String serialNumber, int state,
-            int currentPosition, int target, int remainingTime, int timeStamp) {
+    public VeluxProduct(VeluxProductName name, VeluxProductType typeId, ActuatorType actuatorType,
+            ProductBridgeIndex bridgeProductIndex, int order, int placement, int velocity, int variation, int powerMode,
+            String serialNumber, int state, int currentPosition, int target, int[] functionalParameters,
+            int remainingTime, int timeStamp) {
         logger.trace("VeluxProduct(v2,name={}) created.", name.toString());
         this.name = name;
         this.typeId = typeId;
+        this.actuatorType = actuatorType;
         this.bridgeProductIndex = bridgeProductIndex;
         this.v2 = true;
         this.order = order;
@@ -162,6 +173,9 @@ public class VeluxProduct {
         this.state = state;
         this.currentPosition = currentPosition;
         this.targetPosition = target;
+        for (int i = 0; i < Math.min(this.functionalParameters.length, functionalParameters.length); i++) {
+            this.functionalParameters[i] = functionalParameters[i];
+        }
         this.remainingTime = remainingTime;
         this.timeStamp = timeStamp;
     }
@@ -171,9 +185,10 @@ public class VeluxProduct {
     @Override
     public VeluxProduct clone() {
         if (this.v2) {
-            return new VeluxProduct(this.name, this.typeId, this.bridgeProductIndex, this.order, this.placement,
-                    this.velocity, this.variation, this.powerMode, this.serialNumber, this.state, this.currentPosition,
-                    this.targetPosition, this.remainingTime, this.timeStamp);
+            return new VeluxProduct(this.name, this.typeId, this.actuatorType, this.bridgeProductIndex, this.order,
+                    this.placement, this.velocity, this.variation, this.powerMode, this.serialNumber, this.state,
+                    this.currentPosition, this.targetPosition, this.functionalParameters, this.remainingTime,
+                    this.timeStamp);
         } else {
             return new VeluxProduct(this.name, this.typeId, this.bridgeProductIndex);
         }
@@ -384,5 +399,35 @@ public class VeluxProduct {
             }
         }
         return currentPosition;
+    }
+
+    /**
+     * Get the functional parameters as an array of int.
+     *
+     * @return the functional parameters
+     */
+    public int[] getFunctionalParameters() {
+        return functionalParameters;
+    }
+
+    /**
+     * Set the functional parameters
+     *
+     * @param functionalParameters the new values of the Functional Parameters
+     * @return true any of the functional parameters have been changed
+     */
+    public boolean setFunctionalParameters(int[] functionalParameters) {
+        boolean isDirty = false;
+        for (int i = 0; i < Math.min(this.functionalParameters.length, functionalParameters.length); i++) {
+            if (this.functionalParameters[i] != functionalParameters[i]) {
+                this.functionalParameters[i] = functionalParameters[i];
+                isDirty = true;
+            }
+        }
+        return isDirty;
+    }
+
+    public ActuatorType getActuatorType() {
+        return actuatorType;
     }
 }

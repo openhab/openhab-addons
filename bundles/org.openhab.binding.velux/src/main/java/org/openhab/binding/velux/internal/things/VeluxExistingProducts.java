@@ -111,7 +111,7 @@ public class VeluxExistingProducts {
     }
 
     public boolean update(ProductBridgeIndex bridgeProductIndex, int productState, int productPosition,
-            int productTarget) {
+            int productTarget, int[] productFunctionalParameters) {
         logger.debug("update(bridgeProductIndex={},productState={},productPosition={},productTarget={}) called.",
                 bridgeProductIndex.toInt(), productState, productPosition, productTarget);
         if (!isRegistered(bridgeProductIndex)) {
@@ -122,6 +122,7 @@ public class VeluxExistingProducts {
         dirty |= thisProduct.setState(productState);
         dirty |= thisProduct.setCurrentPosition(productPosition);
         dirty |= thisProduct.setTarget(productTarget);
+        dirty |= thisProduct.setFunctionalParameters(productFunctionalParameters);
         if (dirty) {
             String uniqueIndex = thisProduct.getProductUniqueIndex();
             logger.trace("update(): updating by UniqueIndex {}.", uniqueIndex);
@@ -135,7 +136,8 @@ public class VeluxExistingProducts {
     public boolean update(VeluxProduct currentProduct) {
         logger.trace("update(currentProduct={}) called.", currentProduct);
         return update(currentProduct.getBridgeProductIndex(), currentProduct.getState(),
-                currentProduct.getCurrentPosition(), currentProduct.getTarget());
+                currentProduct.getCurrentPosition(), currentProduct.getTarget(),
+                currentProduct.getFunctionalParameters());
     }
 
     public VeluxProduct get(String productUniqueIndex) {

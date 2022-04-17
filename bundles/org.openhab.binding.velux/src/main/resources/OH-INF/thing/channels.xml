@@ -139,6 +139,13 @@
 		<category>Blinds</category>
 	</channel-type>
 
+	<channel-type id="vanePosition">
+		<item-type>Rollershutter</item-type>
+		<label>@text/channel-type.velux.vanePosition.label</label>
+		<description>@text/channel-type.velux.vanePosition.description</description>
+		<category>Blinds</category>
+	</channel-type>
+
 	<channel-type id="state">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.velux.state.label</label>

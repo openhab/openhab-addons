@@ -15,11 +15,13 @@ package org.openhab.binding.velux.internal.bridge.slip;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
+import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +72,7 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
     private int reqPL03 = 0; // unused
     private int reqPL47 = 0; // unused
     private int reqLockTime = 0; // 30 seconds
+    private int[] reqFunctionalParameters = new int[VeluxBindingConstants.FUNCTIONAL_PARAMETER_COUNT];
 
     /*
      * ===========================================================
@@ -96,6 +99,9 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
         Random rand = new Random();
         reqSessionID = rand.nextInt(0x0fff);
         logger.debug("SCgetProduct(): starting sessions with the random number {}.", reqSessionID);
+        for (int i = 0; i < reqFunctionalParameters.length; i++) {
+            reqFunctionalParameters[i] = VeluxProductPosition.VPP_VELUX_UNKNOWN;
+        }
     }
 
     /*
@@ -124,6 +130,15 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
         request.setOneByteValue(2, reqCommandOriginator);
         request.setOneByteValue(3, reqPriorityLevel);
         request.setOneByteValue(4, reqParameterActive);
+        int bitMask = 0b10000000;
+        for (int i = 0; i < reqFunctionalParameters.length; i++) {
+            int paramValue = reqFunctionalParameters[i];
+            if (paramValue != VeluxProductPosition.VPP_VELUX_UNKNOWN) {
+                reqFPI1 |= bitMask;
+                request.setTwoByteValue(9 + (i * 2), paramValue);
+            }
+            bitMask = bitMask >>> 1;
+        }
         request.setOneByteValue(5, reqFPI1);
         request.setOneByteValue(6, reqFPI2);
         request.setTwoByteValue(7, reqMainParameter);
@@ -133,21 +148,29 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
         request.setOneByteValue(63, reqPL03);
         request.setOneByteValue(64, reqPL47);
         request.setOneByteValue(65, reqLockTime);
-        logger.trace("getRequestDataAsArrayOfBytes(): ntfSessionID={}.", reqSessionID);
-        logger.trace("getRequestDataAsArrayOfBytes(): reqCommandOriginator={}.", reqCommandOriginator);
-        logger.trace("getRequestDataAsArrayOfBytes(): reqPriorityLevel={}.", reqPriorityLevel);
-        logger.trace("getRequestDataAsArrayOfBytes(): reqParameterActive={}.", reqParameterActive);
-        logger.trace("getRequestDataAsArrayOfBytes(): reqFPI1={}.", reqFPI1);
-        logger.trace("getRequestDataAsArrayOfBytes(): reqFPI2={}.", reqFPI2);
-        logger.trace("getRequestDataAsArrayOfBytes(): reqMainParameter={}.", reqMainParameter);
-        logger.trace("getRequestDataAsArrayOfBytes(): reqIndexArrayCount={}.", reqIndexArrayCount);
-        logger.trace("getRequestDataAsArrayOfBytes(): reqIndexArray01={}.", reqIndexArray01);
-        logger.trace("getRequestDataAsArrayOfBytes(): reqPriorityLevelLock={}.", reqPriorityLevelLock);
-        logger.trace("getRequestDataAsArrayOfBytes(): reqPL03={}.", reqPL03);
-        logger.trace("getRequestDataAsArrayOfBytes(): reqPL47={}.", reqPL47);
-        logger.trace("getRequestDataAsArrayOfBytes(): reqLockTime={}.", reqLockTime);
         requestData = request.toByteArray();
-        logger.trace("getRequestDataAsArrayOfBytes() data is {}.", new Packet(requestData).toString());
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("getRequestDataAsArrayOfBytes(): ntfSessionID={}.", reqSessionID);
+            logger.trace("getRequestDataAsArrayOfBytes(): reqCommandOriginator={}.", reqCommandOriginator);
+            logger.trace("getRequestDataAsArrayOfBytes(): reqPriorityLevel={}.", reqPriorityLevel);
+            logger.trace("getRequestDataAsArrayOfBytes(): reqParameterActive={}.", reqParameterActive);
+            logger.trace("getRequestDataAsArrayOfBytes(): reqFPI1={}.", reqFPI1);
+            logger.trace("getRequestDataAsArrayOfBytes(): reqFPI2={}.", reqFPI2);
+            logger.trace("getRequestDataAsArrayOfBytes(): reqMainParameter={}.", reqMainParameter);
+            for (int i = 0; i < reqFunctionalParameters.length; i++) {
+                logger.trace("getRequestDataAsArrayOfBytes(): reqFunctionalParameter{}={}.", i + 1,
+                        reqFunctionalParameters[i]);
+            }
+            logger.trace("getRequestDataAsArrayOfBytes(): reqIndexArrayCount={}.", reqIndexArrayCount);
+            logger.trace("getRequestDataAsArrayOfBytes(): reqIndexArray01={}.", reqIndexArray01);
+            logger.trace("getRequestDataAsArrayOfBytes(): reqPriorityLevelLock={}.", reqPriorityLevelLock);
+            logger.trace("getRequestDataAsArrayOfBytes(): reqPL03={}.", reqPL03);
+            logger.trace("getRequestDataAsArrayOfBytes(): reqPL47={}.", reqPL47);
+            logger.trace("getRequestDataAsArrayOfBytes(): reqLockTime={}.", reqLockTime);
+
+            logger.trace("getRequestDataAsArrayOfBytes() data is {}.", new Packet(requestData).toString());
+        }
         return requestData;
     }
 
@@ -201,15 +224,17 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
                 int ntfRunStatus = responseData.getOneByteValue(7);
                 int ntfStatusReply = responseData.getOneByteValue(8);
                 int ntfInformationCode = responseData.getFourByteValue(9);
-                // Extracting information items
-                logger.debug("setResponse(): ntfSessionID={} (requested {}).", ntfSessionID, reqSessionID);
-                logger.debug("setResponse(): ntfStatusiD={}.", ntfStatusiD);
-                logger.debug("setResponse(): ntfIndex={}.", ntfIndex);
-                logger.debug("setResponse(): ntfNodeParameter={}.", ntfNodeParameter);
-                logger.debug("setResponse(): ntfParameterValue={}.", ntfParameterValue);
-                logger.debug("setResponse(): ntfRunStatus={}.", ntfRunStatus);
-                logger.debug("setResponse(): ntfStatusReply={}.", ntfStatusReply);
-                logger.debug("setResponse(): ntfInformationCode={}.", ntfInformationCode);
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("setResponse(): ntfSessionID={} (requested {}).", ntfSessionID, reqSessionID);
+                    logger.debug("setResponse(): ntfStatusiD={}.", ntfStatusiD);
+                    logger.debug("setResponse(): ntfIndex={}.", ntfIndex);
+                    logger.debug("setResponse(): ntfNodeParameter={}.", ntfNodeParameter);
+                    logger.debug("setResponse(): ntfParameterValue={}.", ntfParameterValue);
+                    logger.debug("setResponse(): ntfRunStatus={}.", ntfRunStatus);
+                    logger.debug("setResponse(): ntfStatusReply={}.", ntfStatusReply);
+                    logger.debug("setResponse(): ntfInformationCode={}.", ntfInformationCode);
+                }
 
                 if (!KLF200Response.check4matchingSessionID(logger, ntfSessionID, reqSessionID)) {
                     finished = true;
@@ -253,11 +278,13 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
                     finished = true;
                 }
 
-                // Extracting information items
-                logger.debug("setResponse(): timeNtfSessionID={}.", timeNtfSessionID);
-                logger.debug("setResponse(): timeNtfIndex={}.", timeNtfIndex);
-                logger.debug("setResponse(): timeNtfNodeParameter={}.", timeNtfNodeParameter);
-                logger.debug("setResponse(): timeNtfSeconds={}.", timeNtfSeconds);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("setResponse(): timeNtfSessionID={}.", timeNtfSessionID);
+                    logger.debug("setResponse(): timeNtfIndex={}.", timeNtfIndex);
+                    logger.debug("setResponse(): timeNtfNodeParameter={}.", timeNtfNodeParameter);
+                    logger.debug("setResponse(): timeNtfSeconds={}.", timeNtfSeconds);
+                }
+
                 if (!isSequentialEnforced) {
                     logger.trace(
                             "setResponse(): skipping wait for more packets as sequential processing is not enforced.");
@@ -303,10 +330,13 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
      */
 
     @Override
-    public SCrunProductCommand setNodeAndMainParameter(int nodeId, int value) {
+    public SCrunProductCommand setNodeAndMainParameter(int nodeId, int value, int[] functionalParameters) {
         logger.debug("setNodeAndMainParameter({}) called.", nodeId);
         this.reqIndexArray01 = nodeId;
         this.reqMainParameter = value;
+        for (int i = 0; i < Math.min(this.reqFunctionalParameters.length, functionalParameters.length); i++) {
+            this.reqFunctionalParameters[i] = functionalParameters[i];
+        }
         return this;
     }
 }

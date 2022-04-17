@@ -41,23 +41,24 @@ public class VeluxBridgeRunProductCommand {
      *
      * @param bridge Initialized Velux bridge handler.
      * @param nodeId Number of Actuator to be modified.
-     * @param value Target value for Actuator main parameter.
+     * @param positionValue Target value for Actuator main parameter.
      * @return true if successful, and false otherwise.
      */
-    public boolean sendCommand(VeluxBridge bridge, int nodeId, VeluxProductPosition value) {
-        logger.trace("sendCommand(nodeId={},value={}) called.", nodeId, value);
+    public boolean sendCommand(VeluxBridge bridge, int nodeId, VeluxProductPosition positionValue,
+            int[] functionalParameters) {
+        logger.trace("sendPositionCommand(nodeId={},value={}) called.", nodeId, positionValue);
 
         boolean success = false;
         RunProductCommand bcp = bridge.bridgeAPI().runProductCommand();
         if (bcp != null) {
-            int veluxValue = value.getPositionAsVeluxType();
+            int veluxValue = positionValue.getPositionAsVeluxType();
 
-            bcp.setNodeAndMainParameter(nodeId, veluxValue);
+            bcp.setNodeAndMainParameter(nodeId, veluxValue, functionalParameters);
             if (bridge.bridgeCommunicate(bcp) && bcp.isCommunicationSuccessful()) {
                 success = true;
             }
         }
-        logger.debug("sendCommand() finished {}.", (success ? "successfully" : "with failure"));
+        logger.debug("sendPositionCommand() finished {}.", (success ? "successfully" : "with failure"));
         return success;
     }
 }
