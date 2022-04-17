@@ -241,6 +241,7 @@
 			<channel id="remaining" typeId="remaining-type"/>
 			<channel id="hours" typeId="hours-type"/>
 		</channels>
+		<config-description-ref uri="thing-type:awattar:bestprice"/>
 	</thing-type>
 
 	<channel-type id="price">

@@ -14,7 +14,6 @@
 				<option value="AT">AT</option>
 			</options>
 		</parameter>
-
 		<parameter name="vatPercent" type="decimal">
 			<label>VAT Percent</label>
 			<description>Specifies the value added tax percentage</description>
