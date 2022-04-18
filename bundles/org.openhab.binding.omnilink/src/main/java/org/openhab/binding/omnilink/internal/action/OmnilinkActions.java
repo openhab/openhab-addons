@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is the action handler service for the set_date action.
+ * This is the action handler service for the synchronizeControllerTime action.
  *
  * @author Ethan Dye - Initial contribution
  */
@@ -56,20 +56,20 @@ public class OmnilinkActions implements ThingActions {
     public void synchronizeControllerTime(
             @ActionInput(name = "zone", label = "@text/actionInputZoneLabel", description = "@text/actionInputZoneDesc") @Nullable String zone) {
         OmnilinkBridgeHandler actionsHandler = handler;
-        ZonedDateTime zdt;
-        if (ZoneId.getAvailableZoneIds().contains(zone)) {
-            zdt = ZonedDateTime.now(ZoneId.of(zone));
-        } else {
-            logger.debug("Time zone provided invalid, using system default!");
-            if (timeZoneProvider.isPresent()) {
-                zdt = ZonedDateTime.now(timeZoneProvider.get().getTimeZone());
-            } else {
-                zdt = ZonedDateTime.now(ZoneId.systemDefault());
-            }
-        }
         if (actionsHandler == null) {
             logger.debug("Action service ThingHandler is null!");
         } else {
+            ZonedDateTime zdt;
+            if (ZoneId.getAvailableZoneIds().contains(zone)) {
+                zdt = ZonedDateTime.now(ZoneId.of(zone));
+            } else {
+                logger.debug("Time zone provided invalid, using system default!");
+                if (timeZoneProvider.isPresent()) {
+                    zdt = ZonedDateTime.now(timeZoneProvider.get().getTimeZone());
+                } else {
+                    zdt = ZonedDateTime.now(ZoneId.systemDefault());
+                }
+            }
             actionsHandler.synchronizeControllerTime(zdt);
         }
     }
