@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.util;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
@@ -88,7 +89,8 @@ public class ShellyUtils {
                 }
                 return obj;
             } catch (JsonSyntaxException e) {
-                throw new ShellyApiException(PRE + className + "from JSON (syntax/format error): " + json, e);
+                throw new ShellyApiException(
+                        PRE + className + "from JSON (syntax/format error: " + e.getMessage() + "): " + json, e);
             } catch (RuntimeException e) {
                 throw new ShellyApiException(PRE + className + "from JSON: " + json, e);
             }
@@ -270,7 +272,11 @@ public class ShellyUtils {
     }
 
     public static String urlEncode(String input) {
-        return URLEncoder.encode(input, StandardCharsets.UTF_8);
+        try {
+            return URLEncoder.encode(input, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            return input;
+        }
     }
 
     public static Long now() {

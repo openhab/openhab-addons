@@ -35,6 +35,8 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsMe
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortLightStatus;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortStatusRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor;
@@ -89,6 +91,7 @@ public class ShellyChannelDefinitions {
     private static final String CHGR_STATUS = CHANNEL_GROUP_STATUS;
     private static final String CHGR_METER = CHANNEL_GROUP_METER;
     private static final String CHGR_SENSOR = CHANNEL_GROUP_SENSOR;
+    private static final String CHGR_CONTROL = CHANNEL_GROUP_CONTROL;
     private static final String CHGR_BAT = CHANNEL_GROUP_BATTERY;
 
     public static final String PREFIX_GROUP = "group-type." + BINDING_ID + ".";
@@ -117,6 +120,8 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPTIME, "uptime", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_HEARTBEAT, "heartBeat", ITEMT_DATETIME))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPDATE, "updateAvailable", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CALIBRATED, "calibrated", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_SCHEDULE, "deviceSchedule", ITEMT_SWITCH))
 
                 // Relay
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEMT_STRING))
@@ -174,7 +179,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_LUX, "sensorLux", ITEMT_LUX))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ILLUM, "sensorIllumination", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VOLTAGE, "sensorADC", ITEMT_VOLT))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_CONTACT, "sensorContact", ITEMT_CONTACT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STATE, "sensorContact", ITEMT_CONTACT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SSTATE, "sensorState", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TILT, "sensorTilt", ITEMT_ANGLE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION, "sensorMotion", ITEMT_SWITCH))
@@ -187,8 +192,9 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VALVE, "sensorValve", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ALARM_STATE, "alarmState", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ERROR, "sensorError", ITEMT_STRING))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME, "sensorSleepTime", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_LAST_UPDATE, "lastUpdate", ITEMT_DATETIME))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME, "sensorSleepTime", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSE_KEY, "senseKey", ITEMT_STRING)) // Sense
 
                 // Button/ix3
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
@@ -205,7 +211,15 @@ public class ShellyChannelDefinitions {
 
                 // Battery
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LEVEL, "system:battery-level", ITEMT_PERCENT))
-                .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LOW, "system:low-battery", ITEMT_SWITCH));
+                .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LOW, "system:low-battery", ITEMT_SWITCH))
+
+                // TRV
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_POSITION, "sensorPosition", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_MODE, "controlMode", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_PROFILE, "controlProfile", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SETTEMP, "targetTemp", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BCONTROL, "boostControl", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BTIMER, "boostTimer", ITEMT_TIME));
     }
 
     public static @Nullable ShellyChannel getDefinition(String channelName) throws IllegalArgumentException {
@@ -255,18 +269,22 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
 
         // If device has more than 1 meter the channel accumulatedWatts receives the accumulated value
-        boolean accuChannel = (((status.meters != null) && (status.meters.size() > 1) && !profile.isRoller
-                && !profile.isRGBW2) || ((status.emeters != null && status.emeters.size() > 1)));
+        boolean accuChannel = !profile.isRoller && !profile.isRGBW2
+                && (((status.meters != null) && (status.meters.size() > 1))
+                        || ((status.emeters != null && status.emeters.size() > 1)));
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS);
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL);
         addChannel(thing, add, accuChannel && (status.emeters != null), CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED);
-        addChannel(thing, add, status.voltage != null || profile.settings.supplyVoltage != null, CHGR_DEVST,
-                CHANNEL_DEVST_VOLTAGE);
+        addChannel(thing, add,
+                !profile.isRoller && !profile.isRGBW2
+                        && (status.voltage != null || profile.settings.supplyVoltage != null),
+                CHGR_DEVST, CHANNEL_DEVST_VOLTAGE);
         addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPDATE);
         addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPTIME);
         addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_HEARTBEAT);
         addChannel(thing, add, profile.settings.ledPowerDisable != null, CHGR_DEVST, CHANNEL_LED_POWER_DISABLE);
-        addChannel(thing, add, profile.settings.ledPowerDisable != null, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE); // WiFi
+        addChannel(thing, add, profile.settings.ledStatusDisable != null, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE); // WiFi
+        addChannel(thing, add, profile.settings.calibrated != null, CHGR_DEVST, CHANNEL_DEVST_CALIBRATED);
 
         return add;
     }
@@ -282,11 +300,14 @@ public class ShellyChannelDefinitions {
         String group = profile.getControlGroup(idx);
 
         ShellySettingsRelay rs = profile.settings.relays.get(idx);
+        ShellyShortStatusRelay rstatus = relay.relays.get(idx);
+        boolean timer = rs.hasTimer != null || (rstatus != null && rstatus.hasTimer != null); // Dimmer 1/2 have
+                                                                                              // has_timer under /status
         addChannel(thing, add, rs.ison != null, group, CHANNEL_OUTPUT);
         addChannel(thing, add, rs.name != null, group, CHANNEL_OUTPUT_NAME);
         addChannel(thing, add, rs.autoOn != null, group, CHANNEL_TIMER_AUTOON);
         addChannel(thing, add, rs.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
-        addChannel(thing, add, rs.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+        addChannel(thing, add, timer, group, CHANNEL_TIMER_ACTIVE);
 
         // Shelly 1/1PM Addon
         if (relay.extTemperature != null) {
@@ -312,6 +333,9 @@ public class ShellyChannelDefinitions {
         ShellySettingsDimmer ds = profile.settings.dimmers.get(idx);
         addChannel(thing, add, ds.autoOn != null, group, CHANNEL_TIMER_AUTOON);
         addChannel(thing, add, ds.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
+
+        ShellyShortLightStatus dss = dstatus.dimmers.get(idx);
+        addChannel(thing, add, dss != null && dss.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
         return add;
     }
 
@@ -406,7 +430,8 @@ public class ShellyChannelDefinitions {
         Map<String, Channel> newChannels = new LinkedHashMap<>();
 
         // Sensor data
-        addChannel(thing, newChannels, sdata.tmp != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP);
+        addChannel(thing, newChannels, sdata.tmp != null || sdata.thermostats != null, CHANNEL_GROUP_SENSOR,
+                CHANNEL_SENSOR_TEMP);
         addChannel(thing, newChannels, sdata.hum != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM);
         addChannel(thing, newChannels, sdata.lux != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX);
         addChannel(thing, newChannels, sdata.lux != null && sdata.lux.illumination != null, CHANNEL_GROUP_SENSOR,
@@ -419,7 +444,7 @@ public class ShellyChannelDefinitions {
                 sdata.motion != null || ((sdata.sensor != null) && (sdata.sensor.motion != null)), CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_MOTION);
         if (sdata.sensor != null) { // DW, Sense or Motion
-            addChannel(thing, newChannels, sdata.sensor.state != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT); // DW/DW2
+            addChannel(thing, newChannels, sdata.sensor.state != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE); // DW/DW2
             addChannel(thing, newChannels, sdata.sensor.motionActive != null, CHANNEL_GROUP_SENSOR, // Motion
                     CHANNEL_SENSOR_MOTION_ACT);
             addChannel(thing, newChannels, sdata.sensor.motionTimestamp != null, CHANNEL_GROUP_SENSOR, // Motion
@@ -443,7 +468,23 @@ public class ShellyChannelDefinitions {
                     CHANNEL_SENSOR_ALARM_STATE);
         }
 
-        addChannel(thing, newChannels, sdata.adcs != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE); // UNI
+        // Sense
+        addChannel(thing, newChannels, profile.isSense, CHANNEL_GROUP_SENSOR, CHANNEL_SENSE_KEY);
+
+        // UNI
+        addChannel(thing, newChannels, sdata.adcs != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE);
+
+        // TRV
+        if (profile.isTRV) {
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_SCHEDULE);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BCONTROL);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BTIMER);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_POSITION);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MODE);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE); // TRV
+        }
 
         // Battery
         if (sdata.bat != null) {
@@ -539,7 +580,7 @@ public class ShellyChannelDefinitions {
         }
 
         public boolean getReadyOnly() {
-            String attr = getChannelAttribute("advanced");
+            String attr = getChannelAttribute("readOnly");
             return attr.isEmpty() ? false : Boolean.valueOf(attr);
         }
 
