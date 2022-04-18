@@ -302,6 +302,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             try {
                 protocol = RotelProtocol.getFromName(config.protocol);
             } catch (RotelException e) {
+                // Invalid protocol name in configuration, HEX will be considered by default
             }
         } else {
             Map<String, String> properties = editProperties();
@@ -310,6 +311,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 try {
                     protocol = RotelProtocol.getFromName(property);
                 } catch (RotelException e) {
+                    // Invalid protocol name in thing property, HEX will be considered by default
                 }
             }
         }
@@ -2426,8 +2428,12 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * @throws RotelException - In case of any problem
      */
     private void sendCommand(RotelCommand cmd, @Nullable Integer value) throws RotelException {
-        byte[] message = protocolHandler.buildCommandMessage(cmd, value);
-        if (message.length == 0) {
+        byte[] message;
+        try {
+            message = protocolHandler.buildCommandMessage(cmd, value);
+        } catch (RotelException e) {
+            // Command not supported
+            logger.debug("sendCommand: {}", e.getMessage());
             return;
         }
         connector.writeOutput(cmd.getName(), message);

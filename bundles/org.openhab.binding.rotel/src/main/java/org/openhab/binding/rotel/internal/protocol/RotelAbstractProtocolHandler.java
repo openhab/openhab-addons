@@ -57,7 +57,7 @@ public abstract class RotelAbstractProtocolHandler {
      * @param cmd the command to execute
      * @param value the integer value to consider for volume, bass or treble adjustment
      *
-     * @throws RotelException - In case of any problem
+     * @throws RotelException - In case the command is not supported by the protocol
      */
     public abstract byte[] buildCommandMessage(RotelCommand cmd, @Nullable Integer value) throws RotelException;
 

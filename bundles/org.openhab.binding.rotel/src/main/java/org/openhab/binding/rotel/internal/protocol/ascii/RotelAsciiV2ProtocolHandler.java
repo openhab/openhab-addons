@@ -49,62 +49,52 @@ public class RotelAsciiV2ProtocolHandler extends RotelAbstractAsciiProtocolHandl
         return RotelProtocol.ASCII_V2;
     }
 
-    /**
-     * Build the message associated to a Rotel command
-     *
-     * @param cmd the command to execute
-     * @param value the integer value to consider for volume, bass or treble adjustment
-     *
-     * @throws RotelException - In case of any problem
-     */
     @Override
     public byte[] buildCommandMessage(RotelCommand cmd, @Nullable Integer value) throws RotelException {
-        byte[] message = new byte[0];
         String messageStr = cmd.getAsciiCommandV2();
         if (messageStr == null) {
-            logger.debug("Command \"{}\" ignored: not available for ASCII V2 protocol", cmd.getName());
-        } else {
-            if (value != null) {
-                switch (cmd) {
-                    case VOLUME_SET:
-                        messageStr += String.format("%02d", value);
-                        break;
-                    case BASS_SET:
-                    case TREBLE_SET:
-                        if (value == 0) {
-                            messageStr += "000";
-                        } else if (value > 0) {
-                            messageStr += String.format("+%02d", value);
-                        } else {
-                            messageStr += String.format("-%02d", -value);
-                        }
-                        break;
-                    case BALANCE_SET:
-                        if (value == 0) {
-                            messageStr += "000";
-                        } else if (value > 0) {
-                            messageStr += String.format("r%02d", value);
-                        } else {
-                            messageStr += String.format("l%02d", -value);
-                        }
-                        break;
-                    case DIMMER_LEVEL_SET:
-                        if (value > 0 && model.getDimmerLevelMin() < 0) {
-                            messageStr += String.format("+%d", value);
-                        } else {
-                            messageStr += String.format("%d", value);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-            if (!messageStr.endsWith("?")) {
-                messageStr += "!";
-            }
-            message = messageStr.getBytes(StandardCharsets.US_ASCII);
-            logger.debug("Command \"{}\" => {}", cmd.getName(), messageStr);
+            throw new RotelException("Command \"" + cmd.getName() + "\" ignored: not available for ASCII V2 protocol");
         }
+        if (value != null) {
+            switch (cmd) {
+                case VOLUME_SET:
+                    messageStr += String.format("%02d", value);
+                    break;
+                case BASS_SET:
+                case TREBLE_SET:
+                    if (value == 0) {
+                        messageStr += "000";
+                    } else if (value > 0) {
+                        messageStr += String.format("+%02d", value);
+                    } else {
+                        messageStr += String.format("-%02d", -value);
+                    }
+                    break;
+                case BALANCE_SET:
+                    if (value == 0) {
+                        messageStr += "000";
+                    } else if (value > 0) {
+                        messageStr += String.format("r%02d", value);
+                    } else {
+                        messageStr += String.format("l%02d", -value);
+                    }
+                    break;
+                case DIMMER_LEVEL_SET:
+                    if (value > 0 && model.getDimmerLevelMin() < 0) {
+                        messageStr += String.format("+%d", value);
+                    } else {
+                        messageStr += String.format("%d", value);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (!messageStr.endsWith("?")) {
+            messageStr += "!";
+        }
+        byte[] message = messageStr.getBytes(StandardCharsets.US_ASCII);
+        logger.debug("Command \"{}\" => {}", cmd.getName(), messageStr);
         return message;
     }
 }

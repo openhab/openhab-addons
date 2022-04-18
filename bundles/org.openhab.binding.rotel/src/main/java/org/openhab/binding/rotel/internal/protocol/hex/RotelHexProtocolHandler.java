@@ -130,38 +130,28 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
         return RotelProtocol.HEX;
     }
 
-    /**
-     * Build the message associated to a Rotel command
-     *
-     * @param cmd the command to execute
-     * @param value the integer value to consider for volume, bass or treble adjustment
-     *
-     * @throws RotelException - In case of any problem
-     */
     @Override
     public byte[] buildCommandMessage(RotelCommand cmd, @Nullable Integer value) throws RotelException {
-        byte[] message = new byte[0];
         if (cmd.getHexType() == 0) {
-            logger.debug("Command \"{}\" ignored: not available for HEX protocol", cmd.getName());
-        } else {
-            final int size = 6;
-            message = new byte[size];
-            int idx = 0;
-            message[idx++] = START;
-            message[idx++] = 3;
-            message[idx++] = model.getDeviceId();
-            message[idx++] = cmd.getHexType();
-            message[idx++] = (value == null) ? cmd.getHexKey() : (byte) (value & 0x000000FF);
-            final byte checksum = computeCheckSum(message, idx - 1);
-            if ((checksum & 0x000000FF) == 0x000000FD || (checksum & 0x000000FF) == 0x000000FE) {
-                message = Arrays.copyOf(message, size + 1);
-                message[idx++] = (byte) 0xFD;
-                message[idx++] = ((checksum & 0x000000FF) == 0x000000FD) ? (byte) 0 : (byte) 1;
-            } else {
-                message[idx++] = checksum;
-            }
-            logger.debug("Command \"{}\" => {}", cmd.getName(), HexUtils.bytesToHex(message));
+            throw new RotelException("Command \"" + cmd.getName() + "\" ignored: not available for HEX protocol");
         }
+        final int size = 6;
+        byte[] message = new byte[size];
+        int idx = 0;
+        message[idx++] = START;
+        message[idx++] = 3;
+        message[idx++] = model.getDeviceId();
+        message[idx++] = cmd.getHexType();
+        message[idx++] = (value == null) ? cmd.getHexKey() : (byte) (value & 0x000000FF);
+        final byte checksum = computeCheckSum(message, idx - 1);
+        if ((checksum & 0x000000FF) == 0x000000FD || (checksum & 0x000000FF) == 0x000000FE) {
+            message = Arrays.copyOf(message, size + 1);
+            message[idx++] = (byte) 0xFD;
+            message[idx++] = ((checksum & 0x000000FF) == 0x000000FD) ? (byte) 0 : (byte) 1;
+        } else {
+            message[idx++] = checksum;
+        }
+        logger.debug("Command \"{}\" => {}", cmd.getName(), HexUtils.bytesToHex(message));
         return message;
     }
 
@@ -338,14 +328,17 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
         try {
             dispatchKeyValue(KEY_POWER_ZONE2, model.isZone2On(flags) ? POWER_ON : STANDBY);
         } catch (RotelException e1) {
+            // Can't get zone power information from flags data, so we just do not notify of this information that way
         }
         try {
             dispatchKeyValue(KEY_POWER_ZONE3, model.isZone3On(flags) ? POWER_ON : STANDBY);
         } catch (RotelException e1) {
+            // Can't get zone power information from flags data, so we just do not notify of this information that way
         }
         try {
             dispatchKeyValue(KEY_POWER_ZONE4, model.isZone4On(flags) ? POWER_ON : STANDBY);
         } catch (RotelException e1) {
+            // Can't get zone power information from flags data, so we just do not notify of this information that way
         }
         boolean checkMultiIn = false;
         boolean checkSource = true;
@@ -362,15 +355,20 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
                         }
                     }
                 } catch (RotelException e1) {
+                    // MULTI source not declared for the model (should not happen), we do not notify of this source
                 }
             }
         } catch (RotelException e1) {
+            // Can't get status of multiple input source from flags data, checkMultiIn is set to true to get this
+            // information in another way
             checkMultiIn = true;
         }
         boolean checkStereo = true;
         try {
             checkStereo = !model.isMoreThan2Channels(flags);
         } catch (RotelException e1) {
+            // Can't get stereo information from flags data, checkStereo is set to true to get this information in
+            // another way
         }
 
         String valueLowerCase = value.trim().toLowerCase();
@@ -483,6 +481,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
                         }
                     }
                 } catch (RotelException e1) {
+                    // MULTI source not declared for the model (should not happen), we do not notify of this source
                 }
             } else if (!MSG_VALUE_OFF.equalsIgnoreCase(value)) {
                 logger.debug("Invalid value {} for MULTI IN", value);
@@ -588,6 +587,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
                 try {
                     source = model.getSourceFromName(RotelSource.CAT1_FOLLOW_MAIN.getName());
                 } catch (RotelException e) {
+                    // MAIN (follow main zone source) source not declared for the model, we return null
                 }
             } else {
                 for (RotelSource src : sourcesLabels.keySet()) {
