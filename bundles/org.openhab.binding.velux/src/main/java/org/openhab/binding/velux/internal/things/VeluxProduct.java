@@ -131,6 +131,9 @@ public class VeluxProduct {
         this.typeId = typeId;
         this.bridgeProductIndex = bridgeProductIndex;
         this.actuatorType = ActuatorType.WINDOW_4_0;
+        for (int i = 0; i < functionalParameters.length; i++) {
+            functionalParameters[i] = VeluxProductPosition.VPP_VELUX_UNKNOWN;
+        }
     }
 
     /**
@@ -151,6 +154,7 @@ public class VeluxProduct {
      * @param state This field indicates the operating state of the node.
      * @param currentPosition This field indicates the current position of the node.
      * @param target This field indicates the target position of the current operation.
+     * @param functionalParameters the target Functional Parameters as an array of int.
      * @param remainingTime This field indicates the remaining time for a node activation in seconds.
      * @param timeStamp UTC time stamp for last known position.
      */
@@ -231,6 +235,12 @@ public class VeluxProduct {
 
     // Class helper methods
 
+    /**
+     * Return the product unique index.
+     * Either the serial number (for normal Velux devices), or its name (for e.g. Somfy devices).
+     *
+     * @return ..
+     */
     public String getProductUniqueIndex() {
         if (!v2 || serialNumber.startsWith(VeluxProductSerialNo.UNKNOWN)) {
             return name.toString();
@@ -402,31 +412,36 @@ public class VeluxProduct {
     }
 
     /**
-     * Get the functional parameters as an array of int.
+     * Get the Functional Parameters.
      *
-     * @return the functional parameters
+     * @return the Functional Parameters as an array of int.
      */
     public int[] getFunctionalParameters() {
         return functionalParameters;
     }
 
     /**
-     * Set the functional parameters
+     * Set the Functional Parameters.
      *
-     * @param functionalParameters the new values of the Functional Parameters
-     * @return true any of the functional parameters have been changed
+     * @param functionalParameters the new values of the Functional Parameters.
+     * @return <b>modified</b> if any of the Functional Parameters have been changed.
      */
     public boolean setFunctionalParameters(int[] functionalParameters) {
-        boolean isDirty = false;
+        boolean modified = false;
         for (int i = 0; i < Math.min(this.functionalParameters.length, functionalParameters.length); i++) {
             if (this.functionalParameters[i] != functionalParameters[i]) {
                 this.functionalParameters[i] = functionalParameters[i];
-                isDirty = true;
+                modified = true;
             }
         }
-        return isDirty;
+        return modified;
     }
 
+    /**
+     * Return the actuator type.
+     *
+     * @return ..
+     */
     public ActuatorType getActuatorType() {
         return actuatorType;
     }

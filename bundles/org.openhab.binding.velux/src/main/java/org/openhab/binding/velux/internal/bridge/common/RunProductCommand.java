@@ -36,9 +36,10 @@ public abstract class RunProductCommand implements BridgeCommunicationProtocol {
      * Modifies the state of an actuator
      *
      * @param actuatorId Gateway internal actuator identifier (zero to 199).
-     * @param parameterValue target device state.
+     * @param mainValue target device state.
+     * @param functionalParameters the target Functional Parameters as an array of int.
      * @return reference to the class instance.
      */
-    public abstract RunProductCommand setNodeAndMainParameter(int actuatorId, int parameterValue,
+    public abstract RunProductCommand setNodeAndMainParameter(int actuatorId, int mainValue,
             int[] functionalParameters);
 }
