@@ -167,7 +167,7 @@ class SCgetProduct extends GetProduct implements SlipBridgeCommunicationProtocol
                 int ntfState = responseData.getOneByteValue(84);
                 int ntfCurrentPosition = responseData.getTwoByteValue(85);
                 int ntfTarget = responseData.getTwoByteValue(87);
-                int[] ntfFuntionalParameters = new int[VeluxBindingConstants.FUNCTIONAL_PARAMETER_COUNT];
+                int[] ntfFuntionalParameters = VeluxBindingConstants.newFunctionalParameterArray();
                 for (int i = 0; i < ntfFuntionalParameters.length; i++) {
                     ntfFuntionalParameters[i] = responseData.getTwoByteValue(89 + (i * 2));
                 }

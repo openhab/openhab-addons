@@ -72,7 +72,7 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
     private int reqPL03 = 0; // unused
     private int reqPL47 = 0; // unused
     private int reqLockTime = 0; // 30 seconds
-    private int[] reqFunctionalParameters = new int[VeluxBindingConstants.FUNCTIONAL_PARAMETER_COUNT];
+    private int[] reqFunctionalParameters = VeluxBindingConstants.newFunctionalParameterArray();
 
     /*
      * ===========================================================

@@ -76,7 +76,7 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
     private int ntfState;
     private int ntfCurrentPosition;
     private int ntfTarget;
-    private int[] ntfFuntionalParameters = new int[VeluxBindingConstants.FUNCTIONAL_PARAMETER_COUNT];
+    private int[] ntfFuntionalParameters = VeluxBindingConstants.newFunctionalParameterArray();
 
     /*
      * ===========================================================

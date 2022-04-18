@@ -94,7 +94,7 @@ public class VeluxProduct {
     private int state = State.UNKNOWN.value;
     private int currentPosition = 0;
     private int targetPosition = 0;
-    private int[] functionalParameters = new int[VeluxBindingConstants.FUNCTIONAL_PARAMETER_COUNT];
+    private int[] functionalParameters = VeluxBindingConstants.newFunctionalParameterArray();
     private int remainingTime = 0;
     private int timeStamp = 0;
 
@@ -111,9 +111,6 @@ public class VeluxProduct {
         this.typeId = VeluxProductType.UNDEFTYPE;
         this.bridgeProductIndex = ProductBridgeIndex.UNKNOWN;
         this.actuatorType = ActuatorType.UNDEFTYPE;
-        for (int i = 0; i < functionalParameters.length; i++) {
-            functionalParameters[i] = VeluxProductPosition.VPP_VELUX_UNKNOWN;
-        }
     }
 
     /**
@@ -131,9 +128,6 @@ public class VeluxProduct {
         this.typeId = typeId;
         this.bridgeProductIndex = bridgeProductIndex;
         this.actuatorType = ActuatorType.WINDOW_4_0;
-        for (int i = 0; i < functionalParameters.length; i++) {
-            functionalParameters[i] = VeluxProductPosition.VPP_VELUX_UNKNOWN;
-        }
     }
 
     /**
