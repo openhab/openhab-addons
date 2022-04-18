@@ -94,14 +94,14 @@
 	<channel-type id="activePhases">
 		<item-type>Number</item-type>
 		<label>Charging active phases</label>
-		<description>Current number of active phases</description>
+		<description>Current number of active phases while charging</description>
 		<category></category>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 	<channel-type id="chargeCurrent">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Charging current</label>
-		<description>Current electric current of charging</description>
+		<description>Current amperage per connected phase while charging</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -136,7 +136,7 @@
 	<channel-type id="charging">
 		<item-type>Switch</item-type>
 		<label>Charging state</label>
-		<description>Currently charging or not</description>
+		<description>Loadpoint is currently charging</description>
 		<category>Energy</category>
 		<state pattern="%f %unit%" readOnly="true">
 			<options>
@@ -148,7 +148,7 @@
 	<channel-type id="enabled">
 		<item-type>Switch</item-type>
 		<label>Charging enabled</label>
-		<description>Charging enabled or not</description>
+		<description>Charging enabled (mode not "off")</description>
 		<category>Switch</category>
 		<state readOnly="true">
 			<options>
@@ -172,7 +172,7 @@
 	<channel-type id="maxCurrent">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Charging max current</label>
-		<description>Maximum electric current for charging</description>
+		<description>Maximum amperage per connected phase with which the car should be charged</description>
 		<category>Energy</category>
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -180,7 +180,7 @@
 	<channel-type id="minCurrent">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Charging min current</label>
-		<description>Minimum electric current for charging</description>
+		<description>Minimum amperage per connected phase with which the car should be charged</description>
 		<category>Energy</category>
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -188,7 +188,7 @@
 	<channel-type id="minSoC">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Charging min SoC</label>
-		<description>Minimum State of Charge of EV to charge; limited by targetSoC</description>
+		<description>Charge immediately with maximum power up to the defined SoC, if the charge mode is not set to "off"</description>
 		<category>Batterylevel</category>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -196,7 +196,7 @@
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Charging mode</label>
-		<description>Mode of charging</description>
+		<description>Charging mode: "off", "now", "minpv", "pv"</description>
 		<category>String</category>
 		<state readOnly="false">
 			<options>
@@ -210,15 +210,15 @@
 	</channel-type>
 	<channel-type id="phases">
 		<item-type>Number</item-type>
-		<label>Charging enabled Phases</label>
-		<description>Number of enabled phases for charging</description>
+		<label>Charging enabled phases</label>
+		<description>The maximum number of phases which can be used</description>
 		<category>Energy</category>
 		<state min="0" step="1" max="3" pattern="%d" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="pvAction">
+	<channel-type id="pvAction" advanced="true">
 		<item-type>Switch</item-type>
-		<label>CHarging PV action</label>
+		<label>Charging PV action</label>
 		<description>PV (solarplant) activity</description>
 		<category>Solarplant</category>
 		<state readOnly="true">
@@ -231,7 +231,7 @@
 	<channel-type id="targetSoC">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Charging target SoC</label>
-		<description>Target State of Charge for EV battery</description>
+		<description>Until which state of charge (SoC) should the vehicle be charged</description>
 		<category>Batterylevel</category>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -259,7 +259,7 @@
 	<channel-type id="targetTimeEnabled">
 		<item-type>Switch</item-type>
 		<label>Charging target time enabled</label>
-		<description>Target time for charging enabled or not</description>
+		<description>Target time for charging enabled</description>
 		<category>Switch</category>
 		<state readOnly="false">
 			<options>
@@ -279,7 +279,7 @@
 	<channel-type id="vehicleConnected">
 		<item-type>Switch</item-type>
 		<label>Vehicle connected</label>
-		<description>Whether vehicle is connected to loadpoint or not</description>
+		<description>Whether vehicle is connected to loadpoint</description>
 		<category>Switch</category>
 		<state readOnly="true">
 			<options>
@@ -312,7 +312,7 @@
 	<channel-type id="vehiclePresent">
 		<item-type>Switch</item-type>
 		<label>Vehicle data access</label>
-		<description>Whether evcc is able to get data from vehicle or not</description>
+		<description>Whether evcc is able to get data from vehicle</description>
 		<category>Switch</category>
 		<state readOnly="true">
 			<options>
