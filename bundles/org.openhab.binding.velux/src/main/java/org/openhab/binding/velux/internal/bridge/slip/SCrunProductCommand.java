@@ -331,10 +331,10 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
      */
 
     @Override
-    public SCrunProductCommand setNodeAndMainParameter(int actuatorId, int mainValue, int[] functionalParameters) {
-        logger.debug("setNodeAndMainParameter({}) called.", actuatorId);
-        reqIndexArray01 = actuatorId;
-        reqMainParameter = mainValue;
+    public SCrunProductCommand setNodeIdAndParameters(int nodeId, int mainParameter, int[] functionalParameters) {
+        logger.debug("setNodeAndMainParameter({}) called.", nodeId);
+        reqIndexArray01 = nodeId;
+        reqMainParameter = mainParameter;
         for (int i = 0; i < Math.min(reqFunctionalParameters.length, functionalParameters.length); i++) {
             reqFunctionalParameters[i] = functionalParameters[i];
         }

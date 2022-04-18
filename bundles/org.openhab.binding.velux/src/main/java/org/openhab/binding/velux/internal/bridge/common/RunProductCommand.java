@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * In addition to the common methods defined by {@link BridgeCommunicationProtocol}
  * each protocol-specific implementation has to provide the following methods:
  * <UL>
- * <LI>{@link #setNodeAndMainParameter} for defining the intended node and the main parameter value.
+ * <LI>{@link #setNodeIdAndParameters} for defining the intended node and the main parameter value.
  * </UL>
  *
  * @see BridgeCommunicationProtocol
@@ -35,11 +35,10 @@ public abstract class RunProductCommand implements BridgeCommunicationProtocol {
     /**
      * Modifies the state of an actuator
      *
-     * @param actuatorId Gateway internal actuator identifier (zero to 199).
-     * @param mainValue target device state.
+     * @param nodeId Gateway internal actuator identifier (zero to 199).
+     * @param mainParameter target device state.
      * @param functionalParameters the target Functional Parameters as an array of int.
      * @return reference to the class instance.
      */
-    public abstract RunProductCommand setNodeAndMainParameter(int actuatorId, int mainValue,
-            int[] functionalParameters);
+    public abstract RunProductCommand setNodeIdAndParameters(int nodeId, int mainParameter, int[] functionalParameters);
 }

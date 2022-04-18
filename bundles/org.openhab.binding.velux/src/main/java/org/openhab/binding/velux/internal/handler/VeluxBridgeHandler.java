@@ -845,7 +845,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.trace("moveRelative() called on {}", getThing().getUID());
         RunProductCommand bcp = thisBridge.bridgeAPI().runProductCommand();
         if (bcp != null) {
-            bcp.setNodeAndMainParameter(nodeId, new VeluxProductPosition(new PercentType(Math.abs(relativePercent)))
+            bcp.setNodeIdAndParameters(nodeId, new VeluxProductPosition(new PercentType(Math.abs(relativePercent)))
                     .getAsRelativePosition((relativePercent >= 0)), new int[0]);
             // background execution of moveRelative
             submitCommunicationsJob(() -> {

@@ -47,19 +47,19 @@ public class VeluxBridgeRunProductCommand {
      */
     public boolean sendCommand(VeluxBridge bridge, int nodeId, VeluxProductPosition mainValue,
             int[] functionalParameters) {
-        logger.trace("sendPositionCommand(nodeId={},value={}) called.", nodeId, mainValue);
+        logger.trace("sendCommand(nodeId={},value={}) called.", nodeId, mainValue);
 
         boolean success = false;
         RunProductCommand bcp = bridge.bridgeAPI().runProductCommand();
         if (bcp != null) {
-            int veluxMainValue = mainValue.getPositionAsVeluxType();
+            int mainParameter = mainValue.getPositionAsVeluxType();
 
-            bcp.setNodeAndMainParameter(nodeId, veluxMainValue, functionalParameters);
+            bcp.setNodeIdAndParameters(nodeId, mainParameter, functionalParameters);
             if (bridge.bridgeCommunicate(bcp) && bcp.isCommunicationSuccessful()) {
                 success = true;
             }
         }
-        logger.debug("sendPositionCommand() finished {}.", (success ? "successfully" : "with failure"));
+        logger.debug("sendCommand() finished {}.", (success ? "successfully" : "with failure"));
         return success;
     }
 }
