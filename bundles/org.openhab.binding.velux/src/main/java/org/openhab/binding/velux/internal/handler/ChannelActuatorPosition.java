@@ -115,13 +115,14 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                                 }
                             default:
                         }
-                        if (vanePosition == VeluxProductPosition.VPP_VELUX_UNKNOWN) {
-                            newState = UnDefType.UNDEF;
-                            LOGGER.trace("handleRefresh(): position of vane is 'UNDEFINED'.");
-                        } else {
+                        if ((vanePosition >= VeluxProductPosition.VPP_VELUX_MIN)
+                                && (vanePosition <= VeluxProductPosition.VPP_VELUX_MAX)) {
                             VeluxProductPosition productVanePosition = new VeluxProductPosition(vanePosition);
                             newState = productVanePosition.getPositionAsPercentType(false);
                             LOGGER.trace("handleRefresh(): position of vane is {}%.", newState);
+                        } else {
+                            newState = UnDefType.UNDEF;
+                            LOGGER.trace("handleRefresh(): position of vane is 'UNDEFINED'.");
                         }
                         break;
                     }
@@ -161,7 +162,6 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
      *            information for this channel.
      * @return newValue ...
      */
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     static @Nullable Command handleCommand(ChannelUID channelUID, String channelId, Command command,
             VeluxBridgeHandler thisBridgeHandler) {
         LOGGER.debug("handleCommand({},{},{},{}) called.", channelUID, channelId, command, thisBridgeHandler);
@@ -240,7 +240,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                             : new VeluxProductPosition(PercentType.HUNDRED);
                 }
             }
-            if (targetLevel == VeluxProductPosition.UNKNOWN) {
+            if (targetLevel.equals(VeluxProductPosition.UNKNOWN)) {
                 LOGGER.info("handleCommand({},{}): ignoring command.", channelUID.getAsString(), command);
                 break;
             }
