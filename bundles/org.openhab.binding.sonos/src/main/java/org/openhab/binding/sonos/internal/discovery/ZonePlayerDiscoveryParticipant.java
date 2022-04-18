@@ -82,7 +82,8 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
             if (device.getDetails().getManufacturerDetails().getManufacturer().toUpperCase().contains("SONOS")) {
                 String id = SonosXMLParser
                         .buildThingTypeIdFromModelName(device.getDetails().getModelDetails().getModelName());
-                if (!"Sub".equalsIgnoreCase(id)) {
+                String udn = device.getIdentity().getUdn().getIdentifierString();
+                if (!id.isEmpty() && !"Sub".equalsIgnoreCase(id) && !udn.isEmpty()) {
                     ThingTypeUID thingTypeUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, id);
                     if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingTypeUID)) {
                         // Try with the model name all in uppercase
@@ -96,9 +97,8 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
                         }
                     }
 
-                    logger.debug("Discovered a Sonos '{}' thing with UDN '{}'", thingTypeUID,
-                            device.getIdentity().getUdn().getIdentifierString());
-                    return new ThingUID(thingTypeUID, device.getIdentity().getUdn().getIdentifierString());
+                    logger.debug("Discovered a Sonos '{}' thing with UDN '{}'", thingTypeUID, udn);
+                    return new ThingUID(thingTypeUID, udn);
                 }
             }
         }
