@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.rotel.internal;
 
+import static org.openhab.binding.rotel.internal.communication.RotelCommand.*;
+import static org.openhab.binding.rotel.internal.protocol.ascii.RotelAbstractAsciiProtocolHandler.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rotel.internal.communication.RotelCommand;
-import org.openhab.binding.rotel.internal.communication.RotelConnector;
 import org.openhab.binding.rotel.internal.communication.RotelDsp;
 import org.openhab.binding.rotel.internal.communication.RotelFlagsMapping;
 import org.openhab.binding.rotel.internal.communication.RotelSource;
@@ -32,78 +34,64 @@ import org.openhab.core.types.StateOption;
 @NonNullByDefault
 public enum RotelModel {
 
-    RSP1066("RSP-1066", 19200, 3, 1, false, 90, false, 12, false, RotelCommand.ZONE_SELECT, 1, (byte) 0xC2, 13, 8, true,
+    RSP1066("RSP-1066", 19200, 3, 1, false, 90, false, 12, false, ZONE_SELECT, 1, (byte) 0xC2, 13, 8, true,
             RotelFlagsMapping.MAPPING1),
-    RSP1068("RSP-1068", 19200, 1, 1, true, 96, true, 6, false, RotelCommand.RECORD_FONCTION_SELECT, 2, (byte) 0xA1, 42,
-            5, true, RotelFlagsMapping.MAPPING2),
-    RSP1069("RSP-1069", 38400, 1, 3, true, 96, true, 6, false, RotelCommand.RECORD_FONCTION_SELECT, 2, (byte) 0xA2, 42,
-            5, true, RotelFlagsMapping.MAPPING5),
-    RSP1098("RSP-1098", 19200, 1, 1, true, 96, true, 6, false, RotelCommand.ZONE_SELECT, 2, (byte) 0xA0, 13, 8, true,
-            RotelFlagsMapping.MAPPING1),
-    RSP1570("RSP-1570", 115200, 1, 3, true, 96, true, 6, false, RotelCommand.RECORD_FONCTION_SELECT, 3, (byte) 0xA3, 42,
-            5, true, RotelFlagsMapping.MAPPING5),
-    RSP1572("RSP-1572", 115200, 2, 3, true, 96, true, null, false, RotelCommand.RECORD_FONCTION_SELECT, 4, (byte) 0xA5,
-            42, 5, true, RotelFlagsMapping.MAPPING5),
-    RSX1055("RSX-1055", 19200, 3, 1, false, 90, false, 12, false, RotelCommand.ZONE_SELECT, 1, (byte) 0xC3, 13, 8, true,
-            RotelFlagsMapping.MAPPING1),
-    RSX1056("RSX-1056", 19200, 1, 1, true, 96, true, 12, false, RotelCommand.ZONE_SELECT, 2, (byte) 0xC5, 13, 8, true,
-            RotelFlagsMapping.MAPPING1),
-    RSX1057("RSX-1057", 19200, 1, 1, true, 96, true, 6, false, RotelCommand.RECORD_FONCTION_SELECT, 2, (byte) 0xC7, 13,
-            8, true, RotelFlagsMapping.MAPPING1),
-    RSX1058("RSX-1058", 38400, 1, 3, true, 96, true, 6, false, RotelCommand.RECORD_FONCTION_SELECT, 2, (byte) 0xC8, 13,
-            8, true, RotelFlagsMapping.MAPPING4),
-    RSX1065("RSX-1065", 19200, 3, 1, false, 96, false, 12, false, RotelCommand.ZONE_SELECT, 1, (byte) 0xC1, 42, 5, true,
+    RSP1068("RSP-1068", 19200, 1, 1, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2, (byte) 0xA1, 42, 5, true,
             RotelFlagsMapping.MAPPING2),
-    RSX1067("RSX-1067", 19200, 1, 1, true, 96, true, 6, false, RotelCommand.RECORD_FONCTION_SELECT, 2, (byte) 0xC4, 42,
-            5, true, RotelFlagsMapping.MAPPING2),
-    RSX1550("RSX-1550", 115200, 1, 3, true, 96, true, 6, false, RotelCommand.RECORD_FONCTION_SELECT, 3, (byte) 0xC9, 13,
-            8, true, RotelFlagsMapping.MAPPING3),
-    RSX1560("RSX-1560", 115200, 1, 3, true, 96, true, 6, false, RotelCommand.RECORD_FONCTION_SELECT, 3, (byte) 0xCA, 42,
-            5, true, RotelFlagsMapping.MAPPING5),
-    RSX1562("RSX-1562", 115200, 2, 3, true, 96, true, null, false, RotelCommand.RECORD_FONCTION_SELECT, 4, (byte) 0xCC,
-            42, 5, true, RotelFlagsMapping.MAPPING5),
-    A11("A11", 115200, 4, 96, true, 10, 15, false, -1, false, true, true, 6, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
-    A12("A12", 115200, 5, 96, true, 10, 15, false, -1, true, true, true, 6, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
-    A14("A14", 115200, 5, 96, true, 10, 15, false, -1, true, true, true, 6, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
-    CD11("CD11", 57600, 0, null, false, null, true, -1, false, true, 6, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
-    CD14("CD14", 57600, 0, null, false, null, true, -1, false, true, 6, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
-    RA11("RA-11", 115200, 6, 96, true, 10, 15, true, -1, true, false, false, 6, 0, RotelConnector.SPECIAL_CHARACTERS),
-    RA12("RA-12", 115200, 6, 96, true, 10, 15, true, -1, true, false, false, 6, 0, RotelConnector.SPECIAL_CHARACTERS),
-    RA1570("RA-1570", 115200, 7, 96, true, 10, 15, true, -1, true, true, false, 6, 0,
-            RotelConnector.SPECIAL_CHARACTERS),
-    RA1572("RA-1572", 115200, 8, 96, true, 10, 15, false, -1, true, true, true, 6, 0,
-            RotelConnector.SPECIAL_CHARACTERS),
-    RA1592("RA-1592", 115200, 9, 96, true, 10, 15, false, -1, true, true, true, 6, 0,
-            RotelConnector.SPECIAL_CHARACTERS),
-    RAP1580("RAP-1580", 115200, 11, 96, true, null, false, 5, false, false, -10, 10,
-            RotelConnector.NO_SPECIAL_CHARACTERS),
-    RC1570("RC-1570", 115200, 7, 96, true, 10, 15, true, -1, true, false, false, 6, 0,
-            RotelConnector.SPECIAL_CHARACTERS),
-    RC1572("RC-1572", 115200, 8, 96, true, 10, 15, false, -1, true, false, true, 6, 0,
-            RotelConnector.SPECIAL_CHARACTERS),
-    RC1590("RC-1590", 115200, 9, 96, true, 10, 15, false, -1, true, false, true, 6, 0,
-            RotelConnector.SPECIAL_CHARACTERS),
-    RCD1570("RCD-1570", 115200, 0, null, false, null, true, -1, false, true, 6, 0, RotelConnector.SPECIAL_CHARACTERS),
-    RCD1572("RCD-1572", 57600, 0, null, false, null, true, -1, false, true, 6, 0,
-            RotelConnector.SPECIAL_CHARACTERS_RCD1572),
-    RCX1500("RCX-1500", 115200, 17, 86, true, null, true, -1, false, false, null, null,
-            RotelConnector.SPECIAL_CHARACTERS),
-    RDD1580("RDD-1580", 115200, 15, null, false, null, true, -1, true, false, null, null,
-            RotelConnector.NO_SPECIAL_CHARACTERS),
-    RDG1520("RDG-1520", 115200, 16, null, false, null, true, -1, false, false, null, null,
-            RotelConnector.SPECIAL_CHARACTERS),
-    RSP1576("RSP-1576", 115200, 10, 96, true, null, false, 5, false, false, -10, 10,
-            RotelConnector.NO_SPECIAL_CHARACTERS),
-    RSP1582("RSP-1582", 115200, 11, 96, true, null, false, 6, false, false, -10, 10,
-            RotelConnector.NO_SPECIAL_CHARACTERS),
-    RT11("RT-11", 115200, 12, null, false, null, false, -1, false, true, 6, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
-    RT1570("RT-1570", 115200, 14, null, false, null, false, -1, false, true, 6, 0,
-            RotelConnector.NO_SPECIAL_CHARACTERS),
-    T11("T11", 115200, 12, null, false, null, false, -1, false, true, 6, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
-    T14("T14", 115200, 13, null, false, null, false, -1, false, true, 6, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
-    P5("P5", 115200, 20, 96, true, 10, 10, false, -1, true, false, true, 4, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
-    X3("X3", 115200, 18, 96, true, 10, 10, false, -1, true, false, true, 4, 0, RotelConnector.NO_SPECIAL_CHARACTERS),
-    X5("X5", 115200, 19, 96, true, 10, 10, false, -1, true, false, true, 4, 0, RotelConnector.NO_SPECIAL_CHARACTERS);
+    RSP1069("RSP-1069", 38400, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2, (byte) 0xA2, 42, 5, true,
+            RotelFlagsMapping.MAPPING5),
+    RSP1098("RSP-1098", 19200, 1, 1, true, 96, true, 6, false, ZONE_SELECT, 2, (byte) 0xA0, 13, 8, true,
+            RotelFlagsMapping.MAPPING1),
+    RSP1570("RSP-1570", 115200, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 3, (byte) 0xA3, 42, 5, true,
+            RotelFlagsMapping.MAPPING5),
+    RSP1572("RSP-1572", 115200, 2, 3, true, 96, true, null, false, RECORD_FONCTION_SELECT, 4, (byte) 0xA5, 42, 5, true,
+            RotelFlagsMapping.MAPPING5),
+    RSX1055("RSX-1055", 19200, 3, 1, false, 90, false, 12, false, ZONE_SELECT, 1, (byte) 0xC3, 13, 8, true,
+            RotelFlagsMapping.MAPPING1),
+    RSX1056("RSX-1056", 19200, 1, 1, true, 96, true, 12, false, ZONE_SELECT, 2, (byte) 0xC5, 13, 8, true,
+            RotelFlagsMapping.MAPPING1),
+    RSX1057("RSX-1057", 19200, 1, 1, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2, (byte) 0xC7, 13, 8, true,
+            RotelFlagsMapping.MAPPING1),
+    RSX1058("RSX-1058", 38400, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2, (byte) 0xC8, 13, 8, true,
+            RotelFlagsMapping.MAPPING4),
+    RSX1065("RSX-1065", 19200, 3, 1, false, 96, false, 12, false, ZONE_SELECT, 1, (byte) 0xC1, 42, 5, true,
+            RotelFlagsMapping.MAPPING2),
+    RSX1067("RSX-1067", 19200, 1, 1, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2, (byte) 0xC4, 42, 5, true,
+            RotelFlagsMapping.MAPPING2),
+    RSX1550("RSX-1550", 115200, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 3, (byte) 0xC9, 13, 8, true,
+            RotelFlagsMapping.MAPPING3),
+    RSX1560("RSX-1560", 115200, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 3, (byte) 0xCA, 42, 5, true,
+            RotelFlagsMapping.MAPPING5),
+    RSX1562("RSX-1562", 115200, 2, 3, true, 96, true, null, false, RECORD_FONCTION_SELECT, 4, (byte) 0xCC, 42, 5, true,
+            RotelFlagsMapping.MAPPING5),
+    A11("A11", 115200, 4, 96, true, 10, 15, false, -1, false, true, true, 6, 0, NO_SPECIAL_CHARACTERS),
+    A12("A12", 115200, 5, 96, true, 10, 15, false, -1, true, true, true, 6, 0, NO_SPECIAL_CHARACTERS),
+    A14("A14", 115200, 5, 96, true, 10, 15, false, -1, true, true, true, 6, 0, NO_SPECIAL_CHARACTERS),
+    CD11("CD11", 57600, 0, null, false, null, true, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
+    CD14("CD14", 57600, 0, null, false, null, true, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
+    RA11("RA-11", 115200, 6, 96, true, 10, 15, true, -1, true, false, false, 6, 0, SPECIAL_CHARACTERS),
+    RA12("RA-12", 115200, 6, 96, true, 10, 15, true, -1, true, false, false, 6, 0, SPECIAL_CHARACTERS),
+    RA1570("RA-1570", 115200, 7, 96, true, 10, 15, true, -1, true, true, false, 6, 0, SPECIAL_CHARACTERS),
+    RA1572("RA-1572", 115200, 8, 96, true, 10, 15, false, -1, true, true, true, 6, 0, SPECIAL_CHARACTERS),
+    RA1592("RA-1592", 115200, 9, 96, true, 10, 15, false, -1, true, true, true, 6, 0, SPECIAL_CHARACTERS),
+    RAP1580("RAP-1580", 115200, 11, 96, true, null, false, 5, false, false, -10, 10, NO_SPECIAL_CHARACTERS),
+    RC1570("RC-1570", 115200, 7, 96, true, 10, 15, true, -1, true, false, false, 6, 0, SPECIAL_CHARACTERS),
+    RC1572("RC-1572", 115200, 8, 96, true, 10, 15, false, -1, true, false, true, 6, 0, SPECIAL_CHARACTERS),
+    RC1590("RC-1590", 115200, 9, 96, true, 10, 15, false, -1, true, false, true, 6, 0, SPECIAL_CHARACTERS),
+    RCD1570("RCD-1570", 115200, 0, null, false, null, true, -1, false, true, 6, 0, SPECIAL_CHARACTERS),
+    RCD1572("RCD-1572", 57600, 0, null, false, null, true, -1, false, true, 6, 0, SPECIAL_CHARACTERS_RCD1572),
+    RCX1500("RCX-1500", 115200, 17, 86, true, null, true, -1, false, false, null, null, SPECIAL_CHARACTERS),
+    RDD1580("RDD-1580", 115200, 15, null, false, null, true, -1, true, false, null, null, NO_SPECIAL_CHARACTERS),
+    RDG1520("RDG-1520", 115200, 16, null, false, null, true, -1, false, false, null, null, SPECIAL_CHARACTERS),
+    RSP1576("RSP-1576", 115200, 10, 96, true, null, false, 5, false, false, -10, 10, NO_SPECIAL_CHARACTERS),
+    RSP1582("RSP-1582", 115200, 11, 96, true, null, false, 6, false, false, -10, 10, NO_SPECIAL_CHARACTERS),
+    RT11("RT-11", 115200, 12, null, false, null, false, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
+    RT1570("RT-1570", 115200, 14, null, false, null, false, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
+    T11("T11", 115200, 12, null, false, null, false, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
+    T14("T14", 115200, 13, null, false, null, false, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
+    P5("P5", 115200, 20, 96, true, 10, 10, false, -1, true, false, true, 4, 0, NO_SPECIAL_CHARACTERS),
+    X3("X3", 115200, 18, 96, true, 10, 10, false, -1, true, false, true, 4, 0, NO_SPECIAL_CHARACTERS),
+    X5("X5", 115200, 19, 96, true, 10, 10, false, -1, true, false, true, 4, 0, NO_SPECIAL_CHARACTERS);
 
     private String name;
     private int baudRate;
@@ -154,10 +142,9 @@ public enum RotelModel {
             @Nullable Integer volumeMax, boolean directVolume, @Nullable Integer toneLevelMax, boolean playControl,
             @Nullable RotelCommand zoneSelectCmd, int dspCategory, byte deviceId, int respNbChars, int respNbFlags,
             boolean charsBeforeFlags, RotelFlagsMapping flagsMapping) {
-        this(name, baudRate, RotelCommand.DISPLAY_REFRESH, sourceCategory, nbAdditionalZones, additionalCommands,
-                volumeMax, directVolume, toneLevelMax, null, playControl, zoneSelectCmd, dspCategory, false, false,
-                false, null, null, deviceId, respNbChars, respNbFlags, charsBeforeFlags, flagsMapping,
-                RotelConnector.NO_SPECIAL_CHARACTERS);
+        this(name, baudRate, DISPLAY_REFRESH, sourceCategory, nbAdditionalZones, additionalCommands, volumeMax,
+                directVolume, toneLevelMax, null, playControl, zoneSelectCmd, dspCategory, false, false, false, null,
+                null, deviceId, respNbChars, respNbFlags, charsBeforeFlags, flagsMapping, NO_SPECIAL_CHARACTERS);
     }
 
     /**
@@ -181,8 +168,8 @@ public enum RotelModel {
             @Nullable Integer toneLevelMax, boolean playControl, int dspCategory, boolean getFrequencyAvailable,
             boolean getDimmerLevelAvailable, @Nullable Integer diummerLevelMin, @Nullable Integer diummerLevelMax,
             byte[][] specialCharacters) {
-        this(name, baudRate, RotelCommand.POWER, sourceCategory, 0, false, volumeMax, directVolume, toneLevelMax, null,
-                playControl, null, dspCategory, getFrequencyAvailable, false, getDimmerLevelAvailable, diummerLevelMin,
+        this(name, baudRate, POWER, sourceCategory, 0, false, volumeMax, directVolume, toneLevelMax, null, playControl,
+                null, dspCategory, getFrequencyAvailable, false, getDimmerLevelAvailable, diummerLevelMin,
                 diummerLevelMax, (byte) 0, 0, 0, false, RotelFlagsMapping.NO_MAPPING, specialCharacters);
     }
 
@@ -209,8 +196,8 @@ public enum RotelModel {
             @Nullable Integer toneLevelMax, @Nullable Integer balanceLevelMax, boolean playControl, int dspCategory,
             boolean getFrequencyAvailable, boolean getSpeakerGroupsAvailable, boolean getDimmerLevelAvailable,
             @Nullable Integer diummerLevelMin, @Nullable Integer diummerLevelMax, byte[][] specialCharacters) {
-        this(name, baudRate, RotelCommand.POWER, sourceCategory, 0, false, volumeMax, directVolume, toneLevelMax,
-                balanceLevelMax, playControl, null, dspCategory, getFrequencyAvailable, getSpeakerGroupsAvailable,
+        this(name, baudRate, POWER, sourceCategory, 0, false, volumeMax, directVolume, toneLevelMax, balanceLevelMax,
+                playControl, null, dspCategory, getFrequencyAvailable, getSpeakerGroupsAvailable,
                 getDimmerLevelAvailable, diummerLevelMin, diummerLevelMax, (byte) 0, 0, 0, false,
                 RotelFlagsMapping.NO_MAPPING, specialCharacters);
     }
