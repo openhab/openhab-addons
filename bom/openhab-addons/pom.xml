@@ -1004,6 +1004,10 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.mycroft</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.mybmw</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
