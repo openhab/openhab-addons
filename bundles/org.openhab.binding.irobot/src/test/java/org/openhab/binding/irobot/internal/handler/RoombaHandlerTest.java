@@ -60,7 +60,7 @@ public class RoombaHandlerTest {
     @Nullable
     private RoombaHandler handler;
     // We have to initialize it to avoid compile errors
-    private @Mock Thing thing = new ThingImpl(new ThingTypeUID("AA:BB"), "");
+    private @Mock Thing thing = new ThingImpl(new ThingTypeUID("AA:BB"), "test");
     @Nullable
     private ThingHandlerCallback callback;
 
