@@ -97,11 +97,11 @@ public enum VeluxProductType {
 
         // Class access methods
 
-        int getNodeType() {
+        public int getNodeType() {
             return nodeType;
         }
 
-        String getDescription() {
+        public String getDescription() {
             return description;
         }
 
