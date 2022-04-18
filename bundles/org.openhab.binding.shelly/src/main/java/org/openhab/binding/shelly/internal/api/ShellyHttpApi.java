@@ -199,8 +199,8 @@ public class ShellyHttpApi {
             status.tmp.tC = status.tmp.units.equals(SHELLY_TEMP_CELSIUS) ? status.tmp.value
                     : ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(getDouble(status.tmp.value))
                             .doubleValue();
-            double f = SIUnits.CELSIUS.getConverterTo(ImperialUnits.FAHRENHEIT).convert(getDouble(status.tmp.value))
-                    .doubleValue();
+            double f = (double) SIUnits.CELSIUS.getConverterTo(ImperialUnits.FAHRENHEIT)
+                    .convert(getDouble(status.tmp.value));
             status.tmp.tF = status.tmp.units.equals(SHELLY_TEMP_FAHRENHEIT) ? status.tmp.value : f;
         }
         if ((status.charger == null) && (profile.settings.externalPower != null)) {
@@ -223,6 +223,36 @@ public class ShellyHttpApi {
 
     public void setSleepTime(int value) throws ShellyApiException {
         request(SHELLY_URL_SETTINGS + "?sleep_time=" + value);
+    }
+
+    public void setTemperature(int valveId, int value) throws ShellyApiException {
+        request("/thermostat/" + valveId + "?target_t_enabled=1&target_t=" + value);
+    }
+
+    public void setValveMode(int valveId, boolean auto) throws ShellyApiException {
+        String uri = "/settings/thermostat/" + valveId + "?target_t_enabled=" + (auto ? "1" : "0");
+        if (auto) {
+            uri = uri + "&target_t=" + getDouble(profile.settings.thermostats.get(0).targetTemp.value);
+        }
+        request(uri); // percentage to open the valve
+    }
+
+    public void setProfile(int valveId, int value) throws ShellyApiException {
+        String uri = "/settings/thermostat/" + valveId + "?";
+        request(uri + (value == 0 ? "schedule=0" : "schedule=1&schedule_profile=" + value));
+    }
+
+    public void setValvePosition(int valveId, double value) throws ShellyApiException {
+        request("/thermostat/" + valveId + "?pos=" + value); // percentage to open the valve
+    }
+
+    public void setBoostTime(int valveId, int value) throws ShellyApiException {
+        request("/settings/thermostat/" + valveId + "?boost_minutes=" + value);
+    }
+
+    public void startBoost(int valveId, int value) throws ShellyApiException {
+        int minutes = value != -1 ? value : getInteger(profile.settings.thermostats.get(0).boostMinutes);
+        request("/thermostat/" + valveId + "?boost_minutes=" + minutes);
     }
 
     public void setLedStatus(String ledName, Boolean value) throws ShellyApiException {
