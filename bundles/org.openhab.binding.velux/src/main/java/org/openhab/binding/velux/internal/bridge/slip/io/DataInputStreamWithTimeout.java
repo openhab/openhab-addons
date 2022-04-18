@@ -142,7 +142,7 @@ class DataInputStreamWithTimeout implements Closeable {
             logger.debug("startPolling() called");
             slipMessageQueue.clear();
             poller = new Poller(inputStream, slipMessageQueue);
-            executor = Executors.newSingleThreadExecutor(bridge.getThreadFactory());
+            ExecutorService executor = this.executor = Executors.newSingleThreadExecutor(bridge.getThreadFactory());
             future = executor.submit(poller);
         }
     }
