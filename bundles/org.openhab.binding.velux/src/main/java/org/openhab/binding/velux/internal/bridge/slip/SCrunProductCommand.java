@@ -133,7 +133,8 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
         int bitMask = 0b10000000;
         for (int i = 0; i < reqFunctionalParameters.length; i++) {
             int paramValue = reqFunctionalParameters[i];
-            if (paramValue != VeluxProductPosition.VPP_VELUX_UNKNOWN) {
+            if ((paramValue >= VeluxProductPosition.VPP_VELUX_MIN)
+                    && (paramValue <= VeluxProductPosition.VPP_VELUX_MAX)) {
                 reqFPI1 |= bitMask;
                 request.setTwoByteValue(9 + (i * 2), paramValue);
             }
@@ -330,12 +331,12 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
      */
 
     @Override
-    public SCrunProductCommand setNodeAndMainParameter(int nodeId, int value, int[] functionalParameters) {
-        logger.debug("setNodeAndMainParameter({}) called.", nodeId);
-        this.reqIndexArray01 = nodeId;
-        this.reqMainParameter = value;
-        for (int i = 0; i < Math.min(this.reqFunctionalParameters.length, functionalParameters.length); i++) {
-            this.reqFunctionalParameters[i] = functionalParameters[i];
+    public SCrunProductCommand setNodeAndMainParameter(int actuatorId, int mainValue, int[] functionalParameters) {
+        logger.debug("setNodeAndMainParameter({}) called.", actuatorId);
+        reqIndexArray01 = actuatorId;
+        reqMainParameter = mainValue;
+        for (int i = 0; i < Math.min(reqFunctionalParameters.length, functionalParameters.length); i++) {
+            reqFunctionalParameters[i] = functionalParameters[i];
         }
         return this;
     }
