@@ -1,0 +1,10 @@
+{
+  "executionStatus" : {
+    "serviceType" : "LIGHT_FLASH",
+    "eventId" : "424C39333232312237B3E900@bmw.de",
+    "extendedStatus" : {
+      "result" : "STATUS_UNKNOWN"
+    },
+    "status" : "DELIVERED"
+  }
+}
