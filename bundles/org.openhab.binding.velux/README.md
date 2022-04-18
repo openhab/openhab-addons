@@ -235,11 +235,15 @@ Bridge velux:klf200:g24 "Velux KLF200 Hub" @ "Under Stairs" [ipAddress="192.168.
 }
 ```
 
+See [velux.things](doc/conf/things/velux.things) for more examples.
+
 ### Items
 
 ```
 Rollershutter Bathroom_Roof_Window_Position "Bathroom Roof Window Position [%.0f %%]" {channel="velux:window:g24:w56-36-13-5A-11-2A-05-70:position"}
 ```
+
+See [velux.items](doc/conf/items/velux.items) for more examples.
 
 ### Sitemap
 
@@ -248,6 +252,8 @@ Frame label="Velux Windows" {
 	Slider item=Bathroom_Roof_Window_Position
 }
 ```
+
+See [velux.sitemap](doc/conf/sitemaps/velux.sitemap) for more examples.
 
 ### Rule for closing windows after a period of time
 
@@ -285,7 +291,7 @@ then
 end
 ```
 
-[=> download sample rules file for textual configuration](./doc/conf/rules/velux.rules)
+See [velux.rules](doc/conf/rules/velux.rules) for more examples.
 
 ### Rule for rebooting the Bridge
 
