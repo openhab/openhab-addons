@@ -695,9 +695,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                             break;
 
                         default:
-                            logger.trace(
-                                    "handleCommandCommsJob(): cannot handle REFRESH on channel {} as it is of type {}.",
-                                    itemName, channelId);
+                            logger.warn("{} Cannot handle REFRESH on channel {} as it is of type {}.",
+                                    VeluxBindingConstants.LOGGING_CONTACT, itemName, channelId);
                     }
                 } catch (IllegalArgumentException e) {
                     logger.warn("Cannot handle REFRESH on channel {} as it isn't (yet) known to the bridge.", itemName);
