@@ -99,9 +99,6 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
         Random rand = new Random();
         reqSessionID = rand.nextInt(0x0fff);
         logger.debug("SCgetProduct(): starting sessions with the random number {}.", reqSessionID);
-        for (int i = 0; i < reqFunctionalParameters.length; i++) {
-            reqFunctionalParameters[i] = VeluxProductPosition.VPP_VELUX_UNKNOWN;
-        }
     }
 
     /*
