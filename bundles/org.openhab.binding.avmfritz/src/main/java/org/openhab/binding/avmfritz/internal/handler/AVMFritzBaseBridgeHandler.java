@@ -297,13 +297,14 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * @return ThingUID without illegal characters.
      */
     public @Nullable ThingUID getThingUID(AVMFritzBaseModel device) {
-        ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, getThingTypeId(device));
+        String id = getThingTypeId(device);
+        ThingTypeUID thingTypeUID = id.isEmpty() ? null : new ThingTypeUID(BINDING_ID, id);
         ThingUID bridgeUID = thing.getUID();
         String thingName = getThingName(device);
 
-        if (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)
+        if (thingTypeUID != null && (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)
                 || SUPPORTED_HEATING_THING_TYPES.contains(thingTypeUID)
-                || SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
+                || SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID))) {
             return new ThingUID(thingTypeUID, bridgeUID, thingName);
         } else if (device.isHeatingThermostat()) {
             return new ThingUID(GROUP_HEATING_THING_TYPE, bridgeUID, thingName);
