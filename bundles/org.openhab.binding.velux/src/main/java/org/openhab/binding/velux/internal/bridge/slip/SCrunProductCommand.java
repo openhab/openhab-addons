@@ -127,6 +127,7 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
         request.setOneByteValue(2, reqCommandOriginator);
         request.setOneByteValue(3, reqPriorityLevel);
         request.setOneByteValue(4, reqParameterActive);
+        reqFPI1 = 0;
         int bitMask = 0b10000000;
         for (int i = 0; i < reqFunctionalParameters.length; i++) {
             int paramValue = reqFunctionalParameters[i];
