@@ -16,7 +16,6 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -70,7 +69,7 @@ public class RefreshCapability extends Capability {
     }
 
     private Duration dataAge() {
-        return Duration.between(dataTimeStamp, ZonedDateTime.now());
+        return Duration.between(dataTimeStamp, Instant.now());
     }
 
     private boolean probing() {

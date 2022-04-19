@@ -45,6 +45,31 @@ The Account bridge has the following configuration options:
 -   **reconnectInterval:** The reconnection interval to Netatmo API (in s).
 
 
+## List of supported things
+
+| Parameter       | Type   | Netatmo Object | Description                                                                                              |
+|-----------------|--------|----------------|----------------------------------------------------------------------------------------------------------|
+| account         | Bridge | N/A            | This bridge represents an account, gateway to Netatmo API.                                               |
+| home            | Bridge | NAHome         | A home hosting Security or Energy devices and modules.                                                   |
+| person          | Thing  | NAPerson       | A person known by your Netatmo system.                                                                   |
+| welcome         | Thing  | NACamera       | The Netatmo Smart Indoor Camera (Welcome).                                                               |
+| presence        | Thing  | NOC            | The Netatmo Smart Outdoor Camera (Presence) camera with or without siren.                                |
+| siren           | Thing  | NIS            | The Netatmo Smart Indoor Siren.                                                                          |
+| doorbell        | Thing  | NDB            | The Netatmo Smart Video Doorbell device.                                                                 |
+| weather-station | Bridge | NAMain         | Main indoor module reporting temperature, humidity, pressure, air quality and sound level.               |
+| outdoor         | Thing  | NAModule1      | Outdoor module reporting temperature and humidity.                                                       |
+| wind            | Thing  | NAModule2      | Wind sensor reporting wind angle and strength.                                                           |
+| rain            | Thing  | NAModule3      | Rain Gauge measuring precipitation.                                                                      |
+| indoor          | Thing  | NAModule4      | Additional indoor module reporting temperature, humidity and CO2 level.                                  |
+| home-coach      | Thing  | NHC            | Healthy home coach reporting health-index, temperature, humidity, pressure, air quality and sound level. |
+| plug            | Thing  | NAPlug         | The relay connected to the boiler controlling a Thermostat and zero or more valves.                      |
+| thermostat      | Thing  | NATherm1       | The Thermostat device placed in a given room.                                                            |
+| room            | Thing  | NARoom         | A room in your house.                                                                                    |
+| valve           | Thing  | NRV            | A valve controlling a radiator.                                                                          |
+
+
+
+
 ### Webhook
 
 Netatmo servers can send push notifications to the Netatmo Binding by using a callback URL.
