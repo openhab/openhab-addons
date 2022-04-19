@@ -674,6 +674,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                         case ACTUATOR_STATE:
                         case ROLLERSHUTTER_POSITION:
                         case WINDOW_POSITION:
+                        case ROLLERSHUTTER_VANE_POSITION:
                             newState = ChannelActuatorPosition.handleRefresh(channelUID, channelId, this);
                             break;
                         case ACTUATOR_LIMIT_MINIMUM:
@@ -769,6 +770,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                     case ACTUATOR_STATE:
                     case ROLLERSHUTTER_POSITION:
                     case WINDOW_POSITION:
+                    case ROLLERSHUTTER_VANE_POSITION:
                         newValue = ChannelActuatorPosition.handleCommand(channelUID, channelId, command, this);
                         break;
                     case ACTUATOR_LIMIT_MINIMUM:
