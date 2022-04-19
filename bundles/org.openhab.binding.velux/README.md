@@ -163,7 +163,7 @@ The supported Channels and their associated channel types are shown below.
 | position     | Rollershutter | Actual position of the window or device.        |
 | limitMinimum | Rollershutter | Minimum limit position of the window or device. |
 | limitMaximum | Rollershutter | Maximum limit position of the window or device. |
-| vanePosition | Dimmer        | Vane position of a Ventian blind.               |
+| vanePosition | Dimmer        | Vane position of a Venetian blind.              |
 
 The `position`, `limitMinimum`, and `limitMaximum` are the same as described above for "window" Things.
 
