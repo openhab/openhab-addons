@@ -423,8 +423,13 @@ public class VeluxProduct {
     public boolean setFunctionalParameters(int[] functionalParameters) {
         boolean modified = false;
         for (int i = 0; i < Math.min(this.functionalParameters.length, functionalParameters.length); i++) {
-            if (this.functionalParameters[i] != functionalParameters[i]) {
-                this.functionalParameters[i] = functionalParameters[i];
+            int val = functionalParameters[i];
+            if ((val == this.functionalParameters[i]) || (val == VeluxProductPosition.VPP_VELUX_IGNORE)) {
+                continue;
+            }
+            if (((val >= VeluxProductPosition.VPP_VELUX_MIN) && (val <= VeluxProductPosition.VPP_VELUX_MAX))
+                    || (val == VeluxProductPosition.VPP_VELUX_UNKNOWN)) {
+                this.functionalParameters[i] = val;
                 modified = true;
             }
         }

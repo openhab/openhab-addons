@@ -16,6 +16,7 @@ import static org.openhab.binding.velux.internal.VeluxBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeRunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.GetProduct;
 import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
@@ -212,7 +213,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 if (setVanePosition) {
                     LOGGER.debug("handleCommand(): sending command to set vane position to {}.", newVanePosition);
                     new VeluxBridgeRunProductCommand().sendCommand(thisBridgeHandler.thisBridge, bridgeIndex.toInt(),
-                            new VeluxProductPosition(PercentType.HUNDRED), functionalParameters);
+                            new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_IGNORE), functionalParameters);
                     LOGGER.trace("handleCommand(): vane position will be updated through the house status events.");
                     if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
                         LOGGER.trace("handleCommand(): vane positions will be refreshed.");
@@ -255,7 +256,8 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
             }
             LOGGER.debug("handleCommand(): sending command with target level {}.", targetLevel);
             new VeluxBridgeRunProductCommand().sendCommand(thisBridgeHandler.thisBridge,
-                    veluxActuator.getProductBridgeIndex().toInt(), targetLevel, new int[0]);
+                    veluxActuator.getProductBridgeIndex().toInt(), targetLevel,
+                    VeluxBindingConstants.newFunctionalParameterArray());
             LOGGER.trace("handleCommand(): The new shutter level will be send through the home monitoring events.");
             if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
                 LOGGER.trace("handleCommand(): position of actuators are updated.");

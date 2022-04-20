@@ -123,21 +123,23 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
     public byte[] getRequestDataAsArrayOfBytes() {
         Packet request = new Packet(new byte[66]);
         reqSessionID = (reqSessionID + 1) & 0xffff;
+        reqFPI1 = 0;
+
         request.setTwoByteValue(0, reqSessionID);
         request.setOneByteValue(2, reqCommandOriginator);
         request.setOneByteValue(3, reqPriorityLevel);
         request.setOneByteValue(4, reqParameterActive);
-        reqFPI1 = 0;
+
         int bitMask = 0b10000000;
         for (int i = 0; i < reqFunctionalParameters.length; i++) {
-            int paramValue = reqFunctionalParameters[i];
-            if ((paramValue >= VeluxProductPosition.VPP_VELUX_MIN)
-                    && (paramValue <= VeluxProductPosition.VPP_VELUX_MAX)) {
+            int val = reqFunctionalParameters[i];
+            if ((val >= VeluxProductPosition.VPP_VELUX_MIN) && (val <= VeluxProductPosition.VPP_VELUX_MAX)) {
                 reqFPI1 |= bitMask;
-                request.setTwoByteValue(9 + (i * 2), paramValue);
+                request.setTwoByteValue(9 + (i * 2), val);
             }
             bitMask = bitMask >>> 1;
         }
+
         request.setOneByteValue(5, reqFPI1);
         request.setOneByteValue(6, reqFPI2);
         request.setTwoByteValue(7, reqMainParameter);
@@ -147,6 +149,7 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
         request.setOneByteValue(63, reqPL03);
         request.setOneByteValue(64, reqPL47);
         request.setOneByteValue(65, reqLockTime);
+
         requestData = request.toByteArray();
 
         if (logger.isTraceEnabled()) {

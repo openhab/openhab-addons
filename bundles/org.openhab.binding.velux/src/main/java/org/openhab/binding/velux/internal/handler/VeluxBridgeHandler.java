@@ -847,7 +847,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         RunProductCommand bcp = thisBridge.bridgeAPI().runProductCommand();
         if (bcp != null) {
             bcp.setNodeIdAndParameters(nodeId, new VeluxProductPosition(new PercentType(Math.abs(relativePercent)))
-                    .getAsRelativePosition((relativePercent >= 0)), new int[0]);
+                    .getAsRelativePosition((relativePercent >= 0)),
+                    VeluxBindingConstants.newFunctionalParameterArray());
             // background execution of moveRelative
             submitCommunicationsJob(() -> {
                 if (thisBridge.bridgeCommunicate(bcp)) {

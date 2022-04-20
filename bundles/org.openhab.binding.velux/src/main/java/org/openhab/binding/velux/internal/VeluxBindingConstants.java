@@ -171,7 +171,7 @@ public class VeluxBindingConstants {
     public static final int[] newFunctionalParameterArray() {
         int[] functionalParameters = new int[FUNCTIONAL_PARAMETER_COUNT];
         for (int i = 0; i < functionalParameters.length; i++) {
-            functionalParameters[i] = VeluxProductPosition.VPP_VELUX_UNKNOWN;
+            functionalParameters[i] = VeluxProductPosition.VPP_VELUX_IGNORE;
         }
         return functionalParameters;
     }
