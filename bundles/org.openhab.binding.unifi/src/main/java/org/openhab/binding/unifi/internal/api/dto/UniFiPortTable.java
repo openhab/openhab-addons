@@ -56,7 +56,7 @@ public class UniFiPortTable extends UnfiPortOverride {
         return up;
     }
 
-    public boolean isEnable() {
+    public boolean isEnabled() {
         return enable;
     }
 
@@ -64,7 +64,7 @@ public class UniFiPortTable extends UnfiPortOverride {
         return portPoe;
     }
 
-    public boolean isPoeEnable() {
+    public boolean isPoeEnabled() {
         return poeEnable;
     }
 

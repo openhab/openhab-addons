@@ -53,7 +53,7 @@ public final class UniFiBindingConstants {
     public static final String CHANNEL_WLANBAND = "wlanBand";
     public static final String CHANNEL_WPAENC = "wpaEnc";
     public static final String CHANNEL_WPAMODE = "wpaMode";
-    public static final String CHANNEL_XPASSPHRASE = "xPassphrase";
+    public static final String CHANNEL_PASSPHRASE = "passphrase";
     public static final String CHANNEL_QRCODE_ENCODING = "qrcodeEncoding";
 
     // List of common wired + wireless client channels
@@ -98,7 +98,7 @@ public final class UniFiBindingConstants {
     public static final String PARAMETER_CID = "cid";
     public static final String PARAMETER_SID = "sid";
     public static final String PARAMETER_WID = "wid";
-    public static final String PARAMETER_PORT_IDX = "portIdx";
+    public static final String PARAMETER_PORT_NUMBER = "portNumber";
     public static final String PARAMETER_MAC_ADDRESS = "macAddress";
     public static final String PARAMETER_WIFI_NAME = "wifi";
 

@@ -50,7 +50,7 @@
 			<channel id="wlanBand" typeId="wlanBand"/>
 			<channel id="wpaEnc" typeId="wpaEnc"/>
 			<channel id="wpaMode" typeId="wpaMode"/>
-			<channel id="xPassphrase" typeId="xPassphrase"/>
+			<channel id="passphrase" typeId="passphrase"/>
 			<channel id="qrcodeEncoding" typeId="qrcodeEncoding"/>
 		</channels>
 
@@ -206,7 +206,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="xPassphrase" advanced="true">
+	<channel-type id="passphrase" advanced="true">
 		<item-type>String</item-type>
 		<label>Passphrase</label>
 		<description>Passphrase of the Wi-Fi network</description>

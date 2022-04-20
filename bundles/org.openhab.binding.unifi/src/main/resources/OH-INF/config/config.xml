@@ -68,9 +68,9 @@
 	</config-description>
 
 	<config-description uri="thing-type:unifi:poePort">
-		<parameter name="portIdx" type="integer" required="true">
-			<label>Port Index</label>
-			<description>The index of the port as reported by the UniFi switch</description>
+		<parameter name="portNumber" type="integer" required="true">
+			<label>Port Number</label>
+			<description>The number of the port as reported by the UniFi switch</description>
 		</parameter>
 		<parameter name="macAddress" type="text" required="true">
 			<label>Switch MAC Address</label>

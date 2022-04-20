@@ -24,12 +24,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @SuppressWarnings("unused")
 public class UniFiPoePortThingConfig {
 
-    private int portIdx;
+    private int portNumber;
 
     private String macAddress = "";
 
-    public int getPortIdx() {
-        return portIdx;
+    public int getPortNumber() {
+        return portNumber;
     }
 
     public String getMacAddress() {

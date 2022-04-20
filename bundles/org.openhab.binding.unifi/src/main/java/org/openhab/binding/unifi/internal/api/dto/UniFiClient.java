@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.unifi.internal.api.dto;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.util.UniFiTidyLowerCaseStringDeserializer;
@@ -51,7 +51,7 @@ public abstract class UniFiClient implements HasId {
     private Integer uptime;
 
     @JsonAdapter(UniFiTimestampDeserializer.class)
-    private ZonedDateTime lastSeen;
+    private Instant lastSeen;
 
     private boolean blocked;
 
@@ -93,7 +93,7 @@ public abstract class UniFiClient implements HasId {
         return uptime;
     }
 
-    public ZonedDateTime getLastSeen() {
+    public Instant getLastSeen() {
         return lastSeen;
     }
 

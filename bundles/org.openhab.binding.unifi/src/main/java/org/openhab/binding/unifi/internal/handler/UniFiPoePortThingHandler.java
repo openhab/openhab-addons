@@ -109,7 +109,7 @@ public class UniFiPoePortThingHandler
                 state = OnOffType.from(port.isUp());
                 break;
             case CHANNEL_PORT_POE_ENABLE:
-                state = OnOffType.from(port.isPoeEnable());
+                state = OnOffType.from(port.isPoeEnabled());
                 break;
             case CHANNEL_PORT_POE_MODE:
                 state = StringType.valueOf(port.getPoeMode());
@@ -130,7 +130,7 @@ public class UniFiPoePortThingHandler
     }
 
     private @Nullable UniFiPortTable getPort(final Map<Integer, UniFiPortTable> ports) {
-        return ports.get(config.getPortIdx());
+        return ports.get(config.getPortNumber());
     }
 
     @Override

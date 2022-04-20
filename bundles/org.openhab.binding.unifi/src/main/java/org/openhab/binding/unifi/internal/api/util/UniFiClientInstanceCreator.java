@@ -14,6 +14,7 @@ package org.openhab.binding.unifi.internal.api.util;
 
 import java.lang.reflect.Type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
@@ -22,6 +23,7 @@ import org.openhab.binding.unifi.internal.api.dto.UniFiWiredClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWirelessClient;
 
 import com.google.gson.InstanceCreator;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link UniFiClientInstanceCreator} creates instances of {@link UniFiClient}s during the JSON unmarshalling of
@@ -29,6 +31,7 @@ import com.google.gson.InstanceCreator;
  *
  * @author Matthew Bowman - Initial contribution
  */
+@NonNullByDefault
 public class UniFiClientInstanceCreator implements InstanceCreator<UniFiClient> {
 
     private final UniFiControllerCache cache;
@@ -47,7 +50,8 @@ public class UniFiClientInstanceCreator implements InstanceCreator<UniFiClient> 
         }
         if (UniFiWiredClient.class.equals(type)) {
             return new UniFiWiredClient(cache);
+        } else {
+            throw new JsonSyntaxException("Expected a UniFi Client type, but got " + type);
         }
-        return null;
     }
 }

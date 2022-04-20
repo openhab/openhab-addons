@@ -14,7 +14,7 @@ package org.openhab.binding.unifi.internal.handler;
 
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_CID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_MAC_ADDRESS;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_PORT_IDX;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_PORT_NUMBER;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_SID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_SITE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_WID;
@@ -166,7 +166,7 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
                 final String deviceMac = pt.getDevice().getMac();
                 final String id = deviceMac.replace(":", "") + "_" + pt.getPortIdx();
                 final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_POE_PORT, bridgeUID, id);
-                final Map<String, Object> properties = Map.of(PARAMETER_PORT_IDX, pt.getPortIdx(),
+                final Map<String, Object> properties = Map.of(PARAMETER_PORT_NUMBER, pt.getPortIdx(),
                         PARAMETER_MAC_ADDRESS, deviceMac);
 
                 thingDiscovered(DiscoveryResultBuilder.create(thingUID)

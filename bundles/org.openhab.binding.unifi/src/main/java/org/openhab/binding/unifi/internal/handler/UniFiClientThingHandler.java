@@ -148,12 +148,12 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
     private synchronized boolean isClientHome(final UniFiClient client) {
         final boolean online;
 
-        final ZonedDateTime lastSeen = client.getLastSeen();
+        final Instant lastSeen = client.getLastSeen();
         if (lastSeen == null) {
             online = false;
             logger.warn("Could not determine if client is online: cid = {}, lastSeen = null", config.getClientID());
         } else {
-            final Instant considerHomeExpiry = lastSeen.toInstant().plusSeconds(config.getConsiderHome());
+            final Instant considerHomeExpiry = lastSeen.plusSeconds(config.getConsiderHome());
             online = Instant.now().isBefore(considerHomeExpiry);
         }
         return online;
@@ -206,8 +206,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             case CHANNEL_LAST_SEEN:
                 // mgb: we don't check clientOnline as lastSeen is also included in the Insights data
                 if (client.getLastSeen() != null) {
-                    state = new DateTimeType(
-                            ZonedDateTime.ofInstant(client.getLastSeen().toInstant(), ZoneId.systemDefault()));
+                    state = new DateTimeType(ZonedDateTime.ofInstant(client.getLastSeen(), ZoneId.systemDefault()));
                 }
                 break;
 

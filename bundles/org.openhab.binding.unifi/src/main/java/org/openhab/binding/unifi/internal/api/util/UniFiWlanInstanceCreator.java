@@ -14,11 +14,13 @@ package org.openhab.binding.unifi.internal.api.util;
 
 import java.lang.reflect.Type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
 
 import com.google.gson.InstanceCreator;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link UniFiWlanInstanceCreator} creates instances of {@link UniFiWlan}s during the JSON unmarshalling of
@@ -26,6 +28,7 @@ import com.google.gson.InstanceCreator;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 public class UniFiWlanInstanceCreator implements InstanceCreator<UniFiWlan> {
 
     private final UniFiControllerCache cache;
@@ -36,6 +39,10 @@ public class UniFiWlanInstanceCreator implements InstanceCreator<UniFiWlan> {
 
     @Override
     public UniFiWlan createInstance(final @Nullable Type type) {
-        return UniFiWlan.class.equals(type) ? new UniFiWlan(cache) : null;
+        if (UniFiWlan.class.equals(type)) {
+            return new UniFiWlan(cache);
+        } else {
+            throw new JsonSyntaxException("Expected a UniFiWlan type, but got " + type);
+        }
     }
 }

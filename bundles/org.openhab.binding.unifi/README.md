@@ -102,10 +102,10 @@ For example, using the default of `180` (seconds), the binding will report a cli
 The following table describes the `poePort` configuration parameters:
 
 
-| Parameter   | Description                                                 | Config   |
-| ------------|-------------------------------------------------------------|----------|
-| portIdx     | The port number as reported by the switch                   | Required |
-| macAddress  | The MAC address of the switch device the port is part of    | Required |
+| Parameter  | Description                                               | Config   |
+|------------|-----------------------------------------------------------|----------|
+| portNumber | The port number as reported by the switch (starts with 1) | Required |
+| macAddress | The MAC address of the switch device the port is part of  | Required |
 
 
 ## Channels
@@ -136,7 +136,7 @@ The `wlan` information that is retrieved is available as these channels:
 | wlanBand        | String    | Wireless LAN band of the Wi-Fi network                                         | Read        |
 | wpaEnc          | String    | WPA Encoding of the Wi-Fi network                                              | Read        |
 | wpaMode         | String    | WPA Mode of the Wi-Fi network                                                  | Read        |
-| xPassphrase     | String    | Passphrase of the Wi-Fi network                                                | Read        |
+| passphrase      | String    | Passphrase of the Wi-Fi network                                                | Read        |
 | qrcodeEncoding  | String    | MECARD like encoding to generate a QRCode for easy access to the Wi-Fi network | Read        |
 
 ::: warning Attention

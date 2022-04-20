@@ -15,6 +15,7 @@ package org.openhab.binding.unifi.internal.handler;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ENABLE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ESSID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_GUEST_CLIENTS;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_PASSPHRASE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_QRCODE_ENCODING;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_SECURITY;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_SITE;
@@ -22,7 +23,6 @@ import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_W
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_WLANBAND;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_WPAENC;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_WPAMODE;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_XPASSPHRASE;
 
 import java.util.function.Function;
 
@@ -114,7 +114,7 @@ public class UniFiWlanThingHandler extends UniFiBaseThingHandler<UniFiWlan, UniF
             case CHANNEL_WPAMODE:
                 state = StringType.valueOf(wlan.getWpaMode());
                 break;
-            case CHANNEL_XPASSPHRASE:
+            case CHANNEL_PASSPHRASE:
                 state = StringType.valueOf(wlan.getXPassphrase());
                 break;
             case CHANNEL_QRCODE_ENCODING:

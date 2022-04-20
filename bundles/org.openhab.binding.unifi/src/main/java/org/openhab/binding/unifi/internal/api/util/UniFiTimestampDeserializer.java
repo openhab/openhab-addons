@@ -14,8 +14,6 @@ package org.openhab.binding.unifi.internal.api.util;
 
 import java.lang.reflect.Type;
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,15 +29,14 @@ import com.google.gson.JsonElement;
  * @author Matthew Bowman - Initial contribution
  */
 @NonNullByDefault
-public class UniFiTimestampDeserializer implements JsonDeserializer<ZonedDateTime> {
+public class UniFiTimestampDeserializer implements JsonDeserializer<Instant> {
 
     @Override
-    public @Nullable ZonedDateTime deserialize(final JsonElement json, final Type type,
+    public @Nullable Instant deserialize(final JsonElement json, final Type type,
             final JsonDeserializationContext context) {
         final String text = json.getAsJsonPrimitive().getAsString();
-
         final long millis = Long.valueOf(text) * 1000;
-        final Instant instant = Instant.ofEpochMilli(millis);
-        return ZonedDateTime.ofInstant(instant, TimeZone.getDefault().toZoneId());
+
+        return Instant.ofEpochMilli(millis);
     }
 }
