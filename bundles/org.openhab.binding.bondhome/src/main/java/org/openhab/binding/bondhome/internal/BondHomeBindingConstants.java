@@ -30,7 +30,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public class BondHomeBindingConstants {
 
     public static final String BINDING_ID = "bondhome";
-    public static final String CURRENT_BINDING_VERSION = "v0.2.3";
+    public static final String CURRENT_BINDING_VERSION = "v0.2.4";
 
     /**
      * List of all Thing Type UIDs.

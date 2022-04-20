@@ -21,7 +21,7 @@
 		<label>Last Update</label>
 		<description>Timestamp of last status update</description>
 		<category>Time</category>
-		<state readOnly="true"></state>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="fanSpeedChannelType" advanced="false">
@@ -76,10 +76,6 @@
 		<label>Light</label>
 		<description>Turns the light on the ceiling fan on or off</description>
 		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-			<tag>Switchable</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="brightnessChannelType" advanced="false">
@@ -87,9 +83,6 @@
 		<label>Brightness</label>
 		<description>Adjusts the brightness of the fan light</description>
 		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="dimmerStartStopChannelType" advanced="false">
@@ -98,9 +91,6 @@
 		<description>Starts or stops changing the brightness of the ceiling fan light. The direction of dimming cannot be
 			controlled.</description>
 		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="dimmerIncrChannelType" advanced="false">
@@ -108,9 +98,6 @@
 		<label>Start Increasing Brightness</label>
 		<description>Starts or stops increasing the brightness of the ceiling fan light.</description>
 		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="dimmerDcrChannelType" advanced="false">
@@ -118,9 +105,6 @@
 		<label>Start Decreasing Brightness</label>
 		<description>Starts or stops decreasing the brightness of the ceiling fan light.</description>
 		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="upLightChannelType" advanced="false">
@@ -128,10 +112,6 @@
 		<label>Up Light</label>
 		<description>Turns on the up light.</description>
 		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-			<tag>Switchable</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="upLightEnableChannelType" advanced="false">
@@ -139,10 +119,6 @@
 		<label>Enable Up Light</label>
 		<description>Enables or disables the up light of the ceiling fan. The light must also be on to turn on the up light.</description>
 		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-			<tag>Switchable</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="upLightBrightnessChannelType" advanced="false">
@@ -150,9 +126,6 @@
 		<label>Up Light Brightness</label>
 		<description>Adjusts the brightness of the fan up light</description>
 		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="upLightDimmerStartStopChannelType" advanced="false">
@@ -161,9 +134,6 @@
 		<description>Starts or stops changing the brightness of the ceiling fan up light. The direction of dimming cannot be
 			controlled.</description>
 		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="upLightDimmerIncrChannelType" advanced="false">
@@ -171,9 +141,6 @@
 		<label>Start Increasing Up Light Brightness</label>
 		<description>Starts or stops increasing the brightness of the ceiling fan up light.</description>
 		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="upLightDimmerDcrChannelType" advanced="false">
@@ -181,9 +148,6 @@
 		<label>Start Decreasing Up Light Brightness</label>
 		<description>Starts or stops decreasing the brightness of the ceiling fan up light.</description>
 		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="downLightChannelType" advanced="false">
@@ -191,10 +155,6 @@
 		<label>Down Light</label>
 		<description>Turns on the down light.</description>
 		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-			<tag>Switchable</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="downLightEnableChannelType" advanced="false">
@@ -203,10 +163,6 @@
 		<description>Enables or disables the down light of the ceiling fan. The light must also be on to turn on the down
 			light.</description>
 		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-			<tag>Switchable</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="downLightBrightnessChannelType" advanced="false">
@@ -214,9 +170,6 @@
 		<label>Down Light Brightness</label>
 		<description>Adjusts the brightness of the fan down light</description>
 		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="downLightDimmerStartStopChannelType" advanced="false">
@@ -225,9 +178,6 @@
 		<description>Starts or stops changing the brightness of the ceiling fan down light. The direction of dimming cannot be
 			controlled.</description>
 		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="downLightDimmerIncrChannelType" advanced="false">
