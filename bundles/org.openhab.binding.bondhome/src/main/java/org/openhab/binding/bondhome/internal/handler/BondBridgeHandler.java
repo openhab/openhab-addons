@@ -37,6 +37,7 @@ import org.openhab.binding.bondhome.internal.api.BondSysVersion;
 import org.openhab.binding.bondhome.internal.config.BondBridgeConfiguration;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -190,6 +191,11 @@ public class BondBridgeHandler extends BaseBridgeHandler {
      * @param the {@link BPUPUpdate object}
      */
     public void forwardUpdateToThing(BPUPUpdate pushUpdate) {
+
+        updateStatus(ThingStatus.ONLINE);
+        updateState(CHANNEL_LAST_UPDATE, new DateTimeType());
+        logger.trace("Update Time for {}: {}", this.getThing().getLabel(), (new DateTimeType()).toFullString());
+
         BondDeviceState updateState = pushUpdate.deviceState;
         String topic = pushUpdate.topic;
         String deviceId = null;
