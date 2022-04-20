@@ -162,7 +162,6 @@ var omnilinkActions = actions.get("omnilink", "omnilink:controller:home");
 
 ``` php
 val omnilinkActions = getActions("omnilink", "omnilink:controller:home")
-
 ```
 
 :::
@@ -177,7 +176,7 @@ Once this action instance is retrieved, you can invoke the `synchronizeControlle
 ::: tab JavaScript
 
 ``` javascript
-omnilinkAction.synchronizeControllerTime("America/Denver");
+omnilinkActions.synchronizeControllerTime("America/Denver");
 ```
 
 :::
@@ -185,8 +184,7 @@ omnilinkAction.synchronizeControllerTime("America/Denver");
 ::: tab DSL
 
 ``` php
-omnilinkAction.synchronizeControllerTime("America/Denver")
-
+omnilinkActions.synchronizeControllerTime("America/Denver")
 ```
 
 :::
