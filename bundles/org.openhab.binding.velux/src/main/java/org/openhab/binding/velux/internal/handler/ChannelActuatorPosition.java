@@ -126,9 +126,11 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                             VeluxProductPosition productVanePosition = new VeluxProductPosition(vanePosition);
                             newState = productVanePosition.getPositionAsPercentType(false);
                             LOGGER.trace("handleRefresh(): position of vane is {}%.", newState);
-                        } else {
+                        } else if (vanePosition == VeluxProductPosition.VPP_VELUX_UNKNOWN) {
                             newState = UnDefType.UNDEF;
                             LOGGER.trace("handleRefresh(): position of vane is 'UNDEFINED'.");
+                        } else {
+                            LOGGER.trace("handleRefresh(): position of vane unchanged.");
                         }
                         break;
                     }
