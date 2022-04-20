@@ -162,7 +162,6 @@ var omnilinkActions = actions.get("omnilink", "omnilink:controller:home");
 
 ``` php
 val omnilinkActions = getActions("omnilink", "omnilink:controller:home")
-
 ```
 
 :::
@@ -186,7 +185,6 @@ omnilinkAction.synchronizeControllerTime("America/Denver");
 
 ``` php
 omnilinkAction.synchronizeControllerTime("America/Denver")
-
 ```
 
 :::
