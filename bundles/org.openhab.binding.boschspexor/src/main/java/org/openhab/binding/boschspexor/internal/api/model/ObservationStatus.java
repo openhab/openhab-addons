@@ -13,7 +13,6 @@
 package org.openhab.binding.boschspexor.internal.api.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Representation of Observation Status
@@ -22,16 +21,8 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class ObservationStatus {
-    /**
-     * Observation Types
-     *
-     * @author Marc Fischer - Initial contribution
-     *
-     */
-    public enum ObservationType {
-        Burglary,
-        Fire
-    }
+
+    public static final String TYPE_BURGLARY = "Burglary";
 
     /**
      * Sensor modes
@@ -48,15 +39,14 @@ public class ObservationStatus {
         InDeactivation
     }
 
-    private ObservationType observationType = ObservationType.Burglary;
+    private String observationType = TYPE_BURGLARY;
     private SensorMode sensorMode = SensorMode.Deactivated;
 
-    @Nullable
-    public ObservationType getObservationType() {
+    public String getObservationType() {
         return observationType;
     }
 
-    public void setObservationType(ObservationType observationType) {
+    public void setObservationType(String observationType) {
         this.observationType = observationType;
     }
 

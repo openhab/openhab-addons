@@ -34,9 +34,7 @@ import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstants;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationChangeStatus;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationChangeStatus.StatusCode;
-import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus.ObservationType;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus.SensorMode;
-import org.openhab.binding.boschspexor.internal.api.model.SensorType;
 import org.openhab.binding.boschspexor.internal.api.model.SensorValue;
 import org.openhab.binding.boschspexor.internal.api.model.Spexor;
 import org.openhab.binding.boschspexor.internal.api.model.SpexorInfo;
@@ -102,9 +100,9 @@ public class SpexorAPIService {
         }
     }
 
-    public Map<SensorType, SensorValue<?>> getSensorValues(String id, List<SensorType> sensors) {
-        Map<@NonNull SensorType, @NonNull SensorValue<?>> values = new HashMap<SensorType, SensorValue<?>>();
-        String keys = sensors.stream().map(SensorType::name).collect(Collectors.joining(","));
+    public Map<String, SensorValue<?>> getSensorValues(String id, List<String> sensors) {
+        Map<@NonNull String, @NonNull SensorValue<?>> values = new HashMap<String, SensorValue<?>>();
+        String keys = sensors.stream().collect(Collectors.joining(","));
         Optional<Request> request = authService.newRequest(BoschSpexorBindingConstants.ENDPOINT_SPEXOR, id,
                 BoschSpexorBindingConstants.ENDPOINT_SENSORVALUE, keys);
         if (request.isPresent()) {
@@ -117,16 +115,16 @@ public class SpexorAPIService {
                 List<Map<String, String>> resp = mapper.readValue(response.getContent(),
                         mapper.getTypeFactory().constructCollectionType(ArrayList.class, HashMap.class));
                 for (Map<String, String> map : resp) {
-                    SensorType key = SensorType.valueOf(String.valueOf(map.get("key")));
-                    if (SensorType.AirQualityLevel.equals(key)) {
+                    String sensorType = String.valueOf(map.get("key"));
+                    if (SensorValue.TYPE_AIR_QUALITY_LEVEL.equals(sensorType)) {
                         SensorValue<String> value = mapper.convertValue(map, new TypeReference<SensorValue<String>>() {
                         });
-                        values.put(key, value);
+                        values.put(sensorType, value);
                     } else {
                         SensorValue<Integer> value = mapper.convertValue(map,
                                 new TypeReference<SensorValue<Integer>>() {
                                 });
-                        values.put(key, value);
+                        values.put(sensorType, value);
                     }
                 }
             } catch (NullPointerException | InterruptedException | TimeoutException | ExecutionException
@@ -138,7 +136,7 @@ public class SpexorAPIService {
         return values;
     }
 
-    public ObservationChangeStatus setObservation(String id, ObservationType type, boolean enable) {
+    public ObservationChangeStatus setObservation(String id, String observationType, boolean enable) {
         Optional<Request> request = authService.newRequest(BoschSpexorBindingConstants.ENDPOINT_SPEXOR, id,
                 BoschSpexorBindingConstants.ENDPOINT_OBSERVATION);
         if (request.isPresent()) {
@@ -146,7 +144,7 @@ public class SpexorAPIService {
             request.get().accept(MimeTypes.Type.APPLICATION_JSON.asString());
             request.get()
                     .content(new StringContentProvider(
-                            "[{\"observationType\":\"" + type.name() + "\", \"sensorMode\":\""
+                            "[{\"observationType\":\"" + observationType + "\", \"sensorMode\":\""
                                     + (enable ? SensorMode.Activated : SensorMode.Deactivated).name() + "\"}]",
                             "UTF-8"), ContentType.APPLICATION_JSON.toString());
             try {
@@ -155,7 +153,7 @@ public class SpexorAPIService {
                         });
                 if (result.size() > 0) {
                     for (ObservationChangeStatus observationChangeStatus : result) {
-                        if (type.equals(observationChangeStatus.getObservationType())) {
+                        if (observationType.equals(observationChangeStatus.getObservationType())) {
                             return observationChangeStatus;
                         }
                     }
@@ -163,14 +161,14 @@ public class SpexorAPIService {
             } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
                 logger.error("failed to get '{}' : {}", request.get().getURI(), e.getMessage(), e);
                 ObservationChangeStatus statusFailed = new ObservationChangeStatus();
-                statusFailed.setObservationType(type);
+                statusFailed.setObservationType(observationType);
                 statusFailed.setStatusCode(StatusCode.FAILURE);
                 statusFailed.setMessage(e.getLocalizedMessage());
                 return statusFailed;
             }
         }
         ObservationChangeStatus statusFailed = new ObservationChangeStatus();
-        statusFailed.setObservationType(type);
+        statusFailed.setObservationType(observationType);
         statusFailed.setStatusCode(StatusCode.FAILURE);
         return statusFailed;
     }

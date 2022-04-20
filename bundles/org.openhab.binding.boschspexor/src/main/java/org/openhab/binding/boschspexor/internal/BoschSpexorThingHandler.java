@@ -13,6 +13,7 @@
 package org.openhab.binding.boschspexor.internal;
 
 import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstants.CHANNEL_BOSCH_SPEXOR;
+import static org.openhab.binding.boschspexor.internal.api.model.SensorValue.*;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -27,10 +28,8 @@ import org.openhab.binding.boschspexor.internal.api.model.Energy;
 import org.openhab.binding.boschspexor.internal.api.model.Firmware;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationChangeStatus;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus;
-import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus.ObservationType;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus.SensorMode;
 import org.openhab.binding.boschspexor.internal.api.model.Profile;
-import org.openhab.binding.boschspexor.internal.api.model.SensorType;
 import org.openhab.binding.boschspexor.internal.api.model.SensorValue;
 import org.openhab.binding.boschspexor.internal.api.model.SpexorInfo;
 import org.openhab.binding.boschspexor.internal.api.service.SpexorAPIService;
@@ -105,8 +104,7 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
             if (command instanceof StringType) {
                 try {
                     SensorMode mode = SensorMode.valueOf(command.toString());
-                    ObservationType type = ObservationType
-                            .valueOf(channelUID.getId().substring(channelUID.getId().lastIndexOf('#') + 1));
+                    String type = channelUID.getId().substring(channelUID.getId().lastIndexOf('#') + 1);
                     if (SensorMode.Activated.equals(mode) || SensorMode.Deactivated.equals(mode)) {
                         ObservationChangeStatus newObservationState = apiService
                                 .setObservation(getThing().getUID().getId(), type, SensorMode.Activated.equals(mode));
@@ -175,24 +173,21 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
 
                 // OBSERVATION
                 for (ObservationStatus observationStatus : spexor.getStatus().getObservation()) {
-                    if (observationStatus.getObservationType() != null) {
-                        @SuppressWarnings("null")
-                        String observationType = observationStatus.getObservationType().name();
-                        Channel channel = getThing().getChannel(getChannelID(GROUP_ID_OBSERVATIONS, observationType));
-                        if (channel == null) {
-                            channel = createObservationChannel(observationType);
-                            thingBuilder.withoutChannel(channel.getUID()).withChannel(channel);
-                            thingStructureChanged = true;
-                        }
-                        updateState(channel.getUID(), new StringType(observationStatus.getSensorMode().name()));
+                    @SuppressWarnings("null")
+                    String observationType = observationStatus.getObservationType();
+                    Channel channel = getThing().getChannel(getChannelID(GROUP_ID_OBSERVATIONS, observationType));
+                    if (channel == null) {
+                        channel = createObservationChannel(observationType);
+                        thingBuilder.withoutChannel(channel.getUID()).withChannel(channel);
+                        thingStructureChanged = true;
                     }
+                    updateState(channel.getUID(), new StringType(observationStatus.getSensorMode().name()));
                 }
 
                 // SENSORS
-                Map<SensorType, SensorValue<?>> values = apiService.getSensorValues(spexor.getId(),
-                        spexor.getSensors());
-                for (SensorType sensor : spexor.getSensors()) {
-                    String sensorType = sensor.name();
+                Map<String, SensorValue<?>> values = apiService.getSensorValues(spexor.getId(), spexor.getSensors());
+                for (String sensor : spexor.getSensors()) {
+                    String sensorType = sensor;
                     Channel channel = getThing().getChannel(getChannelID(GROUP_ID_SENSORS, sensorType));
                     if (channel == null) {
                         channel = createSensorChannel(sensor, sensorType);
@@ -234,31 +229,30 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
         return channel;
     }
 
-    private @Nullable Channel createSensorChannel(SensorType sensor, String sensorType) {
+    private @Nullable Channel createSensorChannel(String sensor, String sensorType) {
         Channel channel = null;
         switch (sensor) {
-            case AirQuality:
-            case Temperature:
-            case Humidity:
-            case Microphone:
-            case Fire:
-            case Pressure:
-            case Acceleration:
-            case Light:
-            case Gas:
-            case PassiveInfrared:
+            case TYPE_AIR_QUALITY:
+            case TYPE_TEMPERATURE:
+            case TYPE_HUMIDITY:
+            case TYPE_MICROPHONE:
+            case TYPE_FIRE:
+            case TYPE_PRESSURE:
+            case TYPE_ACCELERATION:
+            case TYPE_LIGHT:
+            case TYPE_GAS:
+            case TYPE_PASSIVE_INFRARED:
                 channel = ChannelBuilder.create(getChannelID(GROUP_ID_SENSORS, sensorType), "Number")
                         .withType(new ChannelTypeUID("boschspexor", "sampleNumberChannel")).withKind(ChannelKind.STATE)
                         .withDescription("Sensor Value \"" + sensorType + "\"").withLabel("Sensor Type " + sensorType)
                         .build();
                 break;
-            case AirQualityLevel:
+            case TYPE_AIR_QUALITY_LEVEL:
+            default:
                 channel = ChannelBuilder.create(getChannelID(GROUP_ID_SENSORS, sensorType), "String")
                         .withType(new ChannelTypeUID("boschspexor", "sampleStringChannel")).withKind(ChannelKind.STATE)
                         .withDescription("Sensor Value \"" + sensorType + "\"").withLabel("Sensor Type " + sensorType)
                         .build();
-                break;
-            default:
                 break;
         }
         return channel;

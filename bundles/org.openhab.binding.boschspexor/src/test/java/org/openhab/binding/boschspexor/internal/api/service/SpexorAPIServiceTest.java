@@ -15,6 +15,7 @@ package org.openhab.binding.boschspexor.internal.api.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.boschspexor.internal.api.model.SensorValue.*;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -48,10 +49,8 @@ import org.openhab.binding.boschspexor.internal.api.model.Firmware.FirmwareState
 import org.openhab.binding.boschspexor.internal.api.model.ObservationChangeStatus;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationChangeStatus.StatusCode;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus;
-import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus.ObservationType;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus.SensorMode;
 import org.openhab.binding.boschspexor.internal.api.model.Profile.ProfileType;
-import org.openhab.binding.boschspexor.internal.api.model.SensorType;
 import org.openhab.binding.boschspexor.internal.api.model.SensorValue;
 import org.openhab.binding.boschspexor.internal.api.model.Spexor;
 import org.openhab.binding.boschspexor.internal.api.model.SpexorInfo;
@@ -97,12 +96,12 @@ class SpexorAPIServiceTest {
         assertFalse(actual.getStatus().isUpdateAvailable());
         assertEquals(3, actual.getStatus().getObservationStatus().size());
         ObservationStatus burglaryStatus = actual.getStatus().getObservationStatus().get(0);
-        assertEquals(ObservationType.Burglary, burglaryStatus.getObservationType());
+        assertEquals("Burglary", burglaryStatus.getObservationType());
         assertEquals(SensorMode.Deactivated, burglaryStatus.getSensorMode());
         ObservationStatus coStatus = actual.getStatus().getObservationStatus().get(1);
         assertEquals(SensorMode.Deactivated, coStatus.getSensorMode());
         ObservationStatus fireStatus = actual.getStatus().getObservationStatus().get(2);
-        assertEquals(ObservationType.Fire, fireStatus.getObservationType());
+        assertEquals("Fire", fireStatus.getObservationType());
         assertEquals(SensorMode.Activated, fireStatus.getSensorMode());
     }
 
@@ -141,11 +140,11 @@ class SpexorAPIServiceTest {
 
         assertEquals(2, spexor.getStatus().getObservation().size());
         ObservationStatus burglaryStatus = spexor.getStatus().getObservation().get(0);
-        assertEquals(ObservationType.Burglary, burglaryStatus.getObservationType());
+        assertEquals("Burglary", burglaryStatus.getObservationType());
         assertEquals(SensorMode.Deactivated, burglaryStatus.getSensorMode());
 
         ObservationStatus fireStatus = spexor.getStatus().getObservation().get(1);
-        assertEquals(ObservationType.Fire, fireStatus.getObservationType());
+        assertEquals("Fire", fireStatus.getObservationType());
         assertEquals(SensorMode.Activated, fireStatus.getSensorMode());
     }
 
@@ -158,8 +157,10 @@ class SpexorAPIServiceTest {
         when(response.getContent()).thenReturn(testResponse.getBytes(StandardCharsets.UTF_8));
         SpexorAPIService apiService = new SpexorAPIService(authService);
 
-        Map<@NonNull SensorType, @NonNull SensorValue<?>> sensorValues = apiService.getSensorValues("123456",
-                Arrays.asList(SensorType.values()));
+        Map<@NonNull String, @NonNull SensorValue<?>> sensorValues = apiService.getSensorValues("123456",
+                Arrays.asList(TYPE_ACCELERATION, TYPE_AIR_QUALITY, TYPE_AIR_QUALITY_LEVEL, TYPE_FIRE, TYPE_GAS,
+                        TYPE_HUMIDITY, TYPE_LIGHT, TYPE_MICROPHONE, TYPE_PASSIVE_INFRARED, TYPE_PRESSURE,
+                        TYPE_TEMPERATURE));
         assertNotNull(sensorValues);
         assertTrue(sensorValues.size() > 0);
     }
@@ -173,9 +174,9 @@ class SpexorAPIServiceTest {
         when(response.getContent()).thenReturn(testResponse.getBytes(StandardCharsets.UTF_8));
         SpexorAPIService apiService = new SpexorAPIService(authService);
 
-        ObservationChangeStatus observationChange = apiService.setObservation("123456", ObservationType.Burglary, true);
+        ObservationChangeStatus observationChange = apiService.setObservation("123456", "Burglary", true);
         assertNotNull(observationChange);
-        assertEquals(ObservationType.Burglary, observationChange.getObservationType());
+        assertEquals("Burglary", observationChange.getObservationType());
         assertEquals(SensorMode.Deactivated, observationChange.getSensorMode());
         assertEquals(StatusCode.FAILURE, observationChange.getStatusCode());
         verify(request).method(HttpMethod.PATCH);
@@ -196,27 +197,27 @@ class SpexorAPIServiceTest {
         when(response.getContent()).thenReturn(testResponse.getBytes(StandardCharsets.UTF_8));
         SpexorAPIService apiService = new SpexorAPIService(authService);
 
-        Map<@NonNull SensorType, @NonNull SensorValue<?>> sensorValues = apiService.getSensorValues("123456",
-                Arrays.asList(SensorType.AirQuality, SensorType.Fire, SensorType.AirQualityLevel));
+        Map<@NonNull String, @NonNull SensorValue<?>> sensorValues = apiService.getSensorValues("123456",
+                Arrays.asList(TYPE_AIR_QUALITY, TYPE_FIRE, TYPE_AIR_QUALITY_LEVEL));
         assertNotNull(sensorValues);
 
-        assertTrue(sensorValues.containsKey(SensorType.AirQuality));
-        assertTrue(sensorValues.containsKey(SensorType.Fire));
-        assertFalse(sensorValues.containsKey(SensorType.AirQualityLevel));
+        assertTrue(sensorValues.containsKey(TYPE_AIR_QUALITY));
+        assertTrue(sensorValues.containsKey(TYPE_FIRE));
+        assertFalse(sensorValues.containsKey(TYPE_AIR_QUALITY_LEVEL));
 
-        assertNotNull(sensorValues.get(SensorType.AirQuality));
-        assertEquals("fake", sensorValues.get(SensorType.AirQuality).getUnit());
-        assertEquals(815, sensorValues.get(SensorType.AirQuality).getValue());
-        assertFalse(sensorValues.get(SensorType.AirQuality).hasMinValue());
-        assertEquals(2, sensorValues.get(SensorType.AirQuality).getMaxValue());
-        assertEquals("2022-02-02T20:46:05.763Z", sensorValues.get(SensorType.AirQuality).getTimestamp());
+        assertNotNull(sensorValues.get(TYPE_AIR_QUALITY));
+        assertEquals("fake", sensorValues.get(TYPE_AIR_QUALITY).getUnit());
+        assertEquals(815, sensorValues.get(TYPE_AIR_QUALITY).getValue());
+        assertFalse(sensorValues.get(TYPE_AIR_QUALITY).hasMinValue());
+        assertEquals(2, sensorValues.get(TYPE_AIR_QUALITY).getMaxValue());
+        assertEquals("2022-02-02T20:46:05.763Z", sensorValues.get(TYPE_AIR_QUALITY).getTimestamp());
 
-        assertNotNull(sensorValues.get(SensorType.Fire));
-        assertEquals("fake2", sensorValues.get(SensorType.Fire).getUnit());
-        assertEquals(50, sensorValues.get(SensorType.Fire).getValue());
-        assertEquals(49, sensorValues.get(SensorType.Fire).getMinValue());
-        assertFalse(sensorValues.get(SensorType.Fire).hasMaxValue());
-        assertEquals("2022-02-02T20:46:05.764Z", sensorValues.get(SensorType.Fire).getTimestamp());
+        assertNotNull(sensorValues.get(TYPE_FIRE));
+        assertEquals("fake2", sensorValues.get(TYPE_FIRE).getUnit());
+        assertEquals(50, sensorValues.get(TYPE_FIRE).getValue());
+        assertEquals(49, sensorValues.get(TYPE_FIRE).getMinValue());
+        assertFalse(sensorValues.get(TYPE_FIRE).hasMaxValue());
+        assertEquals("2022-02-02T20:46:05.764Z", sensorValues.get(TYPE_FIRE).getTimestamp());
     }
 
     @Test
@@ -228,9 +229,9 @@ class SpexorAPIServiceTest {
         when(response.getContent()).thenReturn(testResponse.getBytes(StandardCharsets.UTF_8));
         SpexorAPIService apiService = new SpexorAPIService(authService);
 
-        ObservationChangeStatus observationChange = apiService.setObservation("123456", ObservationType.Burglary, true);
+        ObservationChangeStatus observationChange = apiService.setObservation("123456", "Burglary", true);
         assertNotNull(observationChange);
-        assertEquals(ObservationType.Burglary, observationChange.getObservationType());
+        assertEquals("Burglary", observationChange.getObservationType());
         assertEquals(SensorMode.InActivation, observationChange.getSensorMode());
         assertEquals(StatusCode.SUCCESS, observationChange.getStatusCode());
         verify(request).method(HttpMethod.PATCH);

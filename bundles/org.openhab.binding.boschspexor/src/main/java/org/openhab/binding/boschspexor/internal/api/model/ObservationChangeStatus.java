@@ -14,7 +14,6 @@ package org.openhab.binding.boschspexor.internal.api.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus.ObservationType;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus.SensorMode;
 
 /**
@@ -35,17 +34,17 @@ public class ObservationChangeStatus {
         FAILURE
     }
 
-    private ObservationType observationType = ObservationType.Burglary;
+    private String observationType = ObservationStatus.TYPE_BURGLARY;
     private SensorMode sensorMode = SensorMode.Deactivated;
     private StatusCode statusCode = StatusCode.FAILURE;
     @Nullable
     private String message;
 
-    public ObservationType getObservationType() {
+    public String getObservationType() {
         return observationType;
     }
 
-    public void setObservationType(ObservationType observationType) {
+    public void setObservationType(String observationType) {
         this.observationType = observationType;
     }
 

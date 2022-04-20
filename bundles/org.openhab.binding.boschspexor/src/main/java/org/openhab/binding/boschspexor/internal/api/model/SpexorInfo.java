@@ -28,7 +28,7 @@ public class SpexorInfo {
     private String name = "spexor";
     private Profile profile = new Profile();
     private Status status = new Status();
-    private List<SensorType> sensors = new ArrayList<>();
+    private List<String> sensors = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -62,11 +62,11 @@ public class SpexorInfo {
         this.status = status;
     }
 
-    public List<SensorType> getSensors() {
+    public List<String> getSensors() {
         return sensors;
     }
 
-    public void setSensors(List<SensorType> sensors) {
+    public void setSensors(List<String> sensors) {
         this.sensors = sensors;
     }
 }

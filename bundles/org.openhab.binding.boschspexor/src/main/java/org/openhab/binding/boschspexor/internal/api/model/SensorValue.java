@@ -24,11 +24,25 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class SensorValue<T> {
+    private static final String UNKNOWN = "-";
+    private static final String N_A = "N/A";
+    public static final String TYPE_AIR_QUALITY_LEVEL = "AirQualityLevel";
+    public static final String TYPE_PASSIVE_INFRARED = "PassiveInfrared";
+    public static final String TYPE_GAS = "Gas";
+    public static final String TYPE_LIGHT = "Light";
+    public static final String TYPE_ACCELERATION = "Acceleration";
+    public static final String TYPE_PRESSURE = "Pressure";
+    public static final String TYPE_FIRE = "Fire";
+    public static final String TYPE_MICROPHONE = "Microphone";
+    public static final String TYPE_HUMIDITY = "Humidity";
+    public static final String TYPE_TEMPERATURE = "Temperature";
+    public static final String TYPE_AIR_QUALITY = "AirQuality";
+
     private Optional<T> value = Optional.empty();
-    private String unit = "N/A";
+    private String unit = N_A;
     private Optional<T> minValue = Optional.empty();
     private Optional<T> maxValue = Optional.empty();
-    private String timestamp = "-";
+    private String timestamp = UNKNOWN;
 
     public T getValue() {
         return value.get();
@@ -71,7 +85,7 @@ public class SensorValue<T> {
     }
 
     public boolean hasTimestamp() {
-        return !"-".equalsIgnoreCase(timestamp);
+        return !UNKNOWN.equalsIgnoreCase(timestamp);
     }
 
     public String getTimestamp() {
