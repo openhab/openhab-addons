@@ -99,8 +99,8 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 try {
                     VeluxProduct product = bcp.getProduct();
 
-                    // update vane position
                     if (CHANNEL_VANE_POSITION.equals(channelId)) {
+                        // update vane position
                         int vanePosition;
                         FunctionalParameters functionalParameters = product.getFunctionalParameters();
                         ActuatorType actuatorType = product.getActuatorType();
@@ -118,6 +118,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                                 LOGGER.info("handleRefresh(): actuator type '{}' ({}) does not support channel '{}'.",
                                         actuatorType.getNodeType(), actuatorType.getDescription(), channelId);
                         }
+
                         if (functionalParameters.isNormalPosition(vanePosition)) {
                             VeluxProductPosition productVanePosition = new VeluxProductPosition(vanePosition);
                             newState = productVanePosition.getPositionAsPercentType(false);
@@ -126,28 +127,27 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                             newState = UnDefType.UNDEF;
                             LOGGER.trace("handleRefresh(): position of vane is 'UNDEFINED'.");
                         } else {
-                            // for any other vane position state, newState remain with a null value
+                            // if any other vane position value is returned, newState == null
                             LOGGER.trace("handleRefresh(): position of vane unchanged.");
                         }
-                        break;
-                    }
-
-                    // update actuator position resp. state
-                    VeluxProductPosition position = new VeluxProductPosition(product.getDisplayPosition());
-                    if (position.isValid()) {
-                        if (CHANNEL_ACTUATOR_POSITION.equals(channelId)) {
-                            newState = position.getPositionAsPercentType(veluxActuator.isInverted());
-                            LOGGER.trace("handleRefresh(): position of actuator is {}%.", newState);
-                            break;
-                        } else if (CHANNEL_ACTUATOR_STATE.equals(channelId)) {
-                            newState = OnOffType.from(
-                                    position.getPositionAsPercentType(veluxActuator.isInverted()).intValue() > 50);
-                            LOGGER.trace("handleRefresh(): state of actuator is {}.", newState);
-                            break;
+                    } else {
+                        // update actuator position resp. state
+                        VeluxProductPosition position = new VeluxProductPosition(product.getDisplayPosition());
+                        if (position.isValid()) {
+                            if (CHANNEL_ACTUATOR_POSITION.equals(channelId)) {
+                                newState = position.getPositionAsPercentType(veluxActuator.isInverted());
+                                LOGGER.trace("handleRefresh(): position of actuator is {}%.", newState);
+                                break;
+                            } else if (CHANNEL_ACTUATOR_STATE.equals(channelId)) {
+                                newState = OnOffType.from(
+                                        position.getPositionAsPercentType(veluxActuator.isInverted()).intValue() > 50);
+                                LOGGER.trace("handleRefresh(): state of actuator is {}.", newState);
+                                break;
+                            }
                         }
+                        LOGGER.trace("handleRefresh(): position of actuator is 'UNDEFINED'.");
+                        newState = UnDefType.UNDEF;
                     }
-                    LOGGER.trace("handleRefresh(): position of actuator is 'UNDEFINED'.");
-                    newState = UnDefType.UNDEF;
                 } catch (Exception e) {
                     LOGGER.warn("handleRefresh(): getProducts() exception: {}.", e.getMessage());
                 }
@@ -181,82 +181,96 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 break;
             }
 
-            // command the vane position
-            if (CHANNEL_VANE_POSITION.equals(channelId) && (command instanceof PercentType)) {
-                LOGGER.trace("handleCommand(): found vane position PercentType.{} command", command);
-                boolean setVanePosition = false;
-                int newVanePosition = new VeluxProductPosition((PercentType) command).getPositionAsVeluxType();
-                ProductBridgeIndex bridgeIndex = veluxActuator.getProductBridgeIndex();
-                VeluxProduct targetProduct = thisBridgeHandler.existingProducts().get(bridgeIndex);
-                ActuatorType actuatorType = targetProduct.getActuatorType();
-                FunctionalParameters functionalParameters = new FunctionalParameters();
+            ProductBridgeIndex bridgeIndex = veluxActuator.getProductBridgeIndex();
+            VeluxProduct targetProduct = thisBridgeHandler.existingProducts().get(bridgeIndex);
 
+            if (CHANNEL_VANE_POSITION.equals(channelId) && (command instanceof PercentType)) {
+                // command the vane position
+                LOGGER.trace("handleCommand(): found vane position PercentType.{} command", command);
+
+                VeluxProductPosition oldMainPosition = new VeluxProductPosition(targetProduct.getCurrentPosition());
+                int newVanePosition = new VeluxProductPosition((PercentType) command).getPositionAsVeluxType();
+                FunctionalParameters newFunctionalParameters = new FunctionalParameters();
+
+                boolean error;
+                ActuatorType actuatorType = targetProduct.getActuatorType();
                 switch (actuatorType) {
                     case BLIND_1_0:
-                        functionalParameters.setValue(0, newVanePosition);
-                        setVanePosition = true;
+                        newFunctionalParameters.setValue(0, newVanePosition);
+                        error = false;
                         break;
                     case ROLLERSHUTTER_2_1:
                     case BLIND_17:
                     case BLIND_18:
-                        functionalParameters.setValue(2, newVanePosition);
-                        setVanePosition = true;
+                        newFunctionalParameters.setValue(2, newVanePosition);
+                        error = false;
                         break;
                     default:
-                        LOGGER.info("handleCommand(): actuator type '{}' ({}) does not support channel '{}'.",
-                                actuatorType.getNodeType(), actuatorType.getDescription(), channelId);
+                        error = true;
                 }
+                if (error) {
+                    LOGGER.info("handleCommand(): actuator type '{}' ({}) does not support channel '{}'.",
+                            actuatorType.getNodeType(), actuatorType.getDescription(), channelId);
+                    break;
+                }
+                LOGGER.debug("handleCommand(): sending command to set vane position to {}.", newVanePosition);
+                if (new VeluxBridgeRunProductCommand().sendCommand(thisBridgeHandler.thisBridge, bridgeIndex.toInt(),
+                        oldMainPosition, newFunctionalParameters)) {
+                    LOGGER.trace("handleCommand(): store vane position to cache.");
+                    // cache new value in existingProducts() until it gets updated by polling
+                    targetProduct.setFunctionalParameters(newFunctionalParameters);
+                }
+                LOGGER.trace("handleCommand(): vane position will be updated via polling.");
+                if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
+                    LOGGER.trace("handleCommand(): position of actuators will be updated.");
+                }
+            } else {
+                // command the actuator position resp. state
+                FunctionalParameters oldFunctionalParameters = targetProduct.getFunctionalParameters();
+                VeluxProductPosition newMainPosition = VeluxProductPosition.UNKNOWN;
 
-                if (setVanePosition) {
-                    LOGGER.debug("handleCommand(): sending command to set vane position to {}.", newVanePosition);
-                    new VeluxBridgeRunProductCommand().sendCommand(thisBridgeHandler.thisBridge, bridgeIndex.toInt(),
-                            new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_IGNORE), functionalParameters);
-                    LOGGER.trace("handleCommand(): vane position will be updated through the house status events.");
-                    if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
-                        LOGGER.trace("handleCommand(): vane positions will be refreshed.");
+                if (CHANNEL_ACTUATOR_POSITION.equals(channelId)) {
+                    if (command instanceof UpDownType) {
+                        LOGGER.trace("handleCommand(): found UpDownType.{} command.", command);
+                        newMainPosition = UpDownType.UP.equals(command) ^ veluxActuator.isInverted()
+                                ? new VeluxProductPosition(PercentType.ZERO)
+                                : new VeluxProductPosition(PercentType.HUNDRED);
+                    } else if (command instanceof StopMoveType) {
+                        LOGGER.trace("handleCommand(): found StopMoveType.{} command.", command);
+                        newMainPosition = StopMoveType.STOP.equals(command) ? new VeluxProductPosition()
+                                : newMainPosition;
+                    } else if (command instanceof PercentType) {
+                        LOGGER.trace("handleCommand(): found PercentType.{} command", command);
+                        PercentType ptCommand = (PercentType) command;
+                        if (veluxActuator.isInverted()) {
+                            ptCommand = new PercentType(PercentType.HUNDRED.intValue() - ptCommand.intValue());
+                        }
+                        LOGGER.trace("handleCommand(): found command to set level to {}.", ptCommand);
+                        newMainPosition = new VeluxProductPosition(ptCommand);
+                    }
+                } else if (CHANNEL_ACTUATOR_STATE.equals(channelId)) {
+                    if (command instanceof OnOffType) {
+                        LOGGER.trace("handleCommand(): found OnOffType.{} command.", command);
+                        newMainPosition = OnOffType.OFF.equals(command) ^ veluxActuator.isInverted()
+                                ? new VeluxProductPosition(PercentType.ZERO)
+                                : new VeluxProductPosition(PercentType.HUNDRED);
                     }
                 }
-                break;
-            }
-
-            // command the actuator position resp. state
-            VeluxProductPosition targetLevel = VeluxProductPosition.UNKNOWN;
-            if (CHANNEL_ACTUATOR_POSITION.equals(channelId)) {
-                if (command instanceof UpDownType) {
-                    LOGGER.trace("handleCommand(): found UpDownType.{} command.", command);
-                    targetLevel = UpDownType.UP.equals(command) ^ veluxActuator.isInverted()
-                            ? new VeluxProductPosition(PercentType.ZERO)
-                            : new VeluxProductPosition(PercentType.HUNDRED);
-                } else if (command instanceof StopMoveType) {
-                    LOGGER.trace("handleCommand(): found StopMoveType.{} command.", command);
-                    targetLevel = StopMoveType.STOP.equals(command) ? new VeluxProductPosition() : targetLevel;
-                } else if (command instanceof PercentType) {
-                    LOGGER.trace("handleCommand(): found PercentType.{} command", command);
-                    PercentType ptCommand = (PercentType) command;
-                    if (veluxActuator.isInverted()) {
-                        ptCommand = new PercentType(PercentType.HUNDRED.intValue() - ptCommand.intValue());
-                    }
-                    LOGGER.trace("handleCommand(): found command to set level to {}.", ptCommand);
-                    targetLevel = new VeluxProductPosition(ptCommand);
+                if (newMainPosition.equals(VeluxProductPosition.UNKNOWN)) {
+                    LOGGER.info("handleCommand({},{}): ignoring command.", channelUID.getAsString(), command);
+                    break;
                 }
-            } else if (CHANNEL_ACTUATOR_STATE.equals(channelId)) {
-                if (command instanceof OnOffType) {
-                    LOGGER.trace("handleCommand(): found OnOffType.{} command.", command);
-                    targetLevel = OnOffType.OFF.equals(command) ^ veluxActuator.isInverted()
-                            ? new VeluxProductPosition(PercentType.ZERO)
-                            : new VeluxProductPosition(PercentType.HUNDRED);
+                LOGGER.debug("handleCommand(): sending command to set main position to {}.", newMainPosition);
+                if (new VeluxBridgeRunProductCommand().sendCommand(thisBridgeHandler.thisBridge, bridgeIndex.toInt(),
+                        newMainPosition, oldFunctionalParameters)) {
+                    LOGGER.trace("handleCommand(): store main position to cache.");
+                    // cache new value in existingProducts() until it gets updated by polling
+                    targetProduct.setCurrentPosition(newMainPosition.getPositionAsVeluxType());
                 }
-            }
-            if (targetLevel.equals(VeluxProductPosition.UNKNOWN)) {
-                LOGGER.info("handleCommand({},{}): ignoring command.", channelUID.getAsString(), command);
-                break;
-            }
-            LOGGER.debug("handleCommand(): sending command with target level {}.", targetLevel);
-            new VeluxBridgeRunProductCommand().sendCommand(thisBridgeHandler.thisBridge,
-                    veluxActuator.getProductBridgeIndex().toInt(), targetLevel, new FunctionalParameters());
-            LOGGER.trace("handleCommand(): The new shutter level will be send through the home monitoring events.");
-            if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
-                LOGGER.trace("handleCommand(): position of actuators are updated.");
+                LOGGER.trace("handleCommand(): main position will be updated via polling.");
+                if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
+                    LOGGER.trace("handleCommand(): position of actuators will be updated.");
+                }
             }
         } while (false); // common exit
         return newValue;
