@@ -13,6 +13,7 @@
 package org.openhab.binding.velux.internal.bridge.common;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 
 /**
  * <B>Common bridge communication message scheme supported by the </B><I>Velux</I><B> bridge.</B>
@@ -37,8 +38,9 @@ public abstract class RunProductCommand implements BridgeCommunicationProtocol {
      *
      * @param nodeId Gateway internal actuator identifier (zero to 199).
      * @param mainParameter target device state.
-     * @param functionalParameters the target Functional Parameters as an array of int.
+     * @param functionalParameters the target Functional Parameters.
      * @return reference to the class instance.
      */
-    public abstract RunProductCommand setNodeIdAndParameters(int nodeId, int mainParameter, int[] functionalParameters);
+    public abstract RunProductCommand setNodeIdAndParameters(int nodeId, int mainParameter,
+            FunctionalParameters functionalParameters);
 }

@@ -14,6 +14,7 @@ package org.openhab.binding.velux.internal.bridge;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
+import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +43,11 @@ public class VeluxBridgeRunProductCommand {
      * @param bridge Initialized Velux bridge handler.
      * @param nodeId Number of Actuator to be modified.
      * @param mainValue Target value for Actuator main parameter.
-     * @param functionalParameters the target Functional Parameters as an array of int.
+     * @param functionalParameters the target Functional Parameters.
      * @return true if successful, and false otherwise.
      */
     public boolean sendCommand(VeluxBridge bridge, int nodeId, VeluxProductPosition mainValue,
-            int[] functionalParameters) {
+            FunctionalParameters functionalParameters) {
         logger.trace("sendCommand(nodeId={},value={}) called.", nodeId, mainValue);
 
         boolean success = false;

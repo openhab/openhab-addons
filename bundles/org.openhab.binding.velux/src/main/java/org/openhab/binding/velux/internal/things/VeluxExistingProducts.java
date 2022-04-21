@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
+import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +112,7 @@ public class VeluxExistingProducts {
     }
 
     public boolean update(ProductBridgeIndex bridgeProductIndex, int productState, int productPosition,
-            int productTarget, int[] productFunctionalParameters) {
+            int productTarget, FunctionalParameters productFunctionalParameters) {
         logger.debug("update(bridgeProductIndex={},productState={},productPosition={},productTarget={}) called.",
                 bridgeProductIndex.toInt(), productState, productPosition, productTarget);
         if (!isRegistered(bridgeProductIndex)) {

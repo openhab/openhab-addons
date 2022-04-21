@@ -43,6 +43,7 @@ import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProto
 import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.RunReboot;
 import org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge;
+import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.bridge.slip.SlipVeluxBridge;
 import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
 import org.openhab.binding.velux.internal.development.Threads;
@@ -847,8 +848,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         RunProductCommand bcp = thisBridge.bridgeAPI().runProductCommand();
         if (bcp != null) {
             bcp.setNodeIdAndParameters(nodeId, new VeluxProductPosition(new PercentType(Math.abs(relativePercent)))
-                    .getAsRelativePosition((relativePercent >= 0)),
-                    VeluxBindingConstants.newFunctionalParameterArray());
+                    .getAsRelativePosition((relativePercent >= 0)), new FunctionalParameters());
             // background execution of moveRelative
             submitCommunicationsJob(() -> {
                 if (thisBridge.bridgeCommunicate(bcp)) {

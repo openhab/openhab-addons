@@ -16,9 +16,9 @@ import static org.openhab.binding.velux.internal.VeluxBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeRunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.GetProduct;
+import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
@@ -101,35 +101,32 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
 
                     // update vane position
                     if (CHANNEL_VANE_POSITION.equals(channelId)) {
-                        int vanePosition = VeluxProductPosition.VPP_VELUX_UNKNOWN;
-                        int[] functionalParameters = product.getFunctionalParameters();
+                        int vanePosition;
+                        FunctionalParameters functionalParameters = product.getFunctionalParameters();
                         ActuatorType actuatorType = product.getActuatorType();
                         switch (actuatorType) {
                             case BLIND_1_0:
-                                if (functionalParameters.length > 0) {
-                                    vanePosition = functionalParameters[0];
-                                }
+                                vanePosition = functionalParameters.getValues()[0];
                                 break;
                             case ROLLERSHUTTER_2_1:
                             case BLIND_17:
                             case BLIND_18:
-                                if (functionalParameters.length > 2) {
-                                    vanePosition = functionalParameters[2];
-                                }
+                                vanePosition = functionalParameters.getValues()[2];
                                 break;
                             default:
+                                vanePosition = VeluxProductPosition.VPP_VELUX_UNKNOWN;
                                 LOGGER.info("handleRefresh(): actuator type '{}' ({}) does not support channel '{}'.",
                                         actuatorType.getNodeType(), actuatorType.getDescription(), channelId);
                         }
-                        if ((vanePosition >= VeluxProductPosition.VPP_VELUX_MIN)
-                                && (vanePosition <= VeluxProductPosition.VPP_VELUX_MAX)) {
+                        if (functionalParameters.isNormalPosition(vanePosition)) {
                             VeluxProductPosition productVanePosition = new VeluxProductPosition(vanePosition);
                             newState = productVanePosition.getPositionAsPercentType(false);
                             LOGGER.trace("handleRefresh(): position of vane is {}%.", newState);
-                        } else if (vanePosition == VeluxProductPosition.VPP_VELUX_UNKNOWN) {
+                        } else if (functionalParameters.isUndefined(vanePosition)) {
                             newState = UnDefType.UNDEF;
                             LOGGER.trace("handleRefresh(): position of vane is 'UNDEFINED'.");
                         } else {
+                            // for any other vane position state, newState remain with a null value
                             LOGGER.trace("handleRefresh(): position of vane unchanged.");
                         }
                         break;
@@ -187,31 +184,29 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
             // command the vane position
             if (CHANNEL_VANE_POSITION.equals(channelId) && (command instanceof PercentType)) {
                 LOGGER.trace("handleCommand(): found vane position PercentType.{} command", command);
+                boolean setVanePosition = false;
                 int newVanePosition = new VeluxProductPosition((PercentType) command).getPositionAsVeluxType();
                 ProductBridgeIndex bridgeIndex = veluxActuator.getProductBridgeIndex();
                 VeluxProduct targetProduct = thisBridgeHandler.existingProducts().get(bridgeIndex);
-                int[] functionalParameters = targetProduct.getFunctionalParameters();
-                boolean setVanePosition = false;
                 ActuatorType actuatorType = targetProduct.getActuatorType();
+                FunctionalParameters functionalParameters = new FunctionalParameters();
+
                 switch (actuatorType) {
                     case BLIND_1_0:
-                        if (functionalParameters.length > 0) {
-                            functionalParameters[0] = newVanePosition;
-                            setVanePosition = true;
-                        }
+                        functionalParameters.setValue(0, newVanePosition);
+                        setVanePosition = true;
                         break;
                     case ROLLERSHUTTER_2_1:
                     case BLIND_17:
                     case BLIND_18:
-                        if (functionalParameters.length > 2) {
-                            functionalParameters[2] = newVanePosition;
-                            setVanePosition = true;
-                        }
+                        functionalParameters.setValue(2, newVanePosition);
+                        setVanePosition = true;
                         break;
                     default:
                         LOGGER.info("handleCommand(): actuator type '{}' ({}) does not support channel '{}'.",
                                 actuatorType.getNodeType(), actuatorType.getDescription(), channelId);
                 }
+
                 if (setVanePosition) {
                     LOGGER.debug("handleCommand(): sending command to set vane position to {}.", newVanePosition);
                     new VeluxBridgeRunProductCommand().sendCommand(thisBridgeHandler.thisBridge, bridgeIndex.toInt(),
@@ -258,8 +253,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
             }
             LOGGER.debug("handleCommand(): sending command with target level {}.", targetLevel);
             new VeluxBridgeRunProductCommand().sendCommand(thisBridgeHandler.thisBridge,
-                    veluxActuator.getProductBridgeIndex().toInt(), targetLevel,
-                    VeluxBindingConstants.newFunctionalParameterArray());
+                    veluxActuator.getProductBridgeIndex().toInt(), targetLevel, new FunctionalParameters());
             LOGGER.trace("handleCommand(): The new shutter level will be send through the home monitoring events.");
             if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
                 LOGGER.trace("handleCommand(): position of actuators are updated.");

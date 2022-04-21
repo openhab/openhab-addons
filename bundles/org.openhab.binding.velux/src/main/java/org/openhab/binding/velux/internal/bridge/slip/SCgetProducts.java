@@ -13,7 +13,6 @@
 package org.openhab.binding.velux.internal.bridge.slip;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.bridge.common.GetProducts;
 import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
@@ -166,9 +165,11 @@ class SCgetProducts extends GetProducts implements SlipBridgeCommunicationProtoc
                 int ntfState = responseData.getOneByteValue(84);
                 int ntfCurrentPosition = responseData.getTwoByteValue(85);
                 int ntfTarget = responseData.getTwoByteValue(87);
-                int[] ntfFunctionalParamaters = VeluxBindingConstants.newFunctionalParameterArray();
-                for (int i = 0; i < ntfFunctionalParamaters.length; i++) {
-                    ntfFunctionalParamaters[i] = responseData.getTwoByteValue(89 + (i * 2));
+                FunctionalParameters ntfFunctionalParamaters = new FunctionalParameters();
+                int sourcePosition = 89;
+                for (int i = 0; i < ntfFunctionalParamaters.count(); i++) {
+                    ntfFunctionalParamaters.setValue(i, responseData.getTwoByteValue(sourcePosition));
+                    sourcePosition = sourcePosition + 2;
                 }
                 int ntfRemainingTime = responseData.getTwoByteValue(97);
                 int ntfTimeStamp = responseData.getFourByteValue(99);
@@ -198,8 +199,10 @@ class SCgetProducts extends GetProducts implements SlipBridgeCommunicationProtoc
                     logger.trace("setResponse(): ntfState={}.", ntfState);
                     logger.trace("setResponse(): ntfCurrentPosition={}.", ntfCurrentPosition);
                     logger.trace("setResponse(): ntfTarget={}.", ntfTarget);
-                    for (int i = 0; i < ntfFunctionalParamaters.length; i++) {
-                        logger.trace("setResponse(): ntfFunctionalParamater{}={}.", i + 1, ntfFunctionalParamaters[i]);
+                    int id = 1;
+                    for (int value : ntfFunctionalParamaters.getValues()) {
+                        logger.trace("setResponse(): ntfFunctionalParamater{}={}.", id, value);
+                        id++;
                     }
                     logger.trace("setResponse(): ntfRemainingTime={}.", ntfRemainingTime);
                     logger.trace("setResponse(): ntfTimeStamp={}.", ntfTimeStamp);

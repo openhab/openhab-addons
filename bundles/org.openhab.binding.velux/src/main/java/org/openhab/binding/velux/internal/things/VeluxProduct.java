@@ -13,7 +13,7 @@
 package org.openhab.binding.velux.internal.things;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.velux.internal.VeluxBindingConstants;
+import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.things.VeluxProductType.ActuatorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +94,7 @@ public class VeluxProduct {
     private int state = State.UNKNOWN.value;
     private int currentPosition = 0;
     private int targetPosition = 0;
-    private int[] functionalParameters = VeluxBindingConstants.newFunctionalParameterArray();
+    private final FunctionalParameters functionalParameters = new FunctionalParameters();
     private int remainingTime = 0;
     private int timeStamp = 0;
 
@@ -148,13 +148,13 @@ public class VeluxProduct {
      * @param state This field indicates the operating state of the node.
      * @param currentPosition This field indicates the current position of the node.
      * @param target This field indicates the target position of the current operation.
-     * @param functionalParameters the target Functional Parameters as an array of int.
+     * @param functionalParameters the target Functional Parameters.
      * @param remainingTime This field indicates the remaining time for a node activation in seconds.
      * @param timeStamp UTC time stamp for last known position.
      */
     public VeluxProduct(VeluxProductName name, VeluxProductType typeId, ActuatorType actuatorType,
             ProductBridgeIndex bridgeProductIndex, int order, int placement, int velocity, int variation, int powerMode,
-            String serialNumber, int state, int currentPosition, int target, int[] functionalParameters,
+            String serialNumber, int state, int currentPosition, int target, FunctionalParameters functionalParameters,
             int remainingTime, int timeStamp) {
         logger.trace("VeluxProduct(v2,name={}) created.", name.toString());
         this.name = name;
@@ -171,9 +171,7 @@ public class VeluxProduct {
         this.state = state;
         this.currentPosition = currentPosition;
         this.targetPosition = target;
-        for (int i = 0; i < Math.min(this.functionalParameters.length, functionalParameters.length); i++) {
-            this.functionalParameters[i] = functionalParameters[i];
-        }
+        this.functionalParameters.setValues(functionalParameters);
         this.remainingTime = remainingTime;
         this.timeStamp = timeStamp;
     }
@@ -408,38 +406,27 @@ public class VeluxProduct {
     /**
      * Get the Functional Parameters.
      *
-     * @return the Functional Parameters as an array of int.
+     * @return the Functional Parameters.
      */
-    public int[] getFunctionalParameters() {
+    public FunctionalParameters getFunctionalParameters() {
         return functionalParameters;
     }
 
     /**
-     * Set the Functional Parameters.
+     * Set the Functional Parameters. Calls setProductAllowedValues() so that any values that are not allowed by normal
+     * products will be replaced by the 'undefined' (i.e. 0xF7FF) value.
      *
-     * @param functionalParameters the new values of the Functional Parameters.
+     * @param newFunctionalParameters the new values of the Functional Parameters.
      * @return <b>modified</b> if any of the Functional Parameters have been changed.
      */
-    public boolean setFunctionalParameters(int[] functionalParameters) {
-        boolean modified = false;
-        for (int i = 0; i < Math.min(this.functionalParameters.length, functionalParameters.length); i++) {
-            int val = functionalParameters[i];
-            if ((val == this.functionalParameters[i]) || (val == VeluxProductPosition.VPP_VELUX_IGNORE)) {
-                continue;
-            }
-            if (((val >= VeluxProductPosition.VPP_VELUX_MIN) && (val <= VeluxProductPosition.VPP_VELUX_MAX))
-                    || (val == VeluxProductPosition.VPP_VELUX_UNKNOWN)) {
-                this.functionalParameters[i] = val;
-                modified = true;
-            }
-        }
-        return modified;
+    public boolean setFunctionalParameters(FunctionalParameters newFunctionalParameters) {
+        return functionalParameters.setProductAllowedFPValues(newFunctionalParameters);
     }
 
     /**
      * Return the actuator type.
      *
-     * @return ..
+     * @return the actuator type.
      */
     public ActuatorType getActuatorType() {
         return actuatorType;

@@ -15,13 +15,11 @@ package org.openhab.binding.velux.internal.bridge.slip;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
-import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +70,7 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
     private int reqPL03 = 0; // unused
     private int reqPL47 = 0; // unused
     private int reqLockTime = 0; // 30 seconds
-    private int[] reqFunctionalParameters = VeluxBindingConstants.newFunctionalParameterArray();
+    private final FunctionalParameters reqFunctionalParameters = new FunctionalParameters();
 
     /*
      * ===========================================================
@@ -131,12 +129,13 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
         request.setOneByteValue(4, reqParameterActive);
 
         int bitMask = 0b10000000;
-        for (int i = 0; i < reqFunctionalParameters.length; i++) {
-            int val = reqFunctionalParameters[i];
-            if ((val >= VeluxProductPosition.VPP_VELUX_MIN) && (val <= VeluxProductPosition.VPP_VELUX_MAX)) {
+        int targetPosition = 9;
+        for (int value : reqFunctionalParameters.getValues()) {
+            if (reqFunctionalParameters.isNormalPosition(value)) {
                 reqFPI1 |= bitMask;
-                request.setTwoByteValue(9 + (i * 2), val);
+                request.setTwoByteValue(targetPosition, value);
             }
+            targetPosition = targetPosition + 2;
             bitMask = bitMask >>> 1;
         }
 
@@ -160,9 +159,10 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
             logger.trace("getRequestDataAsArrayOfBytes(): reqFPI1={}.", reqFPI1);
             logger.trace("getRequestDataAsArrayOfBytes(): reqFPI2={}.", reqFPI2);
             logger.trace("getRequestDataAsArrayOfBytes(): reqMainParameter={}.", reqMainParameter);
-            for (int i = 0; i < reqFunctionalParameters.length; i++) {
-                logger.trace("getRequestDataAsArrayOfBytes(): reqFunctionalParameter{}={}.", i + 1,
-                        reqFunctionalParameters[i]);
+            int id = 1;
+            for (int value : reqFunctionalParameters.getValues()) {
+                logger.trace("getRequestDataAsArrayOfBytes(): reqFunctionalParameter{}={}.", id, value);
+                id++;
             }
             logger.trace("getRequestDataAsArrayOfBytes(): reqIndexArrayCount={}.", reqIndexArrayCount);
             logger.trace("getRequestDataAsArrayOfBytes(): reqIndexArray01={}.", reqIndexArray01);
@@ -332,13 +332,12 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
      */
 
     @Override
-    public SCrunProductCommand setNodeIdAndParameters(int nodeId, int mainParameter, int[] functionalParameters) {
+    public SCrunProductCommand setNodeIdAndParameters(int nodeId, int mainParameter,
+            FunctionalParameters functionalParameters) {
         logger.debug("setNodeIdAndParameters({}) called.", nodeId);
         reqIndexArray01 = nodeId;
         reqMainParameter = mainParameter;
-        for (int i = 0; i < Math.min(reqFunctionalParameters.length, functionalParameters.length); i++) {
-            reqFunctionalParameters[i] = functionalParameters[i];
-        }
+        reqFunctionalParameters.setValues(functionalParameters);
         return this;
     }
 }

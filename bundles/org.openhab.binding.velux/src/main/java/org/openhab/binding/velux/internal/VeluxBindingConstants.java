@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -158,21 +157,4 @@ public class VeluxBindingConstants {
 
     public static final String UNKNOWN_THING_TYPE_ID = "FAILED";
     public static final String UNKNOWN_IP_ADDRESS = "xxx.xxx.xxx.xxx";
-
-    // Functional Parameters
-    private static final int FUNCTIONAL_PARAMETER_COUNT = 4;
-
-    /**
-     * Create a pre- initialised array of Functional Parameters of size FUNCTIONAL_PARAMETER_COUNT with each element
-     * containing VPP_VELUX_UNKNOWN.
-     *
-     * @return the array of Functional Parameters.
-     */
-    public static final int[] newFunctionalParameterArray() {
-        int[] functionalParameters = new int[FUNCTIONAL_PARAMETER_COUNT];
-        for (int i = 0; i < functionalParameters.length; i++) {
-            functionalParameters[i] = VeluxProductPosition.VPP_VELUX_IGNORE;
-        }
-        return functionalParameters;
-    }
 }
