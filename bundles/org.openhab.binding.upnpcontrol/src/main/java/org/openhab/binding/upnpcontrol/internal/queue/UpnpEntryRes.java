@@ -28,9 +28,12 @@ public class UpnpEntryRes {
     private String importUri;
     private String res = "";
 
-    public UpnpEntryRes(String protocolInfo, @Nullable Long size, @Nullable String duration,
+    public UpnpEntryRes(@Nullable String protocolInfo, @Nullable Long size, @Nullable String duration,
             @Nullable String importUri) {
-        this.protocolInfo = protocolInfo.trim();
+        // According to the UPnP standard, res should always contain protocolInfo. Some devices do not respect this
+        // standard in their AVTransport implementation. To avoid null pointer exceptions, take care of this special
+        // case.
+        this.protocolInfo = (protocolInfo == null) ? "*" : protocolInfo.trim();
         this.size = size;
         this.duration = (duration == null) ? "" : duration.trim();
         this.importUri = (importUri == null) ? "" : importUri.trim();
