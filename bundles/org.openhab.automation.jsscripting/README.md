@@ -443,7 +443,7 @@ See [openhab-js : utils](https://openhab.github.io/openhab-js/utils.html) for fu
 
 The JSScripting binding  will load scripts from `automation/js` in the user configuration directory.
 The system will automatically reload scripts when changes are detected to files.
-Local variable state is not persisted among reloads, see using the [cache](#cache) for a connivent way to persist objects.
+Local variable state is not persisted among reloads, see using the [cache](#cache) for a convenient way to persist objects.
 
 File based rules can be created in 2 different ways: using [JSRule](#jsrule) or the [Rule Builder](#rule-builder).
 
