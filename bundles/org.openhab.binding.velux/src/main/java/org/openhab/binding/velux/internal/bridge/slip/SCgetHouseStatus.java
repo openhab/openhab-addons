@@ -183,6 +183,6 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
      * @return <b>ntfFunctionalParameters</b> returns the Functional Parameters.
      */
     public FunctionalParameters getFunctionalParameters() {
-        return ntfFunctionalParameters;
+        return ntfFunctionalParameters.clone();
     }
 }

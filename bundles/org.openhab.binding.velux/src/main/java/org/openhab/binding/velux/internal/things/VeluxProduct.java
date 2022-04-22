@@ -409,7 +409,7 @@ public class VeluxProduct {
      * @return the Functional Parameters.
      */
     public FunctionalParameters getFunctionalParameters() {
-        return functionalParameters;
+        return functionalParameters.clone();
     }
 
     /**
