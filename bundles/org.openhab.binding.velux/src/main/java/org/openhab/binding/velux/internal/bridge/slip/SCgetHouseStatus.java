@@ -75,7 +75,7 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
     private int ntfState;
     private int ntfCurrentPosition;
     private int ntfTarget;
-    private final FunctionalParameters ntfFuntionalParameters = new FunctionalParameters();
+    private final FunctionalParameters ntfFunctionalParameters = new FunctionalParameters();
 
     /*
      * ===========================================================
@@ -113,11 +113,7 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
                 ntfState = responseData.getOneByteValue(1);
                 ntfCurrentPosition = responseData.getTwoByteValue(2);
                 ntfTarget = responseData.getTwoByteValue(4);
-                int sourcePosition = 6;
-                for (int i = 0; i < ntfFuntionalParameters.count(); i++) {
-                    ntfFuntionalParameters.setValue(i, responseData.getTwoByteValue(sourcePosition));
-                    sourcePosition = sourcePosition + 2;
-                }
+                ntfFunctionalParameters.read(responseData, 6);
                 int ntfRemainingTime = responseData.getTwoByteValue(14);
                 int ntfTimeStamp = responseData.getFourByteValue(16);
 
@@ -126,11 +122,7 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
                     logger.trace("setResponse(): ntfState={}.", ntfState);
                     logger.trace("setResponse(): ntfCurrentPosition={}.", ntfCurrentPosition);
                     logger.trace("setResponse(): ntfTarget={}.", ntfTarget);
-                    int id = 1;
-                    for (int value : ntfFuntionalParameters.getValues()) {
-                        logger.trace("setResponse(): ntfFuntionalParameter{}={}.", id, value);
-                        id++;
-                    }
+                    logger.trace("setResponse(): ntfFunctionalParameters={}.", ntfFunctionalParameters);
                     logger.trace("setResponse(): ntfRemainingTime={}.", ntfRemainingTime);
                     logger.trace("setResponse(): ntfTimeStamp={}.", ntfTimeStamp);
                 }
@@ -188,9 +180,9 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
     }
 
     /**
-     * @return <b>ntfFuntionalParameters</b> returns the Functional Parameters.
+     * @return <b>ntfFunctionalParameters</b> returns the Functional Parameters.
      */
-    public FunctionalParameters getFuntionalParameters() {
-        return ntfFuntionalParameters;
+    public FunctionalParameters getFunctionalParameters() {
+        return ntfFunctionalParameters;
     }
 }

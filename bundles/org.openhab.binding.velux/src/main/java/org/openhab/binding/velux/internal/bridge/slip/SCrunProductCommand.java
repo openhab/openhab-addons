@@ -121,23 +121,13 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
     public byte[] getRequestDataAsArrayOfBytes() {
         Packet request = new Packet(new byte[66]);
         reqSessionID = (reqSessionID + 1) & 0xffff;
-        reqFPI1 = 0;
 
         request.setTwoByteValue(0, reqSessionID);
         request.setOneByteValue(2, reqCommandOriginator);
         request.setOneByteValue(3, reqPriorityLevel);
         request.setOneByteValue(4, reqParameterActive);
 
-        int bitMask = 0b10000000;
-        int targetPosition = 9;
-        for (int value : reqFunctionalParameters.getValues()) {
-            if (reqFunctionalParameters.isNormalPosition(value)) {
-                reqFPI1 |= bitMask;
-                request.setTwoByteValue(targetPosition, value);
-            }
-            targetPosition = targetPosition + 2;
-            bitMask = bitMask >>> 1;
-        }
+        reqFPI1 = reqFunctionalParameters.write(request, 9);
 
         request.setOneByteValue(5, reqFPI1);
         request.setOneByteValue(6, reqFPI2);
@@ -159,13 +149,10 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
             logger.trace("getRequestDataAsArrayOfBytes(): reqFPI1={}.", reqFPI1);
             logger.trace("getRequestDataAsArrayOfBytes(): reqFPI2={}.", reqFPI2);
             logger.trace("getRequestDataAsArrayOfBytes(): reqMainParameter={}.", reqMainParameter);
-            int id = 1;
-            for (int value : reqFunctionalParameters.getValues()) {
-                logger.trace("getRequestDataAsArrayOfBytes(): reqFunctionalParameter{}={}.", id, value);
-                id++;
-            }
+            logger.trace("getRequestDataAsArrayOfBytes(): reqFunctionalParameters={}.", reqFunctionalParameters);
             logger.trace("getRequestDataAsArrayOfBytes(): reqIndexArrayCount={}.", reqIndexArrayCount);
-            logger.trace("getRequestDataAsArrayOfBytes(): reqIndexArray01={}.", reqIndexArray01);
+            logger.trace("getRequestDataAsArrayOfBytes(): reqIndexArray01={} (reqNodeId={}.", reqIndexArray01,
+                    reqIndexArray01);
             logger.trace("getRequestDataAsArrayOfBytes(): reqPriorityLevelLock={}.", reqPriorityLevelLock);
             logger.trace("getRequestDataAsArrayOfBytes(): reqPL03={}.", reqPL03);
             logger.trace("getRequestDataAsArrayOfBytes(): reqPL47={}.", reqPL47);

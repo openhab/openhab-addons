@@ -424,11 +424,46 @@ public class VeluxProduct {
     }
 
     /**
-     * Return the actuator type.
+     * Return the vane position. Reads the vane position from the Functional Parameters depending on Velux KLF 200 API
+     * Appendix 2, or returns 'UNKNOWN' if vane position is not supported.
      *
-     * @return the actuator type.
+     * @return the vane position.
      */
-    public ActuatorType getActuatorType() {
-        return actuatorType;
+    public int getVanePosition() {
+        switch (actuatorType) {
+            case BLIND_1_0:
+                return functionalParameters.getValues()[0];
+            case ROLLERSHUTTER_2_1:
+            case BLIND_17:
+            case BLIND_18:
+                return functionalParameters.getValues()[2];
+            default:
+                return VeluxProductPosition.VPP_VELUX_UNKNOWN;
+        }
+    }
+
+    /**
+     * Set the vane position into the appropriate Functional Parameter depending on Velux KLF 200 API Appendix 2. If the
+     * actuator does not support vane positions then a message is logged.
+     *
+     * @param vanePosition the new vane position.
+     */
+    public void setVanePosition(int vanePosition) {
+        functionalParameters.setValues(new FunctionalParameters());
+        if (functionalParameters.isNormalPosition(vanePosition)) {
+            switch (actuatorType) {
+                case BLIND_1_0:
+                    functionalParameters.setValue(0, vanePosition);
+                    break;
+                case ROLLERSHUTTER_2_1:
+                case BLIND_17:
+                case BLIND_18:
+                    functionalParameters.setValue(2, vanePosition);
+                    break;
+                default:
+                    logger.info("setVanePosition(): actuator type '{}' ({}) does not support vane position.",
+                            actuatorType.getNodeType(), actuatorType.getDescription());
+            }
+        }
     }
 }

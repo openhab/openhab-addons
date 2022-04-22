@@ -165,12 +165,7 @@ class SCgetProducts extends GetProducts implements SlipBridgeCommunicationProtoc
                 int ntfState = responseData.getOneByteValue(84);
                 int ntfCurrentPosition = responseData.getTwoByteValue(85);
                 int ntfTarget = responseData.getTwoByteValue(87);
-                FunctionalParameters ntfFunctionalParameters = new FunctionalParameters();
-                int sourcePosition = 89;
-                for (int i = 0; i < ntfFunctionalParameters.count(); i++) {
-                    ntfFunctionalParameters.setValue(i, responseData.getTwoByteValue(sourcePosition));
-                    sourcePosition = sourcePosition + 2;
-                }
+                FunctionalParameters ntfFunctionalParameters = new FunctionalParameters().read(responseData, 89);
                 int ntfRemainingTime = responseData.getTwoByteValue(97);
                 int ntfTimeStamp = responseData.getFourByteValue(99);
                 int ntfNbrOfAlias = responseData.getOneByteValue(103);
@@ -199,11 +194,7 @@ class SCgetProducts extends GetProducts implements SlipBridgeCommunicationProtoc
                     logger.trace("setResponse(): ntfState={}.", ntfState);
                     logger.trace("setResponse(): ntfCurrentPosition={}.", ntfCurrentPosition);
                     logger.trace("setResponse(): ntfTarget={}.", ntfTarget);
-                    int id = 1;
-                    for (int value : ntfFunctionalParameters.getValues()) {
-                        logger.trace("setResponse(): ntfFunctionalParameter{}={}.", id, value);
-                        id++;
-                    }
+                    logger.trace("setResponse(): ntfFunctionalParameters={}.", ntfFunctionalParameters);
                     logger.trace("setResponse(): ntfRemainingTime={}.", ntfRemainingTime);
                     logger.trace("setResponse(): ntfTimeStamp={}.", ntfTimeStamp);
                     logger.trace("setResponse(): ntfNbrOfAlias={}.", ntfNbrOfAlias);

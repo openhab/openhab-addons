@@ -13,10 +13,12 @@
 package org.openhab.binding.velux.internal.bridge.slip;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 
 /**
- * Implementation of API Functional Parameters FP1 thru FP4
+ * Implementation of API Functional Parameters.
+ * Supports an array of of four Functional Parameter values { FP1 .. FP4 }
  *
  * @author Andrew Fiddian-Green - Initial contribution.
  */
@@ -35,6 +37,18 @@ public class FunctionalParameters {
         for (int i = 0; i < FUNCTIONAL_PARAMETER_COUNT; i++) {
             values[i] = VeluxProductPosition.VPP_VELUX_UNKNOWN;
         }
+    }
+
+    @Override
+    public FunctionalParameters clone() {
+        FunctionalParameters result = new FunctionalParameters();
+        result.setValues(this);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{ %4x, %4x, %4x, %4x }", values[0], values[1], values[2], values[3]);
     }
 
     /**
@@ -127,5 +141,43 @@ public class FunctionalParameters {
      */
     public boolean isIgnore(int paramValue) {
         return paramValue == VeluxProductPosition.VPP_VELUX_IGNORE;
+    }
+
+    /**
+     * Read the Functional Parameters from the given Packet.
+     * 
+     * @param packet the Packet to read from.
+     * @param startPosition the read starting position.
+     */
+    public FunctionalParameters read(Packet packet, int startPosition) {
+        int pos = startPosition;
+        for (int i = 0; i < FUNCTIONAL_PARAMETER_COUNT; i++) {
+            values[i] = packet.getTwoByteValue(pos);
+            pos = pos + 2;
+        }
+        return this;
+    }
+
+    /**
+     * Write the Functional Parameters to the given packet. Only writes normal valid position values.
+     * 
+     * @param packet the Packet to write to.
+     * @param startPosition the write starting position.
+     * @return fpIndex a bit map that indicates which of the written Functional Parameters contains a normal valid
+     *         position value.
+     */
+    public int write(Packet packet, int startPosition) {
+        int bitMask = 0b10000000;
+        int pos = startPosition;
+        int fpIndex = 0;
+        for (int i = 0; i < FUNCTIONAL_PARAMETER_COUNT; i++) {
+            if (isNormalPosition(values[i])) {
+                fpIndex |= bitMask;
+                packet.setTwoByteValue(pos, values[i]);
+            }
+            pos = pos + 2;
+            bitMask = bitMask >>> 1;
+        }
+        return fpIndex;
     }
 }

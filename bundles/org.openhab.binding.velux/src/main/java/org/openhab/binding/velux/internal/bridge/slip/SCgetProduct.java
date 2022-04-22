@@ -166,12 +166,7 @@ class SCgetProduct extends GetProduct implements SlipBridgeCommunicationProtocol
                 int ntfState = responseData.getOneByteValue(84);
                 int ntfCurrentPosition = responseData.getTwoByteValue(85);
                 int ntfTarget = responseData.getTwoByteValue(87);
-                FunctionalParameters ntfFuntionalParameters = new FunctionalParameters();
-                int sourcePosition = 89;
-                for (int i = 0; i < ntfFuntionalParameters.count(); i++) {
-                    ntfFuntionalParameters.setValue(i, responseData.getTwoByteValue(sourcePosition));
-                    sourcePosition = sourcePosition + 2;
-                }
+                FunctionalParameters ntfFunctionalParameters = new FunctionalParameters().read(responseData, 89);
                 int ntfRemainingTime = responseData.getFourByteValue(97);
                 int ntfTimeStamp = responseData.getFourByteValue(99);
                 int ntfNbrOfAlias = responseData.getOneByteValue(103);
@@ -200,11 +195,7 @@ class SCgetProduct extends GetProduct implements SlipBridgeCommunicationProtocol
                     logger.trace("setResponse(): ntfState={}.", ntfState);
                     logger.trace("setResponse(): ntfCurrentPosition={}.", ntfCurrentPosition);
                     logger.trace("setResponse(): ntfTarget={}.", ntfTarget);
-                    int id = 1;
-                    for (int value : ntfFuntionalParameters.getValues()) {
-                        logger.trace("setResponse(): ntfFunctionalParameter{}={}.", id, value);
-                        id++;
-                    }
+                    logger.trace("setResponse(): ntfFunctionalParameters={}.", ntfFunctionalParameters);
                     logger.trace("setResponse(): ntfRemainingTime={}.", ntfRemainingTime);
                     logger.trace("setResponse(): ntfTimeStamp={}.", ntfTimeStamp);
                     logger.trace("setResponse(): ntfNbrOfAlias={}.", ntfNbrOfAlias);
@@ -233,7 +224,7 @@ class SCgetProduct extends GetProduct implements SlipBridgeCommunicationProtocol
                 product = new VeluxProduct(new VeluxProductName(ntfName), VeluxProductType.get(ntfNodeTypeSubType),
                         ActuatorType.get(ntfNodeTypeSubType), new ProductBridgeIndex(ntfNodeID), ntfOrder, ntfPlacement,
                         ntfVelocity, ntfNodeVariation, ntfPowerMode, commonSerialNumber, ntfState, ntfCurrentPosition,
-                        ntfTarget, ntfFuntionalParameters, ntfRemainingTime, ntfTimeStamp);
+                        ntfTarget, ntfFunctionalParameters, ntfRemainingTime, ntfTimeStamp);
                 success = true;
                 break;
 
