@@ -44,7 +44,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Lighting                      |     `1`     |             `bus_on_off_switch`, `bus_dimmer`              | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)                                                                                           |
 | Automation                    |     `2`     |                      `bus_automation`                      | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2                                                                                                                                                                              |
 | Temperature Control           |     `4`     |  `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`   | Thermo zones management and temperature sensors (probes).        | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455; Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details |
-| Auxiliary (AUX)               |     `9`     |                         `bus_aux`                          | AUX commands                                                     | Successfully tested: AUX configured for bulgrar-alarm unit 3486                                                                                                                                            |
+| Auxiliary (AUX)               |     `9`     |                         `bus_aux`                          | AUX commands                                                     | Successfully tested: AUX configured for bulgrar-alarm unit 3486. Only sending AUX commands is supported                                                                                                    |
 | CEN & CEN+ Scenarios          | `15` & `25` | `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | CEN/CEN+ scenarios events and virtual activation                 | Successfully tested: scenario buttons: HC/HD/HS/L/N/NT4680                                                                                                                                                 |
 | Dry Contact and IR Interfaces |    `25`     |                    `bus_dry_contact_ir`                    | Dry Contacts and IR Interfaces                                   | Successfully tested: contact interfaces F428 and 3477; IR sensors: HC/HD/HS/L/N/NT4610                                                                                                                     |
 | Energy Management             |    `18`     |                     `bus_energy_meter`                     | Energy Management                                                | Successfully tested: F520, F521                                                                                                                                                                            |
@@ -159,10 +159,14 @@ BUS Auxiliary commands  (WHO=9) can be used to send on the BUS commands to contr
 
 To control a BTicino alarm system  the alarm unit should be configured for example  as follows:
 
-Antitheft->Automations-> then toggle the Event option -> then select OPEN code
+Antitheft -> Automations -> then toggle the Event option -> then select OPEN code
 
 - Type in the AUX command you want to set, e.g. \*9\*1\*4\## (where=4)
-- Type in the associated  Open Web Net code you want to execute, e.g.  \*5\*8*#1234## (engage alarm on zones 1,2,3,4)
+- Type in the associated  Open Web Net code you want to execute, e.g.  \*5\*8*#1234## (engage alarm on zones 1,2,3,4).
+
+Please note  that,  as far as AUX command support, it is not possibile to receive messages originating from the bus. Only sending messages to the bus  is  doable.  
+Hence, for the time being,   when AUX commands  are used to control the alarm system it is not possible retrieve its status (i.e. armed or disarmed).
+
 
 
 ### Central Unit integration missing points 
@@ -175,15 +179,15 @@ Antitheft->Automations-> then toggle the Event option -> then select OPEN code
 
 ### Lighting, Automation, Power meter, CEN/CEN+ Scenario Events and Dry Contact / IR Interfaces channels
 
-| Channel Type ID (channel ID)            | Applies to Thing Type IDs                                     | Item Type     | Description                                                                                                         | Read/Write  |
-|-----------------------------------------|---------------------------------------------------------------|---------------|---------------------------------------------------------------------------------------------------------------------|:-----------:|
-| `switch` or `switch_01`/`02` for ZigBee | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                                                                                 |     R/W     |
-| `brightness`                            | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                                                               |     R/W     |
-| `shutter`                               | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position))             |     R/W     |
-| `button#X`                              | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`    | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#cen-cen-channels)                               | R (TRIGGER) |
-| `sensor`                                | `bus_dry_contact_ir`                                          | Switch        | Indicates if a Dry Contact Interface is `ON`/`OFF`, or if a IR Sensor is detecting movement (`ON`), or not  (`OFF`) |      R      |
-| `power`                                 | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter                                                                    |      R      |
-| `aux`                                   | `bus_aux`                                                     | String        | To send an AUX command  `ON` and `OFF`                                                                              |     R/W     |
+| Channel Type ID (channel ID)            | Applies to Thing Type IDs                                     | Item Type     | Description                                                                                                                                            | Read/Write  |
+|-----------------------------------------|---------------------------------------------------------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|:-----------:|
+| `switch` or `switch_01`/`02` for ZigBee | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                                                                                                                    |     R/W     |
+| `brightness`                            | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                                                                                                  |     R/W     |
+| `shutter`                               | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position))                                                |     R/W     |
+| `button#X`                              | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`    | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#cen-cen-channels)                                                                  | R (TRIGGER) |
+| `sensor`                                | `bus_dry_contact_ir`                                          | Switch        | Indicates if a Dry Contact Interface is `ON`/`OFF`, or if a IR Sensor is detecting movement (`ON`), or not  (`OFF`)                                    |      R      |
+| `power`                                 | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter                                                                                                       |      R      |
+| `aux`                                   | `bus_aux`                                                     | String        | Possible commands: ON,OFF,TOGGLE, STOP, UP,DOWN,ENABLED, DISABLED, RESET_GEN, RESET_BI, RESET_TRI. Still, only   'ON' and `OFF'  are supported for now |     R/W     |
 
 ### Thermo channels
 
@@ -335,7 +339,7 @@ Number:Temperature  iEXT_temp                   "Temperature [%.1f %unit%]"   (g
 
 String	            iCENPlusProxyItem	        "CEN+ Proxy Item"
 
-String              iAlarm                      "Alarm Activation"		                 { channel="openwebnet:bus_aux:mybridge:Alarm_activation:aux"}
+String              iAlarm_activation            "Alarm Activation"		                 { channel="openwebnet:bus_aux:mybridge:Alarm_activation:aux"}
 
 Switch              iLR_IR_sensor               "Sensor"                            { channel="openwebnet:bus_dry_contact_ir:mybridge:LR_IR_sensor:sensor" }
 

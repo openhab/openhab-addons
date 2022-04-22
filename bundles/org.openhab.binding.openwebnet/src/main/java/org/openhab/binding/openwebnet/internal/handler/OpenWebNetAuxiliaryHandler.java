@@ -21,6 +21,7 @@ import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openwebnet4j.OpenGateway;
@@ -37,10 +38,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetAuxiliaryHandler} is responsible for handling Auxiliary (AUX) commands/messages
+ * The {@link OpenWebNetAuxiliaryHandler} is responsible for sending Auxiliary (AUX) commands/messages to the bus
  * It extends the abstract {@link OpenWebNetThingHandler}.
  *
+ * NOTICE: Support for handling messages from the bus regarding alarm control has to be implemented
+ *
  * @author Giovanni Fabiani - Initial contribution
+ *
  */
 @NonNullByDefault
 public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
@@ -86,6 +90,7 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
         Where w = deviceWhere;
         if (w != null) {
             if (channel.getId().equals(CHANNEL_AUX)) {
+                updateStatus(ThingStatus.ONLINE);
                 if (command instanceof StringType) {
                     try {
                         if (command.toString().equals(Auxiliary.WhatAuxiliary.ON.name())) {
@@ -101,6 +106,7 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
                 }
             } else {
                 logger.warn("Unsupported ChannelUID {}", channel);
+                updateStatus(ThingStatus.UNKNOWN);
             }
         }
     }
@@ -129,9 +135,5 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     @Override
     protected String ownIdPrefix() {
         return Who.AUX.value().toString();
-    }
-
-    protected void handleMessage(BaseOpenMessage msg) {
-        super.handleMessage(msg);
     }
 }
