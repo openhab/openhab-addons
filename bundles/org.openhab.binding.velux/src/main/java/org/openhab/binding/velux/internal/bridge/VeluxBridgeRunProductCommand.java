@@ -48,7 +48,8 @@ public class VeluxBridgeRunProductCommand {
      */
     public boolean sendCommand(VeluxBridge bridge, int nodeId, VeluxProductPosition mainValue,
             FunctionalParameters functionalParameters) {
-        logger.trace("sendCommand(nodeId={},value={}) called.", nodeId, mainValue);
+        logger.trace("sendCommand(nodeId={},value={},functionalParameters={}) called.", nodeId, mainValue,
+                functionalParameters);
 
         boolean success = false;
         RunProductCommand bcp = bridge.bridgeAPI().runProductCommand();

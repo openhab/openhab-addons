@@ -113,8 +113,9 @@ public class VeluxExistingProducts {
 
     public boolean update(ProductBridgeIndex bridgeProductIndex, int productState, int productPosition,
             int productTarget, FunctionalParameters productFunctionalParameters) {
-        logger.debug("update(bridgeProductIndex={},productState={},productPosition={},productTarget={}) called.",
-                bridgeProductIndex.toInt(), productState, productPosition, productTarget);
+        logger.debug(
+                "update(bridgeProductIndex={},productState={},productPosition={},productTarget={},functionalParameters={}) called.",
+                bridgeProductIndex.toInt(), productState, productPosition, productTarget, productFunctionalParameters);
         if (!isRegistered(bridgeProductIndex)) {
             logger.warn("update() failed as actuator (with index {}) is not registered.", bridgeProductIndex.toInt());
             return false;
