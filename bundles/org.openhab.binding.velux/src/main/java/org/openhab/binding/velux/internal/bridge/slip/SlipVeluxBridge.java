@@ -28,6 +28,7 @@ import org.openhab.binding.velux.internal.bridge.slip.utils.SlipRFC1055;
 import org.openhab.binding.velux.internal.development.Threads;
 import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
+import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -358,9 +359,11 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                     SCgetHouseStatus receiver = new SCgetHouseStatus();
                     receiver.setResponse(rxCmd, rxData, isSequentialEnforced);
                     if (receiver.isCommunicationSuccessful()) {
-                        bridgeInstance.existingProducts().update(new ProductBridgeIndex(receiver.getNtfNodeID()),
-                                receiver.getNtfState(), receiver.getNtfCurrentPosition(), receiver.getNtfTarget(),
-                                receiver.getFunctionalParameters());
+                        ProductBridgeIndex nodeId = new ProductBridgeIndex(receiver.getNtfNodeID());
+                        VeluxProduct thisProduct = bridgeInstance.existingProducts().get(nodeId);
+                        bridgeInstance.existingProducts().update(nodeId, receiver.getNtfState(),
+                                receiver.getNtfCurrentPosition(), receiver.getNtfTarget(),
+                                thisProduct.getFunctionalParameters());
                         logger.trace(loggerFmt, rxName, "=> special command", "=> product updated");
                         if (rcvonly) {
                             // receive-only: return success to confirm that product(s) were updated
