@@ -111,7 +111,7 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     @Override
     public @Nullable String getUDN() {
-        return (String) this.getThing().getConfiguration().get(WemoBindingConstants.UDN);
+        return (String) this.getConfig().get(WemoBindingConstants.UDN);
     }
 
     protected boolean isUpnpDeviceRegistered() {
@@ -128,7 +128,7 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
             logger.debug("Adding first GENA subscription for {}, scheduling renewal job", getUDN());
             scheduleSubscriptionRenewalJob();
         }
-        subscriptions.put(serviceId, Instant.ofEpochSecond(0));
+        subscriptions.put(serviceId, Instant.MIN);
         UpnpIOService service = this.service;
         if (service == null) {
             return;
