@@ -146,25 +146,6 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
         service.addSubscription(this, serviceId, WemoBindingConstants.SUBSCRIPTION_DURATION_SECONDS);
     }
 
-    protected void removeSubscription(String serviceId) {
-        UpnpIOService service = this.service;
-        if (service == null) {
-            return;
-        }
-        subscriptions.remove(serviceId);
-        if (subscriptions.isEmpty()) {
-            logger.debug("Removing last GENA subscription for {}, cancelling renewal job", getUDN());
-            cancelSubscriptionRenewalJob();
-        }
-        if (!service.isRegistered(this)) {
-            logger.debug("Trying to remove GENA subscription {} for {}, but service is not registered", serviceId,
-                    getUDN());
-            return;
-        }
-        logger.debug("Unsubscribing {} from service {}", getUDN(), serviceId);
-        service.removeSubscription(this, serviceId);
-    }
-
     private void scheduleSubscriptionRenewalJob() {
         cancelSubscriptionRenewalJob();
         this.subscriptionRenewalJob = scheduler.scheduleWithFixedDelay(this::renewSubscriptions,
