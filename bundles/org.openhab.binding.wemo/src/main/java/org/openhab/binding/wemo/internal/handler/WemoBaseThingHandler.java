@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.wemo.internal.handler;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Map;
@@ -22,8 +23,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
-import org.openhab.binding.wemo.internal.WemoUtil;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.thing.ChannelUID;
@@ -217,14 +218,20 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
         }
         int portCheckStart = 49151;
         int portCheckStop = 49157;
-        String port = null;
-        for (int i = portCheckStart; i < portCheckStop; i++) {
-            if (WemoUtil.serviceAvailableFunction.apply(host, i)) {
-                port = String.valueOf(i);
-                break;
+        int port = 0;
+        for (int portCheck = portCheckStart; portCheck < portCheckStop; portCheck++) {
+            try {
+                String urlProbe = "http://" + host + ":" + portCheck;
+                logger.trace("Probing {} to find port", urlProbe);
+                HttpUtil.executeUrl("GET", urlProbe, 250);
+            } catch (IOException e) {
+                continue;
             }
+            port = portCheck;
+            logger.trace("Successfully detected port {}", port);
+            break;
         }
-        if (port == null) {
+        if (port == 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-url");
             return null;
