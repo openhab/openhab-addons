@@ -83,6 +83,11 @@
 				<description>How long to wait for commands to reach car and update to server in seconds.</description>
 				<default>30</default>
 			</parameter>
+			<parameter name="kamereonApiKey" type="text" required="true">
+				<label>Kamereon API Key</label>
+				<description>Access code for MyRenault Services.</description>
+				<default>VAX7XYKGfa92yMvXculCkEFyfZbuM7Ss</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 
