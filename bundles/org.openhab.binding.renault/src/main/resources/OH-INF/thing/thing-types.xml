@@ -85,7 +85,7 @@
 			</parameter>
 			<parameter name="kamereonApiKey" type="text" required="true">
 				<label>Kamereon API Key</label>
-				<description>Code for MyRenault Services.</description>
+				<description>Access code for MyRenault Services.</description>
 				<default>VAX7XYKGfa92yMvXculCkEFyfZbuM7Ss</default>
 			</parameter>
 		</config-description>

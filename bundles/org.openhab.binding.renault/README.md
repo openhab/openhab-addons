@@ -94,7 +94,7 @@ sitemap renaultcar label="Renault Car" {
 
 If you want to limit the charge of the car battery to less than 100%, this can be done as follows. 
  
- * Set up an active 15 minute charge schedule in the MyRenault App.
+ * Set up an active dummy charge schedule in the MyRenault App.
 
  * Create a Dimmer item "RenaultCar_ChargeLimit" and set it to 80% for example. 
 
