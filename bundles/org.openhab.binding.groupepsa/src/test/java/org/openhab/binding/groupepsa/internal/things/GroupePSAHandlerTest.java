@@ -20,6 +20,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
+import javax.measure.quantity.Speed;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpContentResponse;
@@ -34,6 +36,9 @@ import org.openhab.binding.groupepsa.internal.rest.api.GroupePSAConnectApi;
 import org.openhab.binding.groupepsa.internal.rest.exceptions.GroupePSACommunicationException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -43,6 +48,8 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.State;
 
+import tec.uom.se.unit.Units;
+
 /**
  * The {@link GroupePSAHandlerTest} is responsible for testing the binding
  *
@@ -50,7 +57,6 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class GroupePSAHandlerTest {
-
     private @NonNullByDefault({}) AutoCloseable closeable;
 
     private @NonNullByDefault({}) GroupePSAConnectApi api;
@@ -152,5 +158,10 @@ public class GroupePSAHandlerTest {
 
         // check that the channels are updated
         verify(thingCallback, atLeast(30)).stateUpdated(any(ChannelUID.class), any(State.class));
+        verify(thingCallback).stateUpdated(eq(new ChannelUID("a:b:c:electric#charging_status")),
+                eq(new StringType("Disconnected")));
+        verify(thingCallback).stateUpdated(eq(new ChannelUID("a:b:c:electric#charging_rate")),
+                eq(new QuantityType<Speed>(0, Units.KILOMETRE_PER_HOUR)));
+        verify(thingCallback).stateUpdated(eq(new ChannelUID("a:b:c:various#lastupdated")), any(DateTimeType.class));
     }
 }

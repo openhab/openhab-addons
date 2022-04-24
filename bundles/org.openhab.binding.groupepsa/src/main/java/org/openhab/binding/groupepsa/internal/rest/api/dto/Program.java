@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.groupepsa.internal.rest.api.dto;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -25,7 +27,7 @@ public class Program {
     private @Nullable String recurrence;
     private @Nullable String start;
     private @Nullable Boolean enabled;
-    private @Nullable Double slot;
+    private @Nullable BigDecimal slot;
 
     public @Nullable Occurence getOccurence() {
         return occurence;
@@ -43,7 +45,7 @@ public class Program {
         return enabled;
     }
 
-    public @Nullable Double getSlot() {
+    public @Nullable BigDecimal getSlot() {
         return slot;
     }
 

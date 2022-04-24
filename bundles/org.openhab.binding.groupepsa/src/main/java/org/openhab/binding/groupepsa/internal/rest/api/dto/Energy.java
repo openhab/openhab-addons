@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.groupepsa.internal.rest.api.dto;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,12 +26,12 @@ public class Energy {
 
     private @Nullable ZonedDateTime updatedAt;
     private @Nullable ZonedDateTime createdAt;
-    private @Nullable Double autonomy;
+    private @Nullable BigDecimal autonomy;
     private @Nullable BatteryStatus battery;
     private @Nullable Charging charging;
-    private @Nullable Double consumption;
-    private @Nullable Double level;
-    private @Nullable Double residual;
+    private @Nullable BigDecimal consumption;
+    private @Nullable BigDecimal level;
+    private @Nullable BigDecimal residual;
     private @Nullable String type;
 
     public @Nullable ZonedDateTime getUpdatedAt() {
@@ -41,7 +42,7 @@ public class Energy {
         return createdAt;
     }
 
-    public @Nullable Double getAutonomy() {
+    public @Nullable BigDecimal getAutonomy() {
         return autonomy;
     }
 
@@ -53,15 +54,15 @@ public class Energy {
         return charging;
     }
 
-    public @Nullable Double getConsumption() {
+    public @Nullable BigDecimal getConsumption() {
         return consumption;
     }
 
-    public @Nullable Double getLevel() {
+    public @Nullable BigDecimal getLevel() {
         return level;
     }
 
-    public @Nullable Double getResidual() {
+    public @Nullable BigDecimal getResidual() {
         return residual;
     }
 

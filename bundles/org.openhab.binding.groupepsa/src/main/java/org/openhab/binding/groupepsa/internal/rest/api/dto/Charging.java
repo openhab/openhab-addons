@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.groupepsa.internal.rest.api.dto;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class Charging {
 
     private @Nullable String chargingMode;
-    private @Nullable Double chargingRate;
+    private @Nullable BigDecimal chargingRate;
     private @Nullable Duration nextDelayedTime;
     private @Nullable Boolean plugged;
     private @Nullable Duration remainingTime;
@@ -34,11 +35,11 @@ public class Charging {
         return chargingMode;
     }
 
-    public @Nullable Double getChargingRate() {
+    public @Nullable BigDecimal getChargingRate() {
         return chargingRate;
     }
 
-    public void setChargingRate(Double chargingRate) {
+    public void setChargingRate(BigDecimal chargingRate) {
         this.chargingRate = chargingRate;
     }
 

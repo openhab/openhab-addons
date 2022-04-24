@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.groupepsa.internal.rest.api.dto;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,16 +25,16 @@ import org.eclipse.jdt.annotation.Nullable;
 public class Kinetic {
 
     private @Nullable ZonedDateTime createdAt;
-    private @Nullable Double acceleration;
+    private @Nullable BigDecimal acceleration;
     private @Nullable Boolean moving;
-    private @Nullable Double pace;
-    private @Nullable Double speed;
+    private @Nullable BigDecimal pace;
+    private @Nullable BigDecimal speed;
 
     public @Nullable ZonedDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public @Nullable Double getAcceleration() {
+    public @Nullable BigDecimal getAcceleration() {
         return acceleration;
     }
 
@@ -41,11 +42,11 @@ public class Kinetic {
         return moving;
     }
 
-    public @Nullable Double getPace() {
+    public @Nullable BigDecimal getPace() {
         return pace;
     }
 
-    public @Nullable Double getSpeed() {
+    public @Nullable BigDecimal getSpeed() {
         return speed;
     }
 

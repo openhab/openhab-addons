@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.groupepsa.internal.rest.api.dto;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,18 +25,18 @@ import org.eclipse.jdt.annotation.Nullable;
 public class Battery {
 
     private @Nullable ZonedDateTime createdAt;
-    private @Nullable Double current;
-    private @Nullable Double voltage;
+    private @Nullable BigDecimal current;
+    private @Nullable BigDecimal voltage;
 
     public @Nullable ZonedDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public @Nullable Double getCurrent() {
+    public @Nullable BigDecimal getCurrent() {
         return current;
     }
 
-    public @Nullable Double getVoltage() {
+    public @Nullable BigDecimal getVoltage() {
         return voltage;
     }
 

@@ -67,6 +67,7 @@ public class GroupePSABindingConstants {
     public static final String CHANNEL_POSITION_TYPE = "position#type";
     public static final String CHANNEL_POSITION_SIGNALSTRENGTH = "position#signal";
 
+    public static final String CHANNEL_VARIOUS_LASTUPDATED = "various#lastupdated";
     public static final String CHANNEL_VARIOUS_PRIVACY = "various#privacy";
     public static final String CHANNEL_VARIOUS_BELT = "various#belt";
     public static final String CHANNEL_VARIOUS_EMERGENCY = "various#emergency";

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.groupepsa.internal.rest.api.dto;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -21,14 +23,14 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class Health {
 
-    private @Nullable Double capacity;
-    private @Nullable Double resistance;
+    private @Nullable BigDecimal capacity;
+    private @Nullable BigDecimal resistance;
 
-    public @Nullable Double getCapacity() {
+    public @Nullable BigDecimal getCapacity() {
         return capacity;
     }
 
-    public @Nullable Double getResistance() {
+    public @Nullable BigDecimal getResistance() {
         return resistance;
     }
 
