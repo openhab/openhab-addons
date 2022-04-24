@@ -96,7 +96,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private static final String SOURCE = "SOURCE";
     private static final String CHANNEL_DELIMIT = "#";
     private static final String UNDEF = "UNDEF";
-    private static final String GC_STR = "NV-IG8";
+    private static final String GC_STR = "NV-I8G";
 
     private static final int MAX_ZONES = 20;
     private static final int MAX_SRC = 6;
@@ -471,8 +471,11 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 this.versionString = updateData;
                 // Determine if we are a Grand Concerto or not
                 if (this.versionString.contains(GC_STR)) {
+                    logger.debug("Grand Concerto detected");
                     this.isGConcerto = true;
                     connector.setEssentia(false);
+                } else {
+                    logger.debug("Grand Concerto not detected");
                 }
                 break;
             case TYPE_PING:
