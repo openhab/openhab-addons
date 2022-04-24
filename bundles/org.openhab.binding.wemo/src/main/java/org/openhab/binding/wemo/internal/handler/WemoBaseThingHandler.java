@@ -49,8 +49,8 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
     private static final int SUBSCRIPTION_RENEWAL_INTERVAL_SECONDS = 60;
 
     private final Logger logger = LoggerFactory.getLogger(WemoBaseThingHandler.class);
+    private final UpnpIOService service;
 
-    protected @Nullable UpnpIOService service;
     protected WemoHttpCall wemoHttpCaller;
 
     private @Nullable String host;
@@ -65,22 +65,16 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     @Override
     public void initialize() {
-        UpnpIOService service = this.service;
-        if (service != null) {
-            logger.debug("Registering UPnP participant for {}", getThing().getUID());
-            service.registerParticipant(this);
-            initializeHost();
-        }
+        logger.debug("Registering UPnP participant for {}", getThing().getUID());
+        service.registerParticipant(this);
+        initializeHost();
     }
 
     @Override
     public void dispose() {
         removeSubscriptions();
-        UpnpIOService service = this.service;
-        if (service != null) {
-            logger.debug("Unregistering UPnP participant for {}", getThing().getUID());
-            service.unregisterParticipant(this);
-        }
+        logger.debug("Unregistering UPnP participant for {}", getThing().getUID());
+        service.unregisterParticipant(this);
         cancelSubscriptionRenewalJob();
     }
 
@@ -116,8 +110,7 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
     }
 
     protected boolean isUpnpDeviceRegistered() {
-        UpnpIOService service = this.service;
-        return service != null && service.isRegistered(this);
+        return service.isRegistered(this);
     }
 
     protected void addSubscription(String serviceId) {
@@ -130,10 +123,6 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
             scheduleSubscriptionRenewalJob();
         }
         subscriptions.put(serviceId, Instant.MIN);
-        UpnpIOService service = this.service;
-        if (service == null) {
-            return;
-        }
         if (!service.isRegistered(this)) {
             logger.debug("Registering UPnP participant for {}", getUDN());
             service.registerParticipant(this);
@@ -165,10 +154,6 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
         if (subscriptions.isEmpty()) {
             return;
         }
-        UpnpIOService service = this.service;
-        if (service == null) {
-            return;
-        }
         if (!service.isRegistered(this)) {
             service.registerParticipant(this);
         }
@@ -190,10 +175,6 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     private void removeSubscriptions() {
         if (subscriptions.isEmpty()) {
-            return;
-        }
-        UpnpIOService service = this.service;
-        if (service == null) {
             return;
         }
         if (!service.isRegistered(this)) {
@@ -252,12 +233,9 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
     }
 
     private @Nullable String getHostFromService() {
-        UpnpIOService service = this.service;
-        if (service != null) {
-            URL descriptorURL = service.getDescriptorURL(this);
-            if (descriptorURL != null) {
-                return descriptorURL.getHost();
-            }
+        URL descriptorURL = service.getDescriptorURL(this);
+        if (descriptorURL != null) {
+            return descriptorURL.getHost();
         }
         return null;
     }
