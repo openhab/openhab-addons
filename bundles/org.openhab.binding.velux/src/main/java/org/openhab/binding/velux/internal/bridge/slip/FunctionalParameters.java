@@ -48,7 +48,7 @@ public class FunctionalParameters {
 
     @Override
     public String toString() {
-        return String.format("{ %4x, %4x, %4x, %4x }", values[0], values[1], values[2], values[3]);
+        return String.format("{0x%04X, 0x%04X, 0x%04X, 0x%04X}", values[0], values[1], values[2], values[3]);
     }
 
     /**
@@ -119,7 +119,7 @@ public class FunctionalParameters {
      * @param paramValue the value to be checked.
      * @return true if it is a normal actuator position value.
      */
-    public boolean isNormalPosition(int paramValue) {
+    public static boolean isNormalPosition(int paramValue) {
         return (paramValue >= VeluxProductPosition.VPP_VELUX_MIN) && (paramValue <= VeluxProductPosition.VPP_VELUX_MAX);
     }
 
@@ -129,7 +129,7 @@ public class FunctionalParameters {
      * @param paramValue the value to be checked.
      * @return true if it is the 'undefined' value.
      */
-    public boolean isUndefined(int paramValue) {
+    public static boolean isUndefined(int paramValue) {
         return paramValue == VeluxProductPosition.VPP_VELUX_UNKNOWN;
     }
 
@@ -139,20 +139,43 @@ public class FunctionalParameters {
      * @param paramValue the value to be checked.
      * @return true if it is the 'ignore' value.
      */
-    public boolean isIgnore(int paramValue) {
+    public static boolean isIgnore(int paramValue) {
         return paramValue == VeluxProductPosition.VPP_VELUX_IGNORE;
     }
 
     /**
-     * Read the Functional Parameters from the given Packet.
-     * 
-     * @param packet the Packet to read from.
+     * Read the Functional Parameters from the given Packet. Where the parameters are packed into an array of two byte
+     * integer values.
+     *
+     * @param responseData the Packet to read from.
      * @param startPosition the read starting position.
+     * @return this object.
      */
-    public FunctionalParameters read(Packet packet, int startPosition) {
+    public FunctionalParameters readArray(Packet responseData, int startPosition) {
         int pos = startPosition;
         for (int i = 0; i < FUNCTIONAL_PARAMETER_COUNT; i++) {
-            values[i] = packet.getTwoByteValue(pos);
+            values[i] = responseData.getTwoByteValue(pos);
+            pos = pos + 2;
+        }
+        return this;
+    }
+
+    /**
+     * Read the Functional Parameters from the given Packet. Where the parameters are packed into an array of three byte
+     * records each comprising a one byte index followed by a two byte integer value.
+     *
+     * @param responseData the Packet to read from.
+     * @param startPosition the read starting position.
+     * @return this object.
+     */
+    public FunctionalParameters readArrayIndexed(Packet responseData, int startPosition) {
+        int pos = startPosition;
+        for (int i = 0; i < FUNCTIONAL_PARAMETER_COUNT; i++) {
+            int index = responseData.getOneByteValue(pos) - 1;
+            pos++;
+            if ((index >= 0) && (index < FUNCTIONAL_PARAMETER_COUNT)) {
+                values[index] = responseData.getTwoByteValue(pos);
+            }
             pos = pos + 2;
         }
         return this;
@@ -160,20 +183,20 @@ public class FunctionalParameters {
 
     /**
      * Write the Functional Parameters to the given packet. Only writes normal valid position values.
-     * 
-     * @param packet the Packet to write to.
+     *
+     * @param requestData the Packet to write to.
      * @param startPosition the write starting position.
      * @return fpIndex a bit map that indicates which of the written Functional Parameters contains a normal valid
      *         position value.
      */
-    public int write(Packet packet, int startPosition) {
+    public int write(Packet requestData, int startPosition) {
         int bitMask = 0b10000000;
         int pos = startPosition;
         int fpIndex = 0;
         for (int i = 0; i < FUNCTIONAL_PARAMETER_COUNT; i++) {
             if (isNormalPosition(values[i])) {
                 fpIndex |= bitMask;
-                packet.setTwoByteValue(pos, values[i]);
+                requestData.setTwoByteValue(pos, values[i]);
             }
             pos = pos + 2;
             bitMask = bitMask >>> 1;
