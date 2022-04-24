@@ -28,7 +28,6 @@ import org.openhab.binding.velux.internal.bridge.slip.utils.SlipRFC1055;
 import org.openhab.binding.velux.internal.development.Threads;
 import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
-import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -360,27 +359,8 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                     receiver.setResponse(rxCmd, rxData, isSequentialEnforced);
                     if (receiver.isCommunicationSuccessful()) {
                         ProductBridgeIndex nodeId = new ProductBridgeIndex(receiver.getNtfNodeID());
-                        VeluxProduct thisProduct = bridgeInstance.existingProducts().get(nodeId);
                         bridgeInstance.existingProducts().update(nodeId, receiver.getNtfState(),
-                                receiver.getNtfCurrentPosition(), receiver.getNtfTarget(),
-                                thisProduct.getFunctionalParameters());
-                        logger.trace(loggerFmt, rxName, "=> special command", "=> product updated");
-                        if (rcvonly) {
-                            // receive-only: return success to confirm that product(s) were updated
-                            success = true;
-                        }
-                    }
-                    logger.trace(loggerFmt, rxName, "=> special command", "=> continuing");
-                    break;
-
-                case GW_STATUS_REQUEST_NTF:
-                    logger.trace(loggerFmt, rxName, "=> special command", "=> starting");
-                    SCgetStatus receiver2 = new SCgetStatus();
-                    receiver2.setResponse(rxCmd, rxData, isSequentialEnforced);
-                    if (receiver2.isCommunicationSuccessful()) {
-                        bridgeInstance.existingProducts().update(new ProductBridgeIndex(receiver2.getNodeId()),
-                                receiver2.getState(), receiver2.getCurrentPosition(), receiver2.getCurrentPosition(),
-                                receiver2.getFunctionalParameters());
+                                receiver.getNtfCurrentPosition(), receiver.getNtfTarget(), null);
                         logger.trace(loggerFmt, rxName, "=> special command", "=> product updated");
                         if (rcvonly) {
                             // receive-only: return success to confirm that product(s) were updated
