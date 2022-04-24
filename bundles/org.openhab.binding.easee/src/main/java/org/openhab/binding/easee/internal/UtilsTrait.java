@@ -12,20 +12,22 @@
  */
 package org.openhab.binding.easee.internal;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EaseeConfiguration} class contains fields mapping thing configuration parameters.
+ * trait class which contains useful helper methods. Thus, the interface can be implemented and methods are available
+ * within the class.
  *
- * @author Alexander Friese - Initial contribution
+ * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class EaseeConfiguration {
+public interface UtilsTrait {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
-    public String hostname = "";
-    public String password = "";
-    public int refreshInterval = 600;
+    default String formatDate(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return formatter.format(date);
+    }
 }

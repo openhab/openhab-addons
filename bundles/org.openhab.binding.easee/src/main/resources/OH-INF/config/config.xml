@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="thing-type:easee:cloud">
+		<parameter-group name="authentication">
+			<label>Authentication</label>
+			<description>Authentication settings.</description>
+		</parameter-group>
+		<parameter-group name="connection">
+			<label>Connection</label>
+			<description>Connection settings.</description>
+		</parameter-group>
+		<parameter-group name="general">
+			<label>General</label>
+			<description>General settings.</description>
+		</parameter-group>
+
+		<parameter name="username" type="text" required="true" groupName="authentication">
+			<label>Username</label>
+			<description>The username to login at Easee Cloud service. This should be an email adress or phone number.</description>
+		</parameter>
+		<parameter name="password" type="text" required="true" groupName="authentication">
+			<label>Password</label>
+			<description>Your password to login at Easee Cloud service.</description>
+			<context>password</context>
+		</parameter>
+
+		<parameter name="wallboxId" type="text" required="true" groupName="general">
+			<label>Wallbox ID</label>
+			<description>The ID (serial) of the wallbox used to identify the wall box at Easee cloud. This typically starts with
+				"EH"</description>
+		</parameter>
+
+		<parameter name="dataPollingInterval" type="integer" required="false" min="1" max="60" unit="m"
+			groupName="connection">
+			<label>Polling Interval</label>
+			<description>Interval in which data is polled from EaseeCloud (in minutes).</description>
+			<default>5</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

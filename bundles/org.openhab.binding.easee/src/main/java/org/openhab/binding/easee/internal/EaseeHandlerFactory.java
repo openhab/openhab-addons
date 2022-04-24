@@ -12,18 +12,25 @@
  */
 package org.openhab.binding.easee.internal;
 
-import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
+import static org.openhab.binding.easee.internal.EaseeBindingConstants.THING_TYPE_WALLBOX;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.easee.internal.handler.EaseeWallboxHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link EaseeHandlerFactory} is responsible for creating things and thing
@@ -35,7 +42,18 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.easee", service = ThingHandlerFactory.class)
 public class EaseeHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
+    private final Logger logger = LoggerFactory.getLogger(EaseeHandlerFactory.class);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_WALLBOX);
+
+    /**
+     * the shared http client
+     */
+    private final HttpClient httpClient;
+
+    @Activate
+    public EaseeHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,8 +64,10 @@ public class EaseeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new EaseeHandler(thing);
+        if (THING_TYPE_WALLBOX.equals(thingTypeUID)) {
+            return new EaseeWallboxHandler(thing, httpClient);
+        } else {
+            logger.warn("Unsupported Thing-Type: {}", thingTypeUID.getAsString());
         }
 
         return null;
