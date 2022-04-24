@@ -320,7 +320,7 @@
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
-	<channel-type id="lastupdated">
+	<channel-type id="lastUpdated">
 		<item-type>DateTime</item-type>
 		<label>Time of Last Update</label>
 		<description>Last time the results were updated on the server</description>
