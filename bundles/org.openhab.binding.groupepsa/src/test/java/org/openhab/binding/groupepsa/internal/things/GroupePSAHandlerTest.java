@@ -20,8 +20,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
-import javax.measure.quantity.Time;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpContentResponse;
@@ -36,7 +34,6 @@ import org.openhab.binding.groupepsa.internal.rest.api.GroupePSAConnectApi;
 import org.openhab.binding.groupepsa.internal.rest.exceptions.GroupePSACommunicationException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -45,8 +42,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.State;
-
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link GroupePSAHandlerTest} is responsible for testing the binding
@@ -156,10 +151,6 @@ public class GroupePSAHandlerTest {
                         && arg.getStatusDetail().equals(ThingStatusDetail.NONE)));
 
         // check that the channels are updated
-        verify(thingCallback, atLeast(37)).stateUpdated(any(ChannelUID.class), any(State.class));
-
-        // check channel content
-        verify(thingCallback).stateUpdated(eq(new ChannelUID("a:b:c:electric#charging_nextDelayedTime")),
-                eq(new QuantityType<Time>(900, Units.SECOND)));
+        verify(thingCallback, atLeast(30)).stateUpdated(any(ChannelUID.class), any(State.class));
     }
 }
