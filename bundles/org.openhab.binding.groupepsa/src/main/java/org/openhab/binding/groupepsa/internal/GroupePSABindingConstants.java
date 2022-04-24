@@ -89,7 +89,7 @@ public class GroupePSABindingConstants {
 
     public enum VendorConstants {
         PEUGEOT("https://idpcvs.peugeot.com/am/oauth2/access_token", "clientsB2CPeugeot"),
-        CITROEN("https://idpcvs.opel.com/am/oauth2/access_token", "clientsB2CCitroen"),
+        CITROEN("https://idpcvs.citroen.com/am/oauth2/access_token", "clientsB2CCitroen"),
         DS("https://idpcvs.driveds.com/am/oauth2/access_token", "clientsB2CDS"),
         OPEL("https://idpcvs.opel.com/am/oauth2/access_token", "clientsB2COpel"),
         VAUXHALL("https://idpcvs.vauxhall.co.uk/am/oauth2/access_token", "clientsB2CVauxhall");
