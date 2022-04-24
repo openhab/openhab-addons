@@ -164,8 +164,7 @@ Antitheft -> Automations -> then toggle the Event option -> then select OPEN cod
 - Type in the AUX command you want to set, e.g. \*9\*1\*4\## (where=4)
 - Type in the associated  Open Web Net code you want to execute, e.g.  \*5\*8*#1234## (engage alarm on zones 1,2,3,4).
 
-Please note  that,  as far as AUX command support, it is not possibile to receive messages originating from the bus. Only sending messages to the bus  is  doable.  
-Hence, for the time being,   when AUX commands  are used to control the alarm system it is not possible retrieve its status (i.e. armed or disarmed).
+Please note that receiving AUX messages originating from the bus is not supported yet, only sending messages to the bus is supported.
 
 
 
@@ -179,15 +178,15 @@ Hence, for the time being,   when AUX commands  are used to control the alarm sy
 
 ### Lighting, Automation, Power meter, CEN/CEN+ Scenario Events and Dry Contact / IR Interfaces channels
 
-| Channel Type ID (channel ID)            | Applies to Thing Type IDs                                     | Item Type     | Description                                                                                                                                            | Read/Write  |
-|-----------------------------------------|---------------------------------------------------------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|:-----------:|
-| `switch` or `switch_01`/`02` for ZigBee | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                                                                                                                    |     R/W     |
-| `brightness`                            | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                                                                                                  |     R/W     |
-| `shutter`                               | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position))                                                |     R/W     |
-| `button#X`                              | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`    | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#cen-cen-channels)                                                                  | R (TRIGGER) |
-| `sensor`                                | `bus_dry_contact_ir`                                          | Switch        | Indicates if a Dry Contact Interface is `ON`/`OFF`, or if a IR Sensor is detecting movement (`ON`), or not  (`OFF`)                                    |      R      |
-| `power`                                 | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter                                                                                                       |      R      |
-| `aux`                                   | `bus_aux`                                                     | String        | Possible commands: ON,OFF,TOGGLE, STOP, UP,DOWN,ENABLED, DISABLED, RESET_GEN, RESET_BI, RESET_TRI. Still, only   'ON' and `OFF'  are supported for now |     R/W     |
+| Channel Type ID (channel ID)            | Applies to Thing Type IDs                                     | Item Type     | Description                                                                                                                                     | Read/Write  |
+|-----------------------------------------|---------------------------------------------------------------|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------|:-----------:|
+| `switch` or `switch_01`/`02` for ZigBee | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                                                                                                             |     R/W     |
+| `brightness`                            | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                                                                                           |     R/W     |
+| `shutter`                               | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position))                                         |     R/W     |
+| `button#X`                              | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`    | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#cen-cen-channels)                                                           | R (TRIGGER) |
+| `sensor`                                | `bus_dry_contact_ir`                                          | Switch        | Indicates if a Dry Contact Interface is `ON`/`OFF`, or if a IR Sensor is detecting movement (`ON`), or not  (`OFF`)                             |      R      |
+| `power`                                 | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter                                                                                                |      R      |
+| `aux`                                   | `bus_aux`                                                     | String        | Possible commands: ON,OFF,TOGGLE, STOP, UP,DOWN,ENABLED, DISABLED, RESET_GEN, RESET_BI, RESET_TRI. Only   'ON' and `OFF'  are supported for now |     R/W     |
 
 ### Thermo channels
 
@@ -393,7 +392,7 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
     
     Frame label="Alarm activation via AUX command"
     {
-          Switch item=iAlarm         icon="siren"
+          Switch item=iAlarm_activation         icon="siren"
          
     }
 }
