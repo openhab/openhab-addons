@@ -120,6 +120,7 @@ public abstract class GenericWemoOSGiTest extends JavaOSGiTest {
         assertThat(upnpIOService, is(notNullValue()));
 
         mockCaller = Mockito.spy(new WemoHttpCall());
+        doReturn(true).when(mockCaller).probeURL(any());
         WemoHttpCallFactory wemoHttpCallFactory = () -> mockCaller;
         registerService(wemoHttpCallFactory, WemoHttpCallFactory.class.getName());
 

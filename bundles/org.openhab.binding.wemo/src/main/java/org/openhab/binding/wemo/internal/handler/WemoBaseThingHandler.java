@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.wemo.internal.handler;
 
-import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Map;
@@ -27,7 +26,6 @@ import org.jupnp.UpnpService;
 import org.jupnp.model.message.header.RootDeviceHeader;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.thing.ChannelUID;
@@ -229,11 +227,9 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
         int portCheckStop = 49157;
         int port = 0;
         for (int portCheck = portCheckStart; portCheck < portCheckStop; portCheck++) {
-            try {
-                String urlProbe = "http://" + host + ":" + portCheck;
-                logger.trace("Probing {} to find port", urlProbe);
-                HttpUtil.executeUrl("GET", urlProbe, 250);
-            } catch (IOException e) {
+            String urlProbe = "http://" + host + ":" + portCheck;
+            logger.trace("Probing {} to find port", urlProbe);
+            if (!wemoHttpCaller.probeURL(urlProbe)) {
                 continue;
             }
             port = portCheck;
