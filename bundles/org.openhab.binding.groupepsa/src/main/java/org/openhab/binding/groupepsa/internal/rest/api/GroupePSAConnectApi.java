@@ -55,7 +55,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class GroupePSAConnectApi {
-    private static final Logger logger = LoggerFactory.getLogger(GroupePSAConnectApi.class);
+    private final Logger logger = LoggerFactory.getLogger(GroupePSAConnectApi.class);
 
     private final HttpClient httpClient;
     private final GroupePSABridgeHandler bridge;
@@ -106,15 +106,15 @@ public class GroupePSAConnectApi {
         Throwable nextE;
         do {
             nextE = e.getCause();
-            if (nextE != null)
+            if (nextE != null) {
                 e = nextE;
+            }
         } while (nextE != null);
         return e;
     }
 
     public ContentResponse executeRequest(final String uri, final String accept)
             throws GroupePSACommunicationException {
-
         Request request = getHttpClient().newRequest(uri);
 
         String token = getBridge().authenticate();
@@ -153,8 +153,9 @@ public class GroupePSAConnectApi {
             case HttpStatus.NOT_FOUND_404:
                 ErrorObject error = gson.fromJson(response.getContentAsString(), ErrorObject.class);
                 String message = (error != null) ? error.getMessage() : null;
-                if (message == null)
+                if (message == null) {
                     message = "Unknown";
+                }
                 throw new GroupePSACommunicationException(statusCode, message);
 
             case HttpStatus.FORBIDDEN_403:
@@ -191,8 +192,8 @@ public class GroupePSAConnectApi {
     }
 
     public @Nullable VehicleStatus getVehicleStatus(String vin) throws GroupePSACommunicationException {
-        ContentResponse response_odometer = executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/status");
-        VehicleStatus status = parseResponse(response_odometer, VehicleStatus.class);
+        ContentResponse responseOdometer = executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/status");
+        VehicleStatus status = parseResponse(responseOdometer, VehicleStatus.class);
 
         return status;
     }

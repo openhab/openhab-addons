@@ -63,7 +63,7 @@ public class GroupePSADiscoveryService extends AbstractDiscoveryService {
                 ThingTypeUID thingTypeUID = THING_TYPE_VEHICLE;
                 String id = vehicle.getId();
                 if (id != null) {
-                    ThingUID VehicleThingUid = new ThingUID(THING_TYPE_VEHICLE, bridgeUID, id);
+                    ThingUID vehicleThingUid = new ThingUID(THING_TYPE_VEHICLE, bridgeUID, id);
 
                     Map<String, Object> properties = new HashMap<>();
                     putProperty(properties, GroupePSABindingConstants.VEHICLE_ID, id);
@@ -71,7 +71,7 @@ public class GroupePSADiscoveryService extends AbstractDiscoveryService {
                     putProperty(properties, GroupePSABindingConstants.VEHICLE_VENDOR, vehicle.getBrand());
                     putProperty(properties, GroupePSABindingConstants.VEHICLE_MODEL, vehicle.getLabel());
 
-                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(VehicleThingUid)
+                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(vehicleThingUid)
                             .withThingType(thingTypeUID).withProperties(properties).withBridge(bridgeUID)
                             .withRepresentationProperty(GroupePSABindingConstants.VEHICLE_VIN)
                             .withLabel(vehicle.getBrand() + "  (" + vehicle.getVin() + ")").build();
@@ -86,8 +86,9 @@ public class GroupePSADiscoveryService extends AbstractDiscoveryService {
     }
 
     private void putProperty(Map<String, Object> properties, String key, @Nullable String value) {
-        if (value == null)
+        if (value == null) {
             value = "Unknown";
+        }
         properties.put(key, value);
     }
 }

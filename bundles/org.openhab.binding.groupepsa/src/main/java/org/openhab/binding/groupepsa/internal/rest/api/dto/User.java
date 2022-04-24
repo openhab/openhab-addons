@@ -52,11 +52,12 @@ public class User {
     }
 
     public @Nullable List<Vehicle> getVehicles() {
-        final Embedded res_embedded = _embedded;
-        if (res_embedded != null)
-            return res_embedded.vehicles;
-        else
+        final Embedded resEmbedded = _embedded;
+        if (resEmbedded != null) {
+            return resEmbedded.vehicles;
+        } else {
             return null;
+        }
     }
 
     public @Nullable ZonedDateTime getCreatedAt() {

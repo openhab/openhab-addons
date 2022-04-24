@@ -134,7 +134,6 @@ public class GroupePSAHandlerTest {
 
     @Test
     public void intializeAndCheckChannels() throws InterruptedException {
-
         // Initialize the bridge
         bridgeHandler.initialize();
 

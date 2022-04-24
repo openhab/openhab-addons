@@ -195,19 +195,22 @@ public class GroupePSAHandler extends BaseThingHandler {
 
     private boolean isConnected(VehicleStatus vehicle) {
         Position lastPosition = vehicle.getLastPosition();
-        if (lastPosition == null)
+        if (lastPosition == null) {
             return false;
+        }
 
         ZonedDateTime updatedAt = vehicle.getUpdatedAt();
-        if (updatedAt == null)
+        if (updatedAt == null) {
             return false;
+        }
 
         return updatedAt.isAfter(ZonedDateTime.now().minusMinutes(onlineIntervalM));
     }
 
     private synchronized void updateGroupePSAState() {
-        if (System.nanoTime() - lastQueryTimeMs <= maxQueryFrequencyNanos)
+        if (System.nanoTime() - lastQueryTimeMs <= maxQueryFrequencyNanos) {
             return;
+        }
 
         lastQueryTimeMs = System.nanoTime();
 
@@ -226,9 +229,9 @@ public class GroupePSAHandler extends BaseThingHandler {
         try {
             VehicleStatus vehicle = groupepsaBridge.getVehicleStatus(id);
 
-            logger.trace("Vehicle: {}", vehicle.toString());
-
             if (vehicle != null && isValidResult(vehicle)) {
+                logger.trace("Vehicle: {}", vehicle.toString());
+
                 logger.debug("Update vehicle state now: {}, lastupdate: {}", ZonedDateTime.now(),
                         vehicle.getUpdatedAt());
 
@@ -252,7 +255,6 @@ public class GroupePSAHandler extends BaseThingHandler {
     }
 
     private void updateChannelState(VehicleStatus vehicle) {
-
         final DoorsState doorsState = vehicle.getDoorsState();
         if (doorsState != null) {
             buildDoorChannels(doorsState);
@@ -369,8 +371,9 @@ public class GroupePSAHandler extends BaseThingHandler {
 
     void buildDoorChannels(final DoorsState doorsState) {
         ThingHandlerCallback callback = getCallback();
-        if (callback == null)
+        if (callback == null) {
             return;
+        }
 
         ThingBuilder thingBuilder = editThing();
         List<Channel> channels = getThing().getChannelsOfGroup(CHANNEL_GROUP_DOORS);

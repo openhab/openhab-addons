@@ -132,13 +132,12 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/conf-error-invalid-polling-interval");
         } else {
-
             vendorConstants = VendorConstants.valueOf(vendor);
 
-            oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
-                    vendorConstants.OAUTH_URL, null, clientId, clientSecret, vendorConstants.OAUTH_SCOPE, true);
+            oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), vendorConstants.url,
+                    null, clientId, clientSecret, vendorConstants.scope, true);
 
-            groupePSAApi = new GroupePSAConnectApi(httpClient, this, clientId, vendorConstants.OAUTH_REALM);
+            groupePSAApi = new GroupePSAConnectApi(httpClient, this, clientId, vendorConstants.realm);
 
             startGroupePSABridgePolling(pollingIntervalM);
 
@@ -170,8 +169,9 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
         Throwable nextE;
         do {
             nextE = e.getCause();
-            if (nextE != null)
+            if (nextE != null) {
                 e = nextE;
+            }
         } while (nextE != null);
         return e;
     }
@@ -181,7 +181,7 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
             AccessTokenResponse result = oAuthService.getAccessTokenResponse();
             if (result == null) {
                 result = oAuthService.getAccessTokenByResourceOwnerPasswordCredentials(this.userName, this.password,
-                        this.vendorConstants.OAUTH_SCOPE);
+                        this.vendorConstants.scope);
             }
             return result.getAccessToken();
         } catch (OAuthException | IOException | OAuthResponseException e) {

@@ -62,28 +62,30 @@ public class VehicleStatus {
     }
 
     public @Nullable Kinetic getKinetic() {
-        if (kinetic != null)
+        if (kinetic != null) {
             return kinetic;
-        else {
-            final Embedded final_embedded = _embedded;
-            if (final_embedded != null) {
-                final Extension final_extension = final_embedded.extension;
-                if (final_extension != null)
-                    return final_extension.kinetic;
+        } else {
+            final Embedded finalEmbedded = _embedded;
+            if (finalEmbedded != null) {
+                final Extension finalExtension = finalEmbedded.extension;
+                if (finalExtension != null) {
+                    return finalExtension.kinetic;
+                }
             }
             return null;
         }
     }
 
     public @Nullable Odometer getOdometer() {
-        if (odometer != null)
+        if (odometer != null) {
             return odometer;
-        else {
-            Embedded final_embedded = _embedded;
-            if (final_embedded != null) {
-                final Extension final_extension = final_embedded.extension;
-                if (final_extension != null)
-                    return final_extension.odometer;
+        } else {
+            Embedded finalEmbedded = _embedded;
+            if (finalEmbedded != null) {
+                final Extension finalExtension = finalEmbedded.extension;
+                if (finalExtension != null) {
+                    return finalExtension.odometer;
+                }
             }
             return null;
         }

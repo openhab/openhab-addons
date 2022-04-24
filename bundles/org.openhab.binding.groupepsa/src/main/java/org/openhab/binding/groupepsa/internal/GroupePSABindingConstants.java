@@ -94,14 +94,14 @@ public class GroupePSABindingConstants {
         OPEL("https://idpcvs.opel.com/am/oauth2/access_token", "clientsB2COpel"),
         VAUXHALL("https://idpcvs.vauxhall.co.uk/am/oauth2/access_token", "clientsB2CVauxhall");
 
-        public final String OAUTH_URL;
-        public final String OAUTH_REALM;
-        public final String OAUTH_SCOPE;
+        public final String url;
+        public final String realm;
+        public final String scope;
 
-        VendorConstants(String oauth_url, String oauth_realm) {
-            this.OAUTH_URL = oauth_url;
-            this.OAUTH_REALM = oauth_realm;
-            this.OAUTH_SCOPE = "profile openid";
+        VendorConstants(String url, String realm) {
+            this.url = url;
+            this.realm = realm;
+            this.scope = "profile openid";
         }
     }
 
