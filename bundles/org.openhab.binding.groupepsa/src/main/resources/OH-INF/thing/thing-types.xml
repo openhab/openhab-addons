@@ -121,7 +121,7 @@
 		<channels>
 			<channel id="locked" typeId="doorLock"/>
 			<channel id="driver" typeId="doorOpen">
-				<label>Driver door</label>
+				<label>Driver Door</label>
 				<description>Driver door open state</description>
 			</channel>
 		</channels>
@@ -212,7 +212,7 @@
 
 	<channel-type id="doorLock">
 		<item-type>String</item-type>
-		<label>Door lock</label>
+		<label>Door Lock</label>
 		<description>Door lock state</description>
 		<category>Door</category>
 		<state readOnly="true">
@@ -232,7 +232,7 @@
 
 	<channel-type id="doorOpen">
 		<item-type>Contact</item-type>
-		<label>Door open</label>
+		<label>Door Open</label>
 		<description>Door is open</description>
 		<category>Door</category>
 	</channel-type>
@@ -329,7 +329,7 @@
 
 	<channel-type id="privacy">
 		<item-type>String</item-type>
-		<label>Privacy status</label>
+		<label>Privacy Status</label>
 		<description>Privacy status</description>
 		<state readOnly="true">
 			<options>
@@ -342,7 +342,7 @@
 
 	<channel-type id="belt">
 		<item-type>String</item-type>
-		<label>Belt status</label>
+		<label>Belt Status</label>
 		<description>Seat belt status</description>
 		<state readOnly="true">
 			<options>
@@ -354,7 +354,7 @@
 
 	<channel-type id="emergency">
 		<item-type>String</item-type>
-		<label>Emergency call</label>
+		<label>Emergency Call</label>
 		<description>Emergency call status</description>
 		<state readOnly="true">
 			<options>
@@ -409,7 +409,7 @@
 
 	<channel-group-type id="fuel">
 		<label>Fuel</label>
-		<description>Thermic motor fuel status</description>
+		<description>Thermic Motor Fuel Status</description>
 		<category>Energy</category>
 		<channels>
 			<channel id="autonomy" typeId="autonomy"/>
@@ -515,7 +515,7 @@
 
 	<channel-type id="chargingMode">
 		<item-type>String</item-type>
-		<label>Charging mode</label>
+		<label>Charging Mode</label>
 		<description>Battery charging mode</description>
 		<state readOnly="true">
 			<options>
