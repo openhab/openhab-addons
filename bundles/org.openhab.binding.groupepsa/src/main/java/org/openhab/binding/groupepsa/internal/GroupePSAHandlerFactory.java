@@ -50,7 +50,7 @@ public class GroupePSAHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_VEHICLE);
 
     private final OAuthFactory oAuthFactory;
-    protected final @NonNullByDefault({}) HttpClient httpClient;
+    protected final HttpClient httpClient;
     private @Nullable ServiceRegistration<?> groupePSADiscoveryServiceRegistration;
 
     @Activate

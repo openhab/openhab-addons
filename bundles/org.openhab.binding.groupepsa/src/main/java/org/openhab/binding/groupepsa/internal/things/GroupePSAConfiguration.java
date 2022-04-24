@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * The {@link GroupePSAConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Markus Pfleger - Initial contribution
+ * @author Arjan Mels - Initial contribution
  */
 @NonNullByDefault
 public class GroupePSAConfiguration {

@@ -13,7 +13,6 @@
 package org.openhab.binding.groupepsa.internal.bridge;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link GroupePSABridgeConfiguration} class contains fields mapping thing configuration parameters.
@@ -22,18 +21,18 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public final class GroupePSABridgeConfiguration {
-    private @Nullable String vendor;
-    private @Nullable String userName;
-    private @Nullable String password;
-    private @Nullable String clientId;
-    private @Nullable String clientSecret;
+    private String vendor = "";
+    private String userName = "";
+    private String password = "";
+    private String clientId = "";
+    private String clientSecret = "";
 
-    private @Nullable Integer pollingInterval;
+    private Integer pollingInterval = 5;
 
     /**
      * @return The polling interval for the groupepsa state in s
      */
-    public @Nullable Integer getPollingInterval() {
+    public Integer getPollingInterval() {
         return pollingInterval;
     }
 
@@ -41,7 +40,7 @@ public final class GroupePSABridgeConfiguration {
         this.pollingInterval = pollingInterval;
     }
 
-    public @Nullable String getVendor() {
+    public String getVendor() {
         return vendor;
     }
 
@@ -49,7 +48,7 @@ public final class GroupePSABridgeConfiguration {
         this.vendor = vendor;
     }
 
-    public @Nullable String getUserName() {
+    public String getUserName() {
         return userName;
     }
 
@@ -57,7 +56,7 @@ public final class GroupePSABridgeConfiguration {
         this.userName = userName;
     }
 
-    public @Nullable String getPassword() {
+    public String getPassword() {
         return password;
     }
 
@@ -65,7 +64,7 @@ public final class GroupePSABridgeConfiguration {
         this.password = password;
     }
 
-    public @Nullable String getClientId() {
+    public String getClientId() {
         return clientId;
     }
 
@@ -73,7 +72,7 @@ public final class GroupePSABridgeConfiguration {
         this.clientId = clientId;
     }
 
-    public @Nullable String getClientSecret() {
+    public String getClientSecret() {
         return clientSecret;
     }
 

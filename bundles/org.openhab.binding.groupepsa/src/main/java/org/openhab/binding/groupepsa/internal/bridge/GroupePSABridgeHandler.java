@@ -59,18 +59,18 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
 
     private final OAuthFactory oAuthFactory;
 
-    private @NonNullByDefault({}) OAuthClientService oAuthService;
+    private @Nullable OAuthClientService oAuthService;
     private @Nullable ScheduledFuture<?> groupepsaBridgePollingJob;
     private final HttpClient httpClient;
 
-    private @NonNullByDefault({}) String vendor;
-    private @NonNullByDefault({}) VendorConstants vendorConstants;
-    private @NonNullByDefault({}) String userName;
-    private @NonNullByDefault({}) String password;
-    private @NonNullByDefault({}) String clientId;
-    private @NonNullByDefault({}) String clientSecret;
+    private String vendor = "";
+    private @Nullable VendorConstants vendorConstants;
+    private String userName = "";
+    private String password = "";
+    private String clientId = "";
+    private String clientSecret = "";
 
-    private @NonNullByDefault({}) GroupePSAConnectApi groupePSAApi;
+    private @Nullable GroupePSAConnectApi groupePSAApi;
 
     public GroupePSABridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient) {
         super(bridge);
@@ -117,27 +117,28 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
 
         final Integer pollingIntervalM = bridgeConfiguration.getPollingInterval();
 
-        if (vendor == null || vendor.isEmpty()) {
+        if (vendor.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-vendor");
-        } else if (userName == null || userName.isEmpty()) {
+        } else if (userName.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-username");
-        } else if (password == null || password.isEmpty()) {
+        } else if (password.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-password");
-        } else if (clientId == null || clientId.isEmpty()) {
+        } else if (clientId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-clientid");
-        } else if (clientSecret == null || clientSecret.isEmpty()) {
+        } else if (clientSecret.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/conf-error-no-clientsecret");
-        } else if (pollingIntervalM != null && pollingIntervalM < 1) {
+        } else if (pollingIntervalM < 1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/conf-error-invalid-polling-interval");
         } else {
-            vendorConstants = VendorConstants.valueOf(vendor);
+            VendorConstants localVendorConstants = VendorConstants.valueOf(vendor);
+            vendorConstants = localVendorConstants;
 
-            oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), vendorConstants.url,
-                    null, clientId, clientSecret, vendorConstants.scope, true);
+            oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), localVendorConstants.url,
+                    null, clientId, clientSecret, localVendorConstants.scope, true);
 
-            groupePSAApi = new GroupePSAConnectApi(httpClient, this, clientId, vendorConstants.realm);
+            groupePSAApi = new GroupePSAConnectApi(httpClient, this, clientId, localVendorConstants.realm);
 
             startGroupePSABridgePolling(pollingIntervalM);
 
@@ -177,11 +178,19 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
     }
 
     public String authenticate() throws GroupePSACommunicationException {
+        OAuthClientService localOAuthService = oAuthService;
+        VendorConstants localVendorConstants = vendorConstants;
+        if (localOAuthService == null) {
+            throw new GroupePSACommunicationException("OAuth service is unexpectedly null");
+        }
+        if (localVendorConstants == null) {
+            throw new GroupePSACommunicationException("Vendor constants are unexpectedly null");
+        }
         try {
-            AccessTokenResponse result = oAuthService.getAccessTokenResponse();
+            AccessTokenResponse result = localOAuthService.getAccessTokenResponse();
             if (result == null) {
-                result = oAuthService.getAccessTokenByResourceOwnerPasswordCredentials(this.userName, this.password,
-                        this.vendorConstants.scope);
+                result = localOAuthService.getAccessTokenByResourceOwnerPasswordCredentials(userName, password,
+                        localVendorConstants.scope);
             }
             return result.getAccessToken();
         } catch (OAuthException | IOException | OAuthResponseException e) {
@@ -189,8 +198,13 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public GroupePSAConnectApi getAPI() {
-        return groupePSAApi;
+    public GroupePSAConnectApi getAPI() throws GroupePSACommunicationException {
+        GroupePSAConnectApi localGroupePSAApi = groupePSAApi;
+        if (localGroupePSAApi == null) {
+            throw new GroupePSACommunicationException("groupePSAApi is unexpectedly null");
+        } else {
+            return localGroupePSAApi;
+        }
     }
 
     /**

@@ -12,15 +12,14 @@ vehicle - Groupe PSA Car: The actual car thing.
 
 Use the "Groupe PSA Web Api bridge" to auto discover your cars. You need to select the brand for the bridge binding and only cars for the brand will be auto discovered. If you need to add for multiple brands or multiple different users, add multiple bridges.
 
-## Binding Configuration
+## Bridge Configuration
 
 You need to select a brand and enter the User Name and Password.
 The Polling interval (in minutes) determines how often the API will polled for new cars.
-The Client ID and Client Secret should not need to be updated. (However you can register your own app via https://developer.groupe-psa.com/inc/ and use this clien tinformation if you wish.)
+The Client ID and Client Secret should not need to be updated. (However you can register your own app via https://developer.groupe-psa.com/inc/ and use this client information if you wish.)
 
-## Thing Configuration
+### properties
 
-### bridge
 |Property|Default|Required|Description|
 |--------|-------|--------|-----------|
 |vendor|None|Yes|The brand of the car (PEUGEOT, CITROEN, DS, OPEL or VAUXHALL)|
@@ -29,7 +28,13 @@ The Client ID and Client Secret should not need to be updated. (However you can 
 |pollingInterval|60|No|The Polling interval (in minutes) determines how often the available vehicles are queried|
 |clientId||Yes|The client ID for API access: can normally left at the default value. (see: https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article)|
 |clientSecret||Yes|The client secret for API access: can normally left at the default value. (see: https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article)|
-### vehicle
+
+## Vehicle Configuration
+
+Normally the vehicles will be autodiscovered. The Polling Interval and Online Timeout can be adjusted.
+
+### properties
+
 |Property|Default|Required|Description|
 |--------|-------|--------|-----------|
 |id|None|Yes|Vehicle API ID|The ID is the vehicle API ID (not equal to the VIN), which is autodiscoverd by the bridge.|
@@ -82,6 +87,7 @@ Further documentation can be found at: https://developer.groupe-psa.io/webapi/b2
 ## Full Example
 
 ### Things file
+
 ```perl
 Bridge groupepsa:bridge:opel "Auto Interface" [ 
     pollingInterval=60,
@@ -103,6 +109,7 @@ Bridge groupepsa:bridge:opel "Auto Interface" [
 ```
 
 ### Items file
+
 ```perl
 Group Auto
 
