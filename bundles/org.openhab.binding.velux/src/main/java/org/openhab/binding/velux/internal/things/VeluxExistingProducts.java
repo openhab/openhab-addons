@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
@@ -112,7 +113,7 @@ public class VeluxExistingProducts {
     }
 
     public boolean update(ProductBridgeIndex bridgeProductIndex, int productState, int productPosition,
-            int productTarget, FunctionalParameters productFunctionalParameters) {
+            int productTarget, @Nullable FunctionalParameters productFunctionalParameters) {
         logger.debug(
                 "update(bridgeProductIndex={},productState={},productPosition={},productTarget={},functionalParameters={}) called.",
                 bridgeProductIndex.toInt(), productState, productPosition, productTarget, productFunctionalParameters);
@@ -124,7 +125,9 @@ public class VeluxExistingProducts {
         dirty |= thisProduct.setState(productState);
         dirty |= thisProduct.setCurrentPosition(productPosition);
         dirty |= thisProduct.setTarget(productTarget);
-        dirty |= thisProduct.setFunctionalParameters(productFunctionalParameters);
+        if (productFunctionalParameters != null) {
+            dirty |= thisProduct.setFunctionalParameters(productFunctionalParameters);
+        }
         if (dirty) {
             String uniqueIndex = thisProduct.getProductUniqueIndex();
             logger.trace("update(): updating by UniqueIndex {}.", uniqueIndex);

@@ -13,6 +13,7 @@
 package org.openhab.binding.velux.internal.bridge;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
@@ -47,7 +48,7 @@ public class VeluxBridgeRunProductCommand {
      * @return true if successful, and false otherwise.
      */
     public boolean sendCommand(VeluxBridge bridge, int nodeId, VeluxProductPosition mainValue,
-            FunctionalParameters functionalParameters) {
+            @Nullable FunctionalParameters functionalParameters) {
         logger.trace("sendCommand(nodeId={},value={},functionalParameters={}) called.", nodeId, mainValue,
                 functionalParameters);
 

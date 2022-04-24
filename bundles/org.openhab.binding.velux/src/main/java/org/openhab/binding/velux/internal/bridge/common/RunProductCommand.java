@@ -13,6 +13,7 @@
 package org.openhab.binding.velux.internal.bridge.common;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 
 /**
@@ -42,5 +43,5 @@ public abstract class RunProductCommand implements BridgeCommunicationProtocol {
      * @return reference to the class instance.
      */
     public abstract RunProductCommand setNodeIdAndParameters(int nodeId, int mainParameter,
-            FunctionalParameters functionalParameters);
+            @Nullable FunctionalParameters functionalParameters);
 }

@@ -13,6 +13,7 @@
 package org.openhab.binding.velux.internal.things;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.things.VeluxProductType.ActuatorType;
 import org.slf4j.Logger;
@@ -94,7 +95,7 @@ public class VeluxProduct {
     private int state = State.UNKNOWN.value;
     private int currentPosition = 0;
     private int targetPosition = 0;
-    private final FunctionalParameters functionalParameters = new FunctionalParameters();
+    private @Nullable FunctionalParameters functionalParameters = null;
     private int remainingTime = 0;
     private int timeStamp = 0;
 
@@ -154,8 +155,8 @@ public class VeluxProduct {
      */
     public VeluxProduct(VeluxProductName name, VeluxProductType typeId, ActuatorType actuatorType,
             ProductBridgeIndex bridgeProductIndex, int order, int placement, int velocity, int variation, int powerMode,
-            String serialNumber, int state, int currentPosition, int target, FunctionalParameters functionalParameters,
-            int remainingTime, int timeStamp) {
+            String serialNumber, int state, int currentPosition, int target,
+            @Nullable FunctionalParameters functionalParameters, int remainingTime, int timeStamp) {
         logger.trace("VeluxProduct(v2,name={}) created.", name.toString());
         this.name = name;
         this.typeId = typeId;
@@ -171,7 +172,7 @@ public class VeluxProduct {
         this.state = state;
         this.currentPosition = currentPosition;
         this.targetPosition = target;
-        this.functionalParameters.setValues(functionalParameters);
+        this.functionalParameters = functionalParameters != null ? functionalParameters.clone() : null;
         this.remainingTime = remainingTime;
         this.timeStamp = timeStamp;
     }
@@ -408,8 +409,9 @@ public class VeluxProduct {
      *
      * @return the Functional Parameters.
      */
-    public FunctionalParameters getFunctionalParameters() {
-        return functionalParameters.clone();
+    public @Nullable FunctionalParameters getFunctionalParameters() {
+        FunctionalParameters functionalParameters = this.functionalParameters;
+        return functionalParameters != null ? functionalParameters.clone() : null;
     }
 
     /**
@@ -419,51 +421,66 @@ public class VeluxProduct {
      * @param newFunctionalParameters the new values of the Functional Parameters.
      * @return <b>modified</b> if any of the Functional Parameters have been changed.
      */
-    public boolean setFunctionalParameters(FunctionalParameters newFunctionalParameters) {
+    public boolean setFunctionalParameters(@Nullable FunctionalParameters newFunctionalParameters) {
+        if (newFunctionalParameters == null) {
+            return false;
+        }
+        FunctionalParameters functionalParameters = this.functionalParameters;
+        if (functionalParameters == null) {
+            functionalParameters = this.functionalParameters = new FunctionalParameters();
+        }
         return functionalParameters.setProductAllowedFPValues(newFunctionalParameters);
     }
 
     /**
-     * Return the vane position. Reads the vane position from the Functional Parameters depending on Velux KLF 200 API
-     * Appendix 2, or returns 'UNKNOWN' if vane position is not supported.
+     * Determines which of the Functional Parameters contains the vane position according to Velux KLF 200 API Appendix
+     * 2
+     *
+     * @return the index of the vane position Functional Parameter, or -1 if not supported.
+     */
+    private int getVanePositionIndex() {
+        switch (actuatorType) {
+            case BLIND_1_0:
+                return 0;
+            case ROLLERSHUTTER_2_1:
+            case BLIND_17:
+            case BLIND_18:
+                return 2;
+            default:
+        }
+        return -1;
+    }
+
+    /**
+     * Return the vane position. Reads the vane position from the Functional Parameters, or returns 'UNKNOWN' if vane
+     * position is not supported.
      *
      * @return the vane position.
      */
     public int getVanePosition() {
-        switch (actuatorType) {
-            case BLIND_1_0:
-                return functionalParameters.getValues()[0];
-            case ROLLERSHUTTER_2_1:
-            case BLIND_17:
-            case BLIND_18:
-                return functionalParameters.getValues()[2];
-            default:
-                return VeluxProductPosition.VPP_VELUX_UNKNOWN;
+        FunctionalParameters functionalParameters = this.functionalParameters;
+        int index = getVanePositionIndex();
+        if ((index >= 0) && (functionalParameters != null)) {
+            return functionalParameters.getValues()[index];
         }
+        return VeluxProductPosition.VPP_VELUX_UNKNOWN;
     }
 
     /**
-     * Set the vane position into the appropriate Functional Parameter depending on Velux KLF 200 API Appendix 2. If the
-     * actuator does not support vane positions then a message is logged.
+     * Set the vane position into the appropriate Functional Parameter. If the actuator does not support vane positions
+     * then a message is logged.
      *
      * @param vanePosition the new vane position.
      */
     public void setVanePosition(int vanePosition) {
-        functionalParameters.setValues(new FunctionalParameters());
-        if (functionalParameters.isNormalPosition(vanePosition)) {
-            switch (actuatorType) {
-                case BLIND_1_0:
-                    functionalParameters.setValue(0, vanePosition);
-                    break;
-                case ROLLERSHUTTER_2_1:
-                case BLIND_17:
-                case BLIND_18:
-                    functionalParameters.setValue(2, vanePosition);
-                    break;
-                default:
-                    logger.info("setVanePosition(): actuator type '{}' ({}) does not support vane position.",
-                            actuatorType.getNodeType(), actuatorType.getDescription());
-            }
+        int index = getVanePositionIndex();
+        if ((index >= 0) && FunctionalParameters.isNormalPosition(vanePosition)) {
+            FunctionalParameters functionalParameters = this.functionalParameters = new FunctionalParameters();
+            functionalParameters.setValue(index, vanePosition);
+        } else {
+            functionalParameters = null;
+            logger.info("setVanePosition(): actuator type '{}' ({}) does not support vane position {}.",
+                    actuatorType.getNodeType(), actuatorType.getDescription(), vanePosition);
         }
     }
 }
