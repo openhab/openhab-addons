@@ -54,7 +54,7 @@ public class GroupePSADiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         try {
             List<Vehicle> vehicles = bridgeHandler.getVehicles();
-            if (vehicles == null || vehicles.size() == 0) {
+            if (vehicles == null || vehicles.isEmpty()) {
                 logger.warn("No vehicles found");
                 return;
             }
