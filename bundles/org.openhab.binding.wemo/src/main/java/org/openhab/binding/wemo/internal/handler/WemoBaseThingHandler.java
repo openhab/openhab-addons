@@ -203,21 +203,7 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
                     "@text/config-status.error.missing-ip");
             return null;
         }
-        int portCheckStart = 49151;
-        int portCheckStop = 49157;
-        int port = 0;
-        for (int portCheck = portCheckStart; portCheck < portCheckStop; portCheck++) {
-            try {
-                String urlProbe = "http://" + host + ":" + portCheck;
-                logger.trace("Probing {} to find port", urlProbe);
-                HttpUtil.executeUrl("GET", urlProbe, 250);
-            } catch (IOException e) {
-                continue;
-            }
-            port = portCheck;
-            logger.trace("Successfully detected port {}", port);
-            break;
-        }
+        int port = scanForPort(host);
         if (port == 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-url");
@@ -236,6 +222,25 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     private void initializeHost() {
         host = getHostFromService();
+    }
+
+    private int scanForPort(String host) {
+        int portCheckStart = 49151;
+        int portCheckStop = 49157;
+        int port = 0;
+        for (int portCheck = portCheckStart; portCheck < portCheckStop; portCheck++) {
+            try {
+                String urlProbe = "http://" + host + ":" + portCheck;
+                logger.trace("Probing {} to find port", urlProbe);
+                HttpUtil.executeUrl("GET", urlProbe, 250);
+            } catch (IOException e) {
+                continue;
+            }
+            port = portCheck;
+            logger.trace("Successfully detected port {}", port);
+            break;
+        }
+        return port;
     }
 
     private @Nullable String getHostFromService() {
