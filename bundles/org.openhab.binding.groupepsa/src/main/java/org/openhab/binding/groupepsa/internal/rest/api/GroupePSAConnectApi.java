@@ -202,43 +202,8 @@ public class GroupePSAConnectApi {
     }
 
     public @Nullable VehicleStatus getVehicleStatus(String vin) throws GroupePSACommunicationException {
-        ContentResponse response_odometer = executeRequest(
-                getBaseUrl() + "/user/vehicles/" + vin + "/status?extension=odometer");
-        VehicleStatus status_odometer = parseResponse(response_odometer, VehicleStatus.class);
-
-        ContentResponse response = executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/status?extension=kinetic");
-        VehicleStatus status = parseResponse(response, VehicleStatus.class);
-        if (status != null && status_odometer != null)
-            status.setOdemeter(status_odometer.getOdemeter());
-        else
-            status = status_odometer;
-
-        // TODO: parse info from responses
-        try {
-            executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/trips");
-        } catch (Throwable t) {
-            logger.info("/trips", t);
-        }
-        try {
-            executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/alerts");
-        } catch (Throwable t) {
-            logger.info("/alerts", t);
-        }
-        try {
-            executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/lastPosition");
-        } catch (Throwable t) {
-            logger.info("/lastPosition", t);
-        }
-        try {
-            executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/maintenance");
-        } catch (Throwable t) {
-            logger.info("/maintenance", t);
-        }
-        try {
-            executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/telemetry");
-        } catch (Throwable t) {
-            logger.info("/telemetry", t);
-        }
+        ContentResponse response_odometer = executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/status");
+        VehicleStatus status = parseResponse(response_odometer, VehicleStatus.class);
 
         return status;
     }

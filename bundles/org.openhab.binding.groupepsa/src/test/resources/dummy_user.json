@@ -54,7 +54,6 @@
           "id": "4336155157856256",
           "vin": "mycar_vin1",
           "brand": "opel",
-          "label": "test model",
           "engine": [
             {
               "class": "Thermic",

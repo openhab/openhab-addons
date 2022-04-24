@@ -74,7 +74,7 @@ public class GroupePSADiscoveryService extends AbstractDiscoveryService {
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(VehicleThingUid)
                             .withThingType(thingTypeUID).withProperties(properties).withBridge(bridgeUID)
                             .withRepresentationProperty(GroupePSABindingConstants.VEHICLE_VIN)
-                            .withLabel(vehicle.getBrand() + "  " + vehicle.getLabel()).build();
+                            .withLabel(vehicle.getBrand() + "  (" + vehicle.getVin() + ")").build();
 
                     thingDiscovered(discoveryResult);
                 }
