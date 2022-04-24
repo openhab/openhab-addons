@@ -206,7 +206,7 @@ public class GroupePSAHandler extends BaseThingHandler {
         try {
             VehicleStatus vehicle = groupepsaBridge.getVehicleStatus(id);
 
-            logger.trace("Vehicle: {}", vehicle);
+            logger.trace("Vehicle: {}", vehicle.toString());
 
             if (vehicle != null && isValidResult(vehicle)) {
                 logger.debug("Update vehicle state now: {}, lastupdate: {}", ZonedDateTime.now(),

@@ -68,8 +68,8 @@ public class GroupePSADiscoveryService extends AbstractDiscoveryService {
                     Map<String, Object> properties = new HashMap<>();
                     putProperty(properties, GroupePSABindingConstants.VEHICLE_ID, id);
                     putProperty(properties, GroupePSABindingConstants.VEHICLE_VIN, vehicle.getVin());
-                    putProperty(properties, GroupePSABindingConstants.VEHICLE_VIN, vehicle.getBrand());
-                    putProperty(properties, GroupePSABindingConstants.VEHICLE_VIN, vehicle.getLabel());
+                    putProperty(properties, GroupePSABindingConstants.VEHICLE_VENDOR, vehicle.getBrand());
+                    putProperty(properties, GroupePSABindingConstants.VEHICLE_MODEL, vehicle.getLabel());
 
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(VehicleThingUid)
                             .withThingType(thingTypeUID).withProperties(properties).withBridge(bridgeUID)
