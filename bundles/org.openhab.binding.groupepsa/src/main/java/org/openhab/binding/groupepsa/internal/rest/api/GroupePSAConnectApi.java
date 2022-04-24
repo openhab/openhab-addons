@@ -17,7 +17,6 @@ import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.A
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -185,20 +184,10 @@ public class GroupePSAConnectApi {
         User user = parseResponse(response, User.class);
 
         if (user != null) {
-            final List<Vehicle> vehicles = user.getVehicles();
-            if (vehicles == null)
-                return null;
-            final List<Vehicle> vehiclesDetails = new LinkedList<>();
-            for (Vehicle vehicle : vehicles) {
-                ContentResponse responseDetails = executeRequest(getBaseUrl() + "/user/vehicles/" + vehicle.getId());
-                Vehicle vehicleDetails = parseResponse(responseDetails, Vehicle.class);
-                if (vehicleDetails != null)
-                    vehiclesDetails.add(vehicleDetails);
-            }
-            return vehiclesDetails;
+            return user.getVehicles();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     public @Nullable VehicleStatus getVehicleStatus(String vin) throws GroupePSACommunicationException {
