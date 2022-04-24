@@ -48,5 +48,4 @@ public class GenericErrorResponse {
     public void setTitle(String title) {
         this.title = title;
     }
-
 }

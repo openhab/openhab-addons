@@ -41,5 +41,4 @@ public class AuthenticationResultData {
     public void setErrorResponse(@Nullable GenericErrorResponse errorResponse) {
         this.errorResponse = errorResponse;
     }
-
 }

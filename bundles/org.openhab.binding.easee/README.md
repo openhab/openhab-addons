@@ -1,76 +1,70 @@
 # Easee Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
-
-_Put each sentence in a separate line to improve readability of diffs._
+The Easee binding can be used to retrieve data from the Easee Cloud API and also to control your wallbox via the Cloud API.
+This allows you to dynamically adjust the charge current for you car depending on production of your solar plant.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+This binding provides only one thing type: "wallbox" which is the wallbox itself.
+Basically any Easee wallbox that supports the Cloud API should automatically be supported by this binding.
+Create one wallbox thing per physical wallbox installation available in your home(s).
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
-
-```
-# Configuration for the Easee Binding
-#
-# Default secret key for the pairing of the Easee Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Auto-Discovery is currently not supported, as most homes should only have one wallbox this is not likely to be implemented as it will not have much benefit.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+The following configuration parameters are available for this thing:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+- **username** (required)
+The username to login at Easee Cloud service.
+This should be an email adress or phone number.
 
-### `sample` Thing Configuration
+- **passord** (required)  
+Your password to login at Easee Cloud service.
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+- **wallboxId** (required)  
+The ID (serial) of the wallbox used to identify the wall box at Easee cloud. This typically starts with "EH".
+
+- **dataPollingInterval** (optional)  
+interval (minutes) in which live data values are retrieved from the Easee Cloud API. (default = 5)
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+The binding only supports a subset of the available endpoints that is provided by the Easee Cloud API.
+The table below shows all channels that are available and which of them are writable.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+| Channel Type ID                        | Item Type              | Writable | Description                                | Allowed Values (write access)                 |
+|----------------------------------------|------------------------|----------|--------------------------------------------|-----------------------------------------------|
+| charger_state#smartCharging            |                        | no       |                                            |                                               |
+| charger_state#cableLocked              |                        | no       |                                            |                                               |
+| charger_state#totalPower               |                        | no       |                                            |                                               |
+| charger_state#sessionEnergy            |                        | no       |                                            |                                               |
+| charger_state#chargerFirmware          |                        | no       |                                            |                                               |
+| charger_state#latestFirmware           |                        | no       |                                            |                                               |
+| charger_state#voltage                  |                        | no       |                                            |                                               |
+| charger_state#lockCablePermanently     |                        | no       |                                            |                                               |
+| charger_state#outputCurrent            |                        | no       |                                            |                                               |
+| charger_state#isOnline                 |                        | no       |                                            |                                               |
+| charger_state#dynamicChargerCurrent    |                        | no       |                                            |                                               |
+| charger_state#lifetimeEnergy           |                        | no       |                                            |                                               |
+| charger_state#errorCode                |                        | no       |                                            |                                               |
+| charger_state#fatalErrorCode           |                        | no       |                                            |                                               |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
+### Thing                                                                                                                                                                    
 
-## Any custom content here!
+- minimum configuration
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+```
+easee:wallbox:box1 [ username="abc@def.net", passord="secret", wallboxId="EH4711" ]
+```
+
+- two wallboxes, with pollingInterval
+
+```
+easee:wallbox:box1 [ username="abc@def.net", passord="secret", wallboxId="EH4711", dataPollingInterval=1 ]
+easee:wallbox:box2 [ username="abc@def.net", passord="secret", wallboxId="EH4712", dataPollingInterval=1 ]
+```

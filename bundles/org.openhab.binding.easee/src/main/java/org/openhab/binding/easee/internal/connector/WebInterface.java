@@ -256,7 +256,6 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
                 command.performAction(httpClient);
             }
         }
-
     }
 
     /**
@@ -331,5 +330,4 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
     public String getAccessToken() {
         return accessToken;
     }
-
 }

@@ -89,7 +89,6 @@ public class EaseeWallboxHandler extends BaseThingHandler implements EaseeHandle
     private void startPolling() {
         updateJobReference(dataPollingJobReference, scheduler.scheduleWithFixedDelay(new EaseeCloudPolling(this),
                 POLLING_INITIAL_DELAY, getConfiguration().getDataPollingInterval(), TimeUnit.MINUTES));
-
     }
 
     /**

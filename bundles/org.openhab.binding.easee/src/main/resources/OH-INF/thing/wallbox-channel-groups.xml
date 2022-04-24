@@ -6,62 +6,62 @@
 	<channel-group-type id="wallbox-charger_state">
 		<label>Charger Status</label>
 		<channels>
-            <channel id="smartCharging" typeId="type-switch">
-                <label>Smart Charging</label>
-                <description>Smart Charging status of the wallbox.</description>
-            </channel>
-            <channel id="cableLocked" typeId="type-switch">
-                <label>Cable Locked</label>
-                <description>Cable Locked status of the wallbox.</description>
-            </channel>
-            <channel id="totalPower" typeId="type-power">
-                <label>Total Power</label>
-                <description>Total Power for all active phases.</description>
-            </channel>
-            <channel id="sessionEnergy" typeId="type-energy">
-                <label>Session Energy</label>
-                <description>Energy for current session.</description>
-            </channel>
-            <channel id="chargerFirmware" typeId="type-integer">
-                <label>Current Firmware</label>
-                <description>Current Firmware of the wallbox.</description>
-            </channel>
-            <channel id="latestFirmware" typeId="type-integer">
-                <label>Latest Firmware</label>
-                <description>Latest Firmware which is available for the wallbox.</description>
-            </channel>
-            <channel id="voltage" typeId="type-volt">
-                <label>Voltage</label>
-                <description>Voltage</description>
-            </channel>
-            <channel id="lockCablePermanently" typeId="type-switch">
-                <label>Lock Cable Permanently</label>
-                <description>Lock Cable Permanently status of the wallbox.</description>
-            </channel>
-            <channel id="outputCurrent" typeId="type-current">
-                <label>Output Current</label>
-                <description>Actual charging current.</description>
-            </channel>
-            <channel id="isOnline" typeId="type-switch">
-                <label>Online</label>
-                <description>Online status of the wallbox.</description>
-            </channel>
-            <channel id="dynamicChargerCurrent" typeId="type-current">
-                <label>Dynamic Charger Current</label>
-                <description>Dynamic set charging current.</description>
-            </channel>
-            <channel id="lifetimeEnergy" typeId="type-energy">
-                <label>Lifetime Energy</label>
-                <description>Total lifetime energy.</description>
-            </channel>
-            <channel id="errorCode" typeId="type-integer">
-                <label>Error Code</label>
-                <description>Error Code.</description>
-            </channel>
-            <channel id="fatalErrorCode" typeId="type-integer">
-                <label>Fatal Error Code</label>
-                <description>Fatal Error Code.</description>
-            </channel>
+			<channel id="smartCharging" typeId="type-switch">
+				<label>Smart Charging</label>
+				<description>Smart Charging status of the wallbox.</description>
+			</channel>
+			<channel id="cableLocked" typeId="type-switch">
+				<label>Cable Locked</label>
+				<description>Cable Locked status of the wallbox.</description>
+			</channel>
+			<channel id="totalPower" typeId="type-power">
+				<label>Total Power</label>
+				<description>Total Power for all active phases.</description>
+			</channel>
+			<channel id="sessionEnergy" typeId="type-energy">
+				<label>Session Energy</label>
+				<description>Energy for current session.</description>
+			</channel>
+			<channel id="chargerFirmware" typeId="type-integer">
+				<label>Current Firmware</label>
+				<description>Current Firmware of the wallbox.</description>
+			</channel>
+			<channel id="latestFirmware" typeId="type-integer">
+				<label>Latest Firmware</label>
+				<description>Latest Firmware which is available for the wallbox.</description>
+			</channel>
+			<channel id="voltage" typeId="type-volt">
+				<label>Voltage</label>
+				<description>Voltage</description>
+			</channel>
+			<channel id="lockCablePermanently" typeId="type-switch">
+				<label>Lock Cable Permanently</label>
+				<description>Lock Cable Permanently status of the wallbox.</description>
+			</channel>
+			<channel id="outputCurrent" typeId="type-current">
+				<label>Output Current</label>
+				<description>Actual charging current.</description>
+			</channel>
+			<channel id="isOnline" typeId="type-switch">
+				<label>Online</label>
+				<description>Online status of the wallbox.</description>
+			</channel>
+			<channel id="dynamicChargerCurrent" typeId="type-current">
+				<label>Dynamic Charger Current</label>
+				<description>Dynamic set charging current.</description>
+			</channel>
+			<channel id="lifetimeEnergy" typeId="type-energy">
+				<label>Lifetime Energy</label>
+				<description>Total lifetime energy.</description>
+			</channel>
+			<channel id="errorCode" typeId="type-integer">
+				<label>Error Code</label>
+				<description>Error Code.</description>
+			</channel>
+			<channel id="fatalErrorCode" typeId="type-integer">
+				<label>Fatal Error Code</label>
+				<description>Fatal Error Code.</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

@@ -51,5 +51,4 @@ public class State extends AbstractCommand implements EaseeCommand {
     protected String getChannelGroup() {
         return CHANNEL_GROUP_CHARGER_STATE;
     }
-
 }
