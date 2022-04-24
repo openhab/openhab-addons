@@ -16,12 +16,15 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
+import org.jupnp.model.message.header.RootDeviceHeader;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.io.net.http.HttpUtil;
@@ -50,6 +53,7 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     private final Logger logger = LoggerFactory.getLogger(WemoBaseThingHandler.class);
     private final UpnpIOService service;
+    private final UpnpService upnpService;
 
     protected WemoHttpCall wemoHttpCaller;
 
@@ -57,9 +61,11 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
     private Map<String, Instant> subscriptions = new ConcurrentHashMap<String, Instant>();
     private @Nullable ScheduledFuture<?> subscriptionRenewalJob;
 
-    public WemoBaseThingHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
+    public WemoBaseThingHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
+            WemoHttpCall wemoHttpCaller) {
         super(thing);
         this.service = upnpIOService;
+        this.upnpService = upnpService;
         this.wemoHttpCaller = wemoHttpCaller;
     }
 
@@ -74,8 +80,8 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
     public void dispose() {
         removeSubscriptions();
         logger.debug("Unregistering UPnP participant for {}", getThing().getUID());
-        service.unregisterParticipant(this);
         cancelSubscriptionRenewalJob();
+        service.unregisterParticipant(this);
     }
 
     @Override
@@ -85,7 +91,20 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     @Override
     public void onStatusChanged(boolean status) {
-        // can be overridden by subclasses
+        if (status) {
+            logger.debug("UPnP device {} for {} is present", getUDN(), getThing().getUID());
+            if (service.isRegistered(this)) {
+                // After successful discovery, try to subscribe again.
+                renewSubscriptions();
+            }
+        } else {
+            logger.info("UPnP device {} for {} is absent", getUDN(), getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
+            // Expire subscriptions.
+            for (Entry<String, Instant> subscription : subscriptions.entrySet()) {
+                subscription.setValue(Instant.MIN);
+            }
+        }
     }
 
     @Override
@@ -123,16 +142,8 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
             scheduleSubscriptionRenewalJob();
         }
         subscriptions.put(serviceId, Instant.MIN);
-        if (!service.isRegistered(this)) {
-            logger.debug("Registering UPnP participant for {}", getUDN());
-            service.registerParticipant(this);
-        }
-        if (!service.isRegistered(this)) {
-            logger.debug("Trying to add GENA subscription {} for {}, but service is not registered", serviceId,
-                    getUDN());
-            return;
-        }
-        logger.debug("Adding GENA subscription {} for {}", serviceId, getUDN());
+        logger.debug("Adding GENA subscription {} for {}, participant is {}", serviceId, getUDN(),
+                service.isRegistered(this) ? "registered" : "not registered");
         service.addSubscription(this, serviceId, WemoBindingConstants.SUBSCRIPTION_DURATION_SECONDS);
     }
 
@@ -150,15 +161,14 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
         this.subscriptionRenewalJob = null;
     }
 
-    private void renewSubscriptions() {
+    private synchronized void renewSubscriptions() {
         if (subscriptions.isEmpty()) {
             return;
         }
         if (!service.isRegistered(this)) {
-            service.registerParticipant(this);
-        }
-        if (!service.isRegistered(this)) {
-            logger.debug("Trying to renew GENA subscriptions for {}, but service is not registered", getUDN());
+            logger.debug("Participant not registered when renewing GENA subscriptions for {}, starting UPnP discovery",
+                    getUDN());
+            upnpService.getControlPoint().search(new RootDeviceHeader());
             return;
         }
         logger.debug("Renewing GENA subscriptions for {}", getUDN());
@@ -177,12 +187,8 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
         if (subscriptions.isEmpty()) {
             return;
         }
-        if (!service.isRegistered(this)) {
-            logger.debug("Trying to remove GENA subscriptions for {}, but service is not registered",
-                    getThing().getUID());
-            return;
-        }
-        logger.debug("Removing GENA subscriptions for {}", getUDN());
+        logger.debug("Removing GENA subscriptions for {}, participant is {}", getUDN(),
+                service.isRegistered(this) ? "registered" : "not registered");
         subscriptions.forEach((serviceId, lastRenewed) -> {
             logger.debug("Removing subscription for service {}", serviceId);
             service.removeSubscription(this, serviceId);
