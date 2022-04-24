@@ -118,7 +118,6 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         updateBridgeInfo();
         startDiscoverJob();
         startPollingJob();
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private void fetchAndUpdateSensors() {
