@@ -15,38 +15,34 @@ package org.openhab.binding.velux.internal.bridge.slip;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProtocol;
-import org.openhab.binding.velux.internal.bridge.common.GetStatus;
+import org.openhab.binding.velux.internal.bridge.common.GetProduct;
 import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
+import org.openhab.binding.velux.internal.things.VeluxProduct;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
+import org.openhab.binding.velux.internal.things.VeluxProductName;
+import org.openhab.binding.velux.internal.things.VeluxProductPosition;
+import org.openhab.binding.velux.internal.things.VeluxProductSerialNo;
+import org.openhab.binding.velux.internal.things.VeluxProductType;
+import org.openhab.binding.velux.internal.things.VeluxProductType.ActuatorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Protocol specific bridge communication supported by the Velux bridge:
  * <B>Retrieve Product Status</B>
- * <P>
- * Common Message semantic: Communication from the bridge and storing returned information within the class itself.
- * <P>
- * As 3rd level class it defines informations how to receive answer through the
- * {@link org.openhab.binding.velux.internal.bridge.VeluxBridgeProvider VeluxBridgeProvider}
- * as described by the interface {@link org.openhab.binding.velux.internal.bridge.slip.SlipBridgeCommunicationProtocol
- * SlipBridgeCommunicationProtocol}.
- * <P>
- *
- * @see BridgeCommunicationProtocol
- * @see SlipBridgeCommunicationProtocol
  *
  * @author Andrew Fiddian-Green - Initial contribution.
  */
 @NonNullByDefault
-class SCgetStatus extends GetStatus implements SlipBridgeCommunicationProtocol {
-    private final Logger logger = LoggerFactory.getLogger(SCgetStatus.class);
+class SCgetProductStatus extends GetProduct implements SlipBridgeCommunicationProtocol {
+    private final Logger logger = LoggerFactory.getLogger(SCgetProductStatus.class);
 
     private static final String DESCRIPTION = "Retrieve Product Status";
     private static final Command COMMAND = Command.GW_STATUS_REQUEST_REQ;
+    private static final VeluxProductName PRODUCT_ID = new VeluxProductName("**DATA_CARRIER**");
 
     /*
      * ===========================================================
@@ -57,9 +53,8 @@ class SCgetStatus extends GetStatus implements SlipBridgeCommunicationProtocol {
     private final int reqIndexArrayCount = 1; // One node will be addressed
     private int reqNodeId = 1; // This is the node id
     private final int reqStatusType = 1; // The current value
-    private final int reqFPI1 = 0xF0; // Functional Parameter Indicator 1 bit map.
+    private final int reqFPI1 = 0xF0; // Functional Parameter Indicator 1 bit map (set to fetch { FP1 .. FP4 }
     private final int reqFPI2 = 0; // Functional Parameter Indicator 2 bit map.
-    private final FunctionalParameters reqFunctionalParameters = new FunctionalParameters();
 
     /*
      * ===========================================================
@@ -76,17 +71,19 @@ class SCgetStatus extends GetStatus implements SlipBridgeCommunicationProtocol {
     private boolean success = false;
     private boolean finished = false;
 
-    private int ntfNodeId;
-    private int ntfCurrentPosition;
-    private int ntfState;
-    private final FunctionalParameters ntfFunctionalParameters = new FunctionalParameters();
+    private VeluxProduct product = VeluxProduct.UNKNOWN;
 
-    public SCgetStatus() {
-        logger.debug("SCgetStatus(Constructor) called.");
+    public SCgetProductStatus() {
+        logger.debug("SCgetProductStatus(Constructor) called.");
         Random rand = new Random();
         reqSessionID = rand.nextInt(0x0fff);
-        logger.debug("SCgetStatus(): starting session with the random number {}.", reqSessionID);
+        logger.debug("SCgetProductStatus(): starting session with the random number {}.", reqSessionID);
     }
+
+    /*
+     * ===========================================================
+     * Methods required for interface {@link BridgeCommunicationProtocol}.
+     */
 
     @Override
     public String name() {
@@ -108,7 +105,7 @@ class SCgetStatus extends GetStatus implements SlipBridgeCommunicationProtocol {
         Packet request = new Packet(new byte[26]);
         request.setTwoByteValue(0, reqSessionID);
         request.setOneByteValue(2, reqIndexArrayCount);
-        request.setTwoByteValue(3, reqNodeId);
+        request.setOneByteValue(3, reqNodeId);
         request.setOneByteValue(23, reqStatusType);
         request.setOneByteValue(24, reqFPI1);
         request.setOneByteValue(25, reqFPI2);
@@ -149,31 +146,34 @@ class SCgetStatus extends GetStatus implements SlipBridgeCommunicationProtocol {
                 break;
 
             case GW_STATUS_REQUEST_NTF:
-                finished = true;
                 if (!KLF200Response.isLengthValid(logger, responseCommand, thisResponseData, 59)) {
+                    finished = true;
                     break;
                 }
 
                 // Extracting information items
-                int ntfSessionID = responseData.getTwoByteValue(0);
-                int ntfStatusID = responseData.getOneByteValue(2);
-                ntfNodeId = responseData.getOneByteValue(3);
-                int ntfRunStatus = responseData.getOneByteValue(4);
-                int ntfStatusReply = responseData.getOneByteValue(5);
-                int ntfStatusType = responseData.getOneByteValue(6);
-                int ntfStatusCount = responseData.getOneByteValue(7);
-                ntfCurrentPosition = responseData.getTwoByteValue(8);
-                ntfFunctionalParameters.read(responseData, 10);
+                final int ntfSessionID = responseData.getTwoByteValue(0);
+                final int ntfStatusID = responseData.getOneByteValue(2);
+                final int ntfNodeId = responseData.getOneByteValue(3);
+                final int ntfRunStatus = responseData.getOneByteValue(4);
+                final int ntfStatusReply = responseData.getOneByteValue(5);
+                final int ntfStatusType = responseData.getOneByteValue(6);
+                final int ntfStatusCount = responseData.getOneByteValue(7);
+                final int ntfFirstParameterIndex = responseData.getOneByteValue(8);
+                final int ntfFirstParameter = responseData.getTwoByteValue(9);
+                final FunctionalParameters ntfFunctionalParameters = new FunctionalParameters()
+                        .readArrayIndexed(responseData, 11);
 
                 if (logger.isTraceEnabled()) {
                     logger.trace("setResponse(): ntfSessionID={}.", ntfSessionID);
                     logger.trace("setResponse(): ntfStatusID={}.", ntfStatusID);
-                    logger.trace("setResponse(): ntfNodeIndex={}.", ntfNodeId);
+                    logger.trace("setResponse(): ntfNodeId={}.", ntfNodeId);
                     logger.trace("setResponse(): ntfRunStatus={}.", ntfRunStatus);
                     logger.trace("setResponse(): ntfStatusReply={}.", ntfStatusReply);
                     logger.trace("setResponse(): ntfStatusType={}.", ntfStatusType);
                     logger.trace("setResponse(): ntfStatusCount={}.", ntfStatusCount);
-                    logger.trace("setResponse(): ntfMainParameter={}.", ntfCurrentPosition);
+                    logger.trace("setResponse(): ntfFirstParameterIndex={}.", ntfFirstParameterIndex);
+                    logger.trace("setResponse(): ntfFirstParameter={}.", String.format("0x%04X", ntfFirstParameter));
                     logger.trace("setResponse(): ntfFunctionalParameters={}.", ntfFunctionalParameters);
                 }
 
@@ -181,18 +181,29 @@ class SCgetStatus extends GetStatus implements SlipBridgeCommunicationProtocol {
                     break;
                 }
 
-                switch (ntfRunStatus) {
-                    case 1:
-                        ntfState = 1;
-                        break;
-                    case 2:
-                        ntfState = 4;
-                        break;
-                    default:
-                        ntfState = 2;
+                int pos;
+                if ((ntfStatusCount > 0) && (ntfFirstParameterIndex == 0)) {
+                    pos = ntfFirstParameter;
+                } else {
+                    pos = VeluxProductPosition.VPP_VELUX_UNKNOWN;
                 }
 
-                reqFunctionalParameters.setValues(ntfFunctionalParameters);
+                int state;
+                switch (ntfRunStatus) {
+                    case 1:
+                        state = 1;
+                        break;
+                    case 2:
+                        state = 4;
+                        break;
+                    default:
+                        state = 2;
+                }
+
+                product = new VeluxProduct(PRODUCT_ID, VeluxProductType.SLIDER_SHUTTER, ActuatorType.ROLLERSHUTTER_2_1,
+                        new ProductBridgeIndex(ntfNodeId), ntfNodeId, 0, 0, 0, 0, VeluxProductSerialNo.UNKNOWN, state,
+                        pos, pos, ntfFunctionalParameters, 0, 0);
+
                 success = true;
                 break;
 
@@ -211,6 +222,7 @@ class SCgetStatus extends GetStatus implements SlipBridgeCommunicationProtocol {
 
             default:
                 KLF200Response.errorLogging(logger, responseCommand);
+                finished = true;
         }
         KLF200Response.outroLogging(logger, success, finished);
     }
@@ -225,30 +237,23 @@ class SCgetStatus extends GetStatus implements SlipBridgeCommunicationProtocol {
         return success;
     }
 
+    /*
+     * ===========================================================
+     * Methods in addition to the interface {@link BridgeCommunicationProtocol}
+     * and the abstract class {@link GetProduct}
+     */
+
     @Override
     public void setProductId(int nodeId) {
         logger.trace("setProductId({}) called.", nodeId);
-        reqNodeId = nodeId;
-        return;
+        if (reqNodeId != nodeId) {
+            reqNodeId = nodeId;
+        }
     }
 
     @Override
-    public FunctionalParameters getFunctionalParameters() {
-        return ntfFunctionalParameters.clone();
-    }
-
-    @Override
-    public int getNodeId() {
-        return ntfNodeId;
-    }
-
-    @Override
-    public int getCurrentPosition() {
-        return ntfCurrentPosition;
-    }
-
-    @Override
-    public int getState() {
-        return ntfState;
+    public VeluxProduct getProduct() {
+        logger.trace("getProduct(): returning {}.", product);
+        return product;
     }
 }

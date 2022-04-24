@@ -24,7 +24,6 @@ import org.openhab.binding.velux.internal.bridge.common.GetProduct;
 import org.openhab.binding.velux.internal.bridge.common.GetProductLimitation;
 import org.openhab.binding.velux.internal.bridge.common.GetProducts;
 import org.openhab.binding.velux.internal.bridge.common.GetScenes;
-import org.openhab.binding.velux.internal.bridge.common.GetStatus;
 import org.openhab.binding.velux.internal.bridge.common.GetWLANConfig;
 import org.openhab.binding.velux.internal.bridge.common.Login;
 import org.openhab.binding.velux.internal.bridge.common.Logout;
@@ -105,7 +104,7 @@ class SlipBridgeAPI implements BridgeAPI {
     private final SetProductLimitation slipSetProductLimitation = new SCsetLimitation();
     private final SetSceneVelocity slipSetSceneVelocity = new SCsetSceneVelocity();
     private final RunReboot slipRunReboot = new SCrunReboot();
-    private final GetStatus slipGetStatus = new SCgetStatus();
+    private final GetProduct slipGetProductStatus = new SCgetProductStatus();
 
     /**
      * Constructor.
@@ -221,7 +220,7 @@ class SlipBridgeAPI implements BridgeAPI {
     }
 
     @Override
-    public @Nullable GetStatus getStatus() {
-        return slipGetStatus;
+    public @Nullable GetProduct getProductStatus() {
+        return slipGetProductStatus;
     }
 }

@@ -24,7 +24,6 @@ import org.openhab.binding.velux.internal.bridge.common.GetProduct;
 import org.openhab.binding.velux.internal.bridge.common.GetProductLimitation;
 import org.openhab.binding.velux.internal.bridge.common.GetProducts;
 import org.openhab.binding.velux.internal.bridge.common.GetScenes;
-import org.openhab.binding.velux.internal.bridge.common.GetStatus;
 import org.openhab.binding.velux.internal.bridge.common.GetWLANConfig;
 import org.openhab.binding.velux.internal.bridge.common.Login;
 import org.openhab.binding.velux.internal.bridge.common.Logout;
@@ -214,7 +213,7 @@ class JsonBridgeAPI implements BridgeAPI {
     }
 
     @Override
-    public @Nullable GetStatus getStatus() {
+    public @Nullable GetProduct getProductStatus() {
         return null;
     }
 }

@@ -109,5 +109,5 @@ public interface BridgeAPI {
     RunReboot runReboot();
 
     @Nullable
-    GetStatus getStatus();
+    GetProduct getProductStatus();
 }
