@@ -187,6 +187,7 @@ public class SomfyTahomaBindingConstants {
 
     // Roller shutter, Shutter, Awning, Screen, Blind, Garage door, Window, Curtain
     public static final String CONTROL = "control";
+    public static final String MOVING = "moving";
 
     // Adjustable slats roller shutter
     public static final String ROCKER = "rocker";
@@ -511,7 +512,9 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_HITACHI_DHW, THING_TYPE_HITACHI_ATWMC, THING_TYPE_RAINSENSOR, THING_TYPE_SHUTTER));
 
     // somfy gateways
-    public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {
+    public static Map<Integer, String> gatewayTypes = new HashMap<>() {
+        private static final long serialVersionUID = 7473481667820682573L;
+
         {
             put(0, "VIRTUAL_KIZBOX");
             put(2, "KIZBOX_V1");
