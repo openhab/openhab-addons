@@ -70,7 +70,7 @@ public class GroupePSAHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(GroupePSAHandler.class);
 
-    private @Nullable String vin = null;
+    private @Nullable String id = null;
     private long lastQueryTimeMs = 0L;
 
     private @Nullable ScheduledFuture<?> groupepsaPollingJob;
@@ -109,17 +109,17 @@ public class GroupePSAHandler extends BaseThingHandler {
     public void initialize() {
         if (getBridgeHandler() != null) {
             GroupePSAConfiguration currentConfig = getConfigAs(GroupePSAConfiguration.class);
-            final String configVehicleId = currentConfig.getVIN();
+            final String id = currentConfig.getId();
             final Integer pollingIntervalS = currentConfig.getPollingInterval();
 
-            if (configVehicleId == null) {
+            if (id == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/conf-error-no-vehicle-id");
             } else if (pollingIntervalS != null && pollingIntervalS < 1) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/conf-error-invalid-polling-interval");
             } else {
-                vin = configVehicleId;
+                this.id = id;
                 startGroupePSAPolling(pollingIntervalS);
             }
 
@@ -143,7 +143,7 @@ public class GroupePSAHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         stopGroupePSAPolling();
-        vin = null;
+        id = null;
     }
 
     private void startGroupePSAPolling(@Nullable Integer pollingIntervalM) {
@@ -184,8 +184,8 @@ public class GroupePSAHandler extends BaseThingHandler {
 
         lastQueryTimeMs = System.nanoTime();
 
-        String vin = this.vin;
-        if (vin == null) {
+        String id = this.id;
+        if (id == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-vehicle-id");
             return;
         }
@@ -197,7 +197,7 @@ public class GroupePSAHandler extends BaseThingHandler {
         }
 
         try {
-            VehicleStatus vehicle = groupepsaBridge.getVehicleStatus(vin);
+            VehicleStatus vehicle = groupepsaBridge.getVehicleStatus(id);
 
             logger.trace("Vehicle: {}", vehicle);
 
@@ -217,7 +217,7 @@ public class GroupePSAHandler extends BaseThingHandler {
         } catch (GroupePSACommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/comm-error-query-vehicle-failed");
-            logger.warn("Unable to query groupepsa status for:  {}. Error: {}", vin, e.getMessage());
+            logger.warn("Unable to query groupepsa status for:  {}. Error: {}", id, e.getMessage());
         }
     }
 
@@ -325,8 +325,8 @@ public class GroupePSAHandler extends BaseThingHandler {
                     updateState(CHANNEL_ELECTRIC_CHARGING_REMAININGTIME, energy, Energy::getCharging,
                             Charging::getRemainingTime, x -> x.getSeconds(), Units.SECOND);
 
-                    updateStateDate(CHANNEL_ELECTRIC_CHARGING_NEXTDELAYEDTIME, energy, Energy::getCharging,
-                            Charging::getNextDelayedTime);
+                    updateState(CHANNEL_ELECTRIC_CHARGING_NEXTDELAYEDTIME, energy, Energy::getCharging,
+                            Charging::getNextDelayedTime, x -> x.getSeconds(), Units.SECOND);
 
                 }
             }

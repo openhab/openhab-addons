@@ -167,8 +167,12 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
     }
 
     static Throwable getRootCause(Throwable e) {
-        while (e.getCause() != null)
-            e = e.getCause();
+        Throwable nextE;
+        do {
+            nextE = e.getCause();
+            if (nextE != null)
+                e = nextE;
+        } while (nextE != null);
         return e;
     }
 

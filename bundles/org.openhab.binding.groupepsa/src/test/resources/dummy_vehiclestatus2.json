@@ -69,7 +69,7 @@
         "charging": {
           "chargingMode": "No",
           "chargingRate": 0,
-          "nextDelayedTime": "2019-08-24T14:15:22Z",
+          "nextDelayedTime": "PT15M",
           "plugged": true,
           "remainingTime": "PT15M",
           "status": "Disconnected"
@@ -93,7 +93,7 @@
         "charging": {
           "chargingMode": "No",
           "chargingRate": 0,
-          "nextDelayedTime": "2019-08-24T14:15:22Z",
+          "nextDelayedTime": "PT15M",
           "plugged": true,
           "remainingTime": "PT15M",
           "status": "Disconnected"

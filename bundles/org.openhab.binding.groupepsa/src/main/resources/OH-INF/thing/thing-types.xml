@@ -82,14 +82,15 @@
 		<properties>
 			<property name="vendor">N/A</property>
 			<property name="model">N/A</property>
+			<property name="vin">N/A</property>
 		</properties>
 
-		<representation-property>vin</representation-property>
+		<representation-property>id</representation-property>
 
 		<config-description>
-			<parameter name="vin" type="text" required="true">
-				<label>Vehicle Identification Number</label>
-				<description>The unique vehicle identifier</description>
+			<parameter name="id" type="text" required="true">
+				<label>ID</label>
+				<description>Vehicle API ID</description>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" required="false" unit="min">
 				<label>Polling Interval</label>

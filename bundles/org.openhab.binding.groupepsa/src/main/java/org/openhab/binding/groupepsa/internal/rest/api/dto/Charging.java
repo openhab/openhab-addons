@@ -13,7 +13,6 @@
 package org.openhab.binding.groupepsa.internal.rest.api.dto;
 
 import java.time.Duration;
-import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,7 +25,7 @@ public class Charging {
 
     private @Nullable String chargingMode;
     private @Nullable Double chargingRate;
-    private @Nullable ZonedDateTime nextDelayedTime;
+    private @Nullable Duration nextDelayedTime;
     private @Nullable Boolean plugged;
     private @Nullable Duration remainingTime;
     private @Nullable String status;
@@ -43,7 +42,7 @@ public class Charging {
         this.chargingRate = chargingRate;
     }
 
-    public @Nullable ZonedDateTime getNextDelayedTime() {
+    public @Nullable Duration getNextDelayedTime() {
         return nextDelayedTime;
     }
 
