@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 class ToStringBuilder implements Appendable, CharSequence {
-    StringBuilder stringBuilder = new StringBuilder();
+    protected StringBuilder stringBuilder = new StringBuilder();
 
     ToStringBuilder(Object obj) {
     }
@@ -44,24 +44,37 @@ class ToStringBuilder implements Appendable, CharSequence {
 
     @Override
     public ToStringBuilder append(@Nullable CharSequence csq) throws IOException {
+        if (stringBuilder.length() != 0)
+            stringBuilder.append(", ");
         stringBuilder.append(csq);
         return this;
     }
 
     @Override
     public ToStringBuilder append(@Nullable CharSequence csq, int start, int end) throws IOException {
+        if (stringBuilder.length() != 0)
+            stringBuilder.append(", ");
         stringBuilder.append(csq, start, end);
         return this;
     }
 
     @Override
     public ToStringBuilder append(char c) throws IOException {
+        if (stringBuilder.length() != 0)
+            stringBuilder.append(", ");
         stringBuilder.append(c);
         return this;
     }
 
     public ToStringBuilder append(Object key, @Nullable Object value) {
+        if (stringBuilder.length() != 0)
+            stringBuilder.append(", ");
         stringBuilder.append(key.toString() + ": " + ((value == null) ? "(null)" : value.toString()));
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "{ " + stringBuilder.toString() + " }";
     }
 }
