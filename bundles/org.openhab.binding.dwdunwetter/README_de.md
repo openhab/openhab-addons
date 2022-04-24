@@ -10,11 +10,11 @@ Ein Thing stellt dabei eine oder mehrere Warnungen für eine Gemeinde bereit.
 
 ## Thing Konfiguration
 
-| Property     | Standard | Erforderlich | Beschreibung |
-|--------------|---------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| cellId       | -       | Ja      | ID der abzufragenden Zelle. Siehe [cap_warncellids_csv.csv](https://www.dwd.de/DE/leistungen/opendata/help/warnungen/cap_warncellids_csv.csv "cap_warncellids_csv.csv"), nur IDs die mit einer 8 (Ausnahme für Berlin: 7) beginnen werden unterstützt. Es kann auch mittels % eine Gesamtmenge abgefragt werden, z.B. 8111% alle Gemeinden die mit 8111 anfangen. |
-| refresh      | 30      | Nein       | Abfrageintervall in Minuten. Minimum 15 Minuten.                                |
-| warningCount | 1       | Nein       | Anzahl der Warnungen, die als Channels bereitgestellt werden sollen                                                |                                                        |
+| Property     | Standard | Erforderlich | Beschreibung                                                                                                                                                                                                                                                                                                                                                      |
+|--------------|----------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| cellId       | -        | Ja           | ID der abzufragenden Zelle. Siehe [cap_warncellids_csv.csv](https://www.dwd.de/DE/leistungen/opendata/help/warnungen/cap_warncellids_csv.csv "cap_warncellids_csv.csv"), nur IDs die mit einer 8 (Ausnahme für Berlin: 7) beginnen werden unterstützt. Es kann auch mittels % eine Gesamtmenge abgefragt werden, z.B. 8111% alle Gemeinden die mit 8111 anfangen. |
+| refresh      | 30       | Nein         | Abfrageintervall in Minuten. Minimum 15 Minuten.                                                                                                                                                                                                                                                                                                                  |
+| warningCount | 1        | Nein         | Anzahl der Warnungen, die als Channels bereitgestellt werden sollen                                                                                                                                                                                                                                                                                               |
 
 ### Cell ID
 <!-- See page 10-13 (in German) of https://www.dwd.de/DE/wetter/warnungen_aktuell/objekt_einbindung/einbindung_karten_geodienste.pdf?__blob=publicationFile&v=14 for Cell ID documentation. -->
