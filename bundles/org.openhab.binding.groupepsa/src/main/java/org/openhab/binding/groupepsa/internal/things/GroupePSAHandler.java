@@ -93,7 +93,7 @@ public class GroupePSAHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(GroupePSAHandler.class);
 
     private @Nullable String id = null;
-    private long lastQueryTimeMs = 0L;
+    private long lastQueryTimeNs = 0L;
 
     private @Nullable ScheduledFuture<?> groupepsaPollingJob;
     private long maxQueryFrequencyNanos = TimeUnit.MINUTES.toNanos(1);
@@ -195,11 +195,6 @@ public class GroupePSAHandler extends BaseThingHandler {
     }
 
     private boolean isConnected(VehicleStatus vehicle) {
-        Position lastPosition = vehicle.getLastPosition();
-        if (lastPosition == null) {
-            return false;
-        }
-
         ZonedDateTime updatedAt = vehicle.getUpdatedAt();
         if (updatedAt == null) {
             return false;
@@ -209,11 +204,11 @@ public class GroupePSAHandler extends BaseThingHandler {
     }
 
     private synchronized void updateGroupePSAState() {
-        if (System.nanoTime() - lastQueryTimeMs <= maxQueryFrequencyNanos) {
+        if (System.nanoTime() - lastQueryTimeNs <= maxQueryFrequencyNanos) {
             return;
         }
 
-        lastQueryTimeMs = System.nanoTime();
+        lastQueryTimeNs = System.nanoTime();
 
         String id = this.id;
         if (id == null) {

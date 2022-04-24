@@ -81,7 +81,6 @@ chargingRate|Number:Speed|Battery Charging Rate
 chargingRemainingTime|Number:Time|Time remaining till charged
 chargingNextDelayedTime|Number:Time|Time till the next charging starts
 
-
 Further documentation can be found at: https://developer.groupe-psa.io/webapi/b2c/api-reference/specification/#article
 
 ## Full Example
@@ -93,8 +92,6 @@ Bridge groupepsa:bridge:opel "Auto Interface" [
     pollingInterval=60,
     userName="anonymous@anonymous.email",
     password="password",
-    clientSecret="F2kK7lC5kF5qN7tM0wT8kE3cW1dP0wC5pI6vC0sQ5iP5cN8cJ8",
-    clientId="07364655-93cb-4194-8158-6b035ac2c24c",
     vendor="OPEL"
 ] {
     Things:
