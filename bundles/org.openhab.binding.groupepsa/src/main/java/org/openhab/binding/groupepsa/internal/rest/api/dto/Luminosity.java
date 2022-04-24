@@ -10,17 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.groupepsa.internal;
+package org.openhab.binding.groupepsa.internal.rest.api.dto;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link GroupePSAConfiguration} class contains fields mapping thing configuration parameters.
- *
  * @author Arjan Mels - Initial contribution
  */
-public class GroupePSAConfiguration {
+@NonNullByDefault
+public class Luminosity {
 
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
-    public String config1;
+    private @Nullable Boolean day;
+
+    public @Nullable Boolean isDay() {
+        return day;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("day", day).toString();
+    }
 }
