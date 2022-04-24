@@ -169,13 +169,13 @@
 		<label>Various</label>
 		<description>Miscellaneous information</description>
 		<channels>
-			<channel id="lastupdated" typeId="lastUpdated"/>
+			<channel id="lastUpdated" typeId="lastUpdated"/>
 			<channel id="privacy" typeId="privacy"/>
 			<channel id="belt" typeId="belt"/>
 			<channel id="emergency" typeId="emergency"/>
 			<channel id="service" typeId="service"/>
 			<channel id="preconditioning" typeId="preconditioning"/>
-			<channel id="preconditioningfailure" typeId="preconditioningFailure"/>
+			<channel id="preconditioningFailure" typeId="preconditioningFailure"/>
 		</channels>
 	</channel-group-type>
 

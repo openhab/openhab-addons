@@ -84,8 +84,8 @@ public class GroupePSABindingConstants {
     public static final String CHANNEL_ELECTRIC_CHARGING_MODE = "electric#chargingMode";
     public static final String CHANNEL_ELECTRIC_CHARGING_PLUGGED = "electric#chargingPlugged";
     public static final String CHANNEL_ELECTRIC_CHARGING_RATE = "electric#chargingRate";
-    public static final String CHANNEL_ELECTRIC_CHARGING_REMAININGTIME = "electric#charging_remainingTime";
-    public static final String CHANNEL_ELECTRIC_CHARGING_NEXTDELAYEDTIME = "electric#charging_nextDelayedTime";
+    public static final String CHANNEL_ELECTRIC_CHARGING_REMAININGTIME = "electric#chargingRemainingTime";
+    public static final String CHANNEL_ELECTRIC_CHARGING_NEXTDELAYEDTIME = "electric#chargingNextDelayedTime";
 
     public enum VendorConstants {
         PEUGEOT("https://idpcvs.peugeot.com/am/oauth2/access_token", "clientsB2CPeugeot"),
