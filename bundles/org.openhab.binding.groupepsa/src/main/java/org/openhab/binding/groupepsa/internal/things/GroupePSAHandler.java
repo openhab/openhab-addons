@@ -301,15 +301,12 @@ public class GroupePSAHandler extends BaseThingHandler {
             Geometry<SinglePosition> geometry = lastPosition.getGeometry();
             if (geometry != null) {
                 SinglePosition position = (SinglePosition) geometry.positions();
-                if (Double.isFinite(position.coordinates().getAlt())) {
-                    updateState(CHANNEL_POSITION_POSITION,
-                            new PointType(new DecimalType(position.coordinates().getLat()),
-                                    new DecimalType(position.coordinates().getLon()),
-                                    new DecimalType(position.coordinates().getAlt())));
+                if (Double.isFinite(position.alt())) {
+                    updateState(CHANNEL_POSITION_POSITION, new PointType(new DecimalType(position.lat()),
+                            new DecimalType(position.lon()), new DecimalType(position.alt())));
                 } else {
                     updateState(CHANNEL_POSITION_POSITION,
-                            new PointType(new DecimalType(position.coordinates().getLat()),
-                                    new DecimalType(position.coordinates().getLon())));
+                            new PointType(new DecimalType(position.lat()), new DecimalType(position.lon())));
                 }
             } else {
                 updateState(CHANNEL_POSITION_POSITION, UnDefType.UNDEF);
