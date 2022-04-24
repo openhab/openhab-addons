@@ -40,18 +40,11 @@ public class GroupePSABindingConstants {
     public static final String CHANNEL_BATTERY_CURRENT = "battery#current";
     public static final String CHANNEL_BATTERY_VOLTAGE = "battery#voltage";
 
-    public static final String CHANNEL_TYPE_DOORLOCK = "doorlock";
-    public static final String CHANNEL_TYPE_DOOROPEN = "dooropen";
+    public static final String CHANNEL_TYPE_DOORLOCK = "doorLock";
+    public static final String CHANNEL_TYPE_DOOROPEN = "doorOpen";
 
     public static final String CHANNEL_GROUP_DOORS = "doors";
     public static final String CHANNEL_DOORS_LOCK = "doors#locked";
-    public static final String CHANNEL_DOORS_DRIVER = "doors#driver";
-    public static final String CHANNEL_DOORS_PASSENGER = "doors#passenger";
-    public static final String CHANNEL_DOORS_REARLEFT = "doors#rearleft";
-    public static final String CHANNEL_DOORS_REARRIGHT = "doors#rearright";
-    public static final String CHANNEL_DOORS_TRUNK = "doors#trunk";
-    public static final String CHANNEL_DOORS_REARWINDOW = "doors#rearwindow";
-    public static final String CHANNEL_DOORS_ROOFWINDOW = "doors#roofwindow";
 
     public static final String CHANNEL_ENVIRONMENT_TEMPERATURE = "environment#temperature";
     public static final String CHANNEL_ENVIRONMENT_DAYTIME = "environment#daytime";
@@ -67,13 +60,13 @@ public class GroupePSABindingConstants {
     public static final String CHANNEL_POSITION_TYPE = "position#type";
     public static final String CHANNEL_POSITION_SIGNALSTRENGTH = "position#signal";
 
-    public static final String CHANNEL_VARIOUS_LASTUPDATED = "various#lastupdated";
+    public static final String CHANNEL_VARIOUS_LAST_UPDATED = "various#lastUpdated";
     public static final String CHANNEL_VARIOUS_PRIVACY = "various#privacy";
     public static final String CHANNEL_VARIOUS_BELT = "various#belt";
     public static final String CHANNEL_VARIOUS_EMERGENCY = "various#emergency";
     public static final String CHANNEL_VARIOUS_SERVICE = "various#service";
     public static final String CHANNEL_VARIOUS_PRECONDITINING = "various#preconditioning";
-    public static final String CHANNEL_VARIOUS_PRECONDITININGFAILURE = "various#preconditioningfailure";
+    public static final String CHANNEL_VARIOUS_PRECONDITINING_FAILURE = "various#preconditioningFailure";
 
     public static final String CHANNEL_FUEL_AUTONOMY = "fuel#autonomy";
     public static final String CHANNEL_FUEL_CONSUMPTION = "fuel#consumption";
@@ -83,14 +76,14 @@ public class GroupePSABindingConstants {
     public static final String CHANNEL_ELECTRIC_LEVEL = "electric#level";
     public static final String CHANNEL_ELECTRIC_RESIDUAL = "electric#residual";
 
-    public static final String CHANNEL_ELECTRIC_BATTERY_CAPACITY = "electric#battery_capacity";
-    public static final String CHANNEL_ELECTRIC_BATTERY_HEALTH_CAPACITY = "electric#battery_health_capacity";
-    public static final String CHANNEL_ELECTRIC_BATTERY_HEALTH_RESISTANCE = "electric#battery_health_resistance";
+    public static final String CHANNEL_ELECTRIC_BATTERY_CAPACITY = "electric#batteryCapacity";
+    public static final String CHANNEL_ELECTRIC_BATTERY_HEALTH_CAPACITY = "electric#batteryHealthCapacity";
+    public static final String CHANNEL_ELECTRIC_BATTERY_HEALTH_RESISTANCE = "electric#batteryHealthResistance";
 
-    public static final String CHANNEL_ELECTRIC_CHARGING_STATUS = "electric#charging_status";
-    public static final String CHANNEL_ELECTRIC_CHARGING_MODE = "electric#charging_mode";
-    public static final String CHANNEL_ELECTRIC_CHARGING_PLUGGED = "electric#charging_plugged";
-    public static final String CHANNEL_ELECTRIC_CHARGING_RATE = "electric#charging_rate";
+    public static final String CHANNEL_ELECTRIC_CHARGING_STATUS = "electric#chargingStatus";
+    public static final String CHANNEL_ELECTRIC_CHARGING_MODE = "electric#chargingMode";
+    public static final String CHANNEL_ELECTRIC_CHARGING_PLUGGED = "electric#chargingPlugged";
+    public static final String CHANNEL_ELECTRIC_CHARGING_RATE = "electric#chargingRate";
     public static final String CHANNEL_ELECTRIC_CHARGING_REMAININGTIME = "electric#charging_remainingTime";
     public static final String CHANNEL_ELECTRIC_CHARGING_NEXTDELAYEDTIME = "electric#charging_nextDelayedTime";
 

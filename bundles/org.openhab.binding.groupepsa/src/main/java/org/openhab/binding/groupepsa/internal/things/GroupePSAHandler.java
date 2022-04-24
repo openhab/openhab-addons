@@ -299,14 +299,14 @@ public class GroupePSAHandler extends BaseThingHandler {
                     Units.PERCENT);
         }
 
-        updateState(CHANNEL_VARIOUS_LASTUPDATED, vehicle.getUpdatedAt());
+        updateState(CHANNEL_VARIOUS_LAST_UPDATED, vehicle.getUpdatedAt());
         updateState(CHANNEL_VARIOUS_PRIVACY, vehicle.getPrivacy(), Privacy::getState);
         updateState(CHANNEL_VARIOUS_BELT, vehicle.getSafety(), Safety::getBeltWarning);
         updateState(CHANNEL_VARIOUS_EMERGENCY, vehicle.getSafety(), Safety::getECallTriggeringRequest);
         updateState(CHANNEL_VARIOUS_SERVICE, vehicle.getService(), Service::getType);
         updateState(CHANNEL_VARIOUS_PRECONDITINING, vehicle.getPreconditionning(), Preconditionning::getAirConditioning,
                 AirConditioning::getStatus);
-        updateState(CHANNEL_VARIOUS_PRECONDITININGFAILURE, vehicle.getPreconditionning(),
+        updateState(CHANNEL_VARIOUS_PRECONDITINING_FAILURE, vehicle.getPreconditionning(),
                 Preconditionning::getAirConditioning, AirConditioning::getFailureCause);
 
         List<Energy> energies = vehicle.getEnergy();

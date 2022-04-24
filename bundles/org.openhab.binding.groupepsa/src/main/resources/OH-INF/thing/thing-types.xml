@@ -119,34 +119,10 @@
 		<description>State of the doors</description>
 		<category>Door</category>
 		<channels>
-			<channel id="locked" typeId="doorlock"/>
-			<channel id="driver" typeId="dooropen">
+			<channel id="locked" typeId="doorLock"/>
+			<channel id="driver" typeId="doorOpen">
 				<label>Driver door</label>
 				<description>Driver door open state</description>
-			</channel>
-			<channel id="passenger" typeId="dooropen">
-				<label>Passenger door</label>
-				<description>Passenger door open state</description>
-			</channel>
-			<channel id="rearleft" typeId="dooropen">
-				<label>Rear left door</label>
-				<description>Rear left door open state</description>
-			</channel>
-			<channel id="rearright" typeId="dooropen">
-				<label>Rear right door</label>
-				<description>Rear right door open state</description>
-			</channel>
-			<channel id="trunk" typeId="dooropen">
-				<label>Trunk</label>
-				<description>Trunk open state</description>
-			</channel>
-			<channel id="rearwindow" typeId="dooropen">
-				<label>Rear window</label>
-				<description>Rear window open state</description>
-			</channel>
-			<channel id="roofwindow" typeId="dooropen">
-				<label>Roof window</label>
-				<description>Roof window open state</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -193,13 +169,13 @@
 		<label>Various</label>
 		<description>Miscellaneous information</description>
 		<channels>
-			<channel id="lastupdated" typeId="lastupdated"/>
+			<channel id="lastupdated" typeId="lastUpdated"/>
 			<channel id="privacy" typeId="privacy"/>
 			<channel id="belt" typeId="belt"/>
 			<channel id="emergency" typeId="emergency"/>
 			<channel id="service" typeId="service"/>
 			<channel id="preconditioning" typeId="preconditioning"/>
-			<channel id="preconditioningfailure" typeId="preconditioningfailure"/>
+			<channel id="preconditioningfailure" typeId="preconditioningFailure"/>
 		</channels>
 	</channel-group-type>
 
@@ -234,7 +210,7 @@
 		<category>Sun</category>
 	</channel-type>
 
-	<channel-type id="doorlock">
+	<channel-type id="doorLock">
 		<item-type>String</item-type>
 		<label>Door lock</label>
 		<description>Door lock state</description>
@@ -254,7 +230,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="dooropen">
+	<channel-type id="doorOpen">
 		<item-type>Contact</item-type>
 		<label>Door open</label>
 		<description>Door is open</description>
@@ -416,7 +392,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="preconditioningfailure">
+	<channel-type id="preconditioningFailure">
 		<item-type>String</item-type>
 		<label>Air Conditioning Failure</label>
 		<description>Airr conditioning failure cause</description>
@@ -456,15 +432,15 @@
 				<description>Electricity level</description>
 			</channel>
 			<channel id="residual" typeId="residual"/>
-			<channel id="battery_capacity" typeId="capacity"/>
-			<channel id="battery_health_capacity" typeId="healthCapacity"/>
-			<channel id="battery_health_resistance" typeId="healthResistance"/>
-			<channel id="charging_status" typeId="chargingStatus"/>
-			<channel id="charging_mode" typeId="chargingMode"/>
-			<channel id="charging_plugged" typeId="chargingPlugged"/>
-			<channel id="charging_rate" typeId="chargingRate"/>
-			<channel id="charging_remainingTime" typeId="chargingRemainingTime"/>
-			<channel id="charging_nextDelayedTime" typeId="chargingNextDelayedTime"/>
+			<channel id="batteryCapacity" typeId="capacity"/>
+			<channel id="batteryHealthCapacity" typeId="healthCapacity"/>
+			<channel id="batteryHealthResistance" typeId="healthResistance"/>
+			<channel id="chargingStatus" typeId="chargingStatus"/>
+			<channel id="chargingMode" typeId="chargingMode"/>
+			<channel id="chargingPlugged" typeId="chargingPlugged"/>
+			<channel id="chargingRate" typeId="chargingRate"/>
+			<channel id="chargingRemainingTime" typeId="chargingRemainingTime"/>
+			<channel id="chargingNextDelayedTime" typeId="chargingNextDelayedTime"/>
 		</channels>
 	</channel-group-type>
 

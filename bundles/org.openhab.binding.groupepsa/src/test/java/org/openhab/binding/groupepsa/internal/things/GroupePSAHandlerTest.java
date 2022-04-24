@@ -158,10 +158,10 @@ public class GroupePSAHandlerTest {
 
         // check that the channels are updated
         verify(thingCallback, atLeast(30)).stateUpdated(any(ChannelUID.class), any(State.class));
-        verify(thingCallback).stateUpdated(eq(new ChannelUID("a:b:c:electric#charging_status")),
+        verify(thingCallback).stateUpdated(eq(new ChannelUID("a:b:c:electric#chargingStatus")),
                 eq(new StringType("Disconnected")));
-        verify(thingCallback).stateUpdated(eq(new ChannelUID("a:b:c:electric#charging_rate")),
+        verify(thingCallback).stateUpdated(eq(new ChannelUID("a:b:c:electric#chargingRate")),
                 eq(new QuantityType<Speed>(0, Units.KILOMETRE_PER_HOUR)));
-        verify(thingCallback).stateUpdated(eq(new ChannelUID("a:b:c:various#lastupdated")), any(DateTimeType.class));
+        verify(thingCallback).stateUpdated(eq(new ChannelUID("a:b:c:various#lastUpdated")), any(DateTimeType.class));
     }
 }
