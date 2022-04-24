@@ -15,6 +15,7 @@ package org.openhab.binding.velux.internal.bridge.slip;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
@@ -70,7 +71,7 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
     private int reqPL03 = 0; // unused
     private int reqPL47 = 0; // unused
     private int reqLockTime = 0; // 30 seconds
-    private final FunctionalParameters reqFunctionalParameters = new FunctionalParameters();
+    private @Nullable FunctionalParameters reqFunctionalParameters = null;
 
     /*
      * ===========================================================
@@ -127,7 +128,8 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
         request.setOneByteValue(3, reqPriorityLevel);
         request.setOneByteValue(4, reqParameterActive);
 
-        reqFPI1 = reqFunctionalParameters.write(request, 9);
+        FunctionalParameters reqFunctionalParameters = this.reqFunctionalParameters;
+        reqFPI1 = reqFunctionalParameters != null ? reqFunctionalParameters.write(request, 9) : 0;
 
         request.setOneByteValue(5, reqFPI1);
         request.setOneByteValue(6, reqFPI2);
@@ -214,15 +216,15 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
                 int ntfStatusReply = responseData.getOneByteValue(8);
                 int ntfInformationCode = responseData.getFourByteValue(9);
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("setResponse(): ntfSessionID={} (requested {}).", ntfSessionID, reqSessionID);
-                    logger.debug("setResponse(): ntfStatusiD={}.", ntfStatusiD);
-                    logger.debug("setResponse(): ntfIndex={}.", ntfIndex);
-                    logger.debug("setResponse(): ntfNodeParameter={}.", ntfNodeParameter);
-                    logger.debug("setResponse(): ntfParameterValue={}.", ntfParameterValue);
-                    logger.debug("setResponse(): ntfRunStatus={}.", ntfRunStatus);
-                    logger.debug("setResponse(): ntfStatusReply={}.", ntfStatusReply);
-                    logger.debug("setResponse(): ntfInformationCode={}.", ntfInformationCode);
+                if (logger.isTraceEnabled()) {
+                    logger.trace("setResponse(): ntfSessionID={} (requested {}).", ntfSessionID, reqSessionID);
+                    logger.trace("setResponse(): ntfStatusiD={}.", ntfStatusiD);
+                    logger.trace("setResponse(): ntfIndex={}.", ntfIndex);
+                    logger.trace("setResponse(): ntfNodeParameter={}.", ntfNodeParameter);
+                    logger.trace("setResponse(): ntfParameterValue={}.", String.format("0x%04X", ntfParameterValue));
+                    logger.trace("setResponse(): ntfRunStatus={}.", ntfRunStatus);
+                    logger.trace("setResponse(): ntfStatusReply={}.", ntfStatusReply);
+                    logger.trace("setResponse(): ntfInformationCode={}.", ntfInformationCode);
                 }
 
                 if (!KLF200Response.check4matchingSessionID(logger, ntfSessionID, reqSessionID)) {
@@ -320,11 +322,11 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
 
     @Override
     public SCrunProductCommand setNodeIdAndParameters(int nodeId, int mainParameter,
-            FunctionalParameters functionalParameters) {
+            @Nullable FunctionalParameters functionalParameters) {
         logger.debug("setNodeIdAndParameters({}) called.", nodeId);
         reqIndexArray01 = nodeId;
         reqMainParameter = mainParameter;
-        reqFunctionalParameters.setValues(functionalParameters);
+        reqFunctionalParameters = functionalParameters != null ? functionalParameters.clone() : null;
         return this;
     }
 }

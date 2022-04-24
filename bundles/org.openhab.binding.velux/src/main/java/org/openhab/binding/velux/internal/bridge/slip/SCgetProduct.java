@@ -166,7 +166,7 @@ class SCgetProduct extends GetProduct implements SlipBridgeCommunicationProtocol
                 int ntfState = responseData.getOneByteValue(84);
                 int ntfCurrentPosition = responseData.getTwoByteValue(85);
                 int ntfTarget = responseData.getTwoByteValue(87);
-                FunctionalParameters ntfFunctionalParameters = new FunctionalParameters().read(responseData, 89);
+                FunctionalParameters ntfFunctionalParameters = new FunctionalParameters().readArray(responseData, 89);
                 int ntfRemainingTime = responseData.getFourByteValue(97);
                 int ntfTimeStamp = responseData.getFourByteValue(99);
                 int ntfNbrOfAlias = responseData.getOneByteValue(103);
@@ -191,10 +191,10 @@ class SCgetProduct extends GetProduct implements SlipBridgeCommunicationProtocol
                     logger.trace("setResponse(): ntfNodeVariation={}.", ntfNodeVariation);
                     logger.trace("setResponse(): ntfPowerMode={}.", ntfPowerMode);
                     logger.trace("setResponse(): ntfBuildNumber={}.", ntfBuildNumber);
-                    logger.trace("setResponse(): ntfSerialNumber={}.", ntfSerialNumber);
+                    logger.trace("setResponse(): ntfSerialNumber={}.", VeluxProductSerialNo.toString(ntfSerialNumber));
                     logger.trace("setResponse(): ntfState={}.", ntfState);
-                    logger.trace("setResponse(): ntfCurrentPosition={}.", ntfCurrentPosition);
-                    logger.trace("setResponse(): ntfTarget={}.", ntfTarget);
+                    logger.trace("setResponse(): ntfCurrentPosition={}.", String.format("0x%04X", ntfCurrentPosition));
+                    logger.trace("setResponse(): ntfTarget={}.", String.format("0x%04X", ntfTarget));
                     logger.trace("setResponse(): ntfFunctionalParameters={}.", ntfFunctionalParameters);
                     logger.trace("setResponse(): ntfRemainingTime={}.", ntfRemainingTime);
                     logger.trace("setResponse(): ntfTimeStamp={}.", ntfTimeStamp);
@@ -253,13 +253,12 @@ class SCgetProduct extends GetProduct implements SlipBridgeCommunicationProtocol
     @Override
     public void setProductId(int nodeId) {
         logger.trace("setProductId({}) called.", nodeId);
-        this.reqNodeID = nodeId;
-        return;
+        reqNodeID = nodeId;
     }
 
     @Override
     public VeluxProduct getProduct() {
-        logger.trace("getProduct(): returning product {}.", product);
+        logger.trace("getProduct(): returning {}.", product);
         return product;
     }
 }

@@ -113,15 +113,15 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
                 ntfState = responseData.getOneByteValue(1);
                 ntfCurrentPosition = responseData.getTwoByteValue(2);
                 ntfTarget = responseData.getTwoByteValue(4);
-                ntfFunctionalParameters.read(responseData, 6);
+                ntfFunctionalParameters.readArray(responseData, 6);
                 int ntfRemainingTime = responseData.getTwoByteValue(14);
                 int ntfTimeStamp = responseData.getFourByteValue(16);
 
                 if (logger.isTraceEnabled()) {
                     logger.trace("setResponse(): ntfNodeID={}.", ntfNodeID);
                     logger.trace("setResponse(): ntfState={}.", ntfState);
-                    logger.trace("setResponse(): ntfCurrentPosition={}.", ntfCurrentPosition);
-                    logger.trace("setResponse(): ntfTarget={}.", ntfTarget);
+                    logger.trace("setResponse(): ntfCurrentPosition={}.", String.format("0x%04X", ntfCurrentPosition));
+                    logger.trace("setResponse(): ntfTarget={}.", String.format("0x%04X", ntfTarget));
                     logger.trace("setResponse(): ntfFunctionalParameters={}.", ntfFunctionalParameters);
                     logger.trace("setResponse(): ntfRemainingTime={}.", ntfRemainingTime);
                     logger.trace("setResponse(): ntfTimeStamp={}.", ntfTimeStamp);
