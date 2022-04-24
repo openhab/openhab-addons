@@ -246,9 +246,7 @@ class SCgetProductStatus extends GetProduct implements SlipBridgeCommunicationPr
     @Override
     public void setProductId(int nodeId) {
         logger.trace("setProductId({}) called.", nodeId);
-        if (reqNodeId != nodeId) {
-            reqNodeId = nodeId;
-        }
+        reqNodeId = nodeId;
     }
 
     @Override
