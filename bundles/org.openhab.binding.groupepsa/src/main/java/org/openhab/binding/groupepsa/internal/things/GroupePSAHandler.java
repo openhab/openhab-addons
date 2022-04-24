@@ -15,6 +15,7 @@ package org.openhab.binding.groupepsa.internal.things;
 import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.*;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -249,8 +250,7 @@ public class GroupePSAHandler extends BaseThingHandler {
             }
         } catch (GroupePSACommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error-query-vehicle-failed");
-            logger.warn("Unable to query groupepsa status for:  {}. Error: {}", id, e.getMessage());
+                    MessageFormat.format("@text/comm-error-query-vehicle-failed", e.getMessage()));
         }
     }
 

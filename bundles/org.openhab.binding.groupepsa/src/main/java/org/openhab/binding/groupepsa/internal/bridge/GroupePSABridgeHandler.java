@@ -16,6 +16,7 @@ import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.T
 import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.VendorConstants;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -52,8 +53,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class GroupePSABridgeHandler extends BaseBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(GroupePSABridgeHandler.class);
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private static final long DEFAULT_POLLING_INTERVAL_M = TimeUnit.HOURS.toMinutes(1);
 
@@ -83,19 +82,13 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
             List<Vehicle> vehicles = getVehicles();
             if (vehicles != null) {
                 updateStatus(ThingStatus.ONLINE);
-                logger.debug("Found {} vehicles", vehicles.size());
-                for (Vehicle vehicle : vehicles) {
-                    logger.trace("Vehicle: {}", vehicle);
-                }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/comm-error-query-vehicles-failed");
-                logger.warn("Unable to fetch vehicles");
             }
         } catch (GroupePSACommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error-query-vehicles-failed");
-            logger.warn("Unable to fetch vehicles: {}", e.getMessage());
+                    MessageFormat.format("@text/comm-error-query-vehicles-failed", e.getMessage()));
         }
     }
 
