@@ -33,6 +33,10 @@ public final class ElroConnectsUtil {
         return (((value ^ 0xFFFFFFFF) + 0x10000) ^ 0x123) ^ 0x1234;
     }
 
+    public static int decode(int value, int msgId) {
+        return (byte) (0xFFFF + ~((value ^ 0x1234) ^ msgId));
+    }
+
     /**
      * Encode input string into hex
      *

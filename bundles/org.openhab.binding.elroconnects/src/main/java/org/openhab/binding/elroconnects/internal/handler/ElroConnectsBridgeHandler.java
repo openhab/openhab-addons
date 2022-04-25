@@ -122,6 +122,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     private volatile @Nullable InetAddress addr;
     private volatile String ctrlKey = "";
 
+    private boolean legacyFirmware = false;
+
     private volatile @Nullable DatagramSocket socket;
     private volatile @Nullable DatagramPacket ackPacket;
 
@@ -154,6 +156,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         ElroConnectsBridgeConfiguration config = getConfigAs(ElroConnectsBridgeConfiguration.class);
         connectorId = config.connectorId;
         refreshInterval = config.refreshInterval;
+        legacyFirmware = config.legacyFirmware;
 
         if (connectorId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.no-device-id");
@@ -684,7 +687,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         String ctrlKey = this.ctrlKey;
         logger.debug("Device control {}, status {}", deviceId, deviceCommand);
         ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
-                ELRO_DEVICE_CONTROL).withDeviceId(ElroConnectsUtil.encode(deviceId)).withDeviceStatus(deviceCommand);
+                ELRO_DEVICE_CONTROL, legacyFirmware).withDeviceId(deviceId).withDeviceStatus(deviceCommand);
         sendElroMessage(elroMessage, false);
     }
 
@@ -695,7 +698,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         encodedName = encodedName + ElroConnectsUtil.crc16(encodedName);
         logger.debug("Rename device {} to {}", deviceId, deviceName);
         ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
-                ELRO_DEVICE_RENAME).withDeviceId(ElroConnectsUtil.encode(deviceId)).withDeviceName(encodedName);
+                ELRO_DEVICE_RENAME, legacyFirmware).withDeviceId(deviceId).withDeviceName(encodedName);
         sendElroMessage(elroMessage, false);
     }
 
@@ -730,7 +733,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         String ctrlKey = this.ctrlKey;
         logger.debug("Remove device {} from hub", deviceId);
         ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
-                ELRO_DEVICE_REMOVE).withDeviceId(ElroConnectsUtil.encode(deviceId));
+                ELRO_DEVICE_REMOVE, legacyFirmware).withDeviceId(deviceId);
         sendElroMessage(elroMessage, false);
     }
 
@@ -743,7 +746,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         String ctrlKey = this.ctrlKey;
         logger.debug("Replace device {} in hub", deviceId);
         ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
-                ELRO_DEVICE_REPLACE).withDeviceId(ElroConnectsUtil.encode(deviceId));
+                ELRO_DEVICE_REPLACE, legacyFirmware).withDeviceId(deviceId);
         sendElroMessage(elroMessage, false);
     }
 
@@ -813,7 +816,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         String ctrlKey = this.ctrlKey;
         logger.debug("Select scene {}", scene);
         ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
-                ELRO_SELECT_SCENE).withSceneType(ElroConnectsUtil.encode(scene));
+                ELRO_SELECT_SCENE, legacyFirmware).withSceneType(scene);
         sendElroMessage(elroMessage, false);
     }
 
@@ -827,7 +830,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         String ctrlKey = this.ctrlKey;
         logger.debug("Sync scenes");
         ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
-                ELRO_SYNC_SCENES).withSceneGroup(ElroConnectsUtil.encode(0)).withSceneContent(SYNC_COMMAND)
+                ELRO_SYNC_SCENES, legacyFirmware).withSceneGroup(0).withSceneContent(SYNC_COMMAND)
                         .withAnswerContent(SYNC_COMMAND);
         sendElroMessage(elroMessage, true);
     }

@@ -78,8 +78,17 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
         connectors.entrySet().forEach(c -> {
             if (c.getValue().online) {
                 String connectorId = c.getKey();
+                String firmwareVersion = c.getValue().binVersion;
+                boolean legacy = false;
+                try {
+                    legacy = !(Integer.valueOf(firmwareVersion.substring(firmwareVersion.lastIndexOf(".") + 1)) > 14);
+                } catch (NumberFormatException e) {
+                    // Assume new firmware if we cannot decode firmwareVersion
+                    logger.debug("Cannot get firmware version from {}, assume new firmware", firmwareVersion);
+                }
                 final Map<String, Object> properties = new HashMap<>();
                 properties.put(CONFIG_CONNECTOR_ID, connectorId);
+                properties.put(CONFIG_LEGACY_FIRMWARE, legacy);
                 properties.put("binVersion", c.getValue().binVersion);
                 properties.put("binType", c.getValue().binType);
                 properties.put("sdkVer", c.getValue().sdkVer);

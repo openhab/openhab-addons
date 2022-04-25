@@ -96,7 +96,9 @@ public class ElroConnectsBindingConstants {
     public static final String CONFIG_USERNAME = "username";
     public static final String CONFIG_PASSWORD = "password";
     public static final String CONFIG_CONNECTOR_ID = "connectorId";
+    public static final String CONFIG_IP_ADDRESS = "ipAddress";
     public static final String CONFIG_REFRESH_INTERVAL_S = "refreshInterval";
+    public static final String CONFIG_LEGACY_FIRMWARE = "legacyFirmware";
     public static final String CONFIG_DEVICE_ID = "deviceId";
     public static final String CONFIG_DEVICE_TYPE = "deviceType";
 
@@ -105,7 +107,7 @@ public class ElroConnectsBindingConstants {
     public static final int ELRO_GET_DEVICE_NAME = 14;
     public static final int ELRO_GET_DEVICE_STATUSES = 15;
     public static final int ELRO_REC_DEVICE_NAME = 17;
-    public static final int ELRO_REC_DEVICE_STATUS = 19;
+    public static final int ELRO_REC_DEVICE_STATUS = 119;
     public static final int ELRO_SYNC_DEVICES = 29;
 
     public static final int ELRO_DEVICE_JOIN = 2;
@@ -116,14 +118,22 @@ public class ElroConnectsBindingConstants {
 
     public static final int ELRO_SELECT_SCENE = 106;
     public static final int ELRO_GET_SCENE = 18;
-    public static final int ELRO_REC_SCENE = 28;
-    public static final int ELRO_REC_SCENE_NAME = 26;
-    public static final int ELRO_REC_SCENE_TYPE = 27;
+    public static final int ELRO_REC_SCENE = 128;
+    public static final int ELRO_REC_SCENE_NAME = 126;
+    public static final int ELRO_REC_SCENE_TYPE = 127;
     public static final int ELRO_SYNC_SCENES = 131;
 
     public static final int ELRO_REC_ALARM = 25;
 
     public static final int ELRO_IGNORE_YES_NO = 11;
+
+    // Older firmware uses different cmd message codes
+    public static final Map<Integer, Integer> ELRO_LEGACY_MESSAGES = Map.ofEntries(Map.entry(ELRO_DEVICE_CONTROL, 1),
+            Map.entry(ELRO_DEVICE_REPLACE, 3), Map.entry(ELRO_DEVICE_REMOVE, 4), Map.entry(ELRO_DEVICE_RENAME, 5),
+            Map.entry(ELRO_SELECT_SCENE, 6), Map.entry(ELRO_SYNC_SCENES, 31), Map.entry(ELRO_REC_DEVICE_STATUS, 19),
+            Map.entry(ELRO_REC_SCENE, 28), Map.entry(ELRO_REC_SCENE_NAME, 26), Map.entry(ELRO_REC_SCENE_TYPE, 27));
+    public static final Map<Integer, Integer> ELRO_NEW_MESSAGES = ELRO_LEGACY_MESSAGES.entrySet().stream()
+            .collect(Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey));
 
     // ELRO device types
     public static enum ElroDeviceType {

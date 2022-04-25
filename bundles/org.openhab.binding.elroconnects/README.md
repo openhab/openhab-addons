@@ -40,8 +40,6 @@ All other things are connected to the `connector` bridge.
 
 Testing was only done with smoke and water detectors connected to a K1 connector.
 The firmware version of the K1 connector was 2.0.3.30 at the time of testing.
-The binding only works with firmware versions above 2.0.3.14.
-Older versions of the firmware are known to have differences in the communication protocol.
 
 ## Discovery
 
@@ -74,6 +72,7 @@ It will not be possible to receive alarms and control them from openHAB in this 
 | `connectorId` |          | Required parameter, should be set to ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector. It will be discovered when an `account` bridge has been initialized. This parameter can also be found in the ELRO Connects mobile application |
 | `ipAdress`     | Y        | IP address of the ELRO Connects K1 Connector, not required if connector and openHAB server in same subnet |
 | `refreshInterval` | Y      |  This parameter controls the connection refresh heartbeat interval. The default is 60s |
+| `legacyFirmware` | Y      | Flag for legacy firmware, should be set to true if ELRO Connects K1 Connector firmware has version lower or equal to 2.0.14. If the connector is discovered from the account, this parameter will be set automatically. The default is false |
 
 ### Devices connected to K1 connected hub
 

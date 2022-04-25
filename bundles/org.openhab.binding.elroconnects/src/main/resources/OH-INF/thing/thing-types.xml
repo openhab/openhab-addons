@@ -48,6 +48,13 @@
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="legacyFirmware" type="boolean">
+				<label>Legacy Firmware</label>
+				<description>Flag for legacy firmware, should be set to true if ELRO Connects K1 Connector firmware has version
+					lower or equal to 2.0.14</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 
