@@ -74,7 +74,7 @@ public class OmnilinkActions implements ThingActions {
         }
     }
 
-    public static void synchronizeSystemTime(ThingActions actions, @Nullable String zone) {
+    public static void synchronizeControllerTime(ThingActions actions, @Nullable String zone) {
         ((OmnilinkActions) actions).synchronizeControllerTime(zone);
     }
 
