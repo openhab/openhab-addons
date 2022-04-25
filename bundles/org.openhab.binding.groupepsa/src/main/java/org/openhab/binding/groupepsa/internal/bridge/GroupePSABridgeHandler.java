@@ -16,7 +16,7 @@ import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.T
 import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.VendorConstants;
 
 import java.io.IOException;
-import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.groupepsa.internal.discovery.GroupePSADiscoveryService;
 import org.openhab.binding.groupepsa.internal.rest.api.GroupePSAConnectApi;
 import org.openhab.binding.groupepsa.internal.rest.api.dto.Vehicle;
 import org.openhab.binding.groupepsa.internal.rest.api.dto.VehicleStatus;
@@ -41,7 +42,10 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link GroupePSABridgeHandler} is responsible for handling commands,
@@ -51,6 +55,8 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class GroupePSABridgeHandler extends BaseBridgeHandler {
+    private final Logger logger = LoggerFactory.getLogger(GroupePSABridgeHandler.class);
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private static final long DEFAULT_POLLING_INTERVAL_M = TimeUnit.HOURS.toMinutes(1);
 
@@ -85,8 +91,7 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
                         "@text/comm-error-query-vehicles-failed");
             }
         } catch (GroupePSACommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    MessageFormat.format("@text/comm-error-query-vehicles-failed", e.getMessage()));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -215,5 +220,10 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
      */
     public @Nullable VehicleStatus getVehicleStatus(String vin) throws GroupePSACommunicationException {
         return getAPI().getVehicleStatus(vin);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(GroupePSADiscoveryService.class);
     }
 }

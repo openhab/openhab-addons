@@ -30,6 +30,9 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,27 +42,48 @@ import org.slf4j.LoggerFactory;
  *
  * @author Arjan Mels - Initial contribution
  */
+@Component(service = ThingHandlerService.class)
 @NonNullByDefault
-public class GroupePSADiscoveryService extends AbstractDiscoveryService {
+public class GroupePSADiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(GroupePSADiscoveryService.class);
 
-    private final GroupePSABridgeHandler bridgeHandler;
+    private @Nullable GroupePSABridgeHandler bridgeHandler;
 
-    public GroupePSADiscoveryService(GroupePSABridgeHandler bridgeHandler) {
+    public GroupePSADiscoveryService() {
         super(Collections.singleton(THING_TYPE_VEHICLE), 10, false);
-        this.bridgeHandler = bridgeHandler;
+    }
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof GroupePSABridgeHandler) {
+            bridgeHandler = (GroupePSABridgeHandler) handler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
     }
 
     @Override
     protected void startScan() {
         try {
-            List<Vehicle> vehicles = bridgeHandler.getVehicles();
+            GroupePSABridgeHandler localBridgeHandler = bridgeHandler;
+            if (localBridgeHandler == null) {
+                return;
+            }
+            List<Vehicle> vehicles = localBridgeHandler.getVehicles();
             if (vehicles == null || vehicles.isEmpty()) {
                 logger.warn("No vehicles found");
                 return;
             }
             for (Vehicle vehicle : vehicles) {
-                ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+                ThingUID bridgeUID = localBridgeHandler.getThing().getUID();
                 ThingTypeUID thingTypeUID = THING_TYPE_VEHICLE;
                 String id = vehicle.getId();
                 if (id != null) {
