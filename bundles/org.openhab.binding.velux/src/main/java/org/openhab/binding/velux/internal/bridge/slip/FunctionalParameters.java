@@ -82,15 +82,6 @@ public class FunctionalParameters {
     }
 
     /**
-     * Returns the number of Functional Parameters.
-     *
-     * @return the number of elements in the array of Functional Parameters.
-     */
-    public int count() {
-        return FUNCTIONAL_PARAMETER_COUNT;
-    }
-
-    /**
      * Copy the Functional Parameters from newFunctionalParameters. Substitute VPP_VELUX_UNKNOWN for any values that
      * are not supported by the VeluxProduct class.
      *

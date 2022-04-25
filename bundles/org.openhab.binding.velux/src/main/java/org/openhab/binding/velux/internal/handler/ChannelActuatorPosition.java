@@ -55,10 +55,10 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelActuatorPosition.class);
 
     /**
-     * This constant <b>FORCE_USE_GW_STATUS_REQUEST_REQ</b> determines which API call set will be used when
+     * This constant <b>{@link FORCE_USE_GW_STATUS_REQUEST_REQ}</b> determines which API call set shall be used when
      * polling for product Vane Positions.
      * <p>
-     * It can be one of the following two API sets:
+     * It can be either of the following two API sets:
      * <li>GW_GET_NODE_INFORMATION_REQ/NTF/CFM - this is the primary API set (used originally in the openHAB
      * binding).</li>
      * <li>GW_STATUS_REQUEST_REQ/NTF/CFM - this is an alternate API set (e.g. as used by Home Assistant).</li>
