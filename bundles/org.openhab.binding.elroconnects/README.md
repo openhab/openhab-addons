@@ -123,6 +123,7 @@ The `entrysensor` thing has the following channels:
 | Channel ID         | Item Type            | Access Mode | Description                                        |
 |--------------------|----------------------|:-----------:|----------------------------------------------------|
 | `entry`            | Contact              | R           | open/closed door/window                            |
+| `signal`            | Number               | R           | signal strength between 0 and 4, higher is stronger |
 | `battery`          | Number               | R           | battery level in %                                 |
 | `lowBattery`       | Switch               | R           | on for low battery (below 15%)                     |
 
@@ -135,6 +136,7 @@ The `motionsensor` thing has the following channels:
 | Channel ID         | Item Type            | Access Mode | Description                                        |
 |--------------------|----------------------|:-----------:|----------------------------------------------------|
 | `motion`           | Switch               | R           | on when motion detected                            |
+| `signal`            | Number               | R           | signal strength between 0 and 4, higher is stronger |
 | `battery`          | Number               | R           | battery level in %                                 |
 | `lowBattery`       | Switch               | R           | on for low battery (below 15%)                     |
 
@@ -148,6 +150,7 @@ The `temperaturesensor` thing has the following channels:
 |--------------------|----------------------|:-----------:|----------------------------------------------------|
 | `temperature`      | Number:Temperature   | R           | temperature                                        |
 | `humidity`         | Number:Dimensionless | R           | device status                                      |
+| `signal`            | Number               | R           | signal strength between 0 and 4, higher is stronger |
 | `battery`          | Number               | R           | battery level in %                                 |
 | `lowBattery`       | Switch               | R           | on for low battery (below 15%)                     |
 
