@@ -105,6 +105,10 @@ public enum VeluxProductType {
             return description;
         }
 
+        public VeluxProductType getTypeClass() {
+            return typeClass;
+        }
+
         public static ActuatorType get(int nodeType) {
             return LOOKUPTYPEID2ENUM.getOrDefault(nodeType, ActuatorType.UNDEFTYPE);
         }

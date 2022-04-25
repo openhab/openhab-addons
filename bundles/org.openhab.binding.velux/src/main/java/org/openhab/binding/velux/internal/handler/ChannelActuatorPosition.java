@@ -48,12 +48,28 @@ import org.slf4j.LoggerFactory;
  * </UL>
  *
  * @author Guenther Schreiner - Initial contribution.
- * @author Andrew Fiddian-Green - Refactoring and vane position support added.
+ * @author Andrew Fiddian-Green - Refactoring and use alternate API set for Vane Position.
  */
 @NonNullByDefault
 final class ChannelActuatorPosition extends ChannelHandlerTemplate {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelActuatorPosition.class);
 
+    /**
+     * This constant <b>FORCE_USE_GW_STATUS_REQUEST_REQ</b> determines which API call set will be used when
+     * polling for product Vane Positions.
+     * <p>
+     * It can be one of the following two API sets:
+     * <li>GW_GET_NODE_INFORMATION_REQ/NTF/CFM - this is the primary API set (used originally in the openHAB
+     * binding).</li>
+     * <li>GW_STATUS_REQUEST_REQ/NTF/CFM - this is an alternate API set (e.g. as used by Home Assistant).</li>
+     * <p>
+     * The latter option was introduced because some devices (e.g. Somfy) seem to return buggy response values in their
+     * Functional Parameters when reporting their Vane Position. Both options are coded for here, since it is possible
+     * that the buggy devices may be fixed at some point in the future.
+     *
+     * @author Andrew Fiddian-Green - Use alternate API set for Vane Position.
+     *
+     */
     private static final boolean FORCE_USE_GW_STATUS_REQUEST_REQ = true;
 
     // Constructors
@@ -113,21 +129,20 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 break;
             }
 
-            VeluxProductPosition position;
+            int posValue;
+            VeluxProduct product = bcp.getProduct();
             switch (channelId) {
                 case CHANNEL_VANE_POSITION:
                     if (FORCE_USE_GW_STATUS_REQUEST_REQ) {
-                        VeluxProduct clone = thisBridgeHandler.existingProducts()
-                                .get(veluxActuator.getProductBridgeIndex()).clone();
-                        clone.setFunctionalParameters(bcp.getProduct().getFunctionalParameters());
-                        position = new VeluxProductPosition(clone.getVanePosition());
-                    } else {
-                        position = new VeluxProductPosition(bcp.getProduct().getVanePosition());
+                        product.setActuatorType(thisBridgeHandler.existingProducts()
+                                .get(veluxActuator.getProductBridgeIndex()).getActuatorType());
                     }
+                    posValue = product.getVanePosition();
                     break;
                 default:
-                    position = new VeluxProductPosition(bcp.getProduct().getDisplayPosition());
+                    posValue = product.getDisplayPosition();
             }
+            VeluxProductPosition position = new VeluxProductPosition(posValue);
 
             if (position.isValid()) {
                 switch (channelId) {

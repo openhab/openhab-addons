@@ -433,8 +433,8 @@ public class VeluxProduct {
     }
 
     /**
-     * Determines which of the Functional Parameters contains the vane position according to Velux KLF 200 API Appendix
-     * 2
+     * Determines which of the Functional Parameters contains the vane position.
+     * As defined in the Velux KLF 200 API Technical Specification Appendix 2 Table 276.
      *
      * @return the index of the vane position Functional Parameter, or -1 if not supported.
      */
@@ -482,5 +482,24 @@ public class VeluxProduct {
             logger.info("setVanePosition(): actuator type '{}' ({}) does not support vane position {}.",
                     actuatorType.getNodeType(), actuatorType.getDescription(), vanePosition);
         }
+    }
+
+    /**
+     * Get the actuator type.
+     *
+     * @return the actuator type.
+     */
+    public ActuatorType getActuatorType() {
+        return this.actuatorType;
+    }
+
+    /**
+     * Set the actuator type.
+     *
+     * @param actuatorType the new value for the actuator type.
+     */
+    public void setActuatorType(ActuatorType actuatorType) {
+        this.actuatorType = actuatorType;
+        this.typeId = actuatorType.getTypeClass();
     }
 }

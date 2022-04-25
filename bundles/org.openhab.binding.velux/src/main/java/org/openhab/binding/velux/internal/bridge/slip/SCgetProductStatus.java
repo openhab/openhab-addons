@@ -33,7 +33,13 @@ import org.slf4j.LoggerFactory;
 /**
  * Protocol specific bridge communication supported by the Velux bridge:
  * <B>Retrieve Product Status</B>
- *
+ * <p>
+ * This implements an alternate API set (vs. the API set used by ScgetProduct) for retrieving a product's status. This
+ * alternate API set was added to the code base because, when using ScgetProduct, some products (e.g. Somfy) would
+ * produce buggy values in their Functional Parameters when reporting their Vane Position.
+ * <p>
+ * This API set is the one used (for example) by Home Assistant.
+ * 
  * @author Andrew Fiddian-Green - Initial contribution.
  */
 @NonNullByDefault
@@ -42,7 +48,6 @@ class SCgetProductStatus extends GetProduct implements SlipBridgeCommunicationPr
 
     private static final String DESCRIPTION = "Retrieve Product Status";
     private static final Command COMMAND = Command.GW_STATUS_REQUEST_REQ;
-    private static final VeluxProductName PRODUCT_ID = new VeluxProductName("**DATA_CARRIER**");
 
     /*
      * ===========================================================
@@ -119,7 +124,8 @@ class SCgetProductStatus extends GetProduct implements SlipBridgeCommunicationPr
         success = false;
         finished = false;
         Packet responseData = new Packet(thisResponseData);
-        switch (Command.get(responseCommand)) {
+        Command responseCmd = Command.get(responseCommand);
+        switch (responseCmd) {
             case GW_STATUS_REQUEST_CFM:
                 if (!KLF200Response.isLengthValid(logger, responseCommand, thisResponseData, 3)) {
                     finished = true;
@@ -152,17 +158,16 @@ class SCgetProductStatus extends GetProduct implements SlipBridgeCommunicationPr
                 }
 
                 // Extracting information items
-                final int ntfSessionID = responseData.getTwoByteValue(0);
-                final int ntfStatusID = responseData.getOneByteValue(2);
-                final int ntfNodeId = responseData.getOneByteValue(3);
-                final int ntfRunStatus = responseData.getOneByteValue(4);
-                final int ntfStatusReply = responseData.getOneByteValue(5);
-                final int ntfStatusType = responseData.getOneByteValue(6);
-                final int ntfStatusCount = responseData.getOneByteValue(7);
-                final int ntfFirstParameterIndex = responseData.getOneByteValue(8);
-                final int ntfFirstParameter = responseData.getTwoByteValue(9);
-                final FunctionalParameters ntfFunctionalParameters = new FunctionalParameters()
-                        .readArrayIndexed(responseData, 11);
+                int ntfSessionID = responseData.getTwoByteValue(0);
+                int ntfStatusID = responseData.getOneByteValue(2);
+                int ntfNodeId = responseData.getOneByteValue(3);
+                int ntfRunStatus = responseData.getOneByteValue(4);
+                int ntfStatusReply = responseData.getOneByteValue(5);
+                int ntfStatusType = responseData.getOneByteValue(6);
+                int ntfStatusCount = responseData.getOneByteValue(7);
+                int ntfFirstParameterIndex = responseData.getOneByteValue(8);
+                int ntfFirstParameter = responseData.getTwoByteValue(9);
+                FunctionalParameters ntfFunctionalParameters = FunctionalParameters.readArrayIndexed(responseData, 11);
 
                 if (logger.isTraceEnabled()) {
                     logger.trace("setResponse(): ntfSessionID={}.", ntfSessionID);
@@ -200,9 +205,9 @@ class SCgetProductStatus extends GetProduct implements SlipBridgeCommunicationPr
                         state = 2;
                 }
 
-                product = new VeluxProduct(PRODUCT_ID, VeluxProductType.SLIDER_SHUTTER, ActuatorType.ROLLERSHUTTER_2_1,
-                        new ProductBridgeIndex(ntfNodeId), ntfNodeId, 0, 0, 0, 0, VeluxProductSerialNo.UNKNOWN, state,
-                        pos, pos, ntfFunctionalParameters, 0, 0);
+                product = new VeluxProduct(new VeluxProductName(responseCmd.name()), VeluxProductType.UNDEFTYPE,
+                        ActuatorType.UNDEFTYPE, new ProductBridgeIndex(ntfNodeId), ntfNodeId, 0, 0, 0, 0,
+                        VeluxProductSerialNo.UNKNOWN, state, pos, pos, ntfFunctionalParameters, 0, 0);
 
                 success = true;
                 break;

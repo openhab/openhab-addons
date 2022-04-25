@@ -13,6 +13,7 @@
 package org.openhab.binding.velux.internal.bridge.slip;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProtocol;
 import org.openhab.binding.velux.internal.bridge.common.GetHouseStatus;
 import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
@@ -75,7 +76,7 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
     private int ntfState;
     private int ntfCurrentPosition;
     private int ntfTarget;
-    private final FunctionalParameters ntfFunctionalParameters = new FunctionalParameters();
+    private @Nullable FunctionalParameters ntfFunctionalParameters = null;
 
     /*
      * ===========================================================
@@ -113,7 +114,7 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
                 ntfState = responseData.getOneByteValue(1);
                 ntfCurrentPosition = responseData.getTwoByteValue(2);
                 ntfTarget = responseData.getTwoByteValue(4);
-                ntfFunctionalParameters.readArray(responseData, 6);
+                ntfFunctionalParameters = FunctionalParameters.readArray(responseData, 6);
                 int ntfRemainingTime = responseData.getTwoByteValue(14);
                 int ntfTimeStamp = responseData.getFourByteValue(16);
 
@@ -182,7 +183,8 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
     /**
      * @return <b>ntfFunctionalParameters</b> returns the Functional Parameters.
      */
-    public FunctionalParameters getFunctionalParameters() {
-        return ntfFunctionalParameters.clone();
+    public @Nullable FunctionalParameters getFunctionalParameters() {
+        FunctionalParameters functionalParameters = ntfFunctionalParameters;
+        return functionalParameters != null ? functionalParameters.clone() : null;
     }
 }

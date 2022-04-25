@@ -129,7 +129,7 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
         request.setOneByteValue(4, reqParameterActive);
 
         FunctionalParameters reqFunctionalParameters = this.reqFunctionalParameters;
-        reqFPI1 = reqFunctionalParameters != null ? reqFunctionalParameters.write(request, 9) : 0;
+        reqFPI1 = reqFunctionalParameters != null ? reqFunctionalParameters.writeArray(request, 9) : 0;
 
         request.setOneByteValue(5, reqFPI1);
         request.setOneByteValue(6, reqFPI2);

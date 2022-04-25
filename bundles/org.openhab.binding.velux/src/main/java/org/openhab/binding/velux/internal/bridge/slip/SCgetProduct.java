@@ -166,7 +166,7 @@ class SCgetProduct extends GetProduct implements SlipBridgeCommunicationProtocol
                 int ntfState = responseData.getOneByteValue(84);
                 int ntfCurrentPosition = responseData.getTwoByteValue(85);
                 int ntfTarget = responseData.getTwoByteValue(87);
-                FunctionalParameters ntfFunctionalParameters = new FunctionalParameters().readArray(responseData, 89);
+                FunctionalParameters ntfFunctionalParameters = FunctionalParameters.readArray(responseData, 89);
                 int ntfRemainingTime = responseData.getFourByteValue(97);
                 int ntfTimeStamp = responseData.getFourByteValue(99);
                 int ntfNbrOfAlias = responseData.getOneByteValue(103);

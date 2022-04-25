@@ -13,6 +13,7 @@
 package org.openhab.binding.velux.internal.bridge.slip;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 
@@ -151,13 +152,19 @@ public class FunctionalParameters {
      * @param startPosition the read starting position.
      * @return this object.
      */
-    public FunctionalParameters readArray(Packet responseData, int startPosition) {
+    public static @Nullable FunctionalParameters readArray(Packet responseData, int startPosition) {
         int pos = startPosition;
+        boolean isValid = false;
+        FunctionalParameters result = new FunctionalParameters();
         for (int i = 0; i < FUNCTIONAL_PARAMETER_COUNT; i++) {
-            values[i] = responseData.getTwoByteValue(pos);
+            int value = responseData.getTwoByteValue(pos);
+            if (isNormalPosition(value)) {
+                result.values[i] = value;
+                isValid = true;
+            }
             pos = pos + 2;
         }
-        return this;
+        return isValid ? result : null;
     }
 
     /**
@@ -168,17 +175,23 @@ public class FunctionalParameters {
      * @param startPosition the read starting position.
      * @return this object.
      */
-    public FunctionalParameters readArrayIndexed(Packet responseData, int startPosition) {
+    public static @Nullable FunctionalParameters readArrayIndexed(Packet responseData, int startPosition) {
         int pos = startPosition;
+        boolean isValid = false;
+        FunctionalParameters result = new FunctionalParameters();
         for (int i = 0; i < FUNCTIONAL_PARAMETER_COUNT; i++) {
             int index = responseData.getOneByteValue(pos) - 1;
             pos++;
             if ((index >= 0) && (index < FUNCTIONAL_PARAMETER_COUNT)) {
-                values[index] = responseData.getTwoByteValue(pos);
+                int value = responseData.getTwoByteValue(pos);
+                if (isNormalPosition(value)) {
+                    result.values[index] = value;
+                    isValid = true;
+                }
             }
             pos = pos + 2;
         }
-        return this;
+        return isValid ? result : null;
     }
 
     /**
@@ -189,7 +202,7 @@ public class FunctionalParameters {
      * @return fpIndex a bit map that indicates which of the written Functional Parameters contains a normal valid
      *         position value.
      */
-    public int write(Packet requestData, int startPosition) {
+    public int writeArray(Packet requestData, int startPosition) {
         int bitMask = 0b10000000;
         int pos = startPosition;
         int fpIndex = 0;
