@@ -162,7 +162,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.no-device-id");
             return;
         } else if (!CONNECTOR_ID_PATTERN.matcher(connectorId).matches()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.invalid-device-id");
+            String msg = String.format("@text/offline.invalid-device-id [ \"%s\" ]", connectorId);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
             return;
         }
 
@@ -194,14 +195,14 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         try {
             addr = getAddr(addr == null);
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.find-ip-fail" + ": " + connectorId);
+            String msg = String.format("@text/offline.find-ip-fail [ \"%s\" ]", connectorId);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
             stopCommunication();
             return;
         }
         if (addr == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.find-ip-fail" + ": " + connectorId);
+            String msg = String.format("@text/offline.find-ip-fail [ \"%s\" ]", connectorId);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
             stopCommunication();
             return;
         }
@@ -219,8 +220,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             socket = createSocket(false);
             this.socket = socket;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error" + ": " + e.getMessage());
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
             stopCommunication();
             return;
         }
@@ -247,7 +248,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
             updateState(SCENE, new StringType(String.valueOf(currentScene)));
         } catch (IOException e) {
-            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
             return;
         }
 
@@ -288,7 +290,6 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             send(socket, queryString, false);
         } else {
             restartCommunication("@text/offline.no-socket");
-            restartCommunication("Error in communication, no socket to send keep alive");
         }
     }
 
@@ -367,7 +368,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                     processMessage(socket, response);
                 }
             } catch (IOException e) {
-                restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+                String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+                restartCommunication(msg);
             }
         } else {
             restartCommunication("@text/offline.no-socket");
@@ -385,7 +387,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 syncScenes();
                 getCurrentScene();
             } catch (IOException e) {
-                restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+                String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+                restartCommunication(msg);
             }
         }, refreshInterval, refreshInterval, TimeUnit.SECONDS);
     }
@@ -851,7 +854,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 }
             }
         } catch (IOException e) {
-            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
         }
     }
 
@@ -956,7 +960,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             getDeviceStatuses();
             getDeviceNames();
         } catch (IOException e) {
-            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
         }
     }
 
@@ -964,7 +969,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         try {
             joinDevice();
         } catch (IOException e) {
-            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
         }
     }
 
@@ -972,7 +978,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         try {
             cancelJoinDevice();
         } catch (IOException e) {
-            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
         }
     }
 
@@ -983,7 +990,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         try {
             renameDevice(deviceId, deviceName);
         } catch (IOException e) {
-            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
         }
         return true;
     }
@@ -995,7 +1003,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         try {
             removeDevice(deviceId);
         } catch (IOException e) {
-            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
         }
         return true;
     }
@@ -1007,7 +1016,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         try {
             replaceDevice(deviceId);
         } catch (IOException e) {
-            restartCommunication("@text/offline.communication-error" + ": " + e.getMessage());
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
         }
         return true;
     }

@@ -75,15 +75,15 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
     protected @Nullable ElroConnectsBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.no-bridge" + ": " + String.valueOf(deviceId));
+            String msg = String.format("@text/offline.no-bridge [ \"%d\" ]", deviceId);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return null;
         }
 
         ElroConnectsBridgeHandler bridgeHandler = (ElroConnectsBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.no-bridge-handler" + ": " + String.valueOf(deviceId));
+            String msg = String.format("@text/offline.no-bridge-handler [ \"%d\" ]", deviceId);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return null;
         }
 
