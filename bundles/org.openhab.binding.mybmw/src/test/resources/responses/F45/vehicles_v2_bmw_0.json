@@ -1,0 +1,301 @@
+[
+    {
+      "a4aType": "USB_ONLY",
+      "bodyType": "F45",
+      "brand": "BMW",
+      "capabilities": {
+        "canRemoteHistoryBeDeleted": false,
+        "climateNow": {
+          "executionMessage": "Do you want to ventilate now? Remote functions may take a few seconds.",
+          "executionPopup": {
+            "executionMessage": "Turn pre-conditioning on now? Remote functions may take a few seconds.",
+            "iconId": 59733,
+            "popupType": "DIALOG",
+            "primaryButtonText": "Start",
+            "secondaryButtonText": "Cancel",
+            "title": "Start Climatization"
+          },
+          "executionStopPopup": {
+            "executionMessage": "Stop climate control in your vehicle now? Remote functions may take a few seconds.",
+            "title": "Climate control is running"
+          },
+          "isEnabled": true,
+          "isPinAuthenticationRequired": false
+        },
+        "isBmwChargingSupported": true,
+        "isCarSharingSupported": false,
+        "isChargeNowForBusinessSupported": false,
+        "isChargingHistorySupported": true,
+        "isChargingHospitalityEnabled": false,
+        "isChargingLoudnessEnable": false,
+        "isChargingPlanSupported": true,
+        "isChargingPowerLimitEnable": false,
+        "isChargingSettingsEnabled": false,
+        "isChargingTargetSocEnable": false,
+        "isCustomerEsimSupported": false,
+        "isDCSContractManagementSupported": true,
+        "isDataPrivacyEnabled": false,
+        "isEasyChargeSupported": false,
+        "isEvGoChargingSupported": false,
+        "isFindChargingEnabled": true,
+        "isMiniChargingSupported": false,
+        "isRemoteHistorySupported": true,
+        "isRemoteServicesActivationRequired": false,
+        "isRemoteServicesBookingRequired": false,
+        "isScanAndChargeSupported": false,
+        "lastStateCall": {
+          "isNonLscFeatureEnabled": false,
+          "lscState": "ACTIVATED"
+        },
+        "lights": {
+          "executionMessage": "Flash headlights now? Remote functions may take a few seconds.",
+          "isEnabled": true,
+          "isPinAuthenticationRequired": false
+        },
+        "lock": {
+          "executionMessage": "Lock your vehicle now? Remote functions may take a few seconds.",
+          "isEnabled": true,
+          "isPinAuthenticationRequired": false
+        },
+        "sendPoi": {
+          "executionMessage": "Send POI now? Remote functions may take a few seconds.",
+          "isEnabled": true,
+          "isPinAuthenticationRequired": false
+        },
+        "unlock": {
+          "executionMessage": "Unlock your vehicle now? Remote functions may take a few seconds.",
+          "isEnabled": true,
+          "isPinAuthenticationRequired": true
+        },
+        "vehicleFinder": {
+          "executionMessage": "Find your vehicle now? Remote functions may take a few seconds.",
+          "isEnabled": true,
+          "isPinAuthenticationRequired": false
+        }
+      },
+      "connectedDriveServices": [],
+      "driveTrain": "PLUGIN_HYBRID",
+      "driverGuideInfo": {
+        "androidAppScheme": "com.bmwgroup.driversguide.row",
+        "androidStoreUrl": "https://play.google.com/store/apps/details?id=com.bmwgroup.driversguide.row",
+        "iosAppScheme": "bmwdriversguide:///open",
+        "iosStoreUrl": "https://apps.apple.com/de/app/id714042749?mt=8",
+        "title": "BMW\nDriver's Guide"
+      },
+      "exFactoryILevel": "F056-16-07-502",
+      "exFactoryPUStep": "0716",
+      "headUnit": "ID5",
+      "hmiVersion": "ID4",
+      "iStep": "F056-20-07-550",
+      "isLscSupported": true,
+      "isMappingPending": false,
+      "isMappingUnconfirmed": false,
+      "model": "225xe iPerformance",
+      "properties": {
+        "areDoorsClosed": true,
+        "areDoorsLocked": true,
+        "areDoorsOpen": false,
+        "areWindowsClosed": true,
+        "chargingState": {
+          "chargePercentage": 40,
+          "isChargerConnected": false,
+          "state": "NOT_CHARGING",
+          "type": "CONDUCTIVE"
+        },
+        "checkControlMessages": [],
+        "climateControl": {},
+        "combinedRange": {
+          "distance": {
+            "units": "KILOMETERS",
+            "value": 245
+          }
+        },
+        "combustionRange": {
+          "distance": {
+            "units": "KILOMETERS",
+            "value": 245
+          }
+        },
+        "doorsAndWindows": {
+          "doors": {
+            "driverFront": "CLOSED",
+            "driverRear": "CLOSED",
+            "passengerFront": "CLOSED",
+            "passengerRear": "CLOSED"
+          },
+          "hood": "CLOSED",
+          "trunk": "CLOSED",
+          "windows": {
+            "driverFront": "CLOSED",
+            "driverRear": "CLOSED",
+            "passengerFront": "CLOSED",
+            "passengerRear": "CLOSED"
+          }
+        },
+        "electricRange": {
+          "distance": {
+            "units": "KILOMETERS",
+            "value": 4
+          }
+        },
+        "electricRangeAndStatus": {
+          "chargePercentage": 40,
+          "distance": {
+            "units": "KILOMETERS",
+            "value": 4
+          }
+        },
+        "fuelLevel": {
+          "units": "LITERS",
+          "value": 20
+        },
+        "inMotion": false,
+        "isServiceRequired": false,
+        "lastUpdatedAt": "2021-11-10T18:25:38Z",
+        "originCountryISO": "GB",
+        "serviceRequired": [],
+        "vehicleLocation": {
+          "address": {
+            "formatted": "some_formatted_address"
+          },
+          "coordinates": {
+            "latitude": 12.3456,
+            "longitude": 34.5678
+          },
+          "heading": 123
+        }
+      },
+      "puStep": "0720",
+      "status": {
+        "chargingProfile": {
+          "chargingControlType": "twoWeeksTimer",
+          "chargingMode": "immediateCharging",
+          "chargingPreference": "chargingWindow",
+          "chargingSettings": {
+            "hospitality": "NO_ACTION",
+            "idcc": "NO_ACTION",
+            "isAcCurrentLimitActive": false,
+            "targetSoc": 100
+          },
+          "climatisationOn": false,
+          "departureTimes": [
+            {
+              "action": "deactivate",
+              "id": 1,
+              "timerWeekDays": []
+            },
+            {
+              "action": "deactivate",
+              "id": 2,
+              "timerWeekDays": []
+            }
+          ],
+          "reductionOfChargeCurrent": {
+            "end": {
+              "hour": 16,
+              "minute": 0
+            },
+            "start": {
+              "hour": 13,
+              "minute": 0
+            }
+          }
+        },
+        "checkControlMessages": [
+          {
+            "criticalness": "nonCritical",
+            "iconId": 60197,
+            "state": "OK",
+            "title": "Engine Oil"
+          }
+        ],
+        "checkControlMessagesGeneralState": "No Issues",
+        "currentMileage": {
+          "formattedMileage": "66720",
+          "mileage": 66720,
+          "units": "mi"
+        },
+        "doorsAndWindows": [
+          {
+            "criticalness": "nonCritical",
+            "iconId": 59722,
+            "state": "Closed",
+            "title": "All doors and windows"
+          }
+        ],
+        "doorsGeneralState": "Locked",
+        "fuelIndicators": [
+          {
+            "chargingType": null,
+            "iconOpacity": "high",
+            "infoIconId": 59691,
+            "infoLabel": "Combined Range",
+            "isCircleIcon": false,
+            "isInaccurate": false,
+            "levelIconId": null,
+            "levelUnits": null,
+            "levelValue": null,
+            "mainBarValue": 0,
+            "rangeIconId": 59691,
+            "rangeUnits": "mi",
+            "rangeValue": "152",
+            "secondaryBarValue": 0,
+            "showsBar": false
+          },
+          {
+            "barType": null,
+            "chargingStatusIndicatorType": "DEFAULT",
+            "chargingStatusType": "DEFAULT",
+            "chargingType": null,
+            "iconOpacity": "high",
+            "infoIconId": 59694,
+            "infoLabel": "State of Charge",
+            "isCircleIcon": false,
+            "isInaccurate": false,
+            "levelIconId": 59694,
+            "levelUnits": "%",
+            "levelValue": "40",
+            "mainBarValue": 40,
+            "rangeIconId": 59683,
+            "rangeUnits": "mi",
+            "rangeValue": "2",
+            "secondaryBarValue": 0,
+            "showBarGoal": false,
+            "showsBar": true
+          },
+          {
+            "chargingType": null,
+            "iconOpacity": "high",
+            "infoIconId": 59930,
+            "infoLabel": "Fuel Level",
+            "isCircleIcon": false,
+            "isInaccurate": true,
+            "levelIconId": 59682,
+            "levelUnits": "l",
+            "levelValue": "20",
+            "mainBarValue": 0,
+            "rangeIconId": 59681,
+            "rangeUnits": "mi",
+            "rangeValue": "150",
+            "secondaryBarValue": 0,
+            "showsBar": false
+          }
+        ],
+        "issues": {},
+        "lastUpdatedAt": "2021-11-10T18:25:38Z",
+        "recallExternalUrl": null,
+        "recallMessages": [],
+        "timestampMessage": "Updated from vehicle 11/11/2021 06:25 PM"
+      },
+      "telematicsUnit": "TCB1",
+      "themeSpecs": {
+        "vehicleStatusBackgroundColor": {
+          "blue": 66,
+          "green": 66,
+          "red": 66
+        }
+      },
+      "vin": "some_vin_F45",
+      "year": 2016
+    }
+  ]

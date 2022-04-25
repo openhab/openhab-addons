@@ -1,0 +1,9 @@
+{
+	"data": {
+		"value": "-----BEGIN PUBLIC KEY-----\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCteEZFIGa2z5cj7sAmX40y8/ige01T2r+VUzkMshAYwotZFvrVWZLQ6W9+ltvINJoRfZEZkmdP2lsidhqj1H1+RWyC78ear7Fm6xd9Gp9LnKtVVBJRM/9cBRg0AGiTJ7IO/x6MpKkBxxHmProFqPI40hueunV85RlaPBrjZVNIpQIDAQAB\r\n-----END PUBLIC KEY-----",
+		"expires": "3600"
+	},
+	"code": 200,
+	"error": false,
+	"description": "ok"
+}
