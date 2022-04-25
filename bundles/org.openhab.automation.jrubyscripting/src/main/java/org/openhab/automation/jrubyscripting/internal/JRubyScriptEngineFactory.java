@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.module.script.AbstractScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigurableService;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -38,7 +39,8 @@ import org.osgi.service.component.annotations.Modified;
  * @author Jimmy Tanagra - Add require injection
  */
 @NonNullByDefault
-@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jrubyscripting")
+@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jrubyscripting", property = Constants.SERVICE_PID
+        + "=org.openhab.automation.jrubyscripting")
 @ConfigurableService(category = "automation", label = "JRuby Scripting", description_uri = "automation:jruby")
 public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
 
