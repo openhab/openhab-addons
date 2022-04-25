@@ -47,7 +47,7 @@ The Account bridge has the following configuration options:
 
 ## List of supported things
 
-| Parameter       | Type   | Netatmo Object | Description                                                                                              |
+| Thing Type      | Type   | Netatmo Object | Description                                                                                              |
 |-----------------|--------|----------------|----------------------------------------------------------------------------------------------------------|
 | account         | Bridge | N/A            | This bridge represents an account, gateway to Netatmo API.                                               |
 | home            | Bridge | NAHome         | A home hosting Security or Energy devices and modules.                                                   |
@@ -145,21 +145,21 @@ Based on a standard update period of 10mn by Netatmo systems - it will auto adap
 | humidity            | value                | Number:Dimensionless | Current humidity                                 |
 | humidity            | humidex              | Number               | Computed Humidex index                           |
 | humidity            | humidex-scale        | Number               | Humidex index appreciation                       |
-| humidity            | heat-index           | Number:Temperature   | Computed Heat Index                              |
-| humidity            | dewpoint             | Number:Temperature   | Computed dewpoint temperature                    |
-| humidity            | dewpoint-depression  | Number:Temperature   | Computed dewpoint depression                     |
 | temperature         | value                | Number:Temperature   | Current temperature                              |
 | temperature         | min-today            | Number:Temperature   | Minimum temperature on current day               |
 | temperature         | max-today            | Number:Temperature   | Maximum temperature on current day               |
-| temperature         | min-time             | DateTime             | Timestamp of today's minimum temperature         |
-| temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
+| temperature         | min-time             | DateTime             | Moment of today's minimum temperature            |
+| temperature         | max-time             | DateTime             | Moment of today's maximum temperature            |
 | temperature         | trend                | String               | Temperature evolution trend over time            |
+| temperature         | heat-index           | Number:Temperature   | Computed Heat Index                              |
+| temperature         | dewpoint             | Number:Temperature   | Computed dewpoint temperature                    |
+| temperature         | dewpoint-depression  | Number:Temperature   | Computed dewpoint depression                     |
 | airquality          | co2                  | Number:Dimensionless | CO2 level in ppm                                 |
-| timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
-| timestamp           | measures             | DateTime             | Timestamp of current measures                    |
+| location            | value                | Location             | Location of the device                           |
+| timestamp           | last-seen            | DateTime             | Last time the module reported its presence       |
+| timestamp           | measures             | DateTime             | Moment of the last measures update               |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal              | value                | Number:Power         | Signal strength in dBm                           |
-
 
 All these channels are read only.
 
@@ -173,17 +173,17 @@ All these channels are read only.
 | humidity            | value                | Number:Dimensionless | Current humidity                                 |
 | humidity            | humidex              | Number               | Computed Humidex index                           |
 | humidity            | humidex-scale        | Number               | Humidex index appreciation                       |
-| humidity            | heat-index           | Number:Temperature   | Computed Heat Index                              |
-| humidity            | dewpoint             | Number:Temperature   | Computed dewpoint temperature                    |
-| humidity            | dewpoint-depression  | Number:Temperature   | Computed dewpoint depression                     |
 | temperature         | value                | Number:Temperature   | Current temperature                              |
 | temperature         | min-today            | Number:Temperature   | Minimum temperature on current day               |
 | temperature         | max-today            | Number:Temperature   | Maximum temperature on current day               |
-| temperature         | min-time             | DateTime             | Timestamp of today's minimum temperature         |
-| temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
+| temperature         | min-time             | DateTime             | Moment of today's minimum temperature            |
+| temperature         | max-time             | DateTime             | Moment of today's maximum temperature            |
 | temperature         | trend                | String               | Temperature evolution trend over time            |
-| timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
-| timestamp           | measures             | DateTime             | Timestamp of current measures                    |
+| temperature         | heat-index           | Number:Temperature   | Computed Heat Index                              |
+| temperature         | dewpoint             | Number:Temperature   | Computed dewpoint temperature                    |
+| temperature         | dewpoint-depression  | Number:Temperature   | Computed dewpoint depression                     |
+| timestamp           | last-seen            | DateTime             | Last time the module reported its presence       |
+| timestamp           | measures             | DateTime             | Moment of the last measures update               |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal              | value                | Number:Power         | Signal strength in dBm                           |
 | battery             | value                | Number               | Battery level                                    |
@@ -202,18 +202,18 @@ All these channels are read only.
 | humidity            | value                | Number:Dimensionless | Current humidity                                 |
 | humidity            | humidex              | Number               | Computed Humidex index                           |
 | humidity            | humidex-scale        | Number               | Humidex index appreciation                       |
-| humidity            | heat-index           | Number:Temperature   | Computed Heat Index                              |
-| humidity            | dewpoint             | Number:Temperature   | Computed dewpoint temperature                    |
-| humidity            | dewpoint-depression  | Number:Temperature   | Computed dewpoint depression                     |
 | temperature         | value                | Number:Temperature   | Current temperature                              |
 | temperature         | min-today            | Number:Temperature   | Minimum temperature on current day               |
 | temperature         | max-today            | Number:Temperature   | Maximum temperature on current day               |
-| temperature         | min-time             | DateTime             | Timestamp of today's minimum temperature         |
-| temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
+| temperature         | min-time             | DateTime             | Moment of today's minimum temperature            |
+| temperature         | max-time             | DateTime             | Moment of today's maximum temperature            |
 | temperature         | trend                | String               | Temperature evolution trend over time            |
+| temperature         | heat-index           | Number:Temperature   | Computed Heat Index                              |
+| temperature         | dewpoint             | Number:Temperature   | Computed dewpoint temperature                    |
+| temperature         | dewpoint-depression  | Number:Temperature   | Computed dewpoint depression                     |
 | airquality          | co2                  | Number:Dimensionless | Air quality                                      |
-| timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
-| timestamp           | measures             | DateTime             | Timestamp of current measures                    |
+| timestamp           | last-seen            | DateTime             | Last time the module reported its presence       |
+| timestamp           | measures             | DateTime             | Moment of the last measures update               |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal              | value                | Number:Power         | Signal strength in dBm                           |
 | battery             | value                | Number               | Battery level                                    |
@@ -229,16 +229,15 @@ All these channels are read only.
 
 | Channel Group       | Channel Id           | Item Type            | Description                                      |
 |---------------------|----------------------|----------------------|--------------------------------------------------|
-| rain                | value                | Number:Length        | Quantity of water                                |
-| rain                | sum-1                | Number:Length        | Quantity of water on last hour                   |
-| rain                | sum-24               | Number:Length        | Quantity of water on last day                    |
-| timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
-| timestamp           | measures             | DateTime             | Timestamp of current measures                    |
+| rain                | value                | Number:Speed         | Current precipitation intensity                  |
+| rain                | sum-1                | Number:Length        | Quantity of water over last hour                 |
+| rain                | sum-24               | Number:Length        | Quantity of water during the current day         |
+| timestamp           | last-seen            | DateTime             | Last time the module reported its presence       |
+| timestamp           | measures             | DateTime             | Moment of the last measures update               |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal              | value                | Number:Power         | Signal strength in dBm                           |
 | battery             | value                | Number               | Battery level                                    |
 | battery             | low-battery          | Switch               | Low battery                                      |
-
 
 All these channels are read only.
 
@@ -253,16 +252,15 @@ All these channels are read only.
 | wind                | angle                | Number:Angle         | Current 5 minutes average wind direction         |
 | wind                | strength             | Number:Speed         | Current 5 minutes average wind speed             |
 | wind                | max-strength         | Number:Speed         | Maximum wind strength recorded                   |
-| wind                | max-strength-date    | DateTime             | Timestamp when MaxWindStrength was recorded      |
+| wind                | max-strength-date    | DateTime             | Moment when MaxWindStrength was recorded         |
 | wind                | gust-angle           | Number:Angle         | Direction of the last 5 minutes highest gust     |
 | wind                | gust-strength        | Number:Speed         | Speed of the last 5 minutes highest gust wind    |
-| timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
-| timestamp           | measures             | DateTime             | Timestamp of current measures                    |
+| timestamp           | last-seen            | DateTime             | Last time the module reported its presence       |
+| timestamp           | measures             | DateTime             | Moment of the last measures update               |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal              | value                | Number:Power         | Signal strength in dBm                           |
 | battery             | value                | Number               | Battery level                                    |
 | battery             | low-battery          | Switch               | Low battery                                      |
-
 
 All these channels are read only.
 
@@ -278,23 +276,22 @@ All these channels are read only.
 | humidity            | value                | Number:Dimensionless | Current humidity                                 |
 | humidity            | humidex              | Number               | Computed Humidex index                           |
 | humidity            | humidex-scale        | Number               | Humidex index appreciation                       |
-| humidity            | heat-index           | Number:Temperature   | Computed Heat Index                              |
-| humidity            | dewpoint             | Number:Temperature   | Computed dewpoint temperature                    |
-| humidity            | dewpoint-depression  | Number:Temperature   | Computed dewpoint depression                     |
 | pressure            | value                | Number:Pressure      | Current pressure                                 |
 | pressure            | absolute             | Number:Pressure      | Pressure at sea level                            |
 | temperature         | value                | Number:Temperature   | Current temperature                              |
 | temperature         | min-today            | Number:Temperature   | Minimum temperature on current day               |
 | temperature         | max-today            | Number:Temperature   | Maximum temperature on current day               |
-| temperature         | min-time             | DateTime             | Timestamp of today's minimum temperature         |
-| temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
+| temperature         | min-time             | DateTime             | Moment of today's minimum temperature            |
+| temperature         | max-time             | DateTime             | Moment of today's maximum temperature            |
+| temperature         | heat-index           | Number:Temperature   | Computed Heat Index                              |
+| temperature         | dewpoint             | Number:Temperature   | Computed dewpoint temperature                    |
+| temperature         | dewpoint-depression  | Number:Temperature   | Computed dewpoint depression                     |
 | airquality          | health-index         | Number               | Health index (*)                                 |
 | airquality          | co2                  | Number:Dimensionless | Air quality                                      |
-| timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
-| timestamp           | measures             | DateTime             | Timestamp of current measures                    |
+| timestamp           | last-seen            | DateTime             | Last time the module reported its presence       |
+| timestamp           | measures             | DateTime             | Moment of the last measures update               |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal              | value                | Number:Power         | Signal strength in dBm                           |
-
 
 (*) Health index values : 
 
@@ -336,6 +333,7 @@ All these channels are read only.
 
 All these channels except setpoint, setpoint-mode and planning are read only.
 
+
 ### Valve Module
 
 **Supported channels for the Valve module:**
@@ -355,24 +353,14 @@ All these channels are read only.
 
 **Supported channels for the Home thing:**
 
-| Channel ID               | Item Type | Description                                              |
-|--------------------------|-----------|----------------------------------------------------------|
-| welcomeHomeCity          | String    | City of the home                                         |
-| welcomeHomeCountry       | String    | Country of the home                                      |
-| welcomeHomeTimezone      | String    | Timezone of the home                                     |
-| welcomeHomePersonCount   | Number    | Total number of Persons that are at home                 |
-| welcomeHomeUnknownCount  | Number    | Count how many Unknown Persons are at home               |
-| welcomeEventType         | String    | Type of event                                            |
-| welcomeEventTime         | DateTime  | Time of occurrence of event                               |
-| welcomeEventCameraId     | String    | Camera that detected the event                           |
-| welcomeEventPersonId     | String    | Id of the person the event is about (if any)             |
-| welcomeEventSnapshot     | Image     | picture of the last event, if it applies                 |
-| welcomeEventSnapshotURL  | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here |
-| welcomeEventVideoURL     | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the corresponding video URL will be available here |
-| welcomeEventVideoStatus  | String    | Status of the video (recording, deleted or available)    |
-| welcomeEventIsArrival    | Switch    | If person was considered "away" before being seen during this event |
-| welcomeEventMessage      | String    | Message sent by Netatmo corresponding to given event     |
-| welcomeEventSubType      | String    | Sub-type of SD and Alim events                           |
+| Channel Group       | Channel Id             | Item Type        | Description                                      |
+|---------------------|------------------------|------------------|--------------------------------------------------|
+| security            | person-count           | Number           | Total number of persons that are at home         |
+| security            | unknown-person-count   | Number           | Total number of unknown persons that are at home |
+| security            | unknown-person-picture | Image            | Snapshot of unknown person that is at home       |
+
+All these channels are read only.
+
 
 **Supported trigger channels for the Home thing:**
 
@@ -413,16 +401,25 @@ Warnings:
 
 **Supported channels for the Welcome Camera thing:**
 
-| Channel Group  | Channel ID     | Item Type    | Read/Write | Description                                      |
-|----------------|----------------|--------------|------------|--------------------------------------------------|
-| status         | monitoring     | Switch       | Read-write | State of the camera (video surveillance on/off)  |
-| status         | sd-card        | String       | Read-only  | State of the SD card                             |
-| status         | alim           | String       | Read-only  | State of the power connector                     |
-| live           | picture        | Image        | Read-only  | Camera Live Snapshot                             |
-| live           | picture-url    | String       | Read-only  | Url of the live snapshot for this camera         |
-| live           | stream-url (*) | String       | Read-only  | Url of the live stream for this camera           |
-| signal         | strength       | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...) |
-| signal         | value          | Number:Power | Read-only  | Signal strength in dBm                           |
+| Channel Group  | Channel ID     | Item Type    | Read/Write | Description                                           |
+|----------------|----------------|--------------|------------|-------------------------------------------------------|
+| status         | monitoring     | Switch       | Read-write | State of the camera (video surveillance on/off)       |
+| status         | sd-card        | String       | Read-only  | State of the SD card                                  |
+| status         | alim           | String       | Read-only  | State of the power connector                          |
+| live           | picture        | Image        | Read-only  | Camera Live Snapshot                                  |
+| live           | picture-url    | String       | Read-only  | Url of the live snapshot for this camera              |
+| live           | stream-url (*) | String       | Read-only  | Url of the live stream for this camera                |
+| signal         | strength       | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)      |
+| signal         | value          | Number:Power | Read-only  | Signal strength in dBm                                |
+| last-event     | type           | String       | Read-only  | Type of event                                         |
+| last-event     | subtype        | String       | Read-only  | Sub-type of event                                     |
+| last-event     | time           | DateTime     | Read-only  | Time of occurrence of event                           |
+| last-event     | message        | String       | Read-only  | Message sent by Netatmo corresponding to given event  |
+| last-event     | snapshot       | Image        | Read-only  | picture of the last event, if it applies              |
+| last-event     | snapshot-url   | String       | Read-only  | if the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here |
+| last-event     | video-url      | String       | Read-only  | if the last event (depending upon event type) in the home lead a snapshot picture, the corresponding video URL will be available here |
+| last-event     | video-status   | String       | Read-only  | Status of the video (recording, deleted or available) |
+| last-event     | person-id      | String       | Read-only  | Id of the person the event is about (if any)          |
 
 (*) This channel is configurable : low, poor, high.
 
@@ -432,17 +429,26 @@ Warnings:
 
 - The floodlight auto-mode (auto-mode) isn't updated it is changed by another application. Therefore the binding handles its own state of the auto-mode. This has the advantage that the user can define its own floodlight switch off behaviour.
 
-| Channel Group  | Channel ID     | Item Type    | Read/Write | Description                                                  |
-|----------------|----------------|--------------|------------|--------------------------------------------------------------|
-| status         | monitoring     | Switch       | Read-write | State of the camera (video surveillance on/off)              |
-| status         | sd-card        | String       | Read-only  | State of the SD card                                         |
-| status         | alim           | String       | Read-only  | State of the power connector                                 |
-| live           | picture        | Image        | Read-only  | Camera Live Snapshot                                         |
-| live           | picture-url    | String       | Read-only  | Url of the live snapshot for this camera                     |
-| live           | stream-url (*) | String       | Read-only  | Url of the live stream for this camera                       |
-| signal         | strength       | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)             |
-| signal         | value          | Number:Power | Read-only  | Signal strength in dBm                                       |
-| presence       | floodlight     | Switch       | Read-write | Sets the floodlight to ON/OFF/AUTO                           |
+| Channel Group  | Channel ID     | Item Type    | Read/Write | Description                                           |
+|----------------|----------------|--------------|------------|-------------------------------------------------------|
+| status         | monitoring     | Switch       | Read-write | State of the camera (video surveillance on/off)       |
+| status         | sd-card        | String       | Read-only  | State of the SD card                                  |
+| status         | alim           | String       | Read-only  | State of the power connector                          |
+| live           | picture        | Image        | Read-only  | Camera Live Snapshot                                  |
+| live           | picture-url    | String       | Read-only  | Url of the live snapshot for this camera              |
+| live           | stream-url (*) | String       | Read-only  | Url of the live stream for this camera                |
+| signal         | strength       | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)      |
+| signal         | value          | Number:Power | Read-only  | Signal strength in dBm                                |
+| presence       | floodlight     | Switch       | Read-write | Sets the floodlight to ON/OFF/AUTO                    |
+| last-event     | type           | String       | Read-only  | Type of event                                         |
+| last-event     | subtype        | String       | Read-only  | Sub-type of event                                     |
+| last-event     | time           | DateTime     | Read-only  | Time of occurrence of event                           |
+| last-event     | message        | String       | Read-only  | Message sent by Netatmo corresponding to given event  |
+| last-event     | snapshot       | Image        | Read-only  | picture of the last event, if it applies              |
+| last-event     | snapshot-url   | String       | Read-only  | if the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here |
+| last-event     | video-url      | String       | Read-only  | if the last event (depending upon event type) in the home lead a snapshot picture, the corresponding video URL will be available here |
+| last-event     | video-status   | String       | Read-only  | Status of the video (recording, deleted or available) |
+| last-event     | person-id      | String       | Read-only  | Id of the person the event is about (if any)          |
 
 (*) This channel is configurable : low, poor, high.
 
@@ -458,18 +464,21 @@ Person things are automatically created in discovery process for all known perso
 
 **Supported channels for the Person thing:**
 
-| Channel ID                    | Item Type | Description                                            |
-|-------------------------------|-----------|--------------------------------------------------------|
-| last-seen                     | DateTime  | Time when this person was last seen                    |
-| welcomePersonAtHome           | Switch    | Indicates if this person is known to be at home or not |
-| welcomePersonAvatarUrl        | String    | URL for the avatar of this person                      |
-| welcomePersonAvatar           | Image     | Avatar of this person                                  |
-| welcomePersonLastEventMessage | String    | Last event message from this person                    |
-| welcomePersonLastEventTime    | DateTime  | Last event message time for this person                |
-| welcomePersonLastEventUrl     | String    | URL for the picture of the last event for this person  |
-| welcomePersonLastEvent        | Image     | Picture of the last event for this person              |
+| Channel Group  | Channel ID     | Item Type    | Description                                            |
+|----------------|----------------|--------------|--------------------------------------------------------|
+| person         | avatar-url     | String       | URL for the avatar of this person                      |
+| person         | avatar         | Image        | Avatar of this person                                  |
+| person         | at-home        | Switch       | Indicates if this person is known to be at home or not |
+| person         | last-seen      | DateTime     | Moment when this person was last seen                  |
+| person-event   | subtype        | String       | Sub-type of event                                      |
+| person-event   | message        | String       | Last event message from this person                    |
+| person-event   | time           | DateTime     | Moment of the last event for this person               |
+| person-event   | snapshot       | Image        | Picture of the last event for this person              |
+| person-event   | snapshot-url   | String       | URL for the picture of the last event for this person  |
+| person-event   | camera-id      | String       | ID of the camera that triggered the event              |
 
-All these channels except welcomePersonAtHome are read only.
+All these channels except at-home are read only.
+
 
 # Configuration Examples
 
@@ -509,8 +518,8 @@ Number:Pressure      Indoor_Pressure                   "Pressure [%.1f %unit%]" 
 Number:Pressure      Indoor_AbsolutePressure           "AbsolutePressure [%.1f %unit%]"                             <pressure>         { channel = "netatmo:weather-station:home:inside:pressure#absolute" }
 Number:Dimensionless Indoor_Noise                      "Noise [%d %unit%]"                                          <soundvolume>      { channel = "netatmo:weather-station:home:inside:noise#value" }
 Number               Indoor_RadioStatus                 "RadioStatus [%s]"                                            <signal>           { channel = "netatmo:weather-station:home:inside:signal#strength" }
-DateTime             Indoor_TimeStamp                  "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                  <calendar>         { channel = "netatmo:weather-station:home:inside:timestamp#last-seen" }
-DateTime             Indoor_LastSeen            "LastSeen [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"            <text>             { channel = "netatmo:weather-station:home:inside:last-seen" }
+DateTime             Indoor_TimeStamp                  "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                  <calendar>         { channel = "netatmo:weather-station:home:inside:timestamp#measures" }
+DateTime             Indoor_LastSeen            "LastSeen [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"            <text>             { channel = "netatmo:weather-station:home:inside:timestamp#last-seen" }
 
 # Outdoor Module
 Number:Temperature   Outdoor_Temperature               "Temperature [%.1f %unit%]"                                  <temperature>      { channel = "netatmo:outdoor:home:inside:outside:temperature#value" }
@@ -522,12 +531,13 @@ Number:Temperature   Outdoor_Dewpoint                  "Dewpoint [%.1f %unit%]" 
 Number:Temperature   Outdoor_DewpointDepression        "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:outdoor:home:inside:outside:temperature#dewpoint-depression" }
 Number               Outdoor_RadioStatus               "RfStatus [%.0f / 5]"                                        <signal>           { channel = "netatmo:outdoor:home:inside:outside:signal#strength" }
 Switch               Outdoor_LowBattery                "LowBattery [%s]"                                            <siren>            { channel = "netatmo:outdoor:home:inside:outside:battery#low-battery" }
-DateTime             Outdoor_TimeStamp                 "Measures TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"         <calendar>         { channel = "netatmo:outdoor:home:inside:outside:timestamp#measure" }
+DateTime             Outdoor_TimeStamp                 "Measures TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"         <calendar>         { channel = "netatmo:outdoor:home:inside:outside:timestamp#measures" }
 DateTime             Outdoor_LastMessage               "LastMessage [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                <text>             { channel = "netatmo:outdoor:home:inside:outside:timestamp#last-seen" }
 
 # Rain Module
-Number:Length        Rain_Hour                         "Rain Last Hour [%.02f %unit%]"                              <rain>             {channel="netatmo:rain:home:inside:rainModule:rain#sum-1"}
-Number:Length        Rain_Today                        "Rain Today [%.02f %unit%]"                                  <rain>             {channel="netatmo:rain:home:inside:rainModule:rain#sum-24"}
+Number:Speed         Rain_Intensity                    "Rain Intensity [%.1f %unit%]"                              <rain>             {channel="netatmo:rain:home:inside:rainModule:rain#value"}
+Number:Length        Rain_Hour                         "Rain Last Hour [%.1f %unit%]"                              <rain>             {channel="netatmo:rain:home:inside:rainModule:rain#sum-1"}
+Number:Length        Rain_Today                        "Rain Today [%.1f %unit%]"                                  <rain>             {channel="netatmo:rain:home:inside:rainModule:rain#sum-24"}
 Number               Rain_BatteryVP                    "Rain battery status [%d%%]"                                 <battery>          {channel="netatmo:rain:home:inside:rainModule:battery#value"}
 ```
 
@@ -569,6 +579,7 @@ sitemap netatmo label="Netatmo" {
         Text item=Outdoor_LastMessage
     }
     Frame label="Rain" {
+        Text item=Rain_Intensity
         Text item=Rain_Hour
         Text item=Rain_Today
         Text item=Rain_Week

@@ -8,14 +8,8 @@
 		<label>Home Security</label>
 		<channels>
 			<channel id="person-count" typeId="person-count"/>
-			<channel id="unknown-count" typeId="person-count">
-				<label>Unknown Persons</label>
-				<description>Total number of unknown persons that are at home.</description>
-			</channel>
-			<channel id="unknown-snapshot" typeId="snapshot">
-				<label>Unknown Snapshot</label>
-				<description>Snapshot of unknown person that is at home.</description>
-			</channel>
+			<channel id="unknown-person-count" typeId="unknown-person-count"/>
+			<channel id="unknown-person-picture" typeId="unknown-person-picture"/>
 			<channel id="home-event" typeId="home-event"/>
 		</channels>
 	</channel-group-type>
@@ -23,10 +17,7 @@
 	<channel-group-type id="status">
 		<label>Camera Status</label>
 		<channels>
-			<channel id="monitoring" typeId="switch-rw">
-				<label>Monitoring</label>
-				<description>Monitoring state of the camera</description>
-			</channel>
+			<channel id="monitoring" typeId="monitoring-status"/>
 			<channel id="sd-card" typeId="sd-card-status"/>
 			<channel id="alim" typeId="alim-status"/>
 		</channels>
@@ -35,10 +26,7 @@
 	<channel-group-type id="live">
 		<label>Live Monitoring</label>
 		<channels>
-			<channel id="picture" typeId="snapshot">
-				<label>Live Snapshot</label>
-				<description>Camera Live Snapshot</description>
-			</channel>
+			<channel id="picture" typeId="live-picture"/>
 			<channel id="picture-url" typeId="live-picture-url"/>
 			<channel id="stream-url" typeId="live-stream-url"/>
 		</channels>
@@ -49,25 +37,16 @@
 		<channels>
 			<channel id="type" typeId="event-type"/>
 			<channel id="subtype" typeId="event-subtype"/>
-			<channel id="person-id" typeId="string-ro">
-				<label>Person ID</label>
-			</channel>
+			<channel id="person-id" typeId="person-id"/>
 			<channel id="video-status" typeId="video-status"/>
-			<channel id="message" typeId="string-ro">
-				<label>Message</label>
-			</channel>
+			<channel id="message" typeId="message"/>
 			<channel id="time" typeId="timestamp">
-				<label>Timestamp</label>
+				<label>Event Timestamp</label>
+				<description>Moment when event occurred.</description>
 			</channel>
-			<channel id="snapshot" typeId="snapshot">
-				<label>Picture</label>
-			</channel>
-			<channel id="snapshot-url" typeId="live-picture-url">
-				<label>Snapshot URL</label>
-			</channel>
-			<channel id="video-url" typeId="string-ro">
-				<label>Video URL</label>
-			</channel>
+			<channel id="snapshot" typeId="event-picture"/>
+			<channel id="snapshot-url" typeId="event-picture-url"/>
+			<channel id="video-url" typeId="video-url"/>
 		</channels>
 	</channel-group-type>
 
@@ -75,38 +54,32 @@
 		<label>Last Event</label>
 		<channels>
 			<channel id="subtype" typeId="event-subtype"/>
-			<channel id="message" typeId="string-ro">
-				<label>Message</label>
+			<channel id="message" typeId="message">
+				<description>Last event message from this person.</description>
 			</channel>
 			<channel id="time" typeId="timestamp">
-				<label>Timestamp</label>
+				<label>Person Timestamp</label>
+				<description>Moment of the last event for this person.</description>
 			</channel>
-			<channel id="snapshot" typeId="snapshot">
-				<label>Picture</label>
+			<channel id="snapshot" typeId="event-picture">
+				<description>Picture of the last event for this person.</description>
 			</channel>
-			<channel id="snapshot-url" typeId="live-picture-url">
-				<label>Picture URL</label>
+			<channel id="snapshot-url" typeId="event-picture-url">
+				<description>URL for the picture of the last event for this person.</description>
 			</channel>
-			<channel id="camera-id" typeId="string-ro">
-				<label>Camera ID</label>
-			</channel>
+			<channel id="camera-id" typeId="camera-id"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="person">
 		<label>Person</label>
 		<channels>
-			<channel id="avatar-url" typeId="string-ro">
-				<label>Avatar URL</label>
-			</channel>
-			<channel id="avatar" typeId="snapshot">
-				<label>Avatar</label>
-			</channel>
-			<channel id="at-home" typeId="switch-rw">
-				<label>At Home</label>
-			</channel>
+			<channel id="avatar-url" typeId="avatar-picture-url"/>
+			<channel id="avatar" typeId="avatar-picture"/>
+			<channel id="at-home" typeId="at-home"/>
 			<channel id="last-seen" typeId="timestamp">
 				<label>Last Seen</label>
+				<description>Moment when this person was last seen.</description>
 			</channel>
 		</channels>
 	</channel-group-type>

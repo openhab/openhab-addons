@@ -70,9 +70,9 @@ public class HomeSecurityChannelHelper extends ChannelHelper {
         switch (channelId) {
             case CHANNEL_PERSON_COUNT:
                 return persons != -1 ? new DecimalType(persons) : UnDefType.NULL;
-            case CHANNEL_UNKNOWN_COUNT:
+            case CHANNEL_UNKNOWN_PERSON_COUNT:
                 return unknowns != -1 ? new DecimalType(unknowns) : UnDefType.NULL;
-            case CHANNEL_UNKNOWN_SNAPSHOT:
+            case CHANNEL_UNKNOWN_PERSON_PICTURE:
                 return unknownSnapshot != null ? toRawType(unknownSnapshot) : UnDefType.NULL;
         }
         return null;

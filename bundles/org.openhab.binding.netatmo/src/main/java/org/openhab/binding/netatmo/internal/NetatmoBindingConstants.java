@@ -109,8 +109,8 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_ROOM_HEATING_POWER = "heating-power-request";
     public static final String CHANNEL_PLANNING = "planning";
     public static final String CHANNEL_PERSON_COUNT = "person-count";
-    public static final String CHANNEL_UNKNOWN_COUNT = "unknown-count";
-    public static final String CHANNEL_UNKNOWN_SNAPSHOT = "unknown-snapshot";
+    public static final String CHANNEL_UNKNOWN_PERSON_COUNT = "unknown-person-count";
+    public static final String CHANNEL_UNKNOWN_PERSON_PICTURE = "unknown-person-picture";
     public static final String CHANNEL_MONITORING = "monitoring";
     public static final String CHANNEL_SD_CARD = "sd-card";
     public static final String CHANNEL_ALIM_STATUS = "alim";
