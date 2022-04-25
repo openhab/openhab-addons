@@ -1,0 +1,16 @@
+{
+    "000123456789": {
+        "processAction": [1, 2],
+        "light": [2],
+        "ambientLight": [],
+        "startTime": null,
+        "ventilationStep": [],
+        "programId": [123],
+        "targetTemperature": [],
+        "deviceName": false,
+        "powerOn": true,
+        "powerOff": false,
+        "colors": [],
+        "modes": []
+    }
+}
