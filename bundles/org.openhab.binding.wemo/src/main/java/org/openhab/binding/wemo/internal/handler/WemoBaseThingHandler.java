@@ -83,9 +83,9 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     @Override
     public void dispose() {
+        cancelSubscriptionRenewalJob();
         removeSubscriptions();
         logger.debug("Unregistering UPnP participant for {}", getThing().getUID());
-        cancelSubscriptionRenewalJob();
         service.unregisterParticipant(this);
     }
 
