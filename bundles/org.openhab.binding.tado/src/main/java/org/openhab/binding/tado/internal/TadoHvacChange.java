@@ -61,16 +61,13 @@ public class TadoHvacChange {
     public TadoHvacChange withOperationMode(OperationMode operationMode) {
         switch (operationMode) {
             case SCHEDULE:
-                followSchedule();
-                break;
+                return followSchedule();
             case MANUAL:
-                activeForever();
-                break;
+                return activeForever();
             case TIMER:
-                activeForMinutes(null);
-                break;
+                return activeForMinutes(null);
             case UNTIL_CHANGE:
-                activeUntilChange();
+                return activeUntilChange();
         }
         return this;
     }
