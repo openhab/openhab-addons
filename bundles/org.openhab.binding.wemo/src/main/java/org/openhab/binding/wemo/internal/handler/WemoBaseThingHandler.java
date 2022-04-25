@@ -14,11 +14,16 @@ package org.openhab.binding.wemo.internal.handler;
 
 import java.net.URL;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,6 +53,8 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     private static final int SUBSCRIPTION_RENEWAL_INITIAL_DELAY_SECONDS = 15;
     private static final int SUBSCRIPTION_RENEWAL_INTERVAL_SECONDS = 60;
+    private static final int PORT_RANGE_START = 49151;
+    private static final int PORT_RANGE_END = 49157;
 
     private final Logger logger = LoggerFactory.getLogger(WemoBaseThingHandler.class);
     private final UpnpIOService service;
@@ -76,9 +83,9 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     @Override
     public void dispose() {
+        cancelSubscriptionRenewalJob();
         removeSubscriptions();
         logger.debug("Unregistering UPnP participant for {}", getThing().getUID());
-        cancelSubscriptionRenewalJob();
         service.unregisterParticipant(this);
     }
 
@@ -223,10 +230,16 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
     }
 
     private int scanForPort(String host) {
-        int portCheckStart = 49151;
-        int portCheckStop = 49157;
+        Integer portFromService = getPortFromService();
+        List<Integer> portsToCheck = new ArrayList<Integer>(PORT_RANGE_END - PORT_RANGE_START + 1);
+        Stream<Integer> portRange = IntStream.rangeClosed(PORT_RANGE_START, PORT_RANGE_END).boxed();
+        if (portFromService != null) {
+            portsToCheck.add(portFromService);
+            portRange = portRange.filter(p -> p.intValue() != portFromService);
+        }
+        portsToCheck.addAll(portRange.collect(Collectors.toList()));
         int port = 0;
-        for (int portCheck = portCheckStart; portCheck < portCheckStop; portCheck++) {
+        for (Integer portCheck : portsToCheck) {
             String urlProbe = "http://" + host + ":" + portCheck;
             logger.trace("Probing {} to find port", urlProbe);
             if (!wemoHttpCaller.probeURL(urlProbe)) {
@@ -243,6 +256,17 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
         URL descriptorURL = service.getDescriptorURL(this);
         if (descriptorURL != null) {
             return descriptorURL.getHost();
+        }
+        return null;
+    }
+
+    private @Nullable Integer getPortFromService() {
+        URL descriptorURL = service.getDescriptorURL(this);
+        if (descriptorURL != null) {
+            int port = descriptorURL.getPort();
+            if (port != -1) {
+                return port;
+            }
         }
         return null;
     }
