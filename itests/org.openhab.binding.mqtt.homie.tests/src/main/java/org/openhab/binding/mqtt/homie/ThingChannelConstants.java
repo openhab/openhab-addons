@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt;
+package org.openhab.binding.mqtt.homie;
 
 import static org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants.HOMIE300_MQTT_THING;
 
@@ -25,5 +25,5 @@ import org.openhab.core.thing.ThingUID;
 @NonNullByDefault
 public class ThingChannelConstants {
     // Common ThingUID and ChannelUIDs
-    public final static ThingUID testHomieThing = new ThingUID(HOMIE300_MQTT_THING, "device123");
+    public static final ThingUID TEST_HOME_THING = new ThingUID(HOMIE300_MQTT_THING, "device123");
 }
