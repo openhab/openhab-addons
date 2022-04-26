@@ -94,7 +94,7 @@
 			</channel>
 			<channel id="sum-24" typeId="rain-quantity">
 				<label>Rain 24h</label>
-				<description>Quantity of water over last 24 hours.</description>
+				<description>Quantity of water during the current day.</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -107,7 +107,7 @@
 			<channel id="max-strength" typeId="max-wind-strength"/>
 			<channel id="max-strength-date" typeId="timestamp-advanced">
 				<label>Date Max Wind Strength</label>
-				<description>Timestamp when max wind strength was recorded.</description>
+				<description>Moment when max wind strength was recorded.</description>
 			</channel>
 			<channel id="gust-angle" typeId="gust-angle"/>
 			<channel id="gust-strength" typeId="gust-strength"/>

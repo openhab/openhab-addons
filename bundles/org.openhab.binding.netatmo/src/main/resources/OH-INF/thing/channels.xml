@@ -4,27 +4,28 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="switch-rw">
+	<channel-type id="monitoring-status">
 		<item-type>Switch</item-type>
-		<label>A read write switch</label>
+		<label>Monitoring</label>
+		<description>Monitoring state of the camera</description>
 	</channel-type>
 
-	<channel-type id="switch-ro">
+	<channel-type id="window-open">
 		<item-type>Switch</item-type>
-		<label>A read write switch</label>
+		<label>Window Status</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="contact">
+	<channel-type id="anticipating-heating">
+		<item-type>Switch</item-type>
+		<label>Anticipated Heating</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heating-status">
 		<item-type>Contact</item-type>
-		<label>A contact representing on/off or open/closed</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="snapshot">
-		<item-type>Image</item-type>
-		<label>Event Snapshot</label>
-		<description>Capture image of the event.</description>
+		<label>Heating Status</label>
+		<description>Is the furnace currently heating?</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -41,33 +42,49 @@
 		</event>
 	</channel-type>
 
-	<channel-type id="string-ro">
+	<channel-type id="battery-status">
 		<item-type>String</item-type>
-		<label>Read-Only String</label>
+		<label>Battery Status</label>
+		<description>Description of the battery status.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="string-ro-advanced" advanced="true">
+	<channel-type id="video-url">
 		<item-type>String</item-type>
-		<label>Read-Only String</label>
+		<label>Video URL</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="string-rw">
+	<channel-type id="planning">
 		<item-type>String</item-type>
-		<label>Read-Write String</label>
+		<label>Planning</label>
+		<description>Planning currently applied when following weekly schedule.</description>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="person-count">
 		<item-type>Number</item-type>
 		<label>Person Count</label>
-		<description>Total number of Persons that are at home.</description>
+		<description>Total number of persons that are at home.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Presence</tag>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="unknown-person-count">
+		<item-type>Number</item-type>
+		<label>Unknown Persons Count</label>
+		<description>Total number of unknown persons that are at home.</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="unknown-person-picture">
+		<item-type>Image</item-type>
+		<label>Unknown Person Snapshot</label>
+		<description>Snapshot of unknown person that is at home.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="rain-quantity">
@@ -81,7 +98,7 @@
 	<channel-type id="rain-intensity">
 		<item-type>Number:Speed</item-type>
 		<label>Rain Intensity</label>
-		<description>Precipitation intensity.</description>
+		<description>Current precipitation intensity.</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.1f mm/h"/>
 	</channel-type>
@@ -214,24 +231,16 @@
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
-		<description>Timestamp when data was measured.</description>
+		<description>Moment when data was measured.</description>
 		<category>time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="timestamp-advanced" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
-		<description>Timestamp when data was measured.</description>
+		<description>Moment when data was measured.</description>
 		<category>time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -372,15 +381,65 @@
 		</event>
 	</channel-type>
 
+	<channel-type id="message">
+		<item-type>String</item-type>
+		<label>Message</label>
+		<description>Message sent by Netatmo corresponding to given event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="event-picture">
+		<item-type>Image</item-type>
+		<label>Event Snapshot</label>
+		<description>Capture image of the event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="event-picture-url" advanced="true">
+		<item-type>String</item-type>
+		<label>Event Snapshot URL</label>
+		<description>Url of the event snapshot.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="person-id">
+		<item-type>String</item-type>
+		<label>Person ID</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="camera-id">
+		<item-type>String</item-type>
+		<label>Camera ID</label>
+		<description>ID of the camera that triggered the event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="avatar-picture-url">
+		<item-type>String</item-type>
+		<label>Avatar Picture URL</label>
+		<description>URL for the avatar of this person.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="avatar-picture">
+		<item-type>Image</item-type>
+		<label>Avatar Picture</label>
+		<description>Avatar of this person.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="at-home">
+		<item-type>Switch</item-type>
+		<label>At Home</label>
+		<description>Indicates if this person is known to be at home or not.</description>
+	</channel-type>
+
 	<channel-type id="rssi" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Signal</label>
 		<description>Signal strength indicator.</description>
 		<category>QualityOfService</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
@@ -424,10 +483,6 @@
 		<label>Max Temp</label>
 		<description>Maximum Temperature on current day.</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -436,10 +491,6 @@
 		<label>Min Temp</label>
 		<description>Minimum Temperature on current day</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -477,7 +528,7 @@
 	<channel-type id="live-stream-url">
 		<item-type>String</item-type>
 		<label>Live Stream URL</label>
-		<description>Url of the live stream for this camera</description>
+		<description>Url of the live stream for this camera.</description>
 		<state readOnly="true"></state>
 		<config-description>
 			<parameter name="quality" type="text">
@@ -493,10 +544,17 @@
 		</config-description>
 	</channel-type>
 
+	<channel-type id="live-picture">
+		<item-type>Image</item-type>
+		<label>Live Snapshot</label>
+		<description>Camera Live Snapshot.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="live-picture-url" advanced="true">
 		<item-type>String</item-type>
 		<label>Live Snapshot URL</label>
-		<description>Url of the live snapshot for this camera (need scope access_camera)</description>
+		<description>Url of the live snapshot for this camera (need scope access_camera).</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

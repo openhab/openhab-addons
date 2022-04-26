@@ -27,8 +27,6 @@
 			<description>For Weather Stations: A friend gave you access to their Netatmo Weather Station.</description>
 			<default>false</default>
 		</parameter>
-
-
 	</config-description>
 
 </binding:binding>

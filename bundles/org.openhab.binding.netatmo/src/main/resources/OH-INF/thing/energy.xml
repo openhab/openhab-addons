@@ -21,15 +21,9 @@
 	<channel-group-type id="room-properties">
 		<label>Room Status</label>
 		<channels>
-			<channel id="window-open" typeId="switch-ro">
-				<label>Window Status</label>
-			</channel>
-			<channel id="anticipating" typeId="switch-ro">
-				<label>Anticipated Heating</label>
-			</channel>
-			<channel id="heating-power-request" typeId="room-heating-percent">
-				<label>Current Heating Power</label>
-			</channel>
+			<channel id="window-open" typeId="window-open"/>
+			<channel id="anticipating" typeId="anticipating-heating"/>
+			<channel id="heating-power-request" typeId="room-heating-percent"/>
 		</channels>
 	</channel-group-type>
 
@@ -50,10 +44,7 @@
 	<channel-group-type id="th-properties">
 		<label>Thermostat</label>
 		<channels>
-			<channel id="relay-status" typeId="contact">
-				<label>Heating Status</label>
-				<description>Is the furnace currently heating?</description>
-			</channel>
+			<channel id="relay-status" typeId="heating-status"/>
 		</channels>
 	</channel-group-type>
 
@@ -61,13 +52,8 @@
 		<label>Home Energy</label>
 		<channels>
 			<channel id="setpoint-duration" typeId="setpoint-duration"/>
-			<channel id="planning" typeId="string-rw">
-				<label>Planning</label>
-				<description>Planning currently applied when following weekly schedule.</description>
-			</channel>
-			<channel id="mode" typeId="energy-mode">
-				<label>Mode</label>
-			</channel>
+			<channel id="planning" typeId="planning"/>
+			<channel id="mode" typeId="energy-mode"/>
 			<channel id="end" typeId="timestamp">
 				<label>Mode End</label>
 				<description>End time of the currently applied setpoint.</description>
