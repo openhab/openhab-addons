@@ -416,8 +416,8 @@ Warnings:
 | last-event     | time           | DateTime     | Read-only  | Time of occurrence of event                           |
 | last-event     | message        | String       | Read-only  | Message sent by Netatmo corresponding to given event  |
 | last-event     | snapshot       | Image        | Read-only  | picture of the last event, if it applies              |
-| last-event     | snapshot-url   | String       | Read-only  | if the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here |
-| last-event     | video-url      | String       | Read-only  | if the last event (depending upon event type) in the home lead a snapshot picture, the corresponding video URL will be available here |
+| last-event     | snapshot-url   | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here |
+| last-event     | video-url      | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding video URL will be available here |
 | last-event     | video-status   | String       | Read-only  | Status of the video (recording, deleted or available) |
 | last-event     | person-id      | String       | Read-only  | Id of the person the event is about (if any)          |
 
@@ -517,16 +517,16 @@ Number:Dimensionless Indoor_Co2                        "CO2 [%d %unit%]"        
 Number:Pressure      Indoor_Pressure                   "Pressure [%.1f %unit%]"                                     <pressure>         { channel = "netatmo:weather-station:home:inside:pressure#value" }
 Number:Pressure      Indoor_AbsolutePressure           "AbsolutePressure [%.1f %unit%]"                             <pressure>         { channel = "netatmo:weather-station:home:inside:pressure#absolute" }
 Number:Dimensionless Indoor_Noise                      "Noise [%d %unit%]"                                          <soundvolume>      { channel = "netatmo:weather-station:home:inside:noise#value" }
-Number               Indoor_RadioStatus                 "RadioStatus [%s]"                                            <signal>           { channel = "netatmo:weather-station:home:inside:signal#strength" }
+Number               Indoor_RadioStatus                 "RadioStatus [%s]"                                          <signal>           { channel = "netatmo:weather-station:home:inside:signal#strength" }
 DateTime             Indoor_TimeStamp                  "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                  <calendar>         { channel = "netatmo:weather-station:home:inside:timestamp#measures" }
-DateTime             Indoor_LastSeen            "LastSeen [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"            <text>             { channel = "netatmo:weather-station:home:inside:timestamp#last-seen" }
+DateTime             Indoor_LastSeen            "LastSeen [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                          <text>             { channel = "netatmo:weather-station:home:inside:timestamp#last-seen" }
 
 # Outdoor Module
 Number:Temperature   Outdoor_Temperature               "Temperature [%.1f %unit%]"                                  <temperature>      { channel = "netatmo:outdoor:home:inside:outside:temperature#value" }
 String               Outdoor_TempTrend                 "TempTrend [%s]"                                             <line>             { channel = "netatmo:outdoor:home:inside:outside:temperature#trend" }
 Number:Dimensionless Outdoor_Humidity                  "Humidity [%d %unit%]"                                       <humidity>         { channel = "netatmo:outdoor:home:inside:outside:humidity#value" }
 Number               Outdoor_Humidex                   "Humidex [%.0f]"                                             <temperature_hot>  { channel = "netatmo:outdoor:home:inside:outside:humidity#humidex" }
-Number:Temperature   Outdoor_HeatIndex                 "heat-index [%.1f %unit%]"                                    <temperature_hot>  { channel = "netatmo:outdoor:home:inside:outside:temperature#heat-index" }
+Number:Temperature   Outdoor_HeatIndex                 "heat-index [%.1f %unit%]"                                   <temperature_hot>  { channel = "netatmo:outdoor:home:inside:outside:temperature#heat-index" }
 Number:Temperature   Outdoor_Dewpoint                  "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:outdoor:home:inside:outside:temperature#dewpoint" }
 Number:Temperature   Outdoor_DewpointDepression        "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:outdoor:home:inside:outside:temperature#dewpoint-depression" }
 Number               Outdoor_RadioStatus               "RfStatus [%.0f / 5]"                                        <signal>           { channel = "netatmo:outdoor:home:inside:outside:signal#strength" }
@@ -535,10 +535,9 @@ DateTime             Outdoor_TimeStamp                 "Measures TimeStamp [%1$t
 DateTime             Outdoor_LastMessage               "LastMessage [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                <text>             { channel = "netatmo:outdoor:home:inside:outside:timestamp#last-seen" }
 
 # Rain Module
-Number:Speed         Rain_Intensity                    "Rain Intensity [%.1f %unit%]"                              <rain>             {channel="netatmo:rain:home:inside:rainModule:rain#value"}
-Number:Length        Rain_Hour                         "Rain Last Hour [%.1f %unit%]"                              <rain>             {channel="netatmo:rain:home:inside:rainModule:rain#sum-1"}
-Number:Length        Rain_Today                        "Rain Today [%.1f %unit%]"                                  <rain>             {channel="netatmo:rain:home:inside:rainModule:rain#sum-24"}
-Number               Rain_BatteryVP                    "Rain battery status [%d%%]"                                 <battery>          {channel="netatmo:rain:home:inside:rainModule:battery#value"}
+Number:Speed         Rain_Intensity                    "Rain Intensity [%.1f %unit%]"                               <rain>             { channel = "netatmo:rain:home:inside:rainModule:rain#value"}
+Number:Length        Rain_Hour                         "Rain Last Hour [%.1f %unit%]"                               <rain>             { channel = "netatmo:rain:home:inside:rainModule:rain#sum-1"}
+Number:Length        Rain_Today                        "Rain Today [%.1f %unit%]"                                   <rain>             { channel = "netatmo:rain:home:inside:rainModule:rain#sum-24"}
 ```
 
 ## sitemaps/netatmo.sitemap

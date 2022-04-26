@@ -145,7 +145,12 @@ public class Capability {
     }
 
     public void expireData() {
-        // do nothing by default, can be overridden by subclasses
+        if (!handler.getCapabilities().containsKey(RefreshCapability.class)) {
+            CommonInterface bridgeHandler = handler.getBridgeHandler();
+            if (bridgeHandler != null) {
+                bridgeHandler.expireData();
+            }
+        }
     }
 
     public void dispose() {

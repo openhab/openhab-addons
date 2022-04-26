@@ -211,10 +211,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             }
             return deserializer.deserialize(clazz, responseBody);
         } catch (InterruptedException e) {
-            if (retryCount > 0) {
-                logger.debug("Request interrupted, retry counter : {}", retryCount);
-                return executeUri(uri, method, clazz, payload, retryCount - 1);
-            }
             Thread.currentThread().interrupt();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             throw new NetatmoException(String.format("%s: \"%s\"", e.getClass().getName(), e.getMessage()));

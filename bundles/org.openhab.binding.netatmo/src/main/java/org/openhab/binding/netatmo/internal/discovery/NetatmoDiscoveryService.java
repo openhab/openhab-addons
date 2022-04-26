@@ -14,7 +14,6 @@ package org.openhab.binding.netatmo.internal.discovery;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.EQUIPMENT_ID;
 
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -110,7 +109,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
 
                 }
             } catch (NetatmoException e) {
-                logger.warn("Error getting Home List", e);
+                logger.warn("During discovery process : {}", e.getMessage());
             }
         }
     }
@@ -149,11 +148,6 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     @Override
     public @Nullable ThingHandler getThingHandler() {
         return handler;
-    }
-
-    @Override
-    public void activate(@Nullable Map<String, Object> configProperties) {
-        super.activate(configProperties);
     }
 
     @Override

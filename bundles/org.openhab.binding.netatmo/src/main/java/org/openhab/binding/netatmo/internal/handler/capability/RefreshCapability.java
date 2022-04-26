@@ -77,7 +77,7 @@ public class RefreshCapability extends Capability {
     }
 
     private void proceedWithUpdate() {
-        handler.proceedWithUpdate(false);
+        handler.proceedWithUpdate();
         long delay = (probing() ? PROBING_INTERVAL : dataValidity.minus(dataAge()).plus(DEFAULT_DELAY)).toSeconds();
         delay = delay < 2 ? PROBING_INTERVAL.toSeconds() : delay;
         logger.debug("Module refreshed, next one in {} s", delay);

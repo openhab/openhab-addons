@@ -107,7 +107,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Setpoint Duration</label>
 		<description>Default duration of manual setpoint changes.</description>
-		<category>time</category>
+		<category>Time</category>
 		<state pattern="%d %unit%" min="5" max="720" step="5"/>
 	</channel-type>
 
@@ -232,7 +232,7 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Moment when data was measured.</description>
-		<category>time</category>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -240,7 +240,7 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Moment when data was measured.</description>
-		<category>time</category>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -248,7 +248,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO2</label>
 		<description>Air Quality indicator.</description>
-		<category>carbondioxide</category>
+		<category>Carbondioxide</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>CO2</tag>
@@ -260,7 +260,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Noise</label>
 		<description>Current Noise Level.</description>
-		<category>soundvolume</category>
+		<category>Soundvolume</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Noise</tag>
@@ -528,7 +528,7 @@
 	<channel-type id="live-stream-url">
 		<item-type>String</item-type>
 		<label>Live Stream URL</label>
-		<description>Url of the live stream for this camera.</description>
+		<description>URL of the live stream for this camera.</description>
 		<state readOnly="true"></state>
 		<config-description>
 			<parameter name="quality" type="text">
@@ -554,7 +554,7 @@
 	<channel-type id="live-picture-url" advanced="true">
 		<item-type>String</item-type>
 		<label>Live Snapshot URL</label>
-		<description>Url of the live snapshot for this camera (need scope access_camera).</description>
+		<description>URL of the live snapshot for this camera (need scope access_camera).</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

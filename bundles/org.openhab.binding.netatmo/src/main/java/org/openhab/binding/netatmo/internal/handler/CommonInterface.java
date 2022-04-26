@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.handler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Stream;
 
@@ -41,20 +42,26 @@ import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
 
 /**
- * {@link CommonInterface} defines common methods of NABridgeHandlers and NAThingHandlers used by Capabilities
+ * {@link CommonInterface} defines common methods of AccountHandler and NAThingHandlers used by Capabilities
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
 public interface CommonInterface {
+    public static final Set<ThingStatus> ACTIVE_STATUSES = Set.of(ThingStatus.ONLINE, ThingStatus.INITIALIZING,
+            ThingStatus.UNKNOWN);
+
     Thing getThing();
 
     ThingBuilder editThing();
 
     CapabilityMap getCapabilities();
+
+    Logger getLogger();
 
     boolean isLinked(ChannelUID channelUID);
 
@@ -135,8 +142,7 @@ public interface CommonInterface {
     default Stream<CommonInterface> getActiveChildren() {
         Thing thing = getThing();
         if (thing instanceof Bridge) {
-            return ((Bridge) thing).getThings().stream().filter(
-                    t -> t.getStatus().equals(ThingStatus.ONLINE) || t.getStatus().equals(ThingStatus.INITIALIZING))
+            return ((Bridge) thing).getThings().stream().filter(t -> ACTIVE_STATUSES.contains(t.getStatus()))
                     .map(t -> t.getHandler()).map(CommonInterface.class::cast);
         }
         return Stream.of();
@@ -151,15 +157,19 @@ public interface CommonInterface {
     }
 
     default void commonHandleCommand(ChannelUID channelUID, Command command) {
-        if (command == RefreshType.REFRESH) {
-            expireData();
-            return;
+        if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+            if (command == RefreshType.REFRESH) {
+                expireData();
+                return;
+            }
+            String channelName = channelUID.getIdWithoutGroup();
+            getCapabilities().values().forEach(cap -> cap.handleCommand(channelName, command));
+        } else {
+            getLogger().debug("Command {}, on channel {} dropped - thing is not ONLINE");
         }
-        String channelName = channelUID.getIdWithoutGroup();
-        getCapabilities().values().forEach(cap -> cap.handleCommand(channelName, command));
     }
 
-    default void proceedWithUpdate(boolean requireDefinedRefreshInterval) {
+    default void proceedWithUpdate() {
         updateReadings().forEach(dataSet -> setNewData(dataSet));
     }
 
@@ -171,6 +181,7 @@ public interface CommonInterface {
     }
 
     default void commonInitialize(ScheduledExecutorService scheduler) {
+        setThingStatus(ThingStatus.UNKNOWN, null);
         ModuleType moduleType = ModuleType.from(getThing().getThingTypeUID());
         if (ModuleType.ACCOUNT.equals(moduleType.getBridge())) {
             NAThingConfiguration config = getThing().getConfiguration().as(NAThingConfiguration.class);

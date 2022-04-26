@@ -110,4 +110,9 @@ public class NAThingHandler extends BaseThingHandler implements CommonInterface 
         capabilities.values().forEach(cap -> result.addAll(cap.getServices()));
         return result;
     }
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 }

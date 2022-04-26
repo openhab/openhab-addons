@@ -93,8 +93,7 @@ public enum ModuleType {
     SIREN(FeatureArea.SECURITY, "NIS", HOME, List.of(ModuleCapability.class),
             List.of(BatteryChannelHelper.class, TimestampChannelHelper.class, SignalChannelHelper.class)),
     @SerializedName("NDB")
-    DOORBELL(FeatureArea.SECURITY, "NDB", HOME, List.of(),
-            List.of(CameraChannelHelper.class, SignalChannelHelper.class, EventChannelHelper.class)),
+    DOORBELL(FeatureArea.SECURITY, "NDB", HOME, List.of(ModuleCapability.class), List.of(SignalChannelHelper.class)),
     @SerializedName("NAMain")
     WEATHER_STATION(FeatureArea.WEATHER, "NAMain", ACCOUNT, List.of(ModuleCapability.class, WeatherCapability.class),
             List.of(PressureExtChannelHelper.class, NoiseChannelHelper.class, HumidityChannelHelper.class,

@@ -98,4 +98,9 @@ public class AccountHandler extends BaseBridgeHandler implements CommonInterface
     public void triggerChannel(String channelID, String event) {
         super.triggerChannel(channelID, event);
     }
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 }
