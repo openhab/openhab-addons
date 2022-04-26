@@ -11,3 +11,20 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+org.jellyfin.sdk.jellyfin-core-jvm
+* License: MIT License
+* Project: https://github.com/jellyfin/jellyfin-sdk-kotlin
+* Source:  https://github.com/jellyfin/jellyfin-sdk-kotlin/jellyfin-core-jvm
+
+org.jellyfin.sdk.jellyfin-api-jvm
+* License: MIT License
+* Project: https://github.com/jellyfin/jellyfin-sdk-kotlin
+* Source:  https://github.com/jellyfin/jellyfin-sdk-kotlin/jellyfin-api-jvm
+
+org.jellyfin.sdk.jellyfin-model-jvm
+* License: MIT License
+* Project: https://github.com/jellyfin/jellyfin-sdk-kotlin
+* Source:  https://github.com/jellyfin/jellyfin-sdk-kotlin/jellyfin-model-jvm
