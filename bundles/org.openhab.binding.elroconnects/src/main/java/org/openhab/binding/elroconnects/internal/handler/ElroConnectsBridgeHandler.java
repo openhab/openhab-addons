@@ -51,6 +51,7 @@ import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDeviceTempe
 import org.openhab.binding.elroconnects.internal.discovery.ElroConnectsDiscoveryService;
 import org.openhab.binding.elroconnects.internal.util.ElroConnectsUtil;
 import org.openhab.core.common.NamedThreadFactory;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -179,33 +180,42 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
 
     private synchronized void startCommunication() {
         ElroConnectsBridgeConfiguration config = getConfigAs(ElroConnectsBridgeConfiguration.class);
-        InetAddress addr = this.addr;
+        InetAddress addr = null;
 
+        // First try with configured IP address if there is one
         String ipAddress = config.ipAddress;
         if (!ipAddress.isEmpty()) {
             try {
-                addr = InetAddress.getByName(ipAddress);
-                this.addr = addr;
-            } catch (UnknownHostException e) {
-                addr = null;
+                this.addr = InetAddress.getByName(ipAddress);
+                addr = getAddr(false);
+            } catch (IOException e) {
                 logger.warn("Unknown host for {}, trying to discover address", ipAddress);
             }
         }
 
-        try {
-            addr = getAddr(addr == null);
-        } catch (IOException e) {
-            String msg = String.format("@text/offline.find-ip-fail [ \"%s\" ]", connectorId);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
-            stopCommunication();
-            return;
+        // Then try broadcast to detect IP address if configured IP address did not work
+        if (addr == null) {
+            try {
+                addr = getAddr(true);
+            } catch (IOException e) {
+                String msg = String.format("@text/offline.find-ip-fail [ \"%s\" ]", connectorId);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+                stopCommunication();
+                return;
+            }
         }
+
         if (addr == null) {
             String msg = String.format("@text/offline.find-ip-fail [ \"%s\" ]", connectorId);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
             stopCommunication();
             return;
         }
+
+        // Found valid IP address, update configuration with detected IP address
+        Configuration configuration = thing.getConfiguration();
+        configuration.put(CONFIG_IP_ADDRESS, addr.getHostAddress());
+        updateConfiguration(configuration);
 
         String ctrlKey = this.ctrlKey;
         if (ctrlKey.isEmpty()) {
@@ -258,7 +268,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
 
     /**
      * Get the IP address and ctrl key of the connector by broadcasting message with connectorId. This should be used
-     * when initializing the connection. the ctrlKey field is set.
+     * when initializing the connection. the ctrlKey and addr fields are set.
      *
      * @param broadcast, if true find address by broadcast, otherwise simply send to configured address to retrieve key
      *            only
