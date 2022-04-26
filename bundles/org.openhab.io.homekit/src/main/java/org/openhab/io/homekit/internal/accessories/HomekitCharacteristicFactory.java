@@ -171,7 +171,6 @@ public class HomekitCharacteristicFactory {
             put(FILTER_RESET_INDICATION, HomekitCharacteristicFactory::createFilterResetCharacteristic);
             put(ACTIVE, HomekitCharacteristicFactory::createActiveCharacteristic);
             put(CONFIGURED_NAME, HomekitCharacteristicFactory::createConfiguredNameCharacteristic);
-
         }
     };
 
