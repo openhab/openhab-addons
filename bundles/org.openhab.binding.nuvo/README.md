@@ -36,17 +36,18 @@ All settings are through thing configuration parameters.
 
 The thing has the following configuration parameters:
 
-| Parameter Label          | Parameter ID  | Description                                                                                                                                | Accepted values                                                                  |
-|--------------------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------|
-| Serial Port              | serialPort    | Serial port to use for connecting to the Nuvo whole house amplifier device                                                                 | a comm port name                                                                 |
-| Address                  | host          | Host name or IP address of the machine connected to the Nuvo whole house amplifier serial port (serial over IP) or MPS4 server             | host name or ip                                                                  |
-| Port                     | port          | Communication port (serial over IP).                                                                                                       | ip port number                                                                   |
-| Number of Zones          | numZones      | (Optional) Number of zones on the amplifier to utilize in the binding (up to 20 zones when zone expansion modules are used)                | (1-20; default 6)                                                                |
-| Sync Clock on GConcerto  | clockSync     | (Optional) If set to true, the binding will sync the internal clock on the Grand Concerto to match the openHAB host's system clock         | Boolean; default false                                                           |
-| Source N is NuvoNet      | nuvoNetSrcN   | MPS4 Only! Indicate if the source is a NuvoNet source in the MPS4 or in openHAB. Nuvo tuners & iPod docks and all others set to 0          | 0 = Non-NuvoNet source, 1 = Source is a used by MPS4, 2 = openHAB NuvoNet Source |
-| Source N Favorites       | favoritesSrcN | MPS4 Only! A comma separated list of favorite names to load into the global favorites list for Source N. See *very advanced* rules         | Comma separated list, max 20 items. Each item max 40 chars, ie: Oldies,Pop,Rock  |
-| Source N Favorite Prefix | favPrefixN    | MPS4 Only! To quickly locate a Source's favorites, this prefix will be added to the favorite names. See *very advanced* rules              | Text; ie: 'S2-' will cause the favorite names to be prefixed, e.g. 'S2-Rock'     |
-| Source N Menu XML        | menuXmlSrcN   | MPS4 Only! Will load a custom menu for a given source into the keypads. Up to 10 items in the top menu and up to 20 items in each sub menu | XML Text string; see examples below and *very advanced* rules for usage          |
+| Parameter Label          | Parameter ID   | Description                                                                                                                                     | Accepted values                                                                    |
+|--------------------------|--------------- |-------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
+| Serial Port              | serialPort     | Serial port to use for connecting to the Nuvo whole house amplifier device                                                                      | a comm port name                                                                   |
+| Address                  | host           | Host name or IP address of the machine connected to the Nuvo whole house amplifier serial port (serial over IP) or MPS4 server                  | host name or ip                                                                    |
+| Port                     | port           | Communication port (serial over IP).                                                                                                            | ip port number                                                                     |
+| Number of Zones          | numZones       | (Optional) Number of zones on the amplifier to utilize in the binding (up to 20 zones when zone expansion modules are used)                     | (1-20; default 6)                                                                  |
+| Favorite Labels          | favoriteLabels | A comma separated list of up to 12 label names that are loaded into the 'favorites' channel of each zone. These represent keypad favorites 1-12 | Optional; Comma separated list, max 12 items. ie: Favorite 1,Favorite 2,Favorite 3 |
+| Sync Clock on GConcerto  | clockSync      | (Optional) If set to true, the binding will sync the internal clock on the Grand Concerto to match the openHAB host's system clock              | Boolean; default false                                                             |
+| Source N is NuvoNet      | nuvoNetSrcN    | MPS4 Only! Indicate if the source is a NuvoNet source in the MPS4 or in openHAB. Nuvo tuners & iPod docks and all others set to 0               | 0 = Non-NuvoNet source, 1 = Source is a used by MPS4, 2 = openHAB NuvoNet Source   |
+| Source N Favorites       | favoritesSrcN  | MPS4 Only! A comma separated list of favorite names to load into the global favorites list for Source N. See *very advanced* rules              | Comma separated list, max 20 items. Each item max 40 chars, ie: Oldies,Pop,Rock    |
+| Source N Favorite Prefix | favPrefixN     | MPS4 Only! To quickly locate a Source's favorites, this prefix will be added to the favorite names. See *very advanced* rules                   | Text; ie: 'S2-' will cause the favorite names to be prefixed, e.g. 'S2-Rock'       |
+| Source N Menu XML        | menuXmlSrcN    | MPS4 Only! Will load a custom menu for a given source into the keypads. Up to 10 items in the top menu and up to 20 items in each sub menu      | XML Text string; see examples below and *very advanced* rules for usage            |
 
 Some notes:
 
@@ -221,8 +222,7 @@ sitemap nuvo label="Audio Control" {
         // Volume can be a Setpoint also
         Slider item=nuvo_z1_volume minValue=0 maxValue=100 step=1 visibility=[nuvo_z1_power==ON] icon="soundvolume"
         Switch item=nuvo_z1_mute visibility=[nuvo_z1_power==ON] icon="soundvolume_mute"
-        // mappings is optional to override the default dropdown item labels
-        Selection item=nuvo_z1_favorite visibility=[nuvo_z1_power==ON] icon="player" //mappings=[1="WNYC", 2="BBC One", 3="My Playlist"]
+        Selection item=nuvo_z1_favorite visibility=[nuvo_z1_power==ON] icon="player"
         Default item=nuvo_z1_control visibility=[nuvo_z1_power==ON]
 
         Text item=nuvo_s1_display_line1 visibility=[nuvo_z1_source=="1"] icon="zoom"

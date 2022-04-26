@@ -28,6 +28,7 @@ public class NuvoThingConfiguration {
     public @Nullable Integer port;
     public @Nullable Integer numZones;
     public boolean clockSync;
+    public String favoriteLabels = "";
     public Integer nuvoNetSrc1 = 0;
     public Integer nuvoNetSrc2 = 0;
     public Integer nuvoNetSrc3 = 0;

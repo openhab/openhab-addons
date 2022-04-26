@@ -145,6 +145,11 @@
 				<description>Number of Zones on the amplifier to utilize in the binding (Up to 20 zones when using expansion module)</description>
 				<default>6</default>
 			</parameter>
+			<parameter name="favoriteLabels" type="text" required="false">
+				<label>Favorite Labels</label>
+				<description>A comma separated list of up to 12 label names that are loaded into the 'favorites' channel of each
+					zone</description>
+			</parameter>
 			<parameter name="clockSync" type="boolean" required="false">
 				<label>Sync Clock On GConcerto</label>
 				<description>If set to true, the binding will sync the internal clock on the Grand Concerto to match the openHAB
@@ -398,22 +403,6 @@
 		<item-type>Number</item-type>
 		<label>Favorite</label>
 		<description>Select a Preset Favorite for the Zone</description>
-		<state>
-			<options>
-				<option value="1">Favorite 1</option>
-				<option value="2">Favorite 2</option>
-				<option value="3">Favorite 3</option>
-				<option value="4">Favorite 4</option>
-				<option value="5">Favorite 5</option>
-				<option value="6">Favorite 6</option>
-				<option value="7">Favorite 7</option>
-				<option value="8">Favorite 8</option>
-				<option value="9">Favorite 9</option>
-				<option value="10">Favorite 10</option>
-				<option value="11">Favorite 11</option>
-				<option value="12">Favorite 12</option>
-			</options>
-		</state>
 	</channel-type>
 
 	<channel-type id="control">

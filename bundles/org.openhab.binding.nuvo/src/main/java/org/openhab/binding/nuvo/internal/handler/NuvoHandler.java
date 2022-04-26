@@ -293,6 +293,25 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             updateThing(editThing().withChannels(channels).build());
         }
 
+        // Build a list of State options for the global favorites using user config values (if supplied)
+        String[] favoritesArr = !config.favoriteLabels.isEmpty() ? config.favoriteLabels.split(COMMA) : new String[0];
+        List<StateOption> favoriteLabelsStateOptions = new ArrayList<>();
+        for (int i = 0; i < 12; i++) {
+            if (favoritesArr.length > i) {
+                favoriteLabelsStateOptions.add(new StateOption(String.valueOf(i + 1), favoritesArr[i]));
+            } else if (favoritesArr.length == 0) {
+                favoriteLabelsStateOptions.add(new StateOption(String.valueOf(i + 1), "Favorite " + (i + 1)));
+            }
+        }
+
+        // Put the global favorites labels on all active zones
+        activeZones.forEach(zoneNum -> {
+            stateDescriptionProvider.setStateOptions(
+                    new ChannelUID(getThing().getUID(),
+                            ZONE.toLowerCase() + zoneNum + CHANNEL_DELIMIT + CHANNEL_TYPE_FAVORITE),
+                    favoriteLabelsStateOptions);
+        });
+
         if (config.clockSync) {
             scheduleClockSyncJob();
         }
