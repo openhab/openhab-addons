@@ -101,7 +101,6 @@ public class HomekitAccessoryFactory {
             put(SLAT, new HomekitCharacteristicType[] { CURRENT_SLAT_STATE });
             put(FAUCET, new HomekitCharacteristicType[] { ACTIVE_STATUS });
             put(MICROPHONE, new HomekitCharacteristicType[] { MUTE });
-
         }
     };
 
