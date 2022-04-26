@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt;
+package org.openhab.binding.mqtt.homie;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -18,17 +18,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
@@ -57,12 +54,10 @@ import org.openhab.binding.mqtt.homie.internal.homie300.PropertyHelper;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
-import org.openhab.core.io.transport.mqtt.MqttService;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.test.java.JavaOSGiTest;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.UnDefType;
-import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
  * A full implementation test, that starts the embedded MQTT broker and publishes a homie device tree.
@@ -72,15 +67,12 @@ import org.osgi.service.cm.ConfigurationAdmin;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
-public class HomieImplementationTest extends JavaOSGiTest {
+public class HomieImplementationTest extends MqttOSGiTest {
     private static final String BASE_TOPIC = "homie";
-    private static final String DEVICE_ID = ThingChannelConstants.testHomieThing.getId();
+    private static final String DEVICE_ID = ThingChannelConstants.TEST_HOME_THING.getId();
     private static final String DEVICE_TOPIC = BASE_TOPIC + "/" + DEVICE_ID;
 
-    private @NonNullByDefault({}) ConfigurationAdmin configurationAdmin;
-    private @NonNullByDefault({}) MqttService mqttService;
-    private @NonNullByDefault({}) MqttBrokerConnection embeddedConnection;
-    private @NonNullByDefault({}) MqttBrokerConnection connection;
+    private @NonNullByDefault({}) MqttBrokerConnection homieConnection;
     private int registeredTopics = 100;
 
     // The handler is not tested here, so just mock the callback
@@ -100,23 +92,15 @@ public class HomieImplementationTest extends JavaOSGiTest {
 
     private String propertyTestTopic = "";
 
+    @Override
     @BeforeEach
     public void beforeEach() throws Exception {
-        registerVolatileStorageService();
-        configurationAdmin = getService(ConfigurationAdmin.class);
-        mqttService = getService(MqttService.class);
+        super.beforeEach();
 
-        // Wait for the EmbeddedBrokerService internal connection to be connected
-        embeddedConnection = new EmbeddedBrokerTools(configurationAdmin, mqttService).waitForConnection();
-        embeddedConnection.setQos(1);
+        homieConnection = createBrokerConnection("homie");
 
-        connection = new MqttBrokerConnection(embeddedConnection.getHost(), embeddedConnection.getPort(),
-                embeddedConnection.isSecure(), "homie");
-        connection.setQos(1);
-        connection.start().get(5, TimeUnit.SECONDS);
-        assertThat(connection.connectionState(), is(MqttConnectionState.CONNECTED));
         // If the connection state changes in between -> fail
-        connection.addConnectionObserver(failIfChange);
+        homieConnection.addConnectionObserver(failIfChange);
 
         List<CompletableFuture<Boolean>> futures = new ArrayList<>();
         futures.add(publish(DEVICE_TOPIC + "/$homie", "3.0"));
@@ -152,47 +136,46 @@ public class HomieImplementationTest extends JavaOSGiTest {
         futures.add(publish(propertyTestTopic + "/$datatype", "boolean"));
 
         registeredTopics = futures.size();
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(2, TimeUnit.SECONDS);
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(5, TimeUnit.SECONDS);
 
         scheduler = new ScheduledThreadPoolExecutor(6);
     }
 
-    private CompletableFuture<Boolean> publish(String topic, String message) {
-        return embeddedConnection.publish(topic, message.getBytes(StandardCharsets.UTF_8), 0, true);
-    }
-
+    @Override
     @AfterEach
     public void afterEach() throws Exception {
-        if (connection != null) {
-            connection.removeConnectionObserver(failIfChange);
-            connection.stop().get(2, TimeUnit.SECONDS);
+        if (homieConnection != null) {
+            homieConnection.removeConnectionObserver(failIfChange);
+            homieConnection.stop().get(5, TimeUnit.SECONDS);
         }
         if (scheduler != null) {
             scheduler.shutdownNow();
         }
+        super.afterEach();
     }
 
     @Test
-    public void retrieveAllTopics() throws InterruptedException, ExecutionException, TimeoutException {
+    public void retrieveAllTopics() throws Exception {
         // four topics are not under /testnode !
         CountDownLatch c = new CountDownLatch(registeredTopics - 4);
-        connection.subscribe(DEVICE_TOPIC + "/testnode/#", (topic, payload) -> c.countDown()).get(5, TimeUnit.SECONDS);
+        homieConnection.subscribe(DEVICE_TOPIC + "/testnode/#", (topic, payload) -> c.countDown()).get(5,
+                TimeUnit.SECONDS);
         assertTrue(c.await(5, TimeUnit.SECONDS),
-                "Connection " + connection.getClientId() + " not retrieving all topics ");
+                "Connection " + homieConnection.getClientId() + " not retrieving all topics ");
     }
 
     @Test
-    public void retrieveOneAttribute() throws InterruptedException, ExecutionException {
-        WaitForTopicValue watcher = new WaitForTopicValue(connection, DEVICE_TOPIC + "/$homie");
+    public void retrieveOneAttribute() throws Exception {
+        WaitForTopicValue watcher = new WaitForTopicValue(homieConnection, DEVICE_TOPIC + "/$homie");
         assertThat(watcher.waitForTopicValue(1000), is("3.0"));
     }
 
     @SuppressWarnings("null")
     @Test
-    public void retrieveAttributes() throws InterruptedException, ExecutionException {
-        assertThat(connection.hasSubscribers(), is(false));
+    public void retrieveAttributes() throws Exception {
+        assertThat(homieConnection.hasSubscribers(), is(false));
 
-        Node node = new Node(DEVICE_TOPIC, "testnode", ThingChannelConstants.testHomieThing, callback,
+        Node node = new Node(DEVICE_TOPIC, "testnode", ThingChannelConstants.TEST_HOME_THING, callback,
                 new NodeAttributes());
         Property property = spy(
                 new Property(DEVICE_TOPIC + "/testnode", node, "temperature", callback, new PropertyAttributes()));
@@ -200,7 +183,7 @@ public class HomieImplementationTest extends JavaOSGiTest {
         // Create a scheduler
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
 
-        property.subscribe(connection, scheduler, 500).get();
+        property.subscribe(homieConnection, scheduler, 500).get();
 
         assertThat(property.attributes.settable, is(true));
         assertThat(property.attributes.retained, is(true));
@@ -214,15 +197,16 @@ public class HomieImplementationTest extends JavaOSGiTest {
         ChannelState channelState = spy(property.getChannelState());
         PropertyHelper.setChannelState(property, channelState);
 
-        property.startChannel(connection, scheduler, 500).get();
+        property.startChannel(homieConnection, scheduler, 500).get();
         verify(channelState).start(any(), any(), anyInt());
         verify(channelState, timeout(500)).processMessage(any(), any());
         verify(callback).updateChannelState(any(), any());
 
-        assertThat(property.getChannelState().getCache().getChannelState(), is(new DecimalType(10)));
+        assertThat(property.getChannelState().getCache().getChannelState(),
+                is(new QuantityType<>(10, SIUnits.CELSIUS)));
 
         property.stop().get();
-        assertThat(connection.hasSubscribers(), is(false));
+        assertThat(homieConnection.hasSubscribers(), is(false));
     }
 
     // Inject a spy'ed property
@@ -245,19 +229,19 @@ public class HomieImplementationTest extends JavaOSGiTest {
 
     @SuppressWarnings("null")
     @Test
-    public void parseHomieTree() throws InterruptedException, ExecutionException, TimeoutException {
+    public void parseHomieTree() throws Exception {
         // Create a Homie Device object. Because spied Nodes are required for call verification,
         // the full Device constructor need to be used and a ChildMap object need to be created manually.
         ChildMap<Node> nodeMap = new ChildMap<>();
         Device device = spy(
-                new Device(ThingChannelConstants.testHomieThing, callback, new DeviceAttributes(), nodeMap));
+                new Device(ThingChannelConstants.TEST_HOME_THING, callback, new DeviceAttributes(), nodeMap));
 
         // Intercept creating a node in initialize()->start() and inject a spy'ed node.
         doAnswer(this::createSpyNode).when(device).createNode(any());
 
         // initialize the device, subscribe and wait.
         device.initialize(BASE_TOPIC, DEVICE_ID, Collections.emptyList());
-        device.subscribe(connection, scheduler, 1500).get();
+        device.subscribe(homieConnection, scheduler, 1500).get();
 
         assertThat(device.isInitialized(), is(true));
 
@@ -306,22 +290,23 @@ public class HomieImplementationTest extends JavaOSGiTest {
         assertThat(propertyBell.attributes.datatype, is(DataTypeEnum.boolean_));
 
         // The device->node->property tree is ready. Now subscribe to property values.
-        device.startChannels(connection, scheduler, 50, handler).get();
+        device.startChannels(homieConnection, scheduler, 50, handler).get();
         assertThat(propertyBell.getChannelState().isStateful(), is(false));
         assertThat(propertyBell.getChannelState().getCache().getChannelState(), is(UnDefType.UNDEF));
-        assertThat(property.getChannelState().getCache().getChannelState(), is(new DecimalType(10)));
+        assertThat(property.getChannelState().getCache().getChannelState(),
+                is(new QuantityType<>(10, SIUnits.CELSIUS)));
 
         property = node.properties.get("testRetain");
-        WaitForTopicValue watcher = new WaitForTopicValue(embeddedConnection, propertyTestTopic + "/set");
+        WaitForTopicValue watcher = new WaitForTopicValue(brokerConnection, propertyTestTopic + "/set");
         // Watch the topic. Publish a retain=false value to MQTT
         property.getChannelState().publishValue(OnOffType.OFF).get();
-        assertThat(watcher.waitForTopicValue(1000), is("false"));
+        assertThat(watcher.waitForTopicValue(10000), is("false"));
 
         // Publish a retain=false value to MQTT.
         property.getChannelState().publishValue(OnOffType.ON).get();
         // No value is expected to be retained on this MQTT topic
         waitForAssert(() -> {
-            WaitForTopicValue w = new WaitForTopicValue(embeddedConnection, propertyTestTopic + "/set");
+            WaitForTopicValue w = new WaitForTopicValue(brokerConnection, propertyTestTopic + "/set");
             assertNull(w.waitForTopicValue(50));
         }, 500, 100);
     }
