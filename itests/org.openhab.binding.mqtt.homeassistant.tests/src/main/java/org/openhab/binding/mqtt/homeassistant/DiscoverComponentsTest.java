@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt;
+package org.openhab.binding.mqtt.homeassistant;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -37,11 +37,11 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
-import org.openhab.binding.mqtt.homeassistant.internal.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.test.java.JavaOSGiTest;
 
@@ -83,7 +83,7 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
 
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
 
-        DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing,
+        DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING,
                 scheduler, channelStateUpdateListener, availabilityTracker, gson, transformationServiceProvider));
 
         HandlerConfiguration config = new HandlerConfiguration("homeassistant",
