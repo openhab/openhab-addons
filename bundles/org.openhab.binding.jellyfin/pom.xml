@@ -9,15 +9,9 @@
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
     <version>3.3.0-SNAPSHOT</version>
   </parent>
-  <repositories>
-    <repository>
-      <id>jelly</id>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-    </repository>
-  </repositories>
   <properties>
     <bnd.importpackage>
-      !android.*,!com.android.*,!kotlin.internal.jdk7,!kotlin.internal.jdk8,!kotlin.reflect.*
+      !android.*,!com.android.*,!kotlin.internal.jdk7,!kotlin.internal.jdk8,!kotlin.reflect.*,!okhttp3.*,!okio.*
     </bnd.importpackage>
   </properties>
   <artifactId>org.openhab.binding.jellyfin</artifactId>
@@ -27,17 +21,17 @@
     <dependency>
       <groupId>org.jellyfin.sdk</groupId>
       <artifactId>jellyfin-core-jvm</artifactId>
-      <version>master-SNAPSHOT</version>
+      <version>1.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.jellyfin.sdk</groupId>
       <artifactId>jellyfin-api-jvm</artifactId>
-      <version>master-SNAPSHOT</version>
+      <version>1.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.jellyfin.sdk</groupId>
       <artifactId>jellyfin-model-jvm</artifactId>
-      <version>master-SNAPSHOT</version>
+      <version>1.2.0</version>
     </dependency>
     <dependency>
       <groupId>io.ktor</groupId>
@@ -84,12 +78,6 @@
     <dependency>
       <groupId>io.ktor</groupId>
       <artifactId>ktor-network-tls-jvm</artifactId>
-      <version>1.6.7</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-client-java</artifactId>
       <version>1.6.7</version>
       <scope>compile</scope>
     </dependency>
