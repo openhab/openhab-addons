@@ -101,10 +101,7 @@ public class NetatmoConstants {
             this.measureDefinition = new Measure(min, max, precision, unit);
             this.apiDescriptor = apiDescriptor;
             if (!apiDescriptor.isBlank()) {
-                String dimension = // (Units.DECIBEL.equals(unit) || Units.PARTS_PER_MILLION.equals(unit)
-                        // || Units.PERCENT.equals(unit)) ? "Dimensionless" // strangely it is given as an Angle
-                        // :
-                        UnitUtils.getDimensionName(unit);
+                String dimension = UnitUtils.getDimensionName(unit);
 
                 channels.put(String.join("-", apiDescriptor, "measurement"),
                         new MeasureChannelDetails(confFragment, String.join(":", NUMBER, dimension),

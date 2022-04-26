@@ -109,7 +109,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
 
                 }
             } catch (NetatmoException e) {
-                logger.warn("During discovery process : {}", e.getMessage());
+                logger.warn("Error during discovery process : {}", e.getMessage());
             }
         }
     }

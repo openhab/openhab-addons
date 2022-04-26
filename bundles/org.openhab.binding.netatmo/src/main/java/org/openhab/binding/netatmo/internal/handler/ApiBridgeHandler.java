@@ -115,6 +115,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             try {
                 connectApi.authenticate(credentials, bindingConf.features);
                 updateStatus(ThingStatus.ONLINE);
+                getThing().getThings().forEach(child -> {
+                    if (child instanceof CommonInterface) {
+                        ((CommonInterface) child).expireData();
+                    }
+                });
             } catch (NetatmoException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 prepareReconnection();
