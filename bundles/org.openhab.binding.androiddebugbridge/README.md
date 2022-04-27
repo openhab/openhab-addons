@@ -398,7 +398,7 @@ Please note that events could fail if the input method is removed, for example i
 ### Sample Thing
 
 ```
-Thing androiddebugbridge:android:xxxxxxxxxxxx [ ip="192.168.1.10" port=5555 refreshTime=30 ]
+Thing androiddebugbridge:android:xxxxxxxxxxxx "xxxxxxxxxxxx" [ ip="192.168.1.10", port=5555, refreshTime=30 ]
 ```
 
 ### Sample Items
