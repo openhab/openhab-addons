@@ -41,7 +41,7 @@ public class NetatmoException extends IOException {
     }
 
     public NetatmoException(ApiError error) {
-        super(error.getCode().name());
+        super(error.getMessage());
         this.statusCode = error.getCode();
     }
 

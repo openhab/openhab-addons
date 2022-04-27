@@ -208,7 +208,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
             Code statusCode = HttpStatus.getCode(response.getStatus());
             String responseBody = new String(response.getContent(), StandardCharsets.UTF_8);
-            logger.trace("executeUri returned : {} ", responseBody);
+            logger.trace("executeUri returned : code {} body {}", statusCode, responseBody);
 
             if (statusCode != Code.OK) {
                 ApiError error = deserializer.deserialize(ApiError.class, responseBody);
