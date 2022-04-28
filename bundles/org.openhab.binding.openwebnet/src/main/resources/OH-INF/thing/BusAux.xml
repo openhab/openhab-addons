@@ -18,7 +18,6 @@
 
 		<properties>
 			<property name="vendor">BTicino/Legrand</property>
-			<!--<property name="model">BTI-F52x</property> -->
 			<property name="ownDeviceType">272</property>
 		</properties>
 

@@ -22,9 +22,9 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
-import org.openwebnet4j.OpenGateway;
 import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.message.Auxiliary;
 import org.openwebnet4j.message.BaseOpenMessage;
@@ -49,33 +49,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(OpenWebNetAuxiliaryHandler.class);
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.AUX_SUPPORTED_THING_TYPES;
+    private final Logger logger = LoggerFactory.getLogger(OpenWebNetAuxiliaryHandler.class);
 
     public OpenWebNetAuxiliaryHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        OpenWebNetBridgeHandler h = bridgeHandler;
-        if (h != null && h.isBusGateway()) {
-            OpenGateway gw = h.gateway;
-            if (gw != null && gw.isConnected()) {
-                try {
-                    OpenMessage msg = BaseOpenMessage.parse("*#9##");
-                    send(msg);
-                } catch (MalformedFrameException | UnsupportedFrameException | OWNException e) {
-                    logger.warn("Exception while processing command {}: ", e.getMessage());
-                }
-            } else {
-                logger.warn("Gateway is not connected");
-            }
-        } else {
-            logger.warn("Gateway is not available");
-        }
     }
 
     /**
@@ -90,7 +68,6 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
         Where w = deviceWhere;
         if (w != null) {
             if (channel.getId().equals(CHANNEL_AUX)) {
-                updateStatus(ThingStatus.ONLINE);
                 if (command instanceof StringType) {
                     try {
                         if (command.toString().equals(Auxiliary.WhatAuxiliary.ON.name())) {
@@ -99,14 +76,13 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
                             send(Auxiliary.requestTurnOff(w.value()));
                         }
                     } catch (OWNException e) {
-                        logger.warn("Exception while processing command {}: {}", command, e.getMessage());
+                        logger.debug("Exception while processing command {}: {}", command, e.getMessage());
                     }
                 } else {
-                    logger.warn("Unsupported command {} for channel {}", command, channel);
+                    logger.debug("Unsupported command {} for channel {}", command, channel);
                 }
             } else {
-                logger.warn("Unsupported ChannelUID {}", channel);
-                updateStatus(ThingStatus.UNKNOWN);
+                logger.debug("Unsupported ChannelUID {}", channel);
             }
         }
     }
@@ -117,6 +93,19 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
          * NOTICE: It is not possible to get the state of a
          * WHO=9 command. To get state of the Alarm system use WHO=5 instead
          */
+
+        super.requestChannelState(channel);
+        Where w = deviceWhere;
+        if (w != null) {
+            try {
+                OpenMessage msg = BaseOpenMessage.parse("*#9##");
+                // initializing
+                send(msg);
+            } catch (MalformedFrameException | UnsupportedFrameException | OWNException e) {
+                logger.warn("Exception while processing command {}: ", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -125,6 +114,9 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
          * NOTICE: It is not possible to refresh the state of a
          * WHO=9 command. To refresh the state of the Alarm system use WHO=5 instead
          */
+
+        logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
+        requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_AUX));
     }
 
     @Override

@@ -155,14 +155,14 @@ The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing.
 
 #### Configuring Auxiliary (AUX)
 
-BUS Auxiliary commands  (WHO=9) can be used to send on the BUS commands to control, for example, external devices or a BTcino Alarm system. 
+BUS Auxiliary commands (WHO=9) can be used to send on the BUS commands to control, for example, external devices or a BTcino Alarm system. 
 
-To control a BTicino alarm system  the alarm unit should be configured for example  as follows:
+To control a BTicino alarm system the alarm unit should be configured for example as follows:
 
 Antitheft -> Automations -> then toggle the Event option -> then select OPEN code
 
-- Type in the AUX command you want to set, e.g. \*9\*1\*4\## (where=4)
-- Type in the associated  Open Web Net code you want to execute, e.g.  \*5\*8*#1234## (engage alarm on zones 1,2,3,4).
+- Type in the AUX command you want to set, e.g.\*9\*1\*4\## (where=4)
+- Type in the associated Open Web Net code you want to execute, e.g.\*5\*8*#1234## (engage alarm on zones 1,2,3,4).
 
 Please note that receiving AUX messages originating from the bus is not supported yet, only sending messages to the bus is supported.
 

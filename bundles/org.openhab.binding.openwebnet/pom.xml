@@ -10,7 +10,6 @@
     <version>3.3.0-SNAPSHOT</version>
   </parent>
 
-
   <artifactId>org.openhab.binding.openwebnet</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: OpenWebNet (BTicino/Legrand) Binding</name>
