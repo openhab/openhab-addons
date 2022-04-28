@@ -7,6 +7,8 @@
 	<bridge-type id="it4wifi">
 		<label>IT4Wifi</label>
 		<description>This thing connects to your IT4Wifi module</description>
+		
+        <representation-property>macAddress</representation-property>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -14,22 +16,14 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
-			<parameter name="macAddress" type="text" pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"
-				required="true">
+			<parameter name="macAddress" type="text" pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*" required="true">
 				<label>MAC Address</label>
 				<description>The full device MAC address</description>
 			</parameter>
 			<parameter name="password" type="text">
 				<context>password</context>
-				<label>Key</label>
+				<label>Pairing Key</label>
 				<description>Pairing Key needed to access the device, provided by the bridge itself.</description>
-                <advanced>true</advanced>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
-				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
-				<default>600</default>
-				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -60,7 +54,7 @@
 	
     <channel-type id="doorstatus">
         <item-type>String</item-type>
-        <label>Garage Door Status</label>
+        <label>Gate Status</label>
         <state readOnly="true">
             <options>
                 <option value="open">Open</option>

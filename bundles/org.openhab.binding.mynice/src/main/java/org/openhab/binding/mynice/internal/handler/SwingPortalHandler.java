@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.binding.mynice.internal.xml.dto.Device;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -57,7 +56,7 @@ public class SwingPortalHandler extends BaseThingHandler implements MyNiceDataLi
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        OpenClosedType.OPEN;
+        // OpenClosedType.OPEN;
     }
 
     @Override
