@@ -13,12 +13,13 @@
 package org.openhab.binding.mynice.internal.xml;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mynice.internal.dto.Authentication;
-import org.openhab.binding.mynice.internal.dto.CommandType;
-import org.openhab.binding.mynice.internal.dto.Device;
-import org.openhab.binding.mynice.internal.dto.Interface;
-import org.openhab.binding.mynice.internal.dto.Response;
-import org.openhab.binding.mynice.internal.dto.UserPerm;
+import org.openhab.binding.mynice.internal.xml.dto.Authentication;
+import org.openhab.binding.mynice.internal.xml.dto.CommandType;
+import org.openhab.binding.mynice.internal.xml.dto.Device;
+import org.openhab.binding.mynice.internal.xml.dto.Interface;
+import org.openhab.binding.mynice.internal.xml.dto.Properties;
+import org.openhab.binding.mynice.internal.xml.dto.Response;
+import org.openhab.binding.mynice.internal.xml.dto.UserPerm;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
@@ -49,6 +50,7 @@ public class MyNiceXStream extends XStream {
         alias("Error", Error.class);
         alias("Interface", Interface.class);
         alias("Device", Device.class);
+        alias("Properties", Properties.class);
     }
 
     public Response deserialize(String response) {

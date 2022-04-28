@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mynice.internal;
+package org.openhab.binding.mynice.internal.xml;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,15 +22,16 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Base64.Encoder;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mynice.internal.dto.CommandType;
+import org.openhab.binding.mynice.internal.handler.It4WifiHandler;
+import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
-import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,52 +45,43 @@ public class It4WifiConnector extends Thread {
     private static final int DEFAULT_SOCKET_TIMEOUT_MS = 5000;
     private static final int DEFAULT_RECONNECT_TIMEOUT_MS = 5000;
     private static final int MAX_KEEPALIVE_FAILURE = 3;
+    private static final Encoder BASE64_ENCODER = Base64.getEncoder();
     private static final int SERVER_PORT = 443;
     private static final char ETX = '\u0003';
     private static final char STX = '\u0002';
     private static final String ENDL = "\r\n";
-    private static final String START_REQUEST = "<Request id=\"%s\" source=\"%s\" target=\"%s\" gw=\"gwID\" protocolType=\"NHK\" protocolVersion=\"1.0\" type=\"%s\">";
+    private static final String START_REQUEST = "<Request id=\"%s\" source=\"openhab\" target=\"%mac%\" gw=\"gwID\" protocolType=\"NHK\" protocolVersion=\"1.0\" type=\"%s\">";
     private static final String END_REQUEST = "</Request>";
-    private static final String nice_source = "python"; // TODO : change this
-
     private static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[] { TrustAllTrustManager.getInstance() };
 
     private final Logger logger = LoggerFactory.getLogger(It4WifiConnector.class);
     private final String hostname;
-    private final String macAddress;
-    private final It4WifiHander handler;
+    private final It4WifiHandler handler;
+    private final It4WifiSession session;
+    private final String requestStart;
 
     private @NonNullByDefault({}) Socket client;
     private @NonNullByDefault({}) InputStreamReader in;
     private @NonNullByDefault({}) OutputStreamWriter out;
-    private byte[] sessionPassword = {};
 
     private int failedKeepalive = 0;
-    private int commandSequence = 1;
-    private int sessionID = 1;
     private boolean waitingKeepaliveResponse = false;
     private String buffer = "";
 
-    public It4WifiConnector(String hostname, String macAddress, ThingUID uid, It4WifiHander handler) {
-        super("OH-binding-" + uid);
+    public It4WifiConnector(String hostname, String macAddress, It4WifiSession session, It4WifiHandler handler) {
+        super(session.getUserName());
         this.hostname = hostname;
-        this.macAddress = macAddress;
         this.handler = handler;
+        this.session = session;
+        this.requestStart = START_REQUEST.replace("%mac%", macAddress) + ENDL;
         setDaemon(true);
     }
 
-    private String generateCommandID() {
-        int i = commandSequence;
-        commandSequence++;
-        return String.valueOf((i << 8) | (sessionID & 255));
-    }
-
-    public void buildMessage(CommandType command, Object... bodyParms) throws Exception {
-        String startRequest = String.format(START_REQUEST + ENDL, generateCommandID(), nice_source, macAddress,
-                command);
-        String body = startRequest + command.getBody(bodyParms);
+    public void buildMessage(CommandType command/* , Object... bodyParms */) throws Exception {
+        String startRequest = String.format(requestStart, session.getCommandId(), command);
+        String body = startRequest + command.getBody(session/* , bodyParms */);
         body = body + buildSign(command, body) + END_REQUEST + ENDL;
-        logger.debug("Sending ItT4Wifi : {}", body);
+        logger.debug("Sending ItT4Wifi :{}{}", ENDL, body);
         out.write(STX + body + ETX);
         out.flush();
     }
@@ -103,7 +95,7 @@ public class It4WifiConnector extends Thread {
 
             client.setReuseAddress(true);
             client.connect(new InetSocketAddress(hostname, SERVER_PORT), 5000);
-            SSLContext sslContext = SSLContext.getInstance("SSL"); // voir si on peut remplacer par getDefault()
+            SSLContext sslContext = SSLContext.getInstance("SSL"); // TODO : voir si on peut remplacer par getDefault()
             sslContext.init(null, TRUST_ALL_CERTS, new SecureRandom());
             client = sslContext.getSocketFactory().createSocket(client, hostname, SERVER_PORT, true);
             in = new InputStreamReader(client.getInputStream());
@@ -223,22 +215,11 @@ public class It4WifiConnector extends Thread {
         }
     }
 
-    public void setChallenges(String clientChallenge, String serverChallenge, String keyPair) {
-        byte[] clientChallengeArr = Utils.invertArray(Utils.hexStringToByteArray(clientChallenge));
-        byte[] serverChallengeArr = Utils.invertArray(Utils.hexStringToByteArray(serverChallenge));
-        byte[] pairingPassword = Base64.getDecoder().decode(keyPair);
-        try {
-            sessionPassword = Utils.sha256(pairingPassword, serverChallengeArr, clientChallengeArr);
-        } catch (NoSuchAlgorithmException e) {
-            logger.warn("Error generating session password : {}", e.getMessage());
-        }
-    }
-
-    private String buildSign(CommandType command, String xmlCommand) throws Exception {
+    private String buildSign(CommandType command, String xmlCommand) throws NoSuchAlgorithmException {
         if (command.signNeeded) {
             byte[] msgHash = Utils.sha256(xmlCommand.getBytes());
-            byte[] sign = Utils.sha256(msgHash, sessionPassword);
-            return String.format("<Sign>%s</Sign>", Base64.getEncoder().encodeToString(sign));
+            byte[] sign = Utils.sha256(msgHash, session.getSessionPassword());
+            return String.format("<Sign>%s</Sign>", BASE64_ENCODER.encodeToString(sign));
         }
         return "";
     }

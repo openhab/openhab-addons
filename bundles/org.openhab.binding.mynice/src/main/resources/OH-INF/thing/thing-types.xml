@@ -4,13 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="it4wifi">
+	<bridge-type id="it4wifi">
 		<label>IT4Wifi</label>
 		<description>This thing connects to your IT4Wifi module</description>
-
-		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
-		</channels>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -23,10 +19,11 @@
 				<label>MAC Address</label>
 				<description>The full device MAC address</description>
 			</parameter>
-			<parameter name="keyPair" type="text">
+			<parameter name="password" type="text">
 				<context>password</context>
 				<label>Key</label>
-				<description>Pairing Key needed to access the device</description>
+				<description>Pairing Key needed to access the device, provided by the bridge itself.</description>
+                <advanced>true</advanced>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
@@ -35,12 +32,50 @@
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
-	</thing-type>
+	</bridge-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for MyNice Binding</description>
-	</channel-type>
+	<thing-type id="swing">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="it4wifi"/>
+		</supported-bridge-type-refs>
+
+		<label>Swing Gate</label>
+		<description>A double wing gate</description>
+		
+		<channels>
+            <channel id="doorstatus" typeId="doorstatus"/>
+            <channel id="obstruct" typeId="obstruct"/>
+        </channels>
+        
+        <representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>ID</label>
+				<description>ID of the gate on the TP4 bus connected to the bridge.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	
+    <channel-type id="doorstatus">
+        <item-type>String</item-type>
+        <label>Garage Door Status</label>
+        <state readOnly="true">
+            <options>
+                <option value="open">Open</option>
+                <option value="closed">Closed</option>
+                <option value="opening">Opening</option>
+                <option value="closing">Closing</option>
+                <option value="stopped">Stopped</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="obstruct">
+        <item-type>String</item-type>
+        <label>Obstruction</label>
+        <state readOnly="true"/>
+    </channel-type>
+
 </thing:thing-descriptions>

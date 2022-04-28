@@ -1,18 +1,28 @@
-package org.openhab.binding.mynice.internal;
+/**
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.mynice.internal.xml;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class Utils {
-    public static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[(len / 2)];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
-        }
-        return data;
-    }
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+@NonNullByDefault
+public class Utils {
     public static byte[] invertArray(byte[] data) {
         byte[] result = new byte[data.length];
         int i = data.length - 1;
@@ -24,10 +34,6 @@ public class Utils {
             c = c2;
         }
         return result;
-    }
-
-    public static String intToHexString(int value) {
-        return String.format("%08x", new Object[] { Integer.valueOf(value) }).toUpperCase();
     }
 
     public static byte[] sha256(byte[]... values) throws NoSuchAlgorithmException {

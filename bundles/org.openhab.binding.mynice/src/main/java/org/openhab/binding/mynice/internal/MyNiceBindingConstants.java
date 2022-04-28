@@ -24,6 +24,11 @@ import org.openhab.core.thing.ThingTypeUID;
 public class MyNiceBindingConstants {
     private static final String BINDING_ID = "mynice";
 
+    // List of all Channel ids
+    public static final String DOOR_STATUS = "doorstatus";
+    public static final String DOOR_OBSTRUCTED = "obstruct";
+
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_IT4WIFI = new ThingTypeUID(BINDING_ID, "it4wifi");
+    public static final ThingTypeUID BRIDGE_TYPE_IT4WIFI = new ThingTypeUID(BINDING_ID, "it4wifi");
+    public static final ThingTypeUID THING_TYPE_SWING = new ThingTypeUID(BINDING_ID, "swing");
 }

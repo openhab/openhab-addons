@@ -10,20 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mynice.internal;
+package org.openhab.binding.mynice.internal.xml.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * The {@link MyNiceConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@NonNullByDefault
-public class MyNiceConfiguration {
-    public static final String KEY_PAIR = "keyPair";
-    public String hostname = "";
-    public String macAddress = "";
-    public String keyPair = "";
-    public int refreshInterval = 600;
+@XStreamAlias("T4Allowed")
+public class T4Allowed {
+    public String type;
+    public String values;
+    public String perm;
 }

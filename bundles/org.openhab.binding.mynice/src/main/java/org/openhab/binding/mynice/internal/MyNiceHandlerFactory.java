@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.mynice.internal;
 
-import static org.openhab.binding.mynice.internal.MyNiceBindingConstants.THING_TYPE_IT4WIFI;
+import static org.openhab.binding.mynice.internal.MyNiceBindingConstants.*;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mynice.internal.handler.It4WifiHandler;
+import org.openhab.binding.mynice.internal.handler.SwingPortalHandler;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -26,15 +29,14 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link MyNiceHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link MyNiceHandlerFactory} is responsible for creating thing handlers.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.mynice", service = ThingHandlerFactory.class)
 public class MyNiceHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_IT4WIFI);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BRIDGE_TYPE_IT4WIFI, THING_TYPE_SWING);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -45,8 +47,10 @@ public class MyNiceHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_IT4WIFI.equals(thingTypeUID)) {
-            return new It4WifiHander(thing);
+        if (BRIDGE_TYPE_IT4WIFI.equals(thingTypeUID)) {
+            return new It4WifiHandler((Bridge) thing);
+        } else if (THING_TYPE_SWING.equals(thingTypeUID)) {
+            return new SwingPortalHandler(thing);
         }
 
         return null;
