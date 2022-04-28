@@ -23,13 +23,16 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pulseaudio.internal.cli.Parser;
+import org.openhab.binding.pulseaudio.internal.handler.DeviceIdentifier;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig.State;
 import org.openhab.binding.pulseaudio.internal.items.Module;
@@ -258,15 +261,23 @@ public class PulseaudioClient {
     }
 
     /**
-     * retrieves a {@link AbstractAudioDeviceConfig} by its name
+     * retrieves a {@link AbstractAudioDeviceConfig} by its identifier
+     * If several devices correspond to the deviceIdentifier, returns the first one (aphabetical order)
      *
+     * @param The device identifier to match against
      * @return the corresponding {@link AbstractAudioDeviceConfig} to the given <code>name</code>
      */
-    public @Nullable AbstractAudioDeviceConfig getGenericAudioItem(String name) {
-        for (AbstractAudioDeviceConfig item : items) {
-            if (item.getPaName().equalsIgnoreCase(name)) {
-                return item;
-            }
+    public @Nullable AbstractAudioDeviceConfig getGenericAudioItem(DeviceIdentifier deviceIdentifier) {
+        List<AbstractAudioDeviceConfig> matchingDevices = items.stream()
+                .filter(device -> device.matches(deviceIdentifier))
+                .sorted(Comparator.comparing(AbstractAudioDeviceConfig::getPaName)).collect(Collectors.toList());
+        if (matchingDevices.size() == 1) {
+            return matchingDevices.get(0);
+        } else if (matchingDevices.size() > 1) {
+            logger.debug(
+                    "Cannot select exactly one audio device, so choosing the first. To choose without ambiguity between the {} devices matching the identifier {}, you can maybe use a more restrictive 'additionalFilter' parameter",
+                    matchingDevices.size(), deviceIdentifier.getNameOrDescription());
+            return matchingDevices.get(0);
         }
         return null;
     }
