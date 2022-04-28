@@ -49,22 +49,23 @@ public abstract class RestManager {
     }
 
     protected <T extends ApiResponse<?>> T get(UriBuilder uriBuilder, Class<T> clazz) throws NetatmoException {
-        return executeUri(uriBuilder, HttpMethod.GET, clazz, null);
+        return executeUri(uriBuilder, HttpMethod.GET, clazz, null, null);
     }
 
-    protected <T extends ApiResponse<?>> T post(UriBuilder uriBuilder, Class<T> clazz, @Nullable String payload)
-            throws NetatmoException {
-        return executeUri(uriBuilder, HttpMethod.POST, clazz, payload);
+    protected <T extends ApiResponse<?>> T post(UriBuilder uriBuilder, Class<T> clazz, @Nullable String payload,
+            @Nullable String contentType) throws NetatmoException {
+        return executeUri(uriBuilder, HttpMethod.POST, clazz, payload, contentType);
     }
 
     protected <T> T post(URI uri, Class<T> clazz, Map<String, String> entries) throws NetatmoException {
-        return apiBridge.executeUri(uri, POST, clazz, toRequest(entries), 3);
+        return apiBridge.executeUri(uri, POST, clazz, toRequest(entries),
+                "application/x-www-form-urlencoded;charset=UTF-8", 3);
     }
 
     private <T extends ApiResponse<?>> T executeUri(UriBuilder uriBuilder, HttpMethod method, Class<T> clazz,
-            @Nullable String payload) throws NetatmoException {
+            @Nullable String payload, @Nullable String contentType) throws NetatmoException {
         URI uri = uriBuilder.build();
-        T response = apiBridge.executeUri(uri, method, clazz, payload, 3);
+        T response = apiBridge.executeUri(uri, method, clazz, payload, contentType, 3);
         if (response instanceof ApiResponse.Ok && ((ApiResponse.Ok) response).failed()) {
             throw new NetatmoException("Command failed : %s for uri : %s", response.getStatus(), uri.toString());
         }

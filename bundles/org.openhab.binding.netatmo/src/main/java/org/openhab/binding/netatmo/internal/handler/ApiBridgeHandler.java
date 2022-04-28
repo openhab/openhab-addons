@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
-import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.URL_API;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -181,26 +179,22 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String payload,
-            int retryCount) throws NetatmoException {
+            @Nullable String contentType, int retryCount) throws NetatmoException {
         try {
             logger.trace("executeUri {}  {} ", method.toString(), uri);
 
-            Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS)
-                    .header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
+            Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
 
             String auth = connectApi.getAuthorization();
             if (auth != null) {
                 request.header(HttpHeader.AUTHORIZATION, auth);
             }
 
-            if (payload != null && (HttpMethod.POST.equals(method) || HttpMethod.PUT.equals(method))) {
+            if (payload != null && contentType != null
+                    && (HttpMethod.POST.equals(method) || HttpMethod.PUT.equals(method))) {
                 InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
                 try (InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(stream)) {
-                    request.content(inputStreamContentProvider, null);
-                }
-                if (!URL_API.contains(uri.getHost())) {
-                    request.getHeaders().remove(HttpHeader.CONTENT_TYPE);
-                    request.header(HttpHeader.CONTENT_TYPE, "application/json;charset=utf-8");
+                    request.content(inputStreamContentProvider, contentType);
                 }
             }
 
@@ -222,7 +216,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         } catch (TimeoutException | ExecutionException e) {
             if (retryCount > 0) {
                 logger.debug("Request timedout, retry counter : {}", retryCount);
-                return executeUri(uri, method, clazz, payload, retryCount - 1);
+                return executeUri(uri, method, clazz, payload, contentType, retryCount - 1);
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/request-time-out");
             prepareReconnection();

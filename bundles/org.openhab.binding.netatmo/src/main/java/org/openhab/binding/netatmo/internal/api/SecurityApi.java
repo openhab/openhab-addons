@@ -47,7 +47,7 @@ public class SecurityApi extends RestManager {
      */
     public void dropWebhook() throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_DROPWEBHOOK);
-        post(uriBuilder, ApiResponse.Ok.class, null);
+        post(uriBuilder, ApiResponse.Ok.class, null, null);
     }
 
     /**
@@ -58,7 +58,7 @@ public class SecurityApi extends RestManager {
      */
     public void addwebhook(URI uri) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_ADDWEBHOOK, PARAM_URL, uri.toString());
-        post(uriBuilder, ApiResponse.Ok.class, null);
+        post(uriBuilder, ApiResponse.Ok.class, null, null);
     }
 
     public Collection<HomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {
@@ -98,7 +98,7 @@ public class SecurityApi extends RestManager {
     public void changeStatus(String localCameraURL, boolean setOn) throws NetatmoException {
         UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(PATH_COMMAND).path(SUB_PATH_CHANGESTATUS);
         uriBuilder.queryParam(PARAM_STATUS, setOn ? "on" : "off");
-        post(uriBuilder, ApiResponse.Ok.class, null);
+        post(uriBuilder, ApiResponse.Ok.class, null, null);
     }
 
     public void changeFloodLightMode(String localCameraURL, FloodLightMode mode) throws NetatmoException {
@@ -112,6 +112,6 @@ public class SecurityApi extends RestManager {
         String payload = String.format(
                 away ? "{\"home_id\":\"%s\",\"person_id\":\"%s\"}" : "{\"home_id\":\"%s\",\"person_ids\":[\"%s\"]}",
                 homeId, personId);
-        post(uriBuilder, ApiResponse.Ok.class, payload);
+        post(uriBuilder, ApiResponse.Ok.class, payload, "application/json;charset=utf-8");
     }
 }
