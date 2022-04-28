@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public class RefreshCapability extends Capability {
         super(handler);
         this.scheduler = scheduler;
         this.dataValidity = Duration.ofMillis(Math.max(0, refreshInterval));
-        handler.setThingStatus(ThingStatus.ONLINE, null);
+        handler.setThingStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
         freeJobAndReschedule(2);
     }
 
