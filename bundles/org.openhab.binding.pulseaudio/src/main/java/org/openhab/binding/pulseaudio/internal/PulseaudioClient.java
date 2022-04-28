@@ -275,7 +275,7 @@ public class PulseaudioClient {
             return matchingDevices.get(0);
         } else if (matchingDevices.size() > 1) {
             logger.debug(
-                    "Cannot select exactly one audio device, so, choosing the first. To choose without ambiguity between the {} devices matching the identifier {}, you can maybe use a more restrictive 'additionalFilter' parameter",
+                    "Cannot select exactly one audio device, so choosing the first. To choose without ambiguity between the {} devices matching the identifier {}, you can maybe use a more restrictive 'additionalFilter' parameter",
                     matchingDevices.size(), deviceIdentifier.getNameOrDescription());
             return matchingDevices.get(0);
         }

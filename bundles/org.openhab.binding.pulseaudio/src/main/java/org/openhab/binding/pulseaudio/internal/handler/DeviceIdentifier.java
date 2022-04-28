@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,7 +34,8 @@ public class DeviceIdentifier {
     private String nameOrDescription;
     private List<Pattern> additionalFilters = new ArrayList<>();
 
-    public DeviceIdentifier(String nameOrDescription, @Nullable String additionalFilters) {
+    public DeviceIdentifier(String nameOrDescription, @Nullable String additionalFilters)
+            throws PatternSyntaxException {
         super();
         this.nameOrDescription = nameOrDescription;
         if (additionalFilters != null && !additionalFilters.isEmpty()) {
