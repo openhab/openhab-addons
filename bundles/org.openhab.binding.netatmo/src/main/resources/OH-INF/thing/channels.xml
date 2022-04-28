@@ -13,12 +13,14 @@
 	<channel-type id="window-open">
 		<item-type>Switch</item-type>
 		<label>Window Status</label>
+		<description>Windows of the room are opened.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="anticipating-heating">
 		<item-type>Switch</item-type>
 		<label>Anticipated Heating</label>
+		<description>Anticipates next scheduled setpoint.</description>
 		<state readOnly="true"/>
 	</channel-type>
 

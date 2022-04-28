@@ -47,25 +47,25 @@ The Account bridge has the following configuration options:
 
 ## List of supported things
 
-| Thing Type      | Type   | Netatmo Object | Description                                                                                              | Thing Parameters                                                          |
-|-----------------|--------|----------------|----------------------------------------------------------------------------------------------------------|                                                                           |
-| account         | Bridge | N/A            | This bridge represents an account, gateway to Netatmo API.                                               | clientId, clientSecret, username, password, webHookUrl, reconnectInterval |
-| home            | Bridge | NAHome         | A home hosting Security or Energy devices and modules.                                                   | id                                                                        |
-| person          | Thing  | NAPerson       | A person known by your Netatmo system.                                                                   | id                                                                        |
-| welcome         | Thing  | NACamera       | The Netatmo Smart Indoor Camera (Welcome).                                                               | id                                                                        |
-| presence        | Thing  | NOC            | The Netatmo Smart Outdoor Camera (Presence) camera with or without siren.                                | id                                                                        |
-| siren           | Thing  | NIS            | The Netatmo Smart Indoor Siren.                                                                          | id                                                                        |
-| doorbell        | Thing  | NDB            | The Netatmo Smart Video Doorbell device.                                                                 | id                                                                        |
-| weather-station | Bridge | NAMain         | Main indoor module reporting temperature, humidity, pressure, air quality and sound level.               | id                                                                        |
-| outdoor         | Thing  | NAModule1      | Outdoor module reporting temperature and humidity.                                                       | id                                                                        |
-| wind            | Thing  | NAModule2      | Wind sensor reporting wind angle and strength.                                                           | id                                                                        |
-| rain            | Thing  | NAModule3      | Rain Gauge measuring precipitation.                                                                      | id                                                                        |
-| indoor          | Thing  | NAModule4      | Additional indoor module reporting temperature, humidity and CO2 level.                                  | id                                                                        |
-| home-coach      | Thing  | NHC            | Healthy home coach reporting health-index, temperature, humidity, pressure, air quality and sound level. | id                                                                        |
-| plug            | Thing  | NAPlug         | The relay connected to the boiler controlling a Thermostat and zero or more valves.                      | id                                                                        |
-| thermostat      | Thing  | NATherm1       | The Thermostat device placed in a given room.                                                            | id                                                                        |
-| room            | Thing  | NARoom         | A room in your house.                                                                                    | id                                                                        |
-| valve           | Thing  | NRV            | A valve controlling a radiator.                                                                          | id                                                                        |
+| Thing Type      | Type   | Netatmo Object | Description                                                                                          | Thing Parameters                                                          |
+|-----------------|--------|----------------|------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| account         | Bridge | N/A            | This bridge represents an account, gateway to Netatmo API.                                           | clientId, clientSecret, username, password, webHookUrl, reconnectInterval |
+| home            | Bridge | NAHome         | A home hosting Security or Energy devices and modules.                                               | id                                                                        |
+| person          | Thing  | NAPerson       | A person known by your Netatmo system.                                                               | id                                                                        |
+| welcome         | Thing  | NACamera       | The Netatmo Smart Indoor Camera (Welcome).                                                           | id                                                                        |
+| presence        | Thing  | NOC            | The Netatmo Smart Outdoor Camera (Presence) camera with or without siren.                            | id                                                                        |
+| siren           | Thing  | NIS            | The Netatmo Smart Indoor Siren.                                                                      | id                                                                        |
+| doorbell        | Thing  | NDB            | The Netatmo Smart Video Doorbell device.                                                             | id                                                                        |
+| weather-station | Bridge | NAMain         | Main indoor module reporting temperature, humidity, pressure, air quality and sound level.           | id                                                                        |
+| outdoor         | Thing  | NAModule1      | Outdoor module reporting temperature and humidity.                                                   | id                                                                        |
+| wind            | Thing  | NAModule2      | Wind sensor reporting wind angle and strength.                                                       | id                                                                        |
+| rain            | Thing  | NAModule3      | Rain Gauge measuring precipitation.                                                                  | id                                                                        |
+| indoor          | Thing  | NAModule4      | Additional indoor module reporting temperature, humidity and CO2 level.                              | id                                                                        |
+| home-coach      | Thing  | NHC            | Healthy home coach reporting health-index, temperature, humidity, pressure, air quality, sound level.| id                                                                        |
+| plug            | Thing  | NAPlug         | The relay connected to the boiler controlling a Thermostat and zero or more valves.                  | id                                                                        |
+| thermostat      | Thing  | NATherm1       | The Thermostat device placed in a given room.                                                        | id                                                                        |
+| room            | Thing  | NARoom         | A room in your house.                                                                                | id                                                                        |
+| valve           | Thing  | NRV            | A valve controlling a radiator.                                                                      | id                                                                        |
 
 
 
@@ -316,6 +316,36 @@ All these channels are read only.
 All these channels are read only.
 
 
+### Thermostat Plug
+
+**Supported channels for the thermostat plug device:**
+
+| Channel Group       | Channel Id         | Item Type            | Description                                      |
+|---------------------|--------------------|----------------------|--------------------------------------------------|
+| signal              | strength           | Number               | Signal strength (0 for no signal, 1 for weak...) |
+| signal              | value              | Number:Power         | Signal strength in dBm                           |
+
+All these channels are read only.
+
+
+### Room
+
+**Supported channels for the Room thing:**
+
+| Channel Group    | Channel Id            | Item Type            | Description                                             |
+|------------------|-----------------------|----------------------|---------------------------------------------------------|
+| room-temperature | value                 | Number:Temperature   | Current temperature in the room                         |
+| room-properties  | window-open           | Switch               | Windows of the room are opened                          |
+| room-properties  | anticipating          | Switch               | Anticipates next scheduled setpoint                     |
+| room-properties  | heating-power-request | Number:Dimensionless | Percentage of heating power                             |
+| setpoint         | value                 | Number:Temperature   | Thermostat temperature setpoint                         |
+| setpoint         | mode                  | String               | Chosen thermostat mode (home, frost guard, manual, max) |
+| setpoint         | start                 | DateTime             | Start time of the currently applied setpoint            |
+| setpoint         | end                   | DateTime             | End time of the currently applied setpoint              |
+
+All these channels except setpoint and setpoint-mode are read only.
+
+
 ### Thermostat Module
 
 **Supported channels for the thermostat module:**
@@ -330,8 +360,6 @@ All these channels are read only.
 | battery             | status             | String               | Description of the battery status (*)            |
 
 (*) Can be UNDEF on some modules
-
-All these channels except setpoint, setpoint-mode and planning are read only.
 
 
 ### Valve Module
@@ -364,33 +392,33 @@ All these channels are read only.
 
 **Supported trigger channels for the Home thing:**
 
-| Channel Type ID  | Options                | Description                                           |
-|------------------|------------------------|-------------------------------------------------------|
+| Channel Type ID  | Options                | Description                                                                                                                                                                      |
+|------------------|------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | cameraEvent      |                        | A camera event is triggered with a short delay but without requiring a webhook. The information of the event can get retrieved from the other "welcomeEvent" home thing channels |
-|                  | HUMAN                  | Triggered when a human (or person) was detected       |
-|                  | ANIMAL                 | Triggered when an animal was detected                 |
-|                  | MOVEMENT               | Triggered when an unspecified movement was detected   |
-|                  | VEHICLE                | Triggered when a vehicle was detected                 |
-| welcomeHomeEvent |                        | A welcome home event is triggered directly via a configured webhook |
-|                  | PERSON                 | Triggered when a concrete person was detected         |
-|                  | PERSON_AWAY            | Triggered when a concrete person leaves               |
-|                  | MOVEMENT               | Triggered when a movement was detected                |
-|                  | CONNECTION             | Triggered when a camera connection gets created       |
-|                  | DISCONNECTION          | Triggered when a camera connection got lost           |
-|                  | ON                     | Triggered when camera monitoring is switched on       |
-|                  | OFF                    | Triggered when camera monitoring is switched off      |
-|                  | BOOT                   | Triggered when a camera is booting                    |
-|                  | SD                     | Triggered when a camera SD card status was changed    |
-|                  | ALIM                   | Triggered when a power supply status was changed      |
-|                  | NEW_MODULE             | Triggered when a new module was discovered            |
-|                  | MODULE_CONNECT         | Triggered when a module gets connected                |
-|                  | MODULE_DISCONNECT      | Triggered when a module gets disconnected             |
-|                  | MODULE_LOW_BATTERY     | Triggered when the battery of a module gets low       |
-|                  | MODULE_END_UPDATE      | Triggered when a firmware update of a module is done  |
-|                  | TAG_BIG_MOVE           | Triggered when a big movement of a tag was detected   |
-|                  | TAG_SMALL_MOVE         | Triggered when a small movement of a tag was detected |
-|                  | TAG_UNINSTALLED        | Triggered when a tag gets uninstalled                 |
-|                  | TAG_OPEN               | Triggered when an open event of a tag was detected    |
+|                  | HUMAN                  | Triggered when a human (or person) was detected                                                                                                                                  |
+|                  | ANIMAL                 | Triggered when an animal was detected                                                                                                                                            |
+|                  | MOVEMENT               | Triggered when an unspecified movement was detected                                                                                                                              |
+|                  | VEHICLE                | Triggered when a vehicle was detected                                                                                                                                            |
+| welcomeHomeEvent |                        | A welcome home event is triggered directly via a configured webhook                                                                                                              |
+|                  | PERSON                 | Triggered when a concrete person was detected                                                                                                                                    |
+|                  | PERSON_AWAY            | Triggered when a concrete person leaves                                                                                                                                          |  
+|                  | MOVEMENT               | Triggered when a movement was detected                                                                                                                                           |
+|                  | CONNECTION             | Triggered when a camera connection gets created                                                                                                                                  |   
+|                  | DISCONNECTION          | Triggered when a camera connection got lost                                                                                                                                      |    
+|                  | ON                     | Triggered when camera monitoring is switched on                                                                                                                                  |    
+|                  | OFF                    | Triggered when camera monitoring is switched off                                                                                                                                 |    
+|                  | BOOT                   | Triggered when a camera is booting                                                                                                                                               |    
+|                  | SD                     | Triggered when a camera SD card status was changed                                                                                                                               |    
+|                  | ALIM                   | Triggered when a power supply status was changed                                                                                                                                 |   
+|                  | NEW_MODULE             | Triggered when a new module was discovered                                                                                                                                       |    
+|                  | MODULE_CONNECT         | Triggered when a module gets connected                                                                                                                                           |    
+|                  | MODULE_DISCONNECT      | Triggered when a module gets disconnected                                                                                                                                        |   
+|                  | MODULE_LOW_BATTERY     | Triggered when the battery of a module gets low                                                                                                                                  | 
+|                  | MODULE_END_UPDATE      | Triggered when a firmware update of a module is done                                                                                                                             | 
+|                  | TAG_BIG_MOVE           | Triggered when a big movement of a tag was detected                                                                                                                              |  
+|                  | TAG_SMALL_MOVE         | Triggered when a small movement of a tag was detected                                                                                                                            |  
+|                  | TAG_UNINSTALLED        | Triggered when a tag gets uninstalled                                                                                                                                            |  
+|                  | TAG_OPEN               | Triggered when an open event of a tag was detected                                                                                                                               |
 
 ### Welcome and Presence Camera
 
@@ -401,25 +429,25 @@ Warnings:
 
 **Supported channels for the Welcome Camera thing:**
 
-| Channel Group  | Channel ID     | Item Type    | Read/Write | Description                                           |
-|----------------|----------------|--------------|------------|-------------------------------------------------------|
-| status         | monitoring     | Switch       | Read-write | State of the camera (video surveillance on/off)       |
-| status         | sd-card        | String       | Read-only  | State of the SD card                                  |
-| status         | alim           | String       | Read-only  | State of the power connector                          |
-| live           | picture        | Image        | Read-only  | Camera Live Snapshot                                  |
-| live           | picture-url    | String       | Read-only  | Url of the live snapshot for this camera              |
-| live           | stream-url (*) | String       | Read-only  | Url of the live stream for this camera                |
-| signal         | strength       | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)      |
-| signal         | value          | Number:Power | Read-only  | Signal strength in dBm                                |
-| last-event     | type           | String       | Read-only  | Type of event                                         |
-| last-event     | subtype        | String       | Read-only  | Sub-type of event                                     |
-| last-event     | time           | DateTime     | Read-only  | Time of occurrence of event                           |
-| last-event     | message        | String       | Read-only  | Message sent by Netatmo corresponding to given event  |
-| last-event     | snapshot       | Image        | Read-only  | picture of the last event, if it applies              |
-| last-event     | snapshot-url   | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here |
+| Channel Group  | Channel ID     | Item Type    | Read/Write | Description                                                                                                                           |
+|----------------|----------------|--------------|------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| status         | monitoring     | Switch       | Read-write | State of the camera (video surveillance on/off)                                                                                       |
+| status         | sd-card        | String       | Read-only  | State of the SD card                                                                                                                  |
+| status         | alim           | String       | Read-only  | State of the power connector                                                                                                          |
+| live           | picture        | Image        | Read-only  | Camera Live Snapshot                                                                                                                  |
+| live           | picture-url    | String       | Read-only  | Url of the live snapshot for this camera                                                                                              |
+| live           | stream-url (*) | String       | Read-only  | Url of the live stream for this camera                                                                                                |
+| signal         | strength       | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                      |
+| signal         | value          | Number:Power | Read-only  | Signal strength in dBm                                                                                                                |
+| last-event     | type           | String       | Read-only  | Type of event                                                                                                                         |
+| last-event     | subtype        | String       | Read-only  | Sub-type of event                                                                                                                     |
+| last-event     | time           | DateTime     | Read-only  | Time of occurrence of event                                                                                                           |
+| last-event     | message        | String       | Read-only  | Message sent by Netatmo corresponding to given event                                                                                  |
+| last-event     | snapshot       | Image        | Read-only  | picture of the last event, if it applies                                                                                              |
+| last-event     | snapshot-url   | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here             |
 | last-event     | video-url      | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding video URL will be available here |
-| last-event     | video-status   | String       | Read-only  | Status of the video (recording, deleted or available) |
-| last-event     | person-id      | String       | Read-only  | Id of the person the event is about (if any)          |
+| last-event     | video-status   | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                 |
+| last-event     | person-id      | String       | Read-only  | Id of the person the event is about (if any)                                                                                          |
 
 (*) This channel is configurable : low, poor, high.
 
@@ -429,26 +457,26 @@ Warnings:
 
 - The floodlight auto-mode (auto-mode) isn't updated it is changed by another application. Therefore the binding handles its own state of the auto-mode. This has the advantage that the user can define its own floodlight switch off behaviour.
 
-| Channel Group  | Channel ID     | Item Type    | Read/Write | Description                                           |
-|----------------|----------------|--------------|------------|-------------------------------------------------------|
-| status         | monitoring     | Switch       | Read-write | State of the camera (video surveillance on/off)       |
-| status         | sd-card        | String       | Read-only  | State of the SD card                                  |
-| status         | alim           | String       | Read-only  | State of the power connector                          |
-| live           | picture        | Image        | Read-only  | Camera Live Snapshot                                  |
-| live           | picture-url    | String       | Read-only  | Url of the live snapshot for this camera              |
-| live           | stream-url (*) | String       | Read-only  | Url of the live stream for this camera                |
-| signal         | strength       | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)      |
-| signal         | value          | Number:Power | Read-only  | Signal strength in dBm                                |
-| presence       | floodlight     | Switch       | Read-write | Sets the floodlight to ON/OFF/AUTO                    |
-| last-event     | type           | String       | Read-only  | Type of event                                         |
-| last-event     | subtype        | String       | Read-only  | Sub-type of event                                     |
-| last-event     | time           | DateTime     | Read-only  | Time of occurrence of event                           |
-| last-event     | message        | String       | Read-only  | Message sent by Netatmo corresponding to given event  |
-| last-event     | snapshot       | Image        | Read-only  | picture of the last event, if it applies              |
-| last-event     | snapshot-url   | String       | Read-only  | if the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here |
+| Channel Group  | Channel ID     | Item Type    | Read/Write | Description                                                                                                                           |
+|----------------|----------------|--------------|------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| status         | monitoring     | Switch       | Read-write | State of the camera (video surveillance on/off)                                                                                       |
+| status         | sd-card        | String       | Read-only  | State of the SD card                                                                                                                  |
+| status         | alim           | String       | Read-only  | State of the power connector                                                                                                          |
+| live           | picture        | Image        | Read-only  | Camera Live Snapshot                                                                                                                  |
+| live           | picture-url    | String       | Read-only  | Url of the live snapshot for this camera                                                                                              |
+| live           | stream-url (*) | String       | Read-only  | Url of the live stream for this camera                                                                                                |
+| signal         | strength       | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                      |
+| signal         | value          | Number:Power | Read-only  | Signal strength in dBm                                                                                                                |
+| presence       | floodlight     | Switch       | Read-write | Sets the floodlight to ON/OFF/AUTO                                                                                                    |
+| last-event     | type           | String       | Read-only  | Type of event                                                                                                                         |
+| last-event     | subtype        | String       | Read-only  | Sub-type of event                                                                                                                     |
+| last-event     | time           | DateTime     | Read-only  | Time of occurrence of event                                                                                                           |
+| last-event     | message        | String       | Read-only  | Message sent by Netatmo corresponding to given event                                                                                  |
+| last-event     | snapshot       | Image        | Read-only  | picture of the last event, if it applies                                                                                              |
+| last-event     | snapshot-url   | String       | Read-only  | if the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here             |
 | last-event     | video-url      | String       | Read-only  | if the last event (depending upon event type) in the home lead a snapshot picture, the corresponding video URL will be available here |
-| last-event     | video-status   | String       | Read-only  | Status of the video (recording, deleted or available) |
-| last-event     | person-id      | String       | Read-only  | Id of the person the event is about (if any)          |
+| last-event     | video-status   | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                 |
+| last-event     | person-id      | String       | Read-only  | Id of the person the event is about (if any)                                                                                          |
 
 (*) This channel is configurable : low, poor, high.
 

@@ -97,6 +97,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing Netatmo API bridge handler.");
         thingConf = getConfigAs(ApiHandlerConfiguration.class);
+        updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             openConnection();
             String webHookUrl = thingConf.webHookUrl;

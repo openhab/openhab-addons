@@ -52,8 +52,7 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 public interface CommonInterface {
-    public static final Set<ThingStatus> ACTIVE_STATUSES = Set.of(ThingStatus.ONLINE, ThingStatus.INITIALIZING,
-            ThingStatus.UNKNOWN);
+    public static final Set<ThingStatus> ACTIVE_STATUSES = Set.of(ThingStatus.ONLINE, ThingStatus.UNKNOWN);
 
     Thing getThing();
 

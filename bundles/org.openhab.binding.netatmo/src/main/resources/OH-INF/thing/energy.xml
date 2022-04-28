@@ -34,9 +34,11 @@
 			<channel id="mode" typeId="th-mode"/>
 			<channel id="start" typeId="timestamp">
 				<label>Setpoint Start</label>
+				<description>Start time of the currently applied setpoint.</description>
 			</channel>
 			<channel id="end" typeId="timestamp">
 				<label>Setpoint End</label>
+				<description>End time of the currently applied setpoint.</description>
 			</channel>
 		</channels>
 	</channel-group-type>
