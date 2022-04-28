@@ -260,7 +260,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Noise</label>
 		<description>Current Noise Level.</description>
-		<category>Soundvolume</category>
+		<category>SoundVolume</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Noise</tag>

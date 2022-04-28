@@ -100,7 +100,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         scheduler.execute(() -> {
             openConnection();
             String webHookUrl = thingConf.webHookUrl;
-            if (webHookUrl != null && !webHookUrl.isEmpty()) {
+            if (webHookUrl != null && !webHookUrl.isBlank()) {
                 servlet = Optional.of(new NetatmoServlet(httpService, this, webHookUrl));
             }
         });
@@ -109,7 +109,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private void openConnection() {
         try {
             Credentials credentials = thingConf.getCredentials();
-            logger.debug("Updated binding configuration to {}", credentials);
+            logger.debug("Binding configuration updated.");
             try {
                 connectApi.authenticate(credentials, bindingConf.features);
                 updateStatus(ThingStatus.ONLINE);

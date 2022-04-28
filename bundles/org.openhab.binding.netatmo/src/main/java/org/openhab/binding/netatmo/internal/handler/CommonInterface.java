@@ -106,8 +106,9 @@ public interface CommonInterface {
         } else if (handler instanceof AccountHandler) {
             root = ((AccountHandler) handler).getBridge();
         }
-        if (root instanceof ApiBridgeHandler) {
-            return ((ApiBridgeHandler) root).getServlet();
+        ThingHandler rootHandler = root != null ? root.getHandler() : null;
+        if (rootHandler instanceof ApiBridgeHandler) {
+            return ((ApiBridgeHandler) rootHandler).getServlet();
         }
         return Optional.empty();
     }
