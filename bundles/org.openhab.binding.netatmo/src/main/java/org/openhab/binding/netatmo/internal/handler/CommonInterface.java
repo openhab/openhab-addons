@@ -35,6 +35,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -66,7 +67,8 @@ public interface CommonInterface {
 
     void updateState(ChannelUID channelUID, State state);
 
-    void setThingStatus(ThingStatus thingStatus, @Nullable String thingStatusReason);
+    void setThingStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail,
+            @Nullable String thingStatusReason);
 
     void triggerChannel(String channelID, String event);
 
@@ -181,16 +183,23 @@ public interface CommonInterface {
     }
 
     default void commonInitialize(ScheduledExecutorService scheduler) {
-        setThingStatus(ThingStatus.UNKNOWN, null);
-        ModuleType moduleType = ModuleType.from(getThing().getThingTypeUID());
-        if (ModuleType.ACCOUNT.equals(moduleType.getBridge())) {
-            NAThingConfiguration config = getThing().getConfiguration().as(NAThingConfiguration.class);
-            getCapabilities().put(new RefreshCapability(this, scheduler, config.refreshInterval));
-        }
-        getCapabilities().values().forEach(cap -> cap.initialize());
-        CommonInterface bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null) {
-            bridgeHandler.expireData();
+        Bridge bridge = getBridge();
+        if (bridge == null || bridge.getHandler() == null) {
+            setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, null);
+        } else if (!ThingStatus.ONLINE.equals(bridge.getStatus())) {
+            setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
+        } else {
+            setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
+            ModuleType moduleType = ModuleType.from(getThing().getThingTypeUID());
+            if (ModuleType.ACCOUNT.equals(moduleType.getBridge())) {
+                NAThingConfiguration config = getThing().getConfiguration().as(NAThingConfiguration.class);
+                getCapabilities().put(new RefreshCapability(this, scheduler, config.refreshInterval));
+            }
+            getCapabilities().values().forEach(cap -> cap.initialize());
+            CommonInterface bridgeHandler = getBridgeHandler();
+            if (bridgeHandler != null) {
+                bridgeHandler.expireData();
+            }
         }
     }
 

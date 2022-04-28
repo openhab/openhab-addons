@@ -35,6 +35,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 
@@ -106,7 +107,7 @@ public class Capability {
         if (!properties.equals(thing.getProperties())) {
             thing.setProperties(properties);
         }
-        handler.setThingStatus(thingStatus, thingStatusReason);
+        handler.setThingStatus(thingStatus, ThingStatusDetail.NONE, thingStatusReason);
     }
 
     protected void updateNAThing(NAThing newData) {

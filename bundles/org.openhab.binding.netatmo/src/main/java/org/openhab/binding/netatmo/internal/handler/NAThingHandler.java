@@ -24,6 +24,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -54,6 +55,12 @@ public class NAThingHandler extends BaseThingHandler implements CommonInterface 
     }
 
     @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("bridgeStatusChanged for thing {}", getThing().getUID());
+        commonInitialize(scheduler);
+    }
+
+    @Override
     public void dispose() {
         commonDispose();
         super.dispose();
@@ -65,8 +72,9 @@ public class NAThingHandler extends BaseThingHandler implements CommonInterface 
     }
 
     @Override
-    public void setThingStatus(ThingStatus thingStatus, @Nullable String thingStatusReason) {
-        updateStatus(thingStatus, ThingStatusDetail.NONE, thingStatusReason);
+    public void setThingStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail,
+            @Nullable String thingStatusReason) {
+        updateStatus(thingStatus, thingStatusDetail, thingStatusReason);
     }
 
     @Override
