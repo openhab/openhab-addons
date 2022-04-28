@@ -89,7 +89,7 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     private ThingUID getPulseaudioDeviceUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
             Configuration configuration, @Nullable ThingUID bridgeUID) {
         if (thingUID == null) {
-            String name = (String) configuration.get(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME);
+            String name = (String) configuration.get(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME_OR_DESCRIPTION);
             return new ThingUID(thingTypeUID, name, bridgeUID == null ? null : bridgeUID.getId());
         }
         return thingUID;
@@ -101,7 +101,9 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
         if (serviceRegistration != null) {
             PulseaudioDeviceDiscoveryService service = (PulseaudioDeviceDiscoveryService) bundleContext
                     .getService(serviceRegistration.getReference());
-            service.deactivate();
+            if (service != null) {
+                service.deactivate();
+            }
             serviceRegistration.unregister();
         }
         discoveryServiceReg.remove(thingHandler);
