@@ -79,7 +79,7 @@ public interface CommonInterface {
 
     default @Nullable CommonInterface getBridgeHandler() {
         Bridge bridge = getBridge();
-        return bridge != null && bridge.getHandler() instanceof AccountHandler ? (AccountHandler) bridge.getHandler()
+        return bridge != null && bridge.getHandler() instanceof DeviceHandler ? (DeviceHandler) bridge.getHandler()
                 : null;
     }
 
@@ -99,13 +99,13 @@ public interface CommonInterface {
     default Optional<NetatmoServlet> getServlet() {
         ThingHandler handler = getThing().getHandler();
         Bridge root = null;
-        if (handler instanceof NAThingHandler) {
-            CommonInterface bridgeHandler = ((NAThingHandler) handler).getBridgeHandler();
+        if (handler instanceof ModuleHandler) {
+            CommonInterface bridgeHandler = ((ModuleHandler) handler).getBridgeHandler();
             if (bridgeHandler != null) {
                 root = bridgeHandler.getBridge();
             }
-        } else if (handler instanceof AccountHandler) {
-            root = ((AccountHandler) handler).getBridge();
+        } else if (handler instanceof DeviceHandler) {
+            root = ((DeviceHandler) handler).getBridge();
         }
         ThingHandler rootHandler = root != null ? root.getHandler() : null;
         if (rootHandler instanceof ApiBridgeHandler) {

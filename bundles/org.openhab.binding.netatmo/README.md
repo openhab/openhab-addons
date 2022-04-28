@@ -335,7 +335,7 @@ All these channels are read only.
 | Channel Group    | Channel Id            | Item Type            | Description                                             |
 |------------------|-----------------------|----------------------|---------------------------------------------------------|
 | room-temperature | value                 | Number:Temperature   | Current temperature in the room                         |
-| room-properties  | window-open           | Switch               | Windows of the room are opened                          |
+| room-properties  | window-open           | Contact              | Windows of the room are opened                          |
 | room-properties  | anticipating          | Switch               | Anticipates next scheduled setpoint                     |
 | room-properties  | heating-power-request | Number:Dimensionless | Percentage of heating power                             |
 | setpoint         | value                 | Number:Temperature   | Thermostat temperature setpoint                         |

@@ -34,17 +34,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link NAThingHandler} is the base class for all Netatmo things
+ * {@link ModuleHandler} is the base class for all Netatmo things
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class NAThingHandler extends BaseThingHandler implements CommonInterface {
-    private final Logger logger = LoggerFactory.getLogger(NAThingHandler.class);
+public class ModuleHandler extends BaseThingHandler implements CommonInterface {
+    private final Logger logger = LoggerFactory.getLogger(ModuleHandler.class);
     private CapabilityMap capabilities = new CapabilityMap();
 
-    public NAThingHandler(Thing thing) {
+    public ModuleHandler(Thing thing) {
         super(thing);
     }
 

@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,14 +52,13 @@ public class RefreshCapability extends Capability {
         super(handler);
         this.scheduler = scheduler;
         this.dataValidity = Duration.ofMillis(Math.max(0, refreshInterval));
-        handler.setThingStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
         freeJobAndReschedule(2);
     }
 
     @Override
     public void dispose() {
-        super.dispose();
         freeJobAndReschedule(0);
+        super.dispose();
     }
 
     @Override
@@ -92,7 +90,7 @@ public class RefreshCapability extends Capability {
         super.updateNAThing(newData);
         newData.getLastSeen().ifPresent(timestamp -> {
             Instant tsInstant = timestamp.toInstant();
-            if (probing()) { // we're still probin
+            if (probing()) {
                 Instant firstTimeStamp = dataTimeStamp0;
                 if (firstTimeStamp == null) {
                     dataTimeStamp0 = tsInstant;
@@ -110,7 +108,7 @@ public class RefreshCapability extends Capability {
 
     private void freeJobAndReschedule(long delay) {
         refreshJob.ifPresent(job -> job.cancel(true));
-        refreshJob = Optional.ofNullable(delay == 0 ? null //
-                : scheduler.schedule(() -> proceedWithUpdate(), delay, TimeUnit.SECONDS));
+        refreshJob = delay == 0 ? Optional.empty()
+                : Optional.of(scheduler.schedule(() -> proceedWithUpdate(), delay, TimeUnit.SECONDS));
     }
 }

@@ -22,10 +22,10 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.config.BindingConfiguration;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
-import org.openhab.binding.netatmo.internal.handler.AccountHandler;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
-import org.openhab.binding.netatmo.internal.handler.NAThingHandler;
+import org.openhab.binding.netatmo.internal.handler.DeviceHandler;
+import org.openhab.binding.netatmo.internal.handler.ModuleHandler;
 import org.openhab.binding.netatmo.internal.handler.capability.AirCareCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.CameraCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
@@ -110,8 +110,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         if (ModuleType.ACCOUNT.equals(moduleType)) {
             return new ApiBridgeHandler((Bridge) thing, httpClient, httpService, deserializer, configuration);
         }
-        CommonInterface handler = moduleType.isABridge() ? new AccountHandler((Bridge) thing)
-                : new NAThingHandler(thing);
+        CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing) : new ModuleHandler(thing);
 
         List<ChannelHelper> helpers = new ArrayList<>();
         moduleType.channelHelpers.forEach(helperClass -> {

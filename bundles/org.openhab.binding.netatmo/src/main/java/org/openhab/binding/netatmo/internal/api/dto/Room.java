@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -32,7 +33,7 @@ import org.openhab.core.types.UnDefType;
 public class Room extends NAObject implements NAModule {
     private @Nullable String type;
     private @Nullable OnOffType anticipating;
-    private @Nullable OnOffType openWindow;
+    private boolean openWindow;
     private @Nullable ZonedDateTime thermSetpointStartTime;
     private @Nullable ZonedDateTime thermSetpointEndTime;
     private SetpointMode thermSetpointMode = SetpointMode.UNKNOWN;
@@ -46,8 +47,7 @@ public class Room extends NAObject implements NAModule {
     }
 
     public State hasOpenedWindows() {
-        OnOffType status = openWindow;
-        return status != null ? status : UnDefType.NULL;
+        return openWindow ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
     }
 
     public int getHeatingPowerRequest() {
