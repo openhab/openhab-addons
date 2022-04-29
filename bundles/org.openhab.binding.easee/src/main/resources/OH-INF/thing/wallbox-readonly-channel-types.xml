@@ -38,4 +38,10 @@
 		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="type-date">
+		<item-type>DateTime</item-type>
+		<label>DateTime</label>
+		<state readOnly="true">
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

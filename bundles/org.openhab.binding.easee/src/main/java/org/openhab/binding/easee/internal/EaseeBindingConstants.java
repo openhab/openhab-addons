@@ -46,6 +46,7 @@ public class EaseeBindingConstants {
     public static final String CHANNEL_TYPE_AMPERE = "Number:ElectricCurrent";
     public static final String CHANNEL_TYPE_KWH = "Number:Energy";
     public static final String CHANNEL_TYPE_KW = "Number:Power";
+    public static final String CHANNEL_TYPE_DATE = "DateTime";
     public static final String CHANNEL_TYPE_NUMBER = "Number";
 
     // web request constants

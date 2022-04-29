@@ -14,6 +14,10 @@
 				<label>Cable Locked</label>
 				<description>Cable Locked status of the wallbox.</description>
 			</channel>
+			<channel id="chargerOpMode" typeId="type-integer">
+				<label>Charger Operation Mode</label>
+				<description>Current operation mode.</description>
+			</channel>
 			<channel id="totalPower" typeId="type-power">
 				<label>Total Power</label>
 				<description>Total Power for all active phases.</description>
@@ -21,6 +25,10 @@
 			<channel id="sessionEnergy" typeId="type-energy">
 				<label>Session Energy</label>
 				<description>Energy for current session.</description>
+			</channel>
+			<channel id="latestPulse" typeId="type-date">
+				<label>Latest Pulse</label>
+				<description>Last data received from charger.</description>
 			</channel>
 			<channel id="chargerFirmware" typeId="type-integer">
 				<label>Current Firmware</label>
@@ -49,6 +57,10 @@
 			<channel id="dynamicChargerCurrent" typeId="type-current">
 				<label>Dynamic Charger Current</label>
 				<description>Dynamic set charging current.</description>
+			</channel>
+			<channel id="reasonForNoCurrent" typeId="type-integer">
+				<label>Reason for no Current</label>
+				<description>Reason for no Current.</description>
 			</channel>
 			<channel id="lifetimeEnergy" typeId="type-energy">
 				<label>Lifetime Energy</label>

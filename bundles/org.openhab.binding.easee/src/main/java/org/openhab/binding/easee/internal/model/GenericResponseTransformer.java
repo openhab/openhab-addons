@@ -21,6 +21,7 @@ import javax.measure.MetricPrefix;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.easee.internal.handler.ChannelProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -82,6 +83,9 @@ public class GenericResponseTransformer {
                             case CHANNEL_TYPE_KW:
                                 result.put(channel,
                                         new QuantityType<>(Double.parseDouble(value), MetricPrefix.KILO(Units.WATT)));
+                                break;
+                            case CHANNEL_TYPE_DATE:
+                                result.put(channel, new DateTimeType(value));
                                 break;
                             case CHANNEL_TYPE_NUMBER:
                                 result.put(channel, new DecimalType(value));
