@@ -56,7 +56,7 @@ public class VeSyncConstants {
     public static final String DEVICE_CHANNEL_FAN_SPEED_ENABLED = "manualFanSpeed";
     public static final String DEVICE_CHANNEL_ERROR_CODE = "errorCode";
     public static final String DEVICE_CHANNEL_AIRQUALITY_BASIC = "airQuality";
-    public static final String DEVICE_CHANNEL_AIRQUALITY_PPM25 = "airQualityPPM25";
+    public static final String DEVICE_CHANNEL_AIRQUALITY_PPM25 = "airQualityPM25";
 
     public static final String DEVICE_CHANNEL_AF_CONFIG_DISPLAY_FOREVER = "configDisplayForever";
     public static final String DEVICE_CHANNEL_AF_CONFIG_AUTO_MODE_PREF = "configAutoMode";

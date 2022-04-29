@@ -57,7 +57,7 @@
 			<channel id="manualFanSpeed" typeId="airPurifierFanLevelType"/>
 			<channel id="errorCode" typeId="deviceErrorCodeType"/>
 			<channel id="airQuality" typeId="deviceAirQualityBasicType"/>
-			<channel id="airQualityPPM25" typeId="deviceAirQualityBasicType"/>
+			<channel id="airQualityPM25" typeId="deviceAirQualityBasicType"/>
 			<channel id="configDisplayForever" typeId="deviceAFConfigDisplayForever"/>
 			<channel id="configAutoMode" typeId="deviceAFConfigAutoPrefType"/>
 			<channel id="timerExpiry" typeId="deviceAFTimerExpiry"/>
@@ -206,11 +206,11 @@
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
-	<channel-type id="airQualityPPM25">
+	<channel-type id="airQualityPM25">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Air Quality PPM2.5</label>
 		<description>Indicator of current air quality</description>
-		<state readOnly="true" pattern="%.0f PPM 2.5"/>
+		<state readOnly="true" pattern="%.0f PM 2.5"/>
 	</channel-type>
 
 	<channel-type id="deviceAFConfigDisplayForever">
