@@ -34,6 +34,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.livisismarthome.internal.LivisiBindingConstants;
 import org.openhab.binding.livisismarthome.internal.LivisiWebSocket;
 import org.openhab.binding.livisismarthome.internal.client.LivisiClient;
 import org.openhab.binding.livisismarthome.internal.client.URLConnectionFactory;
@@ -64,6 +65,7 @@ import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -153,7 +155,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private void initializeClient() {
         String tokenURL = URLCreator.createTokenURL(bridgeConfiguration.host);
         final OAuthClientService oAuthServiceNonNullable = oAuthFactory.createOAuthClientService(
-                thing.getUID().getAsString(), tokenURL, tokenURL, "clientId", null, null, true);
+                thing.getUID().getAsString(), tokenURL, tokenURL, "clientId", "clientPass", null, true);
         this.oAuthService = oAuthServiceNonNullable;
         LivisiClient clientNonNullable = createClient(oAuthServiceNonNullable);
         this.client = clientNonNullable;
@@ -161,8 +163,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
         oAuthServiceNonNullable.addAccessTokenRefreshListener(this);
         try {
-            AccessTokenResponse tokenResponse = clientNonNullable.login();
-            oAuthServiceNonNullable.importAccessTokenResponse(tokenResponse);
+            requestAccessToken();
 
             scheduleRestartClient(false);
         } catch (AuthenticationException | ApiException | IOException | OAuthException e) {
@@ -887,12 +888,23 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     private void refreshAccessToken() {
+        try {
+            requestAccessToken();
+        } catch (AuthenticationException | ApiException | IOException | OAuthException e) {
+            logger.debug("Could not refresh tokens", e);
+        }
+    }
+
+    private void requestAccessToken() throws OAuthException, IOException, AuthenticationException, ApiException {
         if (oAuthService != null && client != null) {
             try {
+                oAuthService.getAccessTokenByResourceOwnerPasswordCredentials(LivisiBindingConstants.USERNAME,
+                        bridgeConfiguration.password, null);
+            } catch (OAuthResponseException e) {
+                // Fallback for SHC 1 which currently doesn't support x-www-form-urlencoded. //TODO remove when SHC 1 is
+                // updated. The LivisiClient#login() method can also get removed after that.
                 AccessTokenResponse tokenResponse = client.login();
                 oAuthService.importAccessTokenResponse(tokenResponse);
-            } catch (AuthenticationException | ApiException | IOException | OAuthException e) {
-                logger.debug("Could not refresh tokens", e);
             }
         }
     }
