@@ -99,7 +99,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                 case DEV_TYPE_LV_PUR131S:
                     toRemove = new String[] { DEVICE_CHANNEL_AF_NIGHT_LIGHT, DEVICE_CHANNEL_AF_CONFIG_AUTO_ROOM_SIZE,
                             DEVICE_CHANNEL_AF_CONFIG_AUTO_MODE_PREF, DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME,
-                            DEVICE_CHANNEL_AIR_FILTER_LIFE_PERCENTAGE_REMAINING, DEVICE_CHANNEL_AIRQUALITY_PPM25,
+                            DEVICE_CHANNEL_AIR_FILTER_LIFE_PERCENTAGE_REMAINING, DEVICE_CHANNEL_AIRQUALITY_PM25,
                             DEVICE_CHANNEL_AF_SCHEDULES_COUNT, DEVICE_CHANNEL_AF_CONFIG_DISPLAY_FOREVER };
                     break;
                 default:
@@ -390,7 +390,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
         updateState(DEVICE_CHANNEL_FAN_SPEED_ENABLED, new DecimalType(purifierStatus.result.result.level));
         updateState(DEVICE_CHANNEL_ERROR_CODE, new DecimalType(purifierStatus.result.result.deviceErrorCode));
         updateState(DEVICE_CHANNEL_AIRQUALITY_BASIC, new DecimalType(purifierStatus.result.result.airQuality));
-        updateState(DEVICE_CHANNEL_AIRQUALITY_PPM25, new DecimalType(purifierStatus.result.result.airQualityValue));
+        updateState(DEVICE_CHANNEL_AIRQUALITY_PM25, new DecimalType(purifierStatus.result.result.airQualityValue));
 
         updateState(DEVICE_CHANNEL_AF_CONFIG_DISPLAY_FOREVER,
                 OnOffType.from(purifierStatus.result.result.configuration.displayForever));
