@@ -131,7 +131,7 @@ Bridge vesync:bridge:vesyncServers [username="<USERNAME>", password="<PASSWORD>"
 Switch               LoungeAPPower        	   "Lounge Air Purifier Power"                                      { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:enabled" }
 Switch               LoungeAPDisplay      	   "Lounge Air Purifier Display"                                    { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:display" }
 Switch               LoungeAPControlsLock          "Lounge Air Purifier Controls Locked"                        { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:childLock" }
-Number:Dimensionless LoungeAPFilterRemainingUse    "Lounge Air Purifier Filter Remaining [%.0f %%]"             { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:filterLifePercentage" }
+Number:Dimensionless LoungeAPFilterRemainingUse    "Lounge Air Purifier Filter Remaining [%.0f %unit%]"         { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:filterLifePercentage" }
 String               LoungeAPMode                  "Lounge Air Purifier Mode [%s]"                              { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:fanMode" }
 Number:Dimensionless LoungeAPManualFanSpeed        "Lounge Air Purifier Manual Fan Speed"                       { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:manualFanSpeed" }
 Number:Dimensionless LoungeAPAirQuality		   "Lounge Air Purifier Air Quality [%.0f% PM2.5]"                  { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:airQualityPM25" }
@@ -150,7 +150,7 @@ Switch               LoungeAPPower        	   "Lounge Air Purifier Power"       
 Switch               LoungeAPDisplay      	   "Lounge Air Purifier Display"                                    { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:display" }
 String               LoungeAPNightLightMode        "Lounge Air Purifier Night Light Mode"                       { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:nightLightMode" }
 Switch               LoungeAPControlsLock          "Lounge Air Purifier Controls Locked"                        { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:childLock" }
-Number:Dimensionless LoungeAPFilterRemainingUse    "Lounge Air Purifier Filter Remaining [%.0f %%]"             { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:filterLifePercentage" }
+Number:Dimensionless LoungeAPFilterRemainingUse    "Lounge Air Purifier Filter Remaining [%.0f %unit%]"         { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:filterLifePercentage" }
 String               LoungeAPMode                  "Lounge Air Purifier Mode [%s]"                              { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:fanMode" }
 Number:Dimensionless LoungeAPManualFanSpeed        "Lounge Air Purifier Manual Fan Speed"                       { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:manualFanSpeed" }
 Number:Dimensionless LoungeAPAirQuality		   "Lounge Air Purifier Air Quality [%.0f%]"                        { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:airQuality" }
