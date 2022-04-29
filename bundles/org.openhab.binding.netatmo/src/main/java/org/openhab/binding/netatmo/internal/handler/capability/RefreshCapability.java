@@ -107,7 +107,7 @@ public class RefreshCapability extends Capability {
     }
 
     private void freeJobAndReschedule(long delay) {
-        refreshJob.ifPresent(job -> job.cancel(true));
+        refreshJob.ifPresent(job -> job.cancel(false));
         refreshJob = delay == 0 ? Optional.empty()
                 : Optional.of(scheduler.schedule(() -> proceedWithUpdate(), delay, TimeUnit.SECONDS));
     }

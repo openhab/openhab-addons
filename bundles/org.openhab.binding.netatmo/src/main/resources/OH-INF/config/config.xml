@@ -36,7 +36,7 @@
 		<parameter name="reconnectInterval" type="integer" unit="s">
 			<label>Reconnect Interval</label>
 			<description>The reconnection interval to Netatmo API (in s).</description>
-			<default>5400</default>
+			<default>300</default>
 		</parameter>
 	</config-description>
 

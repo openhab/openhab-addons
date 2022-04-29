@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -62,6 +63,8 @@ public interface CommonInterface {
     CapabilityMap getCapabilities();
 
     Logger getLogger();
+
+    ScheduledExecutorService getScheduler();
 
     boolean isLinked(ChannelUID channelUID);
 
@@ -141,13 +144,13 @@ public interface CommonInterface {
         return Optional.empty();
     }
 
-    default Stream<CommonInterface> getActiveChildren() {
+    default List<CommonInterface> getActiveChildren() {
         Thing thing = getThing();
         if (thing instanceof Bridge) {
             return ((Bridge) thing).getThings().stream().filter(t -> ACTIVE_STATUSES.contains(t.getStatus()))
-                    .map(t -> t.getHandler()).map(CommonInterface.class::cast);
+                    .map(t -> t.getHandler()).map(CommonInterface.class::cast).collect(Collectors.toList());
         }
-        return Stream.of();
+        return List.of();
     }
 
     default <T extends RestCapability<?>> Optional<T> getHomeCapability(Class<T> clazz) {
@@ -172,7 +175,10 @@ public interface CommonInterface {
     }
 
     default void proceedWithUpdate() {
-        updateReadings().forEach(dataSet -> setNewData(dataSet));
+        for (NAObject dataSet : updateReadings()) {
+            setNewData(dataSet);
+        }
+        // updateReadings().forEach(dataSet -> setNewData(dataSet));
     }
 
     default List<NAObject> updateReadings() {
@@ -182,18 +188,23 @@ public interface CommonInterface {
         return result;
     }
 
-    default void commonInitialize(ScheduledExecutorService scheduler) {
+    default void commonInitialize() {
         Bridge bridge = getBridge();
         if (bridge == null || bridge.getHandler() == null) {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, null);
         } else if (!ThingStatus.ONLINE.equals(bridge.getStatus())) {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
+            Capability refreshCap = getCapabilities().remove(RefreshCapability.class);
+            if (refreshCap != null) {
+                refreshCap.dispose();
+                refreshCap = null;
+            }
         } else {
             setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
             ModuleType moduleType = ModuleType.from(getThing().getThingTypeUID());
             if (ModuleType.ACCOUNT.equals(moduleType.getBridge())) {
                 NAThingConfiguration config = getThing().getConfiguration().as(NAThingConfiguration.class);
-                getCapabilities().put(new RefreshCapability(this, scheduler, config.refreshInterval));
+                getCapabilities().put(new RefreshCapability(this, getScheduler(), config.refreshInterval));
             }
             getCapabilities().values().forEach(cap -> cap.initialize());
             CommonInterface bridgeHandler = getBridgeHandler();

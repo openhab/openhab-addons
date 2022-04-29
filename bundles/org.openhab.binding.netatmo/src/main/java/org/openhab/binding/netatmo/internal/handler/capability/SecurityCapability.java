@@ -74,7 +74,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     protected void updateHomeStatus(HomeStatus homeStatus) {
         NAObjectMap<HomeStatusPerson> persons = homeStatus.getPersons();
         NAObjectMap<HomeStatusModule> cameras = homeStatus.getModules();
-        handler.getActiveChildren().forEach(handler -> {
+        for (CommonInterface handler : handler.getActiveChildren()) {
             HomeStatusPerson dataPerson = persons.get(handler.getId());
             if (dataPerson != null) {
                 handler.setNewData(dataPerson);
@@ -83,18 +83,18 @@ class SecurityCapability extends RestCapability<SecurityApi> {
             if (dataCamera != null) {
                 handler.setNewData(dataCamera);
             }
-        });
+        }
     }
 
     @Override
     protected void updateHomeEvent(HomeEvent homeEvent) {
         String personId = homeEvent.getPersonId();
         if (personId != null) {
-            handler.getActiveChildren().filter(handler -> personId.equals(handler.getId())).findFirst()
+            handler.getActiveChildren().stream().filter(handler -> personId.equals(handler.getId())).findFirst()
                     .ifPresent(handler -> handler.setNewData(homeEvent));
         }
         String cameraId = homeEvent.getCameraId();
-        handler.getActiveChildren().filter(handler -> cameraId.equals(handler.getId())).findFirst()
+        handler.getActiveChildren().stream().filter(handler -> cameraId.equals(handler.getId())).findFirst()
                 .ifPresent(handler -> handler.setNewData(homeEvent));
     }
 

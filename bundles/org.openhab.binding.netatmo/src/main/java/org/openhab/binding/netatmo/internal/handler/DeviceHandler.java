@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
@@ -46,13 +48,13 @@ public class DeviceHandler extends BaseBridgeHandler implements CommonInterface 
     @Override
     public void initialize() {
         logger.debug("Initializing handler for bridge {}", getThing().getUID());
-        commonInitialize(scheduler);
+        commonInitialize();
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("bridgeStatusChanged for bridge {}", getThing().getUID());
-        commonInitialize(scheduler);
+        commonInitialize();
     }
 
     @Override
@@ -110,5 +112,10 @@ public class DeviceHandler extends BaseBridgeHandler implements CommonInterface 
     @Override
     public Logger getLogger() {
         return logger;
+    }
+
+    @Override
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
     }
 }

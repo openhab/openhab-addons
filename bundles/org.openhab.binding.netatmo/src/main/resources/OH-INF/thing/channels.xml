@@ -8,13 +8,13 @@
 		<item-type>Switch</item-type>
 		<label>Monitoring</label>
 		<description>Monitoring state of the camera</description>
-		<category>Window</category>
 	</channel-type>
 
 	<channel-type id="window-open">
 		<item-type>Contact</item-type>
 		<label>Window Status</label>
 		<description>Windows of the room are opened.</description>
+		<category>Window</category>
 		<state readOnly="true"/>
 	</channel-type>
 

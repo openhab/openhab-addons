@@ -24,7 +24,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 
 /**
- * {@link ChannelHelperCapability} give the ability to dispatch
+ * {@link ChannelHelperCapability} give the capability to dispatch incoming data across the channel helpers.
  *
  * @author Gaël L'hopital - Initial contribution
  *

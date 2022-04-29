@@ -54,7 +54,7 @@ public class ApiHandlerConfiguration {
     private @Nullable String username;
     private @Nullable String password;
     public @Nullable String webHookUrl;
-    public int reconnectInterval = 5400;
+    public int reconnectInterval = 300;
 
     public Credentials getCredentials() throws NetatmoException {
         return new Credentials(clientId, clientSecret, username, password);
