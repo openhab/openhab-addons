@@ -171,9 +171,9 @@ String               LoungeAHMode              "Lounge Air Humidifier Mode"     
 Switch               LoungeAHWaterLacking      "Lounge Air Humidifier Water Lacking"                          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:waterLacking" }
 Switch               LoungeAHHighHumidity      "Lounge Air Humidifier High Humidity"                          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidityHigh" }
 Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank Removed"                     { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:waterTankLifted" }
-Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity"                      { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidity" }
+Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity [%.0f %unit%]"        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidity" }
 Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
-Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity"                        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
+Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity [%.0f %unit%]"          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
 Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
 ```
 
@@ -187,9 +187,9 @@ String               LoungeAHMode              "Lounge Air Humidifier Mode"     
 Switch               LoungeAHWaterLacking      "Lounge Air Humidifier Water Lacking"                          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:waterLacking" }
 Switch               LoungeAHHighHumidity      "Lounge Air Humidifier High Humidity"                          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidityHigh" }
 Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank Removed"                     { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:waterTankLifted" }
-Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity"                      { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidity" }
+Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity [%.0f %unit%]"        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidity" }
 Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
-Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity"                        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
+Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity [%.0f %unit%]"          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
 Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
 ```
 
@@ -202,9 +202,9 @@ String               LoungeAHMode              "Lounge Air Humidifier Mode"     
 Switch               LoungeAHWaterLacking      "Lounge Air Humidifier Water Lacking"                          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:waterLacking" }
 Switch               LoungeAHHighHumidity      "Lounge Air Humidifier High Humidity"                          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidityHigh" }
 Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank Removed"                     { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:waterTankLifted" }
-Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity"                      { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidity" }
+Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity [%.0f %unit%]"        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidity" }
 Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
-Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity"                        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
+Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity [%.0f %unit%]"          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
 Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
 ```
 

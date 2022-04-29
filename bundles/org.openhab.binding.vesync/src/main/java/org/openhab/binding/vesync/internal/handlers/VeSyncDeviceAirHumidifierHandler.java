@@ -29,6 +29,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -322,9 +323,9 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
         updateState(DEVICE_CHANNEL_WATER_TANK_LIFTED, OnOffType.from(humidifierStatus.result.result.waterTankLifted));
         updateState(DEVICE_CHANNEL_STOP_AT_TARGET,
                 OnOffType.from(humidifierStatus.result.result.automaticStopReachTarget));
-        updateState(DEVICE_CHANNEL_HUMIDITY, new DecimalType(humidifierStatus.result.result.humidity));
+        updateState(DEVICE_CHANNEL_HUMIDITY,
+                new QuantityType<>(humidifierStatus.result.result.humidity, Units.PERCENT));
         updateState(DEVICE_CHANNEL_MIST_LEVEL, new DecimalType(humidifierStatus.result.result.mistLevel));
-
         updateState(DEVICE_CHANNEL_HUMIDIFIER_MODE, new StringType(humidifierStatus.result.result.mode));
 
         // Only the 300S supports nightlight currently of tested devices.
@@ -343,6 +344,6 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
         }
 
         updateState(DEVICE_CHANNEL_CONFIG_TARGET_HUMIDITY,
-                new DecimalType(humidifierStatus.result.result.configuration.autoTargetHumidity));
+                new QuantityType<>(humidifierStatus.result.result.configuration.autoTargetHumidity, Units.PERCENT));
     }
 }
