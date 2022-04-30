@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 class ElroConnectsAccountException extends Exception {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -1038059604759958044L;
 
     public ElroConnectsAccountException(String message) {
         super(message);

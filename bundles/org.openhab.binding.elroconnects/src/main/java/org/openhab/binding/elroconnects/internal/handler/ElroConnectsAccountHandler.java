@@ -262,7 +262,8 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                                 f.completeExceptionally(
                                         new ElroConnectsAccountException("@text/offline.token-expired"));
                             } else {
-                                f.completeExceptionally(new ElroConnectsAccountException(getContentAsString()));
+                                f.completeExceptionally(new ElroConnectsAccountException(
+                                        String.valueOf(response.getStatus()) + " - " + getContentAsString()));
                             }
                         } else {
                             Throwable e = result.getFailure();

@@ -14,7 +14,7 @@ package org.openhab.binding.elroconnects.internal.discovery;
 
 import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.*;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +47,7 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
     private @Nullable ElroConnectsBridgeHandler bridgeHandler;
 
     private static final int TIMEOUT_S = 5;
-    private static final int REFRESH_INTERVAL_SECONDS = 60;
+    private static final int REFRESH_INTERVAL_S = 60;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
 
@@ -99,7 +99,7 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
         logger.debug("Start device background discovery");
         ScheduledFuture<?> job = discoveryJob;
         if (job == null || job.isCancelled()) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(this::discoverDevices, 0, REFRESH_INTERVAL_SECONDS,
+            discoveryJob = scheduler.scheduleWithFixedDelay(this::discoverDevices, 0, REFRESH_INTERVAL_S,
                     TimeUnit.SECONDS);
         }
     }
@@ -116,7 +116,7 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
 
     @Override
     public void deactivate() {
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
         super.deactivate();
     }
 

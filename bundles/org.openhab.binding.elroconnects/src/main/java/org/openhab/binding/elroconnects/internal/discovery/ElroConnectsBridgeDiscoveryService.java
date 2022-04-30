@@ -14,7 +14,7 @@ package org.openhab.binding.elroconnects.internal.discovery;
 
 import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.*;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -27,6 +27,7 @@ import org.openhab.binding.elroconnects.internal.devices.ElroConnectsConnector;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsAccountHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -48,7 +49,7 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
     private volatile @Nullable ScheduledFuture<?> discoveryJob;
 
     private static final int TIMEOUT_S = 5;
-    private static final int REFRESH_INTERVAL = 60;
+    private static final int REFRESH_INTERVAL_S = 60;
 
     public ElroConnectsBridgeDiscoveryService() {
         super(ElroConnectsBindingConstants.SUPPORTED_CONNECTOR_TYPES_UIDS, TIMEOUT_S);
@@ -92,7 +93,7 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
                 properties.put("binVersion", c.getValue().binVersion);
                 properties.put("binType", c.getValue().binType);
                 properties.put("sdkVer", c.getValue().sdkVer);
-                properties.put("model", c.getValue().model);
+                properties.put(Thing.PROPERTY_MODEL_ID, c.getValue().model);
                 properties.put("desc", c.getValue().desc);
 
                 thingDiscovered(
@@ -114,7 +115,7 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
         logger.debug("Start background bridge discovery");
         ScheduledFuture<?> job = discoveryJob;
         if (job == null || job.isCancelled()) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(this::discoverConnectors, 0, REFRESH_INTERVAL,
+            discoveryJob = scheduler.scheduleWithFixedDelay(this::discoverConnectors, 0, REFRESH_INTERVAL_S,
                     TimeUnit.SECONDS);
         }
     }
@@ -131,7 +132,7 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void deactivate() {
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
         super.deactivate();
     }
 
