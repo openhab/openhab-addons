@@ -18,6 +18,8 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * @author Arjan Mels - Initial contribution
  */
@@ -26,7 +28,8 @@ public class User {
     private @Nullable String email;
     private @Nullable String firstName;
     private @Nullable String lastName;
-    private @Nullable Embedded _embedded;
+    @SerializedName("_embedded")
+    private @Nullable Embedded embedded;
     private @Nullable ZonedDateTime createdAt;
     private @Nullable ZonedDateTime updatedAt;
 
@@ -52,7 +55,7 @@ public class User {
     }
 
     public @Nullable List<Vehicle> getVehicles() {
-        final Embedded resEmbedded = _embedded;
+        final Embedded resEmbedded = embedded;
         if (resEmbedded != null) {
             return resEmbedded.vehicles;
         } else {
@@ -72,6 +75,6 @@ public class User {
     public String toString() {
         return new ToStringBuilder(this).append("createdAt", createdAt).append("updatedAt", createdAt)
                 .append("email", email).append("firstName", firstName).append("lastName", lastName)
-                .append("vehicles", _embedded != null ? _embedded : null).toString();
+                .append("vehicles", embedded != null ? embedded : null).toString();
     }
 }

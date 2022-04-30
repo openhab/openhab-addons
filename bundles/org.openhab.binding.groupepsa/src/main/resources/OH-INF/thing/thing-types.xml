@@ -130,7 +130,6 @@
 	<channel-group-type id="environment">
 		<label>Environment</label>
 		<description>Environmental conditions</description>
-		<category>Sun_Clouds</category>
 		<channels>
 			<channel id="temperature" typeId="temperature">
 				<label>Outside Temperature</label>
@@ -143,7 +142,6 @@
 	<channel-group-type id="motion">
 		<label>Motion</label>
 		<description>Motion information</description>
-		<category>Motion</category>
 		<channels>
 			<channel id="ignition" typeId="ignition"/>
 			<channel id="acceleration" typeId="acceleration"/>
@@ -156,7 +154,6 @@
 	<channel-group-type id="position">
 		<label>Position</label>
 		<description>Location information</description>
-		<category>MoveControl</category>
 		<channels>
 			<channel id="position" typeId="position"/>
 			<channel id="heading" typeId="heading"/>
@@ -207,7 +204,6 @@
 		<item-type>Contact</item-type>
 		<label>Daytime</label>
 		<description>Enabled if it is daytime</description>
-		<category>Sun</category>
 	</channel-type>
 
 	<channel-type id="doorLock">
@@ -241,7 +237,6 @@
 		<item-type>String</item-type>
 		<label>Ignition</label>
 		<description>Ignition state</description>
-		<category>Motion</category>
 		<state readOnly="true">
 			<options>
 				<option value="Stop">Stop</option>
@@ -256,14 +251,12 @@
 		<item-type>Contact</item-type>
 		<label>Moving</label>
 		<description>Vehicle is moving</description>
-		<category>Motion</category>
 	</channel-type>
 
 	<channel-type id="acceleration">
 		<item-type>Number:Acceleration</item-type>
 		<label>Acceleration</label>
 		<description>Current acceleration</description>
-		<category>Motion</category>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -271,7 +264,6 @@
 		<item-type>Number:Speed</item-type>
 		<label>Speed</label>
 		<description>Current speed</description>
-		<category>Motion</category>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -279,7 +271,6 @@
 		<item-type>Number:Length</item-type>
 		<label>Mileage</label>
 		<description>Total travelled distance</description>
-		<category>Motion</category>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -287,7 +278,6 @@
 		<item-type>Location</item-type>
 		<label>Position</label>
 		<description>Last known position</description>
-		<category>MoveControl</category>
 		<state pattern="%2$s°N %3$s°E %1$sm"/>
 	</channel-type>
 
@@ -295,7 +285,6 @@
 		<item-type>Number:Angle</item-type>
 		<label>Heading</label>
 		<description>Direction of travel</description>
-		<category>MoveControl</category>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -303,7 +292,6 @@
 		<item-type>String</item-type>
 		<label>Position Type</label>
 		<description>Position acquisition type</description>
-		<category>MoveControl</category>
 		<state readOnly="true">
 			<options>
 				<option value="Estimate">Estimate</option>
@@ -387,7 +375,7 @@
 	<channel-type id="preconditioningFailure">
 		<item-type>String</item-type>
 		<label>Air Conditioning Failure</label>
-		<description>Airr conditioning failure cause</description>
+		<description>Air conditioning failure cause</description>
 		<state readOnly="true">
 			<options>
 				<option value="Defect">Defect</option>
@@ -412,8 +400,7 @@
 
 	<channel-group-type id="electric">
 		<label>Electric Energy</label>
-		<description>Electric energy</description>
-		<category>Electric motor energy status</category>
+		<description>Electric motor energy status</description>
 		<channels>
 			<channel id="autonomy" typeId="autonomy">
 				<label>Electric Autonomy</label>
@@ -440,7 +427,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fuel Level</label>
 		<description>Fuel level</description>
-		<category>Pressure</category>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -448,7 +434,6 @@
 		<item-type>Number:Length</item-type>
 		<label>Fuel Autonomy</label>
 		<description>Remaining distance</description>
-		<category>Pressure</category>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -456,7 +441,6 @@
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Fuel Consumption</label>
 		<description>Fuel consumption</description>
-		<category>Pressure</category>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 

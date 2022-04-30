@@ -44,8 +44,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link GroupePSABridgeHandler} is responsible for handling commands,
@@ -55,8 +53,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class GroupePSABridgeHandler extends BaseBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(GroupePSABridgeHandler.class);
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private static final long DEFAULT_POLLING_INTERVAL_M = TimeUnit.HOURS.toMinutes(1);
 

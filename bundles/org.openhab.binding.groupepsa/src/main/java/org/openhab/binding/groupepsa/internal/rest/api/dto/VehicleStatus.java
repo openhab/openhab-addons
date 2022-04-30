@@ -27,7 +27,8 @@ import com.google.gson.annotations.SerializedName;
 public class VehicleStatus {
 
     private @Nullable ZonedDateTime updatedAt;
-    private @Nullable Embedded _embedded;
+    @SerializedName("_embedded")
+    private @Nullable Embedded embedded;
     private @Nullable Battery battery;
     private @Nullable DoorsState doorsState;
     private @Nullable List<Energy> energy = null;
@@ -65,7 +66,7 @@ public class VehicleStatus {
         if (kinetic != null) {
             return kinetic;
         } else {
-            final Embedded finalEmbedded = _embedded;
+            final Embedded finalEmbedded = embedded;
             if (finalEmbedded != null) {
                 final Extension finalExtension = finalEmbedded.extension;
                 if (finalExtension != null) {
@@ -80,7 +81,7 @@ public class VehicleStatus {
         if (odometer != null) {
             return odometer;
         } else {
-            Embedded finalEmbedded = _embedded;
+            Embedded finalEmbedded = embedded;
             if (finalEmbedded != null) {
                 final Extension finalExtension = finalEmbedded.extension;
                 if (finalExtension != null) {
@@ -137,7 +138,7 @@ public class VehicleStatus {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("updatedAt", updatedAt).append("_embedded", _embedded)
+        return new ToStringBuilder(this).append("updatedAt", updatedAt).append("_embedded", embedded)
                 .append("battery", battery).append("doorsState", doorsState).append("energy", energy)
                 .append("environment", environment).append("ignition", ignition).append("kinetic", kinetic)
                 .append("odometer", odometer).append("lastPosition", lastPosition)

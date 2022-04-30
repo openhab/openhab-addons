@@ -99,6 +99,10 @@ public class GroupePSAHandler extends BaseThingHandler {
     private long maxQueryFrequencyNanos = TimeUnit.MINUTES.toNanos(1);
     private long onlineIntervalM;
 
+    public GroupePSAHandler(Thing thing) {
+        super(thing);
+    }
+
     @Override
     protected @Nullable Bridge getBridge() {
         return super.getBridge();
@@ -112,10 +116,6 @@ public class GroupePSAHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     };
-
-    public GroupePSAHandler(Thing thing) {
-        super(thing);
-    }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {

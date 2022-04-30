@@ -18,68 +18,68 @@ You need to select a brand and enter the User Name and Password.
 The Polling interval (in minutes) determines how often the API will polled for new cars.
 The Client ID and Client Secret should not need to be updated. (However you can register your own app via https://developer.groupe-psa.com/inc/ and use this client information if you wish.)
 
-### properties
+### parameters
 
-|Property|Default|Required|Description|
-|--------|-------|--------|-----------|
-|vendor|None|Yes|The brand of the car (PEUGEOT, CITROEN, DS, OPEL or VAUXHALL)|
-|userName|None|Yes|The user name for the mypeugot/mycitroen/myds/myopel/myvauxhall website or app|
-|password|None|Yes|The password for the given user|
-|pollingInterval|60|No|The Polling interval (in minutes) determines how often the available vehicles are queried|
-|clientId||Yes|The client ID for API access: can normally left at the default value. (see: https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article)|
-|clientSecret||Yes|The client secret for API access: can normally left at the default value. (see: https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article)|
+| Property        | Default | Required | Description                                                                                                                                             |
+| --------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| vendor          | None    | Yes      | The brand of the car (PEUGEOT, CITROEN, DS, OPEL or VAUXHALL)                                                                                           |
+| userName        | None    | Yes      | The user name for the mypeugot/mycitroen/myds/myopel/myvauxhall website or app                                                                          |
+| password        | None    | Yes      | The password for the given user                                                                                                                         |
+| pollingInterval | 60      | No       | The Polling interval (in minutes) determines how often the available vehicles are queried                                                               |
+| clientId        |         | Yes      | The client ID for API access: can normally left at the default value. (see: https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article)     |
+| clientSecret    |         | Yes      | The client secret for API access: can normally left at the default value. (see: https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article) |
 
 ## Vehicle Configuration
 
 Normally the vehicles will be autodiscovered. The Polling Interval and Online Timeout can be adjusted.
 
-### properties
+### parameters
 
-|Property|Default|Required|Description|
-|--------|-------|--------|-----------|
-|id|None|Yes|Vehicle API ID|The ID is the vehicle API ID (not equal to the VIN), which is autodiscoverd by the bridge.|
-|pollingInterval|5|No|The Polling interval (in minutes) determines how often the car is polled for updated information|
-|onlineInterval|15|No|The Online Timeout (in minutes) determines when the car is deemed to be offline.|
+| Property        | Default | Required | Description                                                                                      |
+| --------------- | ------- | -------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| id              | None    | Yes      | Vehicle API ID                                                                                   | The ID is the vehicle API ID (not equal to the VIN), which is autodiscoverd by the bridge. |
+| pollingInterval | 5       | No       | The Polling interval (in minutes) determines how often the car is polled for updated information |
+| onlineInterval  | 15      | No       | The Online Timeout (in minutes) determines when the car is deemed to be offline.                 |
 
 ## Channels
 
-|Channel Type ID|Item Type|Description|
-|-|-|-|
-current|Number:ElectricCurrent|Electrical current
-voltage|Number:ElectricPotential|Voltage
-temperature|Number:Temperature|Temperature
-daytime|Contact|Enabled if it is daytime
-doorLock|String|Door lock state
-doorOpen|Contact|Door is open
-ignition|String|Ignition state
-moving|Contact|Vehicle is moving
-acceleration|Number:Acceleration|Current acceleration
-speed|Number:Speed|Current speed
-mileage|Number:Length|Total travelled distance
-position|Location|Last known position
-heading|Number:Angle|Direction of travel
-type|String|Position acquisition type
-signal|Number:Dimensionless|Strength of the position localization signal
-lastUpdated|DateTime|Last time the results were updated on the server
-privacy|String|Privacy status
-belt|String|Seat belt status
-emergency|String|Emergency call status
-service|String|Service Type
-preconditioning|String|Air conditioning status
-preconditioningFailure|String|Airr conditioning failure cause
-level|Number:Dimensionless|Fuel level
-autonomy|Number:Length|Remaining distance
-consumption|Number:VolumetricFlowRate|Fuel consumption
-residual|Number:Energy|Remaining battery charge
-capacity|Number:Energy|Battery capacity
-healthCapacity|Number:Dimensionless|Health of the battery capacity
-healthResistance|Number:Dimensionless|Health of the battery resistance
-chargingStatus|String|Battery charging status
-chargingMode|String|Battery charging mode
-chargingPlugged|Contact|Vehicle plugged in to charger
-chargingRate|Number:Speed|Battery Charging Rate
-chargingRemainingTime|Number:Time|Time remaining till charged
-chargingNextDelayedTime|Number:Time|Time till the next charging starts
+| Channel Type ID         | Item Type                 | Description                                      |
+| ----------------------- | ------------------------- | ------------------------------------------------ |
+| current                 | Number:ElectricCurrent    | Electrical current                               |
+| voltage                 | Number:ElectricPotential  | Voltage                                          |
+| temperature             | Number:Temperature        | Temperature                                      |
+| daytime                 | Contact                   | Enabled if it is daytime                         |
+| doorLock                | String                    | Door lock state                                  |
+| doorOpen                | Contact                   | Door is open                                     |
+| ignition                | String                    | Ignition state                                   |
+| moving                  | Contact                   | Vehicle is moving                                |
+| acceleration            | Number:Acceleration       | Current acceleration                             |
+| speed                   | Number:Speed              | Current speed                                    |
+| mileage                 | Number:Length             | Total travelled distance                         |
+| position                | Location                  | Last known position                              |
+| heading                 | Number:Angle              | Direction of travel                              |
+| type                    | String                    | Position acquisition type                        |
+| signal                  | Number:Dimensionless      | Strength of the position localization signal     |
+| lastUpdated             | DateTime                  | Last time the results were updated on the server |
+| privacy                 | String                    | Privacy status                                   |
+| belt                    | String                    | Seat belt status                                 |
+| emergency               | String                    | Emergency call status                            |
+| service                 | String                    | Service Type                                     |
+| preconditioning         | String                    | Air conditioning status                          |
+| preconditioningFailure  | String                    | Airr conditioning failure cause                  |
+| level                   | Number:Dimensionless      | Fuel level                                       |
+| autonomy                | Number:Length             | Remaining distance                               |
+| consumption             | Number:VolumetricFlowRate | Fuel consumption                                 |
+| residual                | Number:Energy             | Remaining battery charge                         |
+| capacity                | Number:Energy             | Battery capacity                                 |
+| healthCapacity          | Number:Dimensionless      | Health of the battery capacity                   |
+| healthResistance        | Number:Dimensionless      | Health of the battery resistance                 |
+| chargingStatus          | String                    | Battery charging status                          |
+| chargingMode            | String                    | Battery charging mode                            |
+| chargingPlugged         | Contact                   | Vehicle plugged in to charger                    |
+| chargingRate            | Number:Speed              | Battery Charging Rate                            |
+| chargingRemainingTime   | Number:Time               | Time remaining till charged                      |
+| chargingNextDelayedTime | Number:Time               | Time till the next charging starts               |
 
 Further documentation can be found at: https://developer.groupe-psa.io/webapi/b2c/api-reference/specification/#article
 
@@ -87,16 +87,16 @@ Further documentation can be found at: https://developer.groupe-psa.io/webapi/b2
 
 ### Things file
 
-```perl
-Bridge groupepsa:bridge:opel "Auto Interface" [ 
+```
+Bridge groupepsa:bridge:opel "Auto Interface" [
     pollingInterval=60,
     userName="anonymous@anonymous.email",
     password="password",
     vendor="OPEL"
 ] {
     Things:
-        vehicle zafira "Auto" @ "Outdoors" 
-        [ 
+        vehicle zafira "Auto" @ "Outdoors"
+        [
             id="<web api id here>",
             pollingInterval=5,
             onlineInterval=1440
@@ -107,7 +107,7 @@ Bridge groupepsa:bridge:opel "Auto Interface" [
 
 ### Items file
 
-```perl
+```
 Group Auto
 
 Number:ElectricCurrent Auto_Aux_Current "Auxillliary Battery Current [%.1f %unit%]" (Auto) ["Measurement","Current"] {channel="groupepsa:vehicle:opel:zafira:battery#current"}
