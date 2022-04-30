@@ -316,8 +316,11 @@
 			<options>
 				<option value="PERSON">Face detected</option>
 				<option value="PERSON_AWAY">Person has left home</option>
+				<option value="PERSON_HOME">Person is at home</option>
 				<option value="OUTDOOR">Motion detected by Presence</option>
 				<option value="MOVEMENT">Motion detected</option>
+				<option value="HUMAN">Human seen</option>
+				<option value="ANIMAL">Animal seen</option>
 				<option value="NEW_MODULE">New Module has been paired</option>
 				<option value="MODULE_CONNECT">Module is connected with the Indoor Camera</option>
 				<option value="MODULE_DISCONNECT">Module lost its connection with the Indoor Camera</option>
@@ -366,8 +369,11 @@
 			<options>
 				<option value="PERSON"/>
 				<option value="PERSON_AWAY"/>
+				<option value="PERSON_HOME"/>
 				<option value="OUTDOOR"/>
 				<option value="MOVEMENT"/>
+				<option value="HUMAN"/>
+				<option value="ANIMAL"/>
 				<option value="NEW_MODULE"/>
 				<option value="MODULE_CONNECT"/>
 				<option value="MODULE_DISCONNECT"/>

@@ -16,6 +16,8 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -85,7 +87,20 @@ public class PersonCapability extends Capability {
         handler.getHomeCapability(SecurityCapability.class).ifPresent(cap -> {
             Collection<HomeEvent> events = cap.getPersonEvents(handler.getId());
             if (!events.isEmpty()) {
-                result.add(events.iterator().next());
+                // Get the most recent event
+                List<HomeEvent> listEvents = new ArrayList<>(events);
+                Collections.sort(listEvents, new Comparator<HomeEvent>() {
+                    @Override
+                    public int compare(HomeEvent o1, HomeEvent o2) {
+                        if (o1.getTime().isBefore(o2.getTime())) {
+                            return 1;
+                        } else if (o1.getTime().isAfter(o2.getTime())) {
+                            return -1;
+                        }
+                        return 0;
+                    }
+                });
+                result.add(listEvents.get(0));
             }
         });
         return result;

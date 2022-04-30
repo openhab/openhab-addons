@@ -67,8 +67,14 @@ public class HomeEvent extends Event {
         // Blend extra information provided by this kind of event in subcategories...
         if (type == EventType.PERSON) {
             subType = isArrival ? EventSubType.PERSON_ARRIVAL.subType : EventSubType.PERSON_SEEN.subType;
+        } else if (type == EventType.PERSON_HOME) {
+            subType = EventSubType.PERSON_ARRIVAL.subType;
         } else if (type == EventType.PERSON_AWAY) {
             subType = EventSubType.PERSON_DEPARTURE.subType;
+        } else if (type == EventType.HUMAN) {
+            subType = EventSubType.MOVEMENT_HUMAN.subType;
+        } else if (type == EventType.ANIMAL) {
+            subType = EventSubType.MOVEMENT_ANIMAL.subType;
         } else {
             switch (category) {
                 case ANIMAL:

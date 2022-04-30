@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.api.data;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -21,29 +23,29 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum EventSubType {
-    SD_CARD_MISSING(EventType.SD, 1),
-    SD_CARD_INSERTED(EventType.SD, 2),
-    SD_CARD_FORMATTED(EventType.SD, 3),
-    SD_CARD_WORKING(EventType.SD, 4),
-    SD_CARD_DEFECTIVE(EventType.SD, 5),
-    SD_CARD_INCOMPATIBLE_SPEED(EventType.SD, 6),
-    SD_CARD_INSUFFICIENT_SPACE(EventType.SD, 7),
-    ALIM_INCORRECT_POWER(EventType.ALIM, 1),
-    ALIM_CORRECT_POWER(EventType.ALIM, 2),
+    SD_CARD_MISSING(List.of(EventType.SD), 1),
+    SD_CARD_INSERTED(List.of(EventType.SD), 2),
+    SD_CARD_FORMATTED(List.of(EventType.SD), 3),
+    SD_CARD_WORKING(List.of(EventType.SD), 4),
+    SD_CARD_DEFECTIVE(List.of(EventType.SD), 5),
+    SD_CARD_INCOMPATIBLE_SPEED(List.of(EventType.SD), 6),
+    SD_CARD_INSUFFICIENT_SPACE(List.of(EventType.SD), 7),
+    ALIM_INCORRECT_POWER(List.of(EventType.ALIM), 1),
+    ALIM_CORRECT_POWER(List.of(EventType.ALIM), 2),
 
     // Artificially implemented by the binding subtypes
-    PERSON_ARRIVAL(EventType.PERSON, 1),
-    PERSON_SEEN(EventType.PERSON, 2),
-    PERSON_DEPARTURE(EventType.PERSON_AWAY, 1),
-    MOVEMENT_HUMAN(EventType.MOVEMENT, 1),
-    MOVEMENT_VEHICLE(EventType.MOVEMENT, 2),
-    MOVEMENT_ANIMAL(EventType.MOVEMENT, 3);
+    PERSON_ARRIVAL(List.of(EventType.PERSON, EventType.PERSON_HOME), 1),
+    PERSON_SEEN(List.of(EventType.PERSON), 2),
+    PERSON_DEPARTURE(List.of(EventType.PERSON_AWAY), 1),
+    MOVEMENT_HUMAN(List.of(EventType.MOVEMENT, EventType.HUMAN), 1),
+    MOVEMENT_VEHICLE(List.of(EventType.MOVEMENT), 2),
+    MOVEMENT_ANIMAL(List.of(EventType.MOVEMENT, EventType.ANIMAL), 3);
 
-    public final EventType type;
+    public final List<EventType> types;
     public final int subType;
 
-    EventSubType(EventType type, int i) {
-        this.type = type;
+    EventSubType(List<EventType> types, int i) {
+        this.types = types;
         this.subType = i;
     }
 }

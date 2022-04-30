@@ -125,7 +125,9 @@ public class HomeCapability extends RestCapability<HomeApi> {
         } catch (NetatmoException e) {
             logger.warn("Error gettting Home informations : {}", e.getMessage());
         }
-        handler.getActiveChildren().forEach(handler -> result.addAll(handler.updateReadings()));
+        // Seems to trigger any HTTP request getevents for camera and person being called twice
+        // To be confirmed by Gael that this is ok to remove this call at this place and not at another
+        // handler.getActiveChildren().forEach(handler -> result.addAll(handler.updateReadings()));
         return result;
     }
 }

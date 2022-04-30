@@ -31,12 +31,22 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class EventChannelHelper extends ChannelHelper {
+    private boolean isLocal;
+    private @Nullable String vpnUrl;
+    private @Nullable String localUrl;
+
     public EventChannelHelper() {
         this(GROUP_LAST_EVENT);
     }
 
     protected EventChannelHelper(String groupName) {
         super(groupName);
+    }
+
+    public void setUrls(String vpnUrl, @Nullable String localUrl) {
+        this.localUrl = localUrl;
+        this.vpnUrl = vpnUrl;
+        this.isLocal = localUrl != null;
     }
 
     @Override
@@ -60,10 +70,20 @@ public class EventChannelHelper extends ChannelHelper {
                 return toStringType(event.getSnapshotUrl());
         }
         if (event instanceof HomeEvent) {
-            if (CHANNEL_EVENT_VIDEO_STATUS.equals(channelId)) {
-                return toStringType(((HomeEvent) event).getVideoStatus());
+            HomeEvent homeEvent = (HomeEvent) event;
+            switch (channelId) {
+                case CHANNEL_EVENT_VIDEO_STATUS:
+                    return homeEvent.getVideoId() != null ? toStringType(homeEvent.getVideoStatus()) : UnDefType.NULL;
+                case CHANNEL_EVENT_VIDEO_URL:
+                    return toStringType(getStreamURL(homeEvent.getVideoId()));
             }
         }
         return null;
+    }
+
+    private @Nullable String getStreamURL(@Nullable String videoId) {
+        String url = isLocal ? localUrl : vpnUrl;
+        return url == null || videoId == null ? null
+                : String.format("%s/vod/%s/index%s.m3u8", url, videoId, isLocal ? "_local" : "");
     }
 }
