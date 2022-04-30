@@ -379,8 +379,8 @@ public class AndroidDebugBridgeDevice {
         }
     }
 
-    public void startIntent(String command) throws NumberFormatException, AndroidDebugBridgeDeviceException,
-            ExecutionException, InterruptedException, TimeoutException {
+    public void startIntent(String command)
+            throws AndroidDebugBridgeDeviceException, ExecutionException, InterruptedException, TimeoutException {
         String[] commandParts = command.split("\\|\\|");
         if (commandParts.length == 0) {
             throw new AndroidDebugBridgeDeviceException("Empty command");
@@ -475,6 +475,11 @@ public class AndroidDebugBridgeDevice {
                 case "<e>":
                 case "<es>":
                     valueParts = argValue.split(" ");
+                    if (valueParts.length != 2) {
+                        logger.warn("argument '{}' requires a key value pair separated by space, current value '{}'",
+                                argName, argValue);
+                        return;
+                    }
                     if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[0]).matches()) {
                         logger.warn("{}, insecure input value", valueParts[0]);
                         return;
@@ -487,6 +492,11 @@ public class AndroidDebugBridgeDevice {
                     break;
                 case "<ez>":
                     valueParts = argValue.split(" ");
+                    if (valueParts.length != 2) {
+                        logger.warn("argument '{}' requires a key value pair separated by space, current value '{}'",
+                                argName, argValue);
+                        return;
+                    }
                     if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[0]).matches()) {
                         logger.warn("{}, insecure input value", valueParts[0]);
                         return;
@@ -499,6 +509,11 @@ public class AndroidDebugBridgeDevice {
                     break;
                 case "<ei>":
                     valueParts = argValue.split(" ");
+                    if (valueParts.length != 2) {
+                        logger.warn("argument '{}' requires a key value pair separated by space, current value '{}'",
+                                argName, argValue);
+                        return;
+                    }
                     if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[0]).matches()) {
                         logger.warn("{}, insecure input value", valueParts[0]);
                         return;
@@ -507,10 +522,20 @@ public class AndroidDebugBridgeDevice {
                         logger.warn("{}, insecure input value", valueParts[1]);
                         return;
                     }
-                    extraIntegers.put(valueParts[0], Integer.parseInt(valueParts[1]));
+                    try {
+                        extraIntegers.put(valueParts[0], Integer.parseInt(valueParts[1]));
+                    } catch (NumberFormatException e) {
+                        logger.warn("Unable to parse {} as integer", valueParts[1]);
+                        return;
+                    }
                     break;
                 case "<el>":
                     valueParts = argValue.split(" ");
+                    if (valueParts.length != 2) {
+                        logger.warn("argument '{}' requires a key value pair separated by space, current value '{}'",
+                                argName, argValue);
+                        return;
+                    }
                     if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[0]).matches()) {
                         logger.warn("{}, insecure input value", valueParts[0]);
                         return;
@@ -519,10 +544,20 @@ public class AndroidDebugBridgeDevice {
                         logger.warn("{}, insecure input value", valueParts[1]);
                         return;
                     }
-                    extraLongs.put(valueParts[0], Long.parseLong(valueParts[1]));
+                    try {
+                        extraLongs.put(valueParts[0], Long.parseLong(valueParts[1]));
+                    } catch (NumberFormatException e) {
+                        logger.warn("Unable to parse {} as long", valueParts[1]);
+                        return;
+                    }
                     break;
                 case "<ef>":
                     valueParts = argValue.split(" ");
+                    if (valueParts.length != 2) {
+                        logger.warn("argument '{}' requires a key value pair separated by space, current value '{}'",
+                                argName, argValue);
+                        return;
+                    }
                     if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[0]).matches()) {
                         logger.warn("{}, insecure input value", valueParts[0]);
                         return;
@@ -531,10 +566,20 @@ public class AndroidDebugBridgeDevice {
                         logger.warn("{}, insecure input value", valueParts[1]);
                         return;
                     }
-                    extraFloats.put(valueParts[0], Float.parseFloat(valueParts[1]));
+                    try {
+                        extraFloats.put(valueParts[0], Float.parseFloat(valueParts[1]));
+                    } catch (NumberFormatException e) {
+                        logger.warn("Unable to parse {} as float", valueParts[1]);
+                        return;
+                    }
                     break;
                 case "<eu>":
                     valueParts = argValue.split(" ");
+                    if (valueParts.length != 2) {
+                        logger.warn("argument '{}' requires a key value pair separated by space, current value '{}'",
+                                argName, argValue);
+                        return;
+                    }
                     if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[0]).matches()) {
                         logger.warn("{}, insecure input value", valueParts[0]);
                         return;
