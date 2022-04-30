@@ -16,6 +16,8 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +31,7 @@ import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.channelhelper.EventChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -44,6 +47,7 @@ import org.openhab.core.types.StateOption;
 @NonNullByDefault
 public class CameraCapability extends Capability {
     private final CameraChannelHelper cameraHelper;
+    private final EventChannelHelper eventHelper;
     protected @Nullable String localUrl;
     private final NetatmoDescriptionProvider descriptionProvider;
     private final ChannelUID personChannelUID;
@@ -56,6 +60,9 @@ public class CameraCapability extends Capability {
         this.cameraHelper = (CameraChannelHelper) channelHelpers.stream().filter(c -> c instanceof CameraChannelHelper)
                 .findFirst().orElseThrow(() -> new IllegalArgumentException(
                         "CameraHandler must have a CameraChannelHelper, file a bug."));
+        this.eventHelper = (EventChannelHelper) channelHelpers.stream().filter(c -> c instanceof EventChannelHelper)
+                .findFirst().orElseThrow(() -> new IllegalArgumentException(
+                        "CameraHandler must have a EventChannelHelper, file a bug."));
     }
 
     @Override
@@ -68,6 +75,7 @@ public class CameraCapability extends Capability {
                     ? handler.getHomeCapability(SecurityCapability.class).map(cap -> cap.ping(vpnUrl)).orElse(null)
                     : null;
             cameraHelper.setUrls(vpnUrl, localUrl);
+            eventHelper.setUrls(vpnUrl, localUrl);
         }
     }
 
@@ -97,7 +105,20 @@ public class CameraCapability extends Capability {
         handler.getHomeCapability(SecurityCapability.class).ifPresent(cap -> {
             Collection<HomeEvent> events = cap.getCameraEvents(handler.getId());
             if (!events.isEmpty()) {
-                result.add(events.iterator().next());
+                // Get the most recent event
+                List<HomeEvent> listEvents = new ArrayList<>(events);
+                Collections.sort(listEvents, new Comparator<HomeEvent>() {
+                    @Override
+                    public int compare(HomeEvent o1, HomeEvent o2) {
+                        if (o1.getTime().isBefore(o2.getTime())) {
+                            return 1;
+                        } else if (o1.getTime().isAfter(o2.getTime())) {
+                            return -1;
+                        }
+                        return 0;
+                    }
+                });
+                result.add(listEvents.get(0));
             }
         });
         return result;

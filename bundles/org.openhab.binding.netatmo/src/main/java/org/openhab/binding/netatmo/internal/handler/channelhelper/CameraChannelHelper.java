@@ -17,8 +17,6 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.Event;
-import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
@@ -71,21 +69,6 @@ public class CameraChannelHelper extends ChannelHelper {
             }
         }
         return null;
-    }
-
-    @Override
-    protected @Nullable State internalGetEvent(String channelId, Event event) {
-        if (event instanceof HomeEvent && CHANNEL_EVENT_VIDEO_URL.equals(channelId)) {
-            HomeEvent homeEvent = (HomeEvent) event;
-            return toStringType(getStreamURL(homeEvent.getVideoId()));
-        }
-        return null;
-    }
-
-    private @Nullable String getStreamURL(@Nullable String videoId) {
-        String url = isLocal ? localUrl : vpnUrl;
-        return url == null || videoId == null ? null
-                : String.format("%s/vod/%s/index%s.m3u8", url, videoId, isLocal ? "_local" : "");
     }
 
     private @Nullable String getLivePictureURL() {
