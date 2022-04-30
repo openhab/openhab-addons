@@ -391,7 +391,8 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
         updateState(DEVICE_CHANNEL_FAN_SPEED_ENABLED, new DecimalType(purifierStatus.result.result.level));
         updateState(DEVICE_CHANNEL_ERROR_CODE, new DecimalType(purifierStatus.result.result.deviceErrorCode));
         updateState(DEVICE_CHANNEL_AIRQUALITY_BASIC, new DecimalType(purifierStatus.result.result.airQuality));
-        updateState(DEVICE_CHANNEL_AIRQUALITY_PM25, new DecimalType(purifierStatus.result.result.airQualityValue));
+        updateState(DEVICE_CHANNEL_AIRQUALITY_PM25,
+                new QuantityType<>(purifierStatus.result.result.airQualityValue, Units.MICROGRAM_PER_CUBICMETRE));
 
         updateState(DEVICE_CHANNEL_AF_CONFIG_DISPLAY_FOREVER,
                 OnOffType.from(purifierStatus.result.result.configuration.displayForever));
