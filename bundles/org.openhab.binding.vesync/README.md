@@ -81,7 +81,7 @@ Channel names in **bold** are read/write, everything else is read-only
 | **nightLightMode**   | String               | The night lights mode                                      | 200S, 300S        | [on, dim, off]        |
 | filterLifePercentage | Number:Dimensionless | The remaining filter life as a percentage                  | 600S, 400S, 300S  |                       |
 | airQuality           | Number:Dimensionless | The air quality as represented by the Core200S / Core300S  | 600S, 400S, 300S  |                       |
-| airQualityPM25       | Number:Dimensionless | The air quality as represented by the Core400S             | 600S, 400S, 300S  |                       |
+| airQualityPM25       | Number:Density       | The air quality as represented by the Core400S             | 600S, 400S, 300S  |                       |
 | errorCode            | Number:Dimensionless | The error code reported by the device                      | 600S, 400S, 300S  |                       |
 | timerExpiry          | DateTime             | The expected expiry time of the current timer              | 600S, 400S        |                       |
 | schedulesCount       | Number:Dimensionless | The number schedules configured                            | 600S, 400S        |                       |
@@ -128,17 +128,17 @@ Bridge vesync:bridge:vesyncServers [username="<USERNAME>", password="<PASSWORD>"
 #### Air Purifier Core 400S / 600S Model
 
 ```
-Switch               LoungeAPPower        	   "Lounge Air Purifier Power"                                      { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:enabled" }
-Switch               LoungeAPDisplay      	   "Lounge Air Purifier Display"                                    { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:display" }
+Switch               LoungeAPPower        	        "Lounge Air Purifier Power"                                 { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:enabled" }
+Switch               LoungeAPDisplay      	        "Lounge Air Purifier Display"                               { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:display" }
 Switch               LoungeAPControlsLock          "Lounge Air Purifier Controls Locked"                        { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:childLock" }
 Number:Dimensionless LoungeAPFilterRemainingUse    "Lounge Air Purifier Filter Remaining [%.0f %unit%]"         { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:filterLifePercentage" }
 String               LoungeAPMode                  "Lounge Air Purifier Mode [%s]"                              { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:fanMode" }
 Number:Dimensionless LoungeAPManualFanSpeed        "Lounge Air Purifier Manual Fan Speed"                       { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:manualFanSpeed" }
-Number:Dimensionless LoungeAPAirQuality		   "Lounge Air Purifier Air Quality [%.0f% PM2.5]"                  { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:airQualityPM25" }
-Number               LoungeAPErrorCode     	   "Lounge Air Purifier Error Code"                                 { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:errorCode" }
-String               LoungeAPAutoMode		   "Lounge Air Purifier Auto Mode"                                  { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
-Number               LoungeAPAutoRoomSize 	   "Lounge Air Purifier Auto Room Size [%.0f% sqft]"                { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
-Number:Time          LoungeAPTimerLeft		   "Lounge Air Purifier Timer Left [%1$Tp]"                         { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
+Number:Density       LoungeAPAirQuality		       "Lounge Air Purifier Air Quality [%.0f% %unit%]"             { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:airQualityPM25" }
+Number               LoungeAPErrorCode     	       "Lounge Air Purifier Error Code"                             { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:errorCode" }
+String               LoungeAPAutoMode		       "Lounge Air Purifier Auto Mode"                              { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
+Number               LoungeAPAutoRoomSize 	       "Lounge Air Purifier Auto Room Size [%.0f% sqft]"            { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
+Number:Time          LoungeAPTimerLeft		       "Lounge Air Purifier Timer Left [%1$Tp]"                     { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
 DateTime             LoungeAPTimerExpire           "Lounge Air Purifier Timer Expiry [%1$tA %1$tI:%1$tM %1$Tp]" { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:timerExpiry" }
 Number               LoungeAPSchedulesCount 	   "Lounge Air Purifier Schedules Count"                        { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:schedulesCount" }
 ```
@@ -146,18 +146,18 @@ Number               LoungeAPSchedulesCount 	   "Lounge Air Purifier Schedules C
 #### Air Purifier Core 200S/300S Model
 
 ```
-Switch               LoungeAPPower        	   "Lounge Air Purifier Power"                                      { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:enabled" }
-Switch               LoungeAPDisplay      	   "Lounge Air Purifier Display"                                    { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:display" }
+Switch               LoungeAPPower        	       "Lounge Air Purifier Power"                                  { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:enabled" }
+Switch               LoungeAPDisplay      	       "Lounge Air Purifier Display"                                { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:display" }
 String               LoungeAPNightLightMode        "Lounge Air Purifier Night Light Mode"                       { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:nightLightMode" }
 Switch               LoungeAPControlsLock          "Lounge Air Purifier Controls Locked"                        { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:childLock" }
 Number:Dimensionless LoungeAPFilterRemainingUse    "Lounge Air Purifier Filter Remaining [%.0f %unit%]"         { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:filterLifePercentage" }
 String               LoungeAPMode                  "Lounge Air Purifier Mode [%s]"                              { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:fanMode" }
 Number:Dimensionless LoungeAPManualFanSpeed        "Lounge Air Purifier Manual Fan Speed"                       { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:manualFanSpeed" }
-Number:Dimensionless LoungeAPAirQuality		   "Lounge Air Purifier Air Quality [%.0f%]"                        { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:airQuality" }
-Number               LoungeAPErrorCode     	   "Lounge Air Purifier Error Code"                                 { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:errorCode" }
-String               LoungeAPAutoMode		   "Lounge Air Purifier Auto Mode"                                  { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
-Number               LoungeAPAutoRoomSize 	   "Lounge Air Purifier Auto Room Size [%.0f% sqft]"                { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
-Number:Time          LoungeAPTimerLeft		   "Lounge Air Purifier Timer Left [%1$Tp]"                         { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
+Number:Density       LoungeAPAirQuality		       "Lounge Air Purifier Air Quality [%.0f%]"                    { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:airQuality" }
+Number               LoungeAPErrorCode     	       "Lounge Air Purifier Error Code"                             { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:errorCode" }
+String               LoungeAPAutoMode		       "Lounge Air Purifier Auto Mode"                              { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
+Number               LoungeAPAutoRoomSize 	       "Lounge Air Purifier Auto Room Size [%.0f% sqft]"            { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
+Number:Time          LoungeAPTimerLeft		       "Lounge Air Purifier Timer Left [%1$Tp]"                     { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
 DateTime             LoungeAPTimerExpire           "Lounge Air Purifier Timer Expiry [%1$tA %1$tI:%1$tM %1$Tp]" { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:timerExpiry" }
 Number               LoungeAPSchedulesCount 	   "Lounge Air Purifier Schedules Count"                        { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:schedulesCount" }
 ```
