@@ -27,7 +27,7 @@ import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.handler.EaseeHandler;
 import org.openhab.binding.easee.internal.model.GenericErrorResponse;
 import org.openhab.binding.easee.internal.model.account.AuthenticationDataResponse;
-import org.openhab.binding.easee.internal.model.account.AuthenticationResultData;
+import org.openhab.binding.easee.internal.model.account.ResultData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +53,8 @@ public class Login extends AbstractCommand implements EaseeCommand {
     private final LoginData loginData;
 
     public Login(EaseeHandler handler) {
-        super(handler);
+        // boolean flags do not matter as "onComplete" is overwritten in this class.
+        super(handler, false, false);
         loginData = new LoginData(handler.getConfiguration().getUsername(), handler.getConfiguration().getPassword());
     }
 
@@ -76,7 +77,7 @@ public class Login extends AbstractCommand implements EaseeCommand {
         logger.debug("onComplete()");
 
         String json = getContentAsString(StandardCharsets.UTF_8);
-        AuthenticationResultData data = new AuthenticationResultData();
+        ResultData data = new ResultData();
 
         switch (getCommunicationStatus().getHttpCode()) {
             case OK:

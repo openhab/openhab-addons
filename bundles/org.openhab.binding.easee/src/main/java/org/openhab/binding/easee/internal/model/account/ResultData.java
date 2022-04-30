@@ -22,16 +22,16 @@ import org.openhab.binding.easee.internal.model.GenericErrorResponse;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class AuthenticationResultData {
-    private @Nullable AuthenticationDataResponse successResponse;
+public class ResultData {
+    private @Nullable AuthenticationDataResponse authenticationResponse;
     private @Nullable GenericErrorResponse errorResponse;
 
     public @Nullable AuthenticationDataResponse getSuccessResponse() {
-        return successResponse;
+        return authenticationResponse;
     }
 
     public void setSuccessResponse(@Nullable AuthenticationDataResponse successResponse) {
-        this.successResponse = successResponse;
+        this.authenticationResponse = successResponse;
     }
 
     public @Nullable GenericErrorResponse getErrorResponse() {

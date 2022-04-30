@@ -33,7 +33,7 @@ import org.openhab.binding.easee.internal.command.account.RefreshToken;
 import org.openhab.binding.easee.internal.handler.EaseeHandler;
 import org.openhab.binding.easee.internal.model.GenericErrorResponse;
 import org.openhab.binding.easee.internal.model.account.AuthenticationDataResponse;
-import org.openhab.binding.easee.internal.model.account.AuthenticationResultData;
+import org.openhab.binding.easee.internal.model.account.ResultData;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
@@ -122,7 +122,7 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
 
         private final StatusUpdateListener authenticationListener = new StatusUpdateListener() {
             @Override
-            public void update(CommunicationStatus status, @Nullable AuthenticationResultData data) {
+            public void update(CommunicationStatus status, @Nullable ResultData data) {
                 GenericErrorResponse response = data != null ? data.getErrorResponse() : null;
                 String msg = response != null ? response.getTitle() : "";
                 if (msg.isBlank()) {
@@ -230,7 +230,7 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
 
                 StatusUpdateListener statusUpdater = new StatusUpdateListener() {
                     @Override
-                    public void update(CommunicationStatus status, @Nullable AuthenticationResultData data) {
+                    public void update(CommunicationStatus status, @Nullable ResultData data) {
                         GenericErrorResponse response = data != null ? data.getErrorResponse() : null;
                         String msg = response != null ? response.getTitle() : "";
                         if (msg.isBlank()) {

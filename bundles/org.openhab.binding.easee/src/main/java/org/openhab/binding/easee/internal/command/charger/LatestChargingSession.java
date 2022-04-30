@@ -28,12 +28,12 @@ import org.openhab.binding.easee.internal.handler.EaseeHandler;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class State extends AbstractCommand implements EaseeCommand {
+public class LatestChargingSession extends AbstractCommand implements EaseeCommand {
 
-    public State(EaseeHandler handler) {
-        // retry does not make much sense as it is a polling command, command should always succeed therefore update
-        // handler on failure.
-        super(handler, false, true);
+    public LatestChargingSession(EaseeHandler handler) {
+        // retry does not make much sense as it is a polling command, command might fail if no charging sessions are
+        // available, therefore just ignore failure.
+        super(handler, false, false);
     }
 
     @Override
@@ -44,13 +44,13 @@ public class State extends AbstractCommand implements EaseeCommand {
 
     @Override
     protected @NonNull String getURL() {
-        String url = STATE_URL;
+        String url = LATEST_CHARGING_SESSION_URL;
         url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
         return url;
     }
 
     @Override
     protected String getChannelGroup() {
-        return CHANNEL_GROUP_CHARGER_STATE;
+        return CHANNEL_GROUP_CHARGER_LATEST_SESSION;
     }
 }

@@ -28,9 +28,9 @@ import org.openhab.binding.easee.internal.handler.EaseeHandler;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class State extends AbstractCommand implements EaseeCommand {
+public class GetConfiguration extends AbstractCommand implements EaseeCommand {
 
-    public State(EaseeHandler handler) {
+    public GetConfiguration(EaseeHandler handler) {
         // retry does not make much sense as it is a polling command, command should always succeed therefore update
         // handler on failure.
         super(handler, false, true);
@@ -44,13 +44,13 @@ public class State extends AbstractCommand implements EaseeCommand {
 
     @Override
     protected @NonNull String getURL() {
-        String url = STATE_URL;
+        String url = GET_CONFIGURATION_URL;
         url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
         return url;
     }
 
     @Override
     protected String getChannelGroup() {
-        return CHANNEL_GROUP_CHARGER_STATE;
+        return CHANNEL_GROUP_CHARGER_CONFIG;
     }
 }

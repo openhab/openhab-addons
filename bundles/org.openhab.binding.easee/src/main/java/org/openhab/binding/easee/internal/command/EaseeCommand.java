@@ -20,7 +20,7 @@ import org.eclipse.jetty.client.api.Response.ContentListener;
 import org.eclipse.jetty.client.api.Response.FailureListener;
 import org.eclipse.jetty.client.api.Response.SuccessListener;
 import org.openhab.binding.easee.internal.connector.StatusUpdateListener;
-import org.openhab.binding.easee.internal.model.account.AuthenticationResultData;
+import org.openhab.binding.easee.internal.model.account.ResultData;
 
 /**
  * public interface for all commands
@@ -49,7 +49,7 @@ public interface EaseeCommand extends SuccessListener, FailureListener, ContentL
      * updates the listener's status, provides additional login data
      *
      */
-    void updateListenerStatus(@Nullable AuthenticationResultData data);
+    void updateListenerStatus(@Nullable ResultData data);
 
     /**
      * register a listener

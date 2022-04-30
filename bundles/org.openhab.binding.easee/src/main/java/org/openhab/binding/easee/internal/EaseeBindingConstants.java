@@ -39,6 +39,8 @@ public class EaseeBindingConstants {
     // List of all channel groups
     public static final String CHANNEL_GROUP_NONE = "";
     public static final String CHANNEL_GROUP_CHARGER_STATE = "charger_state";
+    public static final String CHANNEL_GROUP_CHARGER_CONFIG = "charger_config";
+    public static final String CHANNEL_GROUP_CHARGER_LATEST_SESSION = "charger_latest_session";
 
     // Channel types
     public static final String CHANNEL_TYPE_SWITCH = "Switch";
@@ -61,6 +63,8 @@ public class EaseeBindingConstants {
     public static final String LOGIN_URL = "https://api.easee.cloud/api/accounts/login";
     public static final String REFRESH_TOKEN_URL = "https://api.easee.cloud/api/accounts/refresh_token";
     public static final String STATE_URL = "https://api.easee.cloud/api/chargers/{id}/state";
+    public static final String GET_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/config";
+    public static final String LATEST_CHARGING_SESSION_URL = "https://api.easee.cloud/api/chargers/{id}/sessions/latest";
 
     // other
     public static final Date INVALID_DATE = new GregorianCalendar(1900, 1, 1).getTime();

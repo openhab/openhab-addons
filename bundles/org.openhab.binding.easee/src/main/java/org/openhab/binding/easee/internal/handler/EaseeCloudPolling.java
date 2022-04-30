@@ -13,13 +13,15 @@
 package org.openhab.binding.easee.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.easee.internal.command.EaseeCommand;
+import org.openhab.binding.easee.internal.command.charger.GetConfiguration;
+import org.openhab.binding.easee.internal.command.charger.LatestChargingSession;
 import org.openhab.binding.easee.internal.command.charger.State;
+import org.openhab.binding.easee.internal.connector.WebInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Polling worker class. This is responsible for periodic polling of status values.
+ * Polling worker class. This is responsible for periodic polling of values from Easse Cloud API.
  *
  * @author Alexander Friese - initial contribution
  */
@@ -47,7 +49,9 @@ public class EaseeCloudPolling implements Runnable {
     @Override
     public void run() {
         logger.debug("polling Easee Cloud {}", handler.getConfiguration());
-        EaseeCommand command = new State(handler);
-        handler.getWebInterface().enqueueCommand(command);
+        WebInterface easee = handler.getWebInterface();
+        easee.enqueueCommand(new State(handler));
+        easee.enqueueCommand(new GetConfiguration(handler));
+        easee.enqueueCommand(new LatestChargingSession(handler));
     }
 }

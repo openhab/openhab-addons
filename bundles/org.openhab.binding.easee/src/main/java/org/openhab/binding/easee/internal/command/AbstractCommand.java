@@ -36,8 +36,9 @@ import org.eclipse.jetty.http.HttpStatus.Code;
 import org.openhab.binding.easee.internal.connector.CommunicationStatus;
 import org.openhab.binding.easee.internal.connector.StatusUpdateListener;
 import org.openhab.binding.easee.internal.handler.EaseeHandler;
+import org.openhab.binding.easee.internal.model.GenericErrorResponse;
 import org.openhab.binding.easee.internal.model.GenericResponseTransformer;
-import org.openhab.binding.easee.internal.model.account.AuthenticationResultData;
+import org.openhab.binding.easee.internal.model.account.ResultData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,14 +89,26 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     private int retries = 0;
 
     /**
+     * retry active
+     */
+    private final boolean retryOnFailure;
+
+    /**
+     * set handler offline on error
+     */
+    private final boolean updateHandlerOnFailure;
+
+    /**
      * the constructor
      *
      * @param config
      */
-    public AbstractCommand(EaseeHandler handler) {
+    public AbstractCommand(EaseeHandler handler, boolean retryOnFailure, boolean updateHandlerOnFailure) {
         this.communicationStatus = new CommunicationStatus();
         this.transformer = new GenericResponseTransformer(handler);
         this.handler = handler;
+        this.updateHandlerOnFailure = updateHandlerOnFailure;
+        this.retryOnFailure = retryOnFailure;
         this.gson = new Gson();
     }
 
@@ -142,7 +155,6 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     public void onContent(@Nullable Response response, @Nullable ByteBuffer content) {
         super.onContent(response, content);
         logger.debug("received content, length: {}", getContentAsString().length());
-        logger.debug("received content: {}", getContentAsString());
     }
 
     /**
@@ -150,23 +162,35 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      */
     @Override
     public void onComplete(@Nullable Result result) {
-        if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
-            updateListenerStatus();
-            if (retries++ < MAX_RETRIES) {
-                handler.getWebInterface().enqueueCommand(this);
-            }
-        } else {
-            String json = getContentAsString(StandardCharsets.UTF_8);
-            if (json != null) {
-                logger.debug("JSON String: {}", json);
-                Type genericStringMap = new TypeToken<Map<String, Object>>() {
-                }.getType();
-                Map<String, Object> jsonObject = gson.fromJson(json, genericStringMap);
-                if (jsonObject != null) {
-                    logger.info("success");
-                    handler.updateChannelStatus(transformer.transform(jsonObject, CHANNEL_GROUP_CHARGER_STATE));
+        String json = getContentAsString(StandardCharsets.UTF_8);
+        ResultData data = new ResultData();
+
+        logger.debug("JSON String: {}", json);
+        switch (getCommunicationStatus().getHttpCode()) {
+            case OK:
+                if (json != null) {
+                    Type genericStringMap = new TypeToken<Map<String, Object>>() {
+                    }.getType();
+                    Map<String, Object> jsonObject = gson.fromJson(json, genericStringMap);
+                    if (jsonObject != null) {
+                        logger.info("success");
+                        handler.updateChannelStatus(transformer.transform(jsonObject, CHANNEL_GROUP_CHARGER_STATE));
+                    }
                 }
-            }
+                break;
+            default:
+                GenericErrorResponse errorResponse = gson.fromJson(json, GenericErrorResponse.class);
+                if (updateHandlerOnFailure) {
+                    data.setErrorResponse(errorResponse);
+                    updateListenerStatus(data);
+                } else {
+                    logger.info("command failed, url: {} - result: {}", getURL(),
+                            errorResponse == null ? "null" : errorResponse.getTitle());
+                }
+
+                if (retryOnFailure && retries++ < MAX_RETRIES) {
+                    handler.getWebInterface().enqueueCommand(this);
+                }
         }
     }
 
@@ -209,7 +233,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     }
 
     @Override
-    public void updateListenerStatus(@Nullable AuthenticationResultData data) {
+    public void updateListenerStatus(@Nullable ResultData data) {
         if (listener != null) {
             listener.update(communicationStatus, data);
         }

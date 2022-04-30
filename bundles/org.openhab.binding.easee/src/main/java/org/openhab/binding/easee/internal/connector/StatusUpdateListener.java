@@ -14,7 +14,7 @@ package org.openhab.binding.easee.internal.connector;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.easee.internal.model.account.AuthenticationResultData;
+import org.openhab.binding.easee.internal.model.account.ResultData;
 
 /**
  * callback interface to update the status of the {@link WebInterface}
@@ -23,5 +23,5 @@ import org.openhab.binding.easee.internal.model.account.AuthenticationResultData
  */
 @NonNullByDefault
 public interface StatusUpdateListener {
-    void update(CommunicationStatus status, @Nullable AuthenticationResultData data);
+    void update(CommunicationStatus status, @Nullable ResultData data);
 }
