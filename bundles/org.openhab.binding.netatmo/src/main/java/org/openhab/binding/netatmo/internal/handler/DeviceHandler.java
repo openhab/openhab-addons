@@ -53,7 +53,7 @@ public class DeviceHandler extends BaseBridgeHandler implements CommonInterface 
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("bridgeStatusChanged for bridge {}", getThing().getUID());
+        logger.debug("bridgeStatusChanged for bridge {} to {}", getThing().getUID(), bridgeStatusInfo);
         commonInitialize();
     }
 

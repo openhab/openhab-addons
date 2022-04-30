@@ -175,10 +175,7 @@ public interface CommonInterface {
     }
 
     default void proceedWithUpdate() {
-        for (NAObject dataSet : updateReadings()) {
-            setNewData(dataSet);
-        }
-        // updateReadings().forEach(dataSet -> setNewData(dataSet));
+        updateReadings().forEach(dataSet -> setNewData(dataSet));
     }
 
     default List<NAObject> updateReadings() {

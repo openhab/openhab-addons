@@ -110,7 +110,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private void openConnection() {
         try {
             Credentials credentials = thingConf.getCredentials();
-            logger.debug("Binding configuration updated, connecting to Netatmo API.");
+            logger.debug("Connecting to Netatmo API.");
             try {
                 connectApi.authenticate(credentials, bindingConf.features);
                 updateStatus(ThingStatus.ONLINE);
