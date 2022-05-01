@@ -62,6 +62,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -590,15 +591,17 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                 break;
         }
 
-        logger.debug("{} - Response: {}", zoneToUpdate, responseCode);
-        logger.debug("{} - Power: {}", zoneToUpdate, powerState);
-        logger.debug("{} - Mute: {}", zoneToUpdate, muteState);
-        logger.debug("{} - Volume: {}", zoneToUpdate, volumeState);
-        logger.debug("{} - Volume in dB: {}", zoneToUpdate, (actualVolume != null) ? actualVolume.getValue() : "");
-        logger.debug("{} - Max Volume: {}", zoneToUpdate, maxVolumeState);
-        logger.debug("{} - Input: {}", zoneToUpdate, inputState);
-        logger.debug("{} - Soundprogram: {}", zoneToUpdate, soundProgramState);
-        logger.debug("{} - Sleep: {}", zoneToUpdate, sleepState);
+        if (logger.isTraceEnabled()) {
+            logger.trace("{} - Response: {}", zoneToUpdate, responseCode);
+            logger.trace("{} - Power: {}", zoneToUpdate, powerState);
+            logger.trace("{} - Mute: {}", zoneToUpdate, muteState);
+            logger.trace("{} - Volume: {}", zoneToUpdate, volumeState);
+            logger.trace("{} - Volume in dB: {}", zoneToUpdate, (actualVolume != null) ? actualVolume.getValue() : "");
+            logger.trace("{} - Max Volume: {}", zoneToUpdate, maxVolumeState);
+            logger.trace("{} - Input: {}", zoneToUpdate, inputState);
+            logger.trace("{} - Soundprogram: {}", zoneToUpdate, soundProgramState);
+            logger.trace("{} - Sleep: {}", zoneToUpdate, sleepState);
+        }
 
         if (!powerState.isEmpty()) {
             channel = new ChannelUID(getThing().getUID(), zoneToUpdate, CHANNEL_POWER);
@@ -673,15 +676,18 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             soundProgramState = targetObject.getSoundProgram();
             sleepState = targetObject.getSleep();
 
-            logger.debug("{} - Response: {}", zoneToUpdate, responseCode);
-            logger.debug("{} - Power: {}", zoneToUpdate, powerState);
-            logger.debug("{} - Mute: {}", zoneToUpdate, muteState);
-            logger.debug("{} - Volume: {}", zoneToUpdate, volumeState);
-            logger.debug("{} - Volume in dB: {}", zoneToUpdate, (actualVolume != null) ? actualVolume.getValue() : "");
-            logger.debug("{} - Max Volume: {}", zoneToUpdate, maxVolumeState);
-            logger.debug("{} - Input: {}", zoneToUpdate, inputState);
-            logger.debug("{} - Soundprogram: {}", zoneToUpdate, soundProgramState);
-            logger.debug("{} - Sleep: {}", zoneToUpdate, sleepState);
+            if (logger.isTraceEnabled()) {
+                logger.trace("{} - Response: {}", zoneToUpdate, responseCode);
+                logger.trace("{} - Power: {}", zoneToUpdate, powerState);
+                logger.trace("{} - Mute: {}", zoneToUpdate, muteState);
+                logger.trace("{} - Volume: {}", zoneToUpdate, volumeState);
+                logger.trace("{} - Volume in dB: {}", zoneToUpdate,
+                        (actualVolume != null) ? actualVolume.getValue() : "");
+                logger.trace("{} - Max Volume: {}", zoneToUpdate, maxVolumeState);
+                logger.trace("{} - Input: {}", zoneToUpdate, inputState);
+                logger.trace("{} - Soundprogram: {}", zoneToUpdate, soundProgramState);
+                logger.trace("{} - Sleep: {}", zoneToUpdate, sleepState);
+            }
 
             switch (responseCode) {
                 case "0":
@@ -727,9 +733,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                                         break;
                                     case CHANNEL_VOLUMEDB:
                                         if (localZone.equals(zoneToUpdate)) {
-                                            if (actualVolume != null)
+                                            if (actualVolume != null) {
                                                 updateState(channelUID,
                                                         new QuantityType<>(actualVolume.getValue(), Units.DECIBEL));
+                                            } else {
+                                                updateState(channelUID, UnDefType.UNDEF);
+                                            }
                                         }
                                         break;
                                     case CHANNEL_INPUT:
