@@ -83,7 +83,6 @@ public class EventChannelHelper extends ChannelHelper {
 
     private @Nullable String getStreamURL(@Nullable String videoId) {
         String url = isLocal ? localUrl : vpnUrl;
-        return url == null || videoId == null ? null
-                : String.format("%s/vod/%s/index%s.m3u8", url, videoId, isLocal ? "_local" : "");
+        return url == null || videoId == null ? null : String.format("%s/vod/%s/index.m3u8", url, videoId);
     }
 }
