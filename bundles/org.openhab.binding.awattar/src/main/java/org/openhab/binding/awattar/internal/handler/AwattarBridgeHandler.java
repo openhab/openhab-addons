@@ -16,12 +16,10 @@ import static org.eclipse.jetty.http.HttpMethod.GET;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.BINDING_ID;
 
-import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.zone.ZoneRulesException;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
@@ -37,6 +35,7 @@ import org.openhab.binding.awattar.internal.AwattarBridgeConfiguration;
 import org.openhab.binding.awattar.internal.AwattarPrice;
 import org.openhab.binding.awattar.internal.dto.AwattarApiData;
 import org.openhab.binding.awattar.internal.dto.Datum;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -81,12 +80,14 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     private long minTimestamp = 0;
     private long maxTimestamp = 0;
     private ZoneId zone;
+    private TimeZoneProvider timeZoneProvider;
 
-    public AwattarBridgeHandler(Bridge thing, HttpClient httpClient) {
+    public AwattarBridgeHandler(Bridge thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.httpClient = httpClient;
         url = URLDE;
-        zone = ZoneId.systemDefault();
+        this.timeZoneProvider = timeZoneProvider;
+        zone = timeZoneProvider.getTimeZone();
     }
 
     @Override
@@ -95,15 +96,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         AwattarBridgeConfiguration config = getConfigAs(AwattarBridgeConfiguration.class);
         vatFactor = 1 + (config.vatPercent / 100);
         basePrice = config.basePrice;
-        try {
-            zone = ZoneId.of(config.timeZone);
-        } catch (ZoneRulesException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.timezone");
-            return;
-        } catch (DateTimeException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.timezone.format");
-            return;
-        }
+        zone = timeZoneProvider.getTimeZone();
         switch (config.country) {
             case "DE":
                 url = URLDE;

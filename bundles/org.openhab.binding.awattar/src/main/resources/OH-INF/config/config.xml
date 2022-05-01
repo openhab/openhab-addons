@@ -24,12 +24,6 @@
 			<description>Specifies the net base price per kWh</description>
 			<default>0</default>
 		</parameter>
-		<parameter name="timeZone" type="text">
-			<label>Time Zone</label>
-			<description>Time zone to apply to the hour definitions. Default CET aligns to the aWATTar API</description>
-			<default>CET</default>
-			<advanced>true</advanced>
-		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:awattar:bestprice">

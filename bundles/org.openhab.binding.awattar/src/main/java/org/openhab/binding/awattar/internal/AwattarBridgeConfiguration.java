@@ -24,6 +24,5 @@ public class AwattarBridgeConfiguration {
 
     public double basePrice;
     public double vatPercent;
-    public String timeZone = "";
     public String country = "";
 }

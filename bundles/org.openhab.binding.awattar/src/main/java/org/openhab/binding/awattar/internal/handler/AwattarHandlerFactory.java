@@ -21,9 +21,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -55,7 +53,6 @@ public class AwattarHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public AwattarHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
-            final @Reference LocaleProvider localeProvider, final @Reference TranslationProvider i18nProvider,
             final @Reference TimeZoneProvider timeZoneProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.timeZoneProvider = timeZoneProvider;
@@ -71,7 +68,7 @@ public class AwattarHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new AwattarBridgeHandler((Bridge) thing, httpClient);
+            return new AwattarBridgeHandler((Bridge) thing, httpClient, timeZoneProvider);
         }
         if (THING_TYPE_PRICE.equals(thingTypeUID)) {
             return new AwattarPriceHandler(thing, timeZoneProvider);

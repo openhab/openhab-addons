@@ -106,7 +106,6 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
                 thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels,
                         getMillisToNextMinute(1, timeZoneProvider), thingRefreshInterval * 1000, TimeUnit.MILLISECONDS);
             }
-
         }
         updateStatus(ThingStatus.UNKNOWN);
     }

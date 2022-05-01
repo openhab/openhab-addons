@@ -9,7 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>aWATTar Hourly Price</label>
+		<label>Hourly Price</label>
 		<description>Prices for one kilowatt-hour at the given hour in Cent</description>
 
 		<channel-groups>
