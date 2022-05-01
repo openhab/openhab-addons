@@ -36,7 +36,7 @@ public class EnergyApi extends RestManager {
 
     /**
      *
-     * The method switchschedule switches the home's schedule to another existing schedule.
+     * The method switchSchedule switches the home's schedule to another existing schedule.
      *
      * @param homeId The id of home (required)
      * @param scheduleId The schedule id. It can be found in the getthermstate response, under the keys
@@ -69,7 +69,7 @@ public class EnergyApi extends RestManager {
 
     /**
      *
-     * The method setroomthermpoint changes the Thermostat manual temperature setpoint.
+     * The method setThermpoint changes the Thermostat manual temperature setpoint.
      *
      * @param homeId The id of home (required)
      * @param roomId The id of the room (required)

@@ -57,7 +57,7 @@ public class ModuleHandler extends BaseThingHandler implements CommonInterface {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("bridgeStatusChanged for thing {}", getThing().getUID());
+        logger.debug("bridgeStatusChanged for thing {} to {}", getThing().getUID(), bridgeStatusInfo);
         commonInitialize();
     }
 

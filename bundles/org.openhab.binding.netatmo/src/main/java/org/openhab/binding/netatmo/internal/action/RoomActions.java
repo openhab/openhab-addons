@@ -133,7 +133,7 @@ public class RoomActions implements ThingActions {
     }
 
     /**
-     * Static setLevel method for Rules DSL backward compatibility
+     * Static setThermpoint method for Rules DSL backward compatibility
      */
     public static void setThermpoint(ThingActions actions, @Nullable Double temp, @Nullable Long endTime,
             @Nullable String mode) {

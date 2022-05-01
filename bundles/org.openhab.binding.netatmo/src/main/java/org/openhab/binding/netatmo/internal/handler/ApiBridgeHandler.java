@@ -88,7 +88,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         super(bridge);
         this.bindingConf = configuration;
         this.httpService = httpService;
-        this.connectApi = new AuthenticationApi(this);
+        this.connectApi = new AuthenticationApi(this, scheduler);
         this.httpClient = httpClient;
         this.deserializer = deserializer;
     }

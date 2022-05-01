@@ -15,7 +15,7 @@ package org.openhab.binding.netatmo.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link NetatmoBinding} class defines common constants, which are used
+ * The {@link NetatmoBindingConstants} class defines common constants, which are used
  * across the whole binding.
  *
  * @author Gaël L'hopital - Initial contribution

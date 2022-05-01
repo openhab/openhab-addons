@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.SERVICE_PID;
 import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.PATH_OAUTH;
 import static org.openhab.core.auth.oauth2client.internal.Keyword.*;
 
@@ -32,7 +31,6 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.api.dto.AccessTokenResponse;
 import org.openhab.binding.netatmo.internal.config.ApiHandlerConfiguration.Credentials;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
-import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,15 +43,16 @@ import org.slf4j.LoggerFactory;
 public class AuthenticationApi extends RestManager {
     private static final URI OAUTH_URI = getApiBaseBuilder().path(PATH_OAUTH).build();
 
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(SERVICE_PID);
+    private final ScheduledExecutorService scheduler;
     private final Logger logger = LoggerFactory.getLogger(AuthenticationApi.class);
 
     private @Nullable ScheduledFuture<?> refreshTokenJob;
     private Optional<AccessTokenResponse> tokenResponse = Optional.empty();
     private String scope = "";
 
-    public AuthenticationApi(ApiBridgeHandler bridge) {
+    public AuthenticationApi(ApiBridgeHandler bridge, ScheduledExecutorService scheduler) {
         super(bridge, FeatureArea.NONE);
+        this.scheduler = scheduler;
     }
 
     public void authenticate(Credentials credentials, Set<FeatureArea> features) throws NetatmoException {
