@@ -13,7 +13,6 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ThermostatZoneType;
 
 /**
  * The {@link TimeTableItem} holds the temp scheduling for a given zone.
@@ -33,9 +32,5 @@ public class TimeTableItem extends NAObject {
 
     public int getZoneId() {
         return zoneId;
-    }
-
-    public ThermostatZoneType getZoneType() {
-        return ThermostatZoneType.fromId(getId());
     }
 }

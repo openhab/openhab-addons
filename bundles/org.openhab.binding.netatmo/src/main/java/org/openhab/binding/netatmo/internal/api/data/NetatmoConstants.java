@@ -70,7 +70,7 @@ public class NetatmoConstants {
         public final String itemType;
         public final StateDescriptionFragment stateDescriptionFragment;
 
-        public MeasureChannelDetails(String measureType, String itemType, String pattern) {
+        private MeasureChannelDetails(String measureType, String itemType, String pattern) {
             this.configURI = URI.create(String.join(":", BINDING_ID, measureType, "config"));
             this.itemType = itemType;
             this.stateDescriptionFragment = BUILDER.withReadOnly(true).withPattern(pattern).build();

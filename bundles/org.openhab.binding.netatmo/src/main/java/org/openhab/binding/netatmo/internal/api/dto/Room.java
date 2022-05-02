@@ -54,7 +54,7 @@ public class Room extends NAObject implements NAModule {
         return heatingPowerRequest;
     }
 
-    public Double getMeasuredTemp() {
+    public double getMeasuredTemp() {
         return thermMeasuredTemperature;
     }
 

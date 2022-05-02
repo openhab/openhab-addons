@@ -26,8 +26,10 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureAre
 import org.openhab.binding.netatmo.internal.handler.capability.AirCareCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.CameraCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
+import org.openhab.binding.netatmo.internal.handler.capability.ChannelHelperCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.EventCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.MeasureCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.ModuleCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PersonCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapability;
@@ -77,60 +79,72 @@ public enum ModuleType {
     ACCOUNT(FeatureArea.NONE, null, null, List.of(), List.of()),
     @SerializedName("NAHome")
     HOME(FeatureArea.NONE, "NAHome", ACCOUNT,
-            List.of(ModuleCapability.class, EventCapability.class, HomeCapability.class),
+            List.of(ModuleCapability.class, EventCapability.class, HomeCapability.class, ChannelHelperCapability.class),
             List.of(HomeSecurityChannelHelper.class, HomeEnergyChannelHelper.class)),
     @SerializedName("NAPerson")
-    PERSON(FeatureArea.SECURITY, "NAPerson", HOME, List.of(EventCapability.class, PersonCapability.class),
+    PERSON(FeatureArea.SECURITY, "NAPerson", HOME,
+            List.of(EventCapability.class, PersonCapability.class, ChannelHelperCapability.class),
             List.of(PersonChannelHelper.class, EventPersonChannelHelper.class)),
     @SerializedName("NACamera")
-    WELCOME(FeatureArea.SECURITY, "NACamera", HOME, List.of(EventCapability.class, CameraCapability.class),
+    WELCOME(FeatureArea.SECURITY, "NACamera", HOME,
+            List.of(EventCapability.class, CameraCapability.class, ChannelHelperCapability.class),
             List.of(CameraChannelHelper.class, SignalChannelHelper.class, EventChannelHelper.class)),
     @SerializedName("NOC")
-    PRESENCE(FeatureArea.SECURITY, "NOC", HOME, List.of(EventCapability.class, PresenceCapability.class),
+    PRESENCE(FeatureArea.SECURITY, "NOC", HOME,
+            List.of(EventCapability.class, PresenceCapability.class, ChannelHelperCapability.class),
             List.of(CameraChannelHelper.class, PresenceChannelHelper.class, SignalChannelHelper.class,
                     EventChannelHelper.class)),
     @SerializedName("NIS")
-    SIREN(FeatureArea.SECURITY, "NIS", HOME, List.of(ModuleCapability.class),
+    SIREN(FeatureArea.SECURITY, "NIS", HOME, List.of(ChannelHelperCapability.class),
             List.of(BatteryChannelHelper.class, TimestampChannelHelper.class, SignalChannelHelper.class)),
     @SerializedName("NDB")
-    DOORBELL(FeatureArea.SECURITY, "NDB", HOME, List.of(ModuleCapability.class), List.of(SignalChannelHelper.class)),
+    DOORBELL(FeatureArea.SECURITY, "NDB", HOME, List.of(ChannelHelperCapability.class),
+            List.of(SignalChannelHelper.class)),
     @SerializedName("NAMain")
-    WEATHER_STATION(FeatureArea.WEATHER, "NAMain", ACCOUNT, List.of(ModuleCapability.class, WeatherCapability.class),
+    WEATHER_STATION(FeatureArea.WEATHER, "NAMain", ACCOUNT,
+            List.of(ModuleCapability.class, WeatherCapability.class, MeasureCapability.class,
+                    ChannelHelperCapability.class),
             List.of(PressureExtChannelHelper.class, NoiseChannelHelper.class, HumidityChannelHelper.class,
                     TemperatureExtChannelHelper.class, AirQualityChannelHelper.class, LocationChannelHelper.class,
                     TimestampExtChannelHelper.class, MeasuresChannelHelper.class, SignalChannelHelper.class)),
     @SerializedName("NAModule1")
-    OUTDOOR(FeatureArea.WEATHER, "NAModule1", WEATHER_STATION, List.of(ModuleCapability.class),
+    OUTDOOR(FeatureArea.WEATHER, "NAModule1", WEATHER_STATION,
+            List.of(MeasureCapability.class, ChannelHelperCapability.class),
             List.of(HumidityChannelHelper.class, TemperatureOutChannelHelper.class, BatteryChannelHelper.class,
                     MeasuresChannelHelper.class, TimestampExtChannelHelper.class, SignalChannelHelper.class)),
     @SerializedName("NAModule2")
-    WIND(FeatureArea.WEATHER, "NAModule2", WEATHER_STATION, List.of(ModuleCapability.class),
+    WIND(FeatureArea.WEATHER, "NAModule2", WEATHER_STATION, List.of(ChannelHelperCapability.class),
             List.of(WindChannelHelper.class, BatteryChannelHelper.class, TimestampExtChannelHelper.class,
                     SignalChannelHelper.class)),
     @SerializedName("NAModule3")
-    RAIN(FeatureArea.WEATHER, "NAModule3", WEATHER_STATION, List.of(ModuleCapability.class),
+    RAIN(FeatureArea.WEATHER, "NAModule3", WEATHER_STATION,
+            List.of(MeasureCapability.class, ChannelHelperCapability.class),
             List.of(RainChannelHelper.class, BatteryChannelHelper.class, MeasuresChannelHelper.class,
                     TimestampExtChannelHelper.class, SignalChannelHelper.class)),
     @SerializedName("NAModule4")
-    INDOOR(FeatureArea.WEATHER, "NAModule4", WEATHER_STATION, List.of(ModuleCapability.class),
+    INDOOR(FeatureArea.WEATHER, "NAModule4", WEATHER_STATION,
+            List.of(MeasureCapability.class, ChannelHelperCapability.class),
             List.of(HumidityChannelHelper.class, TemperatureExtChannelHelper.class, AirQualityChannelHelper.class,
                     BatteryChannelHelper.class, MeasuresChannelHelper.class, TimestampExtChannelHelper.class,
                     SignalChannelHelper.class)),
     @SerializedName("NHC")
-    HOME_COACH(FeatureArea.AIR_CARE, "NHC", ACCOUNT, List.of(ModuleCapability.class, AirCareCapability.class),
+    HOME_COACH(FeatureArea.AIR_CARE, "NHC", ACCOUNT,
+            List.of(ModuleCapability.class, AirCareCapability.class, MeasureCapability.class,
+                    ChannelHelperCapability.class),
             List.of(NoiseChannelHelper.class, HumidityChannelHelper.class, AirQualityExtChannelHelper.class,
                     TemperatureChannelHelper.class, PressureChannelHelper.class, TimestampExtChannelHelper.class,
                     SignalChannelHelper.class, MeasuresChannelHelper.class, LocationChannelHelper.class)),
     @SerializedName("NAPlug")
-    PLUG(FeatureArea.ENERGY, "NAPlug", HOME, List.of(ModuleCapability.class), List.of(SignalChannelHelper.class)),
+    PLUG(FeatureArea.ENERGY, "NAPlug", HOME, List.of(ChannelHelperCapability.class),
+            List.of(SignalChannelHelper.class)),
     @SerializedName("NATherm1")
-    THERMOSTAT(FeatureArea.ENERGY, "NATherm1", HOME, List.of(ModuleCapability.class),
+    THERMOSTAT(FeatureArea.ENERGY, "NATherm1", HOME, List.of(ChannelHelperCapability.class),
             List.of(Therm1ChannelHelper.class, BatteryExtChannelHelper.class, SignalChannelHelper.class)),
     @SerializedName("NARoom")
-    ROOM(FeatureArea.ENERGY, "NARoom", HOME, List.of(RoomCapability.class),
+    ROOM(FeatureArea.ENERGY, "NARoom", HOME, List.of(RoomCapability.class, ChannelHelperCapability.class),
             List.of(RoomChannelHelper.class, SetpointChannelHelper.class)),
     @SerializedName("NRV")
-    VALVE(FeatureArea.ENERGY, "NRV", HOME, List.of(ModuleCapability.class),
+    VALVE(FeatureArea.ENERGY, "NRV", HOME, List.of(ChannelHelperCapability.class),
             List.of(BatteryExtChannelHelper.class, SignalChannelHelper.class));
 
     public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);

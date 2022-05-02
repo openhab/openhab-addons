@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.AlimentationStatus;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SdCardStatus;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
@@ -76,6 +78,10 @@ public class CameraCapability extends Capability {
                     : null;
             cameraHelper.setUrls(vpnUrl, localUrl);
             eventHelper.setUrls(vpnUrl, localUrl);
+        }
+        if (!SdCardStatus.SD_CARD_WORKING.equals(newData.getSdStatus())
+                || !AlimentationStatus.ALIM_CORRECT_POWER.equals(newData.getAlimStatus())) {
+            statusReason = String.format("%s, %s", newData.getSdStatus(), newData.getAlimStatus());
         }
     }
 

@@ -158,7 +158,16 @@ public interface CommonInterface {
     }
 
     default void setNewData(@Nullable NAObject newData) {
-        getCapabilities().values().forEach(cap -> cap.setNewData(newData));
+        @Nullable
+        String finalReason = null;
+        for (Capability cap : getCapabilities().values()) {
+            String thingStatusReason = cap.setNewData(newData);
+            if (thingStatusReason != null) {
+                finalReason = thingStatusReason;
+            }
+        }
+        setThingStatus(finalReason == null ? ThingStatus.ONLINE : ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                finalReason);
     }
 
     default void commonHandleCommand(ChannelUID channelUID, Command command) {

@@ -29,6 +29,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.config.MeasureConfiguration;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
+import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.MeasuresChannelHelper;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.State;
@@ -46,10 +47,13 @@ import org.slf4j.LoggerFactory;
 public class MeasureCapability extends RestCapability<WeatherApi> {
     private final Logger logger = LoggerFactory.getLogger(MeasureCapability.class);
     private final Map<String, State> measures = new HashMap<>();
+    private final MeasuresChannelHelper measureChannelHelper;
 
-    public MeasureCapability(CommonInterface handler, MeasuresChannelHelper helper) {
+    public MeasureCapability(CommonInterface handler, List<ChannelHelper> helpers) {
         super(handler);
-        helper.setMeasures(measures);
+        measureChannelHelper = (MeasuresChannelHelper) helpers.stream().filter(c -> c instanceof MeasuresChannelHelper)
+                .findFirst().orElseThrow(() -> new IllegalArgumentException(
+                        "MeasureCapability must find a MeasuresChannelHelper, file a bug."));
     }
 
     @Override
@@ -57,6 +61,7 @@ public class MeasureCapability extends RestCapability<WeatherApi> {
         ApiBridgeHandler bridgeApi = handler.getRootBridge();
         if (bridgeApi != null) {
             api = Optional.ofNullable(bridgeApi.getRestManager(WeatherApi.class));
+            measureChannelHelper.setMeasures(measures);
         }
     }
 

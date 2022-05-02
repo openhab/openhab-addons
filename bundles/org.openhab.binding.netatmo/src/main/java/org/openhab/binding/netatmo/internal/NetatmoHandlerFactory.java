@@ -39,7 +39,6 @@ import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapabilit
 import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.MeasuresChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -115,11 +114,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         List<ChannelHelper> helpers = new ArrayList<>();
         moduleType.channelHelpers.forEach(helperClass -> {
             try {
-                ChannelHelper helper = helperClass.getConstructor().newInstance();
-                helpers.add(helper);
-                if (helper instanceof MeasuresChannelHelper) {
-                    handler.getCapabilities().put(new MeasureCapability(handler, (MeasuresChannelHelper) helper));
-                }
+                helpers.add(helperClass.getConstructor().newInstance());
             } catch (ReflectiveOperationException e) {
                 logger.warn("Error creating or initializing helper class : {}", e.getMessage());
             }
@@ -145,15 +140,15 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
                 newCap = new CameraCapability(handler, stateDescriptionProvider, helpers);
             } else if (capability == PresenceCapability.class) {
                 newCap = new PresenceCapability(handler, stateDescriptionProvider, helpers);
+            } else if (capability == MeasureCapability.class) {
+                newCap = new MeasureCapability(handler, helpers);
+            } else if (capability == ChannelHelperCapability.class) {
+                newCap = new ChannelHelperCapability(handler, helpers);
             }
             if (newCap != null) {
                 handler.getCapabilities().put(newCap);
             } else {
                 logger.warn("No factory entry defined to create Capability : {}", capability);
-            }
-
-            if (!helpers.isEmpty()) {
-                handler.getCapabilities().put(new ChannelHelperCapability(handler, helpers));
             }
         });
 

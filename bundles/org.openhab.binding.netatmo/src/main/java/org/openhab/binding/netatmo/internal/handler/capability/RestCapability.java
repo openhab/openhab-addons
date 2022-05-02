@@ -21,10 +21,8 @@ import org.openhab.binding.netatmo.internal.api.RestManager;
 import org.openhab.binding.netatmo.internal.api.dto.Device;
 import org.openhab.binding.netatmo.internal.api.dto.Module;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
-import org.openhab.core.thing.ThingStatus;
 
 /**
  * The {@link RestCapability} is the base class for handler capabilities
@@ -38,15 +36,6 @@ public abstract class RestCapability<T extends RestManager> extends ModuleCapabi
 
     RestCapability(CommonInterface handler) {
         super(handler);
-    }
-
-    @Override
-    protected void updateNAThing(NAThing newData) {
-        super.updateNAThing(newData);
-        if (!newData.isReachable()) {
-            thingStatus = ThingStatus.OFFLINE;
-            thingStatusReason = "@text/device-not-connected";
-        }
     }
 
     @Override

@@ -34,8 +34,6 @@ import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 
@@ -52,15 +50,14 @@ public class Capability {
 
     protected boolean firstLaunch;
     protected Map<String, String> properties = Map.of();
-    protected ThingStatus thingStatus = ThingStatus.UNKNOWN;
-    protected @Nullable String thingStatusReason = "";
+    protected @Nullable String statusReason;
 
     Capability(CommonInterface handler) {
         this.handler = handler;
         this.thing = handler.getThing();
     }
 
-    public final void setNewData(@Nullable NAObject newData) {
+    public final @Nullable String setNewData(@Nullable NAObject newData) {
         if (newData != null) {
             beforeNewData();
             if (newData instanceof HomeData) {
@@ -89,6 +86,7 @@ public class Capability {
             }
             afterNewData(newData);
         }
+        return statusReason;
     }
 
     protected void beforeNewData() {
@@ -99,21 +97,22 @@ public class Capability {
             properties.put(PROPERTY_VENDOR, VENDOR);
             properties.put(PROPERTY_MODEL_ID, moduleType.name());
         }
-        thingStatus = ThingStatus.ONLINE;
-        thingStatusReason = null;
+        statusReason = null;
     }
 
     protected void afterNewData(@Nullable NAObject newData) {
         if (!properties.equals(thing.getProperties())) {
             thing.setProperties(properties);
         }
-        handler.setThingStatus(thingStatus, ThingStatusDetail.NONE, thingStatusReason);
     }
 
     protected void updateNAThing(NAThing newData) {
         String firmware = newData.getFirmware();
         if (firmware != null && !firmware.isBlank()) {
             properties.put(PROPERTY_FIRMWARE_VERSION, firmware);
+        }
+        if (!newData.isReachable()) {
+            statusReason = "@text/device-not-connected";
         }
     }
 
