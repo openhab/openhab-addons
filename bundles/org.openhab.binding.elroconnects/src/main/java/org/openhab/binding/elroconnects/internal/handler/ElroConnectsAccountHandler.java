@@ -159,9 +159,9 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                 try {
                     response = gson.fromJson(devicesList, deviceListType);
                 } catch (JsonParseException parseException) {
-                    logger.error("Parsing failed: {}", parseException.getMessage());
+                    logger.warn("Parsing failed: {}", parseException.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.devicelist-parsing-fail");
+                            "@text/offline.request-failed");
                     return null;
                 }
                 Map<String, ElroConnectsConnector> devices = new HashMap<>();
@@ -219,12 +219,16 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                                     String accessToken = (content != null) ? content.get("access_token") : null;
                                     f.complete(accessToken);
                                 } catch (JsonParseException parseException) {
-                                    logger.error("Parsing failed: {}", parseException.getMessage());
+                                    logger.warn("Access token request response parsing failed: {}",
+                                            parseException.getMessage());
                                     f.completeExceptionally(
-                                            new ElroConnectsAccountException("@text/offline.login-parsing-fail"));
+                                            new ElroConnectsAccountException("@text/offline.request-failed"));
                                 }
                             } else {
-                                f.completeExceptionally(new ElroConnectsAccountException(getContentAsString()));
+                                logger.warn("Unexpected response on access token request: {} - {}",
+                                        response.getStatus(), getContentAsString());
+                                f.completeExceptionally(
+                                        new ElroConnectsAccountException("@text/offline.request-failed"));
                             }
                         } else {
                             Throwable e = result.getFailure();
@@ -232,6 +236,7 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                                 f.completeExceptionally(
                                         new ElroConnectsAccountException("@text/offline.request-timeout", e));
                             } else {
+                                logger.warn("Access token request failed: {}", e);
                                 f.completeExceptionally(
                                         new ElroConnectsAccountException("@text/offline.request-failed", e));
                             }
@@ -262,8 +267,10 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                                 f.completeExceptionally(
                                         new ElroConnectsAccountException("@text/offline.token-expired"));
                             } else {
-                                f.completeExceptionally(new ElroConnectsAccountException(
-                                        String.valueOf(response.getStatus()) + " - " + getContentAsString()));
+                                logger.warn("Unexpected response on get controllers request: {} - {}",
+                                        response.getStatus(), getContentAsString());
+                                f.completeExceptionally(
+                                        new ElroConnectsAccountException("@text/offline.request-failed"));
                             }
                         } else {
                             Throwable e = result.getFailure();
@@ -271,6 +278,7 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                                 f.completeExceptionally(
                                         new ElroConnectsAccountException("@text/offline.request-timeout", e));
                             } else {
+                                logger.warn("Get controllers request failed: {}", e);
                                 f.completeExceptionally(
                                         new ElroConnectsAccountException("@text/offline.request-failed", e));
                             }
