@@ -116,7 +116,7 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.debug("Start background bridge discovery");
+        logger.debug("Start bridge background discovery");
         ScheduledFuture<?> job = discoveryJob;
         if (job == null || job.isCancelled()) {
             discoveryJob = scheduler.scheduleWithFixedDelay(this::discoverConnectors, INITIAL_DELAY_S,

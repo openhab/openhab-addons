@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponse;
+import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
@@ -92,6 +93,11 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
         this.client = client;
         login.put("pid", ELRO_PID);
         login.put("clientType", "WEB");
+
+        // The ElroConnectsBridgeDiscoverySerivce will query for enableBackgroundDiscovery before the handler is
+        // initialized, therefore already set it here
+        ElroConnectsAccountConfiguration config = getConfigAs(ElroConnectsAccountConfiguration.class);
+        enableBackgroundDiscovery = config.enableBackgroundDiscovery;
     }
 
     @Override
@@ -209,6 +215,12 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
 
     private CompletableFuture<@Nullable String> getAccessToken() {
         CompletableFuture<@Nullable String> f = new CompletableFuture<>();
+
+        // The method call returns an invalid 401 response on authentication error, missing the www-authentication
+        // header. This header should be there according to RFC7235. This workaround removes the protocol handler and
+        // the check.
+        client.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
+
         Request request = client.newRequest(URI.create(ELRO_CLOUD_LOGIN_URL));
 
         request.method(HttpMethod.POST).content(new StringContentProvider(loginJson), "application/json")
