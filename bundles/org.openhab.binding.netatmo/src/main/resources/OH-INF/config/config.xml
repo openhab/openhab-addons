@@ -122,10 +122,10 @@
 			<description>Unique identifier of the thing defined by Netatmo.</description>
 		</parameter>
 
-		<parameter name="refreshInterval" type="integer" min="2000" unit="ms">
+		<parameter name="refreshInterval" type="integer" min="20" unit="s">
 			<label>Refresh Interval</label>
-			<description>The refresh interval to poll Netatmo API (in ms).</description>
-			<default>180000</default>
+			<description>The refresh interval to poll Netatmo API (in seconds).</description>
+			<default>180</default>
 		</parameter>
 	</config-description>
 
@@ -135,10 +135,10 @@
 			<description>ID of the device (MAC address).</description>
 		</parameter>
 
-		<parameter name="refreshInterval" type="integer" min="2000" unit="ms">
+		<parameter name="refreshInterval" type="integer" min="20" unit="s">
 			<label>Refresh Interval</label>
-			<description>The refresh interval to poll Netatmo API (in ms).</description>
-			<default>180000</default>
+			<description>The refresh interval to poll Netatmo API (in seconds).</description>
+			<default>180</default>
 		</parameter>
 	</config-description>
 

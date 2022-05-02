@@ -57,7 +57,7 @@ public class NAThing extends NAObject implements NAModule {
         boolean result = localReachable != null ? localReachable : true;
         // and we double check by comparing data freshness
         ZonedDateTime localLastSeen = lastSeen;
-        if (result && localLastSeen != null) {
+        if (result && localLastSeen != null && !type.isLogical()) {
             result = Duration.between(localLastSeen, ZonedDateTime.now().withZoneSameInstant(localLastSeen.getZone()))
                     .getSeconds() < UNREACHABLE_DELAY_S;
         }

@@ -47,11 +47,13 @@ public class RefreshCapability extends Capability {
     private Instant dataTimeStamp = Instant.now();
     private @Nullable Instant dataTimeStamp0;
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private final boolean refreshConfigured;
 
     public RefreshCapability(CommonInterface handler, ScheduledExecutorService scheduler, int refreshInterval) {
         super(handler);
         this.scheduler = scheduler;
-        this.dataValidity = Duration.ofMillis(Math.max(0, refreshInterval));
+        this.dataValidity = Duration.ofSeconds(Math.max(0, refreshInterval));
+        this.refreshConfigured = !probing();
         freeJobAndReschedule(2);
     }
 
@@ -78,7 +80,12 @@ public class RefreshCapability extends Capability {
     private void proceedWithUpdate() {
         handler.proceedWithUpdate();
         if (ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
-            long delay = (probing() ? PROBING_INTERVAL : dataValidity.minus(dataAge()).plus(DEFAULT_DELAY)).toSeconds();
+            long delay;
+            if (refreshConfigured) {
+                delay = dataValidity.getSeconds();
+            } else {
+                delay = (probing() ? PROBING_INTERVAL : dataValidity.minus(dataAge()).plus(DEFAULT_DELAY)).toSeconds();
+            }
             delay = delay < 2 ? PROBING_INTERVAL.toSeconds() : delay;
             logger.debug("Module refreshed, next one in {} s", delay);
             freeJobAndReschedule(delay);
