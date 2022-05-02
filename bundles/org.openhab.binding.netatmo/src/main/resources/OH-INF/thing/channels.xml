@@ -55,6 +55,7 @@
 	<channel-type id="video-url">
 		<item-type>String</item-type>
 		<label>Video URL</label>
+		<description>URL of the event recording.</description>
 		<state readOnly="true"/>
 	</channel-type>
 

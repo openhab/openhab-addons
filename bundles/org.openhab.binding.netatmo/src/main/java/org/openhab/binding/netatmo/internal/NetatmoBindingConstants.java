@@ -116,7 +116,8 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_ALIM_STATUS = "alim";
     public static final String CHANNEL_LIVEPICTURE = "picture";
     public static final String CHANNEL_LIVEPICTURE_URL = "picture-url";
-    public static final String CHANNEL_LIVESTREAM_URL = "stream-url";
+    public static final String CHANNEL_LIVESTREAM_VPN_URL = "vpn-stream-url";
+    public static final String CHANNEL_LIVESTREAM_LOCAL_URL = "local-stream-url";
     public static final String CHANNEL_EVENT_TYPE = "type";
     public static final String CHANNEL_EVENT_SUBTYPE = "subtype";
     public static final String CHANNEL_EVENT_VIDEO_STATUS = "video-status";
@@ -124,7 +125,8 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_EVENT_TIME = "time";
     public static final String CHANNEL_EVENT_SNAPSHOT = "snapshot";
     public static final String CHANNEL_EVENT_SNAPSHOT_URL = "snapshot-url";
-    public static final String CHANNEL_EVENT_VIDEO_URL = "video-url";
+    public static final String CHANNEL_EVENT_VIDEO_VPN_URL = "vpn-video-url";
+    public static final String CHANNEL_EVENT_VIDEO_LOCAL_URL = "local-video-url";
     public static final String CHANNEL_EVENT_PERSON_ID = "person-id";
     public static final String CHANNEL_EVENT_CAMERA_ID = "camera-id";
     public static final String CHANNEL_PERSON_AT_HOME = "at-home";

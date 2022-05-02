@@ -74,15 +74,20 @@ public class EventChannelHelper extends ChannelHelper {
             switch (channelId) {
                 case CHANNEL_EVENT_VIDEO_STATUS:
                     return homeEvent.getVideoId() != null ? toStringType(homeEvent.getVideoStatus()) : UnDefType.NULL;
-                case CHANNEL_EVENT_VIDEO_URL:
-                    return toStringType(getStreamURL(homeEvent.getVideoId()));
+                case CHANNEL_EVENT_VIDEO_LOCAL_URL:
+                    return getStreamURL(true, homeEvent.getVideoId());
+                case CHANNEL_EVENT_VIDEO_VPN_URL:
+                    return getStreamURL(false, homeEvent.getVideoId());
             }
         }
         return null;
     }
 
-    private @Nullable String getStreamURL(@Nullable String videoId) {
-        String url = isLocal ? localUrl : vpnUrl;
-        return url == null || videoId == null ? null : String.format("%s/vod/%s/index.m3u8", url, videoId);
+    private State getStreamURL(boolean local, @Nullable String videoId) {
+        String url = local ? localUrl : vpnUrl;
+        if ((local && !isLocal) || url == null || videoId == null) {
+            return UnDefType.UNDEF;
+        }
+        return toStringType(String.format("%s/vod/%s/index.m3u8", url, videoId));
     }
 }

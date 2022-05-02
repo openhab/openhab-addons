@@ -21,6 +21,7 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link CameraChannelHelper} handles specific channels of cameras
@@ -64,8 +65,10 @@ public class CameraChannelHelper extends ChannelHelper {
                     return toStringType(getLivePictureURL());
                 case CHANNEL_LIVEPICTURE:
                     return toRawType(getLivePictureURL());
-                case CHANNEL_LIVESTREAM_URL:
-                    return toStringType(getLiveStreamURL((String) config.get("quality")));
+                case CHANNEL_LIVESTREAM_VPN_URL:
+                    return getLiveStreamURL(false, (String) config.get("quality"));
+                case CHANNEL_LIVESTREAM_LOCAL_URL:
+                    return getLiveStreamURL(true, (String) config.get("quality"));
             }
         }
         return null;
@@ -76,11 +79,13 @@ public class CameraChannelHelper extends ChannelHelper {
         return url == null ? null : String.format("%s%s", url, LIVE_PICTURE);
     }
 
-    private @Nullable String getLiveStreamURL(@Nullable String configQual) {
+    private State getLiveStreamURL(boolean local, @Nullable String configQual) {
+        String url = local ? localUrl : vpnUrl;
+        if ((local && !isLocal) || url == null) {
+            return UnDefType.UNDEF;
+        }
         String finalQual = configQual != null ? configQual : "poor";
-        String url = isLocal ? localUrl : vpnUrl;
-        return url == null ? null
-                : String.format("%s/live/%s", url,
-                        isLocal ? String.format("files/%s/index.m3u8", finalQual) : "index.m3u8");
+        return toStringType(String.format("%s/live/%s", url,
+                local ? String.format("files/%s/index.m3u8", finalQual) : "index.m3u8"));
     }
 }
