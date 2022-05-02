@@ -1209,9 +1209,10 @@ public class LivisiDeviceHandlerTest {
             c.setLastKeyPressCounter(10);
         });
 
+        // Nothing should get processed, because it should only react on the more detailed ButtonPressed events
         deviceHandler.onDeviceStateChanged(device, event);
-        assertTrue(isChannelUpdated("button1_count", new DecimalType(10)));
-        assertTrue(isChannelTriggered("button1", CommonTriggerEvents.PRESSED));
+        assertFalse(isChannelUpdated("button1_count", new DecimalType(10)));
+        assertFalse(isChannelTriggered("button1", CommonTriggerEvents.PRESSED));
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.SHORT_PRESSED)); // not available for SHC Classic
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.LONG_PRESSED)); // not available for SHC Classic
         assertFalse(isChannelTriggered("button2", CommonTriggerEvents.PRESSED));
@@ -1232,8 +1233,7 @@ public class LivisiDeviceHandlerTest {
             c.setLastKeyPressCounter(10);
         });
 
-        // Nothing should get processed, because SHCA / SHC 2 should only react on the more detailed ButtonPressed
-        // events
+        // Nothing should get processed, because it should only react on the more detailed ButtonPressed events
         deviceHandler.onDeviceStateChanged(device, event);
         assertFalse(isChannelUpdated("button1_count", new DecimalType(10)));
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.PRESSED));

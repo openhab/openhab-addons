@@ -574,12 +574,13 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 // DEVICE
             } else if (event.isLinkedtoDevice()) {
                 logger.trace("Event is linked to device");
+                String sourceId = event.getSourceId();
 
                 Optional<DeviceDTO> bridgeDevice = deviceStructMan.getBridgeDevice();
-                if (bridgeDevice.isPresent() && !event.getSourceId().equals(bridgeDevice.get().getId())) {
-                    deviceStructMan.refreshDevice(event.getSourceId(), isSHCClassic());
+                if (bridgeDevice.isPresent() && !sourceId.equals(bridgeDevice.get().getId())) {
+                    deviceStructMan.refreshDevice(sourceId, isSHCClassic());
                 }
-                final Optional<DeviceDTO> device = deviceStructMan.getDeviceById(event.getSourceId());
+                final Optional<DeviceDTO> device = deviceStructMan.getDeviceById(sourceId);
                 notifyDeviceStatusListeners(device, event);
 
             } else {
@@ -687,15 +688,16 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     private void notifyDeviceStatusListeners(Optional<DeviceDTO> device, EventDTO event) {
+        String sourceId = event.getSourceId();
         if (device.isPresent()) {
             DeviceStatusListener deviceStatusListener = deviceStatusListeners.get(device.get().getId());
             if (deviceStatusListener != null) {
                 deviceStatusListener.onDeviceStateChanged(device.get(), event);
             } else {
-                logger.debug("No device status listener registered for device / capability {}.", event.getSourceId());
+                logger.debug("No device status listener registered for device / capability {}.", sourceId);
             }
         } else {
-            logger.debug("Unknown/unsupported device / capability {}.", event.getSourceId());
+            logger.debug("Unknown/unsupported device / capability {}.", sourceId);
         }
     }
 
