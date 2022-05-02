@@ -54,7 +54,6 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
     public ElroConnectsDiscoveryService() {
         super(ElroConnectsBindingConstants.SUPPORTED_DEVICE_TYPES_UIDS, TIMEOUT_S);
         logger.debug("Discovery service started");
-        super.activate(null); // Makes sure the background discovery for devices is enabled
     }
 
     @Override
@@ -112,6 +111,11 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
             job.cancel(true);
             discoveryJob = null;
         }
+    }
+
+    @Override
+    public void activate() {
+        super.activate(null);
     }
 
     @Override

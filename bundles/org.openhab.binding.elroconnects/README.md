@@ -60,25 +60,26 @@ It will not be possible to receive alarms and control them from openHAB in this 
 
 ### ELRO Connects account
 
-| Parameter         | Advanced | Description                                            |
-|-------------------|:--------:|--------------------------------------------------------|
-| `username`        |          | Username for the ELRO Connects cloud account, required |
-| `password`        |          | Password for the ELRO Connects cloud account, required |
+| Parameter                   | Advanced | Description                                            |
+|-----------------------------|:--------:|--------------------------------------------------------|
+| `username`                  |          | Username for the ELRO Connects cloud account, required |
+| `password`                  |          | Password for the ELRO Connects cloud account, required |
+| `enableBackgroundDiscovery` | Y        | Enable background discovery of hubs, polling the ELRO Connects cloud account every 5 min. |
 
 ### K1 connector hub
 
-| Parameter         | Advanced | Description                                            |
-|-------------------|:--------:|--------------------------------------------------------|
-| `connectorId`     |          | Required parameter, should be set to ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector. It will be discovered when an `account` bridge has been initialized. This parameter can also be found in the ELRO Connects mobile application |
-| `ipAdress`        | Y        | IP address of the ELRO Connects K1 Connector, not required if connector and openHAB server in same subnet |
-| `refreshInterval` | Y        |  This parameter controls the connection refresh heartbeat interval. The default is 60s |
-| `legacyFirmware`  | Y        | Flag for legacy firmware, should be set to true if ELRO Connects K1 Connector firmware has version lower or equal to 2.0.14. If the connector is discovered from the account, this parameter will be set automatically. The default is false |
+| Parameter                   | Advanced | Description                                            |
+|-----------------------------|:--------:|--------------------------------------------------------|
+| `connectorId`               |          | Required parameter, should be set to ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector. It will be discovered when an `account` bridge has been initialized. This parameter can also be found in the ELRO Connects mobile application |
+| `ipAdress`                  | Y        | IP address of the ELRO Connects K1 Connector, not required if connector and openHAB server in same subnet |
+| `refreshInterval`           | Y        |  This parameter controls the connection refresh heartbeat interval. The default is 60s |
+| `legacyFirmware`            | Y        | Flag for legacy firmware, should be set to true if ELRO Connects K1 Connector firmware has version lower or equal to 2.0.14. If the connector is discovered from the account, this parameter will be set automatically. The default is false |
 
 ### Devices connected to K1 connected hub
 
-| Parameter         | Advanced | Description                                            |
-|-------------------|:--------:|--------------------------------------------------------|
-| `deviceId`        |          | Required parameter, set by discovery. For manual configuration, use the ´elroconnects <connectorId> devices´ console command to get a list of available devices. It should be a number |
+| Parameter                   | Advanced | Description                                            |
+|-----------------------------|:--------:|--------------------------------------------------------|
+| `deviceId`                  |          | Required parameter, set by discovery. For manual configuration, use the ´elroconnects <connectorId> devices´ console command to get a list of available devices. It should be a number |
 
 ## Channels
 

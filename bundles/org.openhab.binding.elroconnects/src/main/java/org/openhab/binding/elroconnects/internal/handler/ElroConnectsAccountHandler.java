@@ -71,6 +71,8 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                                                   // retrieval to succeed
     private static final int REFRESH_INTERVAL_S = 300;
 
+    private boolean enableBackgroundDiscovery;
+
     private volatile @Nullable ScheduledFuture<?> pollingJob;
     private final HttpClient client;
 
@@ -97,6 +99,7 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
         ElroConnectsAccountConfiguration config = getConfigAs(ElroConnectsAccountConfiguration.class);
         String username = config.username;
         String password = config.password;
+        enableBackgroundDiscovery = config.enableBackgroundDiscovery;
 
         if ((username == null) || username.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.no-username");
@@ -111,10 +114,12 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
         login.put("password", password);
         loginJson = gson.toJson(login);
 
-        // Do initial login to retrieve access token and start polling with small initial delay, so the access token is
-        // available
+        // Do initial login to retrieve access token and start polling with small initial delay if background discovery
+        // is enabled), so the access token is available
         scheduler.submit(this::login);
-        startPolling();
+        if (enableBackgroundDiscovery) {
+            startPolling();
+        }
     }
 
     @Override
@@ -298,7 +303,14 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
      * @return connectors on the account from the ELRO Connects cloud API
      */
     public @Nullable Map<String, ElroConnectsConnector> getDevices() {
+        if (!enableBackgroundDiscovery) {
+            poll();
+        }
         return devices;
+    }
+
+    public boolean isBackgroundDiscoveryEnabled() {
+        return enableBackgroundDiscovery;
     }
 
     @Override

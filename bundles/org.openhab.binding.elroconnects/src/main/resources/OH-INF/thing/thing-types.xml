@@ -18,6 +18,12 @@
 				<description>Password for the ELRO Connects cloud account</description>
 				<context>password</context>
 			</parameter>
+			<parameter name="enableBackgroundDiscovery" type="boolean">
+				<label>Background Discovery</label>
+				<description>Enable background discovery of hubs, polling the ELRO Connects cloud account every 5 min.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 	<bridge-type id="connector">

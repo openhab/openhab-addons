@@ -25,4 +25,5 @@ public class ElroConnectsAccountConfiguration {
 
     public @Nullable String username;
     public @Nullable String password;
+    public boolean enableBackgroundDiscovery = true;
 }
