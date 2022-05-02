@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
@@ -30,6 +31,7 @@ import com.google.gson.annotations.SerializedName;
 
 @NonNullByDefault
 public class NAThing extends NAObject implements NAModule {
+    private static final int UNREACHABLE_DELAY_S = 1800;
     @SerializedName(value = "rf_status", alternate = { "wifi_status", "rf_strength", "wifi_strength" })
     private int radioStatus = -1;
     @SerializedName(value = "last_seen", alternate = { "last_therm_seen", "last_status_store", "last_plug_seen",
@@ -52,7 +54,14 @@ public class NAThing extends NAObject implements NAModule {
     public boolean isReachable() {
         // This is not implemented on all devices/modules, so if absent we consider it is reachable
         Boolean localReachable = this.reachable;
-        return localReachable != null ? localReachable : true;
+        boolean result = localReachable != null ? localReachable : true;
+        // and we double check by comparing data freshness
+        ZonedDateTime localLastSeen = lastSeen;
+        if (result && localLastSeen != null) {
+            result = Duration.between(localLastSeen, ZonedDateTime.now().withZoneSameInstant(localLastSeen.getZone()))
+                    .getSeconds() < UNREACHABLE_DELAY_S;
+        }
+        return result;
     }
 
     public @Nullable Dashboard getDashboardData() {

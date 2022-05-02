@@ -205,8 +205,11 @@ public enum ModuleType {
     }
 
     public URI getConfigDescription() {
-        return URI.create(BINDING_ID + ":" + (this.equals(ACCOUNT) ? "api_bridge"
-                : (isLogical() ? "virtual" : ModuleType.UNKNOWN.equals(getBridge()) ? "configurable" : "device")));
+        return URI.create(BINDING_ID + ":"
+                + (equals(ACCOUNT) ? "api_bridge"
+                        : equals(HOME) ? "home"
+                                : (isLogical() ? "virtual"
+                                        : ModuleType.UNKNOWN.equals(getBridge()) ? "configurable" : "device")));
     }
 
     public static ModuleType from(ThingTypeUID thingTypeUID) {
