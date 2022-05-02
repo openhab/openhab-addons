@@ -236,7 +236,7 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                                 f.completeExceptionally(
                                         new ElroConnectsAccountException("@text/offline.request-timeout", e));
                             } else {
-                                logger.warn("Access token request failed: {}", e);
+                                logger.warn("Access token request failed", e);
                                 f.completeExceptionally(
                                         new ElroConnectsAccountException("@text/offline.request-failed", e));
                             }
@@ -278,7 +278,7 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                                 f.completeExceptionally(
                                         new ElroConnectsAccountException("@text/offline.request-timeout", e));
                             } else {
-                                logger.warn("Get controllers request failed: {}", e);
+                                logger.warn("Get controllers request failed", e);
                                 f.completeExceptionally(
                                         new ElroConnectsAccountException("@text/offline.request-failed", e));
                             }
