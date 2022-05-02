@@ -12,7 +12,7 @@
   <packaging>pom</packaging>
   <name>openHAB Add-ons :: Bundles</name>
   <modules>
-    <!-- automation --> 
+    <!-- automation -->
     <module>org.openhab.automation.groovyscripting</module>
     <module>org.openhab.automation.jrubyscripting</module>
     <module>org.openhab.automation.jsscripting</module>
