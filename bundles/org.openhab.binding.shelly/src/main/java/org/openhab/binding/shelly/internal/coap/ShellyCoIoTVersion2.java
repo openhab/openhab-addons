@@ -36,6 +36,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,8 +87,53 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
         boolean processed = true;
         double value = getDouble(s.value);
         String reason = "";
+
+        if (profile.isTRV) {
+            // Special handling for TRV, because it uses duplicate ID values with different meanings
+            switch (sen.id) {
+                case "3101": // current temp
+                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
+                            toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                    break;
+                case "3103": // target temp in C. 4/31, 999=unknown
+                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
+                            toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                    break;
+                case "3116": // S, valveError, 0/1
+                    if (s.value == 1) {
+                        thingHandler.postEvent(ALARM_TYPE_VALVE_ERROR, false);
+                    }
+                    break;
+                case "3117": // S, mode, 0-5 (0=disabled)
+                    value = getDouble(s.value).intValue();
+                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE, getDecimal(value));
+                    updateChannel(updates, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_SCHEDULE, getOnOff(value > 0));
+                    break;
+                case "3118": // Valve state
+                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
+                            value != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                    break;
+                case "3121": // valvePos, Type=S, Range=0/100;
+                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_POSITION,
+                            s.value != -1 ? toQuantityType(getDouble(s.value), 0, Units.PERCENT) : UnDefType.UNDEF);
+                    break;
+                case "3122": // boostMinutes
+                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BTIMER,
+                            s.value != -1 ? toQuantityType(s.value, DIGITS_NONE, Units.MINUTE) : UnDefType.UNDEF);
+                    break;
+                default:
+                    processed = false;
+            }
+        } else {
+            processed = false;
+        }
+
+        if (processed) {
+            return true;
+        }
+
+        processed = true;
         switch (sen.id) {
-            case "3103": // H, humidity, 0-100 percent, unknown 999
             case "3106": // L, luminosity, lux, U32, -1
             case "3110": // S, luminosityLevel, dark/twilight/bright, "unknown"=unknown
             case "3111": // B, battery, 0-100%, unknown -1
@@ -121,7 +167,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS,
                         toQuantityType((double) pos, Units.PERCENT));
                 break;
-            case "1105": // S, valvle, closed/opened/not_connected/failure/closing/opening/checking or unbknown
+            case "1105": // Gas: S, valve, closed/opened/not_connected/failure/closing/opening/checking or unknown
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VALVE, getStringType(s.valueStr));
                 break;
 
@@ -150,13 +196,20 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 if (idx >= 0) {
                     // H&T, Fllod, DW only have 1 channel, 1/1PM with Addon have up to to 3 sensors
                     String channel = profile.isSensor ? CHANNEL_SENSOR_TEMP : CHANNEL_SENSOR_TEMP + idx;
+                    // Some devices report values = -999 or 99 during fw update
+                    boolean valid = value > -50 && value < 90;
                     updateChannel(updates, CHANNEL_GROUP_SENSOR, channel,
-                            toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                            valid ? toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS) : UnDefType.UNDEF);
                 } else {
                     logger.debug("{}: Unable to get extSensorId {} from {}/{}", thingName, sen.id, sen.type, sen.desc);
                 }
                 break;
             case "3104": // T, deviceTemp, Celsius -40/300; 999=unknown
+                if ("targetTemp".equalsIgnoreCase(sen.desc)) {
+
+                    break; // target temp in F-> ignore
+                }
+                // sensor_0: T, internalTemp, F, 39/88, unknown 999
                 updateChannel(updates, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
                         toQuantityType(value, DIGITS_NONE, SIUnits.CELSIUS));
                 break;
@@ -172,7 +225,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 break;
             case "3108": // DW: S, dwIsOpened, 0/1, -1=unknown
                 if (value != -1) {
-                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
+                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
                             value != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 } else {
                     logger.debug("{}: Sensor error reported, check device, battery and installation", thingName);
@@ -302,29 +355,27 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
                         value == 1 ? OnOffType.ON : OnOffType.OFF);
                 break;
-            case "3119": // Motion timestamp
+            case "3119": // Motion timestamp (timestamp os GMT, not adapted to the adapted timezone)
                 // {"I":3119,"T":"S","D":"timestamp","U":"s","R":["U32","-1"],"L":1},
                 if (s.value != 0) {
                     updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_TS,
-                            getTimestamp(getString(profile.settings.timezone), (long) s.value));
+                            getTimestamp(getString("GMT"), (long) s.value));
                 }
                 break;
-            case "3120": // motionActive
+            case "3120": // motionActive (timestamp os GMT, not adapted to the adapted timezone)
                 // {"I":3120,"T":"S","D":"motionActive","R":["0/1","-1"],"L":1},
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_ACT,
-                        getTimestamp(getString(profile.settings.timezone), (long) s.value));
+                        getTimestamp("GMT", (long) s.value));
                 break;
 
             case "6108": // A, gas, none/mild/heavy/test or unknown
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ALARM_STATE, getStringType(s.valueStr));
                 break;
             case "6110": // A, vibration, 0/1, -1=unknown
-                if (profile.isMotion) {
-                    // handle as status
-                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
-                            s.value == 1 ? OnOffType.ON : OnOffType.OFF);
-                } else if (s.value == 1) {
-                    // handle as event
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
+                        s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                if (s.value == 1) {
+                    // post event
                     thingHandler.triggerChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM, EVENT_TYPE_VIBRATION);
                 }
                 break;

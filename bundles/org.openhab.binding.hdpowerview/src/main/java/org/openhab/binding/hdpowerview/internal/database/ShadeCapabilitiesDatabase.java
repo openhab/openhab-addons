@@ -41,7 +41,7 @@ public class ShadeCapabilitiesDatabase {
     private static final Map<Integer, Capabilities> CAPABILITIES_DATABASE = Arrays.asList(
     // @formatter:off
             new Capabilities(0).primary().tiltOnClosed()                      .text("Bottom Up"),
-            new Capabilities(1).primary().tiltAnywhere()                      .text("Bottom Up Tilt 90°"),
+            new Capabilities(1).primary().tiltOnClosed()                      .text("Bottom Up Tilt 90°"),
             new Capabilities(2).primary().tiltAnywhere().tilt180()            .text("Bottom Up Tilt 180°"),
             new Capabilities(3).primary().tiltOnClosed()                      .text("Vertical"),
             new Capabilities(4).primary().tiltAnywhere().tilt180()            .text("Vertical Tilt 180°"),

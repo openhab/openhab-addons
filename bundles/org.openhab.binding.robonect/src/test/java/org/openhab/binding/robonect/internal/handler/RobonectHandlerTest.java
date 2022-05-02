@@ -61,7 +61,7 @@ import org.openhab.core.types.UnDefType;
  * @author Marco Meyer - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class RobonectHandlerTest {
 
     private RobonectHandler subject;

@@ -56,7 +56,7 @@ import org.w3c.dom.NodeList;
  * @author Martin Koehler - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class DwdUnwetterHandlerTest extends JavaTest {
 
     private ThingHandler handler;

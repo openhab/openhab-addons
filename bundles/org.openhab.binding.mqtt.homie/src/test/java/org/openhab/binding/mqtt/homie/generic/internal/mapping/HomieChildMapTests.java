@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,9 +40,10 @@ import org.openhab.binding.mqtt.homie.internal.homie300.NodeAttributes;
  * @author David Graeff - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@NonNullByDefault
 public class HomieChildMapTests {
-    private @Mock DeviceCallback callback;
+    private @Mock @NonNullByDefault({}) DeviceCallback callbackMock;
 
     private final String deviceID = ThingChannelConstants.TEST_HOMIE_THING.getId();
     private final String deviceTopic = "homie/" + deviceID;
@@ -52,7 +54,7 @@ public class HomieChildMapTests {
     ChildMap<Node> subject = new ChildMap<>();
 
     private Node createNode(String id) {
-        Node node = new Node(deviceTopic, id, ThingChannelConstants.TEST_HOMIE_THING, callback,
+        Node node = new Node(deviceTopic, id, ThingChannelConstants.TEST_HOMIE_THING, callbackMock,
                 spy(new NodeAttributes()));
         doReturn(future).when(node.attributes).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
         doReturn(future).when(node.attributes).unsubscribe();
@@ -60,7 +62,7 @@ public class HomieChildMapTests {
     }
 
     private void removedNode(Node node) {
-        callback.nodeRemoved(node);
+        callbackMock.nodeRemoved(node);
     }
 
     public static class AddedAction implements Function<Node, CompletableFuture<Void>> {
@@ -85,6 +87,6 @@ public class HomieChildMapTests {
 
         Node soonToBeRemoved = subject.get("def");
         subject.apply(new String[] { "abc" }, addedAction, this::createNode, this::removedNode);
-        verify(callback).nodeRemoved(eq(soonToBeRemoved));
+        verify(callbackMock).nodeRemoved(eq(soonToBeRemoved));
     }
 }

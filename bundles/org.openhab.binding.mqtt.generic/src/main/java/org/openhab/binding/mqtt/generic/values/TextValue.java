@@ -14,7 +14,7 @@ package org.openhab.binding.mqtt.generic.values;
 
 import static java.util.function.Predicate.not;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,7 +45,7 @@ public class TextValue extends Value {
      *            will be allowed.
      */
     public TextValue(String[] states) {
-        super(CoreItemFactory.STRING, Collections.singletonList(StringType.class));
+        super(CoreItemFactory.STRING, List.of(StringType.class));
         Set<String> s = Stream.of(states).filter(not(String::isBlank)).collect(Collectors.toSet());
         if (!s.isEmpty()) {
             this.states = s;
@@ -55,7 +55,7 @@ public class TextValue extends Value {
     }
 
     public TextValue() {
-        super(CoreItemFactory.STRING, Collections.singletonList(StringType.class));
+        super(CoreItemFactory.STRING, List.of(StringType.class));
         this.states = null;
     }
 

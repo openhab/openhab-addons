@@ -1,0 +1,281 @@
+[
+  {
+    "a4aType": "USB_ONLY",
+    "bodyType": "F31",
+    "brand": "BMW",
+    "capabilities": {
+      "canRemoteHistoryBeDeleted": false,
+      "climateNow": {
+        "executionMessage": "Do you want to ventilate now? Remote functions may take a few seconds.",
+        "executionPopup": {
+          "executionMessage": "Do you want to ventilate now? Remote functions may take a few seconds.",
+          "iconId": 59733,
+          "popupType": "DIALOG",
+          "primaryButtonText": "Start",
+          "secondaryButtonText": "Cancel",
+          "title": "Start Ventilation"
+        },
+        "executionStopPopup": {
+          "executionMessage": "Stop climate control in your vehicle now? Remote functions may take a few seconds.",
+          "title": "Climate control is running"
+        },
+        "isEnabled": true,
+        "isPinAuthenticationRequired": false
+      },
+      "climateTimer": {
+        "isEnabled": true,
+        "isPinAuthenticationRequired": false,
+        "isToggleEnabled": true,
+        "page": {
+          "description": "By setting a start time you let the vehicle know when you plan to use it.",
+          "primaryButtonText": "SEND TO VEHICLE",
+          "secondaryButtonText": "DEACTIVATE AND SEND TO VEHICLE",
+          "subtitle": "Set start time",
+          "title": "Ventilation timer"
+        },
+        "tile": {
+          "description": "Plan start time",
+          "iconId": 59774,
+          "title": "Ventilation timer"
+        }
+      },
+      "horn": {
+        "executionMessage": "Using your horn is only allowed in certain situations in many countries. Responsibility for the use and adherence to the respective regulations lies solely with you as the user. \n\nDo you want to use the horn now? Remote functions may take a few seconds.",
+        "isEnabled": true,
+        "isPinAuthenticationRequired": false
+      },
+      "isBmwChargingSupported": false,
+      "isCarSharingSupported": false,
+      "isChargeNowForBusinessSupported": false,
+      "isChargingHistorySupported": false,
+      "isChargingHospitalityEnabled": false,
+      "isChargingLoudnessEnable": false,
+      "isChargingPlanSupported": false,
+      "isChargingPowerLimitEnable": false,
+      "isChargingSettingsEnabled": false,
+      "isChargingTargetSocEnable": false,
+      "isCustomerEsimSupported": false,
+      "isDCSContractManagementSupported": false,
+      "isDataPrivacyEnabled": false,
+      "isEasyChargeSupported": false,
+      "isEvGoChargingSupported": false,
+      "isFindChargingEnabled": false,
+      "isMiniChargingSupported": false,
+      "isRemoteHistorySupported": true,
+      "isRemoteServicesActivationRequired": false,
+      "isRemoteServicesBookingRequired": false,
+      "isScanAndChargeSupported": false,
+      "lastStateCall": {
+        "isNonLscFeatureEnabled": false,
+        "lscState": "NOT_CAPABLE"
+      },
+      "lights": {
+        "executionMessage": "Flash headlights now? Remote functions may take a few seconds.",
+        "isEnabled": true,
+        "isPinAuthenticationRequired": false
+      },
+      "lock": {
+        "executionMessage": "Lock your vehicle now? Remote functions may take a few seconds.",
+        "isEnabled": true,
+        "isPinAuthenticationRequired": false
+      },
+      "sendPoi": {
+        "executionMessage": "Send POI now? Remote functions may take a few seconds.",
+        "isEnabled": true,
+        "isPinAuthenticationRequired": false
+      },
+      "unlock": {
+        "executionMessage": "Unlock your vehicle now? Remote functions may take a few seconds.",
+        "isEnabled": true,
+        "isPinAuthenticationRequired": true
+      },
+      "vehicleFinder": {
+        "executionMessage": "Find your vehicle now? Remote functions may take a few seconds.",
+        "isEnabled": true,
+        "isPinAuthenticationRequired": false
+      }
+    },
+    "connectedDriveServices": [],
+    "driveTrain": "COMBUSTION",
+    "driverGuideInfo": {
+      "androidAppScheme": "com.bmwgroup.driversguide.row",
+      "androidStoreUrl": "https://play.google.com/store/apps/details?id=com.bmwgroup.driversguide.row",
+      "iosAppScheme": "bmwdriversguide:///open",
+      "iosStoreUrl": "https://apps.apple.com/de/app/id714042749?mt=8",
+      "title": "BMW\nDriver's Guide"
+    },
+    "exFactoryILevel": "F020-13-11-502",
+    "exFactoryPUStep": "1113",
+    "headUnit": "ID5",
+    "hmiVersion": "ID4",
+    "iStep": "F020-13-11-502",
+    "isLscSupported": false,
+    "isMappingPending": false,
+    "isMappingUnconfirmed": false,
+    "model": "320d xDrive",
+    "properties": {
+      "checkControlMessages": [],
+      "climateControl": {},
+      "doorsAndWindows": {
+        "doors": {},
+        "windows": {}
+      },
+      "fuelLevel": {
+        "units": "LITERS",
+        "value": 32
+      },
+      "inMotion": false,
+      "isServiceRequired": true,
+      "lastUpdatedAt": "2021-11-01T16:02:44Z",
+      "originCountryISO": "DE",
+      "serviceRequired": [
+        {
+          "dateTime": "2021-11-01T00:00:00.000Z",
+          "status": "PENDING",
+          "type": "BRAKE_FLUID"
+        },
+        {
+          "dateTime": "2022-07-01T00:00:00.000Z",
+          "distance": {
+            "units": "KILOMETERS",
+            "value": 9000
+          },
+          "status": "OK",
+          "type": "OIL"
+        },
+        {
+          "dateTime": "2022-07-01T00:00:00.000Z",
+          "distance": {
+            "units": "KILOMETERS",
+            "value": 9000
+          },
+          "status": "OK",
+          "type": "VEHICLE_CHECK"
+        },
+        {
+          "dateTime": "2023-02-01T00:00:00.000Z",
+          "status": "OK",
+          "type": "VEHICLE_TUV"
+        }
+      ]
+    },
+    "puStep": "1113",
+    "status": {
+      "checkControlMessages": [
+        {
+          "criticalness": "nonCritical",
+          "iconId": 60197,
+          "state": "OK",
+          "title": "Engine Oil"
+        }
+      ],
+      "checkControlMessagesGeneralState": "No Issues",
+      "doorsAndWindows": [
+        {
+          "criticalness": "nonCritical",
+          "iconId": 59726,
+          "state": "Unknown",
+          "title": "All doors"
+        },
+        {
+          "criticalness": "nonCritical",
+          "iconId": 59701,
+          "state": "Unknown",
+          "title": "Left front window"
+        },
+        {
+          "criticalness": "nonCritical",
+          "iconId": 59700,
+          "state": "Unknown",
+          "title": "Right front window"
+        },
+        {
+          "criticalness": "nonCritical",
+          "iconId": 59703,
+          "state": "Unknown",
+          "title": "Left rear window"
+        },
+        {
+          "criticalness": "nonCritical",
+          "iconId": 59702,
+          "state": "Unknown",
+          "title": "Right rear window"
+        },
+        {
+          "criticalness": "nonCritical",
+          "iconId": 59721,
+          "state": "Unknown",
+          "title": "Back window"
+        }
+      ],
+      "doorsGeneralState": "Unknown",
+      "fuelIndicators": [
+        {
+          "chargingType": null,
+          "iconOpacity": "high",
+          "infoIconId": 59930,
+          "infoLabel": "Fuel Level",
+          "isCircleIcon": false,
+          "isInaccurate": true,
+          "levelIconId": 59682,
+          "levelUnits": "l",
+          "levelValue": "32",
+          "mainBarValue": 0,
+          "rangeIconId": 59681,
+          "rangeUnits": "km",
+          "rangeValue": "- -",
+          "secondaryBarValue": 0,
+          "showsBar": false
+        }
+      ],
+      "lastUpdatedAt": "2021-11-01T16:02:44Z",
+      "recallExternalUrl": null,
+      "recallMessages": [],
+      "requiredServices": [
+        {
+          "criticalness": "semiCritical",
+          "iconId": 60223,
+          "id": "BrakeFluid",
+          "longDescription": "Service due soon. Please make an appointment with your service center.",
+          "subtitle": "Due in November 2021",
+          "title": "Brake fluid"
+        },
+        {
+          "criticalness": "nonCritical",
+          "iconId": 60197,
+          "id": "Oil",
+          "longDescription": "Next service due after the specified distance or date.",
+          "subtitle": "Due in July 2022 or 9000 km",
+          "title": "Engine oil"
+        },
+        {
+          "criticalness": "nonCritical",
+          "iconId": 60215,
+          "id": "VehicleCheck",
+          "longDescription": "Next vehicle check due after the specified distance or date.",
+          "subtitle": "Due in July 2022 or 9000 km",
+          "title": "Vehicle check"
+        },
+        {
+          "criticalness": "nonCritical",
+          "iconId": 60111,
+          "id": "VehicleAdmissionTest",
+          "longDescription": "Next state inspection due by the specified date.",
+          "subtitle": "Due in February 2023",
+          "title": "Vehicle Inspection"
+        }
+      ],
+      "timestampMessage": "Updated from vehicle 11/1/2021 05:02 PM"
+    },
+    "telematicsUnit": "TCB1",
+    "themeSpecs": {
+      "vehicleStatusBackgroundColor": {
+        "blue": 51,
+        "green": 51,
+        "red": 51
+      }
+    },
+    "vin": "some_vin_F31",
+    "year": 2013
+  }
+]

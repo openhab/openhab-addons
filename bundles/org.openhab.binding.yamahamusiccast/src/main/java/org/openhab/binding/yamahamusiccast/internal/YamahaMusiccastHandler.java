@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.yamahamusiccast.internal.dto.ActualVolume;
 import org.openhab.binding.yamahamusiccast.internal.dto.DeviceInfo;
 import org.openhab.binding.yamahamusiccast.internal.dto.DistributionInfo;
 import org.openhab.binding.yamahamusiccast.internal.dto.Features;
@@ -44,8 +45,10 @@ import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -59,6 +62,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +75,7 @@ import com.google.gson.JsonObject;
  * sent to one of the channels.
  *
  * @author Lennert Coopman - Initial contribution
+ * @author Florian Hotze - Add volume in decibel
  */
 @NonNullByDefault
 public class YamahaMusiccastHandler extends BaseThingHandler {
@@ -216,6 +221,24 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                                 for (JsonElement ip : distributioninfo.getClientList()) {
                                     JsonObject clientObject = ip.getAsJsonObject();
                                     setVolumeLinkedDevice(volumePercent, zone,
+                                            clientObject.get("ip_address").getAsString());
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case CHANNEL_VOLUMEDB:
+                    setVolumeDb(((QuantityType<?>) command).floatValue(), zone, this.host);
+                    localSyncVolume = Boolean.parseBoolean(getThing().getConfiguration().get("syncVolume").toString());
+                    if (localSyncVolume == Boolean.TRUE) {
+                        tmpString = getDistributionInfo(this.host);
+                        distributioninfo = gson.fromJson(tmpString, DistributionInfo.class);
+                        if (distributioninfo != null) {
+                            localRole = distributioninfo.getRole();
+                            if ("server".equals(localRole)) {
+                                for (JsonElement ip : distributioninfo.getClientList()) {
+                                    JsonObject clientObject = ip.getAsJsonObject();
+                                    setVolumeDbLinkedDevice(((DecimalType) command).floatValue(), zone,
                                             clientObject.get("ip_address").getAsString());
                                 }
                             }
@@ -451,6 +474,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         createChannel(zone, CHANNEL_MUTE, CHANNEL_TYPE_UID_MUTE, "Switch");
         createChannel(zone, CHANNEL_VOLUME, CHANNEL_TYPE_UID_VOLUME, "Dimmer");
         createChannel(zone, CHANNEL_VOLUMEABS, CHANNEL_TYPE_UID_VOLUMEABS, "Number");
+        createChannel(zone, CHANNEL_VOLUMEDB, CHANNEL_TYPE_UID_VOLUMEDB, "Number:Dimensionless");
         createChannel(zone, CHANNEL_INPUT, CHANNEL_TYPE_UID_INPUT, "String");
         createChannel(zone, CHANNEL_SOUNDPROGRAM, CHANNEL_TYPE_UID_SOUNDPROGRAM, "String");
         createChannel(zone, CHANNEL_SLEEP, CHANNEL_TYPE_UID_SLEEP, "Number");
@@ -514,6 +538,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         String muteState = "";
         String inputState = "";
         int volumeState = 0;
+        ActualVolume actualVolume = null;
         int presetNumber = 0;
         int playTime = 0;
         String distInfoUpdated = "";
@@ -524,6 +549,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                 muteState = targetObject.getMain().getMute();
                 inputState = targetObject.getMain().getInput();
                 volumeState = targetObject.getMain().getVolume();
+                actualVolume = targetObject.getMain().getActualVolume();
                 statusUpdated = targetObject.getMain().getstatusUpdated();
                 break;
             case "zone2":
@@ -531,6 +557,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                 muteState = targetObject.getZone2().getMute();
                 inputState = targetObject.getZone2().getInput();
                 volumeState = targetObject.getZone2().getVolume();
+                actualVolume = targetObject.getZone2().getActualVolume();
                 statusUpdated = targetObject.getZone2().getstatusUpdated();
                 break;
             case "zone3":
@@ -538,6 +565,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                 muteState = targetObject.getZone3().getMute();
                 inputState = targetObject.getZone3().getInput();
                 volumeState = targetObject.getZone3().getVolume();
+                actualVolume = targetObject.getZone3().getActualVolume();
                 statusUpdated = targetObject.getZone3().getstatusUpdated();
                 break;
             case "zone4":
@@ -545,6 +573,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                 muteState = targetObject.getZone4().getMute();
                 inputState = targetObject.getZone4().getInput();
                 volumeState = targetObject.getZone4().getVolume();
+                actualVolume = targetObject.getZone4().getActualVolume();
                 statusUpdated = targetObject.getZone4().getstatusUpdated();
                 break;
             case "netusb":
@@ -560,6 +589,18 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             case "dist":
                 distInfoUpdated = targetObject.getDist().getDistInfoUpdated();
                 break;
+        }
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("{} - Response: {}", zoneToUpdate, responseCode);
+            logger.trace("{} - Power: {}", zoneToUpdate, powerState);
+            logger.trace("{} - Mute: {}", zoneToUpdate, muteState);
+            logger.trace("{} - Volume: {}", zoneToUpdate, volumeState);
+            logger.trace("{} - Volume in dB: {}", zoneToUpdate, (actualVolume != null) ? actualVolume.getValue() : "");
+            logger.trace("{} - Max Volume: {}", zoneToUpdate, maxVolumeState);
+            logger.trace("{} - Input: {}", zoneToUpdate, inputState);
+            logger.trace("{} - Soundprogram: {}", zoneToUpdate, soundProgramState);
+            logger.trace("{} - Sleep: {}", zoneToUpdate, sleepState);
         }
 
         if (!powerState.isEmpty()) {
@@ -593,6 +634,11 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             updateState(channel, new DecimalType(volumeState));
         }
 
+        if (actualVolume != null) {
+            channel = new ChannelUID(getThing().getUID(), zoneToUpdate, CHANNEL_VOLUMEDB);
+            updateState(channel, new QuantityType<>(actualVolume.getValue(), Units.DECIBEL));
+        }
+
         if (presetNumber != 0) {
             logger.trace("Preset detected: {}", presetNumber);
             updatePresets(presetNumber);
@@ -624,19 +670,24 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             String powerState = targetObject.getPower();
             String muteState = targetObject.getMute();
             volumeState = targetObject.getVolume();
+            ActualVolume actualVolume = targetObject.getActualVolume();
             maxVolumeState = targetObject.getMaxVolume();
             inputState = targetObject.getInput();
             soundProgramState = targetObject.getSoundProgram();
             sleepState = targetObject.getSleep();
 
-            logger.trace("{} - Response: {}", zoneToUpdate, responseCode);
-            logger.trace("{} - Power: {}", zoneToUpdate, powerState);
-            logger.trace("{} - Mute: {}", zoneToUpdate, muteState);
-            logger.trace("{} - Volume: {}", zoneToUpdate, volumeState);
-            logger.trace("{} - Max Volume: {}", zoneToUpdate, maxVolumeState);
-            logger.trace("{} - Input: {}", zoneToUpdate, inputState);
-            logger.trace("{} - Soundprogram: {}", zoneToUpdate, soundProgramState);
-            logger.trace("{} - Sleep: {}", zoneToUpdate, sleepState);
+            if (logger.isTraceEnabled()) {
+                logger.trace("{} - Response: {}", zoneToUpdate, responseCode);
+                logger.trace("{} - Power: {}", zoneToUpdate, powerState);
+                logger.trace("{} - Mute: {}", zoneToUpdate, muteState);
+                logger.trace("{} - Volume: {}", zoneToUpdate, volumeState);
+                logger.trace("{} - Volume in dB: {}", zoneToUpdate,
+                        (actualVolume != null) ? actualVolume.getValue() : "");
+                logger.trace("{} - Max Volume: {}", zoneToUpdate, maxVolumeState);
+                logger.trace("{} - Input: {}", zoneToUpdate, inputState);
+                logger.trace("{} - Soundprogram: {}", zoneToUpdate, soundProgramState);
+                logger.trace("{} - Sleep: {}", zoneToUpdate, sleepState);
+            }
 
             switch (responseCode) {
                 case "0":
@@ -678,6 +729,16 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                                     case CHANNEL_VOLUMEABS:
                                         if (localZone.equals(zoneToUpdate)) {
                                             updateState(channelUID, new DecimalType(volumeState));
+                                        }
+                                        break;
+                                    case CHANNEL_VOLUMEDB:
+                                        if (localZone.equals(zoneToUpdate)) {
+                                            if (actualVolume != null) {
+                                                updateState(channelUID,
+                                                        new QuantityType<>(actualVolume.getValue(), Units.DECIBEL));
+                                            } else {
+                                                updateState(channelUID, UnDefType.UNDEF);
+                                            }
                                         }
                                         break;
                                     case CHANNEL_INPUT:
@@ -1014,6 +1075,27 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         }
     }
 
+    private void setVolumeDbLinkedDevice(float value, @Nullable String zone, String host) {
+        logger.trace("setVolumeDbLinkedDevice: {}", host);
+        int zoneNumLinkedDevice = getNumberOfZones(host);
+        for (int i = 1; i <= zoneNumLinkedDevice; i++) {
+            switch (i) {
+                case 1:
+                    setVolumeDb(value, "main", host);
+                    break;
+                case 2:
+                    setVolumeDb(value, "zone2", host);
+                    break;
+                case 3:
+                    setVolumeDb(value, "zone3", host);
+                    break;
+                case 4:
+                    setVolumeDb(value, "zone4", host);
+                    break;
+            }
+        }
+    }
+
     public void updateMCLinkStatus() {
         tmpString = getDistributionInfo(this.host);
         @Nullable
@@ -1138,6 +1220,31 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
 
     private @Nullable String setVolume(int value, @Nullable String zone, @Nullable String host) {
         return makeRequest("Volume", host + YAMAHA_EXTENDED_CONTROL + zone + "/setVolume?volume=" + value);
+    }
+
+    /**
+     * Sets the volume in decibels (dB).
+     *
+     * @param value volume in dB (decibels)
+     * @param zone name of zone
+     * @param host hostname or ip address
+     * @return HTTP request
+     */
+    private @Nullable String setVolumeDb(float value, @Nullable String zone, @Nullable String host) {
+        float volumeDbMin = Float.parseFloat(getThing().getConfiguration().get("volumeDbMin").toString());
+        float volumeDbMax = Float.parseFloat(getThing().getConfiguration().get("volumeDbMax").toString());
+        if (value < volumeDbMin) {
+            value = volumeDbMin;
+        }
+        if (value > volumeDbMax) {
+            value = volumeDbMax;
+        }
+
+        // Yamaha accepts only integer values with .0 or .5 at the end only (-20.5dB, -20.0dB) - at least on RX-S601D.
+        // The order matters here. We want to cast to integer first and then scale by 10.
+        // Effectively we're only allowing dB values with .0 at the end.
+        logger.trace("setVolumeDb: {} dB", value);
+        return makeRequest("Volume", host + YAMAHA_EXTENDED_CONTROL + zone + "/setActualVolume?mode=db&value=" + value);
     }
 
     private @Nullable String setInput(String value, @Nullable String zone, @Nullable String host) {

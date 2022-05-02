@@ -72,11 +72,11 @@ public class List {
         this.temp = temp;
     }
 
-    public @Nullable FeelsLikeTemp getFeelsLikeTemp() {
+    public @Nullable FeelsLikeTemp getFeelsLike() {
         return feelsLikeTemp;
     }
 
-    public void setFeelsLikeTemp(FeelsLikeTemp feelsLikeTemp) {
+    public void setFeelsLike(FeelsLikeTemp feelsLikeTemp) {
         this.feelsLikeTemp = feelsLikeTemp;
     }
 

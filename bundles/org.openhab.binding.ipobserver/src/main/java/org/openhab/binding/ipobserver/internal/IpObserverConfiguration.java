@@ -24,4 +24,6 @@ public class IpObserverConfiguration {
     public String address = "";
     public int pollTime = 20;
     public int autoReboot = 2000;
+    public String password = "";
+    public String id = "";
 }

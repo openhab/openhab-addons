@@ -19,11 +19,12 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
@@ -36,6 +37,7 @@ import com.google.gson.GsonBuilder;
 /**
  * @author Jochen Klein - Initial contribution
  */
+@NonNullByDefault
 public class HAConfigurationTests {
 
     private Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory())
@@ -53,7 +55,7 @@ public class HAConfigurationTests {
             }
             return result.toString();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -79,7 +81,7 @@ public class HAConfigurationTests {
         if (device != null) {
             assertThat(device.getIdentifiers(), contains("H"));
             assertThat(device.getConnections(), is(notNullValue()));
-            List<@NonNull Connection> connections = device.getConnections();
+            List<Connection> connections = device.getConnections();
             if (connections != null) {
                 assertThat(connections.get(0).getType(), is("I1"));
                 assertThat(connections.get(0).getIdentifier(), is("I2"));

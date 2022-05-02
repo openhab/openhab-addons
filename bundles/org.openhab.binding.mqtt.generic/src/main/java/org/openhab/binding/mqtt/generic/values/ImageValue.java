@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mqtt.generic.values;
 
-import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.CoreItemFactory;
@@ -26,7 +26,7 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class ImageValue extends Value {
     public ImageValue() {
-        super(CoreItemFactory.IMAGE, Collections.emptyList());
+        super(CoreItemFactory.IMAGE, List.of());
     }
 
     @Override

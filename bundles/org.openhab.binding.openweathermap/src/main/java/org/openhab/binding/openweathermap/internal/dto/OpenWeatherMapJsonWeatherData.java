@@ -17,8 +17,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openweathermap.internal.dto.base.Clouds;
 import org.openhab.binding.openweathermap.internal.dto.base.Coord;
-import org.openhab.binding.openweathermap.internal.dto.base.Rain;
-import org.openhab.binding.openweathermap.internal.dto.base.Snow;
+import org.openhab.binding.openweathermap.internal.dto.base.Precipitation;
 import org.openhab.binding.openweathermap.internal.dto.base.Weather;
 import org.openhab.binding.openweathermap.internal.dto.base.Wind;
 import org.openhab.binding.openweathermap.internal.dto.weather.Main;
@@ -38,8 +37,8 @@ public class OpenWeatherMapJsonWeatherData {
     private @Nullable Integer visibility;
     private Wind wind;
     private Clouds clouds;
-    private @Nullable Rain rain;
-    private @Nullable Snow snow;
+    private @Nullable Precipitation rain;
+    private @Nullable Precipitation snow;
     private Integer dt;
     private Sys sys;
     private Integer id;
@@ -102,19 +101,19 @@ public class OpenWeatherMapJsonWeatherData {
         this.clouds = clouds;
     }
 
-    public @Nullable Rain getRain() {
+    public @Nullable Precipitation getRain() {
         return rain;
     }
 
-    public void setRain(Rain rain) {
+    public void setRain(Precipitation rain) {
         this.rain = rain;
     }
 
-    public @Nullable Snow getSnow() {
+    public @Nullable Precipitation getSnow() {
         return snow;
     }
 
-    public void setSnow(Snow snow) {
+    public void setSnow(Precipitation snow) {
         this.snow = snow;
     }
 

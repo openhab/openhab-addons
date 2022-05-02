@@ -30,7 +30,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,21 +81,21 @@ import org.openhab.core.types.TypeParser;
  * @author David Graeff - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@NonNullByDefault
 public class HomieThingHandlerTests {
 
-    private Thing thing;
+    private @Mock @NonNullByDefault({}) AbstractBrokerHandler bridgeHandlerMock;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback callbackMock;
+    private @Mock @NonNullByDefault({}) MqttBrokerConnection connectionMock;
+    private @Mock @NonNullByDefault({}) ScheduledExecutorService schedulerMock;
+    private @Mock @NonNullByDefault({}) ScheduledFuture<?> scheduledFutureMock;
+    private @Mock @NonNullByDefault({}) ThingTypeRegistry thingTypeRegistryMock;
 
-    private @Mock AbstractBrokerHandler bridgeHandler;
-    private @Mock ThingHandlerCallback callback;
-    private @Mock MqttBrokerConnection connection;
-    private @Mock ScheduledExecutorService scheduler;
-    private @Mock ScheduledFuture<?> scheduledFuture;
-    private @Mock ThingTypeRegistry thingTypeRegistry;
+    private @NonNullByDefault({}) Thing thing;
+    private @NonNullByDefault({}) HomieThingHandler thingHandler;
 
-    private HomieThingHandler thingHandler;
-
-    private final MqttChannelTypeProvider channelTypeProvider = new MqttChannelTypeProvider(thingTypeRegistry);
+    private final MqttChannelTypeProvider channelTypeProvider = new MqttChannelTypeProvider(thingTypeRegistryMock);
 
     private final String deviceID = ThingChannelConstants.TEST_HOMIE_THING.getId();
     private final String deviceTopic = "homie/" + deviceID;
@@ -116,26 +116,27 @@ public class HomieThingHandlerTests {
         thing.setStatusInfo(thingStatus);
 
         // Return the mocked connection object if the bridge handler is asked for it
-        when(bridgeHandler.getConnectionAsync()).thenReturn(CompletableFuture.completedFuture(connection));
+        when(bridgeHandlerMock.getConnectionAsync()).thenReturn(CompletableFuture.completedFuture(connectionMock));
 
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).subscribe(any(), any());
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).unsubscribe(any(), any());
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).unsubscribeAll();
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).publish(any(), any(), anyInt(),
+        doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).subscribe(any(), any());
+        doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).unsubscribe(any(), any());
+        doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).unsubscribeAll();
+        doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).publish(any(), any(), anyInt(),
                 anyBoolean());
 
-        doReturn(false).when(scheduledFuture).isDone();
-        doReturn(scheduledFuture).when(scheduler).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
+        doReturn(false).when(scheduledFutureMock).isDone();
+        doReturn(scheduledFutureMock).when(schedulerMock).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
 
         final HomieThingHandler handler = new HomieThingHandler(thing, channelTypeProvider, 1000, 30, 5);
         thingHandler = spy(handler);
-        thingHandler.setCallback(callback);
+        thingHandler.setCallback(callbackMock);
         final Device device = new Device(thing.getUID(), thingHandler, spy(new DeviceAttributes()),
                 spy(new ChildMap<>()));
-        thingHandler.setInternalObjects(spy(device), spy(new DelayedBatchProcessing<>(500, thingHandler, scheduler)));
+        thingHandler.setInternalObjects(spy(device),
+                spy(new DelayedBatchProcessing<>(500, thingHandler, schedulerMock)));
 
         // Return the bridge handler if the thing handler asks for it
-        doReturn(bridgeHandler).when(thingHandler).getBridgeHandler();
+        doReturn(bridgeHandlerMock).when(thingHandler).getBridgeHandler();
 
         // We are by default online
         doReturn(thingStatus).when(thingHandler).getBridgeStatus();
@@ -153,7 +154,7 @@ public class HomieThingHandlerTests {
         // Pretend that a device state change arrived.
         thingHandler.device.attributes.state = ReadyState.ready;
 
-        verify(callback, times(0)).statusUpdated(eq(thing), any());
+        verify(callbackMock, times(0)).statusUpdated(eq(thing), any());
 
         thingHandler.initialize();
 
@@ -166,8 +167,8 @@ public class HomieThingHandlerTests {
 
         assertThat(thingHandler.device.isInitialized(), is(true));
 
-        verify(callback).statusUpdated(eq(thing), argThat((arg) -> arg.getStatus().equals(ThingStatus.ONLINE)
-                && arg.getStatusDetail().equals(ThingStatusDetail.NONE)));
+        verify(callbackMock).statusUpdated(eq(thing), argThat(arg -> ThingStatus.ONLINE.equals(arg.getStatus())
+                && ThingStatusDetail.NONE.equals(arg.getStatusDetail())));
     }
 
     @Test
@@ -182,8 +183,8 @@ public class HomieThingHandlerTests {
 
         thingHandler.initialize();
 
-        verify(callback).statusUpdated(eq(thing), argThat((arg) -> arg.getStatus().equals(ThingStatus.OFFLINE)
-                && arg.getStatusDetail().equals(ThingStatusDetail.COMMUNICATION_ERROR)));
+        verify(callbackMock).statusUpdated(eq(thing), argThat(arg -> ThingStatus.OFFLINE.equals(arg.getStatus())
+                && ThingStatusDetail.COMMUNICATION_ERROR.equals(arg.getStatusDetail())));
     }
 
     @Test
@@ -199,8 +200,8 @@ public class HomieThingHandlerTests {
         thingHandler.initialize();
         assertThat(thingHandler.device.isInitialized(), is(true));
 
-        verify(callback).statusUpdated(eq(thing), argThat((arg) -> arg.getStatus().equals(ThingStatus.OFFLINE)
-                && arg.getStatusDetail().equals(ThingStatusDetail.GONE)));
+        verify(callbackMock).statusUpdated(eq(thing), argThat(arg -> ThingStatus.OFFLINE.equals(arg.getStatus())
+                && ThingStatusDetail.GONE.equals(arg.getStatusDetail())));
     }
 
     @SuppressWarnings("null")
@@ -222,12 +223,12 @@ public class HomieThingHandlerTests {
         node.properties.put(property.propertyID, property);
         thingHandler.device.nodes.put(node.nodeID, node);
 
-        ThingHandlerHelper.setConnection(thingHandler, connection);
+        ThingHandlerHelper.setConnection(thingHandler, connectionMock);
         // we need to set a channel value first, undefined values ignored on REFRESH
         property.getChannelState().getCache().update(new StringType("testString"));
 
         thingHandler.handleCommand(property.channelUID, RefreshType.REFRESH);
-        verify(callback).stateUpdated(argThat(arg -> property.channelUID.equals(arg)),
+        verify(callbackMock).stateUpdated(argThat(arg -> property.channelUID.equals(arg)),
                 argThat(arg -> property.getChannelState().getCache().getChannelState().equals(arg)));
     }
 
@@ -252,14 +253,14 @@ public class HomieThingHandlerTests {
 
         ChannelState channelState = requireNonNull(property.getChannelState());
         assertNotNull(channelState);
-        ChannelStateHelper.setConnection(channelState, connection);// Pretend we called start()
-        ThingHandlerHelper.setConnection(thingHandler, connection);
+        ChannelStateHelper.setConnection(channelState, connectionMock);// Pretend we called start()
+        ThingHandlerHelper.setConnection(thingHandler, connectionMock);
 
         StringType updateValue = new StringType("UPDATE");
         thingHandler.handleCommand(property.channelUID, updateValue);
 
         assertThat(property.getChannelState().getCache().getChannelState().toString(), is("UPDATE"));
-        verify(connection, times(1)).publish(any(), any(), anyInt(), anyBoolean());
+        verify(connectionMock, times(1)).publish(any(), any(), anyInt(), anyBoolean());
 
         // Check non writable property
         property.attributes.settable = false;
@@ -274,7 +275,7 @@ public class HomieThingHandlerTests {
             thingHandler.handleCommand(property.channelUID, updateValue);
             // Expect old value and no MQTT publish
             assertThat(property.getChannelState().getCache().getChannelState().toString(), is("OLDVALUE"));
-            verify(connection, times(1)).publish(any(), any(), anyInt(), anyBoolean());
+            verify(connectionMock, times(1)).publish(any(), any(), anyInt(), anyBoolean());
         }
     }
 
@@ -320,7 +321,7 @@ public class HomieThingHandlerTests {
     @Test
     public void propertiesChanged() throws InterruptedException, ExecutionException {
         thingHandler.device.initialize("homie", "device", new ArrayList<>());
-        ThingHandlerHelper.setConnection(thingHandler, connection);
+        ThingHandlerHelper.setConnection(thingHandler, connectionMock);
 
         // Create mocked homie device tree with one node and one property
         doAnswer(this::createSubscriberAnswer).when(thingHandler.device.attributes).createSubscriber(any(), any(),
@@ -355,14 +356,14 @@ public class HomieThingHandlerTests {
         thingHandler.delayedProcessing.forceProcessNow();
 
         // Called for the updated property + for the new channels
-        verify(callback, atLeast(2)).thingUpdated(any());
+        verify(callbackMock, atLeast(2)).thingUpdated(any());
 
-        final List<@NonNull Channel> channels = thingHandler.getThing().getChannels();
+        final List<Channel> channels = thingHandler.getThing().getChannels();
         assertThat(channels.size(), is(1));
         assertThat(channels.get(0).getLabel(), is("testprop"));
         assertThat(channels.get(0).getKind(), is(ChannelKind.STATE));
 
-        final Map<@NonNull String, @NonNull String> properties = thingHandler.getThing().getProperties();
+        final Map<String, String> properties = thingHandler.getThing().getProperties();
         assertThat(properties.get(MqttBindingConstants.HOMIE_PROPERTY_VERSION), is("3.0"));
         assertThat(properties.size(), is(1));
     }

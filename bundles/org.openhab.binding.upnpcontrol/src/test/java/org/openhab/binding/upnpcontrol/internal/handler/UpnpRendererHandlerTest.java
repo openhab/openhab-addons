@@ -921,8 +921,10 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
                 is(cleared ? UnDefType.UNDEF : StringType.valueOf(upnpEntryQueue.get(mediaId).getGenre())));
         verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(TRACK_NUMBER).getUID()),
                 stateCaptor.capture());
-        assertThat(stateCaptor.getValue(),
-                is(cleared ? UnDefType.UNDEF : new DecimalType(upnpEntryQueue.get(mediaId).getOriginalTrackNumber())));
-        is(new DecimalType(upnpEntryQueue.get(mediaId).getOriginalTrackNumber()));
+        Integer originalTrackNumber = upnpEntryQueue.get(mediaId).getOriginalTrackNumber();
+        if (originalTrackNumber != null) {
+            assertThat(stateCaptor.getValue(), is(cleared ? UnDefType.UNDEF : new DecimalType(originalTrackNumber)));
+            is(new DecimalType(originalTrackNumber));
+        }
     }
 }

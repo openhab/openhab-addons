@@ -7,7 +7,6 @@
 		extensible="switch, contact, number, dimmer, datetime, string, rollershutter, rf-device-low-battery, rf-device-signal-strength, push-button-trigger">
 
 		<label>IHC / ELKO Controller</label>
-		<description></description>
 
 		<channels>
 			<channel typeId="controller-state" id="controllerState"/>

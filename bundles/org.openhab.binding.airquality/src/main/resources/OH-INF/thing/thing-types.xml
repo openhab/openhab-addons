@@ -107,18 +107,12 @@
 	<channel-type id="index">
 		<item-type>Number</item-type>
 		<label>Index</label>
-		<tags>
-			<tag>Measurement</tag>
-		</tags>
 		<state readOnly="true" pattern="%d" min="0" max="500"/>
 	</channel-type>
 
 	<channel-type id="index-adv" advanced="true">
 		<item-type>Number</item-type>
 		<label>Index</label>
-		<tags>
-			<tag>Measurement</tag>
-		</tags>
 		<state readOnly="true" pattern="%d" min="0" max="500"/>
 	</channel-type>
 
@@ -159,19 +153,12 @@
 		<label>@text/timestampChannelLabel</label>
 		<description>@text/timestampChannelDescription</description>
 		<category>time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dominent">
 		<item-type>String</item-type>
 		<label>@text/dominentChannelLabel</label>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="pm25">@text/pollutantPm25</option>
@@ -189,10 +176,6 @@
 		<label>@text/dewPointLabel</label>
 		<description>@text/dewPointDescription</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Point</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 

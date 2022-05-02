@@ -12,6 +12,7 @@
  */
 package org.openhab.automation.jrubyscripting.internal;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,12 +20,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.module.script.AbstractScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigurableService;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -33,9 +36,11 @@ import org.osgi.service.component.annotations.Modified;
  * This is an implementation of a {@link ScriptEngineFactory} for Ruby.
  *
  * @author Brian O'Connell - Initial contribution
+ * @author Jimmy Tanagra - Add require injection
  */
 @NonNullByDefault
-@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jrubyscripting")
+@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jrubyscripting", property = Constants.SERVICE_PID
+        + "=org.openhab.automation.jrubyscripting")
 @ConfigurableService(category = "automation", label = "JRuby Scripting", description_uri = "automation:jruby")
 public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
 
@@ -43,11 +48,8 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
 
     // Filter out the File entry to prevent shadowing the Ruby File class which breaks Ruby in spectacularly
     // difficult ways to debug.
-    private static final Set<String> FILTERED_PRESETS = Set.of("File");
+    private static final Set<String> FILTERED_PRESETS = Set.of("File", "Files", "Path", "Paths");
     private static final Set<String> INSTANCE_PRESETS = Set.of();
-    private static final Set<String> GLOBAL_PRESETS = Set.of("scriptExtension", "automationManager", "ruleRegistry",
-            "items", "voice", "rules", "things", "events", "itemRegistry", "ir", "actions", "se", "audio",
-            "lifecycleTracker");
 
     private final javax.script.ScriptEngineFactory factory = new org.jruby.embed.jsr223.JRubyEngineFactory();
 
@@ -55,7 +57,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
             .concat(factory.getExtensions().stream(), factory.getMimeTypes().stream())
             .collect(Collectors.toUnmodifiableList());
 
-    // Adds @ in front of a set of variables so that Ruby recogonizes them as instance variables
+    // Adds @ in front of a set of variables so that Ruby recognizes them as instance variables
     private static Map.Entry<String, Object> mapInstancePresets(Map.Entry<String, Object> entry) {
         if (INSTANCE_PRESETS.contains(entry.getKey())) {
             return Map.entry("@" + entry.getKey(), entry.getValue());
@@ -64,9 +66,10 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
         }
     }
 
-    // Adds $ in front of a set of variables so that Ruby recogonizes them as global variables
+    // Adds $ in front of a set of variables so that Ruby recognizes them as global variables
     private static Map.Entry<String, Object> mapGlobalPresets(Map.Entry<String, Object> entry) {
-        if (GLOBAL_PRESETS.contains(entry.getKey())) {
+        if (Character.isLowerCase(entry.getKey().charAt(0)) && !(entry.getValue() instanceof Class)
+                && !(entry.getValue() instanceof Enum)) {
             return Map.entry("$" + entry.getKey(), entry.getValue());
         } else {
             return entry;
@@ -93,6 +96,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
     @Override
     public void scopeValues(ScriptEngine scriptEngine, Map<String, Object> scopeValues) {
         // Empty comments prevent the formatter from breaking up the correct streams chaining
+        logger.debug("Scope Values: {}", scopeValues);
         Map<String, Object> filteredScopeValues = //
                 scopeValues //
                         .entrySet() //
@@ -102,7 +106,32 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
                         .map(JRubyScriptEngineFactory::mapGlobalPresets) //
                         .collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue())); //
 
-        super.scopeValues(scriptEngine, filteredScopeValues);
+        Map<Boolean, Map<String, Object>> partitionedMap = //
+                filteredScopeValues.entrySet() //
+                        .stream() //
+                        .collect(Collectors.partitioningBy(entry -> (entry.getValue() instanceof Class),
+                                Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+
+        importClassesToRuby(scriptEngine, partitionedMap.getOrDefault(true, new HashMap<>()));
+        super.scopeValues(scriptEngine, partitionedMap.getOrDefault(false, new HashMap<>()));
+
+        // scopeValues is called twice. The first call only passed 'se'. The second call passed the rest of the
+        // presets, including 'ir'. We wait for the second call before running the require statements.
+        if (scopeValues.containsKey("ir")) {
+            configuration.injectRequire(scriptEngine);
+        }
+    }
+
+    private void importClassesToRuby(ScriptEngine scriptEngine, Map<String, Object> objects) {
+        String import_statements = objects.entrySet() //
+                .stream() //
+                .map(entry -> "java_import " + ((Class<?>) entry.getValue()).getName() + " rescue nil") //
+                .collect(Collectors.joining("\n"));
+        try {
+            scriptEngine.eval(import_statements);
+        } catch (ScriptException e) {
+            logger.debug("Error importing java classes", e);
+        }
     }
 
     @Override

@@ -1,0 +1,156 @@
+{
+	"paginationInfo": {
+		
+	},
+	"chargingSessions": {
+		"total": "~ 218 kWh",
+		"numberOfSessions": "17",
+		"chargingListState": "HAS_SESSIONS",
+		"sessions": [
+			{
+				"id": "2021-12-26T16:57:20Z_128fa4af",
+				"title": "Gestern 17:57",
+				"subtitle": "Uferstraße 4B • 7h 45min • -- EUR",
+				"energyCharged": "~ 31 kWh",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-26T16:02:49Z_128fa4af",
+				"title": "Gestern 17:02",
+				"subtitle": "Uferstraße 4C • 32 min • -- EUR",
+				"energyCharged": "~ 2 kWh",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-26T09:44:36Z_128fa4af",
+				"title": "Gestern 10:44",
+				"subtitle": "Kelzer Weg 24 • 58 min • -- EUR",
+				"energyCharged": "~ 2 kWh",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-25T22:18:46Z_128fa4af",
+				"title": "Samstag 23:18",
+				"subtitle": "Kelzer Weg 24 • 3h 42min • -- EUR",
+				"energyCharged": "~ 8 kWh",
+				"issues": "2 Probleme",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-24T11:56:09Z_128fa4af",
+				"title": "Freitag 12:56",
+				"subtitle": "Kelzer Weg 24 • 8h 46min • -- EUR",
+				"energyCharged": "~ 19 kWh",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-24T09:56:13Z_128fa4af",
+				"title": "Freitag 10:56",
+				"subtitle": "Kelzer Weg 15A • 1h 48min • -- EUR",
+				"energyCharged": "~ 4 kWh",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-23T07:55:12Z_128fa4af",
+				"title": "Donnerstag 08:55",
+				"subtitle": "Uferstraße 4C • 2h 55min • -- EUR",
+				"energyCharged": "~ 21 kWh",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-20T09:42:28Z_128fa4af",
+				"title": "20.12.2021 10:42",
+				"subtitle": "Hermannsteiner Straße 13 • 1h 14min",
+				"energyCharged": "~ 21 kWh",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-20T09:37:51Z_128fa4af",
+				"title": "20.12.2021 10:37",
+				"subtitle": "Hermannsteiner Straße 13 • < 1 min",
+				"energyCharged": "< 2 kWh",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-19T12:07:18Z_128fa4af",
+				"title": "19.12.2021 13:07",
+				"subtitle": "Uferstraße 4B • 2h 07min • -- EUR",
+				"energyCharged": "~ 9 kWh",
+				"issues": "1 Problem",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-18T10:56:31Z_128fa4af",
+				"title": "18.12.2021 11:56",
+				"subtitle": "Uferstraße 4C • 41 min • -- EUR",
+				"energyCharged": "~ 5 kWh",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-16T11:08:30Z_128fa4af",
+				"title": "16.12.2021 12:08",
+				"subtitle": "Uferstraße 4B • 2h 07min • -- EUR",
+				"energyCharged": "~ 9 kWh",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-15T12:38:23Z_128fa4af",
+				"title": "15.12.2021 13:38",
+				"subtitle": "Uferstraße 4C • 1h 55min • -- EUR",
+				"energyCharged": "~ 8 kWh",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-12T10:48:16Z_128fa4af",
+				"title": "12.12.2021 11:48",
+				"subtitle": "Uferstraße 4C • 6h 06min • -- EUR",
+				"energyCharged": "~ 23 kWh",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-07T16:09:02Z_128fa4af",
+				"title": "07.12.2021 17:09",
+				"subtitle": "Uferstraße 4B • 5h 40min • -- EUR",
+				"energyCharged": "~ 21 kWh",
+				"issues": "1 Problem",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-04T09:51:23Z_128fa4af",
+				"title": "04.12.2021 10:51",
+				"subtitle": "L3053 • 1h 24min",
+				"energyCharged": "~ 22 kWh",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			},
+			{
+				"id": "2021-12-02T13:42:28Z_128fa4af",
+				"title": "02.12.2021 14:42",
+				"subtitle": "Uferstraße 4C • 2h 29min • -- EUR",
+				"energyCharged": "~ 11 kWh",
+				"sessionStatus": "FINISHED",
+				"isPublic": false
+			}
+		]
+	},
+	"datePicker": {
+		"startDate": "2020-11-07T09:58:20Z",
+		"selectedDate": "2021-12-26T16:57:20Z",
+		"endDate": "2021-12-27T16:10:53Z"
+	}
+}

@@ -14,6 +14,7 @@ package org.openhab.binding.homematic.internal.communicator;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -149,7 +150,12 @@ public class CcuGateway extends AbstractHomematicGateway {
 
     @Override
     protected void setVariable(HmDatapoint dp, Object value) throws IOException {
-        String strValue = Objects.toString(value, "").replace("\"", "\\\"");
+        String strValue;
+        if (value instanceof Double) {
+            strValue = new BigDecimal((Double) value).stripTrailingZeros().toPlainString();
+        } else {
+            strValue = Objects.toString(value, "").replace("\"", "\\\"");
+        }
         if (dp.isStringType()) {
             strValue = "\"" + strValue + "\"";
         }

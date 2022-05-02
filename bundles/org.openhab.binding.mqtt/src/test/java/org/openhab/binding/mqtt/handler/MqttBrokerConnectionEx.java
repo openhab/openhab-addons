@@ -16,7 +16,6 @@ import static org.mockito.Mockito.spy;
 
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -65,7 +64,7 @@ public class MqttBrokerConnectionEx extends MqttBrokerConnection {
     }
 
     @Override
-    public @NonNull MqttConnectionState connectionState() {
+    public MqttConnectionState connectionState() {
         return connectionStateOverwrite;
     }
 }

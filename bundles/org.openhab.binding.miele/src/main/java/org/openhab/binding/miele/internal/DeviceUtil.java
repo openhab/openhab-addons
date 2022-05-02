@@ -17,6 +17,9 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.miele.internal.api.dto.DeviceMetaData;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
@@ -29,13 +32,14 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Jacob Laursen - Initial contribution
  */
+@NonNullByDefault
 public class DeviceUtil {
     private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
     private static final String TEMPERATURE_UNDEFINED = "32768";
     private static final String TEMPERATURE_COLD = "-32760";
     private static final String TEXT_PREFIX = "miele.";
 
-    private static final Map<String, String> states = Map.ofEntries(Map.entry("1", "off"), Map.entry("2", "stand-by"),
+    private static final Map<String, String> STATES = Map.ofEntries(Map.entry("1", "off"), Map.entry("2", "stand-by"),
             Map.entry("3", "programmed"), Map.entry("4", "waiting-to-start"), Map.entry("5", "running"),
             Map.entry("6", "paused"), Map.entry("7", "end"), Map.entry("8", "failure"), Map.entry("9", "abort"),
             Map.entry("10", "idle"), Map.entry("11", "rinse-hold"), Map.entry("12", "service"),
@@ -84,8 +88,9 @@ public class DeviceUtil {
      * Get state text for provided string taking into consideration {@link DeviceMetaData}
      * as well as built-in/translated strings.
      */
-    public static State getStateTextState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
-        return getTextState(s, dmd, translationProvider, states, MISSING_STATE_TEXT_PREFIX, "");
+    public static State getStateTextState(String s, @Nullable DeviceMetaData dmd,
+            MieleTranslationProvider translationProvider) {
+        return getTextState(s, dmd, translationProvider, STATES, MISSING_STATE_TEXT_PREFIX, "");
     }
 
     /**
@@ -100,8 +105,9 @@ public class DeviceUtil {
      * @param appliancePrefix Appliance prefix appended to text key (including dot)
      * @return Text string as State
      */
-    public static State getTextState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider,
-            Map<String, String> valueMap, String propertyPrefix, String appliancePrefix) {
+    public static State getTextState(String s, @Nullable DeviceMetaData dmd,
+            MieleTranslationProvider translationProvider, Map<String, String> valueMap, String propertyPrefix,
+            String appliancePrefix) {
         if ("0".equals(s)) {
             return UnDefType.UNDEF;
         }

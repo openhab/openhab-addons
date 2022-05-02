@@ -36,32 +36,36 @@ No auto discovery
 | host               | String  | IP address of the Yamaha model (AVR, ...)               | false    | true          |
 | syncVolume         | Boolean | Sync volume across linked models (default=false)        | false    | false         |
 | defaultAfterMCLink | String  | Default Input value for client when MC Link is broken   | false    | false         |
+| volumeDbMin        | Number  | Lowest volume in dB.                                    | true     | false         |
+| volumeDbMax        | Number  | Highest volume in dB.                                   | true     | false         |
 
-Default value for *defaultAfterMCLink* is *NET RADIO* as most of the models have this on board.
+Default value for *defaultAfterMCLink* is *NET RADIO* (as *net_radio*) as most of the models have this on board.
+You can also use *RADIO / TUNER* (as *tuner*).
 
 ## Channels
 
-| channel        | type   | description                                                         |
-|----------------|--------|---------------------------------------------------------------------|
-| power          | Switch | Power ON/OFF                                                        |
-| mute           | Switch | Mute ON/OFF                                                         |
-| volume         | Dimmer | Volume as % (recalculated based on Max Volume Model)                |
-| volumeAbs      | Number | Volume as absolute value                                            |
-| input          | String | See below for list                                                  |
-| soundProgram   | String | See below for list                                                  |
-| selectPreset   | String | Select Netradio/USB preset (fetched from Model)                     |
-| sleep          | Number | Fixed values for Sleep : 0/30/60/90/120 in minutes                  |
-| recallScene    | Number | Select a scene (8 defaults scenes are foreseen)                     |
-| player         | Player | PLAY/PAUSE/NEXT/PREVIOUS/REWIND/FASTFORWARD                         |
-| artist         | String | Artist                                                              |
-| track          | String | Track                                                               |
-| album          | String | Album                                                               |
-| albumArt       | Image  | Album Art                                                           |
-| repeat         | String | Toggle Repeat. Available values: Off, One, All                      |
-| shuffle        | String | Toggle Shuffle. Available values: Off, On, Songs, Album             |
-| playTime       | String | Play time of current selection: radio, song, track, ...             |
-| totalTime      | String | Total time of current selection: radio, song, track, ...            |
-| mclinkStatus   | String | Select your Musiccast Server or set to Standalone, Server or Client |
+| channel        | type                 | description                                                         |
+|----------------|----------------------|---------------------------------------------------------------------|
+| power          | Switch               | Power ON/OFF                                                        |
+| mute           | Switch               | Mute ON/OFF                                                         |
+| volume         | Dimmer               | Volume as % (recalculated based on Max Volume Model)                |
+| volumeAbs      | Number               | Volume as absolute value                                            |
+| volumeDB       | Number:Dimensionless | Volume in decibel (dB) (availability depends on device)             |
+| input          | String               | See below for list                                                  |
+| soundProgram   | String               | See below for list                                                  |
+| selectPreset   | String               | Select Netradio/USB preset (fetched from Model)                     |
+| sleep          | Number               | Fixed values for Sleep : 0/30/60/90/120 in minutes                  |
+| recallScene    | Number               | Select a scene (8 defaults scenes are foreseen)                     |
+| player         | Player               | PLAY/PAUSE/NEXT/PREVIOUS/REWIND/FASTFORWARD                         |
+| artist         | String               | Artist                                                              |
+| track          | String               | Track                                                               |
+| album          | String               | Album                                                               |
+| albumArt       | Image                | Album Art                                                           |
+| repeat         | String               | Toggle Repeat. Available values: Off, One, All                      |
+| shuffle        | String               | Toggle Shuffle. Available values: Off, On, Songs, Album             |
+| playTime       | String               | Play time of current selection: radio, song, track, ...             |
+| totalTime      | String               | Total time of current selection: radio, song, track, ...            |
+| mclinkStatus   | String               | Select your Musiccast Server or set to Standalone, Server or Client |
 
 
 | Zones                | description                                          |
@@ -105,30 +109,31 @@ mono_movie / movie / enhanced / 2ch_stereo / 5ch_stereo / 7ch_stereo / 9ch_stere
 
 ```
 Bridge yamahamusiccast:bridge:virtual "YXC Bridge" {
-Thing yamahamusiccast:device:Living "YXC Living" [host="1.2.3.4"]
+    Thing device Living "YXC Living" [host="1.2.3.4", defaultAfterMCLink="none", syncVolume=false, volumeDbMin=-80, volumeDbMax=-10]
 }
 ```
 
 ### Basic setup
 
 ```
-Switch YamahaPower "" {channel="yamahamusiccast:device:Living:main#power"}
-Switch YamahaMute "" {channel="yamahamusiccast:device:Living:main#mute"}
-Dimmer YamahaVolume "" {channel="yamahamusiccast:device:Living:main#volume"}
-Number YamahaVolumeAbs "" {channel="yamahamusiccast:device:Living:main#volumeAbs"}
-String YamahaInput "" {channel="yamahamusiccast:device:Living:main#input"}
-String YamahaSelectPreset "" {channel="yamahamusiccast:device:Living:main#selectPreset"}
-String YamahaSoundProgram "" {channel="yamahamusiccast:device:Living:main#soundProgram"}
+Switch YamahaPower "" {channel="yamahamusiccast:device:virtual:Living:main#power"}
+Switch YamahaMute "" {channel="yamahamusiccast:device:virtual:Living:main#mute"}
+Dimmer YamahaVolume "" {channel="yamahamusiccast:device:virtual:Living:main#volume"}
+Number YamahaVolumeAbs "" {channel="yamahamusiccast:device:virtual:Living:main#volumeAbs"}
+Number:Dimensionless YamahaVolumeDb  "" {channel="yamahamusiccast:device:virtual:Living:main#volumeDB"}
+String YamahaInput "" {channel="yamahamusiccast:device:virtual:Living:main#input"}
+String YamahaSelectPreset "" {channel="yamahamusiccast:device:virtual:Living:main#selectPreset"}
+String YamahaSoundProgram "" {channel="yamahamusiccast:device:virtual:Living:main#soundProgram"}
 ```
 
 ### Player controls
 
 ```
-Player YamahaPlayer "" {channel="yamahamusiccast:device:Living:playerControls#player"}
-String YamahaArt "" {channel="yamahamusiccast:device:Living:playerControls#albumArt"}
-String YamahaArtist "" {channel="yamahamusiccast:device:Living:playerControls#artist"}
-String YamahaTrack "" {channel="yamahamusiccast:device:Living:playerControls#track"}
-String YamahaAlbum "" {channel="yamahamusiccast:device:Living:playerControls#album"}
+Player YamahaPlayer "" {channel="yamahamusiccast:device:virtual:Living:playerControls#player"}
+String YamahaArt "" {channel="yamahamusiccast:device:virtual:Living:playerControls#albumArt"}
+String YamahaArtist "" {channel="yamahamusiccast:device:virtual:Living:playerControls#artist"}
+String YamahaTrack "" {channel="yamahamusiccast:device:virtual:Living:playerControls#track"}
+String YamahaAlbum "" {channel="yamahamusiccast:device:virtual:Living:playerControls#album"}
 ```
 
 ### MusicCast setup

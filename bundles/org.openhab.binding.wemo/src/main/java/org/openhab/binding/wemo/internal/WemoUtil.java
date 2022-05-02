@@ -12,16 +12,13 @@
  */
 package org.openhab.binding.wemo.internal;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -33,8 +30,6 @@ import org.w3c.dom.Node;
  */
 @NonNullByDefault
 public class WemoUtil {
-
-    public static BiFunction<String, Integer, Boolean> serviceAvailableFunction = WemoUtil::servicePing;
 
     public static String substringBefore(@Nullable String string, String pattern) {
         if (string != null) {
@@ -123,28 +118,6 @@ public class WemoUtil {
         m.appendTail(unescapedOutput);
 
         return unescapedOutput.toString();
-    }
-
-    public static @Nullable String getWemoURL(String host, String actionService) {
-        int portCheckStart = 49151;
-        int portCheckStop = 49157;
-        String port = null;
-        for (int i = portCheckStart; i < portCheckStop; i++) {
-            if (serviceAvailableFunction.apply(host, i)) {
-                port = String.valueOf(i);
-                break;
-            }
-        }
-        return port == null ? null : "http://" + host + ":" + port + "/upnp/control/" + actionService + "1";
-    }
-
-    private static boolean servicePing(String host, int port) {
-        try {
-            HttpUtil.executeUrl("GET", "http://" + host + ":" + port, 250);
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
     }
 
     private static Map<String, String> buildBuiltinXMLEntityMap() {

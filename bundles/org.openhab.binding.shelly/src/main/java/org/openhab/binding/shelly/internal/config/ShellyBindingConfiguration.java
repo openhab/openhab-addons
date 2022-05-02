@@ -53,7 +53,13 @@ public class ShellyBindingConfiguration {
                     localIP = (String) e.getValue();
                     break;
                 case CONFIG_AUTOCOIOT:
-                    autoCoIoT = (boolean) e.getValue();
+                    Object value = e.getValue();
+                    if (value instanceof String) {
+                        // support config through shelly.cfg
+                        autoCoIoT = ((String) value).equalsIgnoreCase("true");
+                    } else {
+                        autoCoIoT = (boolean) value;
+                    }
                     break;
             }
 
