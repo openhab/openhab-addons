@@ -109,11 +109,11 @@ When `invert` is `true` than `0` on LIVISI is `UP` and `100` is `DOWN`.
 
 ## Triggers
 
-| Trigger Type  | Description                                                             | Available on thing                  |
-|---------------|-------------------------------------------------------------------------|-------------------------------------|
-| SHORT_PRESSED | Fired when you press a button short (not supported by SHC 1 / classic)  | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2  |
-| LONG_PRESSED  | Fired when you press a button longer (not supported by SHC 1 / classic) | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2  |
-| PRESSED       | Fired when you press a button (short or long)                           | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2  |
+| Trigger Type  | Description                                   | Available on thing                  |
+|---------------|-----------------------------------------------|-------------------------------------|
+| SHORT_PRESSED | Fired when you press a button short           | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2  |
+| LONG_PRESSED  | Fired when you press a button longer          | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2  |
+| PRESSED       | Fired when you press a button (short or long) | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2  |
 
 
 ## Thing configuration
