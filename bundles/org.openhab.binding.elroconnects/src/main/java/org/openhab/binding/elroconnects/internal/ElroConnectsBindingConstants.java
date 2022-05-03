@@ -29,7 +29,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class ElroConnectsBindingConstants {
 
-    private static final String BINDING_ID = "elroconnects";
+    static final String BINDING_ID = "elroconnects";
 
     // List of all Thing Type UIDs
     public static final String TYPE_ACCOUNT = "account";

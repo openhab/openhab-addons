@@ -208,6 +208,7 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
             }).get();
         } catch (InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE);
+            Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
             logger.debug("Poll exception", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -234,6 +235,7 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
             }).get();
         } catch (InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE);
+            Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
             logger.debug("Login exception", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

@@ -124,7 +124,7 @@ public class ElroConnectsHandlerFactory extends BaseThingHandlerFactory {
         // common http client because we need to disable the authentication protocol handler.
         HttpClient client = httpClient;
         if (client == null) {
-            client = httpClientFactory.createHttpClient("elro");
+            client = httpClientFactory.createHttpClient(BINDING_ID);
             httpClient = client;
 
             try {
