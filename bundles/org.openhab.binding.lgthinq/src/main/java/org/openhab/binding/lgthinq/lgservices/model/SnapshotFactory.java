@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WM_SNAPSHOT_WASHER_DRYER_NODE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WM_SNAPSHOT_WASHER_DRYER_NODE_V2;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,11 +81,11 @@ public class SnapshotFactory {
             case WASHING_MACHINE:
                 switch (version) {
                     case V1_0: {
-                        throw new IllegalArgumentException("Version 1.0 for Washer is not supported yet.");
+                        return clazz.cast(objectMapper.convertValue(snapMap, WasherSnapshot.class));
                     }
                     case V2_0: {
                         Map<String, String> washerDryerMap = Objects.requireNonNull(
-                                (Map<String, String>) snapMap.get(WM_SNAPSHOT_WASHER_DRYER_NODE),
+                                (Map<String, String>) snapMap.get(WM_SNAPSHOT_WASHER_DRYER_NODE_V2),
                                 "washerDryer node must be present in the snapshot");
                         return clazz.cast(objectMapper.convertValue(washerDryerMap, WasherSnapshot.class));
                     }
@@ -97,7 +97,7 @@ public class SnapshotFactory {
                     }
                     case V2_0: {
                         Map<String, String> washerDryerMap = Objects.requireNonNull(
-                                (Map<String, String>) snapMap.get(WM_SNAPSHOT_WASHER_DRYER_NODE),
+                                (Map<String, String>) snapMap.get(WM_SNAPSHOT_WASHER_DRYER_NODE_V2),
                                 "washerDryer node must be present in the snapshot");
                         return clazz.cast(objectMapper.convertValue(washerDryerMap, DryerSnapshot.class));
                     }
@@ -125,8 +125,16 @@ public class SnapshotFactory {
                             "Unexpected error. Can't find key node attributes to determine AC API version.");
                 }
             case DRYER:
-            case WASHING_MACHINE:
                 return LGAPIVerion.V2_0;
+            case WASHING_MACHINE:
+                if (snapMap.containsKey(WM_SNAPSHOT_WASHER_DRYER_NODE_V2)) {
+                    return LGAPIVerion.V2_0;
+                } else if (snapMap.containsKey("State")) {
+                    return LGAPIVerion.V1_0;
+                } else {
+                    throw new IllegalStateException(
+                            "Unexpected error. Can't find key node attributes to determine AC API version.");
+                }
             default:
                 throw new IllegalStateException("Unexpected capability. The type " + type + " was not implemented yet");
         }

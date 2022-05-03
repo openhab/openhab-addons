@@ -26,11 +26,18 @@ import org.openhab.binding.lgthinq.lgservices.model.Capability;
 @NonNullByDefault
 public class WasherCapability extends Capability {
     public enum MonitoringCap {
-        STATE("state"),
-        SOIL_WASH("soilWash"),
-        SPIN("spin"),
-        TEMPERATURE("temp"),
-        RINSE("rinse");
+        STATE_V2("state"),
+        SOIL_WASH_V2("soilWash"),
+        SPIN_V2("spin"),
+        TEMPERATURE_V2("temp"),
+        RINSE_V2("rinse"),
+        ERROR_V2("error"),
+        STATE_V1("State"),
+        SOIL_WASH_V1("Wash"),
+        SPIN_V1("SpinSpeed"),
+        TEMPERATURE_V1("WaterTemp"),
+        RINSE_V1("RinseOption"),
+        ERROR_V1("Error");
 
         final String value;
 
@@ -49,6 +56,7 @@ public class WasherCapability extends Capability {
         private Map<String, String> spin = new LinkedHashMap<String, String>();
         private Map<String, String> temperature = new LinkedHashMap<String, String>();
         private Map<String, String> rinse = new LinkedHashMap<String, String>();
+        private Map<String, String> error = new LinkedHashMap<String, String>();
         private boolean hasDoorLook;
         private boolean hasTurboWash;
     }
@@ -94,6 +102,10 @@ public class WasherCapability extends Capability {
         return monitoringValue.rinse;
     }
 
+    public Map<String, String> getError() {
+        return monitoringValue.error;
+    }
+
     public boolean hasDoorLook() {
         return monitoringValue.hasDoorLook;
     }
@@ -112,20 +124,29 @@ public class WasherCapability extends Capability {
 
     public void addMonitoringValue(MonitoringCap monCap, String key, String value) {
         switch (monCap) {
-            case STATE:
+            case STATE_V1:
+            case STATE_V2:
                 monitoringValue.state.put(key, value);
                 break;
-            case SOIL_WASH:
+            case SOIL_WASH_V2:
+            case SOIL_WASH_V1:
                 monitoringValue.soilWash.put(key, value);
                 break;
-            case SPIN:
+            case SPIN_V2:
+            case SPIN_V1:
                 monitoringValue.spin.put(key, value);
                 break;
-            case TEMPERATURE:
+            case TEMPERATURE_V2:
+            case TEMPERATURE_V1:
                 monitoringValue.temperature.put(key, value);
                 break;
-            case RINSE:
+            case RINSE_V2:
+            case RINSE_V1:
                 monitoringValue.rinse.put(key, value);
+                break;
+            case ERROR_V2:
+            case ERROR_V1:
+                monitoringValue.error.put(key, value);
                 break;
         }
     }
