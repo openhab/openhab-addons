@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -36,17 +37,15 @@ public class CameraChannelHelper extends ChannelHelper {
     private boolean isLocal;
     private @Nullable String vpnUrl;
     private @Nullable String localUrl;
-    private boolean isMonitoring;
 
     public CameraChannelHelper() {
         super(GROUP_CAM_STATUS, GROUP_CAM_LIVE);
     }
 
-    public void setUrls(String vpnUrl, @Nullable String localUrl, boolean isMonitoring) {
+    public void setUrls(String vpnUrl, @Nullable String localUrl) {
         this.localUrl = localUrl;
         this.vpnUrl = vpnUrl;
         this.isLocal = localUrl != null;
-        this.isMonitoring = isMonitoring;
     }
 
     public @Nullable String getLocalURL() {
@@ -57,6 +56,7 @@ public class CameraChannelHelper extends ChannelHelper {
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
         if (naThing instanceof HomeStatusModule) {
             HomeStatusModule camera = (HomeStatusModule) naThing;
+            boolean isMonitoring = OnOffType.ON.equals(camera.getMonitoring());
             switch (channelId) {
                 case CHANNEL_MONITORING:
                     return camera.getMonitoring();
@@ -65,21 +65,21 @@ public class CameraChannelHelper extends ChannelHelper {
                 case CHANNEL_ALIM_STATUS:
                     return toStringType(camera.getAlimStatus());
                 case CHANNEL_LIVEPICTURE_VPN_URL:
-                    return toStringType(getLivePictureURL(false));
+                    return toStringType(getLivePictureURL(false, isMonitoring));
                 case CHANNEL_LIVEPICTURE_LOCAL_URL:
-                    return toStringType(getLivePictureURL(true));
+                    return toStringType(getLivePictureURL(true, isMonitoring));
                 case CHANNEL_LIVEPICTURE:
-                    return toRawType(getLivePictureURL(false));
+                    return toRawType(getLivePictureURL(isLocal, isMonitoring));
                 case CHANNEL_LIVESTREAM_VPN_URL:
-                    return getLiveStreamURL(false, (String) config.get(QUALITY_CONF_ENTRY));
+                    return getLiveStreamURL(false, (String) config.get(QUALITY_CONF_ENTRY), isMonitoring);
                 case CHANNEL_LIVESTREAM_LOCAL_URL:
-                    return getLiveStreamURL(true, (String) config.get(QUALITY_CONF_ENTRY));
+                    return getLiveStreamURL(true, (String) config.get(QUALITY_CONF_ENTRY), isMonitoring);
             }
         }
         return null;
     }
 
-    private @Nullable String getLivePictureURL(boolean local) {
+    private @Nullable String getLivePictureURL(boolean local, boolean isMonitoring) {
         String url = local ? localUrl : vpnUrl;
         if (!isMonitoring || (local && !isLocal) || url == null) {
             return null;
@@ -87,7 +87,7 @@ public class CameraChannelHelper extends ChannelHelper {
         return String.format("%s%s", url, LIVE_PICTURE);
     }
 
-    private State getLiveStreamURL(boolean local, @Nullable String configQual) {
+    private State getLiveStreamURL(boolean local, @Nullable String configQual, boolean isMonitoring) {
         String url = local ? localUrl : vpnUrl;
         if (!isMonitoring || (local && !isLocal) || url == null) {
             return UnDefType.NULL;
