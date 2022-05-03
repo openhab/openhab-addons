@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -54,6 +55,7 @@ public class CameraChannelHelper extends ChannelHelper {
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
         if (naThing instanceof HomeStatusModule) {
             HomeStatusModule camera = (HomeStatusModule) naThing;
+            boolean monitoring = camera.getMonitoring() == OnOffType.ON;
             switch (channelId) {
                 case CHANNEL_MONITORING:
                     return camera.getMonitoring();
@@ -62,27 +64,27 @@ public class CameraChannelHelper extends ChannelHelper {
                 case CHANNEL_ALIM_STATUS:
                     return toStringType(camera.getAlimStatus());
                 case CHANNEL_LIVEPICTURE_URL:
-                    return toStringType(getLivePictureURL());
+                    return toStringType(getLivePictureURL(monitoring));
                 case CHANNEL_LIVEPICTURE:
-                    return toRawType(getLivePictureURL());
+                    return toRawType(getLivePictureURL(monitoring));
                 case CHANNEL_LIVESTREAM_VPN_URL:
-                    return getLiveStreamURL(false, (String) config.get("quality"));
+                    return getLiveStreamURL(monitoring, false, (String) config.get("quality"));
                 case CHANNEL_LIVESTREAM_LOCAL_URL:
-                    return getLiveStreamURL(true, (String) config.get("quality"));
+                    return getLiveStreamURL(monitoring, true, (String) config.get("quality"));
             }
         }
         return null;
     }
 
-    private @Nullable String getLivePictureURL() {
+    private @Nullable String getLivePictureURL(boolean monitoring) {
         String url = isLocal ? localUrl : vpnUrl;
-        return url == null ? null : String.format("%s%s", url, LIVE_PICTURE);
+        return !monitoring || url == null ? null : String.format("%s%s", url, LIVE_PICTURE);
     }
 
-    private State getLiveStreamURL(boolean local, @Nullable String configQual) {
+    private State getLiveStreamURL(boolean monitoring, boolean local, @Nullable String configQual) {
         String url = local ? localUrl : vpnUrl;
-        if ((local && !isLocal) || url == null) {
-            return UnDefType.UNDEF;
+        if (!monitoring || (local && !isLocal) || url == null) {
+            return UnDefType.NULL;
         }
         String finalQual = configQual != null ? configQual : "poor";
         return toStringType(String.format("%s/live/%s", url,
