@@ -20,10 +20,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1MonitorExpiredException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1OfflineException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
+import org.openhab.binding.lgthinq.internal.errors.*;
 import org.openhab.binding.lgthinq.lgservices.model.*;
 
 /**
@@ -68,5 +65,6 @@ public interface LGThinQApiClientService<C extends Capability, S extends Snapsho
 
     @Nullable
     S getMonitorData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull String workerId,
-            DeviceTypes deviceType) throws LGThinqApiException, LGThinqDeviceV1MonitorExpiredException, IOException;
+            DeviceTypes deviceType, @NonNull C deviceCapability)
+            throws LGThinqApiException, LGThinqDeviceV1MonitorExpiredException, IOException, LGThinqUnmarshallException;
 }
