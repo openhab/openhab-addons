@@ -94,7 +94,7 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
     }
 
     @Override
-    protected void startBackgroundDiscovery() {
+    public void startBackgroundDiscovery() {
         logger.debug("Start device background discovery");
         ScheduledFuture<?> job = discoveryJob;
         if (job == null || job.isCancelled()) {
@@ -114,11 +114,6 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
     }
 
     @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
     public void deactivate() {
         removeOlderResults(Instant.now().toEpochMilli());
         super.deactivate();
@@ -126,8 +121,14 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
+        ElroConnectsBridgeHandler bridge = null;
         if (handler instanceof ElroConnectsBridgeHandler) {
-            bridgeHandler = (ElroConnectsBridgeHandler) handler;
+            bridge = (ElroConnectsBridgeHandler) handler;
+            bridgeHandler = bridge;
+        }
+
+        if (bridge != null) {
+            bridge.setDiscoveryService(this);
         }
     }
 

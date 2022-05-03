@@ -143,6 +143,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     private final Gson gsonOut = new Gson();
     private Gson gsonIn = new Gson();
 
+    private @Nullable ElroConnectsDiscoveryService discoveryService = null;
+
     public ElroConnectsBridgeHandler(Bridge bridge, NetworkAddressService networkAddressService,
             ElroConnectsDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(bridge);
@@ -256,7 +258,12 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             getCurrentScene();
 
             updateStatus(ThingStatus.ONLINE);
-            updateState(SCENE, new StringType(String.valueOf(currentScene)));
+
+            // Enable discovery of devices
+            ElroConnectsDiscoveryService service = discoveryService;
+            if (service != null) {
+                service.startBackgroundDiscovery();
+            }
         } catch (IOException e) {
             String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
             restartCommunication(msg);
@@ -1030,5 +1037,9 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             restartCommunication(msg);
         }
         return true;
+    }
+
+    public void setDiscoveryService(ElroConnectsDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
     }
 }

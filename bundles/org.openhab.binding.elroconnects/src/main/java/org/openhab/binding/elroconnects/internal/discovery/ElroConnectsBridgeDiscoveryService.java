@@ -27,7 +27,6 @@ import org.openhab.binding.elroconnects.internal.devices.ElroConnectsConnector;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsAccountHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -50,8 +49,8 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
     private volatile @Nullable ScheduledFuture<?> discoveryJob;
 
     private static final int TIMEOUT_S = 5;
-    private static final int INITIAL_DELAY_S = 10; // initial delay for polling to allow time for login and retrieval in
-                                                   // ElroConnectsAccountHandler to complete
+    private static final int INITIAL_DELAY_S = 5; // initial delay for polling to allow time for login and retrieval in
+                                                  // ElroConnectsAccountHandler to complete
     private static final int REFRESH_INTERVAL_S = 60;
 
     public ElroConnectsBridgeDiscoveryService() {
@@ -61,9 +60,9 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected void startScan() {
-        scheduler.submit(this::discoverConnectors); // If background account polling is not enabled for the handler,
-                                                    // this will trigger http requests, therefore do in separate thread
-                                                    // to be able to return quickly
+        scheduler.execute(this::discoverConnectors); // If background account polling is not enabled for the handler,
+                                                     // this will trigger http requests, therefore do in separate thread
+                                                     // to be able to return quickly
     }
 
     private void discoverConnectors() {
@@ -115,7 +114,7 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    protected void startBackgroundDiscovery() {
+    public void startBackgroundDiscovery() {
         logger.debug("Start bridge background discovery");
         ScheduledFuture<?> job = discoveryJob;
         if (job == null || job.isCancelled()) {
@@ -125,25 +124,13 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    protected void stopBackgroundDiscovery() {
+    public void stopBackgroundDiscovery() {
         logger.debug("Stop bridge background discovery");
         ScheduledFuture<?> job = discoveryJob;
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
             discoveryJob = null;
         }
-    }
-
-    @Override
-    public void activate() {
-        ElroConnectsAccountHandler account = accountHandler;
-        if (account == null) {
-            return;
-        }
-
-        Map<String, Object> config = Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
-                account.isBackgroundDiscoveryEnabled());
-        super.activate(config);
     }
 
     @Override
@@ -154,8 +141,14 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
+        ElroConnectsAccountHandler account = null;
         if (handler instanceof ElroConnectsAccountHandler) {
-            accountHandler = (ElroConnectsAccountHandler) handler;
+            account = (ElroConnectsAccountHandler) handler;
+            accountHandler = account;
+        }
+
+        if (account != null) {
+            account.setDiscoveryService(this);
         }
     }
 

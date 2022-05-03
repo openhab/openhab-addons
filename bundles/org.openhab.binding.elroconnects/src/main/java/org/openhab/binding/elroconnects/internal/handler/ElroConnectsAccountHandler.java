@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -29,7 +30,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponse;
-import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
@@ -68,11 +68,9 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
     private static final String ELRO_PID = "01288154146"; // ELRO Connects Enterprise PID on hekr cloud
 
     private static final int TIMEOUT_MS = 2500;
-    private static final int INITIAL_DELAY_S = 5; // initial delay for polling to allow time for login and access token
-                                                  // retrieval to succeed
     private static final int REFRESH_INTERVAL_S = 300;
 
-    private boolean enableBackgroundDiscovery;
+    private boolean enableBackgroundDiscovery = true;
 
     private volatile @Nullable ScheduledFuture<?> pollingJob;
     private final HttpClient client;
@@ -86,22 +84,25 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
     private final Map<String, String> login = new HashMap<>();
     private String loginJson = "";
     private volatile @Nullable String accessToken;
+
+    private volatile boolean retry = false; // Flag for retrying login when token expired during poll, prevents multiple
+                                            // recursive retries
+
     private volatile Map<String, ElroConnectsConnector> devices = new HashMap<>();
+
+    private @Nullable ElroConnectsBridgeDiscoveryService discoveryService = null;
 
     public ElroConnectsAccountHandler(Bridge bridge, HttpClient client) {
         super(bridge);
         this.client = client;
         login.put("pid", ELRO_PID);
         login.put("clientType", "WEB");
-
-        // The ElroConnectsBridgeDiscoverySerivce will query for enableBackgroundDiscovery before the handler is
-        // initialized, therefore already set it here
-        ElroConnectsAccountConfiguration config = getConfigAs(ElroConnectsAccountConfiguration.class);
-        enableBackgroundDiscovery = config.enableBackgroundDiscovery;
     }
 
     @Override
     public void initialize() {
+        accessToken = null;
+
         ElroConnectsAccountConfiguration config = getConfigAs(ElroConnectsAccountConfiguration.class);
         String username = config.username;
         String password = config.password;
@@ -120,11 +121,12 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
         login.put("password", password);
         loginJson = gson.toJson(login);
 
-        // Do initial login to retrieve access token and start polling with small initial delay if background discovery
-        // is enabled), so the access token is available
-        scheduler.submit(this::login);
+        // If background discovery is enabled, start polling (will do login first), else only login to take the thing
+        // online if successful
         if (enableBackgroundDiscovery) {
             startPolling();
+        } else {
+            scheduler.execute(this::login);
         }
     }
 
@@ -139,12 +141,21 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
         final ScheduledFuture<?> localRefreshJob = this.pollingJob;
         if (localRefreshJob == null || localRefreshJob.isCancelled()) {
             logger.debug("Start polling");
-            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, INITIAL_DELAY_S, REFRESH_INTERVAL_S,
-                    TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, REFRESH_INTERVAL_S, TimeUnit.SECONDS);
+        }
+
+        ElroConnectsBridgeDiscoveryService service = this.discoveryService;
+        if (service != null) {
+            service.startBackgroundDiscovery();
         }
     }
 
     private void stopPolling() {
+        ElroConnectsBridgeDiscoveryService service = this.discoveryService;
+        if (service != null) {
+            service.stopBackgroundDiscovery();
+        }
+
         final ScheduledFuture<?> localPollingJob = this.pollingJob;
         if (localPollingJob != null && !localPollingJob.isCancelled()) {
             logger.debug("Stop polling");
@@ -156,71 +167,81 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
     private void poll() {
         logger.debug("Polling");
 
-        // when access token not yet received or expired, login and get devices in next refresh cycle
+        // when access token not yet received or expired, try to login first
         if (accessToken == null) {
             login();
+        }
+        if (accessToken == null) {
             return;
         }
 
-        getControllers().handle((devicesList, accountException) -> {
-            if (devicesList != null) {
-                logger.trace("deviceList response: {}", devicesList);
+        try {
+            getControllers().handle((devicesList, accountException) -> {
+                if (devicesList != null) {
+                    logger.trace("deviceList response: {}", devicesList);
 
-                List<ElroConnectsConnector> response = null;
-                try {
-                    response = gson.fromJson(devicesList, deviceListType);
-                } catch (JsonParseException parseException) {
-                    logger.warn("Parsing failed: {}", parseException.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.request-failed");
-                    return null;
-                }
-                Map<String, ElroConnectsConnector> devices = new HashMap<>();
-                if (response != null) {
-                    response.forEach(d -> devices.put(d.getDevTid(), d));
-                }
-                this.devices = devices;
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                if (accountException == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    List<ElroConnectsConnector> response = null;
+                    try {
+                        response = gson.fromJson(devicesList, deviceListType);
+                    } catch (JsonParseException parseException) {
+                        logger.warn("Parsing failed: {}", parseException.getMessage());
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/offline.request-failed");
+                        return null;
+                    }
+                    Map<String, ElroConnectsConnector> devices = new HashMap<>();
+                    if (response != null) {
+                        response.forEach(d -> devices.put(d.getDevTid(), d));
+                    }
+                    this.devices = devices;
+                    updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            accountException.getLocalizedMessage());
+                    if (accountException == null) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                accountException.getLocalizedMessage());
+                    }
                 }
-            }
 
-            return null;
-        });
+                return null;
+            }).get();
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE);
+        } catch (ExecutionException e) {
+            logger.debug("Poll exception", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        }
     }
 
     private void login() {
         logger.debug("Login");
-        getAccessToken().handle((accessToken, accountException) -> {
-            this.accessToken = accessToken;
-            if (accessToken != null) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                if (accountException == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        try {
+            getAccessToken().handle((accessToken, accountException) -> {
+                this.accessToken = accessToken;
+                if (accessToken != null) {
+                    updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            accountException.getLocalizedMessage());
+                    if (accountException == null) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                accountException.getLocalizedMessage());
+                    }
                 }
-            }
 
-            return null;
-        });
+                return null;
+            }).get();
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE);
+        } catch (ExecutionException e) {
+            logger.debug("Login exception", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        }
     }
 
     private CompletableFuture<@Nullable String> getAccessToken() {
         CompletableFuture<@Nullable String> f = new CompletableFuture<>();
-
-        // The method call returns an invalid 401 response on authentication error, missing the www-authentication
-        // header. This header should be there according to RFC7235. This workaround removes the protocol handler and
-        // the check.
-        client.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
-
         Request request = client.newRequest(URI.create(ELRO_CLOUD_LOGIN_URL));
 
         request.method(HttpMethod.POST).content(new StringContentProvider(loginJson), "application/json")
@@ -241,6 +262,9 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                                     f.completeExceptionally(
                                             new ElroConnectsAccountException("@text/offline.request-failed"));
                                 }
+                            } else if (response.getStatus() == 401) {
+                                f.completeExceptionally(
+                                        new ElroConnectsAccountException("@text/offline.credentials-error"));
                             } else {
                                 logger.warn("Unexpected response on access token request: {} - {}",
                                         response.getStatus(), getContentAsString());
@@ -279,10 +303,22 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                             if (response.getStatus() == 200) {
                                 f.complete(getContentAsString());
                             } else if (response.getStatus() == 401) {
-                                // Access token expired, so clear it
+                                // Access token expired, so clear it and do a poll that will now start with a login
                                 accessToken = null;
-                                f.completeExceptionally(
-                                        new ElroConnectsAccountException("@text/offline.token-expired"));
+                                if (!retry) { // Only retry once to avoid infinite recursive loop if no valid token is
+                                              // received
+                                    retry = true;
+                                    logger.debug("Access token expired, retry");
+                                    poll();
+                                    if (accessToken == null) {
+                                        logger.debug("Request for new token failed");
+                                    }
+                                } else {
+                                    logger.warn("Unexpected response after getting new token : {} - {}",
+                                            response.getStatus(), getContentAsString());
+                                    f.completeExceptionally(
+                                            new ElroConnectsAccountException("@text/offline.request-failed"));
+                                }
                             } else {
                                 logger.warn("Unexpected response on get controllers request: {} - {}",
                                         response.getStatus(), getContentAsString());
@@ -300,6 +336,7 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                                         new ElroConnectsAccountException("@text/offline.request-failed", e));
                             }
                         }
+                        retry = false;
                     }
                 });
 
@@ -321,12 +358,12 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
         return devices;
     }
 
-    public boolean isBackgroundDiscoveryEnabled() {
-        return enableBackgroundDiscovery;
-    }
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // nothing to do, there are no channels
+    }
+
+    public void setDiscoveryService(ElroConnectsBridgeDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
     }
 }
