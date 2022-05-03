@@ -127,6 +127,7 @@ public class WasherSnapshot implements Snapshot {
     }
 
     @JsonProperty("temp")
+    @JsonAlias({ "WaterTemp" })
     public String getTemperatureLevel() {
         return temperatureLevel;
     }
@@ -136,6 +137,7 @@ public class WasherSnapshot implements Snapshot {
     }
 
     @JsonProperty("doorLock")
+    @JsonAlias({ "ChildLock" })
     public String getDoorLock() {
         return doorLock;
     }
