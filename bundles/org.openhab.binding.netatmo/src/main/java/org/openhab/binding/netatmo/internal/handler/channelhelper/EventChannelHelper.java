@@ -34,6 +34,7 @@ public class EventChannelHelper extends ChannelHelper {
     private boolean isLocal;
     private @Nullable String vpnUrl;
     private @Nullable String localUrl;
+    private boolean isMonitoring;
 
     public EventChannelHelper() {
         this(GROUP_LAST_EVENT);
@@ -43,10 +44,11 @@ public class EventChannelHelper extends ChannelHelper {
         super(groupName);
     }
 
-    public void setUrls(String vpnUrl, @Nullable String localUrl) {
+    public void setUrls(String vpnUrl, @Nullable String localUrl, boolean isMonitoring) {
         this.localUrl = localUrl;
         this.vpnUrl = vpnUrl;
         this.isLocal = localUrl != null;
+        this.isMonitoring = isMonitoring;
     }
 
     @Override
@@ -85,9 +87,9 @@ public class EventChannelHelper extends ChannelHelper {
 
     private State getStreamURL(boolean local, @Nullable String videoId) {
         String url = local ? localUrl : vpnUrl;
-        if ((local && !isLocal) || url == null || videoId == null) {
+        if ((local && !isLocal) || url == null || videoId == null || !isMonitoring) {
             return UnDefType.NULL;
         }
-        return toStringType(String.format("%s/vod/%s/index.m3u8", url, videoId));
+        return toStringType("%s/vod/%s/index.m3u8", url, videoId);
     }
 }

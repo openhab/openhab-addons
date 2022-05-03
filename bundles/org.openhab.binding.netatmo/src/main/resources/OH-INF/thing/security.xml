@@ -27,7 +27,14 @@
 		<label>Live Monitoring</label>
 		<channels>
 			<channel id="picture" typeId="live-picture"/>
-			<channel id="picture-url" typeId="live-picture-url"/>
+			<channel id="local-picture-url" typeId="live-picture-url">
+				<label>Live Snapshot Local URL</label>
+				<description>Local URL of the live snapshot for this camera.</description>
+			</channel>
+			<channel id="vpn-picture-url" typeId="live-picture-url">
+				<label>Live Snapshot VPN URL</label>
+				<description>URL of the live snapshot for this camera through Netatmo VPN.</description>
+			</channel>
 			<channel id="local-stream-url" typeId="live-stream-url">
 				<label>Live Stream Local URL</label>
 				<description>Local URL of the live stream for this camera.</description>

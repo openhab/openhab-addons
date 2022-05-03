@@ -76,8 +76,8 @@ public class CameraCapability extends Capability {
             localUrl = isLocal
                     ? handler.getHomeCapability(SecurityCapability.class).map(cap -> cap.ping(vpnUrl)).orElse(null)
                     : null;
-            cameraHelper.setUrls(vpnUrl, localUrl);
-            eventHelper.setUrls(vpnUrl, localUrl);
+            cameraHelper.setUrls(vpnUrl, localUrl, OnOffType.ON.equals(newData.getMonitoring()));
+            eventHelper.setUrls(vpnUrl, localUrl, OnOffType.ON.equals(newData.getMonitoring()));
         }
         if (!SdCardStatus.SD_CARD_WORKING.equals(newData.getSdStatus())
                 || !AlimentationStatus.ALIM_CORRECT_POWER.equals(newData.getAlimStatus())) {

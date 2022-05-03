@@ -55,6 +55,10 @@ public class ChannelTypeUtils {
         return null;
     }
 
+    public static State toStringType(String pattern, Object... parms) {
+        return toStringType(String.format(pattern, parms));
+    }
+
     public static State toStringType(@Nullable Enum<?> value) {
         return (value == null) ? UnDefType.NULL : new StringType(value.name());
     }

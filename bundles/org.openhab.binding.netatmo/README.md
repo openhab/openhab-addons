@@ -435,7 +435,8 @@ Warnings:
 | status         | sd-card              | String       | Read-only  | State of the SD card                                                                                                                        |
 | status         | alim                 | String       | Read-only  | State of the power connector                                                                                                                |
 | live           | picture              | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
-| live           | picture-url          | String       | Read-only  | Url of the live snapshot for this camera                                                                                                    |
+| live           | local-picture-url    | String       | Read-only  | Local Url of the live snapshot for this camera                                                                                              |
+| live           | vpn-picture-url      | String       | Read-only  | Url of the live snapshot for this camera through Netatmo VPN.                                                                               |
 | live           | local-stream-url (*) | String       | Read-only  | Local Url of the live stream for this camera (accessible if openhab server and camera are located on the same lan.                          |
 | live           | vpn-stream-url (*)   | String       | Read-only  | Url of the live stream for this camera through Netatmo VPN.                                                                                 |
 | signal         | strength             | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
@@ -532,6 +533,20 @@ Bridge netatmo:account:home "Netatmo Account" [clientId="", clientSecret="", use
     }
 }
 ```
+
+
+## Sample configuration of live-stream-url channels:
+
+```
+        ....
+        Thing welcome camera "Caméra" [ id="xxxxxx" ] {
+            Channels:
+                Type live-stream-url : live#local-stream-url [ quality="high" ]
+                Type live-stream-url : live#vpn-stream-url [ quality="low" ]
+        }
+        ...
+```
+
 
 ## items/netatmo.items
 

@@ -115,7 +115,8 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_SD_CARD = "sd-card";
     public static final String CHANNEL_ALIM_STATUS = "alim";
     public static final String CHANNEL_LIVEPICTURE = "picture";
-    public static final String CHANNEL_LIVEPICTURE_URL = "picture-url";
+    public static final String CHANNEL_LIVEPICTURE_VPN_URL = "vpn-picture-url";
+    public static final String CHANNEL_LIVEPICTURE_LOCAL_URL = "local-picture-url";
     public static final String CHANNEL_LIVESTREAM_VPN_URL = "vpn-stream-url";
     public static final String CHANNEL_LIVESTREAM_LOCAL_URL = "local-stream-url";
     public static final String CHANNEL_EVENT_TYPE = "type";

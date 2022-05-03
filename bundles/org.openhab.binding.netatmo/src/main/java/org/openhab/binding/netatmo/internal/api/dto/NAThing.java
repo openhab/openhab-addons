@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
@@ -58,8 +59,7 @@ public class NAThing extends NAObject implements NAModule {
         // and we double check by comparing data freshness
         ZonedDateTime localLastSeen = lastSeen;
         if (result && localLastSeen != null && !type.isLogical()) {
-            result = Duration.between(localLastSeen, ZonedDateTime.now().withZoneSameInstant(localLastSeen.getZone()))
-                    .getSeconds() < UNREACHABLE_DELAY_S;
+            result = Duration.between(localLastSeen.toInstant(), Instant.now()).getSeconds() < UNREACHABLE_DELAY_S;
         }
         return result;
     }
