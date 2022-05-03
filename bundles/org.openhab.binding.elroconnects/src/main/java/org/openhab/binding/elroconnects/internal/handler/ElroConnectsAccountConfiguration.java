@@ -13,17 +13,17 @@
 package org.openhab.binding.elroconnects.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link ElroConnectsBridgeConfiguration} class contains fields mapping bridge configuration parameters.
+ * The {@link ElroConnectsAccountConfiguration} class contains fields mapping bridge configuration parameters.
  *
  * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
-public class ElroConnectsBridgeConfiguration {
+public class ElroConnectsAccountConfiguration {
 
-    public String connectorId = "";
-    public String ipAddress = "";
-    public int refreshInterval = 60;
-    public boolean legacyFirmware = false;
+    public @Nullable String username;
+    public @Nullable String password;
+    public boolean enableBackgroundDiscovery = true;
 }

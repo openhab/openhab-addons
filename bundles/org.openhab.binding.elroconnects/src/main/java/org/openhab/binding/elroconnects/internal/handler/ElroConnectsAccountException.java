@@ -15,15 +15,20 @@ package org.openhab.binding.elroconnects.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ElroConnectsBridgeConfiguration} class contains fields mapping bridge configuration parameters.
+ * The {@link ElroConnectsAccountException} class is the exception for all cloud account errors.
  *
  * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
-public class ElroConnectsBridgeConfiguration {
+class ElroConnectsAccountException extends Exception {
 
-    public String connectorId = "";
-    public String ipAddress = "";
-    public int refreshInterval = 60;
-    public boolean legacyFirmware = false;
+    private static final long serialVersionUID = -1038059604759958044L;
+
+    public ElroConnectsAccountException(String message) {
+        super(message);
+    }
+
+    public ElroConnectsAccountException(String message, Throwable throwable) {
+        super(message, throwable);
+    }
 }

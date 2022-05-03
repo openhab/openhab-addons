@@ -10,20 +10,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.elroconnects.internal.handler;
+package org.openhab.binding.elroconnects.internal.devices;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ElroConnectsBridgeConfiguration} class contains fields mapping bridge configuration parameters.
+ * The {@link ElroConnectsConnector} class represents a device response received from the ELRO Connects
+ * cloud.
  *
  * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
-public class ElroConnectsBridgeConfiguration {
+public class ElroConnectsConnector {
 
-    public String connectorId = "";
-    public String ipAddress = "";
-    public int refreshInterval = 60;
-    public boolean legacyFirmware = false;
+    String devTid = "";
+    public String ctrlKey = "";
+    public String binVersion = "";
+    public String binType = "";
+    public String sdkVer = "";
+    public String model = "";
+    public boolean online;
+    public String desc = "";
+
+    public String getDevTid() {
+        return devTid;
+    }
 }
