@@ -26,10 +26,13 @@ import org.openhab.binding.lgthinq.lgservices.model.Capability;
 @NonNullByDefault
 public class DryerCapability extends Capability {
     public enum MonitoringCap {
-        STATE("state"),
-        PROCESS_STATE("processState"),
-        DRY_LEVEL("dryLevel"),
-        ERROR("error");
+        STATE_V2("state"),
+        PROCESS_STATE_V2("processState"),
+        DRY_LEVEL_V2("dryLevel"),
+        ERROR_V2("error"),
+        STATE_V1("State"),
+        PROCESS_STATE_V1("PreState"),
+        ERROR_V1("Error");
 
         final String value;
 
@@ -106,16 +109,19 @@ public class DryerCapability extends Capability {
 
     public void addMonitoringValue(MonitoringCap monCap, String key, String value) {
         switch (monCap) {
-            case STATE:
+            case STATE_V2:
+            case STATE_V1:
                 monitoringValue.state.put(key, value);
                 break;
-            case PROCESS_STATE:
+            case PROCESS_STATE_V2:
+            case PROCESS_STATE_V1:
                 monitoringValue.processState.put(key, value);
                 break;
-            case DRY_LEVEL:
+            case DRY_LEVEL_V2:
                 monitoringValue.dryLevel.put(key, value);
                 break;
-            case ERROR:
+            case ERROR_V1:
+            case ERROR_V2:
                 monitoringValue.error.put(key, value);
                 break;
         }

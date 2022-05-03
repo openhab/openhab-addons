@@ -57,6 +57,7 @@ public class DryerSnapshot implements Snapshot {
     }
 
     @JsonProperty("dryLevel")
+    @JsonAlias({ "DryLevel" })
     public String getDryLevel() {
         return dryLevel;
     }
@@ -70,6 +71,7 @@ public class DryerSnapshot implements Snapshot {
     }
 
     @JsonProperty("error")
+    @JsonAlias({ "Error" })
     public String getError() {
         return error;
     }
@@ -79,6 +81,7 @@ public class DryerSnapshot implements Snapshot {
     }
 
     @JsonProperty("processState")
+    @JsonAlias({ "ProcessState" })
     public String getProcessState() {
         return processState;
     }

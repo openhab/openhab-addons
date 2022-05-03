@@ -25,6 +25,7 @@ import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
 import org.openhab.binding.lgthinq.lgservices.LGThinQDRApiClientService;
 import org.openhab.binding.lgthinq.lgservices.LGThinQDRApiV2ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
+import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.binding.lgthinq.lgservices.model.dryer.DryerCapability;
 import org.openhab.binding.lgthinq.lgservices.model.dryer.DryerSnapshot;
@@ -73,6 +74,10 @@ public class LGThinQDryerHandler extends LGThinQAbstractDeviceHandler<DryerCapab
         processStateChannelUUID = new ChannelUID(getThing().getUID(), DR_CHANNEL_PROCESS_STATE_ID);
         errorChannelUUID = new ChannelUID(getThing().getUID(), DR_CHANNEL_ERROR_ID);
         dryLevelChannelUUID = new ChannelUID(getThing().getUID(), DR_CHANNEL_DRY_LEVEL_ID);
+    }
+
+    protected DeviceTypes getDeviceType() {
+        return DeviceTypes.DRYER;
     }
 
     @Override
