@@ -24,6 +24,7 @@ import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
 import org.openhab.binding.lgthinq.lgservices.LGThinQWMApiClientService;
 import org.openhab.binding.lgthinq.lgservices.LGThinQWMApiV2ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
+import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.binding.lgthinq.lgservices.model.washer.WasherCapability;
 import org.openhab.binding.lgthinq.lgservices.model.washer.WasherSnapshot;
@@ -50,6 +51,8 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
     private final ChannelUID smartCourseChannelUUID;
     private final ChannelUID downloadedCourseChannelUUID;
     private final ChannelUID temperatureChannelUUID;
+    private final ChannelUID doorLockChannelUUID;
+
     private final Logger logger = LoggerFactory.getLogger(LGThinQWasherHandler.class);
     @NonNullByDefault
     private final LGThinQWMApiClientService lgThinqWMApiClientService;
@@ -70,6 +73,7 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
         smartCourseChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_SMART_COURSE_ID);
         downloadedCourseChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_DOWNLOADED_COURSE_ID);
         temperatureChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_TEMP_LEVEL_ID);
+        doorLockChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_DOOR_LOCK_ID);
     }
 
     static class AsyncCommandParams {
@@ -118,6 +122,12 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
                     .forEach((k, v) -> options.add(new StateOption(v, keyIfValueNotFound(CAP_WP_TEMPERATURE, k))));
             stateDescriptionProvider.setStateOptions(temperatureChannelUUID, options);
         }
+        if (isLinked(doorLockChannelUUID)) {
+            List<StateOption> options = new ArrayList<>();
+            options.add(new StateOption("0", "Unlocked"));
+            options.add(new StateOption("1", "Locked"));
+            stateDescriptionProvider.setStateOptions(doorLockChannelUUID, options);
+        }
     }
 
     @Override
@@ -141,6 +151,11 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
         updateState(WM_CHANNEL_DOOR_LOCK_ID, new StringType(shot.getDoorLock()));
         updateState(WM_CHANNEL_REMAIN_TIME_ID, new StringType(shot.getRemainingTime()));
         updateState(WM_CHANNEL_DOWNLOADED_COURSE_ID, new StringType(shot.getDownloadedCourse()));
+    }
+
+    @Override
+    protected DeviceTypes getDeviceType() {
+        return DeviceTypes.WASHING_MACHINE;
     }
 
     @Override
