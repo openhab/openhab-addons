@@ -205,14 +205,12 @@
 		<label>Temperature type 2 port</label>
 		<description>Temperature of the Go-eCharger on the type 2 port</description>
 		<state pattern="%d %unit%" readOnly="true"/>
-		<category>Temperature</category>
 	</channel-type>
 	<channel-type id="tmp">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature circuit board</label>
 		<description>Temperature of the Go-eCharger on circuit board</description>
 		<state pattern="%d %unit%" readOnly="true"/>
-		<category>Temperature</category>
 	</channel-type>
 	<channel-type id="fmw">
 		<item-type>String</item-type>

@@ -106,6 +106,7 @@ end
 ```
 
 Advanced example:
+
 ```
 rule "Set charging limit for go-eCharger"
 when
