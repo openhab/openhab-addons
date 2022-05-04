@@ -316,13 +316,6 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="nightLightBrightnessType">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Night Light Level</label>
-		<description>System representation of night light brightness level?</description>
-		<state readOnly="false" pattern="%.0f"/>
-	</channel-type>
-
 	<channel-type id="warmModeEnabled">
 		<item-type>Switch</item-type>
 		<label>Warm Mode Enabled</label>
