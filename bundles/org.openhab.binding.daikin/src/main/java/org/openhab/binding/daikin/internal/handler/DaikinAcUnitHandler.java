@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.daikin.internal.handler;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -23,7 +22,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinCommunicationException;
 import org.openhab.binding.daikin.internal.DaikinDynamicStateDescriptionProvider;
-import org.openhab.binding.daikin.internal.DaikinWebTargets;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
 import org.openhab.binding.daikin.internal.api.EnergyInfoDayAndWeek;
 import org.openhab.binding.daikin.internal.api.EnergyInfoYear;
@@ -31,7 +29,7 @@ import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
 import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
 import org.openhab.binding.daikin.internal.api.Enums.Mode;
-import org.openhab.binding.daikin.internal.api.Enums.SpecialModeKind;
+import org.openhab.binding.daikin.internal.api.Enums.SpecialMode;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -40,7 +38,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -66,13 +63,12 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
     }
 
     @Override
-    protected void pollStatus() throws IOException {
-        DaikinWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            return;
-        }
+    protected void pollStatus() throws DaikinCommunicationException {
         ControlInfo controlInfo = webTargets.getControlInfo();
-        updateState(DaikinBindingConstants.CHANNEL_AC_POWER, controlInfo.power ? OnOffType.ON : OnOffType.OFF);
+        if (!"OK".equals(controlInfo.ret)) {
+            throw new DaikinCommunicationException("Invalid response from host");
+        }
+        updateState(DaikinBindingConstants.CHANNEL_AC_POWER, OnOffType.from(controlInfo.power));
         updateTemperatureChannel(DaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
 
         updateState(DaikinBindingConstants.CHANNEL_AC_MODE, new StringType(controlInfo.mode.name()));
@@ -89,13 +85,14 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.AUTO.getValue()));
         }
 
-        updateState(DaikinBindingConstants.CHANNEL_AC_SPECIALMODE, new StringType(controlInfo.specialMode.name()));
-
-        if (controlInfo.specialMode.isUndefined()) {
-            updateState(DaikinBindingConstants.CHANNEL_AC_SPECIALMODE_POWERFUL, UnDefType.UNDEF);
+        if (controlInfo.advancedMode.isUndefined()) {
+            updateState(DaikinBindingConstants.CHANNEL_AC_STREAMER, UnDefType.UNDEF);
+            updateState(DaikinBindingConstants.CHANNEL_AC_SPECIALMODE, UnDefType.UNDEF);
         } else {
-            updateState(DaikinBindingConstants.CHANNEL_AC_SPECIALMODE_POWERFUL,
-                    controlInfo.specialMode.isPowerfulActive() ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinBindingConstants.CHANNEL_AC_STREAMER,
+                    OnOffType.from(controlInfo.advancedMode.isStreamerActive()));
+            updateState(DaikinBindingConstants.CHANNEL_AC_SPECIALMODE,
+                    new StringType(controlInfo.getSpecialMode().name()));
         }
 
         SensorInfo sensorInfo = webTargets.getSensorInfo();
@@ -152,7 +149,6 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             // Suppress any error if energy info is not supported.
             logger.debug("getEnergyInfoDayAndWeek() error: {}", e.getMessage());
         }
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -165,9 +161,15 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
                     return true;
                 }
                 break;
-            case DaikinBindingConstants.CHANNEL_AC_SPECIALMODE_POWERFUL:
+            case DaikinBindingConstants.CHANNEL_AC_SPECIALMODE:
+                if (command instanceof StringType) {
+                    changeSpecialMode(((StringType) command).toString());
+                    return true;
+                }
+                break;
+            case DaikinBindingConstants.CHANNEL_AC_STREAMER:
                 if (command instanceof OnOffType) {
-                    changeSpecialModePowerful(((OnOffType) command).equals(OnOffType.ON));
+                    changeStreamer(((OnOffType) command).equals(OnOffType.ON));
                     return true;
                 }
                 break;
@@ -177,10 +179,6 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
 
     @Override
     protected void changePower(boolean power) throws DaikinCommunicationException {
-        DaikinWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            return;
-        }
         ControlInfo info = webTargets.getControlInfo();
         info.power = power;
         webTargets.setControlInfo(info);
@@ -188,10 +186,6 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
 
     @Override
     protected void changeSetPoint(double newTemperature) throws DaikinCommunicationException {
-        DaikinWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            return;
-        }
         ControlInfo info = webTargets.getControlInfo();
         info.temp = Optional.of(newTemperature);
         webTargets.setControlInfo(info);
@@ -199,10 +193,6 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
 
     @Override
     protected void changeMode(String mode) throws DaikinCommunicationException {
-        DaikinWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            return;
-        }
         Mode newMode;
         try {
             newMode = Mode.valueOf(mode);
@@ -217,10 +207,6 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
 
     @Override
     protected void changeFanSpeed(String fanSpeed) throws DaikinCommunicationException {
-        DaikinWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            return;
-        }
         FanSpeed newSpeed;
         try {
             newSpeed = FanSpeed.valueOf(fanSpeed);
@@ -234,10 +220,6 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
     }
 
     protected void changeFanDir(String fanDir) throws DaikinCommunicationException {
-        DaikinWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            return;
-        }
         FanMovement newMovement;
         try {
             newMovement = FanMovement.valueOf(fanDir);
@@ -250,18 +232,19 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         webTargets.setControlInfo(info);
     }
 
-    /**
-     *
-     * @param powerfulMode
-     * @return Is change successful
-     * @throws DaikinCommunicationException
-     */
-    protected boolean changeSpecialModePowerful(boolean powerfulMode) throws DaikinCommunicationException {
-        DaikinWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            return false;
+    protected void changeSpecialMode(String specialMode) throws DaikinCommunicationException {
+        SpecialMode newMode;
+        try {
+            newMode = SpecialMode.valueOf(specialMode);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid specialmode: {}. Valid values: {}", specialMode, SpecialMode.values());
+            return;
         }
-        return webTargets.setSpecialMode(SpecialModeKind.POWERFUL, powerfulMode);
+        webTargets.setSpecialMode(newMode);
+    }
+
+    protected void changeStreamer(boolean streamerMode) throws DaikinCommunicationException {
+        webTargets.setStreamerMode(streamerMode);
     }
 
     /**
@@ -299,10 +282,6 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             return;
         }
         try {
-            DaikinWebTargets webTargets = this.webTargets;
-            if (webTargets == null) {
-                return;
-            }
             webTargets.registerUuid(key);
         } catch (DaikinCommunicationException e) {
             // suppress exceptions

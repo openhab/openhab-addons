@@ -7,12 +7,18 @@
 	<bridge-type id="bridge">
 		<label>Velbus Serial Bridge</label>
 		<description>This bridge represents a Velbus Serial-interface</description>
+		<channel-groups>
+			<channel-group id="bridgeClockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
 		<config-description-ref uri="bridge-type:velbus:bridge"/>
 	</bridge-type>
 
 	<bridge-type id="networkbridge">
 		<label>Velbus Network Bridge</label>
 		<description>This bridge represents a Velbus connection over TCP/IP</description>
+		<channel-groups>
+			<channel-group id="bridgeClockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
 		<config-description-ref uri="bridge-type:velbus:networkbridge"/>
 	</bridge-type>
 
@@ -531,6 +537,25 @@
 		<config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor"/>
 	</thing-type>
 
+	<thing-type id="vmbelpir">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBELPIR</label>
+		<description>Edge-lit Motion detector with one touch button</description>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="2channelButtonModule"/>
+			<channel-group id="feedback" typeId="1channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
 	<thing-type id="vmbgp1">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
@@ -884,7 +909,7 @@
 		<item-type>String</item-type>
 		<label>Alarm Type</label>
 		<description>Type (local/global) of the alarm clock in Velbus</description>
-		<state>
+		<state readOnly="true">
 			<options>
 				<option value="LOCAL">Local</option>
 				<option value="GLOBAL">Global</option>
@@ -916,7 +941,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Brightness control for dimmer action in Velbus</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 	<channel-type id="rollershutter">
 		<item-type>Rollershutter</item-type>
@@ -1292,6 +1317,16 @@
 			<channel id="CH32" typeId="ledFeedback"/>
 		</channels>
 	</channel-group-type>
+	<channel-group-type id="2channelButtonModule">
+		<label>Button</label>
+		<description>
+			This is a generic module with 2 button channels.
+		</description>
+		<channels>
+			<channel id="CH1" typeId="button-channel"/>
+			<channel id="CH2" typeId="button-channel"/>
+		</channels>
+	</channel-group-type>
 	<channel-group-type id="6channelButtonModule">
 		<label>Button</label>
 		<description>
@@ -1444,8 +1479,46 @@
 			<channel id="CH13" typeId="windspeed"/>
 		</channels>
 	</channel-group-type>
+	<channel-group-type id="bridgeClockAlarm">
+		<label>Global Clock Alarm</label>
+		<description>This is a clock alarm with two configurable alarms that can be programmed with a wake up time and a bed
+			time.
+		</description>
+		<channels>
+			<channel id="clockAlarm1Enabled" typeId="switch">
+				<label>Clock Alarm 1 Enabled</label>
+			</channel>
+			<channel id="clockAlarm1WakeupHour" typeId="hour">
+				<label>Clock Alarm 1 Wakeup Hour</label>
+			</channel>
+			<channel id="clockAlarm1WakeupMinute" typeId="minute">
+				<label>Clock Alarm 1 Wakeup Minute</label>
+			</channel>
+			<channel id="clockAlarm1BedtimeHour" typeId="hour">
+				<label>Clock Alarm 1 Bedtime Hour</label>
+			</channel>
+			<channel id="clockAlarm1BedtimeMinute" typeId="minute">
+				<label>Clock Alarm 1 Bedtime Minute</label>
+			</channel>
+			<channel id="clockAlarm2Enabled" typeId="switch">
+				<label>Clock Alarm 2 Enabled</label>
+			</channel>
+			<channel id="clockAlarm2WakeupHour" typeId="hour">
+				<label>Clock Alarm 2 Wakeup Hour</label>
+			</channel>
+			<channel id="clockAlarm2WakeupMinute" typeId="minute">
+				<label>Clock Alarm 2 Wakeup Minute</label>
+			</channel>
+			<channel id="clockAlarm2BedtimeHour" typeId="hour">
+				<label>Clock Alarm 2 Bedtime Hour</label>
+			</channel>
+			<channel id="clockAlarm2BedtimeMinute" typeId="minute">
+				<label>Clock Alarm 2 Bedtime Minute</label>
+			</channel>
+		</channels>
+	</channel-group-type>
 	<channel-group-type id="clockAlarm">
-		<label>Clock Alarm</label>
+		<label>Local Clock Alarm</label>
 		<description>This is a clock alarm with two configurable alarms that can be programmed with a wake up time and a bed
 			time.
 		</description>

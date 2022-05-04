@@ -188,7 +188,7 @@
 					"minimum": 0,
 					"maximum": 65535,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -218,7 +218,7 @@
 					"minimum": 300,
 					"maximum": 2200,
 					"step": 1,
-					"pattern": "%.1f"
+					"pattern": "%.0f"
 				},
 				"refresh": true,
 				"actions": [

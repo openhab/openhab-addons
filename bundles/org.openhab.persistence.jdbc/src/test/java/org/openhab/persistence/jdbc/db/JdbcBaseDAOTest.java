@@ -14,6 +14,7 @@ package org.openhab.persistence.jdbc.db;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -23,8 +24,35 @@ import java.time.format.DateTimeFormatter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.library.items.CallItem;
+import org.openhab.core.library.items.ColorItem;
+import org.openhab.core.library.items.ContactItem;
+import org.openhab.core.library.items.DateTimeItem;
+import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.ImageItem;
+import org.openhab.core.library.items.LocationItem;
+import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.PlayerItem;
+import org.openhab.core.library.items.RollershutterItem;
+import org.openhab.core.library.items.StringItem;
+import org.openhab.core.library.items.SwitchItem;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.RewindFastforwardType;
+import org.openhab.core.library.types.StringListType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
+import org.openhab.core.types.State;
 
 /**
  * Tests the {@link JdbcBaseDAO}.
@@ -45,6 +73,65 @@ public class JdbcBaseDAOTest {
     @BeforeEach
     public void setup() {
         filter = new FilterCriteria();
+    }
+
+    @Test
+    public void testObjectAsStateReturnsValidState() {
+        State decimalType = jdbcBaseDAO.objectAsState(new NumberItem("testNumberItem"), null, 7.3);
+        assertInstanceOf(DecimalType.class, decimalType);
+        assertThat(decimalType, is(DecimalType.valueOf("7.3")));
+        State quantityType = jdbcBaseDAO.objectAsState(new NumberItem("testNumberItem"), SIUnits.CELSIUS, 7.3);
+        assertInstanceOf(QuantityType.class, quantityType);
+        assertThat(quantityType, is(QuantityType.valueOf("7.3 °C")));
+
+        State dateTimeType = jdbcBaseDAO.objectAsState(new DateTimeItem("testDateTimeItem"), null,
+                java.sql.Timestamp.valueOf("2021-02-01 23:30:02.049"));
+        assertInstanceOf(DateTimeType.class, dateTimeType);
+        assertThat(dateTimeType, is(DateTimeType.valueOf("2021-02-01T23:30:02.049")));
+
+        State hsbType = jdbcBaseDAO.objectAsState(new ColorItem("testColorItem"), null, "184,100,52");
+        assertInstanceOf(HSBType.class, hsbType);
+        assertThat(hsbType, is(HSBType.valueOf("184,100,52")));
+
+        State percentType = jdbcBaseDAO.objectAsState(new DimmerItem("testDimmerItem"), null, 52);
+        assertInstanceOf(PercentType.class, percentType);
+        assertThat(percentType, is(PercentType.valueOf("52")));
+
+        percentType = jdbcBaseDAO.objectAsState(new RollershutterItem("testRollershutterItem"), null, 39);
+        assertInstanceOf(PercentType.class, percentType);
+        assertThat(percentType, is(PercentType.valueOf("39")));
+
+        State openClosedType = jdbcBaseDAO.objectAsState(new ContactItem("testContactItem"), null, "OPEN");
+        assertInstanceOf(OpenClosedType.class, openClosedType);
+        assertThat(openClosedType, is(OpenClosedType.OPEN));
+
+        State playPauseType = jdbcBaseDAO.objectAsState(new PlayerItem("testPlayerItem"), null, "PLAY");
+        assertInstanceOf(PlayPauseType.class, playPauseType);
+        assertThat(playPauseType, is(PlayPauseType.PLAY));
+        State rewindFastforwardType = jdbcBaseDAO.objectAsState(new PlayerItem("testPlayerItem"), null, "REWIND");
+        assertInstanceOf(RewindFastforwardType.class, rewindFastforwardType);
+        assertThat(rewindFastforwardType, is(RewindFastforwardType.REWIND));
+
+        State onOffType = jdbcBaseDAO.objectAsState(new SwitchItem("testSwitchItem"), null, "ON");
+        assertInstanceOf(OnOffType.class, onOffType);
+        assertThat(onOffType, is(OnOffType.ON));
+
+        State stringListType = jdbcBaseDAO.objectAsState(new CallItem("testCallItem"), null, "0699222222,0179999998");
+        assertInstanceOf(StringListType.class, stringListType);
+        assertThat(stringListType, is(StringListType.valueOf("0699222222,0179999998")));
+
+        State expectedRawType = new RawType(new byte[0], "application/octet-stream");
+        State rawType = jdbcBaseDAO.objectAsState(new ImageItem("testImageItem"), null, expectedRawType.toFullString());
+        assertInstanceOf(RawType.class, rawType);
+        assertThat(rawType, is(expectedRawType));
+
+        State pointType = jdbcBaseDAO.objectAsState(new LocationItem("testLocationItem"), null, "1,2,3");
+        assertInstanceOf(PointType.class, pointType);
+        assertThat(pointType, is(PointType.valueOf("1,2,3")));
+
+        State stringType = jdbcBaseDAO.objectAsState(new StringItem("testStringItem"), null, "String");
+        assertInstanceOf(StringType.class, stringType);
+        assertThat(stringType, is(StringType.valueOf("String")));
     }
 
     @Test

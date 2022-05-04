@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enturno"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- LineStop Type -->
+	<thing-type id="linestop">
+		<label>Entur Timetable</label>
+		<description>Provides real-time (estimated) departure timetable for chosen public transport line and stop in Norway. Data provided by Entur.no API.</description>
+
+		<channel-groups>
+			<channel-group id="stopPlace" typeId="stopPlace" />
+			<channel-group id="Direction01" typeId="direction">
+				<label>Direction 1</label>
+				<description>This is the real-time table for direction nr 1.</description>
+			</channel-group>
+			<channel-group id="Direction02" typeId="direction">
+				<label>Direction 2</label>
+				<description>This is the real-time table for direction nr 2.</description>
+			</channel-group>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:enturno:linestop" />
+
+	</thing-type>
+
+</thing:thing-descriptions>

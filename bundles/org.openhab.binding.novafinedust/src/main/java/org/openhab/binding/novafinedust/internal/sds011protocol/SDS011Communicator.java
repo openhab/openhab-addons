@@ -227,6 +227,7 @@ public class SDS011Communicator {
             if (logger.isDebugEnabled()) {
                 logger.debug("Read remaining bytes: {}, full reply={}", remainingBytesRead,
                         HexUtils.bytesToHex(readBuffer));
+                logger.trace("Read bytes as numbers: {}", Arrays.toString(readBuffer));
             }
             return ReplyFactory.create(readBuffer);
         }

@@ -164,12 +164,14 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             return;
         }
 
+        updateStatus(ThingStatus.UNKNOWN);
         pendingShadeInitializations.clear();
         webTargets = new HDPowerViewWebTargets(httpClient, host);
         refreshInterval = config.refresh;
         hardRefreshPositionInterval = config.hardRefresh;
         hardRefreshBatteryLevelInterval = config.hardRefreshBatteryLevel;
         initializeChannels();
+        firmwareVersions = null;
         schedulePoll();
     }
 
@@ -282,8 +284,13 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private synchronized void poll() {
         try {
-            logger.debug("Polling for state");
             updateFirmwareProperties();
+        } catch (HubException e) {
+            logger.warn("Failed to update firmware properties: {}", e.getMessage());
+        }
+
+        try {
+            logger.debug("Polling for state");
             pollShades();
 
             List<Scene> scenes = updateSceneChannels();
@@ -304,7 +311,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             // exceptions are logged in HDPowerViewWebTargets
         } catch (HubException e) {
             logger.warn("Error connecting to bridge: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

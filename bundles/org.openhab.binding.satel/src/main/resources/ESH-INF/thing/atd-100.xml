@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="satel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="atd-100">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ethm-1" />
+			<bridge-type-ref id="int-rs" />
+		</supported-bridge-type-refs>
+
+		<label>ATD-100</label>
+		<description><![CDATA[Wireless temperature detector designed for operation as part of the ABAX two-way wireless system.]]></description>
+		<category>Sensor</category>
+
+		<channels>
+			<channel typeId="zoneTemperature" id="temperature" />
+			<channel typeId="system.low-battery" id="device_lobatt" />
+			<channel typeId="device_nocomm" id="device_nocomm" />
+		</channels>
+
+		<config-description>
+			<parameter name="id" type="integer" min="1" max="256" required="true">
+				<label>Zone Number</label>
+				<description>Zone number in the alarm system monitored by this detector</description>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="min" min="1">
+				<label>Refresh Interval</label>
+				<description>Polling interval in minutes.</description>
+				<default>15</default>
+				<unitLabel>Minutes</unitLabel>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="zoneTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature in the zone</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+</thing:thing-descriptions>

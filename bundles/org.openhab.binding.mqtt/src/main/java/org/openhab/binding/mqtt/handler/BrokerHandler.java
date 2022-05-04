@@ -30,7 +30,6 @@ import org.openhab.binding.mqtt.internal.ssl.PinnedCallback;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
-import org.openhab.core.io.transport.mqtt.MqttService;
 import org.openhab.core.io.transport.mqtt.MqttWillAndTestament;
 import org.openhab.core.io.transport.mqtt.reconnect.PeriodicReconnectStrategy;
 import org.openhab.core.thing.Bridge;
@@ -41,8 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This handler provided more detailed connection information from a
  * {@link MqttBrokerConnection} via a Thing property, put the Thing
- * offline or online depending on the connection and adds the configured
- * connection to the {@link MqttService}.
+ * offline or online depending on the connection.
  *
  * @author David Graeff - Initial contribution
  * @author Jimmy Tanagra - Add birth and shutdown message
@@ -59,19 +57,18 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
     @Override
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         super.connectionStateChanged(state, error);
-        // Store generated client ID if none was set by the user
         final MqttBrokerConnection connection = this.connection;
-        String clientID = config.clientID;
         if (connection != null && state == MqttConnectionState.CONNECTED) {
+            String clientID = config.clientID;
             if (clientID == null || clientID.isBlank()) {
+                // Store generated client ID if none was set by the user
                 clientID = connection.getClientId();
                 config.clientID = clientID;
                 Configuration editConfig = editConfiguration();
                 editConfig.put("clientid", clientID);
                 updateConfiguration(editConfig);
-            } else {
-                publish(config.birthTopic, config.birthMessage, config.birthRetain);
             }
+            publish(config.birthTopic, config.birthMessage, config.birthRetain);
         }
     }
 
@@ -157,13 +154,13 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
             try {
                 Pin pin;
                 if (config.certificate.isBlank()) {
-                    pin = Pin.LearningPin(PinType.CERTIFICATE_TYPE);
+                    pin = Pin.learningPin(PinType.CERTIFICATE_TYPE);
                 } else {
                     String[] split = config.certificate.split(":");
                     if (split.length != 2) {
                         throw new NoSuchAlgorithmException("Algorithm is missing");
                     }
-                    pin = Pin.CheckingPin(PinType.CERTIFICATE_TYPE, new PinMessageDigest(split[0]),
+                    pin = Pin.checkingPin(PinType.CERTIFICATE_TYPE, new PinMessageDigest(split[0]),
                             HexUtils.hexToBytes(split[1]));
                 }
                 trustManager.addPinning(pin);
@@ -175,13 +172,13 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
             try {
                 Pin pin;
                 if (config.publickey.isBlank()) {
-                    pin = Pin.LearningPin(PinType.PUBLIC_KEY_TYPE);
+                    pin = Pin.learningPin(PinType.PUBLIC_KEY_TYPE);
                 } else {
                     String[] split = config.publickey.split(":");
                     if (split.length != 2) {
                         throw new NoSuchAlgorithmException("Algorithm is missing");
                     }
-                    pin = Pin.CheckingPin(PinType.PUBLIC_KEY_TYPE, new PinMessageDigest(split[0]),
+                    pin = Pin.checkingPin(PinType.PUBLIC_KEY_TYPE, new PinMessageDigest(split[0]),
                             HexUtils.hexToBytes(split[1]));
                 }
                 trustManager.addPinning(pin);

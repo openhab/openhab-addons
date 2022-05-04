@@ -207,16 +207,19 @@
 		<description>States whether a device is online or offline</description>
 		<state readOnly="true"></state>
 	</channel-type>
+
 	<channel-type id="latency">
 		<item-type>Number:Time</item-type>
 		<label>Latency</label>
 		<description>States the latency time</description>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
+
 	<channel-type id="lastseen">
 		<item-type>DateTime</item-type>
 		<label>Last Seen</label>
 		<description>States the last seen date/time</description>
+		<category>time</category>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+		xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<!-- Config for EnturTimeTable Binding -->
+	<config-description uri="thing-type:enturno:linestop">
+		<parameter name="stopPlaceId" type="text" required="true">
+			<label>Stop Code</label>
+			<description>Stop code that can be find here https://en-tur.no (id in link when stop is chosen).</description>
+		</parameter>
+		<parameter name="lineCode" type="text" required="true">
+			<label>Line Code</label>
+			<description>Line code that can be find here https://en-tur.no (displayed when departures for stop are chosen).</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

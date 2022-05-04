@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:mybmw:vehicle">
+		<parameter name="vin" type="text" required="true">
+			<label>Vehicle Identification Number (VIN)</label>
+			<description>Unique VIN given by BMW</description>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="1" unit="min" required="true">
+			<label>Refresh Interval</label>
+			<description>Data refresh rate for your vehicle data</description>
+			<default>5</default>
+		</parameter>
+		<parameter name="vehicleBrand" type="text" required="true">
+			<label>Brand of the Vehicle</label>
+			<description>Vehicle brand like BMW or Mini</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enturno"
+						xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+						xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Channel groups for EnturTimeTable Binding -->
+	<channel-group-type id="stopPlace">
+		<label>Stop Place</label>
+		<description>This is a stop place.</description>
+		<channels>
+			<channel id="id" typeId="stop-id" />
+			<channel id="name" typeId="stop-name" />
+			<channel id="transportMode" typeId="stop-transport-mode" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="direction">
+		<label>Line Direction</label>
+		<description>This is the data for public transport line direction.</description>
+		<channels>
+			<channel id="lineCode" typeId="line-code" />
+			<channel id="frontDisplayText" typeId="front-display" />
+			<channel id="departure01" typeId="departure" />
+			<channel id="departure02" typeId="departure" />
+			<channel id="departure03" typeId="departure" />
+			<channel id="departure04" typeId="departure" />
+			<channel id="departure05" typeId="departure" />
+			<channel id="estimatedFlag01" typeId="is-real" />
+			<channel id="estimatedFlag02" typeId="is-real" />
+			<channel id="estimatedFlag03" typeId="is-real" />
+			<channel id="estimatedFlag04" typeId="is-real" />
+			<channel id="estimatedFlag05" typeId="is-real" />
+		</channels>
+	</channel-group-type>
+
+	<!-- Channels for EnturTimeTable Binding -->
+	<channel-type id="departure">
+		<item-type>DateTime</item-type>
+		<label>Departure Time</label>
+		<description>Time of departure.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+	</channel-type>
+
+	<channel-type id="line-code">
+		<item-type>String</item-type>
+		<label>Line Code</label>
+		<description>Code (usually number) of the public transport line.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="is-real">
+		<item-type>String</item-type>
+		<label>Estimated Flag</label>
+		<description>Whether departure time is calculated/estimated or as in printed timetable (true/false).</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="front-display">
+		<item-type>String</item-type>
+		<label>Front Display</label>
+		<description>Front display usually shows direction of the line.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="stop-id">
+		<item-type>String</item-type>
+		<label>Stop Id</label>
+		<description>Id of the stop place.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="stop-name">
+		<item-type>String</item-type>
+		<label>Stop Name</label>
+		<description>Name of the stop place.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="stop-transport-mode">
+		<item-type>String</item-type>
+		<label>Stop Transport Mode</label>
+		<description>Bus/Tramway/Plane etc.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+</thing:thing-descriptions>

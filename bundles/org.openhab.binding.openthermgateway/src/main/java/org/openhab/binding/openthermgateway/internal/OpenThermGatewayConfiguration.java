@@ -27,4 +27,8 @@ public class OpenThermGatewayConfiguration {
     public int port = 0;
 
     public int connectionRetryInterval = 60;
+
+    public int connectTimeoutSeconds = 5;
+
+    public int readTimeoutSeconds = 20;
 }

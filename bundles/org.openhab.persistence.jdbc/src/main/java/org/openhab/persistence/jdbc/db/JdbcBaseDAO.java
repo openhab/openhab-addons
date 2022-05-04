@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
+import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
@@ -40,6 +41,7 @@ import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
@@ -341,7 +343,7 @@ public class JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#tablePrimaryValue#" }, new String[] { storedVO.getTableName(), "?" });
         java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
-        Object[] params = new Object[] { storedVO.getValue(), timestamp, storedVO.getValue() };
+        Object[] params = new Object[] { timestamp, storedVO.getValue(), storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
         Yank.execute(sql, params);
     }
@@ -541,14 +543,15 @@ public class JdbcBaseDAO {
                 return unit == null ? new DecimalType((BigDecimal) v)
                         : QuantityType.valueOf(((BigDecimal) v).doubleValue(), unit);
             } else if (it.toUpperCase().contains("INT")) {
-                return unit == null ? new DecimalType(((Integer) v).intValue())
+                return unit == null ? new DecimalType(objectAsInteger(v))
                         : QuantityType.valueOf(((Integer) v).doubleValue(), unit);
             }
-            return unit == null ? DecimalType.valueOf(((String) v).toString())
-                    : QuantityType.valueOf(((String) v).toString());
+            return unit == null ? DecimalType.valueOf(objectAsString(v)) : QuantityType.valueOf(objectAsString(v));
         } else if (item instanceof DateTimeItem) {
             return new DateTimeType(
                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(objectAsLong(v)), ZoneId.systemDefault()));
+        } else if (item instanceof ColorItem) {
+            return HSBType.valueOf(objectAsString(v));
         } else if (item instanceof DimmerItem || item instanceof RollershutterItem) {
             return new PercentType(objectAsInteger(v));
         } else if (item instanceof ImageItem) {

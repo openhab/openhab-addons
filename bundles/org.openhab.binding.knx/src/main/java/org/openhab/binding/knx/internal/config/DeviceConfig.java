@@ -14,18 +14,21 @@ package org.openhab.binding.knx.internal.config;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration object for the device thing handler.
  *
  * @author Karel Goderis - Initial contribution
  * @author Simon Kaufmann - refactoring & cleanup
  */
+@NonNullByDefault
 public class DeviceConfig {
 
-    private String address;
-    private boolean fetch;
-    private BigDecimal pingInterval;
-    private BigDecimal readInterval;
+    private String address = "";
+    private boolean fetch = false;
+    private BigDecimal pingInterval = BigDecimal.valueOf(0);
+    private BigDecimal readInterval = BigDecimal.valueOf(0);
 
     public String getAddress() {
         return address;

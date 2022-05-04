@@ -17,8 +17,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -46,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * {@link OpenUVBridgeHandler} is the handler for OpenUV API and connects it
@@ -114,9 +115,10 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     }
 
     public @Nullable OpenUVResult getUVData(String latitude, String longitude, String altitude) {
+        String url = String.format(QUERY_URL, latitude, longitude, altitude);
+        String jsonData = "";
         try {
-            String jsonData = HttpUtil.executeUrl("GET", String.format(QUERY_URL, latitude, longitude, altitude),
-                    header, null, null, REQUEST_TIMEOUT_MS);
+            jsonData = HttpUtil.executeUrl("GET", url, header, null, null, REQUEST_TIMEOUT_MS);
             OpenUVResponse uvResponse = gson.fromJson(jsonData, OpenUVResponse.class);
             if (uvResponse != null) {
                 String error = uvResponse.getError();
@@ -126,13 +128,13 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 }
                 throw new OpenUVException(error);
             }
+        } catch (JsonSyntaxException e) {
+            logger.debug("No valid json received when calling `{}` : {}", url, jsonData);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (OpenUVException e) {
             if (e.isQuotaError()) {
-                LocalDate today = LocalDate.now();
-                LocalDate tomorrow = today.plusDays(1);
-                LocalDateTime tomorrowMidnight = tomorrow.atStartOfDay().plusMinutes(2);
+                LocalDateTime tomorrowMidnight = LocalDate.now().plusDays(1).atStartOfDay().plusMinutes(2);
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
                         .format("@text/offline.comm-error-quota-exceeded [ \"%s\" ]", tomorrowMidnight.toString()));
@@ -150,7 +152,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(OpenUVDiscoveryService.class);
+        return Set.of(OpenUVDiscoveryService.class);
     }
 
     public @Nullable PointType getLocation() {

@@ -32,9 +32,12 @@ If the connection succeeds, the hub will indicate its status as Online, otherwis
 Once the hub thing has been created and successfully connected, the binding will automatically discover all shades and scenes that are in it.
 
 - For each shade discovered: the binding will create a new dedicated thing with its own channels.
+- For each repeater discovered: the binding will create a new dedicated thing with its own channels.
 - For each scene discovered: the binding will create a new channel dynamically within the hub thing.
+- For each scene group discovered: the binding will create a new channel dynamically within the hub thing.
+- For each automation discovered: the binding will create a new channel dynamically within the hub thing.
 
-If in the future, you add additional shades or scenes to your system, the binding will discover them too.
+If in the future, you add additional shades, repeaters, scenes, scene groups or automations to your system, the binding will discover them too.
 
 ## Thing Configuration
 
@@ -102,6 +105,8 @@ All of these channels appear in the binding, but only those which have a physica
 
 | Channel         | Item Type | Description                   |
 |-----------------|-----------|-------------------------------|
+| color           | Color     | Controls the color of the LED ring. A switch item can be linked: ON = white, OFF = turn off |
+| brightness      | Dimmer    | Controls the brightness of the LED ring. |
 | identify        | String    | Flash repeater to identify. Valid values are: `IDENTIFY` |
 | blinkingEnabled | Switch    | Blink during commands.        |
 
@@ -211,7 +216,7 @@ For single shades the refresh takes the item's channel into consideration:
 ### `demo.things` File
 
 ```
-Bridge hdpowerview:hub:g24 "Luxaflex Hub" @ "Living Room" [host="192.168.1.123"] {
+Bridge hdpowerview:hub:home "Luxaflex Hub" @ "Living Room" [host="192.168.1.123"] {
     Thing shade s50150 "Living Room Shade" @ "Living Room" [id="50150"]
     Thing repeater r16384 "Bedroom Repeater" @ "Bedroom" [id="16384"]
 }
@@ -222,34 +227,58 @@ Bridge hdpowerview:hub:g24 "Luxaflex Hub" @ "Living Room" [host="192.168.1.123"]
 Shade items:
 
 ```
-Rollershutter Living_Room_Shade_Position "Living Room Shade Position [%.0f %%]" {channel="hdpowerview:shade:g24:s50150:position"}
-Rollershutter Living_Room_Shade_Secondary "Living Room Shade Secondary Position [%.0f %%]" {channel="hdpowerview:shade:g24:s50150:secondary"}
-Dimmer Living_Room_Shade_Vane "Living Room Shade Vane [%.0f %%]" {channel="hdpowerview:shade:g24:s50150:vane"}
-Switch Living_Room_Shade_Battery_Low_Alarm "Living Room Shade Battery Low Alarm [%s]" {channel="hdpowerview:shade:g24:s50150:lowBattery"}
-String Living_Room_Shade_Command "Living Room Shade Command" {channel="hdpowerview:shade:g24:s50150:command"}
+Rollershutter Living_Room_Shade_Position "Living Room Shade Position [%.0f %%]" {channel="hdpowerview:shade:home:s50150:position"}
+Rollershutter Living_Room_Shade_Secondary "Living Room Shade Secondary Position [%.0f %%]" {channel="hdpowerview:shade:home:s50150:secondary"}
+Dimmer Living_Room_Shade_Vane "Living Room Shade Vane [%.0f %%]" {channel="hdpowerview:shade:home:s50150:vane"}
+Switch Living_Room_Shade_Battery_Low_Alarm "Living Room Shade Battery Low Alarm [%s]" {channel="hdpowerview:shade:home:s50150:lowBattery"}
+Number Living_Room_Shade_Battery_Level "Battery Level" {channel="hdpowerview:shade:home:s50150:batteryLevel"}
+Number:ElectricPotential Living_Room_Shade_Battery_Voltage "Battery Voltage" {channel="hdpowerview:shade:home:s50150:batteryVoltage"}
+String Living_Room_Shade_Command "Living Room Shade Command" {channel="hdpowerview:shade:home:s50150:command"}
+Number Living_Room_Shade_SignalStrength "Living Room Shade Signal Strength" {channel="hdpowerview:shade:home:s50150:signalStrength"}
 ```
 
 Repeater items:
 
 ```
-String Bedroom_Repeater_Identify "Bedroom Repeater Identify" {channel="hdpowerview:repeater:g24:r16384:identify"}
-Switch Bedroom_Repeater_BlinkingEnabled "Bedroom Repeater Blinking Enabled [%s]" {channel="hdpowerview:repeater:g24:r16384:blinkingEnabled"}
+Color Bedroom_Repeater_Color "Bedroom Repeater Color" {channel="hdpowerview:repeater:home:r16384:color"}
+Dimmer Bedroom_Repeater_Brightness "Bedroom Repeater Brightness" {channel="hdpowerview:repeater:home:r16384:brightness"}
+String Bedroom_Repeater_Identify "Bedroom Repeater Identify" {channel="hdpowerview:repeater:home:r16384:identify"}
+Switch Bedroom_Repeater_BlinkingEnabled "Bedroom Repeater Blinking Enabled [%s]" {channel="hdpowerview:repeater:home:r16384:blinkingEnabled"}
 ```
 
 Scene items:
 
 ```
-Switch Living_Room_Shades_Scene_Heart "Living Room Shades Scene Heart" <blinds> (g_Shades_Scene_Trigger) {channel="hdpowerview:hub:g24:scenes#22663"}
+Switch Living_Room_Shades_Scene_Heart "Living Room Shades Scene Heart" <blinds> (g_Shades_Scene_Trigger) {channel="hdpowerview:hub:home:scenes#22663"}
+```
+
+Scene Group items:
+
+```
+Switch Children_Rooms_Shades_Up "Good Morning Children" {channel="hdpowerview:hub:home:sceneGroups#27119"}
+```
+
+Automation items:
+
+```
+Switch Automation_Children_Up_Sun "Children Up At Sunrise" {channel="hdpowerview:hub:home:automations#1262"}
+Switch Automation_Children_Up_Time "Children Up At 6:30" {channel="hdpowerview:hub:home:automations#49023"}
 ```
 
 ### `demo.sitemap` File
 
 ```
-Frame label="Living Room Shades" {
+Frame label="Living Room" {
     Switch item=Living_Room_Shades_Scene_Open
-    Slider item=Living_Room_Shade_1_Position
+    Slider item=Living_Room_Shade_Position
+    Switch item=Living_Room_Shade_Command mappings=[CALIBRATE="Calibrate"]
+    Text item=Living_Room_Shade_SignalStrength
+    Text item=Living_Room_Shade_Battery_Voltage
 }
 Frame label="Bedroom" {
+    Colorpicker item=PowerViewRepeater_Color
+    Switch item=PowerViewRepeater_Color
+    Slider item=PowerViewRepeater_Brightness
     Switch item=Bedroom_Repeater_Identify mappings=[IDENTIFY="Identify"]
     Switch item=Bedroom_Repeater_BlinkingEnabled
 }

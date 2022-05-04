@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tplinksmarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="hs300">
+		<label>HS300</label>
+		<description>TP-Link HS300 Smart Wi-Fi Power Strip</description>
+		<category>PowerOutlet</category>
+
+		<channel-groups>
+			<channel-group id="group" typeId="switch-group" />
+			<channel-group id="outlet1" typeId="energy-outlet">
+				<label>Outlet 1</label>
+			</channel-group>
+			<channel-group id="outlet2" typeId="energy-outlet">
+				<label>Outlet 2</label>
+			</channel-group>
+			<channel-group id="outlet3" typeId="energy-outlet">
+				<label>Outlet 3</label>
+			</channel-group>
+			<channel-group id="outlet4" typeId="energy-outlet">
+				<label>Outlet 4</label>
+			</channel-group>
+			<channel-group id="outlet5" typeId="energy-outlet">
+				<label>Outlet 5</label>
+			</channel-group>
+			<channel-group id="outlet6" typeId="energy-outlet">
+				<label>Outlet 6</label>
+			</channel-group>
+		</channel-groups>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description-ref uri="thing-type:device:plug" />
+	</thing-type>
+
+</thing:thing-descriptions>

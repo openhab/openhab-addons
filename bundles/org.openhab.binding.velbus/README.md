@@ -17,7 +17,7 @@ A Velbus configuration module (e.g. VMBRSUSB) or a network server (e.g. [VelServ
 The supported Velbus devices are:
 
 ```
-vmb1bl, vmb1bls, vmb1dm, vmb1led, vmb1ry, vmb1ryno, vmb1rynos, vmb1rys, vmb1ts, vmb2bl, vmb2ble, vmb2pbn, vmb4an, vmb4dc, vmb4ry, vmb4ryld, vmb4ryno, vmb6in, vmb6pbn, vmb7in, vmb8ir, vmb8pb, vmb8pbu, vmbdme, vmbdmi, vmbdmir, vmbel1, vmbel2, vmbel4, vmbelo, vmbgp1, vmbgp2, vmbgp4, vmbgp4pir, vmbgpo, vmbgpod, vmbmeteo, vmbpirc, vmbpirm, vmbpiro, vmbvp1
+vmb1bl, vmb1bls, vmb1dm, vmb1led, vmb1ry, vmb1ryno, vmb1rynos, vmb1rys, vmb1ts, vmb2bl, vmb2ble, vmb2pbn, vmb4an, vmb4dc, vmb4ry, vmb4ryld, vmb4ryno, vmb6in, vmb6pbn, vmb7in, vmb8ir, vmb8pb, vmb8pbu, vmbdme, vmbdmi, vmbdmir, vmbel1, vmbel2, vmbel4, vmbelo, vmbelpir, vmbgp1, vmbgp2, vmbgp4, vmbgp4pir, vmbgpo, vmbgpod, vmbmeteo, vmbpirc, vmbpirm, vmbpiro, vmbvp1
 ```
 
 The type of a specific device can be found in the configuration section for things in the UI. 
@@ -97,7 +97,7 @@ or nested in the bridge configuration:
 The following thing types are valid for configuration:
 
 ```
-vmb1bl, vmb1bls, vmb1dm, vmb1led, vmb1ry, vmb1ryno, vmb1rynos, vmb1rys, vmb1ts, vmb2bl, vmb2ble, vmb2pbn, vmb4an, vmb4dc, vmb4ry, vmb4ryld, vmb4ryno, vmb6in, vmb6pbn, vmb7in, vmb8ir, vmb8pb, vmb8pbu, vmbdme, vmbdmi, vmbdmir, vmbel1, vmbel2, vmbel4, vmbelo, vmbgp1, vmbgp2, vmbgp4, vmbgp4pir, vmbgpo, vmbgpod, vmbmeteo, vmbpirc, vmbpirm, vmbpiro, vmbvp1
+vmb1bl, vmb1bls, vmb1dm, vmb1led, vmb1ry, vmb1ryno, vmb1rynos, vmb1rys, vmb1ts, vmb2bl, vmb2ble, vmb2pbn, vmb4an, vmb4dc, vmb4ry, vmb4ryld, vmb4ryno, vmb6in, vmb6pbn, vmb7in, vmb8ir, vmb8pb, vmb8pbu, vmbdme, vmbdmi, vmbdmir, vmbel1, vmbel2, vmbel4, vmbelo, vmbelpir, vmbgp1, vmbgp2, vmbgp4, vmbgp4pir, vmbgpo, vmbgpod, vmbmeteo, vmbpirc, vmbpirm, vmbpiro, vmbvp1
 ```
 
 `thingId` is the hexadecimal Velbus address of the thing.
@@ -120,7 +120,7 @@ Setting the refresh interval to 0 or leaving it empty will prevent the thing fro
 The following thing types support a sensor refresh interval:
 
 ```
-vmb1ts, vmb4an, vmbel1, vmbel2, vmbel4, vmbelo, vmbgp1, vmbgp2, vmbgp4, vmbgp4pir, vmbgpo, vmbgpod, vmbmeteo, vmbpirc, vmbpirm, vmbpiro
+vmb1ts, vmb4an, vmbel1, vmbel2, vmbel4, vmbelo, vmbelpir, vmbgp1, vmbgp2, vmbgp4, vmbgp4pir, vmbgpo, vmbgpod, vmbmeteo, vmbpirc, vmbpirm, vmbpiro
 ```
 
 The `vmb7in` thing type also supports a refresh interval. For this thing type, the refresh interval is the interval at which the counter values should be refreshed.
@@ -192,14 +192,15 @@ Sending an ON command will switch the dimmer to the value stored when last turni
 For thing type `vmb4ry` 4 channels are available `CH1` ... `CH4`.
 OnOff command types are supported.
 
-Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbgp1`, `vmbgp2`, `vmbgp4`, `vmbgp4pir` and `vmbpiro` have 8 trigger channels `input:CH1` ... `input:CH8` and one temperature channel `input:CH9`.
-Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH8`.
+Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbelpir`, `vmbgp1`, `vmbgp2`, `vmbgp4`, `vmbgp4pir` and `vmbpiro` have 8 trigger channels `input:CH1` ... `input:CH8` and one temperature channel `input:CH9`.
+Pressed and Long_Pressed command types are supported on channels `button#CH1` and `button#CH2` for the thing type `vmbelpir`.  
+Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH8` for the thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbgp1`, `vmbgp2`, `vmbgp4`, `vmbgp4pir` and `vmbpiro`.
 The thing types `vmbel1` and `vmbgp1` have one channel to steer the button LED feedback `feedback:CH1`.
 The thing types `vmbel2` and `vmbgp2` have two channels to steer the button LED feedback `feedback:CH1` and `feedback:CH2`.
 The thing types `vmbel4`, `vmbgp4` and `vmbgp4pir` have four channels to steer the button LED feedback `feedback:CH1` ... `feedback:CH4`.
 The thing type `vmbpiro` has a channel `input:LIGHT` indicating the illuminance.
-Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbgp1`, `vmbgp2`, `vmbgp4` and `vmbgp4pir` have a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
-Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbgp1`, `vmbgp2`, `vmbgp4` and `vmbgp4pir` also have a number of channels to set the module's thermostat (`thermostat:currentTemperatureSetpoint`, `thermostat:heatingModeComfortTemperatureSetpoint`, `thermostat:heatingModeDayTemperatureSetpoint`, `thermostat:heatingModeNightTemperatureSetpoint`, `thermostat:heatingModeAntiFrostTemperatureSetpoint`, `thermostat:coolingModeComfortTemperatureSetpoint`, `thermostat:coolingModeDayTemperatureSetpoint`, `thermostat:coolingModeNightTemperatureSetpoint`, `thermostat:coolingModeSafeTemperatureSetpoint`, `operatingMode` and `thermostat:mode`) and thermostat trigger channels: `thermostat:heater`, `thermostat:boost`, `thermostat:pump`, `thermostat:cooler`, `thermostat:alarm1`, `thermostat:alarm2`, `thermostat:alarm3`, `thermostat:alarm4`.
+Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbelpir`, `vmbgp1`, `vmbgp2`, `vmbgp4` and `vmbgp4pir` have a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
+Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbelpir`, `vmbgp1`, `vmbgp2`, `vmbgp4` and `vmbgp4pir` also have a number of channels to set the module's thermostat (`thermostat:currentTemperatureSetpoint`, `thermostat:heatingModeComfortTemperatureSetpoint`, `thermostat:heatingModeDayTemperatureSetpoint`, `thermostat:heatingModeNightTemperatureSetpoint`, `thermostat:heatingModeAntiFrostTemperatureSetpoint`, `thermostat:coolingModeComfortTemperatureSetpoint`, `thermostat:coolingModeDayTemperatureSetpoint`, `thermostat:coolingModeNightTemperatureSetpoint`, `thermostat:coolingModeSafeTemperatureSetpoint`, `operatingMode` and `thermostat:mode`) and thermostat trigger channels: `thermostat:heater`, `thermostat:boost`, `thermostat:pump`, `thermostat:cooler`, `thermostat:alarm1`, `thermostat:alarm2`, `thermostat:alarm3`, `thermostat:alarm4`.
 
 Thing types `vmbelo`, `vmbgpo` and `vmbgpod` have 32 trigger channels `input:CH1` ... `input:CH32` and one temperature channel `input:CH33`.
 Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH32`.

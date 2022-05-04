@@ -28,16 +28,17 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.net.exec.ExecUtil;
@@ -66,6 +67,35 @@ public class NetworkUtils {
     public Set<CidrAddress> getInterfaceIPs() {
         return NetUtil.getAllInterfaceAddresses().stream().filter(a -> a.getAddress() instanceof Inet4Address)
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * Gets every IPv4 address on the network defined by its cidr
+     *
+     * @return The collected IPv4 Addresses
+     */
+    private List<String> getIPAddresses(CidrAddress adr) {
+        List<String> result = new ArrayList<>();
+        byte[] octets = adr.getAddress().getAddress();
+        final int addressCount = (1 << (32 - adr.getPrefix())) - 2;
+        final int ipMask = 0xFFFFFFFF << (32 - adr.getPrefix());
+        octets[0] &= ipMask >> 24;
+        octets[1] &= ipMask >> 16;
+        octets[2] &= ipMask >> 8;
+        octets[3] &= ipMask;
+        try {
+            final CidrAddress baseIp = new CidrAddress(InetAddress.getByAddress(octets), (short) adr.getPrefix());
+            for (int i = 1; i <= addressCount; i++) {
+                int octet = i & ~ipMask;
+                byte[] segments = baseIp.getAddress().getAddress();
+                segments[2] += (octet >> 8);
+                segments[3] += octet;
+                result.add(InetAddress.getByAddress(segments).getHostAddress());
+            }
+        } catch (UnknownHostException e) {
+            logger.debug("Could not build net ip address.", e);
+        }
+        return result;
     }
 
     /**
@@ -108,7 +138,7 @@ public class NetworkUtils {
      * @param maximumPerInterface The maximum of IP addresses per interface or 0 to get all.
      * @return Every single IP which can be assigned on the Networks the computer is connected to
      */
-    public Set<String> getNetworkIPs(Set<CidrAddress> interfaceIPs, int maximumPerInterface) {
+    private Set<String> getNetworkIPs(Set<CidrAddress> interfaceIPs, int maximumPerInterface) {
         LinkedHashSet<String> networkIPs = new LinkedHashSet<>();
 
         short minCidrPrefixLength = 8; // historic Class A network, addresses = 16777214
@@ -132,14 +162,13 @@ public class NetworkUtils {
                 cidrNotation = new CidrAddress(cidrNotation.getAddress(), minCidrPrefixLength);
             }
 
-            SubnetUtils utils = new SubnetUtils(cidrNotation.toString());
-            String[] addresses = utils.getInfo().getAllAddresses();
-            int len = addresses.length;
+            List<String> addresses = getIPAddresses(cidrNotation);
+            int len = addresses.size();
             if (maximumPerInterface != 0 && maximumPerInterface < len) {
                 len = maximumPerInterface;
             }
             for (int i = 0; i < len; i++) {
-                networkIPs.add(addresses[i]);
+                networkIPs.add(addresses.get(i));
             }
         }
 
@@ -173,16 +202,22 @@ public class NetworkUtils {
      * works JavaPing is returned.
      */
     public IpPingMethodEnum determinePingMethod() {
+        String os = System.getProperty("os.name");
         IpPingMethodEnum method;
-        if (SystemUtils.IS_OS_WINDOWS) {
-            method = IpPingMethodEnum.WINDOWS_PING;
-        } else if (SystemUtils.IS_OS_MAC) {
-            method = IpPingMethodEnum.MAC_OS_PING;
-        } else if (SystemUtils.IS_OS_UNIX) {
-            method = IpPingMethodEnum.IPUTILS_LINUX_PING;
-        } else {
-            // We cannot estimate the command line for any other operating system and just return false
+        if (os == null) {
             return IpPingMethodEnum.JAVA_PING;
+        } else {
+            os = os.toLowerCase();
+            if (os.indexOf("win") >= 0) {
+                method = IpPingMethodEnum.WINDOWS_PING;
+            } else if (os.indexOf("mac") >= 0) {
+                method = IpPingMethodEnum.MAC_OS_PING;
+            } else if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0 || os.indexOf("aix") >= 0) {
+                method = IpPingMethodEnum.IPUTILS_LINUX_PING;
+            } else {
+                // We cannot estimate the command line for any other operating system and just return false
+                return IpPingMethodEnum.JAVA_PING;
+            }
         }
 
         try {
@@ -203,19 +238,19 @@ public class NetworkUtils {
     public ArpPingUtilEnum determineNativeARPpingMethod(String arpToolPath) {
         String result = ExecUtil.executeCommandLineAndWaitResponse(Duration.ofMillis(100), arpToolPath, "--help");
         if (result == null || result.isBlank()) {
-            return ArpPingUtilEnum.UNKNOWN_TOOL;
+            return ArpPingUtilEnum.DISABLED_UNKNOWN_TOOL;
         } else if (result.contains("Thomas Habets")) {
             if (result.matches("(?s)(.*)w sec Specify a timeout(.*)")) {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING;
             } else {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT;
             }
-        } else if (result.contains("-w timeout")) {
+        } else if (result.contains("-w timeout") || result.contains("-w <timeout>")) {
             return ArpPingUtilEnum.IPUTILS_ARPING;
         } else if (result.contains("Usage: arp-ping.exe")) {
             return ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS;
         }
-        return ArpPingUtilEnum.UNKNOWN_TOOL;
+        return ArpPingUtilEnum.DISABLED_UNKNOWN_TOOL;
     }
 
     public enum IpPingMethodEnum {
@@ -292,11 +327,21 @@ public class NetworkUtils {
     }
 
     public enum ArpPingUtilEnum {
-        UNKNOWN_TOOL,
-        IPUTILS_ARPING,
-        THOMAS_HABERT_ARPING,
-        THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT,
-        ELI_FULKERSON_ARP_PING_FOR_WINDOWS
+        DISABLED("Disabled", false),
+        DISABLED_INVALID_IP("Destination is not a valid IPv4 address", false),
+        DISABLED_UNKNOWN_TOOL("Unknown arping tool", false),
+        IPUTILS_ARPING("Iputils Arping", true),
+        THOMAS_HABERT_ARPING("Arping tool by Thomas Habets", true),
+        THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT("Arping tool by Thomas Habets (old version)", true),
+        ELI_FULKERSON_ARP_PING_FOR_WINDOWS("Eli Fulkerson ARPing tool for Windows", true);
+
+        public final String description;
+        public final boolean canProceed;
+
+        ArpPingUtilEnum(String description, boolean canProceed) {
+            this.description = description;
+            this.canProceed = canProceed;
+        }
     }
 
     /**
@@ -317,7 +362,7 @@ public class NetworkUtils {
             String interfaceName, String ipV4address, int timeoutInMS) throws IOException, InterruptedException {
         double execStartTimeInMS = System.currentTimeMillis();
 
-        if (arpUtilPath == null || arpingTool == null || arpingTool == ArpPingUtilEnum.UNKNOWN_TOOL) {
+        if (arpUtilPath == null || arpingTool == null || !arpingTool.canProceed) {
             return Optional.empty();
         }
         Process proc;

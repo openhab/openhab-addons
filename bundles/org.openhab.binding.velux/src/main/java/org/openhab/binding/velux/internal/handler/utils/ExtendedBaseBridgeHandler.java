@@ -15,6 +15,7 @@ package org.openhab.binding.velux.internal.handler.utils;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -59,7 +60,7 @@ public abstract class ExtendedBaseBridgeHandler extends BaseBridgeHandler {
      * @param properties properties map, that was updated and should be persisted
      */
     @Override
-    public void updateProperties(Map<String, String> properties) {
+    public void updateProperties(@Nullable Map<String, String> properties) {
         super.updateProperties(properties);
     }
 

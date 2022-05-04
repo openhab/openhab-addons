@@ -55,6 +55,7 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,8 +69,8 @@ import ai.picovoice.porcupine.PorcupineException;
  */
 @NonNullByDefault
 @Component(configurationPid = SERVICE_PID, property = Constants.SERVICE_PID + "=" + SERVICE_PID)
-@ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME, description_uri = SERVICE_CATEGORY + ":"
-        + SERVICE_ID)
+@ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME
+        + " Keyword Spotter", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class PorcupineKSService implements KSService {
     private static final String PORCUPINE_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "porcupine").toString();
     private static final String EXTRACTION_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "porcupine", "extracted")
@@ -98,8 +99,13 @@ public class PorcupineKSService implements KSService {
 
     @Activate
     protected void activate(ComponentContext componentContext, Map<String, Object> config) {
-        this.config = new Configuration(config).as(PorcupineKSConfiguration.class);
         this.bundleContext = componentContext.getBundleContext();
+        modified(config);
+    }
+
+    @Modified
+    protected void modified(Map<String, Object> config) {
+        this.config = new Configuration(config).as(PorcupineKSConfiguration.class);
         if (this.config.apiKey.isBlank()) {
             logger.warn("Missing pico voice api key to use Porcupine Keyword Spotter");
         }
@@ -120,8 +126,16 @@ public class PorcupineKSService implements KSService {
         File localFile = new File(EXTRACTION_FOLDER,
                 relativePath.substring(relativePath.lastIndexOf(File.separator) + 1));
         if (!localFile.exists()) {
+            if (File.separator.equals("\\")) {
+                // bundle requires unix path separator
+                logger.debug("use unix path separator");
+                relativePath = relativePath.replace("\\", "/");
+            }
             URL porcupineResource = bundleContext.getBundle().getEntry(relativePath);
             logger.debug("extracting binary {} from bundle to extraction folder", relativePath);
+            if (porcupineResource == null) {
+                throw new IOException("Missing bundle file: " + relativePath);
+            }
             extractFromBundle(porcupineResource, localFile);
         } else {
             logger.debug("binary {} already extracted", relativePath);
@@ -280,8 +294,9 @@ public class PorcupineKSService implements KSService {
                                 + localKeywordPath);
             }
             String env = getPorcupineEnv();
-            String keywordPath = "porcupine/resources/keyword_files/" + env + "/" + keyWord.replace(" ", "_") + "_"
-                    + env + ".ppn";
+            String keywordPath = Path
+                    .of("porcupine", "resources", "keyword_files", env, keyWord.replace(" ", "_") + "_" + env + ".ppn")
+                    .toString();
             return prepareLib(bundleContext, keywordPath);
         } else {
             throw new IllegalArgumentException(

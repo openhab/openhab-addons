@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="iaqualink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="controller">
+		<label>iAquaLink Pool Controller</label>
+		<description>A iAquaLink pool control thing represents a iAquaLink pool controller for Jandy/Zodiac systems
+		</description>
+		<channels>
+			<channel id="status" typeId="status" />
+			<channel id="system_type" typeId="system_type" />
+			<channel id="temp_scale" typeId="temperature_scale" />
+			<channel id="spa_temp" typeId="temperature">
+				<label>Spa Temperature</label>
+				<description>The current temperature of the spa</description>
+			</channel>
+			<channel id="pool_temp" typeId="temperature">
+				<label>Pool Temperature</label>
+				<description>The current temperature of the pool</description>
+			</channel>
+			<channel id="air_temp" typeId="temperature">
+				<label>Air Temperature</label>
+				<description>The current outside temperature</description>
+			</channel>
+			<channel id="spa_set_point" typeId="setpoint">
+				<label>Spa Setpoint</label>
+				<description>The spa setpoint</description>
+			</channel>
+			<channel id="pool_set_point" typeId="setpoint">
+				<label>Pool Setpoint</label>
+				<description>The pool setpoint</description>
+			</channel>
+			<channel id="cover_pool" typeId="equipment-switch">
+				<label>Cover Pool</label>
+				<description>Pool covering</description>
+			</channel>
+			<channel id="freeze_protection" typeId="equipment-switch">
+				<label>Freeze Protection</label>
+				<description>Freeze protection</description>
+			</channel>
+			<channel id="spa_pump" typeId="equipment-switch">
+				<label>Spa Pump</label>
+				<description>Spa pump</description>
+			</channel>
+			<channel id="pool_pump" typeId="equipment-switch">
+				<label>Pool Pump</label>
+				<description>Pool pump</description>
+			</channel>
+			<channel id="spa_heater_status" typeId="equipment-heater">
+				<label>Spa Heater Status</label>
+				<description>Spa heater status</description>
+			</channel>
+			<channel id="spa_heater" typeId="equipment-switch">
+				<label>Spa Heater Switch</label>
+				<description>Spa heater switch</description>
+			</channel>
+			<channel id="pool_heater_status" typeId="equipment-heater">
+				<label>Pool Heater Status</label>
+				<description>Pool heater status</description>
+			</channel>
+			<channel id="pool_heater" typeId="equipment-switch">
+				<label>Pool Heater Switch</label>
+				<description>Pool heater Switch</description>
+			</channel>
+			<channel id="solar_heater_status" typeId="equipment-heater">
+				<label>Solar Heater Status</label>
+				<description>Solar heater status</description>
+			</channel>
+			<channel id="solar_heater" typeId="equipment-switch">
+				<label>Solar Heater Switch</label>
+				<description>Solar heater switch</description>
+			</channel>
+			<channel id="spa_salinity" typeId="chemical">
+				<label>Spa Salinity</label>
+				<description>Spa Salinity</description>
+			</channel>
+			<channel id="pool_salinity" typeId="chemical">
+				<label>Pool Salinity</label>
+				<description>Pool Salinity</description>
+			</channel>
+			<channel id="orp" typeId="chemical">
+				<label>Orp</label>
+				<description>Orp</description>
+			</channel>
+			<channel id="ph" typeId="chemical">
+				<label>PH</label>
+				<description>PH</description>
+			</channel>
+		</channels>
+		<config-description>
+			<parameter name="userName" type="text" required="true">
+				<label>User Name</label>
+				<description>The user name to use when connecting to a iAqualink Account</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password to use when connecting to a iAqualink Account</description>
+			</parameter>
+			<parameter name="refresh" type="integer" required="true">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="serialId" type="text" required="false">
+				<label>Serial Number</label>
+				<description>Optionally specify the serial number of the controller which can be found on the iAquaLink Owner's
+					Center. This is only useful if you have more then one controller (pool) associated with your account. Leave blank
+					to have the first controller used.
+				</description>
+			</parameter>
+			<parameter name="apiKey" type="text" required="false">
+				<label>API Key</label>
+				<description>Optionally specify the API key used for access. This is only useful for debugging or if the API key is
+					changed by the vendor
+				</description>
+				<default>EOOEMOW4YR6QNB07</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- System Channels -->
+
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>The status of the iAqualink connection</description>
+		<state readOnly="true" />
+
+	</channel-type>
+
+	<channel-type id="system_type" advanced="true">
+		<item-type>String</item-type>
+		<label>System Type</label>
+		<description> System Type</description>
+		<state readOnly="true" />
+
+	</channel-type>
+
+	<!-- Equipment and Aux Channels -->
+
+	<channel-type id="aux-switch">
+		<item-type>Switch</item-type>
+		<label>Auxiliary Switch</label>
+		<description>The current state of auxiliary channel</description>
+	</channel-type>
+
+	<channel-type id="aux-dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Auxiliary Dimmer</label>
+		<description>The current state of auxiliary channel</description>
+		<state step="25"></state>
+	</channel-type>
+
+	<channel-type id="aux-jandycolor">
+		<item-type>String</item-type>
+		<label>Jandy Color Lighting</label>
+		<description>Jandy Color Lighting Channel</description>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="on">On</option>
+				<option value="1">Alpine White</option>
+				<option value="2">Sky Blue</option>
+				<option value="3">Cobalt Blue</option>
+				<option value="4">Caribbean Blue</option>
+				<option value="5">Spring Green</option>
+				<option value="6">Emerald Green</option>
+				<option value="7">Emerald Rose</option>
+				<option value="8">Magenta</option>
+				<option value="9">Garnet Red</option>
+				<option value="10">Violet</option>
+				<option value="11">Color Splash</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="aux-pentairsam">
+		<item-type>String</item-type>
+		<label>Pentair SAm/SAL Lighting</label>
+		<description>Pentair SAm/SAL Lighting Channel</description>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="on">On</option>
+				<option value="1">White</option>
+				<option value="2">Light Green</option>
+				<option value="3">Green</option>
+				<option value="4">Cyan</option>
+				<option value="5">Blue</option>
+				<option value="6">Lavender</option>
+				<option value="7">Magenta</option>
+				<option value="8">Light Magenta</option>
+				<option value="9">Color Splash</option>
+
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="aux-jandyled">
+		<item-type>String</item-type>
+		<label>Jandy Led Water Colors Lighting</label>
+		<description>Jandy Led Water Colors Lighting Channel</description>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="on">On</option>
+				<option value="1">Alpine White</option>
+				<option value="2">Sky Blue</option>
+				<option value="3">Cobalt Blue</option>
+				<option value="4">Caribbean Blue</option>
+				<option value="5">Spring Green</option>
+				<option value="6">Emerald Green</option>
+				<option value="7">Emerald Rose</option>
+				<option value="8">Magenta</option>
+				<option value="9">Violet</option>
+				<option value="10">Slow Splash</option>
+				<option value="11">Fast Splash</option>
+				<option value="12">USA!!!</option>
+				<option value="13">Fat Tuesday</option>
+				<option value="14">Disco Tech</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="aux-pentairib">
+		<item-type>String</item-type>
+		<label>Pentair intelliBrite Lighting</label>
+		<description>Pentair intelliBrite Lighting Channel</description>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="on">On</option>
+				<option value="1">SAM</option>
+				<option value="2">Party</option>
+				<option value="3">Romance</option>
+				<option value="4">Caribbean</option>
+				<option value="5">American</option>
+				<option value="6">Cal Sunset</option>
+				<option value="7">Royal</option>
+				<option value="8">Blue</option>
+				<option value="9">Green</option>
+				<option value="10">Red</option>
+				<option value="11">White</option>
+				<option value="12">Magenta</option>
+				<option value="13">Hold</option>
+				<option value="14">Recall</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="aux-hayward">
+		<item-type>String</item-type>
+		<label>Hayward Universal Lighting</label>
+		<description>Hayward Universal Lighting Channel</description>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="on">On</option>
+				<option value="1">Voodoo Lounge</option>
+				<option value="2">Deep Blue Sea</option>
+				<option value="3">Afternoon Skies</option>
+				<option value="4">Emerald</option>
+				<option value="5">Sangria</option>
+				<option value="6">Cloud White</option>
+				<option value="7">Twilight</option>
+				<option value="8">Tranquility</option>
+				<option value="9">Gemstone</option>
+				<option value="10">USA!</option>
+				<option value="11">Mardi Gras</option>
+				<option value="12">Cool Caberet</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="onetouch">
+		<item-type>Switch</item-type>
+		<label>OneTouch</label>
+		<description>OneTouch commands</description>
+	</channel-type>
+
+	<channel-type id="equipment-switch">
+		<item-type>Switch</item-type>
+		<label>Equipment Switch</label>
+		<description>The current state of a equipment switch</description>
+	</channel-type>
+
+	<channel-type id="equipment-heater">
+		<item-type>String</item-type>
+		<label>Heater</label>
+		<description>The current state of the heater</description>
+		<state readOnly="true">
+			<options>
+				<option value="off">Off</option>
+				<option value="heating">Heating</option>
+				<option value="enabled">Enabled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" />
+
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true" />
+
+	</channel-type>
+
+	<channel-type id="temperature_scale" advanced="true">
+		<item-type>String</item-type>
+		<label>Temperature Units</label>
+		<description>The selected units for temperature (C or F)</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="chemical">
+		<item-type>Number</item-type>
+		<label>Chemical</label>
+		<category>Other</category>
+		<state readOnly="true" />
+	</channel-type>
+</thing:thing-descriptions>

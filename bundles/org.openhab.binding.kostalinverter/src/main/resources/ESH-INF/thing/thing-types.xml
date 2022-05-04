@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="kostalinverter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="kostalinverter">
+		<label>Kostal Inverter</label>
+		<description>Kostal Inverter</description>
+		<channels>
+			<channel typeId="device-local-ac-current-power" id="acPower" />
+			<channel typeId="statistic-yield-total" id="totalEnergy" />
+			<channel typeId="statistic-yield-day" id="dayEnergy" />
+			<channel typeId="status" id="status" />
+			<channel typeId="device-local-pvstring-1-voltage" id="str1Voltage" />
+			<channel typeId="device-local-pvstring-1-amperage" id="str1Current" />
+			<channel typeId="device-local-pvstring-2-voltage" id="str2Voltage" />
+			<channel typeId="device-local-pvstring-2-amperage" id="str2Current" />
+			<channel typeId="device-local-ac-phase-1-current-voltage" id="l1Voltage" />
+			<channel typeId="device-local-ac-phase-1-current-power" id="l1Power" />
+			<channel typeId="device-local-ac-phase-2-current-voltage" id="l2Voltage" />
+			<channel typeId="device-local-ac-phase-2-current-power" id="l2Power" />
+			<channel typeId="device-local-ac-phase-3-current-voltage" id="l3Voltage" />
+			<channel typeId="device-local-ac-phase-3-current-power" id="l3Power" />
+		</channels>
+
+		<config-description>
+			<parameter name="url" type="text" required="true">
+				<label>URL</label>
+				<description>URL of the web interface (e.g. http://192.168.0.1)</description>
+				<default></default>
+			</parameter>
+
+			<parameter name="userName" type="text" required="true">
+				<label>Username</label>
+				<default>pvserver</default>
+			</parameter>
+
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<default>pvwr</default>
+			</parameter>
+
+			<parameter name="refreshInterval" type="integer" unit="s">
+				<label>Refresh Interval</label>
+				<description>States how often a refresh shall occur (in s)</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

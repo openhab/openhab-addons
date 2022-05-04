@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rfxcom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="temperature">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="tcpbridge" />
+			<bridge-type-ref id="RFXtrx433" />
+			<bridge-type-ref id="RFXrec433" />
+		</supported-bridge-type-refs>
+
+		<label>RFXCOM Temperature Sensor</label>
+		<description>A Temperature device.</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="signalLevel" typeId="system.signal-strength" />
+			<channel id="batteryLevel" typeId="system.battery-level" />
+			<channel id="lowBattery" typeId="system.low-battery" />
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Sensor Id. Example 56923</description>
+			</parameter>
+			<parameter name="subType" type="text" required="true">
+				<label>Sub Type</label>
+				<description>Specifies device sub type.</description>
+				<options>
+					<option value="TEMP1">THR128/138, THC138</option>
+					<option value="TEMP2">THC238/268,THN132,THWR288,THRN122,THN122,AW129/131</option>
+					<option value="TEMP3">THWR800</option>
+					<option value="TEMP4">RTHN318</option>
+					<option value="TEMP5">La Crosse TX2, TX3, TX4, TX17</option>
+					<option value="TEMP6">TS15C. UPM temp only</option>
+					<option value="TEMP7">Viking 02811, Proove TSS330, 311346</option>
+					<option value="TEMP8">La Crosse WS2300</option>
+					<option value="TEMP9">Rubicson</option>
+					<option value="TEMP10">TFA 30.3133</option>
+					<option value="TEMP11">WT0122</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

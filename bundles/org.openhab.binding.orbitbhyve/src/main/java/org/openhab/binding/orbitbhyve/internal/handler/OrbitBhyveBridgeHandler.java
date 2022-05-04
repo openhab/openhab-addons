@@ -308,11 +308,13 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
     private void updateAllStatuses() {
         List<OrbitBhyveDevice> devices = getDevices();
         for (Thing th : getThing().getThings()) {
-            String deviceId = th.getUID().getId();
-            OrbitBhyveSprinklerHandler handler = (OrbitBhyveSprinklerHandler) th.getHandler();
-            for (OrbitBhyveDevice device : devices) {
-                if (deviceId.equals(th.getUID().getId())) {
-                    updateDeviceStatus(device, handler);
+            if (th.isEnabled()) {
+                String deviceId = th.getUID().getId();
+                OrbitBhyveSprinklerHandler handler = (OrbitBhyveSprinklerHandler) th.getHandler();
+                for (OrbitBhyveDevice device : devices) {
+                    if (deviceId.equals(th.getUID().getId())) {
+                        updateDeviceStatus(device, handler);
+                    }
                 }
             }
         }

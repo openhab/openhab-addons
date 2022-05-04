@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.daikin.internal.handler;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -37,7 +36,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
@@ -75,46 +73,40 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
     }
 
     @Override
-    protected void pollStatus() throws IOException {
-        AirbaseControlInfo controlInfo = webTargets.getAirbaseControlInfo();
-
+    protected void pollStatus() throws DaikinCommunicationException {
         if (airbaseModelInfo == null || !"OK".equals(airbaseModelInfo.ret)) {
             airbaseModelInfo = webTargets.getAirbaseModelInfo();
             updateChannelStateDescriptions();
         }
 
-        if (controlInfo != null) {
-            updateState(DaikinBindingConstants.CHANNEL_AC_POWER, controlInfo.power ? OnOffType.ON : OnOffType.OFF);
-            updateTemperatureChannel(DaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
-            updateState(DaikinBindingConstants.CHANNEL_AC_MODE, new StringType(controlInfo.mode.name()));
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED,
-                    new StringType(controlInfo.fanSpeed.name()));
+        AirbaseControlInfo controlInfo = webTargets.getAirbaseControlInfo();
+        if (!"OK".equals(controlInfo.ret)) {
+            throw new DaikinCommunicationException("Invalid response from host");
+        }
 
-            if (!controlInfo.power) {
-                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.OFF.getValue()));
-            } else if (controlInfo.mode == AirbaseMode.COLD) {
-                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.COOL.getValue()));
-            } else if (controlInfo.mode == AirbaseMode.HEAT) {
-                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.HEAT.getValue()));
-            } else if (controlInfo.mode == AirbaseMode.AUTO) {
-                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.AUTO.getValue()));
-            }
+        updateState(DaikinBindingConstants.CHANNEL_AC_POWER, OnOffType.from(controlInfo.power));
+        updateTemperatureChannel(DaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
+        updateState(DaikinBindingConstants.CHANNEL_AC_MODE, new StringType(controlInfo.mode.name()));
+        updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED, new StringType(controlInfo.fanSpeed.name()));
+
+        if (!controlInfo.power) {
+            updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.OFF.getValue()));
+        } else if (controlInfo.mode == AirbaseMode.COLD) {
+            updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.COOL.getValue()));
+        } else if (controlInfo.mode == AirbaseMode.HEAT) {
+            updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.HEAT.getValue()));
+        } else if (controlInfo.mode == AirbaseMode.AUTO) {
+            updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.AUTO.getValue()));
         }
 
         SensorInfo sensorInfo = webTargets.getAirbaseSensorInfo();
-        if (sensorInfo != null) {
-            updateTemperatureChannel(DaikinBindingConstants.CHANNEL_INDOOR_TEMP, sensorInfo.indoortemp);
-
-            updateTemperatureChannel(DaikinBindingConstants.CHANNEL_OUTDOOR_TEMP, sensorInfo.outdoortemp);
-        }
+        updateTemperatureChannel(DaikinBindingConstants.CHANNEL_INDOOR_TEMP, sensorInfo.indoortemp);
+        updateTemperatureChannel(DaikinBindingConstants.CHANNEL_OUTDOOR_TEMP, sensorInfo.outdoortemp);
 
         AirbaseZoneInfo zoneInfo = webTargets.getAirbaseZoneInfo();
-        if (zoneInfo != null) {
-            IntStream.range(0, zoneInfo.zone.length)
-                    .forEach(idx -> updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE + idx,
-                            OnOffType.from(zoneInfo.zone[idx])));
-        }
-        updateStatus(ThingStatus.ONLINE);
+        IntStream.range(0, zoneInfo.zone.length)
+                .forEach(idx -> updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE + (idx + 1),
+                        OnOffType.from(zoneInfo.zone[idx])));
     }
 
     @Override
@@ -177,14 +169,21 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
         webTargets.setAirbaseControlInfo(info);
     }
 
+    /**
+     * 
+     * Turn the zone on/off
+     * The Airbase controller allows turning off all zones, so we allow it here too
+     * 
+     * @param zone the zone number starting from 1
+     * @param command true to turn on the zone, false to turn it off
+     * 
+     */
     protected void changeZone(int zone, boolean command) throws DaikinCommunicationException {
         AirbaseZoneInfo zoneInfo = webTargets.getAirbaseZoneInfo();
-        long commonZones = 0;
         long maxZones = zoneInfo.zone.length;
 
         if (airbaseModelInfo != null) {
-            maxZones = Math.min(maxZones - 1, airbaseModelInfo.zonespresent);
-            commonZones = airbaseModelInfo.commonzone;
+            maxZones = Math.min(maxZones, airbaseModelInfo.zonespresent);
         }
         if (zone <= 0 || zone > maxZones) {
             logger.warn("The given zone number ({}) is outside the number of zones supported by the controller ({})",
@@ -192,14 +191,8 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
             return;
         }
 
-        long openZones = IntStream.range(0, zoneInfo.zone.length).filter(idx -> zoneInfo.zone[idx]).count()
-                + commonZones;
-        logger.debug("Number of open zones: \"{}\"", openZones);
-
-        if (openZones >= 1) {
-            zoneInfo.zone[zone] = command;
-            webTargets.setAirbaseZoneInfo(zoneInfo);
-        }
+        zoneInfo.zone[zone - 1] = command;
+        webTargets.setAirbaseZoneInfo(zoneInfo);
     }
 
     @Override

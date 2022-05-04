@@ -13,6 +13,7 @@
 package org.openhab.transform.javascript.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,8 +38,10 @@ import org.osgi.framework.BundleContext;
  * @author Pauli Anttila - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class JavaScriptTransformationServiceTest {
+
+    private static final boolean NASHORN_AVAILABLE = isNashornAvailable();
 
     private static final String BASE_FOLDER = "target";
     private static final String SRC_FOLDER = "conf";
@@ -54,8 +57,25 @@ public class JavaScriptTransformationServiceTest {
         }
     };
 
+    /**
+     * Returns if the Nashorn JavaScript engine is available based on the Java specification version property.
+     * Nashorn has been removed from JDK 15 and onwards.
+     *
+     * @return {@code true} if Nashorn is available, {@code false} otherwise
+     */
+    private static boolean isNashornAvailable() {
+        try {
+            String javaVersion = System.getProperty("java.specification.version");
+            return javaVersion == null ? false : Long.parseLong(javaVersion) < 15;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     @BeforeEach
     public void setUp() throws IOException {
+        assumeTrue(NASHORN_AVAILABLE);
+
         JavaScriptEngineManager manager = new JavaScriptEngineManager();
         processor = new TestableJavaScriptTransformationService(manager);
         copyDirectory(SRC_FOLDER, CONFIG_FOLDER);
@@ -63,8 +83,11 @@ public class JavaScriptTransformationServiceTest {
 
     @AfterEach
     public void tearDown() throws IOException {
-        try (Stream<Path> walk = Files.walk(Path.of(CONFIG_FOLDER))) {
-            walk.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+        Path path = Path.of(CONFIG_FOLDER);
+        if (Files.exists(path)) {
+            try (Stream<Path> walk = Files.walk(path)) {
+                walk.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+            }
         }
     }
 

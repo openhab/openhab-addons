@@ -22,6 +22,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -33,6 +35,7 @@ import org.openhab.core.util.HexUtils;
  * @author Wouter Born - Initial contribution
  */
 @Timeout(value = 10)
+@NonNullByDefault
 public class WakeOnLanPacketSenderTest {
 
     private void assertValidMagicPacket(byte[] macBytes, byte[] packet) {
@@ -102,7 +105,8 @@ public class WakeOnLanPacketSenderTest {
         assertThrows(IllegalStateException.class, () -> sendWOLTest(null, 4444));
     }
 
-    private void sendWOLTest(String hostname, Integer port) throws InterruptedException, IOException {
+    private void sendWOLTest(@Nullable String hostname, @Nullable Integer port)
+            throws InterruptedException, IOException {
         DatagramSocket socket = new DatagramSocket(4444);
 
         byte[] buf = new byte[256];

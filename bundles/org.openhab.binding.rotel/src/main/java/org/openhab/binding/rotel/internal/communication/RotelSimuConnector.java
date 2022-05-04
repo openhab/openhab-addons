@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.rotel.internal.communication;
 
+import static org.openhab.binding.rotel.internal.RotelBindingConstants.*;
+import static org.openhab.binding.rotel.internal.protocol.hex.RotelHexProtocolHandler.START;
+
 import java.io.InterruptedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -23,6 +26,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rotel.internal.RotelException;
 import org.openhab.binding.rotel.internal.RotelModel;
 import org.openhab.binding.rotel.internal.RotelPlayStatus;
+import org.openhab.binding.rotel.internal.protocol.RotelAbstractProtocolHandler;
+import org.openhab.binding.rotel.internal.protocol.RotelProtocol;
+import org.openhab.binding.rotel.internal.protocol.hex.RotelHexProtocolHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +40,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RotelSimuConnector extends RotelConnector {
 
+    private static final int STEP_TONE_LEVEL = 1;
+
     private final Logger logger = LoggerFactory.getLogger(RotelSimuConnector.class);
 
-    private static final int STEP_TONE_LEVEL = 1;
+    private final RotelModel model;
+    private final RotelProtocol protocol;
+    private final Map<RotelSource, String> sourcesLabels;
 
     private Object lock = new Object();
 
@@ -80,12 +90,16 @@ public class RotelSimuConnector extends RotelConnector {
      * Constructor
      *
      * @param model the projector model in use
-     * @param protocol the protocol to be used
+     * @param protocolHandler the protocol handler
+     * @param sourcesLabels the custom labels for sources
      * @param readerThreadName the name of thread to be created
      */
-    public RotelSimuConnector(RotelModel model, RotelProtocol protocol, Map<RotelSource, String> sourcesLabels,
-            String readerThreadName) {
-        super(model, protocol, sourcesLabels, true, readerThreadName);
+    public RotelSimuConnector(RotelModel model, RotelAbstractProtocolHandler protocolHandler,
+            Map<RotelSource, String> sourcesLabels, String readerThreadName) {
+        super(protocolHandler, true, readerThreadName);
+        this.model = model;
+        this.protocol = protocolHandler.getProtocol();
+        this.sourcesLabels = sourcesLabels;
         this.minVolume = 0;
         this.maxVolume = model.hasVolumeControl() ? model.getVolumeMax() : 0;
         this.maxToneLevel = model.hasToneControl() ? model.getToneLevelMax() : 0;
@@ -95,9 +109,7 @@ public class RotelSimuConnector extends RotelConnector {
     @Override
     public synchronized void open() throws RotelException {
         logger.debug("Opening simulated connection");
-        Thread thread = new RotelReaderThread(this, readerThreadName);
-        setReaderThread(thread);
-        thread.start();
+        readerThread.start();
         setConnected(true);
         logger.debug("Simulated connection opened");
     }
@@ -132,23 +144,13 @@ public class RotelSimuConnector extends RotelConnector {
         return 0;
     }
 
-    @Override
-    public void sendCommand(RotelCommand cmd, @Nullable Integer value) throws RotelException {
-        super.sendCommand(cmd, value);
-        if ((getProtocol() == RotelProtocol.HEX && cmd.getHexType() != 0)
-                || (getProtocol() == RotelProtocol.ASCII_V1 && cmd.getAsciiCommandV1() != null)
-                || (getProtocol() == RotelProtocol.ASCII_V2 && cmd.getAsciiCommandV2() != null)) {
-            buildFeedbackMessage(cmd, value);
-        }
-    }
-
     /**
      * Built the simulated feedback message for a sent command
      *
      * @param cmd the sent command
      * @param value the integer value considered in the sent command for volume, bass or treble adjustment
      */
-    private void buildFeedbackMessage(RotelCommand cmd, @Nullable Integer value) {
+    public void buildFeedbackMessage(RotelCommand cmd, @Nullable Integer value) {
         String text = buildSourceLine1Response();
         String textLine1Left = buildSourceLine1LeftResponse();
         String textLine1Right = buildVolumeLine1RightResponse();
@@ -180,14 +182,14 @@ public class RotelSimuConnector extends RotelConnector {
                 break;
             case ZONE2_POWER_OFF:
                 powerZone2 = false;
-                text = textLine2 = buildZonePowerResponse(getModel().getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
+                text = textLine2 = buildZonePowerResponse(model.getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
                         powerZone2, sourceZone2);
                 showZone = 2;
                 resetZone = false;
                 break;
             case ZONE2_POWER_ON:
                 powerZone2 = true;
-                text = textLine2 = buildZonePowerResponse(getModel().getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
+                text = textLine2 = buildZonePowerResponse(model.getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
                         powerZone2, sourceZone2);
                 showZone = 2;
                 resetZone = false;
@@ -217,9 +219,9 @@ public class RotelSimuConnector extends RotelConnector {
                 resetZone = false;
                 break;
             case RECORD_FONCTION_SELECT:
-                if (getModel().getNbAdditionalZones() >= 1 && getModel().getZoneSelectCmd() == cmd) {
+                if (model.getNbAdditionalZones() >= 1 && model.getZoneSelectCmd() == cmd) {
                     showZone++;
-                    if (showZone > getModel().getNbAdditionalZones()) {
+                    if (showZone > model.getNbAdditionalZones()) {
                         showZone = 1;
                         if (!power) {
                             showZone++;
@@ -234,7 +236,7 @@ public class RotelSimuConnector extends RotelConnector {
                     textLine2 = buildRecordResponse();
                 } else if (showZone == 2) {
                     selectingRecord = false;
-                    text = textLine2 = buildZonePowerResponse(getModel().getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
+                    text = textLine2 = buildZonePowerResponse(model.getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
                             powerZone2, sourceZone2);
                 } else if (showZone == 3) {
                     selectingRecord = false;
@@ -246,12 +248,12 @@ public class RotelSimuConnector extends RotelConnector {
                 resetZone = false;
                 break;
             case ZONE_SELECT:
-                if (getModel().getNbAdditionalZones() == 0
-                        || (getModel().getNbAdditionalZones() > 1 && getModel().getZoneSelectCmd() == cmd)
-                        || (showZone == 1 && getModel().getZoneSelectCmd() != cmd)) {
+                if (model.getNbAdditionalZones() == 0
+                        || (model.getNbAdditionalZones() > 1 && model.getZoneSelectCmd() == cmd)
+                        || (showZone == 1 && model.getZoneSelectCmd() != cmd)) {
                     accepted = false;
                 } else {
-                    if (getModel().getZoneSelectCmd() == cmd) {
+                    if (model.getZoneSelectCmd() == cmd) {
                         if (!power && !powerZone2) {
                             showZone = 2;
                             powerZone2 = true;
@@ -270,8 +272,8 @@ public class RotelSimuConnector extends RotelConnector {
                         }
                     }
                     if (showZone == 2) {
-                        text = textLine2 = buildZonePowerResponse(
-                                getModel().getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE", powerZone2, sourceZone2);
+                        text = textLine2 = buildZonePowerResponse(model.getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
+                                powerZone2, sourceZone2);
                     } else if (showZone == 3) {
                         text = textLine2 = buildZonePowerResponse("ZONE3", powerZone3, sourceZone3);
                     } else if (showZone == 4) {
@@ -291,54 +293,54 @@ public class RotelSimuConnector extends RotelConnector {
                     if (volumeZone2 < maxVolume) {
                         volumeZone2++;
                     }
-                    text = textLine2 = buildZoneVolumeResponse(getModel().getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
+                    text = textLine2 = buildZoneVolumeResponse(model.getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
                             muteZone2, volumeZone2);
                     break;
                 case ZONE2_VOLUME_DOWN:
                     if (volumeZone2 > minVolume) {
                         volumeZone2--;
                     }
-                    text = textLine2 = buildZoneVolumeResponse(getModel().getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
+                    text = textLine2 = buildZoneVolumeResponse(model.getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
                             muteZone2, volumeZone2);
                     break;
                 case ZONE2_VOLUME_SET:
                     if (value != null) {
                         volumeZone2 = value;
                     }
-                    text = textLine2 = buildZoneVolumeResponse(getModel().getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
+                    text = textLine2 = buildZoneVolumeResponse(model.getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
                             muteZone2, volumeZone2);
                     break;
                 case VOLUME_UP:
-                    if (!getModel().hasZone2Commands() && getModel().getNbAdditionalZones() >= 1 && showZone == 2) {
+                    if (!model.hasZone2Commands() && model.getNbAdditionalZones() >= 1 && showZone == 2) {
                         if (volumeZone2 < maxVolume) {
                             volumeZone2++;
                         }
-                        text = textLine2 = buildZoneVolumeResponse(
-                                getModel().getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE", muteZone2, volumeZone2);
+                        text = textLine2 = buildZoneVolumeResponse(model.getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
+                                muteZone2, volumeZone2);
                         resetZone = false;
                     } else {
                         accepted = false;
                     }
                     break;
                 case VOLUME_DOWN:
-                    if (!getModel().hasZone2Commands() && getModel().getNbAdditionalZones() >= 1 && showZone == 2) {
+                    if (!model.hasZone2Commands() && model.getNbAdditionalZones() >= 1 && showZone == 2) {
                         if (volumeZone2 > minVolume) {
                             volumeZone2--;
                         }
-                        text = textLine2 = buildZoneVolumeResponse(
-                                getModel().getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE", muteZone2, volumeZone2);
+                        text = textLine2 = buildZoneVolumeResponse(model.getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
+                                muteZone2, volumeZone2);
                         resetZone = false;
                     } else {
                         accepted = false;
                     }
                     break;
                 case VOLUME_SET:
-                    if (!getModel().hasZone2Commands() && getModel().getNbAdditionalZones() >= 1 && showZone == 2) {
+                    if (!model.hasZone2Commands() && model.getNbAdditionalZones() >= 1 && showZone == 2) {
                         if (value != null) {
                             volumeZone2 = value;
                         }
-                        text = textLine2 = buildZoneVolumeResponse(
-                                getModel().getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE", muteZone2, volumeZone2);
+                        text = textLine2 = buildZoneVolumeResponse(model.getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
+                                muteZone2, volumeZone2);
                         resetZone = false;
                     } else {
                         accepted = false;
@@ -346,17 +348,17 @@ public class RotelSimuConnector extends RotelConnector {
                     break;
                 case ZONE2_MUTE_TOGGLE:
                     muteZone2 = !muteZone2;
-                    text = textLine2 = buildZoneVolumeResponse(getModel().getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
+                    text = textLine2 = buildZoneVolumeResponse(model.getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
                             muteZone2, volumeZone2);
                     break;
                 case ZONE2_MUTE_ON:
                     muteZone2 = true;
-                    text = textLine2 = buildZoneVolumeResponse(getModel().getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
+                    text = textLine2 = buildZoneVolumeResponse(model.getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
                             muteZone2, volumeZone2);
                     break;
                 case ZONE2_MUTE_OFF:
                     muteZone2 = false;
-                    text = textLine2 = buildZoneVolumeResponse(getModel().getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
+                    text = textLine2 = buildZoneVolumeResponse(model.getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
                             muteZone2, volumeZone2);
                     break;
                 default:
@@ -365,9 +367,9 @@ public class RotelSimuConnector extends RotelConnector {
             }
             if (!accepted) {
                 try {
-                    sourceZone2 = getModel().getZone2SourceFromCommand(cmd);
+                    sourceZone2 = model.getZone2SourceFromCommand(cmd);
                     powerZone2 = true;
-                    text = textLine2 = buildZonePowerResponse(getModel().getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
+                    text = textLine2 = buildZonePowerResponse(model.getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
                             powerZone2, sourceZone2);
                     muteZone2 = false;
                     accepted = true;
@@ -376,12 +378,11 @@ public class RotelSimuConnector extends RotelConnector {
                 } catch (RotelException e) {
                 }
             }
-            if (!accepted && !getModel().hasZone2Commands() && getModel().getNbAdditionalZones() >= 1
-                    && showZone == 2) {
+            if (!accepted && !model.hasZone2Commands() && model.getNbAdditionalZones() >= 1 && showZone == 2) {
                 try {
-                    sourceZone2 = getModel().getSourceFromCommand(cmd);
+                    sourceZone2 = model.getSourceFromCommand(cmd);
                     powerZone2 = true;
-                    text = textLine2 = buildZonePowerResponse(getModel().getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
+                    text = textLine2 = buildZonePowerResponse(model.getNbAdditionalZones() > 1 ? "ZONE2" : "ZONE",
                             powerZone2, sourceZone2);
                     muteZone2 = false;
                     accepted = true;
@@ -429,7 +430,7 @@ public class RotelSimuConnector extends RotelConnector {
             }
             if (!accepted) {
                 try {
-                    sourceZone3 = getModel().getZone3SourceFromCommand(cmd);
+                    sourceZone3 = model.getZone3SourceFromCommand(cmd);
                     powerZone3 = true;
                     text = textLine2 = buildZonePowerResponse("ZONE3", powerZone3, sourceZone3);
                     muteZone3 = false;
@@ -479,7 +480,7 @@ public class RotelSimuConnector extends RotelConnector {
             }
             if (!accepted) {
                 try {
-                    sourceZone4 = getModel().getZone4SourceFromCommand(cmd);
+                    sourceZone4 = model.getZone4SourceFromCommand(cmd);
                     powerZone4 = true;
                     text = textLine2 = buildZonePowerResponse("ZONE4", powerZone4, sourceZone4);
                     muteZone4 = false;
@@ -495,11 +496,11 @@ public class RotelSimuConnector extends RotelConnector {
             switch (cmd) {
                 case UPDATE_AUTO:
                     textAscii = buildAsciiResponse(
-                            getProtocol() == RotelProtocol.ASCII_V1 ? KEY_DISPLAY_UPDATE : KEY_UPDATE_MODE, "AUTO");
+                            protocol == RotelProtocol.ASCII_V1 ? KEY_DISPLAY_UPDATE : KEY_UPDATE_MODE, AUTO);
                     break;
                 case UPDATE_MANUAL:
                     textAscii = buildAsciiResponse(
-                            getProtocol() == RotelProtocol.ASCII_V1 ? KEY_DISPLAY_UPDATE : KEY_UPDATE_MODE, "MANUAL");
+                            protocol == RotelProtocol.ASCII_V1 ? KEY_DISPLAY_UPDATE : KEY_UPDATE_MODE, MANUAL);
                     break;
                 case VOLUME_GET_MIN:
                     textAscii = buildAsciiResponse(KEY_VOLUME_MIN, minVolume);
@@ -668,7 +669,7 @@ public class RotelSimuConnector extends RotelConnector {
                     multiinput = !multiinput;
                     text = "MULTI IN " + (multiinput ? "ON" : "OFF");
                     try {
-                        source = getModel().getSourceFromCommand(cmd);
+                        source = model.getSourceFromCommand(cmd);
                         textLine1Left = buildSourceLine1LeftResponse();
                         textAscii = buildSourceAsciiResponse();
                         mute = false;
@@ -795,7 +796,7 @@ public class RotelSimuConnector extends RotelConnector {
             }
             if (!accepted) {
                 try {
-                    source = getModel().getMainZoneSourceFromCommand(cmd);
+                    source = model.getMainZoneSourceFromCommand(cmd);
                     text = buildSourceLine1Response();
                     textLine1Left = buildSourceLine1LeftResponse();
                     textAscii = buildSourceAsciiResponse();
@@ -805,10 +806,10 @@ public class RotelSimuConnector extends RotelConnector {
             }
             if (!accepted) {
                 try {
-                    if (selectingRecord && !getModel().hasOtherThanPrimaryCommands()) {
-                        recordSource = getModel().getSourceFromCommand(cmd);
+                    if (selectingRecord && !model.hasOtherThanPrimaryCommands()) {
+                        recordSource = model.getSourceFromCommand(cmd);
                     } else {
-                        source = getModel().getSourceFromCommand(cmd);
+                        source = model.getSourceFromCommand(cmd);
                     }
                     text = buildSourceLine1Response();
                     textLine1Left = buildSourceLine1LeftResponse();
@@ -820,7 +821,7 @@ public class RotelSimuConnector extends RotelConnector {
             }
             if (!accepted) {
                 try {
-                    recordSource = getModel().getRecordSourceFromCommand(cmd);
+                    recordSource = model.getRecordSourceFromCommand(cmd);
                     text = buildSourceLine1Response();
                     textLine2 = buildRecordResponse();
                     accepted = true;
@@ -840,7 +841,7 @@ public class RotelSimuConnector extends RotelConnector {
             showZone = 0;
         }
 
-        if (getModel().getRespNbChars() == 42) {
+        if (model.getRespNbChars() == 42) {
             while (textLine1Left.length() < 14) {
                 textLine1Left += " ";
             }
@@ -853,44 +854,44 @@ public class RotelSimuConnector extends RotelConnector {
             text = textLine1Left + textLine1Right + textLine2;
         }
 
-        if (getProtocol() == RotelProtocol.HEX) {
-            byte[] chars = Arrays.copyOf(text.getBytes(StandardCharsets.US_ASCII), getModel().getRespNbChars());
-            byte[] flags = new byte[getModel().getRespNbFlags()];
+        if (protocol == RotelProtocol.HEX) {
+            byte[] chars = Arrays.copyOf(text.getBytes(StandardCharsets.US_ASCII), model.getRespNbChars());
+            byte[] flags = new byte[model.getRespNbFlags()];
             try {
-                getModel().setMultiInput(flags, multiinput);
+                model.setMultiInput(flags, multiinput);
             } catch (RotelException e) {
             }
             try {
-                getModel().setZone2(flags, powerZone2);
+                model.setZone2(flags, powerZone2);
             } catch (RotelException e) {
             }
             try {
-                getModel().setZone3(flags, powerZone3);
+                model.setZone3(flags, powerZone3);
             } catch (RotelException e) {
             }
             try {
-                getModel().setZone4(flags, powerZone4);
+                model.setZone4(flags, powerZone4);
             } catch (RotelException e) {
             }
-            int size = 6 + getModel().getRespNbChars() + getModel().getRespNbFlags();
+            int size = 6 + model.getRespNbChars() + model.getRespNbFlags();
             byte[] dataBuffer = new byte[size];
             int idx = 0;
             dataBuffer[idx++] = START;
             dataBuffer[idx++] = (byte) (size - 4);
-            dataBuffer[idx++] = getModel().getDeviceId();
+            dataBuffer[idx++] = model.getDeviceId();
             dataBuffer[idx++] = STANDARD_RESPONSE;
-            if (getModel().isCharsBeforeFlags()) {
-                System.arraycopy(chars, 0, dataBuffer, idx, getModel().getRespNbChars());
-                idx += getModel().getRespNbChars();
-                System.arraycopy(flags, 0, dataBuffer, idx, getModel().getRespNbFlags());
-                idx += getModel().getRespNbFlags();
+            if (model.isCharsBeforeFlags()) {
+                System.arraycopy(chars, 0, dataBuffer, idx, model.getRespNbChars());
+                idx += model.getRespNbChars();
+                System.arraycopy(flags, 0, dataBuffer, idx, model.getRespNbFlags());
+                idx += model.getRespNbFlags();
             } else {
-                System.arraycopy(flags, 0, dataBuffer, idx, getModel().getRespNbFlags());
-                idx += getModel().getRespNbFlags();
-                System.arraycopy(chars, 0, dataBuffer, idx, getModel().getRespNbChars());
-                idx += getModel().getRespNbChars();
+                System.arraycopy(flags, 0, dataBuffer, idx, model.getRespNbFlags());
+                idx += model.getRespNbFlags();
+                System.arraycopy(chars, 0, dataBuffer, idx, model.getRespNbChars());
+                idx += model.getRespNbChars();
             }
-            byte checksum = computeCheckSum(dataBuffer, idx - 1);
+            byte checksum = RotelHexProtocolHandler.computeCheckSum(dataBuffer, idx - 1);
             if ((checksum & 0x000000FF) == 0x000000FD) {
                 dataBuffer[idx++] = (byte) 0xFD;
                 dataBuffer[idx++] = 0;
@@ -905,7 +906,7 @@ public class RotelSimuConnector extends RotelConnector {
                 idxInFeedbackMsg = 0;
             }
         } else {
-            String command = textAscii + (getProtocol() == RotelProtocol.ASCII_V1 ? "!" : "$");
+            String command = textAscii + (protocol == RotelProtocol.ASCII_V1 ? "!" : "$");
             synchronized (lock) {
                 feedbackMsg = command.getBytes(StandardCharsets.US_ASCII);
                 idxInFeedbackMsg = 0;
@@ -978,8 +979,7 @@ public class RotelSimuConnector extends RotelConnector {
                 status = STOP;
                 break;
         }
-        return buildAsciiResponse(getProtocol() == RotelProtocol.ASCII_V1 ? KEY1_PLAY_STATUS : KEY2_PLAY_STATUS,
-                status);
+        return buildAsciiResponse(protocol == RotelProtocol.ASCII_V1 ? KEY1_PLAY_STATUS : KEY2_PLAY_STATUS, status);
     }
 
     private String buildTrackAsciiResponse() {

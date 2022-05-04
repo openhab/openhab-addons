@@ -6,7 +6,6 @@
 
 	<thing-type id="smo40-udp">
 		<label>UDP Connected Nibe SMO40 Heat Pumps</label>
-		<description></description>
 
 		<channel-groups>
 			<channel-group typeId="smo40-sensor-group-channels" id="sensor"/>
@@ -67,7 +66,6 @@
 
 	<thing-type id="smo40-serial">
 		<label>Serial Port Connected SMO40 Heat Pumps</label>
-		<description></description>
 
 		<channel-groups>
 			<channel-group typeId="smo40-sensor-group-channels" id="sensor"/>
@@ -127,7 +125,6 @@
 
 	<thing-type id="smo40-simulator">
 		<label>Simulator for Nibe SMO40 Heat Pumps</label>
-		<description></description>
 
 		<channel-groups>
 			<channel-group typeId="smo40-sensor-group-channels" id="sensor"/>

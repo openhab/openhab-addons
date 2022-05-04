@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rfxcom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="fan">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="tcpbridge" />
+			<bridge-type-ref id="RFXtrx433" />
+			<bridge-type-ref id="RFXrec433" />
+		</supported-bridge-type-refs>
+
+		<label>RFXCOM Fan Device</label>
+		<description>A generic fan device.</description>
+
+		<channels>
+			<channel id="command" typeId="command" />
+			<channel id="fanSpeed" typeId="fanspeedstring" />
+			<channel id="fanLight" typeId="command" />
+			<channel id="signalLevel" typeId="system.signal-strength" />
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Unit Id. Example 'B', '7' or 'D'</description>
+				<options>
+					<option value="00">0</option>
+					<option value="01">1</option>
+					<option value="02">2</option>
+					<option value="03">3</option>
+					<option value="04">4</option>
+					<option value="05">5</option>
+					<option value="06">6</option>
+					<option value="07">7</option>
+					<option value="08">8</option>
+					<option value="09">9</option>
+					<option value="10">A</option>
+					<option value="11">B</option>
+					<option value="12">C</option>
+					<option value="13">D</option>
+					<option value="14">E</option>
+					<option value="15">F</option>
+				</options>
+			</parameter>
+			<parameter name="subType" type="text" required="true">
+				<label>Sub Type</label>
+				<description>Specifies device sub type.</description>
+				<options>
+					<option value="LUCCI_AIR_FAN">Lucci Air fan</option>
+					<option value="CASAFAN">Casafan</option>
+					<option value="WESTINGHOUSE_7226640">Westinghouse 7226640</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -42,7 +42,7 @@ import io.swagger.client.model.NAStationModule;
  * @author Sven Strohschein - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class NetatmoModuleDiscoveryServiceTest {
 
     private NetatmoModuleDiscoveryServiceAccessible service;

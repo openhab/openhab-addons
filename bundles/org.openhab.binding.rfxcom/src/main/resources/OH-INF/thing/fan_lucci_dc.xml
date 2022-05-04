@@ -17,7 +17,8 @@
 
 		<channels>
 			<channel id="commandString" typeId="commandString"/>
-			<channel id="fanSpeed" typeId="fanspeedcontrol"/>
+			<channel id="fanSpeedControl" typeId="fanspeedcontrol"/>
+			<channel id="fanSpeed" typeId="fanspeed"/>
 			<channel id="fanLight" typeId="command"/>
 			<channel id="signalLevel" typeId="system.signal-strength"/>
 		</channels>

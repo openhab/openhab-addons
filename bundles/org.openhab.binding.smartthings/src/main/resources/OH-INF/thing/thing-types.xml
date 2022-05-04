@@ -1387,7 +1387,7 @@
 	<channel-type id="level-channel">
 		<item-type>Dimmer</item-type>
 		<label>Light Level</label>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 
 	<channel-type id="volumeLevel-channel">

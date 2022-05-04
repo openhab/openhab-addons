@@ -39,7 +39,7 @@ import org.openhab.core.thing.binding.ThingHandler;
  * @author Kevin Siml - Initial contribution, forked from Christoph Weitkamp
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class PushsaferActionsTest {
 
     private static final String MESSAGE = "My Message";

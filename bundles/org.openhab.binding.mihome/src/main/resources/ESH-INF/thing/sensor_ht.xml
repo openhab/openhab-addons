@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mihome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="sensor_ht">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Xiaomi Mi Temperature &amp; Humidity Sensor</label>
+		<description>Reports temperature and humidity. Operating temperature: −20°C to 60°C. Operating humidity: 0 to 100%.
+			Sensor reports the temperature when there's a difference of around 0.5°C. If there is no significant temperature change then the sensor reports temperature once every 50 minutes.
+		</description>
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="batteryLevel" typeId="system.battery-level" />
+			<channel id="lowBattery" typeId="system.low-battery" />
+		</channels>
+		<config-description-ref uri="thing-type:mihome:device" />
+	</thing-type>
+</thing:thing-descriptions>

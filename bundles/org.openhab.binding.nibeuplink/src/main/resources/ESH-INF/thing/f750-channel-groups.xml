@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nibeuplink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="f750-compressor">
+		<label>Compressor Channels</label>
+		<channels>
+			<channel id="43181" typeId="f750-type-43181" />
+			<channel id="43424" typeId="f750-type-43424" />
+			<channel id="43420" typeId="f750-type-43420" />
+			<channel id="43416" typeId="f750-type-43416" />
+			<channel id="40022" typeId="f750-type-40022" />
+			<channel id="40019" typeId="f750-type-40019" />
+			<channel id="40018" typeId="f750-type-40018" />
+			<channel id="40017" typeId="f750-type-40017" />
+			<channel id="40020" typeId="f750-type-40020" />
+			<channel id="43136" typeId="f750-type-43136" />
+			<channel id="43122" typeId="f750-type-43122" />
+			<channel id="43123" typeId="f750-type-43123" />
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="f750-airsupply">
+		<label>Air Supply/Exhaust Channels</label>
+		<channels>
+			<channel id="40025" typeId="f750-type-40025" />
+			<channel id="40026" typeId="f750-type-40026" />
+			<channel id="43124" typeId="f750-type-43124" />
+			<channel id="41026" typeId="f750-type-41026" />
+			<channel id="47260" typeId="f750-type-47260" />
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

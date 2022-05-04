@@ -16,6 +16,7 @@ import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hdpowerview.internal.api.Color;
 import org.openhab.binding.hdpowerview.internal.api.Firmware;
 
 /**
@@ -31,6 +32,7 @@ public class RepeaterData {
     public int groupId;
     public boolean blinkEnabled;
     public @Nullable Firmware firmware;
+    public @Nullable Color color;
 
     public String getName() {
         return new String(Base64.getDecoder().decode(name));

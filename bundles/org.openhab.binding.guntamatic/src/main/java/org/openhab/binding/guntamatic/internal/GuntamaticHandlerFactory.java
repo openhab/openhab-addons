@@ -14,6 +14,7 @@ package org.openhab.binding.guntamatic.internal;
 
 import static org.openhab.binding.guntamatic.internal.GuntamaticBindingConstants.*;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,8 +40,9 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.guntamatic", service = ThingHandlerFactory.class)
 public class GuntamaticHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BIOSTAR, THING_TYPE_POWERCHIP,
-            THING_TYPE_POWERCORN, THING_TYPE_BIOCOM, THING_TYPE_PRO, THING_TYPE_THERM);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BIOSTAR, THING_TYPE_BIOSMART,
+            THING_TYPE_POWERCHIP, THING_TYPE_POWERCORN, THING_TYPE_BIOCOM, THING_TYPE_PRO, THING_TYPE_THERM,
+            THING_TYPE_GENERIC);
 
     private final HttpClient httpClient;
     private GuntamaticChannelTypeProvider guntamaticChannelTypeProvider;
@@ -60,9 +62,18 @@ public class GuntamaticHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        List<String> staticChannelIDs;
+
+        if (THING_TYPE_BIOSTAR.equals(thingTypeUID) || THING_TYPE_POWERCHIP.equals(thingTypeUID)
+                || THING_TYPE_POWERCORN.equals(thingTypeUID) || THING_TYPE_BIOCOM.equals(thingTypeUID)
+                || THING_TYPE_PRO.equals(thingTypeUID) || THING_TYPE_THERM.equals(thingTypeUID)) {
+            staticChannelIDs = STATIC_CHANNEL_IDS;
+        } else {
+            staticChannelIDs = STATIC_CHANNEL_IDS_WOBOILERAPP;
+        }
 
         if (supportsThingType(thingTypeUID)) {
-            return new GuntamaticHandler(thing, httpClient, guntamaticChannelTypeProvider);
+            return new GuntamaticHandler(thing, httpClient, guntamaticChannelTypeProvider, staticChannelIDs);
         }
 
         return null;

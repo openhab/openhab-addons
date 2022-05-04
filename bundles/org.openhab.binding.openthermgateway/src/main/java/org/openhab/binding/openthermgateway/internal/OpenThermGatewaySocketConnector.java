@@ -12,22 +12,27 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
+import static org.openhab.binding.openthermgateway.internal.OpenThermGatewayBindingConstants.BINDING_ID;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.AbstractMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
+import java.time.Instant;
+import java.util.ArrayDeque;
+import java.util.Queue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.types.State;
+import org.openhab.core.common.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,186 +41,284 @@ import org.slf4j.LoggerFactory;
  *
  * @author Arjen Korevaar - Initial contribution
  * @author Arjan Mels - Improved robustness by re-sending commands, handling all message types (not only Boiler)
+ * @author Andrew Fiddian-Green - Improve thread interruption, socket timeouts, exception handling, FIFO command queue
  */
 @NonNullByDefault
 public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnector {
-    private static final int COMMAND_RESPONSE_TIME_MILLISECONDS = 100;
-    private static final int COMMAND_TIMEOUT_MILLISECONDS = 5000;
+    private static final int COMMAND_RESPONSE_MIN_WAIT_TIME_MILLISECONDS = 100;
+    private static final int COMMAND_RESPONSE_MAX_WAIT_TIME_MILLISECONDS = 5000;
+    private static final int MAXIMUM_FIFO_BUFFER_SIZE = 20;
+
+    private static final String WDT_RESET_RESPONSE_MESSAGE = "WDT reset";
 
     private final Logger logger = LoggerFactory.getLogger(OpenThermGatewaySocketConnector.class);
 
     private final OpenThermGatewayCallback callback;
     private final String ipaddress;
     private final int port;
+    private final int connectTimeoutMilliseconds;
+    private final int readTimeoutMilliSeconds;
 
-    private @Nullable PrintWriter writer;
+    private @Nullable volatile PrintWriter writer;
+    private @Nullable volatile Thread thread;
+    private @Nullable Future<Boolean> future;
+    private @Nullable ExecutorService executor;
 
-    private volatile boolean stopping;
-    private boolean connected;
+    /**
+     * FIFO queue of commands that are pending being sent to the gateway. That is commands that are either not yet sent,
+     * or sent but not yet acknowledged and pending possible re-sending.
+     *
+     * Note: we must use 'synchronized' when accessing this object to ensure proper thread safety.
+     */
+    private final Queue<PendingCommand> pendingCommands = new ArrayDeque<>(MAXIMUM_FIFO_BUFFER_SIZE);
 
-    private Map<String, Entry<Long, GatewayCommand>> pendingCommands = new ConcurrentHashMap<>();
+    /**
+     * Wrapper for a command entry in the pending command FIFO queue.
+     *
+     * @author AndrewFG - initial contribution
+     */
+    private class PendingCommand {
+        protected final GatewayCommand command;
+        protected final Instant expiryTime = Instant.now().plusMillis(COMMAND_RESPONSE_MAX_WAIT_TIME_MILLISECONDS);
+        protected Instant sentTime = Instant.MIN;
 
-    public OpenThermGatewaySocketConnector(OpenThermGatewayCallback callback, String ipaddress, int port) {
+        protected PendingCommand(GatewayCommand command) {
+            this.command = command;
+        }
+
+        /**
+         * Check if the command has been sent to the gateway.
+         *
+         * @return true if it has been sent
+         */
+        protected boolean sent() {
+            return Instant.MIN.isBefore(sentTime);
+        }
+
+        /**
+         * Check if the command is ready to send (or re-send) to the gateway.
+         *
+         * @return true if the command has either not been sent, or sent but not acknowledged within due time i.e. it
+         *         needs to be re-sent
+         */
+        protected boolean readyToSend() {
+            return sentTime.isBefore(Instant.now().minusMillis(COMMAND_RESPONSE_MIN_WAIT_TIME_MILLISECONDS));
+        }
+
+        /**
+         * Check if the command has expired.
+         *
+         * @return true if the expiry time has expired
+         */
+        protected boolean expired() {
+            return Instant.now().isAfter(expiryTime);
+        }
+    }
+
+    public OpenThermGatewaySocketConnector(OpenThermGatewayCallback callback, OpenThermGatewayConfiguration config) {
         this.callback = callback;
-        this.ipaddress = ipaddress;
-        this.port = port;
+        ipaddress = config.ipaddress;
+        port = config.port;
+        connectTimeoutMilliseconds = config.connectTimeoutSeconds * 1000;
+        readTimeoutMilliSeconds = config.readTimeoutSeconds * 1000;
     }
 
     @Override
-    public void run() {
-        stopping = false;
-        connected = false;
-
-        logger.debug("Connecting OpenThermGatewaySocketConnector to {}:{}", this.ipaddress, this.port);
-
-        callback.connecting();
-
+    public Boolean call() throws Exception {
+        thread = Thread.currentThread();
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(this.ipaddress, this.port), COMMAND_TIMEOUT_MILLISECONDS);
-            socket.setSoTimeout(COMMAND_TIMEOUT_MILLISECONDS);
+            logger.debug("Connecting OpenThermGatewaySocketConnector to {}:{}", this.ipaddress, this.port);
+            callback.connectionStateChanged(ConnectionState.CONNECTING);
 
-            connected = true;
-
-            callback.connected();
+            socket.connect(new InetSocketAddress(ipaddress, port), connectTimeoutMilliseconds);
+            socket.setSoTimeout(readTimeoutMilliSeconds);
 
             logger.debug("OpenThermGatewaySocketConnector connected");
+            callback.connectionStateChanged(ConnectionState.CONNECTED);
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     PrintWriter wrt = new PrintWriter(socket.getOutputStream(), true)) {
                 // Make writer accessible on class level
                 writer = wrt;
 
-                sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintReport, "A"));
+                sendCommand(GatewayCommand.parse(GatewayCommandCode.PRINTREPORT, "A"));
                 // Set the OTGW to report every message it receives and transmits
-                sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintSummary, "0"));
+                sendCommand(GatewayCommand.parse(GatewayCommandCode.PRINTSUMMARY, "0"));
 
-                while (!stopping && !Thread.currentThread().isInterrupted()) {
+                while (!Thread.currentThread().isInterrupted()) {
                     @Nullable
                     String message = reader.readLine();
 
                     if (message != null) {
+                        logger.trace("Read: {}", message);
                         handleMessage(message);
                     } else {
-                        logger.debug("Connection closed by OpenTherm Gateway");
+                        logger.debug("Received NULL message from OpenTherm Gateway (EOF)");
                         break;
                     }
                 }
-
-                logger.debug("Stopping OpenThermGatewaySocketConnector");
-            } finally {
-                connected = false;
-
-                logger.debug("OpenThermGatewaySocketConnector disconnected");
-                callback.disconnected();
+                // disable reporting every message (for cleaner re-starting)
+                sendCommand(GatewayCommand.parse(GatewayCommandCode.PRINTSUMMARY, "1"));
+            } catch (IOException ex) {
+                logger.warn("Error communicating with OpenTherm Gateway: '{}'", ex.getMessage());
             }
         } catch (IOException ex) {
-            logger.warn("Unable to connect to the OpenTherm Gateway.", ex);
-            callback.disconnected();
+            logger.warn("Unable to connect to the OpenTherm Gateway: '{}'", ex.getMessage());
         }
+        thread = null;
+        writer = null;
+        logger.debug("OpenThermGatewaySocketConnector disconnected");
+        callback.connectionStateChanged(ConnectionState.DISCONNECTED);
+        return true;
     }
 
     @Override
     public void stop() {
         logger.debug("Stopping OpenThermGatewaySocketConnector");
-        stopping = true;
+
+        Thread thread = this.thread;
+        Future<Boolean> future = this.future;
+        ExecutorService executor = this.executor;
+
+        if (executor != null) {
+            executor.shutdown();
+        }
+        if ((thread != null) && thread.isAlive()) {
+            thread.interrupt();
+        }
+        if (future != null) {
+            try {
+                future.get(readTimeoutMilliSeconds, TimeUnit.MILLISECONDS);
+            } catch (ExecutionException e) {
+                // expected exception due to e.g. IOException on socket close
+            } catch (TimeoutException | InterruptedException e) {
+                // unexpected exception
+                logger.warn("stop() exception '{}' => PLEASE REPORT !!", e.getMessage());
+            }
+        }
+
+        this.thread = null;
+        this.future = null;
+        this.executor = null;
     }
 
     @Override
-    public boolean isConnected() {
-        return connected;
+    public void start() {
+        logger.debug("Starting OpenThermGatewaySocketConnector");
+        ExecutorService executor = this.executor = Executors
+                .newSingleThreadExecutor(new NamedThreadFactory("binding-" + BINDING_ID));
+        future = executor.submit(this);
+    }
+
+    @Override
+    public synchronized boolean isConnected() {
+        Thread thread = this.thread;
+        return (thread != null) && thread.isAlive();
     }
 
     @Override
     public void sendCommand(GatewayCommand command) {
-        @Nullable
-        PrintWriter wrtr = writer;
-
-        String msg = command.toFullString();
-
-        pendingCommands.put(command.getCode(),
-                new AbstractMap.SimpleImmutableEntry<>(System.currentTimeMillis(), command));
-
-        if (connected) {
-            logger.debug("Sending message: {}", msg);
-            if (wrtr != null) {
-                wrtr.print(msg + "\r\n");
-                wrtr.flush();
+        synchronized (pendingCommands) {
+            // append the command to the end of the FIFO queue
+            if (MAXIMUM_FIFO_BUFFER_SIZE < pendingCommands.size()
+                    || !pendingCommands.offer(new PendingCommand(command))) {
+                logger.warn("Command refused: FIFO buffer overrun => PLEASE REPORT !!");
             }
-        } else {
-            logger.debug("Unable to send message: {}. OpenThermGatewaySocketConnector is not connected.", msg);
-        }
+            // send the FIFO head command, which may or may not be the one just added
+            pendingCommandsSendHeadCommandIfReady();
+        } // release the pendingCommands lock
     }
 
+    /**
+     * Process the incoming message. Remove any expired commands from the queue. Check if the incoming message is an
+     * acknowledgement. If it is the acknowledgement for the FIFO head command, remove it from the queue. Try to send
+     * the (next) FIFO head command, if it exists, and is ready to send. And finally if the message is not an
+     * acknowledgement, check if it is a valid message, and if so, pass it to the gateway Thing handler for processing.
+     *
+     * @param message the incoming message received from the gateway
+     */
     private void handleMessage(String message) {
-        if (message.length() > 2 && message.charAt(2) == ':') {
-            String code = message.substring(0, 2);
-            String value = message.substring(3);
+        // check if the message is a command acknowledgement e.g. having the form "XX: yyy"
+        boolean isCommandAcknowledgement = (message.length() > 2) && (message.charAt(2) == ':');
 
-            logger.debug("Received command confirmation: {}: {}", code, value);
-            pendingCommands.remove(code);
-            return;
-        }
+        synchronized (pendingCommands) {
+            // remove all expired commands
+            pendingCommandsRemoveAllExpiredCommands();
 
-        long currentTime = System.currentTimeMillis();
-
-        for (Entry<Long, GatewayCommand> timeAndCommand : pendingCommands.values()) {
-            long responseTime = timeAndCommand.getKey() + COMMAND_RESPONSE_TIME_MILLISECONDS;
-            long timeoutTime = timeAndCommand.getKey() + COMMAND_TIMEOUT_MILLISECONDS;
-
-            if (currentTime > responseTime && currentTime <= timeoutTime) {
-                logger.debug("Resending command: {}", timeAndCommand.getValue());
-                sendCommand(timeAndCommand.getValue());
-            } else if (currentTime > timeoutTime) {
-                pendingCommands.remove(timeAndCommand.getValue().getCode());
+            // if acknowledgement is for the FIFO head command, remove it from the queue
+            if (isCommandAcknowledgement) {
+                pendingCommandsRemoveHeadCommandIfAcknowledgement(message);
             }
-        }
 
-        Message msg = Message.parse(message);
+            // (re-)send the FIFO head command, if it exists and is ready to send
+            pendingCommandsSendHeadCommandIfReady();
+        } // release the pendingCommands lock
 
-        if (msg == null) {
-            logger.trace("Received message: {}, (unknown)", message);
-            return;
+        if (isCommandAcknowledgement) {
+            callback.receiveAcknowledgement(message);
+        } else if (message.startsWith(WDT_RESET_RESPONSE_MESSAGE)) {
+            logger.warn("OpenTherm Gateway was reset by its Watch-Dog Timer!");
         } else {
-            logger.trace("Received message: {}, {} {} {}", message, msg.getID(), msg.getCode(), msg.getMessageType());
-        }
+            Message msg = Message.parse(message);
 
-        if (DataItemGroup.dataItemGroups.containsKey(msg.getID())) {
-            DataItem[] dataItems = DataItemGroup.dataItemGroups.get(msg.getID());
-
-            for (DataItem dataItem : dataItems) {
-                State state = null;
-
-                switch (dataItem.getDataType()) {
-                    case FLAGS:
-                        state = OnOffType.from(msg.getBit(dataItem.getByteType(), dataItem.getBitPos()));
-                        break;
-                    case UINT8:
-                    case UINT16:
-                        state = new DecimalType(msg.getUInt(dataItem.getByteType()));
-                        break;
-                    case INT8:
-                    case INT16:
-                        state = new DecimalType(msg.getInt(dataItem.getByteType()));
-                        break;
-                    case FLOAT:
-                        state = new DecimalType(msg.getFloat());
-                        break;
-                    case DOWTOD:
-                        break;
-                }
-
-                logger.trace("  Data: {} {} {} {}", dataItem.getID(), dataItem.getSubject(), dataItem.getDataType(),
-                        state == null ? "" : state);
+            // ignore and log bad messages
+            if (msg == null) {
+                logger.debug("Received message: {}, (unknown)", message);
+                return;
             }
-        }
 
-        if (msg.getMessageType() == MessageType.READACK || msg.getMessageType() == MessageType.WRITEDATA
-                || msg.getID() == 0 || msg.getID() == 1) {
-            receiveMessage(msg);
+            // pass good messages to the Thing handler for processing
+            if (msg.getMessageType() == MessageType.READACK || msg.getMessageType() == MessageType.WRITEDATA
+                    || msg.getID() == 0 || msg.getID() == 1) {
+                callback.receiveMessage(msg);
+            }
         }
     }
 
-    private void receiveMessage(Message message) {
-        callback.receiveMessage(message);
+    /**
+     * If there is a FIFO head command that is ready to (re-)send, then send it.
+     */
+    private void pendingCommandsSendHeadCommandIfReady() {
+        // process the command at the head of the queue
+        PendingCommand headCommand = pendingCommands.peek();
+        if (headCommand != null && headCommand.readyToSend()) {
+            String message = headCommand.command.toFullString();
+
+            // transmit the command string
+            PrintWriter writer = this.writer;
+            if (isConnected() && (writer != null)) {
+                writer.print(message + "\r\n");
+                writer.flush();
+                if (writer.checkError()) {
+                    logger.warn("Error sending command to OpenTherm Gateway => PLEASE REPORT !!");
+                    stop();
+                }
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Sent: {}{}", message, headCommand.sent() ? " (repeat)" : "");
+                }
+                headCommand.sentTime = Instant.now();
+            } else {
+                logger.debug("Unable to send command: {}. OpenThermGatewaySocketConnector is not connected.", message);
+            }
+        }
+    }
+
+    /**
+     * If the acknowledgement message corresponds to the FIFO head command then remove it from the queue.
+     *
+     * @param message must be an acknowledgement message in the form "XX: yyy"
+     */
+    private void pendingCommandsRemoveHeadCommandIfAcknowledgement(String message) {
+        PendingCommand headCommand = pendingCommands.peek();
+        if (headCommand != null && headCommand.command.getCode().equals(message.substring(0, 2))) {
+            pendingCommands.poll();
+        }
+    }
+
+    /**
+     * Remove all expired commands from the queue.
+     */
+    private void pendingCommandsRemoveAllExpiredCommands() {
+        pendingCommands.removeIf(pendingCommand -> pendingCommand.expired());
     }
 }
