@@ -18,9 +18,9 @@ This binding supports the follow thing types:
 
 | Thing          | Thing Type | Thing Type UID | Discovery | Description                                                          |
 |----------------|------------|----------------|-----------|----------------------------------------------------------------------|
-| Bridge         | Bridge     | Bridge         | Manual    | A single connection to the VeSync API                                |
-| Air Purifier   | Thing      | AirPurifier    | Automatic | A Air Purifier supporting V2 e.g. Core200S/Core300S or Core400S unit |
-| Air Humidifier | Thing      | AirHumidifier  | Automatic | A Air Humidifier supporting V2 e.g. Classic300S or 600s              |
+| Bridge         | Bridge     | bridge         | Manual    | A single connection to the VeSync API                                |
+| Air Purifier   | Thing      | airPurifier    | Automatic | A Air Purifier supporting V2 e.g. Core200S/Core300S or Core400S unit |
+| Air Humidifier | Thing      | airHumidifier  | Automatic | A Air Humidifier supporting V2 e.g. Classic300S or 600s              |
 
 
 
@@ -117,9 +117,9 @@ Channel names in **bold** are read/write, everything else is read-only
 
 ```
 Bridge vesync:bridge:vesyncServers [username="<USERNAME>", password="<PASSWORD>", airPurifierPollInterval=60] {
-	AirPurifier loungeAirFilter [deviceName="<DEVICE NAME FROM APP>"]
-	AirPurifier bedroomAirFilter [deviceName="<DEVICE NAME FROM APP>"]
-	AirHumidifier loungeHumidifier [deviceName="<DEVICE NAME FROM APP>"]
+	airPurifier loungeAirFilter [deviceName="<DEVICE NAME FROM APP>"]
+	airPurifier bedroomAirFilter [deviceName="<DEVICE NAME FROM APP>"]
+	airHumidifier loungeHumidifier [deviceName="<DEVICE NAME FROM APP>"]
 }
 ```
 
@@ -128,84 +128,84 @@ Bridge vesync:bridge:vesyncServers [username="<USERNAME>", password="<PASSWORD>"
 #### Air Purifier Core 400S / 600S Model
 
 ```
-Switch               LoungeAPPower        	        "Lounge Air Purifier Power"                                 { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:enabled" }
-Switch               LoungeAPDisplay      	        "Lounge Air Purifier Display"                               { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:display" }
-Switch               LoungeAPControlsLock          "Lounge Air Purifier Controls Locked"                        { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:childLock" }
-Number:Dimensionless LoungeAPFilterRemainingUse    "Lounge Air Purifier Filter Remaining [%.0f %unit%]"         { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:filterLifePercentage" }
-String               LoungeAPMode                  "Lounge Air Purifier Mode [%s]"                              { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:fanMode" }
-Number:Dimensionless LoungeAPManualFanSpeed        "Lounge Air Purifier Manual Fan Speed"                       { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:manualFanSpeed" }
-Number:Density       LoungeAPAirQuality		       "Lounge Air Purifier Air Quality [%.0f% %unit%]"             { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:airQualityPM25" }
-Number               LoungeAPErrorCode     	       "Lounge Air Purifier Error Code"                             { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:errorCode" }
-String               LoungeAPAutoMode		       "Lounge Air Purifier Auto Mode"                              { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
-Number               LoungeAPAutoRoomSize 	       "Lounge Air Purifier Auto Room Size [%.0f% sqft]"            { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
-Number:Time          LoungeAPTimerLeft		       "Lounge Air Purifier Timer Left [%1$Tp]"                     { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
-DateTime             LoungeAPTimerExpire           "Lounge Air Purifier Timer Expiry [%1$tA %1$tI:%1$tM %1$Tp]" { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:timerExpiry" }
-Number               LoungeAPSchedulesCount 	   "Lounge Air Purifier Schedules Count"                        { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:schedulesCount" }
+Switch               LoungeAPPower        	        "Lounge Air Purifier Power"                                 { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:enabled" }
+Switch               LoungeAPDisplay      	        "Lounge Air Purifier Display"                               { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:display" }
+Switch               LoungeAPControlsLock          "Lounge Air Purifier Controls Locked"                        { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:childLock" }
+Number:Dimensionless LoungeAPFilterRemainingUse    "Lounge Air Purifier Filter Remaining [%.0f %unit%]"         { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:filterLifePercentage" }
+String               LoungeAPMode                  "Lounge Air Purifier Mode [%s]"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:fanMode" }
+Number:Dimensionless LoungeAPManualFanSpeed        "Lounge Air Purifier Manual Fan Speed"                       { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:manualFanSpeed" }
+Number:Density       LoungeAPAirQuality		       "Lounge Air Purifier Air Quality [%.0f% %unit%]"             { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:airQualityPM25" }
+Number               LoungeAPErrorCode     	       "Lounge Air Purifier Error Code"                             { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:errorCode" }
+String               LoungeAPAutoMode		       "Lounge Air Purifier Auto Mode"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
+Number               LoungeAPAutoRoomSize 	       "Lounge Air Purifier Auto Room Size [%.0f% sqft]"            { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
+Number:Time          LoungeAPTimerLeft		       "Lounge Air Purifier Timer Left [%1$Tp]"                     { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
+DateTime             LoungeAPTimerExpire           "Lounge Air Purifier Timer Expiry [%1$tA %1$tI:%1$tM %1$Tp]" { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerExpiry" }
+Number               LoungeAPSchedulesCount 	   "Lounge Air Purifier Schedules Count"                        { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:schedulesCount" }
 ```
 
 #### Air Purifier Core 200S/300S Model
 
 ```
-Switch               LoungeAPPower        	       "Lounge Air Purifier Power"                                  { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:enabled" }
-Switch               LoungeAPDisplay      	       "Lounge Air Purifier Display"                                { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:display" }
-String               LoungeAPNightLightMode        "Lounge Air Purifier Night Light Mode"                       { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:nightLightMode" }
-Switch               LoungeAPControlsLock          "Lounge Air Purifier Controls Locked"                        { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:childLock" }
-Number:Dimensionless LoungeAPFilterRemainingUse    "Lounge Air Purifier Filter Remaining [%.0f %unit%]"         { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:filterLifePercentage" }
-String               LoungeAPMode                  "Lounge Air Purifier Mode [%s]"                              { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:fanMode" }
-Number:Dimensionless LoungeAPManualFanSpeed        "Lounge Air Purifier Manual Fan Speed"                       { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:manualFanSpeed" }
-Number:Density       LoungeAPAirQuality		       "Lounge Air Purifier Air Quality [%.0f%]"                    { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:airQuality" }
-Number               LoungeAPErrorCode     	       "Lounge Air Purifier Error Code"                             { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:errorCode" }
-String               LoungeAPAutoMode		       "Lounge Air Purifier Auto Mode"                              { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
-Number               LoungeAPAutoRoomSize 	       "Lounge Air Purifier Auto Room Size [%.0f% sqft]"            { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
-Number:Time          LoungeAPTimerLeft		       "Lounge Air Purifier Timer Left [%1$Tp]"                     { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
-DateTime             LoungeAPTimerExpire           "Lounge Air Purifier Timer Expiry [%1$tA %1$tI:%1$tM %1$Tp]" { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:timerExpiry" }
-Number               LoungeAPSchedulesCount 	   "Lounge Air Purifier Schedules Count"                        { channel="vesync:AirPurifier:vesyncServers:loungeAirFilter:schedulesCount" }
+Switch               LoungeAPPower        	       "Lounge Air Purifier Power"                                  { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:enabled" }
+Switch               LoungeAPDisplay      	       "Lounge Air Purifier Display"                                { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:display" }
+String               LoungeAPNightLightMode        "Lounge Air Purifier Night Light Mode"                       { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:nightLightMode" }
+Switch               LoungeAPControlsLock          "Lounge Air Purifier Controls Locked"                        { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:childLock" }
+Number:Dimensionless LoungeAPFilterRemainingUse    "Lounge Air Purifier Filter Remaining [%.0f %unit%]"         { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:filterLifePercentage" }
+String               LoungeAPMode                  "Lounge Air Purifier Mode [%s]"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:fanMode" }
+Number:Dimensionless LoungeAPManualFanSpeed        "Lounge Air Purifier Manual Fan Speed"                       { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:manualFanSpeed" }
+Number:Density       LoungeAPAirQuality		       "Lounge Air Purifier Air Quality [%.0f%]"                    { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:airQuality" }
+Number               LoungeAPErrorCode     	       "Lounge Air Purifier Error Code"                             { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:errorCode" }
+String               LoungeAPAutoMode		       "Lounge Air Purifier Auto Mode"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
+Number               LoungeAPAutoRoomSize 	       "Lounge Air Purifier Auto Room Size [%.0f% sqft]"            { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
+Number:Time          LoungeAPTimerLeft		       "Lounge Air Purifier Timer Left [%1$Tp]"                     { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
+DateTime             LoungeAPTimerExpire           "Lounge Air Purifier Timer Expiry [%1$tA %1$tI:%1$tM %1$Tp]" { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerExpiry" }
+Number               LoungeAPSchedulesCount 	   "Lounge Air Purifier Schedules Count"                        { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:schedulesCount" }
 ```
 
 #### Air Humidifier Classic 200S / Dual 200S Model
 
 ```
-Switch               LoungeAHPower             "Lounge Air Humidifier Power"                                  { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:enabled" }
-Switch               LoungeAHDisplay           "Lounge Air Humidifier Display"                                { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:display" }
-String               LoungeAHMode              "Lounge Air Humidifier Mode"                                   { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidifierMode" }
-Switch               LoungeAHWaterLacking      "Lounge Air Humidifier Water Lacking"                          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:waterLacking" }
-Switch               LoungeAHHighHumidity      "Lounge Air Humidifier High Humidity"                          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidityHigh" }
-Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank Removed"                     { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:waterTankLifted" }
-Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity [%.0f %unit%]"        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidity" }
-Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
-Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity [%.0f %unit%]"          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
-Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
+Switch               LoungeAHPower             "Lounge Air Humidifier Power"                                  { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:enabled" }
+Switch               LoungeAHDisplay           "Lounge Air Humidifier Display"                                { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:display" }
+String               LoungeAHMode              "Lounge Air Humidifier Mode"                                   { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidifierMode" }
+Switch               LoungeAHWaterLacking      "Lounge Air Humidifier Water Lacking"                          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:waterLacking" }
+Switch               LoungeAHHighHumidity      "Lounge Air Humidifier High Humidity"                          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidityHigh" }
+Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank Removed"                     { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:waterTankLifted" }
+Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity [%.0f %unit%]"        { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidity" }
+Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
+Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity [%.0f %unit%]"          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
+Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
 ```
 
 #### Air Humidifier Classic 300S Model
 
 ```
-Switch               LoungeAHPower             "Lounge Air Humidifier Power"                                  { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:enabled" }
-Switch               LoungeAHDisplay           "Lounge Air Humidifier Display"                                { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:display" }
-String               LoungeAHNightLightMode    "Lounge Air Humidifier Night Light Mode"                       { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:nightLightMode }
-String               LoungeAHMode              "Lounge Air Humidifier Mode"                                   { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidifierMode" }
-Switch               LoungeAHWaterLacking      "Lounge Air Humidifier Water Lacking"                          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:waterLacking" }
-Switch               LoungeAHHighHumidity      "Lounge Air Humidifier High Humidity"                          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidityHigh" }
-Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank Removed"                     { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:waterTankLifted" }
-Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity [%.0f %unit%]"        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidity" }
-Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
-Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity [%.0f %unit%]"          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
-Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
+Switch               LoungeAHPower             "Lounge Air Humidifier Power"                                  { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:enabled" }
+Switch               LoungeAHDisplay           "Lounge Air Humidifier Display"                                { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:display" }
+String               LoungeAHNightLightMode    "Lounge Air Humidifier Night Light Mode"                       { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:nightLightMode }
+String               LoungeAHMode              "Lounge Air Humidifier Mode"                                   { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidifierMode" }
+Switch               LoungeAHWaterLacking      "Lounge Air Humidifier Water Lacking"                          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:waterLacking" }
+Switch               LoungeAHHighHumidity      "Lounge Air Humidifier High Humidity"                          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidityHigh" }
+Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank Removed"                     { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:waterTankLifted" }
+Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity [%.0f %unit%]"        { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidity" }
+Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
+Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity [%.0f %unit%]"          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
+Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
 ```
 
 #### Air Humidifier 600S Model
 
 ```
-Switch               LoungeAHPower             "Lounge Air Humidifier Power"                                  { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:enabled" }
-Switch               LoungeAHDisplay           "Lounge Air Humidifier Display"                                { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:display" }
-String               LoungeAHMode              "Lounge Air Humidifier Mode"                                   { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidifierMode" }
-Switch               LoungeAHWaterLacking      "Lounge Air Humidifier Water Lacking"                          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:waterLacking" }
-Switch               LoungeAHHighHumidity      "Lounge Air Humidifier High Humidity"                          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidityHigh" }
-Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank Removed"                     { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:waterTankLifted" }
-Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity [%.0f %unit%]"        { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humidity" }
-Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
-Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity [%.0f %unit%]"          { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
-Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:AirHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
+Switch               LoungeAHPower             "Lounge Air Humidifier Power"                                  { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:enabled" }
+Switch               LoungeAHDisplay           "Lounge Air Humidifier Display"                                { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:display" }
+String               LoungeAHMode              "Lounge Air Humidifier Mode"                                   { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidifierMode" }
+Switch               LoungeAHWaterLacking      "Lounge Air Humidifier Water Lacking"                          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:waterLacking" }
+Switch               LoungeAHHighHumidity      "Lounge Air Humidifier High Humidity"                          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidityHigh" }
+Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank Removed"                     { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:waterTankLifted" }
+Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity [%.0f %unit%]"        { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidity" }
+Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
+Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity [%.0f %unit%]"          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
+Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
 ```
 
 ### Configuration (*.sitemap)

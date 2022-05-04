@@ -40,7 +40,7 @@
 		</config-description>
 	</bridge-type>
 
-	<thing-type id="AirPurifier">
+	<thing-type id="airPurifier">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
@@ -86,7 +86,7 @@
 
 	</thing-type>
 
-	<thing-type id="AirHumidifier">
+	<thing-type id="airHumidifier">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
