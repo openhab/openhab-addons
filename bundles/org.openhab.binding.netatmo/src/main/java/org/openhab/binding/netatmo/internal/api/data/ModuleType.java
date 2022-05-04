@@ -170,7 +170,7 @@ public enum ModuleType {
             for (Class<? extends ChannelHelper> helperClass : helpers) {
                 ChannelHelper helper = helperClass.getConstructor().newInstance();
                 groupTypes.addAll(helper.getChannelGroupTypes());
-                extensions.addAll(helper.getMeasureChannels());
+                extensions.addAll(helper.getExtensibleChannels());
             }
         } catch (RuntimeException | ReflectiveOperationException e) {
             throw new IllegalArgumentException(e);

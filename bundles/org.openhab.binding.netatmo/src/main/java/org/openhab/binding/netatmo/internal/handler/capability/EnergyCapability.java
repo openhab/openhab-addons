@@ -15,8 +15,6 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,10 +26,8 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataRoom;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
-import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.Room;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
-import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.thing.ChannelUID;
@@ -54,12 +50,8 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     private final NetatmoDescriptionProvider descriptionProvider;
 
     EnergyCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
-        super(handler);
+        super(handler, EnergyApi.class);
         this.descriptionProvider = descriptionProvider;
-        ApiBridgeHandler bridgeApi = handler.getRootBridge();
-        if (bridgeApi != null) {
-            api = Optional.ofNullable(bridgeApi.getRestManager(EnergyApi.class));
-        }
     }
 
     @Override
@@ -102,36 +94,36 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
         return setPointDefaultDuration;
     }
 
-    void setRoomThermMode(String roomId, SetpointMode targetMode) {
-        api.ifPresent(api -> {
+    public void setRoomThermMode(String roomId, SetpointMode targetMode) {
+        getApi().ifPresent(api -> {
             try {
                 api.setThermpoint(handler.getId(), roomId, targetMode,
                         targetMode == SetpointMode.MAX ? setpointEndTimeFromNow(setPointDefaultDuration) : 0, 0);
                 handler.expireData();
             } catch (NetatmoException e) {
-                logger.warn("Error setting room thermostat mode '{}' : {}", roomId, e.getMessage());
+                logger.warn("Error setting room thermostat mode '{}' : {}", targetMode, e.getMessage());
             }
         });
     }
 
     public void setRoomThermTemp(String roomId, double temperature, long endtime, SetpointMode mode) {
-        api.ifPresent(api -> {
+        getApi().ifPresent(api -> {
             try {
                 api.setThermpoint(handler.getId(), roomId, mode, endtime, temperature);
                 handler.expireData();
             } catch (NetatmoException e) {
-                logger.warn("Error setting room thermostat mode '{}' : {}", roomId, e.getMessage());
+                logger.warn("Error setting room thermostat mode '{}' : {}", mode, e.getMessage());
             }
         });
     }
 
-    void setRoomThermTemp(String roomId, double temperature) {
+    public void setRoomThermTemp(String roomId, double temperature) {
         setRoomThermTemp(roomId, temperature, setpointEndTimeFromNow(setPointDefaultDuration), SetpointMode.MANUAL);
     }
 
     @Override
     public void handleCommand(String channelName, Command command) {
-        api.ifPresent(api -> {
+        getApi().ifPresent(api -> {
             try {
                 switch (channelName) {
                     case CHANNEL_PLANNING:
@@ -144,20 +136,18 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
                             return;
                         }
                         api.setThermMode(handler.getId(), targetMode.apiDescriptor);
+                        break;
                 }
                 handler.expireData();
             } catch (NetatmoException e) {
                 logger.warn("Error handling command '{}' : {}", command, e.getMessage());
+            } catch (IllegalArgumentException e) {
+                logger.warn("Command '{}' sent to channel '{}' is not a valid setpoint mode.", command, channelName);
             }
         });
     }
 
     private static long setpointEndTimeFromNow(int duration_min) {
         return ZonedDateTime.now().plusMinutes(duration_min).toEpochSecond();
-    }
-
-    @Override
-    protected List<NAObject> updateReadings(EnergyApi api) {
-        return List.of();
     }
 }

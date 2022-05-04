@@ -14,8 +14,8 @@ package org.openhab.binding.netatmo.internal.handler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -54,8 +54,6 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 public interface CommonInterface {
-    public static final Set<ThingStatus> ACTIVE_STATUSES = Set.of(ThingStatus.ONLINE, ThingStatus.UNKNOWN);
-
     Thing getThing();
 
     ThingBuilder editThing();
@@ -147,8 +145,8 @@ public interface CommonInterface {
     default List<CommonInterface> getActiveChildren() {
         Thing thing = getThing();
         if (thing instanceof Bridge) {
-            return ((Bridge) thing).getThings().stream().filter(t -> ACTIVE_STATUSES.contains(t.getStatus()))
-                    .map(t -> t.getHandler()).map(CommonInterface.class::cast).collect(Collectors.toList());
+            return ((Bridge) thing).getThings().stream().map(Thing::getHandler).filter(Objects::nonNull)
+                    .map(CommonInterface.class::cast).collect(Collectors.toList());
         }
         return List.of();
     }
@@ -157,8 +155,7 @@ public interface CommonInterface {
         return getHomeHandler().map(handler -> handler.getCapabilities().get(clazz)).orElse(Optional.empty());
     }
 
-    default void setNewData(@Nullable NAObject newData) {
-        @Nullable
+    default void setNewData(NAObject newData) {
         String finalReason = null;
         for (Capability cap : getCapabilities().values()) {
             String thingStatusReason = cap.setNewData(newData);
@@ -200,23 +197,31 @@ public interface CommonInterface {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, null);
         } else if (!ThingStatus.ONLINE.equals(bridge.getStatus())) {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
-            Capability refreshCap = getCapabilities().remove(RefreshCapability.class);
-            if (refreshCap != null) {
-                refreshCap.dispose();
-                refreshCap = null;
-            }
+            removeRefreshCapability();
         } else {
             setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
-            ModuleType moduleType = ModuleType.from(getThing().getThingTypeUID());
-            if (ModuleType.ACCOUNT.equals(moduleType.getBridge())) {
-                NAThingConfiguration config = getThing().getConfiguration().as(NAThingConfiguration.class);
-                getCapabilities().put(new RefreshCapability(this, getScheduler(), config.refreshInterval));
-            }
+            setRefreshCapability();
             getCapabilities().values().forEach(cap -> cap.initialize());
             CommonInterface bridgeHandler = getBridgeHandler();
             if (bridgeHandler != null) {
                 bridgeHandler.expireData();
             }
+        }
+    }
+
+    default void setRefreshCapability() {
+        ModuleType moduleType = ModuleType.from(getThing().getThingTypeUID());
+        if (ModuleType.ACCOUNT.equals(moduleType.getBridge())) {
+            NAThingConfiguration config = getThing().getConfiguration().as(NAThingConfiguration.class);
+            getCapabilities().put(new RefreshCapability(this, getScheduler(), config.refreshInterval));
+        }
+    }
+
+    default void removeRefreshCapability() {
+        Capability refreshCap = getCapabilities().remove(RefreshCapability.class);
+        if (refreshCap != null) {
+            refreshCap.dispose();
+            refreshCap = null;
         }
     }
 

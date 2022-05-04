@@ -23,15 +23,20 @@ import org.openhab.binding.netatmo.internal.api.dto.Dashboard;
 import org.openhab.core.types.State;
 
 /**
- * The {@link TemperatureChannelHelper} handles specific behavior of modules measuring temperature
+ * The {@link TemperatureChannelHelper} handles channels of modules measuring temperature
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
 public class TemperatureChannelHelper extends ChannelHelper {
+    /*
+     * TemperatureChannelHelper may be used by indoor or outdoor modules. There is no easy way here to decide what is
+     * the handler owning the channelHelper. The usage of OUTSIDE_TEMPERATURE instead of INSIDE_TEMPERATURE is by design
+     * because OUTSIDE_TEMPERATURE has wide value range than INSIDE_TEMPERATURE.
+     */
     public TemperatureChannelHelper() {
-        this(GROUP_TEMPERATURE, MeasureClass.INSIDE_TEMPERATURE);
+        this(GROUP_TEMPERATURE, MeasureClass.OUTSIDE_TEMPERATURE);
     }
 
     protected TemperatureChannelHelper(String groupName, MeasureClass measureClass) {

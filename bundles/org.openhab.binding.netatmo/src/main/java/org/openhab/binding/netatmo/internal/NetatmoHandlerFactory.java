@@ -135,7 +135,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             } else if (capability == RoomCapability.class) {
                 newCap = new RoomCapability(handler);
             } else if (capability == PersonCapability.class) {
-                newCap = new PersonCapability(handler, stateDescriptionProvider);
+                newCap = new PersonCapability(handler, stateDescriptionProvider, helpers);
             } else if (capability == CameraCapability.class) {
                 newCap = new CameraCapability(handler, stateDescriptionProvider, helpers);
             } else if (capability == PresenceCapability.class) {

@@ -23,7 +23,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link EventPersonChannelHelper} handles specific channels of cameras
+ * The {@link EventPersonChannelHelper} handles specific channels of person events
  *
  * @author Gaël L'hopital - Initial contribution
  *
@@ -38,9 +38,8 @@ public class EventPersonChannelHelper extends EventChannelHelper {
     protected @Nullable State internalGetEvent(String channelId, Event event) {
         EventType eventType = event.getEventType();
         if (eventType.appliesOn(ModuleType.PERSON) && CHANNEL_PERSON_AT_HOME.equals(channelId)) {
-            return OnOffType.from(eventType == EventType.PERSON);
-        } else {
-            return super.internalGetEvent(channelId, event);
+            return OnOffType.from(EventType.PERSON.equals(eventType) || EventType.PERSON_HOME.equals(eventType));
         }
+        return super.internalGetEvent(channelId, event);
     }
 }

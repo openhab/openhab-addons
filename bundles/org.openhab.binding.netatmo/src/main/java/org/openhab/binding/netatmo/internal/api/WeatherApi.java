@@ -73,13 +73,13 @@ public class WeatherApi extends RestManager {
         throw new NetatmoException("Unexpected answer searching device '%s' : not found.", deviceId);
     }
 
-    public @Nullable Object getMeasurements(String deviceId, @Nullable String moduleId, @Nullable String scale,
+    public @Nullable Object getMeasures(String deviceId, @Nullable String moduleId, @Nullable String scale,
             String apiDescriptor) throws NetatmoException {
         MeasureBodyElem<?> result = getMeasure(deviceId, moduleId, scale, apiDescriptor);
         return result.getSingleValue();
     }
 
-    public @Nullable Object getMeasurements(String deviceId, @Nullable String moduleId, @Nullable String scale,
+    public @Nullable Object getMeasures(String deviceId, @Nullable String moduleId, @Nullable String scale,
             String apiDescriptor, String limit) throws NetatmoException {
         String queryLimit = limit;
         if (!apiDescriptor.contains("_")) {

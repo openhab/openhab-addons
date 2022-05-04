@@ -45,8 +45,11 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class Capability {
+    public static final int DATA_AGE_LIMIT = 1800;
+
     protected final Thing thing;
     protected final CommonInterface handler;
+    protected final ModuleType moduleType;
 
     protected boolean firstLaunch;
     protected Map<String, String> properties = Map.of();
@@ -55,44 +58,42 @@ public class Capability {
     Capability(CommonInterface handler) {
         this.handler = handler;
         this.thing = handler.getThing();
+        this.moduleType = ModuleType.from(thing.getThingTypeUID());
     }
 
-    public final @Nullable String setNewData(@Nullable NAObject newData) {
-        if (newData != null) {
-            beforeNewData();
-            if (newData instanceof HomeData) {
-                updateHomeData((HomeData) newData);
-            }
-            if (newData instanceof HomeStatus) {
-                updateHomeStatus((HomeStatus) newData);
-            }
-            if (newData instanceof HomeStatusModule) {
-                updateHomeStatusModule((HomeStatusModule) newData);
-            }
-            if (newData instanceof Event) {
-                updateEvent((Event) newData);
-            }
-            if (newData instanceof HomeEvent) {
-                updateHomeEvent((HomeEvent) newData);
-            }
-            if (newData instanceof NAThing) {
-                updateNAThing((NAThing) newData);
-            }
-            if (newData instanceof NAMain) {
-                updateNAMain((NAMain) newData);
-            }
-            if (newData instanceof Device) {
-                updateNADevice((Device) newData);
-            }
-            afterNewData(newData);
+    public final @Nullable String setNewData(NAObject newData) {
+        beforeNewData();
+        if (newData instanceof HomeData) {
+            updateHomeData((HomeData) newData);
         }
+        if (newData instanceof HomeStatus) {
+            updateHomeStatus((HomeStatus) newData);
+        }
+        if (newData instanceof HomeStatusModule) {
+            updateHomeStatusModule((HomeStatusModule) newData);
+        }
+        if (newData instanceof Event) {
+            updateEvent((Event) newData);
+        }
+        if (newData instanceof HomeEvent) {
+            updateHomeEvent((HomeEvent) newData);
+        }
+        if (newData instanceof NAThing) {
+            updateNAThing((NAThing) newData);
+        }
+        if (newData instanceof NAMain) {
+            updateNAMain((NAMain) newData);
+        }
+        if (newData instanceof Device) {
+            updateNADevice((Device) newData);
+        }
+        afterNewData(newData);
         return statusReason;
     }
 
     protected void beforeNewData() {
         properties = new HashMap<>(thing.getProperties());
         firstLaunch = properties.isEmpty();
-        ModuleType moduleType = ModuleType.from(thing.getThingTypeUID());
         if (firstLaunch && !moduleType.isLogical()) {
             properties.put(PROPERTY_VENDOR, VENDOR);
             properties.put(PROPERTY_MODEL_ID, moduleType.name());
@@ -113,6 +114,8 @@ public class Capability {
         }
         if (!newData.isReachable()) {
             statusReason = "@text/device-not-connected";
+        } else if (!newData.hasFreshData(DATA_AGE_LIMIT)) {
+            statusReason = "@text/data-over-limit";
         }
     }
 

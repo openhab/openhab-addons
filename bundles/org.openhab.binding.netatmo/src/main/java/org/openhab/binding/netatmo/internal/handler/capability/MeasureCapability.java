@@ -18,7 +18,6 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,7 +26,6 @@ import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.config.MeasureConfiguration;
-import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.MeasuresChannelHelper;
@@ -47,22 +45,14 @@ import org.slf4j.LoggerFactory;
 public class MeasureCapability extends RestCapability<WeatherApi> {
     private final Logger logger = LoggerFactory.getLogger(MeasureCapability.class);
     private final Map<String, State> measures = new HashMap<>();
-    private final MeasuresChannelHelper measureChannelHelper;
 
     public MeasureCapability(CommonInterface handler, List<ChannelHelper> helpers) {
-        super(handler);
-        measureChannelHelper = (MeasuresChannelHelper) helpers.stream().filter(c -> c instanceof MeasuresChannelHelper)
-                .findFirst().orElseThrow(() -> new IllegalArgumentException(
+        super(handler, WeatherApi.class);
+        MeasuresChannelHelper measureChannelHelper = (MeasuresChannelHelper) helpers.stream()
+                .filter(c -> c instanceof MeasuresChannelHelper).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
                         "MeasureCapability must find a MeasuresChannelHelper, file a bug."));
-    }
-
-    @Override
-    public void initialize() {
-        ApiBridgeHandler bridgeApi = handler.getRootBridge();
-        if (bridgeApi != null) {
-            api = Optional.ofNullable(bridgeApi.getRestManager(WeatherApi.class));
-            measureChannelHelper.setMeasures(measures);
-        }
+        measureChannelHelper.setMeasures(measures);
     }
 
     @Override
@@ -70,33 +60,33 @@ public class MeasureCapability extends RestCapability<WeatherApi> {
         String bridgeId = handler.getBridgeId();
         String deviceId = bridgeId != null ? bridgeId : handler.getId();
         String moduleId = bridgeId != null ? handler.getId() : null;
-        updateMeasurements(api, deviceId, moduleId);
+        updateMeasures(api, deviceId, moduleId);
         return List.of();
     }
 
-    private void updateMeasurements(WeatherApi api, String deviceId, @Nullable String moduleId) {
+    private void updateMeasures(WeatherApi api, String deviceId, @Nullable String moduleId) {
         measures.clear();
-        thing.getChannels().stream().filter(channel -> !channel.getConfiguration().getProperties().isEmpty())
+        handler.getActiveChannels().filter(channel -> !channel.getConfiguration().getProperties().isEmpty())
                 .forEach(channel -> {
                     ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
                     if (channelTypeUID != null) {
                         MeasureConfiguration measureDef = channel.getConfiguration().as(MeasureConfiguration.class);
-                        String apiDescriptor = channelTypeUID.getId().split("-")[0];
+                        String descriptor = channelTypeUID.getId().split("-")[0];
                         try {
                             Object result = measureDef.limit.isBlank()
-                                    ? api.getMeasurements(deviceId, moduleId, measureDef.period, apiDescriptor)
-                                    : api.getMeasurements(deviceId, moduleId, measureDef.period, apiDescriptor,
+                                    ? api.getMeasures(deviceId, moduleId, measureDef.period, descriptor)
+                                    : api.getMeasures(deviceId, moduleId, measureDef.period, descriptor,
                                             measureDef.limit);
-                            MeasureClass.AS_SET.stream().filter(mt -> mt.apiDescriptor.equals(apiDescriptor))
-                                    .findFirst().ifPresent(mt -> {
-                                        State data = result instanceof ZonedDateTime
+                            MeasureClass.AS_SET.stream().filter(mc -> mc.apiDescriptor.equals(descriptor)).findFirst()
+                                    .ifPresent(mc -> {
+                                        State state = result instanceof ZonedDateTime
                                                 ? toDateTimeType((ZonedDateTime) result)
-                                                : result instanceof Double ? toQuantityType((Double) result, mt)
+                                                : result instanceof Double ? toQuantityType((Double) result, mc)
                                                         : UnDefType.UNDEF;
-                                        measures.put(channel.getUID().getIdWithoutGroup(), data);
+                                        measures.put(channel.getUID().getIdWithoutGroup(), state);
                                     });
                         } catch (NetatmoException e) {
-                            logger.warn("Error getting measurements for channel {}, check configuration",
+                            logger.warn("Error getting measures for channel {}, check configuration",
                                     channel.getLabel());
                         }
                     }

@@ -32,10 +32,10 @@ public enum EventType {
     PERSON(ModuleType.PERSON, ModuleType.WELCOME),
 
     @SerializedName("person_away") // When geofencing indicates that the person has left the home
-    PERSON_AWAY(ModuleType.PERSON),
+    PERSON_AWAY(ModuleType.PERSON, ModuleType.HOME),
 
     @SerializedName("person_home") // When the person is declared at home
-    PERSON_HOME(ModuleType.PERSON),
+    PERSON_HOME(ModuleType.PERSON, ModuleType.HOME),
 
     @SerializedName("outdoor") // When the Outdoor Camera detects a human, a car or an animal
     OUTDOOR(ModuleType.PRESENCE, ModuleType.DOORBELL),

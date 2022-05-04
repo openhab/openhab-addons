@@ -36,7 +36,7 @@ public class HomeEvent extends Event {
     public class NAEventsDataResponse extends ApiResponse<BodyResponse<Home>> {
     }
 
-    private @NonNullByDefault({}) ZonedDateTime time;
+    private ZonedDateTime time = ZonedDateTime.now();
     private @Nullable String personId;
     private EventCategory category = EventCategory.UNKNOWN;
     private @Nullable Snapshot snapshot;
@@ -76,18 +76,12 @@ public class HomeEvent extends Event {
         } else if (type == EventType.ANIMAL) {
             subType = EventSubType.MOVEMENT_ANIMAL.subType;
         } else {
-            switch (category) {
-                case ANIMAL:
-                    subType = EventSubType.MOVEMENT_ANIMAL.subType;
-                    break;
-                case HUMAN:
-                    subType = EventSubType.MOVEMENT_HUMAN.subType;
-                    break;
-                case VEHICLE:
-                    subType = EventSubType.MOVEMENT_VEHICLE.subType;
-                    break;
-                default:
-                    break;
+            if (category == EventCategory.ANIMAL) {
+                subType = EventSubType.MOVEMENT_ANIMAL.subType;
+            } else if (category == EventCategory.HUMAN) {
+                subType = EventSubType.MOVEMENT_HUMAN.subType;
+            } else if (category == EventCategory.VEHICLE) {
+                subType = EventSubType.MOVEMENT_VEHICLE.subType;
             }
         }
         // ... and let ancestor do his work
@@ -98,9 +92,5 @@ public class HomeEvent extends Event {
     public @Nullable String getSnapshotUrl() {
         Snapshot localSnap = snapshot;
         return localSnap != null ? localSnap.getUrl() : null;
-    }
-
-    public void setTime(ZonedDateTime eventTime) {
-        this.time = eventTime;
     }
 }

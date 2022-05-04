@@ -22,6 +22,7 @@ import org.openhab.binding.netatmo.internal.api.dto.Device;
 import org.openhab.binding.netatmo.internal.api.dto.Module;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 
 /**
@@ -32,25 +33,44 @@ import org.openhab.binding.netatmo.internal.handler.CommonInterface;
  */
 @NonNullByDefault
 public abstract class RestCapability<T extends RestManager> extends ModuleCapability {
-    protected Optional<T> api = Optional.empty();
+    private Optional<T> api = Optional.empty();
+    private Class<T> restManagerClass;
 
-    RestCapability(CommonInterface handler) {
+    RestCapability(CommonInterface handler, Class<T> restManagerClazz) {
         super(handler);
+        this.restManagerClass = restManagerClazz;
     }
 
     @Override
     protected void updateNADevice(Device newData) {
         super.updateNADevice(newData);
         NAObjectMap<Module> modules = newData.getModules();
-        handler.getActiveChildren().forEach(child -> child.setNewData(modules.get(child.getId())));
+        handler.getActiveChildren().forEach(child -> {
+            Module childData = modules.get(child.getId());
+            if (childData != null) {
+                child.setNewData(childData);
+            }
+        });
     }
 
     @Override
-    public List<NAObject> updateReadings() {
+    public final List<NAObject> updateReadings() {
         List<NAObject> result = new ArrayList<>();
-        api.ifPresent(api -> result.addAll(updateReadings(api)));
+        getApi().ifPresent(api -> result.addAll(updateReadings(api)));
         return result;
     }
 
-    protected abstract List<NAObject> updateReadings(T api);
+    protected List<NAObject> updateReadings(T api) {
+        return List.of();
+    }
+
+    protected Optional<T> getApi() {
+        if (api.isEmpty()) {
+            ApiBridgeHandler bridgeApi = handler.getRootBridge();
+            if (bridgeApi != null) {
+                api = Optional.ofNullable(bridgeApi.getRestManager(restManagerClass));
+            }
+        }
+        return api;
+    }
 }

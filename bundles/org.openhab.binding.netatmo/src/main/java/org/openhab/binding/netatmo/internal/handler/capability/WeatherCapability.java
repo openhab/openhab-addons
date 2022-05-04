@@ -13,13 +13,11 @@
 package org.openhab.binding.netatmo.internal.handler.capability;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,15 +33,7 @@ public class WeatherCapability extends RestCapability<WeatherApi> {
     private final Logger logger = LoggerFactory.getLogger(WeatherCapability.class);
 
     public WeatherCapability(CommonInterface handler) {
-        super(handler);
-    }
-
-    @Override
-    public void initialize() {
-        ApiBridgeHandler bridgeApi = handler.getRootBridge();
-        if (bridgeApi != null) {
-            api = Optional.ofNullable(bridgeApi.getRestManager(WeatherApi.class));
-        }
+        super(handler, WeatherApi.class);
     }
 
     @Override

@@ -16,7 +16,6 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,6 @@ import org.openhab.binding.netatmo.internal.api.dto.Location;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
-import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.slf4j.Logger;
@@ -56,16 +54,8 @@ public class HomeCapability extends RestCapability<HomeApi> {
     private Set<FeatureArea> featuresArea = Set.of();
 
     public HomeCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
-        super(handler);
+        super(handler, HomeApi.class);
         this.descriptionProvider = descriptionProvider;
-    }
-
-    @Override
-    public void initialize() {
-        ApiBridgeHandler bridgeApi = handler.getRootBridge();
-        if (bridgeApi != null) {
-            api = Optional.ofNullable(bridgeApi.getRestManager(HomeApi.class));
-        }
     }
 
     @Override
@@ -125,9 +115,6 @@ public class HomeCapability extends RestCapability<HomeApi> {
         } catch (NetatmoException e) {
             logger.warn("Error gettting Home informations : {}", e.getMessage());
         }
-        // Seems to trigger any HTTP request getevents for camera and person being called twice
-        // To be confirmed by Gael that this is ok to remove this call at this place and not at another
-        // handler.getActiveChildren().forEach(handler -> result.addAll(handler.updateReadings()));
         return result;
     }
 }

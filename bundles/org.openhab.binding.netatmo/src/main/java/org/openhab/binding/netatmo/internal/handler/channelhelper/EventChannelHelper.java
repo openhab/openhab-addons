@@ -15,10 +15,14 @@ package org.openhab.binding.netatmo.internal.handler.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.Event;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
+import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -32,8 +36,9 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class EventChannelHelper extends ChannelHelper {
     private boolean isLocal;
-    private @Nullable String vpnUrl;
-    private @Nullable String localUrl;
+    private @Nullable ZonedDateTime lastEventTime;
+    private @Nullable String vpnUrl, localUrl;
+    private ModuleType moduleType = ModuleType.UNKNOWN;
 
     public EventChannelHelper() {
         this(GROUP_LAST_EVENT);
@@ -43,10 +48,28 @@ public class EventChannelHelper extends ChannelHelper {
         super(groupName);
     }
 
+    public void setModuleType(ModuleType moduleType) {
+        this.moduleType = moduleType;
+    }
+
     public void setUrls(String vpnUrl, @Nullable String localUrl) {
         this.localUrl = localUrl;
         this.vpnUrl = vpnUrl;
         this.isLocal = localUrl != null;
+    }
+
+    @Override
+    public void setNewData(@Nullable NAObject data) {
+        if (data instanceof Event) {
+            Event event = (Event) data;
+            ZonedDateTime localLast = lastEventTime;
+            ZonedDateTime eventTime = event.getTime();
+            if ((localLast != null && !eventTime.isAfter(localLast)) || !event.getEventType().appliesOn(moduleType)) {
+                return; // ignore incoming events if they are deprecated
+            }
+            lastEventTime = eventTime;
+        }
+        super.setNewData(data);
     }
 
     @Override

@@ -14,8 +14,6 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,9 +27,7 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
-import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
-import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,11 +43,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     private final Logger logger = LoggerFactory.getLogger(SecurityCapability.class);
 
     SecurityCapability(CommonInterface handler) {
-        super(handler);
-        ApiBridgeHandler bridgeApi = handler.getRootBridge();
-        if (bridgeApi != null) {
-            api = Optional.ofNullable(bridgeApi.getRestManager(SecurityApi.class));
-        }
+        super(handler, SecurityApi.class);
     }
 
     @Override
@@ -74,7 +66,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     protected void updateHomeStatus(HomeStatus homeStatus) {
         NAObjectMap<HomeStatusPerson> persons = homeStatus.getPersons();
         NAObjectMap<HomeStatusModule> cameras = homeStatus.getModules();
-        for (CommonInterface handler : handler.getActiveChildren()) {
+        handler.getActiveChildren().forEach(handler -> {
             HomeStatusPerson dataPerson = persons.get(handler.getId());
             if (dataPerson != null) {
                 handler.setNewData(dataPerson);
@@ -83,7 +75,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
             if (dataCamera != null) {
                 handler.setNewData(dataCamera);
             }
-        }
+        });
     }
 
     @Override
@@ -98,83 +90,77 @@ class SecurityCapability extends RestCapability<SecurityApi> {
                 .ifPresent(handler -> handler.setNewData(homeEvent));
     }
 
-    Collection<HomeEvent> getCameraEvents(String cameraId) {
-        return api.map(api -> {
+    public Collection<HomeEvent> getCameraEvents(String cameraId) {
+        return getApi().map(api -> {
             try {
                 return api.getCameraEvents(handler.getId(), cameraId);
-            } catch (NetatmoException | NoSuchElementException e) {
+            } catch (NetatmoException e) {
                 logger.warn("Error retrieving last events of camera '{}' : {}", cameraId, e.getMessage());
                 return null;
             }
         }).orElse(List.of());
     }
 
-    Collection<HomeEvent> getPersonEvents(String personId) {
-        return api.map(api -> {
+    public Collection<HomeEvent> getPersonEvents(String personId) {
+        return getApi().map(api -> {
             try {
                 return api.getPersonEvents(handler.getId(), personId);
-            } catch (NetatmoException | NoSuchElementException e) {
+            } catch (NetatmoException e) {
                 logger.warn("Error retrieving last events of person '{}' : {}", personId, e.getMessage());
                 return null;
             }
         }).orElse(List.of());
     }
 
-    void setPersonAway(String personId, boolean away) {
-        api.ifPresent(api -> {
+    public void setPersonAway(String personId, boolean away) {
+        getApi().ifPresent(api -> {
             try {
                 api.setPersonAwayStatus(handler.getId(), personId, away);
                 handler.expireData();
-            } catch (NetatmoException | NoSuchElementException e) {
+            } catch (NetatmoException e) {
                 logger.warn("Error setting person away/at home '{}' : {}", personId, e.getMessage());
             }
         });
     }
 
-    @Nullable
-    String ping(String vpnUrl) {
-        return api.map(api -> {
+    public @Nullable String ping(String vpnUrl) {
+        return getApi().map(api -> {
             try {
                 return api.ping(vpnUrl);
-            } catch (NetatmoException | NoSuchElementException e) {
+            } catch (NetatmoException e) {
                 logger.warn("Error pinging camera '{}' : {}", vpnUrl, e.getMessage());
                 return null;
             }
         }).orElse(null);
     }
 
-    void changeStatus(@Nullable String localURL, boolean status) {
-        api.ifPresent(api -> {
-            if (localURL != null) {
-                try {
-                    api.changeStatus(localURL, status);
-                    handler.expireData();
-                } catch (NetatmoException e) {
-                    logger.warn("Error changing camera monitoring status '{}' : {}", localURL, e.getMessage());
-                }
-            } else {
-                logger.info("Monitoring can only be done on local camera.");
+    public void changeStatus(@Nullable String localURL, boolean status) {
+        if (localURL == null) {
+            logger.info("Monitoring changes can only be done on local camera.");
+            return;
+        }
+        getApi().ifPresent(api -> {
+            try {
+                api.changeStatus(localURL, status);
+                handler.expireData();
+            } catch (NetatmoException e) {
+                logger.warn("Error changing camera monitoring status '{}' : {}", status, e.getMessage());
             }
         });
     }
 
-    void changeFloodlightMode(@Nullable String localURL, FloodLightMode mode) {
-        api.ifPresent(api -> {
-            if (localURL != null) {
-                try {
-                    api.changeFloodLightMode(localURL, mode);
-                    handler.expireData();
-                } catch (NetatmoException e) {
-                    logger.warn("Error changing Presence floodlight mode '{}' : {}", localURL, e.getMessage());
-                }
-            } else {
-                logger.info("Changing floodlight mode can only be done on local camera.");
+    public void changeFloodlightMode(@Nullable String localURL, FloodLightMode mode) {
+        if (localURL == null) {
+            logger.info("Changing floodlight mode can only be done on local camera.");
+            return;
+        }
+        getApi().ifPresent(api -> {
+            try {
+                api.changeFloodLightMode(localURL, mode);
+                handler.expireData();
+            } catch (NetatmoException e) {
+                logger.warn("Error changing Presence floodlight mode '{}' : {}", mode, e.getMessage());
             }
         });
-    }
-
-    @Override
-    protected List<NAObject> updateReadings(SecurityApi api) {
-        return List.of();
     }
 }

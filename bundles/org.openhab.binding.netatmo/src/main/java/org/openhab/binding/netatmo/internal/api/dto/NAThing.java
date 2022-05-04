@@ -32,7 +32,6 @@ import com.google.gson.annotations.SerializedName;
 
 @NonNullByDefault
 public class NAThing extends NAObject implements NAModule {
-    private static final int UNREACHABLE_DELAY_S = 1800;
     @SerializedName(value = "rf_status", alternate = { "wifi_status", "rf_strength", "wifi_strength" })
     private int radioStatus = -1;
     @SerializedName(value = "last_seen", alternate = { "last_therm_seen", "last_status_store", "last_plug_seen",
@@ -55,13 +54,16 @@ public class NAThing extends NAObject implements NAModule {
     public boolean isReachable() {
         // This is not implemented on all devices/modules, so if absent we consider it is reachable
         Boolean localReachable = this.reachable;
-        boolean result = localReachable != null ? localReachable : true;
-        // and we double check by comparing data freshness
+        return localReachable != null ? localReachable : true;
+    }
+
+    public boolean hasFreshData(int dataFreshnessLimit) {
+        // check by comparing data freshness
         ZonedDateTime localLastSeen = lastSeen;
-        if (result && localLastSeen != null && !type.isLogical()) {
-            result = Duration.between(localLastSeen.toInstant(), Instant.now()).getSeconds() < UNREACHABLE_DELAY_S;
+        if (localLastSeen != null && !type.isLogical()) {
+            return Duration.between(localLastSeen.toInstant(), Instant.now()).getSeconds() < dataFreshnessLimit;
         }
-        return result;
+        return true;
     }
 
     public @Nullable Dashboard getDashboardData() {

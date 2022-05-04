@@ -13,19 +13,17 @@
 package org.openhab.binding.netatmo.internal.handler.capability;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.AircareApi;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link AirCareCapability} give the ability to read weather station api
+ * {@link AirCareCapability} give the ability to read home coach api
  *
  * @author Gaël L'hopital - Initial contribution
  *
@@ -35,15 +33,7 @@ public class AirCareCapability extends RestCapability<AircareApi> {
     private final Logger logger = LoggerFactory.getLogger(AirCareCapability.class);
 
     public AirCareCapability(CommonInterface handler) {
-        super(handler);
-    }
-
-    @Override
-    public void initialize() {
-        ApiBridgeHandler bridgeApi = handler.getRootBridge();
-        if (bridgeApi != null) {
-            api = Optional.ofNullable(bridgeApi.getRestManager(AircareApi.class));
-        }
+        super(handler, AircareApi.class);
     }
 
     @Override

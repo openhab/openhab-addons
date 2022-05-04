@@ -17,6 +17,7 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.comman
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.action.RoomActions;
@@ -30,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link RoomCapability} give the ability to read weather station api
+ * {@link RoomCapability} gives the ability to handle Room specifics
  *
  * @author Gaël L'hopital - Initial contribution
  *
@@ -38,27 +39,34 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RoomCapability extends Capability {
     private final Logger logger = LoggerFactory.getLogger(RoomCapability.class);
+    private Optional<EnergyCapability> energyCapability = Optional.empty();
 
     public RoomCapability(CommonInterface handler) {
         super(handler);
     }
 
-    // Command handling capability
+    @Override
+    public void initialize() {
+        energyCapability = handler.getHomeCapability(EnergyCapability.class);
+    }
+
     @Override
     public void handleCommand(String channelName, Command command) {
         if (CHANNEL_SETPOINT_MODE.equals(channelName)) {
-            SetpointMode targetMode = SetpointMode.valueOf(command.toString());
-            if (targetMode == SetpointMode.MANUAL) {
-                logger.info("Switch to 'Manual' is done by setting a setpoint temp, command ignored");
-            } else {
-                handler.getHomeCapability(EnergyCapability.class)
-                        .ifPresent(cap -> cap.setRoomThermMode(handler.getId(), targetMode));
+            try {
+                SetpointMode targetMode = SetpointMode.valueOf(command.toString());
+                if (targetMode == SetpointMode.MANUAL) {
+                    logger.info("Switch to 'Manual' mode is done by setting a setpoint temp, command ignored");
+                } else {
+                    energyCapability.ifPresent(cap -> cap.setRoomThermMode(handler.getId(), targetMode));
+                }
+            } catch (IllegalArgumentException e) {
+                logger.info("Command '{}' is not a valid setpoint mode for channel '{}'", command, channelName);
             }
         } else if (CHANNEL_VALUE.equals(channelName)) {
             QuantityType<?> quantity = commandToQuantity(command, MeasureClass.INSIDE_TEMPERATURE);
             if (quantity != null) {
-                handler.getHomeCapability(EnergyCapability.class)
-                        .ifPresent(cap -> cap.setRoomThermTemp(handler.getId(), quantity.doubleValue()));
+                energyCapability.ifPresent(cap -> cap.setRoomThermTemp(handler.getId(), quantity.doubleValue()));
             } else {
                 logger.warn("Incorrect command '{}' on channel '{}'", command, channelName);
             }

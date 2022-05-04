@@ -37,7 +37,7 @@ public abstract class ChannelHelper {
     private @Nullable NAObject data;
     private final Set<String> channelGroupTypes;
     private final Set<String> channelGroups = new HashSet<>();
-    private Set<String> measureChannels = Set.of();
+    private Set<String> extensibleChannels = Set.of();
 
     ChannelHelper(String... providedGroups) {
         this.channelGroupTypes = Set.of(providedGroups);
@@ -46,7 +46,7 @@ public abstract class ChannelHelper {
 
     ChannelHelper(String providedGroup, MeasureClass measureClass) {
         this(providedGroup);
-        this.measureChannels = measureClass.channels.keySet();
+        this.extensibleChannels = measureClass.channels.keySet();
     }
 
     public void setNewData(@Nullable NAObject data) {
@@ -112,7 +112,7 @@ public abstract class ChannelHelper {
         return channelGroupTypes;
     }
 
-    public Set<String> getMeasureChannels() {
-        return measureChannels;
+    public Set<String> getExtensibleChannels() {
+        return extensibleChannels;
     }
 }
