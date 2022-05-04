@@ -139,7 +139,7 @@ Number               LoungeAPErrorCode     	       "Lounge Air Purifier Error Co
 String               LoungeAPAutoMode		       "Lounge Air Purifier Auto Mode"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
 Number               LoungeAPAutoRoomSize 	       "Lounge Air Purifier Auto Room Size [%.0f% sqft]"            { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
 Number:Time          LoungeAPTimerLeft		       "Lounge Air Purifier Timer Left [%1$Tp]"                     { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
-DateTime             LoungeAPTimerExpire           "Lounge Air Purifier Timer Expiry [%1$tA %1$tI:%1$tM %1$Tp]" { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerExpiry" }
+DateTime             LoungeAPTimerExpiry           "Lounge Air Purifier Timer Expiry [%1$tA %1$tI:%1$tM %1$Tp]" { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerExpiry" }
 Number               LoungeAPSchedulesCount 	   "Lounge Air Purifier Schedules Count"                        { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:schedulesCount" }
 ```
 
@@ -158,7 +158,7 @@ Number               LoungeAPErrorCode     	       "Lounge Air Purifier Error Co
 String               LoungeAPAutoMode		       "Lounge Air Purifier Auto Mode"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
 Number               LoungeAPAutoRoomSize 	       "Lounge Air Purifier Auto Room Size [%.0f% sqft]"            { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
 Number:Time          LoungeAPTimerLeft		       "Lounge Air Purifier Timer Left [%1$Tp]"                     { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
-DateTime             LoungeAPTimerExpire           "Lounge Air Purifier Timer Expiry [%1$tA %1$tI:%1$tM %1$Tp]" { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerExpiry" }
+DateTime             LoungeAPTimerExpiry           "Lounge Air Purifier Timer Expiry [%1$tA %1$tI:%1$tM %1$Tp]" { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerExpiry" }
 Number               LoungeAPSchedulesCount 	   "Lounge Air Purifier Schedules Count"                        { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:schedulesCount" }
 ```
 
