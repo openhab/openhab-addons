@@ -68,7 +68,7 @@ public class SDMAPI {
 
     private static final String AUTH_URL = "https://accounts.google.com/o/oauth2/auth";
     private static final String TOKEN_URL = "https://accounts.google.com/o/oauth2/token";
-    private static final String REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
+    private static final String REDIRECT_URI = "https://www.google.com";
 
     private static final String SDM_HANDLE_FORMAT = "%s.sdm";
     private static final String SDM_SCOPE = "https://www.googleapis.com/auth/sdm.service";
@@ -163,7 +163,7 @@ public class SDMAPI {
             ContentResponse contentResponse = request.send();
             logResponseErrors(contentResponse);
             logger.debug("Retrieved camera image from: {}", url);
-            requestListeners.forEach(listener -> listener.onSuccess());
+            requestListeners.forEach(SDMAPIRequestListener::onSuccess);
             return contentResponse.getContent();
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
             logger.debug("Failed to get camera image", e);
@@ -302,7 +302,7 @@ public class SDMAPI {
             logResponseErrors(contentResponse);
             String response = contentResponse.getContentAsString();
             logger.debug("Response: {}", response);
-            requestListeners.forEach(listener -> listener.onSuccess());
+            requestListeners.forEach(SDMAPIRequestListener::onSuccess);
             return response;
         } catch (ExecutionException | InterruptedException | IOException | TimeoutException e) {
             logger.debug("Failed to send JSON GET request", e);
@@ -327,7 +327,7 @@ public class SDMAPI {
             logResponseErrors(contentResponse);
             String response = contentResponse.getContentAsString();
             logger.debug("Response: {}", response);
-            requestListeners.forEach(listener -> listener.onSuccess());
+            requestListeners.forEach(SDMAPIRequestListener::onSuccess);
             return response;
         } catch (ExecutionException | InterruptedException | IOException | TimeoutException e) {
             logger.debug("Failed to send JSON POST request", e);
