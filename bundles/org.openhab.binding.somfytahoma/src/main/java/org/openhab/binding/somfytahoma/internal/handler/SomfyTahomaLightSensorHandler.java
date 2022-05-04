@@ -28,7 +28,9 @@ public class SomfyTahomaLightSensorHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaLightSensorHandler(Thing thing) {
         super(thing);
-        stateNames.put(LUMINANCE, "core:LuminanceState");
+        stateNames.put(LUMINANCE, LUMINANCE_STATE);
         stateNames.put(SENSOR_DEFECT, SENSOR_DEFECT_STATE);
+        // override state type because the local server sends luminance in percent
+        cacheStateType(LUMINANCE_STATE, TYPE_DECIMAL);
     }
 }

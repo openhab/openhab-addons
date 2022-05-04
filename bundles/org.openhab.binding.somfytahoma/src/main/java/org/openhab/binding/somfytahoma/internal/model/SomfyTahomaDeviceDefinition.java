@@ -24,9 +24,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class SomfyTahomaDeviceDefinition {
+    private String widgetName = "";
+    private String uiClass = "";
 
     private List<SomfyTahomaDeviceDefinitionCommand> commands = new ArrayList<>();
     private List<SomfyTahomaDeviceDefinitionState> states = new ArrayList<>();
+
+    public String getWidgetName() {
+        return widgetName;
+    }
+
+    public String getUiClass() {
+        return uiClass;
+    }
+
+    public void setWidgetName(String widgetName) {
+        this.widgetName = widgetName;
+    }
 
     public List<SomfyTahomaDeviceDefinitionCommand> getCommands() {
         return commands;

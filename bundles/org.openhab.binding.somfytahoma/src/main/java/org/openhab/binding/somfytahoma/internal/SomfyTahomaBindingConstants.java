@@ -291,7 +291,6 @@ public class SomfyTahomaBindingConstants {
     public static final String POWER_HEAT_PUMP = "power_heatpump";
     public static final String POWER_HEAT_ELEC = "power_heatelec";
     public static final String WATER_HEATER_MODE = "mode";
-    public static final String WATER_TEMPERATURE = "water_temperature";
     public static final String ELECTRIC_BOOSTER_OPERATING_TIME = "electric_booster_operating_time";
     public static final String SHOWERS = "showers";
 
@@ -388,6 +387,7 @@ public class SomfyTahomaBindingConstants {
     public static final String EVENT_LISTENER_TIMEOUT = "No registered event listener";
     public static final String AUTHENTICATION_OAUTH_GRANT_ERROR = "Provided Authorization Grant is invalid.";
     public static final String AUTHENTICATION_OAUTH_INVALID_GRANT = "error.invalid.grant";
+    public static final String OPENHAB_TOKEN = "openHAB token";
     public static final int SUSPEND_TIME = 120;
     public static final int RECONCILIATION_TIME = 600;
 
@@ -453,6 +453,7 @@ public class SomfyTahomaBindingConstants {
     public static final String RADIO_PART_BATTERY_STATE = "io:MaintenanceRadioPartBatteryState";
     public static final String SENSOR_PART_BATTERY_STATE = "io:MaintenanceSensorPartBatteryState";
     public static final String ZWAVE_SET_POINT_TYPE_STATE = "zwave:SetPointTypeState";
+    public static final String LUMINANCE_STATE = "core:LuminanceState";
 
     // supported uiClasses
     public static final String CLASS_ROLLER_SHUTTER = "RollerShutter";

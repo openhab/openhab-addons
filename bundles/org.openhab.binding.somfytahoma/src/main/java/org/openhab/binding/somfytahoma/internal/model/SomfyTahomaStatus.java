@@ -33,4 +33,12 @@ public class SomfyTahomaStatus {
     public String getProtocolVersion() {
         return protocolVersion;
     }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setProtocolVersion(String protocolVersion) {
+        this.protocolVersion = protocolVersion;
+    }
 }
