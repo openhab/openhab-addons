@@ -128,7 +128,7 @@ public class Parser {
                 }
             }
             if (properties.containsKey("name")) {
-                Sink sink = new Sink(id, properties.get("name"),
+                Sink sink = new Sink(id, properties.get("name"), properties.get("device.description"), properties,
                         client.getModule(getNumberValue(properties.get("module"))));
                 if (properties.containsKey("state")) {
                     try {
@@ -198,7 +198,8 @@ public class Parser {
             if (properties.containsKey("sink")) {
                 String name = properties.containsKey("media.name") ? properties.get("media.name")
                         : properties.get("sink");
-                SinkInput item = new SinkInput(id, name, client.getModule(getNumberValue(properties.get("module"))));
+                SinkInput item = new SinkInput(id, name, properties.get("application.name"), properties,
+                        client.getModule(getNumberValue(properties.get("module"))));
                 if (properties.containsKey("state")) {
                     try {
                         item.setState(AbstractAudioDeviceConfig.State.valueOf(properties.get("state")));
@@ -256,7 +257,7 @@ public class Parser {
                 }
             }
             if (properties.containsKey("name")) {
-                Source source = new Source(id, properties.get("name"),
+                Source source = new Source(id, properties.get("name"), properties.get("device.description"), properties,
                         client.getModule(getNumberValue(properties.get("module"))));
                 if (properties.containsKey("state")) {
                     try {
@@ -316,8 +317,8 @@ public class Parser {
                 }
             }
             if (properties.containsKey("source")) {
-                SourceOutput item = new SourceOutput(id, properties.get("source"),
-                        client.getModule(getNumberValue(properties.get("module"))));
+                SourceOutput item = new SourceOutput(id, properties.get("source"), properties.get("application.name"),
+                        properties, client.getModule(getNumberValue(properties.get("module"))));
                 if (properties.containsKey("state")) {
                     try {
                         item.setState(AbstractAudioDeviceConfig.State.valueOf(properties.get("state")));

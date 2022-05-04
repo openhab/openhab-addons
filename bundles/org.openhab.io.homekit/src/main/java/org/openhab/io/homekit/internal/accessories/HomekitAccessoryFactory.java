@@ -89,12 +89,18 @@ public class HomekitAccessoryFactory {
                     new HomekitCharacteristicType[] { SECURITY_SYSTEM_CURRENT_STATE, SECURITY_SYSTEM_TARGET_STATE });
             put(OUTLET, new HomekitCharacteristicType[] { ON_STATE, INUSE_STATUS });
             put(SPEAKER, new HomekitCharacteristicType[] { MUTE });
+            put(SMART_SPEAKER, new HomekitCharacteristicType[] { CURRENT_MEDIA_STATE, TARGET_MEDIA_STATE });
             put(GARAGE_DOOR_OPENER,
                     new HomekitCharacteristicType[] { CURRENT_DOOR_STATE, TARGET_DOOR_STATE, OBSTRUCTION_STATUS });
             put(HEATER_COOLER, new HomekitCharacteristicType[] { ACTIVE_STATUS, CURRENT_HEATER_COOLER_STATE,
                     TARGET_HEATER_COOLER_STATE, CURRENT_TEMPERATURE });
             put(WINDOW, new HomekitCharacteristicType[] { CURRENT_POSITION, TARGET_POSITION, POSITION_STATE });
             put(DOOR, new HomekitCharacteristicType[] { CURRENT_POSITION, TARGET_POSITION, POSITION_STATE });
+            put(BATTERY, new HomekitCharacteristicType[] { BATTERY_LEVEL, BATTERY_LOW_STATUS });
+            put(FILTER_MAINTENANCE, new HomekitCharacteristicType[] { FILTER_CHANGE_INDICATION });
+            put(SLAT, new HomekitCharacteristicType[] { CURRENT_SLAT_STATE });
+            put(FAUCET, new HomekitCharacteristicType[] { ACTIVE_STATUS });
+            put(MICROPHONE, new HomekitCharacteristicType[] { MUTE });
         }
     };
 
@@ -122,10 +128,16 @@ public class HomekitAccessoryFactory {
             put(SECURITY_SYSTEM, HomekitSecuritySystemImpl.class);
             put(OUTLET, HomekitOutletImpl.class);
             put(SPEAKER, HomekitSpeakerImpl.class);
+            put(SMART_SPEAKER, HomekitSmartSpeakerImpl.class);
             put(GARAGE_DOOR_OPENER, HomekitGarageDoorOpenerImpl.class);
             put(DOOR, HomekitDoorImpl.class);
             put(WINDOW, HomekitWindowImpl.class);
             put(HEATER_COOLER, HomekitHeaterCoolerImpl.class);
+            put(BATTERY, HomekitBatteryImpl.class);
+            put(FILTER_MAINTENANCE, HomekitFilterMaintenanceImpl.class);
+            put(SLAT, HomekitSlatImpl.class);
+            put(FAUCET, HomekitFaucetImpl.class);
+            put(MICROPHONE, HomekitMicrophoneImpl.class);
         }
     };
 

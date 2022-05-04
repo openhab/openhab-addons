@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mielecloud.internal.handler.channel;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -53,14 +54,14 @@ public final class ChannelTypeUtil {
      * Converts an {@link Optional} of {@link Integer} to {@link State}.
      */
     public static State intToState(Optional<Integer> value) {
-        return value.map(v -> (State) new DecimalType(v)).orElse(UnDefType.UNDEF);
+        return value.map(v -> (State) new DecimalType(new BigDecimal(v))).orElse(UnDefType.UNDEF);
     }
 
     /**
      * Converts an {@link Optional} of {@link Long} to {@link State}.
      */
     public static State longToState(Optional<Long> value) {
-        return value.map(v -> (State) new DecimalType(v)).orElse(UnDefType.UNDEF);
+        return value.map(v -> (State) new DecimalType(new BigDecimal(v))).orElse(UnDefType.UNDEF);
     }
 
     /**

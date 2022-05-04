@@ -413,7 +413,7 @@ logger.debug("Hello {}!", "world");
 ### Time
 
 openHAB internally makes extensive use of the `java.time` package.
-openHAB-JS exports the excellent [JS-Joda](#https://js-joda.github.io/js-joda/) library via the `time` namespace, which is a native Javascript port of the same API standard used in Java for `java.time`.
+openHAB-JS exports the excellent [JS-Joda](https://js-joda.github.io/js-joda/) library via the `time` namespace, which is a native Javascript port of the same API standard used in Java for `java.time`.
 Anywhere that a native Java `ZonedDateTime` or `Duration` is required, the runtime will automatically convert a JS-Joda `ZonedDateTime` or `Duration` to its Java counterpart.
 
 Examples:
@@ -443,7 +443,7 @@ See [openhab-js : utils](https://openhab.github.io/openhab-js/utils.html) for fu
 
 The JSScripting binding  will load scripts from `automation/js` in the user configuration directory.
 The system will automatically reload scripts when changes are detected to files.
-Local variable state is not persisted among reloads, see using the [cache](#cache) for a connivent way to persist objects.
+Local variable state is not persisted among reloads, see using the [cache](#cache) for a convenient way to persist objects.
 
 File based rules can be created in 2 different ways: using [JSRule](#jsrule) or the [Rule Builder](#rule-builder).
 

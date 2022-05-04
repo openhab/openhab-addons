@@ -97,7 +97,7 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
         } else {
             // browse all child handlers to update status according to the result of the query to the pulse audio server
             for (PulseaudioHandler pulseaudioHandler : childHandlersInitialized) {
-                pulseaudioHandler.deviceUpdate(getDevice(pulseaudioHandler.getName()));
+                pulseaudioHandler.deviceUpdate(getDevice(pulseaudioHandler.getDeviceIdentifier()));
             }
         }
         // browse query result to notify add event
@@ -129,8 +129,8 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
         }
     }
 
-    public @Nullable AbstractAudioDeviceConfig getDevice(String name) {
-        return getClient().getGenericAudioItem(name);
+    public @Nullable AbstractAudioDeviceConfig getDevice(@Nullable DeviceIdentifier deviceIdentifier) {
+        return deviceIdentifier == null ? null : getClient().getGenericAudioItem(deviceIdentifier);
     }
 
     public PulseaudioClient getClient() {

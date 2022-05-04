@@ -59,7 +59,9 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 | shellydw           | Shelly Door/Window                                     | SHDW-1    |
 | shellydw2          | Shelly Door/Window 2                                   | SHDW-2    |
 | shellybutton1      | Shelly Button 1                                        | SHBTN-1   |
+| shellybutton2      | Shelly Button 2                                        | SHBTN-2   |
 | shellysense        | Shelly Motion and IR Controller                        | SHSEN-1   |
+| shellytrv          | Shelly TRV                                             | SHTRV-01  |
 | shellydevice       | A password protected Shelly device or an unknown type  |           |
 
 ## Binding Configuration
@@ -101,8 +103,15 @@ Battery powered devices need to wake up by pressing the button, they will stay a
 
 The binding uses mDNS to discover the Shelly devices. 
 They periodically announce their presence, which is used by the binding to find them on the local network.
-
 Sometimes you need to run the manual discovery multiple times until you see all your devices.
+
+`Important`: 
+It's recommended to enable CoIoT in the device settings for faster response times (event driven rather than polling).
+Open the device's Web UI, section "COIOT settings" and select "Enable COCIOT".
+It's recommended to switch the Shelly devices to CoAP Unicast mode if you have only your openHAB system controlling the device.
+This allows routing the CoIoT/CoAP messages across multiple IP subnets without special network setup required.
+You could use Shelly Manager (doc/ShellyManager.md) to easily do the setup (configuring the openHAB host as CoAP peer address).
+Keep Multicast mode if you have multiple hosts, which should receive the CoAP updates.
 
 ### Password Protected Devices
 
@@ -150,7 +159,7 @@ The binding sets the following Thing status depending on the device status:
 | OFFLINE      | Communication with the device failed. Check the Thing status in the UI and openHAB's log for an indication of the error. Try restarting OH or deleting and re-discovering the Thing. You could also post to the community thread if the problem persists. |
 
 `Battery powered devices:` 
-If the device is in sleep mode and can't be reached by the binding, the Thing will change into UNKNOWN state.
+If the device is in sleep mode and can't be reached by the binding, the Thing will change into CONFIG_PENDING.
 Once the device wakes up, the Thing will perform initialization and the state will change to ONLINE.
 
 The first time a device is discovered and initialized successfully, the binding will be able to perform auto-initialization when OH is restarted.  Waking up the device triggers the event URL and/or CoIoT packet, which is processed by the binding and triggers initialization. Once a device is initialized, it is no longer necessary to manually wake it up after an openHAB restart unless you change the battery. In this case press the button and run the discovery again.
@@ -216,6 +225,7 @@ Every device has a channel group `device` with the following channels:
 |          |statusLed          |Switch  |r/w      |ON: Status LED is disabled, OFF: LED enabled                                     |
 |          |powerLed           |Switch  |r/w      |ON: Power LED is disabled, OFF: LED enabled                                      |
 |          |charger            |Switch  |yes      |ON: USB charging cable is connected external power supply activated.             |
+|          |calibrated         |Switch  |yes      |ON: Device/sensor is calibrated (if supported by device).                        |
 
 Availability of channels is depending on the device type.
 The binding detects many of those channels on-the-fly (when Thing changes to ONLINE state) and adjusts the Thing's channel structure.
@@ -261,7 +271,7 @@ Enable the autoCoIoT option in the binding configuration or eventsCoIoT in the T
 ### Button events
 
 Various devices signal an event when the physical button is pressed.
-This could be a switch connected to the SW input of the relay or the Button 1.
+This could be a switch connected to the SW input of the relay or the Button 1 or 2.
 
 The following trigger types are sent:
 
@@ -496,8 +506,9 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)      |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                     |
 
-The roller positioning calibration has to be performed using the Shelly App before the position can be set in percent.
+`Note: The Roller should be calibrated using the device Web UI or Shelly App, otherwise the position can .`
 
+The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
 Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration. 
 
 ### Shelly 2.5 - relay mode (thing-type:shelly25-relay) 
@@ -531,8 +542,7 @@ For this the binding aggregates the power consumption of both relays and include
 |meter1    |             |         |         |See group meter1 for Shelly 2                                                        |
 |meter2    |             |         |         |See group meter1 for Shelly 2                                                        |
 
-The roller positioning calibration has to be performed using the Shelly App before the position can be set in percent. 
-
+The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
 Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration. 
 
 ### Shelly4 Pro (thing-type: shelly4pro)
@@ -580,7 +590,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 
-`Note: The Dimmer should be calibrated using the Shelly App.`
+`Note: The Dimmer should be calibrated using the device Web UI or Shelly App.`
 
 Using the Thing configuration option `brightnessAutoOn` you could decide if the light is turned on when a brightness > 0 is set.
 `true`:  Brightness will be set and device output is powered = light turns on with the new brightness
@@ -812,10 +822,9 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 
 ### Shelly Motion (thing-type: shellymotion)
 
-Important: The Shelly Motion does only support CoIoT Unicast, which means you need to set the CoIoT peer address.
-
-- Use device WebUI, open COIOT settings, make sure CoIoT is enabled and enter the openHAB IP address or
-- Use [Shelly Manager](doc/ShellyManager.md, select Action 'Set CoIoT peer' and the Manager will sets the openHAB IP address as peer address
+Note: You might need to restart the device to enable the discovery mode for 3 minutes(use the Web UI). 
+As an alternativ you could press the reset button shortly (refer to the manual to locate the reset button).
+While the device is in low power mode (usual operation) it will not respond to discovery requests
 
 |Group     |Channel        |Type     |read-only|Description                                                          |
 |----------|---------------|---------|---------|---------------------------------------------------------------------|
@@ -836,7 +845,30 @@ You have a Motion controlling your light.
 You switch off the light and want to leave the room, but the motion sensor immediately switches light back on.
 Using 'sensorSleepTime' you could suppress motion events while leaving the room, e.g. for 5sec and the light doesn's switch on. 
 
-### Shelly Button 1 (thing-type: shellybutton1)
+### Shelly TRV (thing-type: shellytrv)
+
+Note: You might need to reboot the device to enable the discovery mode for 3 minutes(use the Web UI). 
+As an alternative you could press the reset button shortly (refer to the manual to locate the reset button).
+While the device is in low power mode (usual operation) it will not respond to discovery requests
+
+You should calibrate the valve using the device Web UI or Shelly App before starting to control it using openHAB.
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|sensors   |temperature  |Number   |yes      |Current Temperature in °C                                              |
+|          |state        |Contact  |yes      |Valve status: OPEN or CLOSED (position = 0)                            |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any sensor value changed)                |
+|control   |targetTemp   |Number   |no       |Temperature in °C: 4=Low/Min; 5..30=target temperature;31=Hi/Max       |
+|          |position     |Dimmer   |no       |Set valve to manual mode (0..100%) disables auto-temp)                 |
+|          |mode         |String   |no       |Switch between manual and automatic mode                               |
+|          |profile      |Number   |no       |Select profile: 0=disable, 1-n: profile index from Shelly Web App      |
+|          |boost        |Number   |no       |Enable/disable boost mode (full heating power)                         |
+|          |boostTimer   |Number   |no       |Number of minutes to heat at full power while boost mode is enabled    |
+|battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
+|          |batteryAlert |Switch   |yes      |Low battery alert                                                      |
+|device    |schedule     |Switch   |yes      |ON: Schedule is active                                                 |
+
+### Shelly Button 1 or 2 (thing-type: shellybutton1 / shellybutton2)
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
@@ -847,8 +879,6 @@ Using 'sensorSleepTime' you could suppress motion events while leaving the room,
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any value changed)                       |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
-
-You should calibrate the sensor using the Shelly App to get information on the tilt status.
 
 ### Shelly Smoke (thing-type: shellysmoke)
 
@@ -861,7 +891,7 @@ You should calibrate the sensor using the Shelly App to get information on the t
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
 
-### Shelly Smoke(thing-type: shellysmoke)
+### Shelly Gas (thing-type: shellygas)
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
@@ -888,6 +918,7 @@ You should calibrate the sensor using the Shelly App to get information on the t
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any sensor value changed)                |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |batteryAlert |Switch   |yes      |Low battery alert                                                      |
+
 
 ## Full Example
 

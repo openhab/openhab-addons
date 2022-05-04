@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.pulseaudio.internal.items;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -26,8 +28,8 @@ public class SinkInput extends AbstractAudioDeviceConfig {
     @Nullable
     private Sink sink;
 
-    public SinkInput(int id, String name, @Nullable Module module) {
-        super(id, name, module);
+    public SinkInput(int id, String name, String description, Map<String, String> properties, @Nullable Module module) {
+        super(id, name, description, properties, module);
     }
 
     public @Nullable Sink getSink() {

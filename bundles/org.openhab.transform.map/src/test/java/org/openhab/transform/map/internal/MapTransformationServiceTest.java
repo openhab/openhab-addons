@@ -13,10 +13,11 @@
 package org.openhab.transform.map.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -49,12 +50,12 @@ public class MapTransformationServiceTest extends JavaTest {
     private static final String SOURCE_CLOSED = "CLOSED";
     private static final String SOURCE_UNKNOWN = "UNKNOWN";
 
-    private static final String NON_DEFAULTED_TRANSFORMATION_DE = "map/doorstatus_de.map";
-    private static final String NON_DEFAULTED_TRANSFORMATION_FR = "map/doorstatus_fr.map";
-    private static final String DEFAULTED_TRANSFORMATION = "map/doorstatus_defaulted.map";
-    private static final String UNKNOWN_TRANSFORMATION = "map/de.map";
+    private static final String NON_DEFAULTED_TRANSFORMATION_DE = "map" + File.separator + "doorstatus_de.map";
+    private static final String NON_DEFAULTED_TRANSFORMATION_FR = "map" + File.separator + "doorstatus_fr.map";
+    private static final String DEFAULTED_TRANSFORMATION = "map" + File.separator + "doorstatus_defaulted.map";
+    private static final String UNKNOWN_TRANSFORMATION = "map" + File.separator + "de.map";
 
-    private static final String SRC_FOLDER = "conf/transform";
+    private static final String SRC_FOLDER = "conf" + File.separator + "transform";
 
     @Mock
     private @NonNullByDefault({}) TransformationConfigurationRegistry transformationConfigurationRegistry;
@@ -67,7 +68,7 @@ public class MapTransformationServiceTest extends JavaTest {
         configurationMap.clear();
         Files.walk(Path.of(SRC_FOLDER)).filter(Files::isRegularFile).forEach(file -> {
             try {
-                String content = new String(Files.readAllBytes(file));
+                String content = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
                 String uid = Path.of(SRC_FOLDER).relativize(file).toString();
                 TransformationConfiguration transformationConfiguration = new TransformationConfiguration(uid, uid,
                         "map", null, content);
@@ -79,7 +80,7 @@ public class MapTransformationServiceTest extends JavaTest {
         Mockito.when(transformationConfigurationRegistry.get(anyString(), eq(null)))
                 .thenAnswer((Answer<TransformationConfiguration>) invocation -> {
                     Object[] args = invocation.getArguments();
-                    return configurationMap.get((String) args[0]);
+                    return configurationMap.get(args[0]);
                 });
 
         processor = new MapTransformationService(transformationConfigurationRegistry);

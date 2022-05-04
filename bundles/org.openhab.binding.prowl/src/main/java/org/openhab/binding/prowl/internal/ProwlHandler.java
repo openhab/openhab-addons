@@ -49,7 +49,7 @@ public class ProwlHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(ProwlHandler.class);
 
     private ProwlConfiguration config = new ProwlConfiguration();
-    final private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     /**
      * Future to poll for status
@@ -117,9 +117,19 @@ public class ProwlHandler extends BaseThingHandler {
     }
 
     public void pushNotification(@Nullable String event, @Nullable String description) {
+        pushNotification(event, description, 0);
+    }
+
+    public void pushNotification(@Nullable String event, @Nullable String description, int priority) {
         if (event == null || description == null) {
             logger.debug("Cannot push message with null event or null description");
             return;
+        }
+
+        if (priority < -2) {
+            priority = -2;
+        } else if (priority > 2) {
+            priority = 2;
         }
 
         logger.debug("Pushing an event: {} with desc: {}", event, description);
@@ -127,7 +137,7 @@ public class ProwlHandler extends BaseThingHandler {
             ContentResponse response = httpClient.POST(PROWL_ADD_URI).timeout(5, TimeUnit.SECONDS)
                     .content(
                             new StringContentProvider("apikey=" + config.apiKey + "&application=" + config.application
-                                    + "&event=" + event + "&description=" + description),
+                                    + "&event=" + event + "&description=" + description + "&priority=" + priority),
                             "application/x-www-form-urlencoded; charset=UTF-8")
                     .send();
             String resp = response.getContentAsString();
