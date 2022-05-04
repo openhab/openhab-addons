@@ -23,12 +23,10 @@ import org.openhab.binding.vesync.internal.api.IHttpClientProvider;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirHumidifierHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirPurifierHandler;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
@@ -68,21 +66,6 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory implements IHt
         }
 
         return null;
-    }
-
-    @Override
-    public @Nullable Thing createThing(final ThingTypeUID thingTypeUID, final Configuration configuration,
-            final @Nullable ThingUID thingUID, final @Nullable ThingUID bridgeUID) {
-        // Use the specific Handler Factory if required
-        // otherwise fallback to the default
-        if (VeSyncDeviceAirPurifierHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
-                || VeSyncDeviceAirHumidifierHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
-                || VeSyncHandlerFactory.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
-        } else {
-            throw new IllegalArgumentException(
-                    "The thing type " + thingTypeUID + " is not supported by the VeSync binding.");
-        }
     }
 
     @Reference
