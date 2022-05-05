@@ -624,8 +624,11 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         }
 
         for (Thing thing : getThing().getThings()) {
+            if (!thing.isEnabled()) {
+                continue;
+            }
             ThingHandler thingHandler = thing.getHandler();
-            if (thing.isEnabled() && thingHandler instanceof PowermaxThingHandler) {
+            if (thingHandler instanceof PowermaxThingHandler) {
                 PowermaxThingHandler handler = (PowermaxThingHandler) thingHandler;
                 if (thing.getThingTypeUID().equals(THING_TYPE_ZONE)) {
                     // All of the zone state objects will have the same list of values.
