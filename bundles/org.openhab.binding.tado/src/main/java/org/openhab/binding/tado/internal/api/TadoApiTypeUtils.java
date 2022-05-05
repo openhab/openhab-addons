@@ -46,7 +46,7 @@ import org.openhab.binding.tado.internal.api.model.TimerTerminationConditionTemp
 public class TadoApiTypeUtils {
 
     public static OverlayTerminationCondition getTerminationCondition(OverlayTerminationConditionType type,
-            @Nullable Integer timerDurationInSeconds) {
+            int timerDurationInSeconds) {
         switch (type) {
             case TIMER:
                 return timerTermination(timerDurationInSeconds);
@@ -61,23 +61,35 @@ public class TadoApiTypeUtils {
 
     public static OverlayTerminationCondition cleanTerminationCondition(
             OverlayTerminationCondition terminationCondition) {
-        Integer timerDuration = terminationCondition.getType() == OverlayTerminationConditionType.TIMER
-                ? ((TimerTerminationCondition) terminationCondition).getRemainingTimeInSeconds()
-                : null;
+        OverlayTerminationConditionType conditionType = terminationCondition.getType();
 
-        return getTerminationCondition(terminationCondition.getType(), timerDuration);
+        int timerDuration = 0;
+        if (conditionType == OverlayTerminationConditionType.TIMER) {
+            Integer duration = ((TimerTerminationCondition) terminationCondition).getRemainingTimeInSeconds();
+            if (duration != null) {
+                timerDuration = duration.intValue();
+            }
+        }
+
+        return getTerminationCondition(conditionType, timerDuration);
     }
 
     public static OverlayTerminationCondition terminationConditionTemplateToTerminationCondition(
             OverlayTerminationConditionTemplate template) {
-        Integer timerDuration = template.getType() == OverlayTerminationConditionType.TIMER
-                ? ((TimerTerminationConditionTemplate) template).getDurationInSeconds()
-                : null;
+        OverlayTerminationConditionType conditionType = template.getType();
 
-        return getTerminationCondition(template.getType(), timerDuration);
+        int timerDuration = 0;
+        if (conditionType == OverlayTerminationConditionType.TIMER) {
+            Integer duration = ((TimerTerminationConditionTemplate) template).getDurationInSeconds();
+            if (duration != null) {
+                timerDuration = duration.intValue();
+            }
+        }
+
+        return getTerminationCondition(conditionType, timerDuration);
     }
 
-    public static TimerTerminationCondition timerTermination(@Nullable Integer durationInSeconds) {
+    public static TimerTerminationCondition timerTermination(int durationInSeconds) {
         TimerTerminationCondition terminationCondition = new TimerTerminationCondition();
         terminationCondition.setType(OverlayTerminationConditionType.TIMER);
         terminationCondition.setDurationInSeconds(durationInSeconds);

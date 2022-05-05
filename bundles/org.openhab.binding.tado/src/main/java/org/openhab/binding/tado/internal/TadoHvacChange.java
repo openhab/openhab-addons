@@ -15,7 +15,6 @@ package org.openhab.binding.tado.internal;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants.FanLevel;
 import org.openhab.binding.tado.internal.TadoBindingConstants.FanSpeed;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HorizontalSwing;
@@ -65,7 +64,7 @@ public class TadoHvacChange {
             case MANUAL:
                 return activeForever();
             case TIMER:
-                return activeForMinutes(null);
+                return activeForMinutes(0);
             case UNTIL_CHANGE:
                 return activeUntilChange();
         }
@@ -87,9 +86,9 @@ public class TadoHvacChange {
         return this;
     }
 
-    public TadoHvacChange activeForMinutes(@Nullable Integer minutes) {
+    public TadoHvacChange activeForMinutes(int minutes) {
         terminationConditionBuilder.withTerminationType(OverlayTerminationConditionType.TIMER);
-        terminationConditionBuilder.withTimerDurationInSeconds(minutes != null ? minutes * 60 : null);
+        terminationConditionBuilder.withTimerDurationInSeconds(minutes * 60);
         return this;
     }
 

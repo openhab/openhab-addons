@@ -36,7 +36,7 @@ public class TerminationConditionBuilder {
     private final TadoZoneHandler zoneHandler;
 
     private @Nullable OverlayTerminationConditionType terminationType;
-    private @Nullable Integer timerDurationInSeconds;
+    private int timerDurationInSeconds = 0;
 
     protected TerminationConditionBuilder(TadoZoneHandler zoneHandler) {
         this.zoneHandler = zoneHandler;
@@ -49,12 +49,12 @@ public class TerminationConditionBuilder {
     public TerminationConditionBuilder withTerminationType(OverlayTerminationConditionType terminationType) {
         this.terminationType = terminationType;
         if (terminationType != OverlayTerminationConditionType.TIMER) {
-            timerDurationInSeconds = null;
+            timerDurationInSeconds = 0;
         }
         return this;
     }
 
-    public TerminationConditionBuilder withTimerDurationInSeconds(@Nullable Integer timerDurationInSeconds) {
+    public TerminationConditionBuilder withTimerDurationInSeconds(int timerDurationInSeconds) {
         this.terminationType = OverlayTerminationConditionType.TIMER;
         this.timerDurationInSeconds = timerDurationInSeconds;
         return this;
@@ -65,7 +65,7 @@ public class TerminationConditionBuilder {
 
         OverlayTerminationConditionType terminationType = this.terminationType;
         if (terminationType != null) {
-            if (terminationType != OverlayTerminationConditionType.TIMER || timerDurationInSeconds != null) {
+            if (terminationType != OverlayTerminationConditionType.TIMER || timerDurationInSeconds > 0) {
                 terminationCondition = getTerminationCondition(terminationType, timerDurationInSeconds);
             } else {
                 terminationCondition = getCurrentOrDefaultTimerTermination(zoneStateProvider);
