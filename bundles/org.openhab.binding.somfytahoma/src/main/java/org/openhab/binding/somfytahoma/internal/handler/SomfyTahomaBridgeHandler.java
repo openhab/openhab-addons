@@ -588,8 +588,11 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable Thing getThingByDeviceUrl(String deviceUrl) {
         for (Thing th : getThing().getThings()) {
+            if (!th.isEnabled()) {
+                continue;
+            }
             String url = (String) th.getConfiguration().get("url");
-            if (th.isEnabled() && deviceUrl.equals(url)) {
+            if (deviceUrl.equals(url)) {
                 return th;
             }
         }
