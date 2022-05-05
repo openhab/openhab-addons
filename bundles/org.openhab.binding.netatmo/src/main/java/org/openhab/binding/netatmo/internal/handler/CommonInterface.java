@@ -30,7 +30,6 @@ import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RestCapability;
-import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -38,7 +37,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BridgeHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
@@ -84,7 +82,7 @@ public interface CommonInterface {
                 : null;
     }
 
-    default @Nullable ApiBridgeHandler getRootBridge() {
+    default @Nullable ApiBridgeHandler getAccountHandler() {
         Bridge bridge = getBridge();
         BridgeHandler bridgeHandler = null;
         if (bridge != null) {
@@ -95,24 +93,6 @@ public interface CommonInterface {
             }
         }
         return (ApiBridgeHandler) bridgeHandler;
-    }
-
-    default Optional<NetatmoServlet> getServlet() {
-        ThingHandler handler = getThing().getHandler();
-        Bridge root = null;
-        if (handler instanceof ModuleHandler) {
-            CommonInterface bridgeHandler = ((ModuleHandler) handler).getBridgeHandler();
-            if (bridgeHandler != null) {
-                root = bridgeHandler.getBridge();
-            }
-        } else if (handler instanceof DeviceHandler) {
-            root = ((DeviceHandler) handler).getBridge();
-        }
-        ThingHandler rootHandler = root != null ? root.getHandler() : null;
-        if (rootHandler instanceof ApiBridgeHandler) {
-            return ((ApiBridgeHandler) rootHandler).getServlet();
-        }
-        return Optional.empty();
     }
 
     default @Nullable String getBridgeId() {
@@ -145,8 +125,8 @@ public interface CommonInterface {
     default List<CommonInterface> getActiveChildren() {
         Thing thing = getThing();
         if (thing instanceof Bridge) {
-            return ((Bridge) thing).getThings().stream().map(Thing::getHandler).filter(Objects::nonNull)
-                    .map(CommonInterface.class::cast).collect(Collectors.toList());
+            return ((Bridge) thing).getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler)
+                    .filter(Objects::nonNull).map(CommonInterface.class::cast).collect(Collectors.toList());
         }
         return List.of();
     }
@@ -221,7 +201,6 @@ public interface CommonInterface {
         Capability refreshCap = getCapabilities().remove(RefreshCapability.class);
         if (refreshCap != null) {
             refreshCap.dispose();
-            refreshCap = null;
         }
     }
 

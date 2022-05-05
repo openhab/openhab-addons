@@ -99,8 +99,8 @@ public class NetatmoServlet extends HttpServlet {
                     logger.warn("Error releasing webhook : {}", e.getMessage());
                 }
             }
+            httpService.unregister(CALLBACK_URI);
         });
-        httpService.unregister(CALLBACK_URI);
         logger.debug("Netatmo Webhook Servlet stopped");
     }
 
@@ -110,14 +110,18 @@ public class NetatmoServlet extends HttpServlet {
             String data = inputStreamToString(req.getInputStream());
             if (!data.isEmpty()) {
                 logger.debug("Event transmitted from restService : {}", data);
-                WebhookEvent event = deserializer.deserialize(WebhookEvent.class, data);
-                List<String> tobeNotified = collectNotified(event);
-                dataListeners.keySet().stream().filter(tobeNotified::contains).forEach(id -> {
-                    EventCapability module = dataListeners.get(id);
-                    if (module != null) {
-                        module.setNewData(event);
-                    }
-                });
+                try {
+                    WebhookEvent event = deserializer.deserialize(WebhookEvent.class, data);
+                    List<String> tobeNotified = collectNotified(event);
+                    dataListeners.keySet().stream().filter(tobeNotified::contains).forEach(id -> {
+                        EventCapability module = dataListeners.get(id);
+                        if (module != null) {
+                            module.setNewData(event);
+                        }
+                    });
+                } catch (NetatmoException e) {
+                    logger.info("Error deserializing webhook data received : {}. {}", data, e.getMessage());
+                }
             }
             resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
             resp.setContentType(MediaType.APPLICATION_JSON);

@@ -66,7 +66,7 @@ public abstract class RestCapability<T extends RestManager> extends ModuleCapabi
 
     protected Optional<T> getApi() {
         if (api.isEmpty()) {
-            ApiBridgeHandler bridgeApi = handler.getRootBridge();
+            ApiBridgeHandler bridgeApi = handler.getAccountHandler();
             if (bridgeApi != null) {
                 api = Optional.ofNullable(bridgeApi.getRestManager(restManagerClass));
             }

@@ -50,6 +50,7 @@ import org.openhab.binding.netatmo.internal.discovery.NetatmoDiscoveryService;
 import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -71,15 +72,14 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
     private final BindingConfiguration bindingConf;
-    private @NonNullByDefault({}) ApiHandlerConfiguration thingConf;
     private final HttpService httpService;
-
-    private Optional<NetatmoServlet> servlet = Optional.empty();
-
     private final AuthenticationApi connectApi;
     private final HttpClient httpClient;
     private final NADeserializer deserializer;
+
     private Optional<ScheduledFuture<?>> connectJob = Optional.empty();
+    private Optional<NetatmoServlet> servlet = Optional.empty();
+    private @NonNullByDefault({}) ApiHandlerConfiguration thingConf;
 
     private Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
 
@@ -114,11 +114,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             try {
                 connectApi.authenticate(credentials, bindingConf.features);
                 updateStatus(ThingStatus.ONLINE);
-                getThing().getThings().forEach(child -> {
-                    if (child instanceof CommonInterface) {
-                        ((CommonInterface) child).expireData();
-                    }
-                });
+                getThing().getThings().stream().filter(Thing::isEnabled).filter(t -> t instanceof CommonInterface)
+                        .map(CommonInterface.class::cast).forEach(CommonInterface::expireData);
             } catch (NetatmoException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 prepareReconnection();

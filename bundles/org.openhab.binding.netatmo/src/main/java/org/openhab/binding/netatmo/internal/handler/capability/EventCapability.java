@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 
@@ -36,8 +37,11 @@ public class EventCapability extends Capability {
 
     @Override
     public void initialize() {
-        servlet = handler.getServlet();
-        servlet.ifPresent(s -> s.registerDataListener(handler.getId(), this));
+        ApiBridgeHandler accountHandler = handler.getAccountHandler();
+        if (accountHandler != null) {
+            servlet = accountHandler.getServlet();
+            servlet.ifPresent(s -> s.registerDataListener(handler.getId(), this));
+        }
     }
 
     @Override

@@ -45,7 +45,7 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class Capability {
-    public static final int DATA_AGE_LIMIT = 1800;
+    public static final int DATA_AGE_LIMIT_S = 1800;
 
     protected final Thing thing;
     protected final CommonInterface handler;
@@ -114,7 +114,7 @@ public class Capability {
         }
         if (!newData.isReachable()) {
             statusReason = "@text/device-not-connected";
-        } else if (!newData.hasFreshData(DATA_AGE_LIMIT)) {
+        } else if (!newData.hasFreshData(DATA_AGE_LIMIT_S)) {
             statusReason = "@text/data-over-limit";
         }
     }
