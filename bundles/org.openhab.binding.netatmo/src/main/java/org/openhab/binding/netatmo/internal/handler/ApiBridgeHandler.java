@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -114,7 +115,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             try {
                 connectApi.authenticate(credentials, bindingConf.features);
                 updateStatus(ThingStatus.ONLINE);
-                getThing().getThings().stream().filter(Thing::isEnabled).filter(t -> t instanceof CommonInterface)
+                getThing().getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler).filter(Objects::nonNull)
                         .map(CommonInterface.class::cast).forEach(CommonInterface::expireData);
             } catch (NetatmoException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -182,10 +183,12 @@ public interface CommonInterface {
             setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
             setRefreshCapability();
             getCapabilities().values().forEach(cap -> cap.initialize());
-            CommonInterface bridgeHandler = getBridgeHandler();
-            if (bridgeHandler != null) {
-                bridgeHandler.expireData();
-            }
+            getScheduler().schedule(() -> {
+                CommonInterface bridgeHandler = getBridgeHandler();
+                if (bridgeHandler != null) {
+                    bridgeHandler.expireData();
+                }
+            }, 1, TimeUnit.SECONDS);
         }
     }
 
