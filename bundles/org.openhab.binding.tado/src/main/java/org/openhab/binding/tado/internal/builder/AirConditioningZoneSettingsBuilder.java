@@ -165,29 +165,30 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
             newSetting.setSwing(getCurrentOrDefaultSwing(zoneStateProvider, swings));
         }
 
-        /*
-         * In the latest API release Tado introduced extra AC settings that don't have explicit pre-defined default
-         * values, so for such settings we just carry over the setting's prior value (i.e. the value may be null)
-         */
-        CoolingZoneSetting oldSetting = (CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting();
-        if (newSetting.getFanLevel() == null) {
-            newSetting.setFanLevel(oldSetting.getFanLevel());
+        List<ACFanLevel> fanLevels = targetCapabilities.getFanLevel();
+        if (fanLevels != null && !fanLevels.isEmpty() && newSetting.getFanLevel() == null) {
+            newSetting.setFanLevel(getCurrentOrDefaultFanLevel(zoneStateProvider, fanLevels));
         }
-        if (newSetting.getHorizontalSwing() == null) {
-            newSetting.setHorizontalSwing(oldSetting.getHorizontalSwing());
+
+        List<ACHorizontalSwing> horizontalSwings = targetCapabilities.getHorizontalSwing();
+        if (horizontalSwings != null && !horizontalSwings.isEmpty() && newSetting.getHorizontalSwing() == null) {
+            newSetting.setHorizontalSwing(getCurrentOrDefaultHorizontalSwing(zoneStateProvider, horizontalSwings));
         }
-        if (newSetting.getVerticalSwing() == null) {
-            newSetting.setVerticalSwing(oldSetting.getVerticalSwing());
+
+        List<ACVerticalSwing> verticalSwings = targetCapabilities.getVerticalSwing();
+        if (verticalSwings != null && !verticalSwings.isEmpty() && newSetting.getHorizontalSwing() == null) {
+            newSetting.setVerticalSwing(getCurrentOrDefaultVerticalSwing(zoneStateProvider, verticalSwings));
         }
-        if (newSetting.getLight() == null) {
-            newSetting.setLight(oldSetting.getLight());
+
+        List<Power> lights = targetCapabilities.getLight();
+        if (lights != null && !lights.isEmpty() && newSetting.getLight() == null) {
+            newSetting.setLight(getCurrentOrDefaultLight(zoneStateProvider, lights));
         }
     }
 
     private AcMode getCurrentOrDefaultAcMode(ZoneStateProvider zoneStateProvider) throws IOException, ApiException {
-        CoolingZoneSetting zoneSetting = (CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting();
-
-        return zoneSetting.getMode() != null ? zoneSetting.getMode() : DEFAULT_MODE;
+        AcMode acMode = ((CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting()).getMode();
+        return acMode != null ? acMode : DEFAULT_MODE;
     }
 
     private TemperatureObject getCurrentOrDefaultTemperature(ZoneStateProvider zoneStateProvider,
@@ -211,24 +212,40 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
 
     private AcFanSpeed getCurrentOrDefaultFanSpeed(ZoneStateProvider zoneStateProvider, List<AcFanSpeed> fanSpeeds)
             throws IOException, ApiException {
-        CoolingZoneSetting zoneSetting = (CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting();
-
-        if (zoneSetting.getFanSpeed() != null && fanSpeeds.contains(zoneSetting.getFanSpeed())) {
-            return zoneSetting.getFanSpeed();
-        }
-
-        return fanSpeeds.get(0);
+        AcFanSpeed fanSpeed = ((CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting()).getFanSpeed();
+        return (fanSpeed != null) && fanSpeeds.contains(fanSpeed) ? fanSpeed : fanSpeeds.get(0);
     }
 
     private Power getCurrentOrDefaultSwing(ZoneStateProvider zoneStateProvider, List<Power> swings)
             throws IOException, ApiException {
-        CoolingZoneSetting zoneSetting = (CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting();
+        Power swing = ((CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting()).getSwing();
+        return (swing != null) && swings.contains(swing) ? swing : swings.get(0);
+    }
 
-        if (zoneSetting.getSwing() != null && swings.contains(zoneSetting.getSwing())) {
-            return zoneSetting.getSwing();
-        }
+    private ACFanLevel getCurrentOrDefaultFanLevel(ZoneStateProvider zoneStateProvider, List<ACFanLevel> fanLevels)
+            throws IOException, ApiException {
+        ACFanLevel fanLevel = ((CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting()).getFanLevel();
+        return (fanLevel != null) && fanLevels.contains(fanLevel) ? fanLevel : fanLevels.get(0);
+    }
 
-        return swings.get(0);
+    private ACVerticalSwing getCurrentOrDefaultVerticalSwing(ZoneStateProvider zoneStateProvider,
+            List<ACVerticalSwing> vertSwings) throws IOException, ApiException {
+        ACVerticalSwing vertSwing = ((CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting())
+                .getVerticalSwing();
+        return (vertSwing != null) && vertSwings.contains(vertSwing) ? vertSwing : vertSwings.get(0);
+    }
+
+    private ACHorizontalSwing getCurrentOrDefaultHorizontalSwing(ZoneStateProvider zoneStateProvider,
+            List<ACHorizontalSwing> horzSwings) throws IOException, ApiException {
+        ACHorizontalSwing horzSwing = ((CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting())
+                .getHorizontalSwing();
+        return (horzSwing != null) && horzSwings.contains(horzSwing) ? horzSwing : horzSwings.get(0);
+    }
+
+    private Power getCurrentOrDefaultLight(ZoneStateProvider zoneStateProvider, List<Power> lights)
+            throws IOException, ApiException {
+        Power light = ((CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting()).getLight();
+        return (light != null) && lights.contains(light) ? light : lights.get(0);
     }
 
     private CoolingZoneSetting coolingSetting(boolean powerOn) {
