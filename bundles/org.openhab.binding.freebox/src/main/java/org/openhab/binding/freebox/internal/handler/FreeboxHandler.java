@@ -490,8 +490,11 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
             // The update of channels is delegated to each thing handler
             for (Thing thing : getThing().getThings()) {
+                if (!thing.isEnabled()) {
+                    continue;
+                }
                 ThingHandler handler = thing.getHandler();
-                if (thing.isEnabled() && handler instanceof FreeboxThingHandler) {
+                if (handler instanceof FreeboxThingHandler) {
                     ((FreeboxThingHandler) handler).updateNetInfo(hosts);
                 }
             }
@@ -512,8 +515,11 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
             // The update of channels is delegated to each thing handler
             for (Thing thing : getThing().getThings()) {
+                if (!thing.isEnabled()) {
+                    continue;
+                }
                 ThingHandler handler = thing.getHandler();
-                if (thing.isEnabled() && handler instanceof FreeboxThingHandler) {
+                if (handler instanceof FreeboxThingHandler) {
                     ((FreeboxThingHandler) handler).updateAirPlayDevice(devices);
                 }
             }
