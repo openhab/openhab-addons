@@ -196,7 +196,8 @@ public enum ModuleType {
                     || channelHelpers.contains(BatteryExtChannelHelper.class)) ? RADIO_SIGNAL_LEVELS
                             : WIFI_SIGNAL_LEVELS;
         }
-        throw new IllegalArgumentException("This should not be called for module type : " + name() + ", file a bug.");
+        throw new IllegalArgumentException(
+                "This should not be called for module type : " + name() + ", please file a bug report.");
     }
 
     public ModuleType getBridge() {

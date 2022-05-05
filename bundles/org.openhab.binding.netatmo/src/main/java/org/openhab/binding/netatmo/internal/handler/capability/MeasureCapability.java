@@ -51,7 +51,7 @@ public class MeasureCapability extends RestCapability<WeatherApi> {
         MeasuresChannelHelper measureChannelHelper = (MeasuresChannelHelper) helpers.stream()
                 .filter(c -> c instanceof MeasuresChannelHelper).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "MeasureCapability must find a MeasuresChannelHelper, file a bug."));
+                        "MeasureCapability must find a MeasuresChannelHelper, please file a bug report."));
         measureChannelHelper.setMeasures(measures);
     }
 

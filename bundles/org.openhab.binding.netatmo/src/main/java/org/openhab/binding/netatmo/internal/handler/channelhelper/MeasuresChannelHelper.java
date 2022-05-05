@@ -39,6 +39,6 @@ public class MeasuresChannelHelper extends ChannelHelper {
         if (localMeasures != null) {
             return localMeasures.get(channelId);
         }
-        throw new IllegalArgumentException("localMeasures should not be null, file a bug.");
+        throw new IllegalArgumentException("localMeasures should not be null, please file a bug report.");
     }
 }
