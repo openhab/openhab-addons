@@ -47,7 +47,7 @@ Some ideas what you can do in your home by using rules and other openHAB control
 - Automatic turn on your amplifier and connect echo with bluetooth if the echo plays music
 - If the amplifier was turned off, the echo stop playing and disconnect the bluetooth
 - The echo starts playing radio if the light was turned on
-- The echo starts playing radio at specified time 
+- The echo starts playing radio at specified time
 - Remind you with a voice message, that a window is open for a long time and it is winter
 - Start a routine which welcome you, if you come home
 - Start a routine which switch a smart home device connected to Alexa
@@ -65,7 +65,7 @@ With the possibility to control your lights you could do:
 - connect single bulbs to functions of openHAB
 - simulate your presence at home
 - automatically turn on your lights at the evening
-- integrate your smart bulbs with rules 
+- integrate your smart bulbs with rules
 
 ## Binding Configuration
 
@@ -109,12 +109,12 @@ The configuration of your Amazon account must be done in the 'Amazon Account' de
 | Configuration name              | Default | Description                                                                           |
 |---------------------------------|---------|---------------------------------------------------------------------------------------|
 | discoverSmartHome               | 0       | 0...No discover, 1...Discover direct connected, 2...Discover direct and Alexa skill devices, 3...Discover direct, Alexa and openHAB skill devices |
-| pollingIntervalSmartHomeAlexa   | 30      | Defines the time in seconds for openHAB to pull the state of the Alexa connected devices. The minimum is 10 seconds. | 
+| pollingIntervalSmartHomeAlexa   | 30      | Defines the time in seconds for openHAB to pull the state of the Alexa connected devices. The minimum is 10 seconds. |
 | pollingIntervalSmartSkills      | 120     | Defines the time in seconds for openHAB to pull the state of the over a skill connected devices. The minimum is 60 seconds. |
 
 #### Channels
 
-| Channel Type ID       | Item Type   | Access Mode | Thing Type                    | Description                                                                                                                                                                
+| Channel Type ID       | Item Type   | Access Mode | Thing Type                    | Description
 |-----------------------|-------------|-------------|-------------------------------|------------------------------------------------------------------------------------------
 | sendMessage           | String      | W           | account                       | Write Only! Sends a message to the Echo devices.
 
@@ -160,7 +160,7 @@ It will be configured at runtime by using the save channel to store the current 
 | subtitle2             | String      | R           | echo, echoshow, echospot, wha | Additional subtitle of the current media
 | providerDisplayName   | String      | R           | echo, echoshow, echospot, wha | Name of the music provider
 | bluetoothMAC          | String      | R/W         | echo, echoshow, echospot      | Bluetooth device MAC. Used to connect to a specific device or disconnect if an empty string was provided
-| bluetooth             | Switch      | R/W         | echo, echoshow, echospot      | Connect/Disconnect to the last used bluetooth device (works after a bluetooth connection was established after the openHAB start) 
+| bluetooth             | Switch      | R/W         | echo, echoshow, echospot      | Connect/Disconnect to the last used bluetooth device (works after a bluetooth connection was established after the openHAB start)
 | bluetoothDeviceName   | String      | R           | echo, echoshow, echospot      | User friendly name of the connected bluetooth device
 | radioStationId        | String      | R/W         | echo, echoshow, echospot, wha | Start playing of a TuneIn radio station by specifying its id or stops playing if an empty string was provided
 | radio                 | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used TuneIn radio station (works after the radio station started after the openHAB start)
@@ -173,24 +173,24 @@ It will be configured at runtime by using the save channel to store the current 
 | nextAlarm             | DateTime    | R           | echo, echoshow, echospot      | Next alarm on the device
 | nextMusicAlarm        | DateTime    | R           | echo, echoshow, echospot      | Next music alarm on the device
 | nextTimer             | DateTime    | R           | echo, echoshow, echospot      | Next timer on the device
-| startRoutine          | String      | W           | echo, echoshow, echospot      | Write Only! Type in what you normally say to Alexa without the preceding "Alexa," 
+| startRoutine          | String      | W           | echo, echoshow, echospot      | Write Only! Type in what you normally say to Alexa without the preceding "Alexa,"
 | musicProviderId       | String      | R/W         | echo, echoshow, echospot      | Current Music provider
-| playMusicVoiceCommand | String      | W           | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
+| playMusicVoiceCommand | String      | W           | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles'
 | startCommand          | String      | W           | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)
 | announcement          | String      | W           | echo, echoshow, echospot      | Write Only! Display the announcement message on the display. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.
 | textToSpeech          | String      | W           | echo, echoshow, echospot      | Write Only! Write some text to this channel and Alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect></speak>`
 | textToSpeechVolume    | Dimmer      | R/W         | echo, echoshow, echospot      | Volume of the textToSpeech channel, if 0 the current volume will be used
-| textCommand           | String      | W           | echo, echoshow, echospot      | Write Only! Execute a text command (like a spoken text)                    
+| textCommand           | String      | W           | echo, echoshow, echospot      | Write Only! Execute a text command (like a spoken text)
 | lastVoiceCommand      | String      | R/W         | echo, echoshow, echospot      | Last voice command spoken to the device. Writing to the channel starts voice output.
-| mediaProgress         | Dimmer      | R/W         | echo, echoshow, echospot      | Media progress in percent 
-| mediaProgressTime     | Number:Time | R/W         | echo, echoshow, echospot      | Media play time 
+| mediaProgress         | Dimmer      | R/W         | echo, echoshow, echospot      | Media progress in percent
+| mediaProgressTime     | Number:Time | R/W         | echo, echoshow, echospot      | Media play time
 | mediaLength           | Number:Time | R           | echo, echoshow, echospot      | Media length
 | notificationVolume    | Dimmer      | R           | echo, echoshow, echospot      | Notification volume
 | ascendingAlarm        | Switch      | R/W         | echo, echoshow, echospot      | Ascending alarm up to the configured volume
 | sendMessage           | String      | W           | account                       | Write Only! Sends a message to the Echo devices.
 | save                  | Switch      | W           | flashbriefingprofile          | Write Only! Stores the current configuration of flash briefings within the thing
 | active                | Switch      | R/W         | flashbriefingprofile          | Active the profile
-| playOnDevice          | String      | W           | flashbriefingprofile          | Specify the echo serial number or name to start the flash briefing. 
+| playOnDevice          | String      | W           | flashbriefingprofile          | Specify the echo serial number or name to start the flash briefing.
 
 ## Advanced Feature Technically Experienced Users
 
@@ -283,11 +283,11 @@ DateTime Echo_Living_Room_NextMusicAlarm           "Next music alarm"           
 DateTime Echo_Living_Room_NextTimer                "Next timer"                        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextTimer"}
 
 // Flashbriefings
-Switch FlashBriefing_Technical_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"} 
+Switch FlashBriefing_Technical_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"}
 Switch FlashBriefing_Technical_Active "Active"            { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:active"}
 String FlashBriefing_Technical_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:playOnDevice"}
 
-Switch FlashBriefing_LifeStyle_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:save"} 
+Switch FlashBriefing_LifeStyle_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:save"}
 Switch FlashBriefing_LifeStyle_Active "Active"            { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:active"}
 String FlashBriefing_LifeStyle_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:playOnDevice"}
 ```
@@ -359,11 +359,11 @@ The flashbriefingprofile thing has no configuration parameters.
 It will be configured at runtime by using the save channel to store the current flash briefing configuration which is set in the alexa app in the thing. Create a flashbriefingprofile Thing for each set you need.
 E.g. One Flashbriefing profile with technical news and wheater, one for playing world news and one for sport news.
 
-| Channel Type ID       | Item Type   | Access Mode | Thing Type                    | Description                                                                                                                                                                
+| Channel Type ID       | Item Type   | Access Mode | Thing Type                    | Description
 |-----------------------|-------------|-------------|-------------------------------|------------------------------------------------------------------------------------------
 | save                  | Switch      | W           | flashbriefingprofile          | Write Only! Stores the current configuration of flash briefings within the thing
 | active                | Switch      | R/W         | flashbriefingprofile          | Active the profile
-| playOnDevice          | String      | W           | flashbriefingprofile          | Specify the echo serial number or name to start the flash briefing. 
+| playOnDevice          | String      | W           | flashbriefingprofile          | Specify the echo serial number or name to start the flash briefing.
 
 #### Example
 
@@ -372,7 +372,7 @@ E.g. One Flashbriefing profile with technical news and wheater, one for playing 
 ```
 Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discoverSmartHome=2]
 {
-    Thing flashbriefingprofile flashbriefing1 "Flash Briefing Technical" @ "Flash Briefings" 
+    Thing flashbriefingprofile flashbriefing1 "Flash Briefing Technical" @ "Flash Briefings"
     Thing flashbriefingprofile flashbriefing2 "Flash Briefing Life Style" @ "Flash Briefings"
 }
 ```
@@ -384,11 +384,11 @@ Take a look in the channel description above to know, which channels are support
 
 ```
 // Flashbriefings
-Switch FlashBriefing_Technical_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"} 
+Switch FlashBriefing_Technical_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"}
 Switch FlashBriefing_Technical_Active "Active" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:active"}
 String FlashBriefing_Technical_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:playOnDevice"}
 
-Switch FlashBriefing_LifeStyle_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:save"} 
+Switch FlashBriefing_LifeStyle_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:save"}
 Switch FlashBriefing_LifeStyle_Active "Active" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:active"}
 String FlashBriefing_LifeStyle_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:playOnDevice"}
 ```
@@ -414,7 +414,7 @@ sitemap flashbriefings label="Flash Briefings"
 
 ## Smart Home Devices
 
-Note: the channels of smartHomeDevices and smartHomeDeviceGroup will be created dynamically based on the capabilities reported by the amazon server. This can take a little bit of time. 
+Note: the channels of smartHomeDevices and smartHomeDeviceGroup will be created dynamically based on the capabilities reported by the amazon server. This can take a little bit of time.
 The polling interval configured in the Account Thing to get the state is specified in minutes and has a minimum of 10. This means it takes up to 10 minutes to see the state of a channel. The reason for this low interval is, that the polling causes a big server load for the Smart Home Skills.
 
 #### Supported Things
@@ -437,7 +437,7 @@ The only possibility to find out the id is by using the discover function in the
 
 The channels of the smarthome devices will be generated at runtime. Check in the UI thing configurations, which channels are created.
 
-| Channel Type ID          | Item Type | Access Mode | Thing Type                    | Description                                                                                                                                                                
+| Channel Type ID          | Item Type | Access Mode | Thing Type                    | Description
 |--------------------------|-----------|-------------|-------------------------------|------------------------------------------------------------------------------------------
 | powerState               | Switch    | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the state (ON/OFF) of your device
 | brightness               | Dimmer    | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the brightness of your lamp
@@ -510,11 +510,11 @@ sitemap smarthome label="Smart Home Devices"
 }
 ```
 
-## How To Get IDs 
+## How To Get IDs
 
 1) Open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. http://openhab:8080/amazonechocontrol/)
 2) Click on the name of the account thing
-3) Click on the name of the echo thing 
+3) Click on the name of the echo thing
 4) Scroll to the channel and copy the required ID
 
 ## Advanced Feature Technically Experienced Users
@@ -701,4 +701,4 @@ Thank you Ingo!
 ## Trademark Disclaimer
 
 TuneIn, Amazon Echo, Amazon Echo Spot, Amazon Echo Show, Amazon Music, Amazon Prime, Alexa and all other products and Amazon, TuneIn and other companies are trademarks™ or registered® trademarks of their respective holders.
-Use of them does not imply any affiliation with or endorsement by them. 
+Use of them does not imply any affiliation with or endorsement by them.
