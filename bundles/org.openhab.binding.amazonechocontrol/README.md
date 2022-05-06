@@ -266,30 +266,30 @@ Switch Echo_Living_Room_Bluetooth              "Bluetooth"             <bluetoot
 String Echo_Living_Room_BluetoothDeviceName    "Bluetooth Device"      <bluetooth>     (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:bluetoothDeviceName"}
 
 // Commands
-String Echo_Living_Room_Announcement          "Announcement"                          (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:announcement"}
-String Echo_Living_Room_TTS                   "Text to Speech"                        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:textToSpeech"}
-Dimmer Echo_Living_Room_TTS_Volume            "Text to Speech Volume"                 (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:textToSpeechVolume"}
-String Echo_Living_Room_Remind                "Remind"                                (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:remind"}
-String Echo_Living_Room_PlayAlarmSound        "Play Alarm Sound"                      (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playAlarmSound"}
-String Echo_Living_Room_StartRoutine          "Start Routine"                         (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:startRoutine"}
-Dimmer Echo_Living_Room_NotificationVolume    "Notification volume"                   (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:notificationVolume"}
-Switch Echo_Living_Room_AscendingAlarm    "Ascending alarm"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:ascendingAlarm"}
+String Echo_Living_Room_Announcement           "Announcement"                          (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:announcement"}
+String Echo_Living_Room_TTS                    "Text to Speech"                        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:textToSpeech"}
+Dimmer Echo_Living_Room_TTS_Volume             "Text to Speech Volume"                 (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:textToSpeechVolume"}
+String Echo_Living_Room_Remind                 "Remind"                                (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:remind"}
+String Echo_Living_Room_PlayAlarmSound         "Play Alarm Sound"                      (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playAlarmSound"}
+String Echo_Living_Room_StartRoutine           "Start Routine"                         (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:startRoutine"}
+Dimmer Echo_Living_Room_NotificationVolume     "Notification volume"                   (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:notificationVolume"}
+Switch Echo_Living_Room_AscendingAlarm         "Ascending alarm"                       (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:ascendingAlarm"}
 
 // Feedbacks
-String Echo_Living_Room_LastVoiceCommand          "Last voice command"                (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:lastVoiceCommand"}
-DateTime Echo_Living_Room_NextReminder             "Next reminder"                     (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextReminder"}
-DateTime Echo_Living_Room_NextAlarm                "Next alarm"                        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextAlarm"}
-DateTime Echo_Living_Room_NextMusicAlarm           "Next music alarm"                  (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextMusicAlarm"}
-DateTime Echo_Living_Room_NextTimer                "Next timer"                        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextTimer"}
+String Echo_Living_Room_LastVoiceCommand       "Last voice command"                    (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:lastVoiceCommand"}
+DateTime Echo_Living_Room_NextReminder         "Next reminder"                         (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextReminder"}
+DateTime Echo_Living_Room_NextAlarm            "Next alarm"                            (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextAlarm"}
+DateTime Echo_Living_Room_NextMusicAlarm       "Next music alarm"                      (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextMusicAlarm"}
+DateTime Echo_Living_Room_NextTimer            "Next timer"                            (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextTimer"}
 
 // Flashbriefings
-Switch FlashBriefing_Technical_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"}
-Switch FlashBriefing_Technical_Active "Active"            { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:active"}
-String FlashBriefing_Technical_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:playOnDevice"}
+Switch FlashBriefing_Technical_Save            "Save (Write only)"                                         {channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"}
+Switch FlashBriefing_Technical_Active          "Active"                                                    {channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:active"}
+String FlashBriefing_Technical_Play            "Play (Write only)"                                         {channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:playOnDevice"}
 
-Switch FlashBriefing_LifeStyle_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:save"}
-Switch FlashBriefing_LifeStyle_Active "Active"            { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:active"}
-String FlashBriefing_LifeStyle_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:playOnDevice"}
+Switch FlashBriefing_LifeStyle_Save            "Save (Write only)"                                         {channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:save"}
+Switch FlashBriefing_LifeStyle_Active          "Active"                                                    {channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:active"}
+String FlashBriefing_LifeStyle_Play            "Play (Write only)"                                         {channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:playOnDevice"}
 ```
 
 #### echo.sitemap:
@@ -384,13 +384,13 @@ Take a look in the channel description above to know, which channels are support
 
 ```
 // Flashbriefings
-Switch FlashBriefing_Technical_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"}
-Switch FlashBriefing_Technical_Active "Active" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:active"}
-String FlashBriefing_Technical_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:playOnDevice"}
+Switch FlashBriefing_Technical_Save   "Save (Write only)" {channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"}
+Switch FlashBriefing_Technical_Active "Active"            {channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:active"}
+String FlashBriefing_Technical_Play   "Play (Write only)" {channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:playOnDevice"}
 
-Switch FlashBriefing_LifeStyle_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:save"}
-Switch FlashBriefing_LifeStyle_Active "Active" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:active"}
-String FlashBriefing_LifeStyle_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:playOnDevice"}
+Switch FlashBriefing_LifeStyle_Save   "Save (Write only)" {channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:save"}
+Switch FlashBriefing_LifeStyle_Active "Active"            {channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:active"}
+String FlashBriefing_LifeStyle_Play   "Play (Write only)" {channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:playOnDevice"}
 ```
 
 #### flashbriefings.sitemap:
@@ -474,20 +474,20 @@ Take a look in the channel description above to know which channels are supporte
 
 ```
 // Lights and lightgroups
-Switch Light_State "On/Off" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:powerState" }
-Dimmer Light_Brightness "Brightness" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:brightness" }
-Color  Light_Color "Color" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:color" }
-String Light_Color_Name "Color Name" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:colorName" }
-String Light_White "White temperature" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:colorTemperatureName" }
+Switch Light_State "On/Off"            {channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:powerState"}
+Dimmer Light_Brightness "Brightness"   {channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:brightness"}
+Color  Light_Color "Color"             {channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:color"}
+String Light_Color_Name "Color Name"   {channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:colorName"}
+String Light_White "White temperature" {channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:colorTemperatureName"}
 
 // Smart plugs
-Switch Plug_State "On/Off" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice2:powerState" }
+Switch Plug_State "On/Off"             {channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice2:powerState"}
 
 // Alexa Guard
-Switch Arm_State "State" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice3:armState" }
+Switch Arm_State "State"               {channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice3:armState"}
 
 // Smart Home device group
-Switch Group_State "On/Off" { channel="amazonechocontrol:smartHomeDeviceGroup:account1:smartHomeDeviceGroup1:powerState" }
+Switch Group_State "On/Off"            {channel="amazonechocontrol:smartHomeDeviceGroup:account1:smartHomeDeviceGroup1:powerState"}
 ```
 
 The only possibility to find out the id for the smartHomeDevice and smartHomeDeviceGroup Things is by using the discover function.
@@ -571,7 +571,7 @@ Expert:
 You can use a json formatted string to control title, sound and volume:
 
 ```php
-{ "sound": true, "speak":"<Speak>", "title": "<Title>", "body": "<Body Text>", "volume": 20}
+{"sound": true, "speak":"<Speak>", "title": "<Title>", "body": "<Body Text>", "volume": 20}
 ```
 
 The combination of `sound=true` and `speak` in SSML syntax is not allowed.
@@ -588,7 +588,7 @@ rule "Say welcome if the door opens"
 when
     Item Door_Contact changed to OPEN
 then
-    Echo_Living_Room_Announcement.sendCommand('{ "sound": false, "title": "Doorstep", "body": "Door opened"}')
+    Echo_Living_Room_Announcement.sendCommand('{"sound": false, "title": "Doorstep", "body": "Door opened"}')
 end
 ```
 
