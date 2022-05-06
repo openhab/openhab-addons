@@ -30,7 +30,7 @@ public enum CameraNotificationState {
      * Converts an {@link OnOffType} state into a {@link CameraNotificationState}.
      * 
      * @param onOff the on/off state
-     * @return the corresponding privacy mode state
+     * @return the corresponding notification state
      */
     public static CameraNotificationState from(OnOffType onOff) {
         return onOff == OnOffType.ON ? ENABLED : DISABLED;
@@ -39,7 +39,7 @@ public enum CameraNotificationState {
     /**
      * Converts this {@link CameraNotificationState} into an {@link OnOffType}.
      * 
-     * @return the on/off state corresponding to the privacy mode state of this enumeration literal
+     * @return the on/off state corresponding to the notification state of this enumeration literal
      */
     public OnOffType toOnOffType() {
         return this == ENABLED ? OnOffType.ON : OnOffType.OFF;

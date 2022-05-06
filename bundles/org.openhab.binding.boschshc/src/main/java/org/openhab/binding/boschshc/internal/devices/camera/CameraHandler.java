@@ -104,9 +104,9 @@ public class CameraHandler extends BoschSHCHandler {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.error("Error while requesting initial privacy state of camera {}", getBoschID(), e);
+            logger.debug("Could not retrieve the initial privacy state of camera {}", getBoschID());
         } catch (TimeoutException | ExecutionException | BoschSHCException e) {
-            logger.error("Error while requesting initial privacy state of camera {}", getBoschID(), e);
+            logger.debug("Could not retrieve the initial privacy state of camera {}", getBoschID());
         }
     }
 
@@ -119,10 +119,9 @@ public class CameraHandler extends BoschSHCHandler {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.error("Error while requesting initial notification state of camera {}", getBoschID(), e);
-
+            logger.debug("Could not retrieve the initial notification state of camera {}", getBoschID());
         } catch (TimeoutException | ExecutionException | BoschSHCException e) {
-            logger.error("Error while requesting initial notification state of camera {}", getBoschID(), e);
+            logger.debug("Could not retrieve the initial notification state of camera {}", getBoschID());
         }
     }
 
