@@ -102,7 +102,7 @@ public class RefreshCapability extends Capability {
         newData.getLastSeen().ifPresent(timestamp -> {
             Instant tsInstant = timestamp.toInstant();
             if (probing()) {
-                if (dataTimeStamp0 == Instant.MIN) {
+                if (Instant.MIN.equals(dataTimeStamp0)) {
                     dataTimeStamp0 = tsInstant;
                     logger.debug("First data timestamp is {}", dataTimeStamp0);
                 } else if (tsInstant.isAfter(dataTimeStamp0)) {
