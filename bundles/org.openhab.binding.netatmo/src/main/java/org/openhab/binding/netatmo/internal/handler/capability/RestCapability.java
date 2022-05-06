@@ -32,7 +32,7 @@ import org.openhab.binding.netatmo.internal.handler.CommonInterface;
  *
  */
 @NonNullByDefault
-public abstract class RestCapability<T extends RestManager> extends ModuleCapability {
+public abstract class RestCapability<T extends RestManager> extends DeviceCapability {
     private Optional<T> api = Optional.empty();
     private Class<T> restManagerClass;
 

@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.ApiResponse;
 import org.openhab.binding.netatmo.internal.api.ListBodyResponse;
@@ -37,5 +41,14 @@ public class NAMain extends Device {
      **/
     public boolean isReadOnly() {
         return readOnly;
+    }
+
+    public boolean hasFreshData(int dataFreshnessLimit) {
+        // check by comparing data freshness
+        ZonedDateTime localLastSeen = lastSeen;
+        if (localLastSeen != null && !getType().isLogical()) {
+            return Duration.between(localLastSeen.toInstant(), Instant.now()).getSeconds() < dataFreshnessLimit;
+        }
+        return true;
     }
 }

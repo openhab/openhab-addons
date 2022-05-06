@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class NetatmoBindingConstants {
 
     public static final String BINDING_ID = "netatmo";
-    public static final String SERVICE_PID = "org.openhab.binding." + BINDING_ID;
     public static final String VENDOR = "Netatmo";
 
     // Configuration keys

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
@@ -36,7 +34,7 @@ public class NAThing extends NAObject implements NAModule {
     private int radioStatus = -1;
     @SerializedName(value = "last_seen", alternate = { "last_therm_seen", "last_status_store", "last_plug_seen",
             "last_message", "last_activity" })
-    private @Nullable ZonedDateTime lastSeen;
+    protected @Nullable ZonedDateTime lastSeen;
     @SerializedName(value = "firmware", alternate = { "firmware_revision" })
     private @Nullable String firmware;
     private @Nullable Boolean reachable;
@@ -55,15 +53,6 @@ public class NAThing extends NAObject implements NAModule {
         // This is not implemented on all devices/modules, so if absent we consider it is reachable
         Boolean localReachable = this.reachable;
         return localReachable != null ? localReachable : true;
-    }
-
-    public boolean hasFreshData(int dataFreshnessLimit) {
-        // check by comparing data freshness
-        ZonedDateTime localLastSeen = lastSeen;
-        if (localLastSeen != null && !type.isLogical()) {
-            return Duration.between(localLastSeen.toInstant(), Instant.now()).getSeconds() < dataFreshnessLimit;
-        }
-        return true;
     }
 
     public @Nullable Dashboard getDashboardData() {

@@ -19,15 +19,16 @@ import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 
 /**
- * The {@link ModuleCapability} takes care of handling properties for netatmo modules
+ * The {@link DeviceCapability} takes care of handling properties for netatmo devices
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class ModuleCapability extends Capability {
+public class DeviceCapability extends Capability {
+    private static final int DATA_AGE_LIMIT_S = 3600;
 
-    public ModuleCapability(CommonInterface handler) {
+    public DeviceCapability(CommonInterface handler) {
         super(handler);
     }
 
@@ -39,6 +40,9 @@ public class ModuleCapability extends Capability {
                 place.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
                 place.getTimezone().map(tz -> properties.put(PROPERTY_TIMEZONE, tz));
             });
+        }
+        if (!newData.hasFreshData(DATA_AGE_LIMIT_S)) {
+            statusReason = "@text/data-over-limit";
         }
     }
 }

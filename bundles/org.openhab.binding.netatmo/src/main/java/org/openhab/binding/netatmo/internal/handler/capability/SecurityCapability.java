@@ -29,6 +29,8 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeStatusPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,32 +51,28 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     @Override
     protected void updateHomeData(HomeData homeData) {
         NAObjectMap<HomeDataPerson> persons = homeData.getPersons();
-        NAObjectMap<HomeDataModule> cameras = homeData.getModules();
-        handler.getActiveChildren().forEach(handler -> {
-            HomeDataPerson dataPerson = persons.get(handler.getId());
-            if (dataPerson != null) {
-                handler.setNewData(dataPerson);
-            }
-            HomeDataModule data = cameras.get(handler.getId());
-            if (data != null) {
-                handler.setNewData(data);
-            }
+        NAObjectMap<HomeDataModule> modules = homeData.getModules();
+        handler.getActiveChildren().forEach(childHandler -> {
+            String childId = childHandler.getId();
+            persons.getOpt(childId).ifPresentOrElse(person -> childHandler.setNewData(person), () -> {
+                modules.getOpt(childId).ifPresent(module -> childHandler.setNewData(module));
+            });
         });
     }
 
     @Override
     protected void updateHomeStatus(HomeStatus homeStatus) {
         NAObjectMap<HomeStatusPerson> persons = homeStatus.getPersons();
-        NAObjectMap<HomeStatusModule> cameras = homeStatus.getModules();
-        handler.getActiveChildren().forEach(handler -> {
-            HomeStatusPerson dataPerson = persons.get(handler.getId());
-            if (dataPerson != null) {
-                handler.setNewData(dataPerson);
-            }
-            HomeStatusModule dataCamera = cameras.get(handler.getId());
-            if (dataCamera != null) {
-                handler.setNewData(dataCamera);
-            }
+        NAObjectMap<HomeStatusModule> modules = homeStatus.getModules();
+        handler.getActiveChildren().forEach(childHandler -> {
+            String childId = childHandler.getId();
+            persons.getOpt(childId).ifPresentOrElse(person -> childHandler.setNewData(person), () -> {
+                modules.getOpt(childId).ifPresentOrElse(module -> childHandler.setNewData(module), () -> {
+                    // This handler is not present in the homestatus data, so it is offline
+                    childHandler.setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/device-not-connected");
+                });
+            });
         });
     }
 

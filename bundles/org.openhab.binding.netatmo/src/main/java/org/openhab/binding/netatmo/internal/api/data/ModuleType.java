@@ -27,10 +27,10 @@ import org.openhab.binding.netatmo.internal.handler.capability.AirCareCapability
 import org.openhab.binding.netatmo.internal.handler.capability.CameraCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.ChannelHelperCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.DeviceCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.EventCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.MeasureCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.ModuleCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PersonCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
@@ -79,7 +79,7 @@ public enum ModuleType {
     ACCOUNT(FeatureArea.NONE, null, null, List.of(), List.of()),
     @SerializedName("NAHome")
     HOME(FeatureArea.NONE, "NAHome", ACCOUNT,
-            List.of(ModuleCapability.class, EventCapability.class, HomeCapability.class, ChannelHelperCapability.class),
+            List.of(DeviceCapability.class, EventCapability.class, HomeCapability.class, ChannelHelperCapability.class),
             List.of(HomeSecurityChannelHelper.class, HomeEnergyChannelHelper.class)),
     @SerializedName("NAPerson")
     PERSON(FeatureArea.SECURITY, "NAPerson", HOME,
@@ -102,7 +102,7 @@ public enum ModuleType {
             List.of(SignalChannelHelper.class)),
     @SerializedName("NAMain")
     WEATHER_STATION(FeatureArea.WEATHER, "NAMain", ACCOUNT,
-            List.of(ModuleCapability.class, WeatherCapability.class, MeasureCapability.class,
+            List.of(DeviceCapability.class, WeatherCapability.class, MeasureCapability.class,
                     ChannelHelperCapability.class),
             List.of(PressureExtChannelHelper.class, NoiseChannelHelper.class, HumidityChannelHelper.class,
                     TemperatureExtChannelHelper.class, AirQualityChannelHelper.class, LocationChannelHelper.class,
@@ -129,7 +129,7 @@ public enum ModuleType {
                     SignalChannelHelper.class)),
     @SerializedName("NHC")
     HOME_COACH(FeatureArea.AIR_CARE, "NHC", ACCOUNT,
-            List.of(ModuleCapability.class, AirCareCapability.class, MeasureCapability.class,
+            List.of(DeviceCapability.class, AirCareCapability.class, MeasureCapability.class,
                     ChannelHelperCapability.class),
             List.of(NoiseChannelHelper.class, HumidityChannelHelper.class, AirQualityExtChannelHelper.class,
                     TemperatureChannelHelper.class, PressureChannelHelper.class, TimestampExtChannelHelper.class,

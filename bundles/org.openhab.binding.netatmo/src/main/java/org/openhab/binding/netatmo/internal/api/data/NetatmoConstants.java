@@ -17,7 +17,6 @@ import static org.openhab.core.library.CoreItemFactory.*;
 import static org.openhab.core.library.unit.MetricPrefix.*;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -262,10 +261,6 @@ public class NetatmoConstants {
 
         private ThermostatZoneType(String id) {
             zoneId = id;
-        }
-
-        public static ThermostatZoneType fromId(String id) {
-            return Arrays.stream(values()).filter(value -> value.zoneId.equals(id)).findFirst().orElse(UNKNOWN);
         }
     }
 

@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.deserialization;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,7 +29,11 @@ public class NAObjectMap<T extends NAObject> extends HashMap<String, T> {
     private static final long serialVersionUID = 7635233672795516649L;
 
     @Nullable
-    T put(T thing) {
+    public T put(T thing) {
         return super.put(thing.getId(), thing);
+    }
+
+    public Optional<T> getOpt(String key) {
+        return Optional.ofNullable(super.get(key));
     }
 }

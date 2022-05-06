@@ -30,10 +30,10 @@ import org.openhab.binding.netatmo.internal.handler.capability.AirCareCapability
 import org.openhab.binding.netatmo.internal.handler.capability.CameraCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.ChannelHelperCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.DeviceCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.EventCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.MeasureCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.ModuleCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PersonCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
@@ -122,8 +122,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
         moduleType.capabilities.forEach(capability -> {
             Capability newCap = null;
-            if (capability == ModuleCapability.class) {
-                newCap = new ModuleCapability(handler);
+            if (capability == DeviceCapability.class) {
+                newCap = new DeviceCapability(handler);
             } else if (capability == AirCareCapability.class) {
                 newCap = new AirCareCapability(handler);
             } else if (capability == EventCapability.class) {
