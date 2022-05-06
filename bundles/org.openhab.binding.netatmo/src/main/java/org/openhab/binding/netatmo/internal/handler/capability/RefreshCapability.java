@@ -22,7 +22,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.ThingStatus;
@@ -46,7 +45,7 @@ public class RefreshCapability extends Capability {
 
     private Duration dataValidity;
     private Instant dataTimeStamp = Instant.now();
-    private @Nullable Instant dataTimeStamp0;
+    private Instant dataTimeStamp0 = Instant.MIN;
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private final boolean refreshConfigured;
 
@@ -85,7 +84,7 @@ public class RefreshCapability extends Capability {
             logger.debug("Module is not ONLINE; special refresh interval is used");
             delay = OFFLINE_INTERVAL.toSeconds();
             if (probing()) {
-                dataTimeStamp0 = null;
+                dataTimeStamp0 = Instant.MIN;
             }
         } else if (refreshConfigured) {
             delay = dataValidity.getSeconds();
@@ -103,12 +102,11 @@ public class RefreshCapability extends Capability {
         newData.getLastSeen().ifPresent(timestamp -> {
             Instant tsInstant = timestamp.toInstant();
             if (probing()) {
-                Instant firstTimeStamp = dataTimeStamp0;
-                if (firstTimeStamp == null) {
+                if (dataTimeStamp0 == Instant.MIN) {
                     dataTimeStamp0 = tsInstant;
                     logger.debug("First data timestamp is {}", dataTimeStamp0);
-                } else if (tsInstant.isAfter(firstTimeStamp)) {
-                    dataValidity = Duration.between(firstTimeStamp, tsInstant);
+                } else if (tsInstant.isAfter(dataTimeStamp0)) {
+                    dataValidity = Duration.between(dataTimeStamp0, tsInstant);
                     logger.debug("Data validity period identified to be {}", dataValidity);
                 } else {
                     logger.debug("Data validity period not yet found - data timestamp unchanged");
