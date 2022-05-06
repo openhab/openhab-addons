@@ -87,6 +87,8 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     private @Nullable GenericZoneCapabilities capabilities;
     private @Nullable TadoHvacChange pendingHvacChange;
 
+    private boolean disposing = false;
+
     public TadoZoneHandler(Thing thing, TadoStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
@@ -214,6 +216,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
     @Override
     public void initialize() {
+        disposing = false;
         configuration = getConfigAs(TadoZoneConfig.class);
         if (configuration.refreshInterval <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Refresh interval of zone "
@@ -237,6 +240,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
     @Override
     public void dispose() {
+        disposing = true;
         cancelScheduledZoneStateUpdate();
     }
 
@@ -275,7 +279,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     private void updateZoneState(boolean forceUpdate) {
-        if (thing.getStatus() != ThingStatus.ONLINE) {
+        if ((thing.getStatus() != ThingStatus.ONLINE) || disposing) {
             return;
         }
 
