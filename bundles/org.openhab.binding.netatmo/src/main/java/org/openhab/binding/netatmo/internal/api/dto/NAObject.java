@@ -30,6 +30,7 @@ public class NAObject {
     protected String id = "";
     @SerializedName(value = "name", alternate = { "module_name", "station_name", "pseudo", "message", "key" })
     protected @Nullable String description;
+    private boolean ignoredForThingUpdate;
 
     public String getId() {
         return id;
@@ -37,5 +38,13 @@ public class NAObject {
 
     public @Nullable String getName() {
         return description;
+    }
+
+    public boolean isIgnoredForThingUpdate() {
+        return ignoredForThingUpdate;
+    }
+
+    public void setIgnoredForThingUpdate(boolean ignoredForThingUpdate) {
+        this.ignoredForThingUpdate = ignoredForThingUpdate;
     }
 }
