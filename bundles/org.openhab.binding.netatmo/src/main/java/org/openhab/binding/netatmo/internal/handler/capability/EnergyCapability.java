@@ -61,10 +61,12 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
         handler.getActiveChildren().forEach(handler -> {
             HomeDataRoom roomData = rooms.get(handler.getId());
             if (roomData != null) {
+                roomData.setIgnoredForThingUpdate(true);
                 handler.setNewData(roomData);
             }
             HomeDataModule moduleData = modules.get(handler.getId());
             if (moduleData != null) {
+                moduleData.setIgnoredForThingUpdate(true);
                 handler.setNewData(moduleData);
             }
         });

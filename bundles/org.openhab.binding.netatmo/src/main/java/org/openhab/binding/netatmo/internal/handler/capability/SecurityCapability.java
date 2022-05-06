@@ -29,8 +29,6 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeStatusPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +52,14 @@ class SecurityCapability extends RestCapability<SecurityApi> {
         NAObjectMap<HomeDataModule> modules = homeData.getModules();
         handler.getActiveChildren().forEach(childHandler -> {
             String childId = childHandler.getId();
-            persons.getOpt(childId).ifPresentOrElse(person -> childHandler.setNewData(person), () -> {
-                modules.getOpt(childId).ifPresent(module -> childHandler.setNewData(module));
+            persons.getOpt(childId).ifPresentOrElse(person -> {
+                person.setIgnoredForThingUpdate(true);
+                childHandler.setNewData(person);
+            }, () -> {
+                modules.getOpt(childId).ifPresent(module -> {
+                    module.setIgnoredForThingUpdate(true);
+                    childHandler.setNewData(module);
+                });
             });
         });
     }
@@ -68,9 +72,10 @@ class SecurityCapability extends RestCapability<SecurityApi> {
             String childId = childHandler.getId();
             persons.getOpt(childId).ifPresentOrElse(person -> childHandler.setNewData(person), () -> {
                 modules.getOpt(childId).ifPresentOrElse(module -> childHandler.setNewData(module), () -> {
-                    // This handler is not present in the homestatus data, so it is offline
-                    childHandler.setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/device-not-connected");
+                    // This module is not present in the homestatus data, so it is considered as unreachable
+                    HomeStatusModule module = new HomeStatusModule();
+                    module.setReachable(false);
+                    childHandler.setNewData(module);
                 });
             });
         });
@@ -81,11 +86,17 @@ class SecurityCapability extends RestCapability<SecurityApi> {
         String personId = homeEvent.getPersonId();
         if (personId != null) {
             handler.getActiveChildren().stream().filter(handler -> personId.equals(handler.getId())).findFirst()
-                    .ifPresent(handler -> handler.setNewData(homeEvent));
+                    .ifPresent(handler -> {
+                        homeEvent.setIgnoredForThingUpdate(true);
+                        handler.setNewData(homeEvent);
+                    });
         }
         String cameraId = homeEvent.getCameraId();
         handler.getActiveChildren().stream().filter(handler -> cameraId.equals(handler.getId())).findFirst()
-                .ifPresent(handler -> handler.setNewData(homeEvent));
+                .ifPresent(handler -> {
+                    homeEvent.setIgnoredForThingUpdate(true);
+                    handler.setNewData(homeEvent);
+                });
     }
 
     public Collection<HomeEvent> getCameraEvents(String cameraId) {

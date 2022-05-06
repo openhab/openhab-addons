@@ -144,8 +144,10 @@ public interface CommonInterface {
                 finalReason = thingStatusReason;
             }
         }
-        setThingStatus(finalReason == null ? ThingStatus.ONLINE : ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                finalReason);
+        if (!newData.isIgnoredForThingUpdate()) {
+            setThingStatus(finalReason == null ? ThingStatus.ONLINE : ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                    finalReason);
+        }
     }
 
     default void commonHandleCommand(ChannelUID channelUID, Command command) {
