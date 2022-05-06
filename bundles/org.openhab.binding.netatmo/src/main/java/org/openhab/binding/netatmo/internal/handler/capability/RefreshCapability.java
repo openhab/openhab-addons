@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.time.temporal.ChronoUnit.*;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 public class RefreshCapability extends Capability {
     private static final Duration DEFAULT_DELAY = Duration.of(20, SECONDS);
     private static final Duration PROBING_INTERVAL = Duration.of(120, SECONDS);
+    private static final Duration OFFLINE_INTERVAL = Duration.of(15, MINUTES);
 
     private final Logger logger = LoggerFactory.getLogger(RefreshCapability.class);
     private final ScheduledExecutorService scheduler;
@@ -79,17 +80,21 @@ public class RefreshCapability extends Capability {
 
     private void proceedWithUpdate() {
         handler.proceedWithUpdate();
-        if (ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
-            long delay;
-            if (refreshConfigured) {
-                delay = dataValidity.getSeconds();
-            } else {
-                delay = (probing() ? PROBING_INTERVAL : dataValidity.minus(dataAge()).plus(DEFAULT_DELAY)).toSeconds();
+        long delay;
+        if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
+            logger.debug("Module is not ONLINE; special refresh interval is used");
+            delay = OFFLINE_INTERVAL.toSeconds();
+            if (probing()) {
+                dataTimeStamp0 = null;
             }
-            delay = delay < 2 ? PROBING_INTERVAL.toSeconds() : delay;
-            logger.debug("Module refreshed, next one in {} s", delay);
-            freeJobAndReschedule(delay);
+        } else if (refreshConfigured) {
+            delay = dataValidity.getSeconds();
+        } else {
+            delay = (probing() ? PROBING_INTERVAL : dataValidity.minus(dataAge()).plus(DEFAULT_DELAY)).toSeconds();
         }
+        delay = delay < 2 ? PROBING_INTERVAL.toSeconds() : delay;
+        logger.debug("Module refreshed, next one in {} s", delay);
+        freeJobAndReschedule(delay);
     }
 
     @Override

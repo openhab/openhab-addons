@@ -106,7 +106,6 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                                     .ifPresent(f -> createThing(room, homeUID));
                         });
                     });
-
                 }
             } catch (NetatmoException e) {
                 logger.warn("Error during discovery process : {}", e.getMessage());
