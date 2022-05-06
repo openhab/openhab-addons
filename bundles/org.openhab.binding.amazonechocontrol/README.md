@@ -167,7 +167,7 @@ It will be configured at runtime by using the save channel to store the current 
 | amazonMusicTrackId    | String      | R/W         | echo, echoshow, echospot, wha | Start playing of an Amazon Music track by its id or stops playing if an empty string was provided
 | amazonMusicPlayListId | String      | W           | echo, echoshow, echospot, wha | Write Only! Start playing of an Amazon Music playlist by specifying its id or stops playing if an empty string was provided.
 | amazonMusic           | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used Amazon Music song (works after at least one song was started after the openHAB start)
-| remind                | String      | R/W         | echo, echoshow, echospot      | Write Only! Speak the reminder and sends a notification to the Alexa app (Currently the reminder is played and notified two times, this seems to be a bug in the Amazon software)
+| remind                | String      | R/W         | echo, echoshow, echospot      | Write Only! Speak the reminder and sends a notification to the Alexa app
 | nextReminder          | DateTime    | R           | echo, echoshow, echospot      | Next reminder on the device
 | playAlarmSound        | String      | W           | echo, echoshow, echospot      | Write Only! Plays an Alarm sound
 | nextAlarm             | DateTime    | R           | echo, echoshow, echospot      | Next alarm on the device
