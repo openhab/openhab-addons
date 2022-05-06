@@ -155,6 +155,64 @@
 
 	</thing-type>
 
+	<thing-type id="security-camera-360">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Security Camera 360</label>
+		<description>Indoor security camera with 360° view and motion detection.</description>
+
+		<channels>
+			<channel id="privacy-mode" typeId="privacy-mode"/>
+			<channel id="camera-notification" typeId="camera-notification"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
+	<thing-type id="security-camera-eyes">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Security Camera Eyes</label>
+		<description>Outdoor security camera with motion detection and light.</description>
+
+		<channels>
+			<channel id="privacy-mode" typeId="privacy-mode"/>
+			<channel id="camera-notification" typeId="camera-notification"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
+	<channel-type id="privacy-mode">
+		<item-type>Switch</item-type>
+		<label>Privacy Mode</label>
+		<description>If privacy mode is enabled, the camera is disabled and vice versa.</description>
+		<state>
+			<options>
+				<option value="ENABLED">Privacy mode enabled (camera disabled)</option>
+				<option value="DISABLED">Privacy mode disabled (camera enabled)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="camera-notification">
+		<item-type>Switch</item-type>
+		<label>Camera Notifications</label>
+		<description>Enables or disables notifications for the camera.</description>
+		<state>
+			<options>
+				<option value="ENABLED">Enable notifications</option>
+				<option value="DISABLED">Disable notifications</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
