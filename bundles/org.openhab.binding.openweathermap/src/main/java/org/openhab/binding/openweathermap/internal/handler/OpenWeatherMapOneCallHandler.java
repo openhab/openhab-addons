@@ -263,7 +263,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                 }
                 Matcher alertsMatcher = CHANNEL_GROUP_ALERTS_PREFIX_PATTERN.matcher(channelGroupId);
                 if (alertsMatcher.find() && (i = Integer.parseInt(alertsMatcher.group(1))) >= 1) {
-                    updateAlertsChannel(channelUID, i);
+                    updateAlertsChannel(channelUID, i - 1);
                     break;
                 }
                 break;
@@ -681,7 +681,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
         List<Alert> alerts = localWeatherData != null ? localWeatherData.alerts : null;
         State state = UnDefType.UNDEF;
         if (alerts != null && alerts.size() > count) {
-            Alert alert = alerts.get(count - 1);
+            Alert alert = alerts.get(count);
             switch (channelId) {
                 case CHANNEL_ALERT_EVENT:
                     state = getStringTypeState(alert.event);
