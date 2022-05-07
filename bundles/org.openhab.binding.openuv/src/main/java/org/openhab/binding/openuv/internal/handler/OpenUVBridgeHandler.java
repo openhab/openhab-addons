@@ -94,7 +94,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        reconnectJob.ifPresent(job -> job.cancel(false));
+        reconnectJob.ifPresent(job -> job.cancel(true));
         reconnectJob = Optional.empty();
     }
 
