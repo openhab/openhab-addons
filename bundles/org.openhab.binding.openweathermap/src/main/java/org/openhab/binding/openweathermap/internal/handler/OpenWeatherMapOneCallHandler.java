@@ -410,7 +410,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
      * Update the channel from the last OpenWeatherMap data retrieved.
      *
      * @param channelUID the id identifying the channel to be updated
-     * @param count the number of the hour referenced by the channel
+     * @param count the index of the hourly data referenced by the channel (hour 1 is count 0)
      */
     private void updateHourlyForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
@@ -509,7 +509,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
      * Update the channel from the last OpenWeatherMap data retrieved.
      *
      * @param channelUID the id identifying the channel to be updated
-     * @param count
+     * @param count the index of the daily data referenced by the channel (today is count 0)
      */
     private void updateDailyForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
@@ -672,7 +672,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
      * Update the channel from the last OpenWeaterhMap data retrieved.
      *
      * @param channelUID the id identifying the channel to be updated
-     * @param count
+     * @param count the index of the alert data referenced by the channel (alert 1 is count 0)
      */
     private void updateAlertsChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
