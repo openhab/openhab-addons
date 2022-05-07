@@ -17,6 +17,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -67,7 +68,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
 
-    private @Nullable ScheduledFuture<?> reconnectJob;
+    private Optional<ScheduledFuture<?>> reconnectJob = Optional.empty();
 
     public OpenUVBridgeHandler(Bridge bridge, LocationProvider locationProvider, TranslationProvider i18nProvider,
             LocaleProvider localeProvider, Gson gson) {
@@ -93,11 +94,8 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> job = this.reconnectJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
-        }
-        reconnectJob = null;
+        reconnectJob.ifPresent(job -> job.cancel(true));
+        reconnectJob = Optional.empty();
     }
 
     @Override
@@ -129,7 +127,8 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 throw new OpenUVException(error);
             }
         } catch (JsonSyntaxException e) {
-            logger.debug("No valid json received when calling `{}` : {}", url, jsonData);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    String.format("Invalid json received when calling `%s` : %s", url, jsonData));
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (OpenUVException e) {
@@ -139,8 +138,8 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
                         .format("@text/offline.comm-error-quota-exceeded [ \"%s\" ]", tomorrowMidnight.toString()));
 
-                reconnectJob = scheduler.schedule(this::initiateConnexion,
-                        Duration.between(LocalDateTime.now(), tomorrowMidnight).toMinutes(), TimeUnit.MINUTES);
+                reconnectJob = Optional.of(scheduler.schedule(this::initiateConnexion,
+                        Duration.between(LocalDateTime.now(), tomorrowMidnight).toMinutes(), TimeUnit.MINUTES));
             } else {
                 updateStatus(ThingStatus.OFFLINE,
                         e.isApiKeyError() ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.NONE,
