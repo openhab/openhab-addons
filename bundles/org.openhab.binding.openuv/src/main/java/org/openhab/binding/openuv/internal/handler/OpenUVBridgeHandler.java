@@ -23,8 +23,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.HttpMethod;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openuv.internal.OpenUVException;
@@ -118,7 +116,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
         String url = String.format(QUERY_URL, latitude, longitude, altitude);
         String jsonData = "";
         try {
-            jsonData = HttpUtil.executeUrl(HttpMethod.GET, url, header, null, null, REQUEST_TIMEOUT_MS);
+            jsonData = HttpUtil.executeUrl("GET", url, header, null, null, REQUEST_TIMEOUT_MS);
             OpenUVResponse uvResponse = gson.fromJson(jsonData, OpenUVResponse.class);
             if (uvResponse != null) {
                 String error = uvResponse.getError();
