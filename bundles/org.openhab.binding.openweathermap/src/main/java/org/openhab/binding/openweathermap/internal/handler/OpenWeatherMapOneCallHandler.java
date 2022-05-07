@@ -371,6 +371,12 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
         }
     }
 
+    /**
+     * Update the channel from the last OpenWeatherMap data retrieved.
+     *
+     * @param channelUID the id identifying the channel to be updated
+     * @param count the index of the minutely data referenced by the channel (minute 1 is count 0)
+     */
     private void updateMinutelyForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
