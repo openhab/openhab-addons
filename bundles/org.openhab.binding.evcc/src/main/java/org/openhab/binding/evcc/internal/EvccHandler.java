@@ -181,32 +181,21 @@ public class EvccHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "@text/offline.configuration-error.no-host");
             } else {
-                // Background initialization:
-                scheduler.execute(() -> {
-                    this.result = getResult(config.url);
-                    Result result = this.result;
-                    if (result == null) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                "@text/offline.communication-error.request-failed");
-                    } else {
-                        sitename = result.getSiteTitle();
-                        numberOfLoadpoints = result.getLoadpoints().length;
-                        logger.debug("Found {} loadpoints on site {} (host: {}).", numberOfLoadpoints, sitename,
-                                config.url);
-                        updateStatus(ThingStatus.ONLINE);
-                        refreshOnStartup();
-                    }
-                });
+                logger.debug("Setting up refresh job ...");
+                statePollingJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, 60, TimeUnit.SECONDS);
             }
         }
     }
 
-    private void statePolling() {
-        logger.debug("Running polling job ...");
-        refresh();
-    }
-
+    /**
+     * Refreshes from evcc.
+     * 
+     * First, checks connection and updates Thing status.
+     * Second, creates all available channels.
+     * Third, updates all channels.
+     */
     private void refresh() {
+        logger.debug("Running refresh job ...");
         EvccConfiguration config = this.config;
         if (config == null)
             return;
@@ -218,23 +207,11 @@ public class EvccHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "@text/offline.communication-error.request-failed");
         } else {
-            sitename = result.getSiteTitle();
-            numberOfLoadpoints = result.getLoadpoints().length;
-            logger.debug("Found {} loadpoints on site {} (host: {}).", numberOfLoadpoints, sitename, config.url);
+            this.sitename = result.getSiteTitle();
+            this.numberOfLoadpoints = result.getLoadpoints().length;
+            logger.debug("Found {} loadpoints on site {} (host: {}).", this.numberOfLoadpoints, this.sitename,
+                    config.url);
             updateStatus(ThingStatus.ONLINE);
-            batteryConfigured = result.getBatteryConfigured();
-            gridConfigured = result.getGridConfigured();
-            pvConfigured = result.getPvConfigured();
-            updateChannelsGeneral();
-            for (int i = 0; i < numberOfLoadpoints; i++) {
-                updateChannelsLoadpoint(i);
-            }
-        }
-    }
-
-    private void refreshOnStartup() {
-        Result result = this.result;
-        if (result != null) {
             batteryConfigured = result.getBatteryConfigured();
             gridConfigured = result.getGridConfigured();
             pvConfigured = result.getPvConfigured();
@@ -245,8 +222,6 @@ public class EvccHandler extends BaseThingHandler {
                 updateChannelsLoadpoint(i);
             }
         }
-        logger.debug("Setting up polling job ...");
-        statePollingJob = scheduler.scheduleWithFixedDelay(this::statePolling, 60, 60, TimeUnit.SECONDS);
     }
 
     @Override
