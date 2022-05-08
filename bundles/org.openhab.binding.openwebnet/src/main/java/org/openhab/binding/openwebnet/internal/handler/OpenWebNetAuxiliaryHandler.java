@@ -102,7 +102,7 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
                 // initializing
                 send(msg);
             } catch (MalformedFrameException | UnsupportedFrameException | OWNException e) {
-                logger.debug("Exception while processing command {}: ", e.getMessage());
+                logger.debug("Exception while processing command: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
