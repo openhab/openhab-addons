@@ -88,6 +88,7 @@ public class EvccHandler extends BaseThingHandler {
         } else {
             logger.debug("Handling command {} for channel {}", command, channelUID);
             String channelIdWithoutGroup = channelUID.getIdWithoutGroup();
+            if (channelUID.getGroupId() == null) return;
             int loadpoint = Integer.parseInt(channelUID.getGroupId().toString().substring(9));
             targetSoC = status.getResult().getLoadpoints()[loadpoint].getTargetSoC();
             switch (channelIdWithoutGroup) {
@@ -147,8 +148,7 @@ public class EvccHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(EvccConfiguration.class);
-        updateStatus(ThingStatus.UNKNOWN);
-
+        
         if ("".equals(config.url)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "No host configured");
         } else {
@@ -262,9 +262,6 @@ public class EvccHandler extends BaseThingHandler {
                 "Number:Dimensionless");
         createChannel(CHANNEL_LOADPOINT_MODE, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_MODE, "String");
         createChannel(CHANNEL_LOADPOINT_PHASES, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_PHASES, "Number");
-        // createChannel(CHANNEL_LOADPOINT_PV_ACTION, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_PV_ACTION, "Switch");
-        // createChannel(CHANNEL_LOADPOINT_PV_REMAINING, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_PV_REMAINING,
-        // "Number");
         createChannel(CHANNEL_LOADPOINT_TARGET_SOC, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_TARGET_SOC,
                 "Number:Dimensionless");
         createChannel(CHANNEL_LOADPOINT_TARGET_TIME, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME, "DateTime");
@@ -340,35 +337,19 @@ public class EvccHandler extends BaseThingHandler {
         updateState(channel, new QuantityType<>(chargedEnergy, Units.WATT_HOUR));
         boolean charging = loadpoint.getCharging();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CHARGING);
-        if (charging == true) {
-            updateState(channel, OnOffType.ON);
-        } else {
-            updateState(channel, OnOffType.OFF);
-        }
+        updateState(channel, OnOffType.from(charging));
         boolean connected = loadpoint.getConnected();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CONNECTED);
-        if (connected == true) {
-            updateState(channel, OnOffType.ON);
-        } else {
-            updateState(channel, OnOffType.OFF);
-        }
+        updateState(channel, OnOffType.from(connected));
         long connectedDuration = loadpoint.getConnectedDuration();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CONNECTED_DURATION);
         updateState(channel, new QuantityType<>(connectedDuration, MetricPrefix.NANO(Units.SECOND)));
         boolean enabled = loadpoint.getEnabled();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_ENABLED);
-        if (enabled == true) {
-            updateState(channel, OnOffType.ON);
-        } else {
-            updateState(channel, OnOffType.OFF);
-        }
+        updateState(channel, OnOffType.from(enabled));
         boolean hasVehicle = loadpoint.getHasVehicle();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_HAS_VEHICLE);
-        if (hasVehicle == true) {
-            updateState(channel, OnOffType.ON);
-        } else {
-            updateState(channel, OnOffType.OFF);
-        }
+        updateState(channel, OnOffType.from(hasVehicle));
         double maxCurrent = loadpoint.getMaxCurrent();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_MAX_CURRENT);
         updateState(channel, new QuantityType<>(maxCurrent, Units.AMPERE));
@@ -384,15 +365,6 @@ public class EvccHandler extends BaseThingHandler {
         int phases = loadpoint.getPhases();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_PHASES);
         updateState(channel, new DecimalType(phases));
-        /*
-         * String pvAction = loadpoint.getPvAction();
-         * channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_PV_ACTION);
-         * if (pvAction == "active") {
-         * updateState(channel, OnOffType.ON);
-         * } else {
-         * updateState(channel, OnOffType.OFF);
-         * }
-         */
         targetSoC = loadpoint.getTargetSoC();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_SOC);
         updateState(channel, new QuantityType<>(targetSoC, Units.PERCENT));
@@ -439,11 +411,7 @@ public class EvccHandler extends BaseThingHandler {
         updateState(channel, new QuantityType<>(vehicleOdometer, MetricPrefix.KILO(SIUnits.METRE)));
         boolean vehiclePresent = loadpoint.getVehiclePresent();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_VEHICLE_PRESENT);
-        if (vehiclePresent == true) {
-            updateState(channel, OnOffType.ON);
-        } else {
-            updateState(channel, OnOffType.OFF);
-        }
+        updateState(channel, OnOffType.from(vehiclePresent));
         long vehicleRange = loadpoint.getVehicleRange();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_VEHICLE_RANGE);
         updateState(channel, new QuantityType<>(vehicleRange, MetricPrefix.KILO(SIUnits.METRE)));
