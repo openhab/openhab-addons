@@ -50,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link EvccHandler} is responsible for handling commands, which are
@@ -88,22 +89,17 @@ public class EvccHandler extends BaseThingHandler {
         } else {
             logger.debug("Handling command {} for channel {}", command, channelUID);
             String channelIdWithoutGroup = channelUID.getIdWithoutGroup();
-            if (channelUID.getGroupId() == null) return;
+            if (channelUID.getGroupId() == null)
+                return;
             int loadpoint = Integer.parseInt(channelUID.getGroupId().toString().substring(9));
             targetSoC = status.getResult().getLoadpoints()[loadpoint].getTargetSoC();
             switch (channelIdWithoutGroup) {
                 case CHANNEL_LOADPOINT_MODE:
                     setMode(config.url, loadpoint, command.toString());
-                    refresh();
-                    break;
                 case CHANNEL_LOADPOINT_MIN_SOC:
                     setMinSoC(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
-                    refresh();
-                    break;
                 case CHANNEL_LOADPOINT_TARGET_SOC:
                     setTargetSoC(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
-                    refresh();
-                    break;
                 case CHANNEL_LOADPOINT_TARGET_TIME:
                     if (targetTimeEnabled == true) {
                         targetTimeZDT = new DateTimeType(command.toString()).getZonedDateTime();
@@ -112,8 +108,6 @@ public class EvccHandler extends BaseThingHandler {
                                 CHANNEL_LOADPOINT_TARGET_TIME);
                         updateState(channel, new DateTimeType(targetTimeZDT));
                     }
-                    refresh();
-                    break;
                 case CHANNEL_LOADPOINT_TARGET_TIME_ENABLED:
                     if (command == OnOffType.ON) {
                         targetTimeEnabled = true;
@@ -122,49 +116,43 @@ public class EvccHandler extends BaseThingHandler {
                         targetTimeEnabled = false;
                         unsetTargetCharge(config.url, loadpoint);
                     }
-                    refresh();
-                    break;
                 case CHANNEL_LOADPOINT_PHASES:
                     setPhases(config.url, loadpoint, Integer.parseInt(command.toString()));
-                    refresh();
-                    break;
                 case CHANNEL_LOADPOINT_MIN_CURRENT:
                     setMinCurrent(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
-                    refresh();
-                    break;
                 case CHANNEL_LOADPOINT_MAX_CURRENT:
                     setMaxCurrent(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
+                default:
+                    logger.debug("Handled command {} for channel {}", command, channelUID);
                     refresh();
-                    break;
+                    return;
             }
         }
-
-        // Note: if communication with thing fails for some reason,
-        // indicate that by setting the status with detail information:
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // "Could not control device at IP address x.x.x.x");
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(EvccConfiguration.class);
-        
         if ("".equals(config.url)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "No host configured");
         } else {
             // Background initialization:
             scheduler.execute(() -> {
                 status = getStatus(config.url);
-                try {
-                    sitename = status.getResult().getSiteTitle();
-                    numberOfLoadpoints = status.getResult().getLoadpoints().length;
-                    logger.debug("Found {} loadpoints on site {} (host: {}).", numberOfLoadpoints, sitename,
-                            config.url);
-                    updateStatus(ThingStatus.ONLINE);
-                    refreshOnStartup();
-                } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                            "Failed to connect to evcc: " + e);
+                if (status == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Request failed");
+                } else {
+                    try {
+                        sitename = status.getResult().getSiteTitle();
+                        numberOfLoadpoints = status.getResult().getLoadpoints().length;
+                        logger.debug("Found {} loadpoints on site {} (host: {}).", numberOfLoadpoints, sitename,
+                                config.url);
+                        updateStatus(ThingStatus.ONLINE);
+                        refreshOnStartup();
+                    } catch (Exception e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                                "Failed to connect to evcc: " + e);
+                    }
                 }
             });
         }
@@ -441,17 +429,17 @@ public class EvccHandler extends BaseThingHandler {
      * @param description request description for logger
      * @param url full request URL
      * @param method reguest method, e.g. GET, POST
-     * @return the response body or response_code 999 if request faild
+     * @return the response body or null if request failed
      */
-    private String httpRequest(@Nullable String description, String url, String method) {
+    private @Nullable String httpRequest(@Nullable String description, String url, String method) {
         String response = "";
         try {
             response = HttpUtil.executeUrl(method, url, LONG_CONNECTION_TIMEOUT_MILLISEC);
             logger.trace("{} - {}, {} - {}", description, url, method, response);
             return response;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}, {} - {}", description, url, method, e.toString());
-            return "{\"response_code\":\"999\"}";
+            logger.debug("IO Exception - {} - {}, {} - {}", description, url, method, e.toString());
+            return null;
         }
     }
     // End utility functions
@@ -465,7 +453,12 @@ public class EvccHandler extends BaseThingHandler {
      */
     private @Nullable Status getStatus(@Nullable String host) {
         final String response = httpRequest("Status", host + EVCC_REST_API + "state", "GET");
-        return gson.fromJson(response, Status.class);
+        try {
+            return gson.fromJson(response, Status.class);
+        } catch (JsonSyntaxException e) {
+            logger.debug("Failed to get status:", e);
+            return null;
+        }
     }
 
     // Loadpoint specific API calls.
