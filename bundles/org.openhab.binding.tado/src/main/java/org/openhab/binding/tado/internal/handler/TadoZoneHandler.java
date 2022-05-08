@@ -34,6 +34,7 @@ import org.openhab.binding.tado.internal.TadoBindingConstants.ZoneType;
 import org.openhab.binding.tado.internal.TadoHvacChange;
 import org.openhab.binding.tado.internal.adapter.TadoZoneStateAdapter;
 import org.openhab.binding.tado.internal.api.ApiException;
+import org.openhab.binding.tado.internal.api.GsonBuilderFactory;
 import org.openhab.binding.tado.internal.api.TadoApiTypeUtils;
 import org.openhab.binding.tado.internal.api.model.ACFanLevel;
 import org.openhab.binding.tado.internal.api.model.ACHorizontalSwing;
@@ -68,6 +69,8 @@ import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link TadoZoneHandler} is responsible for handling commands of zones and update their state.
  *
@@ -88,6 +91,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     private @Nullable TadoHvacChange pendingHvacChange;
 
     private boolean disposing = false;
+    private @Nullable Gson gson = null;
 
     public TadoZoneHandler(Thing thing, TadoStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
@@ -113,11 +117,14 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
     public OverlayTerminationCondition getDefaultTerminationCondition() throws IOException, ApiException {
         OverlayTemplate overlayTemplate = getApi().showZoneDefaultOverlay(getHomeId(), getZoneId());
+        logApiTransaction(overlayTemplate, false);
         return terminationConditionTemplateToTerminationCondition(overlayTemplate.getTerminationCondition());
     }
 
     public ZoneState getZoneState() throws IOException, ApiException {
-        return getApi().showZoneState(getHomeId(), getZoneId());
+        ZoneState zoneState = getApi().showZoneState(getHomeId(), getZoneId());
+        logApiTransaction(zoneState, false);
+        return zoneState;
     }
 
     public GenericZoneCapabilities getZoneCapabilities() {
@@ -133,9 +140,10 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     public Overlay setOverlay(Overlay overlay) throws IOException, ApiException {
-        logger.debug("Setting overlay of home {} and zone {} with overlay: {}", getHomeId(), getZoneId(),
-                overlay.toString());
-        return getApi().updateZoneOverlay(getHomeId(), getZoneId(), overlay);
+        logApiTransaction(overlay, true);
+        Overlay newOverlay = getApi().updateZoneOverlay(getHomeId(), getZoneId(), overlay);
+        logApiTransaction(newOverlay, false);
+        return newOverlay;
     }
 
     public void removeOverlay() throws IOException, ApiException {
@@ -249,7 +257,10 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             try {
                 Zone zoneDetails = getApi().showZoneDetails(getHomeId(), getZoneId());
+                logApiTransaction(zoneDetails, false);
+
                 GenericZoneCapabilities capabilities = getApi().showZoneCapabilities(getHomeId(), getZoneId());
+                logApiTransaction(capabilities, false);
 
                 if (zoneDetails == null || capabilities == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -260,7 +271,6 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_NAME, zoneDetails.getName());
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_TYPE, zoneDetails.getType().name());
                 this.capabilities = capabilities;
-                logger.debug("Got capabilities: {}", capabilities.toString());
             } catch (IOException | ApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not connect to server due to " + e.getMessage());
@@ -415,5 +425,27 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 updateZoneState(true);
             }
         }, configuration.hvacChangeDebounce, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Helper method to log an API transaction on the given object.
+     * If the logger level is 'debug', the transaction is simply logged.
+     * If the logger level is 'trace, the object's JSON serial contents are included.
+     *
+     * @param object the object to be logged.
+     * @param isCommand marks whether the transaction is a command to, or a response from, the server.
+     */
+    private void logApiTransaction(Object object, boolean isCommand) {
+        if (logger.isTraceEnabled()) {
+            Gson gson = this.gson;
+            if (gson == null) {
+                gson = this.gson = GsonBuilderFactory.defaultGsonBuilder().setPrettyPrinting().create();
+            }
+            logger.trace("Api {}: homeId:{}, zoneId:{}, objectId:{}, content:\n{}", isCommand ? "command" : "response",
+                    getHomeId(), getZoneId(), object.getClass().getSimpleName(), gson.toJson(object));
+        } else if (logger.isDebugEnabled()) {
+            logger.debug("Api {}: homeId:{}, zoneId:{}, objectId:{}", isCommand ? "command" : "response", getHomeId(),
+                    getZoneId(), object.getClass().getSimpleName());
+        }
     }
 }
