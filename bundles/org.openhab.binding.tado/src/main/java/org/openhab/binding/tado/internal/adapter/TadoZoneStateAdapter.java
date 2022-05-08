@@ -108,6 +108,9 @@ public class TadoZoneStateAdapter {
     }
 
     public State getTargetTemperature() {
+        if (!isPowerOn()) {
+            return UnDefType.UNDEF;
+        }
         switch (zoneState.getSetting().getType()) {
             case HEATING:
                 return toTemperatureState(((HeatingZoneSetting) zoneState.getSetting()).getTemperature(),
