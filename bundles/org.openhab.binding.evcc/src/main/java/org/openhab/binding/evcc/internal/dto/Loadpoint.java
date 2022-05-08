@@ -16,6 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents a loadpoint object of the status response (/api/state).
+ * This DTO was written for evcc version 0.91.
  *
  * @author Florian Hotze - Initial contribution
  */
@@ -37,6 +38,9 @@ public class Loadpoint {
 
     @SerializedName("chargeRemainingDuration")
     private long chargeRemainingDuration;
+
+    @SerializedName("chargeRemainingEnergy")
+    private long chargeRemainingEnergy;
 
     @SerializedName("chargedEnergy")
     private double chargedEnergy;
@@ -85,12 +89,6 @@ public class Loadpoint {
 
     @SerializedName("targetTime")
     private String targetTime;
-
-    @SerializedName("targetTimeActive")
-    private boolean targetTimeActive;
-
-    @SerializedName("targetTimeHourSuggestion")
-    private int targetTimeHourSuggestion;
 
     @SerializedName("title")
     private String title;
@@ -146,6 +144,13 @@ public class Loadpoint {
      */
     public long getChargeRemainingDuration() {
         return chargeRemainingDuration;
+    }
+
+    /**
+     * @return the chargeRemainingEnergy
+     */
+    public long getChargeRemainingEnergy() {
+        return chargeRemainingEnergy;
     }
 
     /**
@@ -258,20 +263,6 @@ public class Loadpoint {
      */
     public String getTargetTime() {
         return targetTime;
-    }
-
-    /**
-     * @return whether the target time is active
-     */
-    public boolean getTargetTimeActive() {
-        return targetTimeActive;
-    }
-
-    /**
-     * @return the target time hour suggestion
-     */
-    public int getTargetTimeHourSuggestion() {
-        return targetTimeHourSuggestion;
     }
 
     /**
