@@ -168,14 +168,15 @@ public class EvccHandler extends BaseThingHandler {
         this.config = getConfigAs(EvccConfiguration.class);
         EvccConfiguration config = this.config;
         if (config != null) {
-            if (config.url == null) {
+            String url = config.url;
+            if (url == null || "".equals(url)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "@text/offline.configuration-error.no-host");
-            } else {
-                this.evccAPI = new EvccAPI(config.url);
-                logger.debug("Setting up refresh job ...");
-                statePollingJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, 15, TimeUnit.SECONDS);
+                return;
             }
+            this.evccAPI = new EvccAPI(url);
+            logger.debug("Setting up refresh job ...");
+            statePollingJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, 15, TimeUnit.SECONDS);
         }
     }
 

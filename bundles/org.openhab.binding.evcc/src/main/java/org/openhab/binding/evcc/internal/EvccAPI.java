@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.dto.Result;
 import org.openhab.binding.evcc.internal.dto.Status;
@@ -34,12 +35,13 @@ import com.google.gson.JsonSyntaxException;
  * 
  * @author Florian Hotze - Initial contribution
  */
+@NonNullByDefault
 public class EvccAPI {
     private static final Logger logger = LoggerFactory.getLogger(EvccAPI.class);
     private static final Gson gson = new Gson();
-    private final @Nullable String host;
+    private String host = "";
 
-    public EvccAPI(@Nullable String host) {
+    public EvccAPI(String host) {
         this.host = host;
     }
 
