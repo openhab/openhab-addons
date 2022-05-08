@@ -3,7 +3,7 @@
 This binding integrates [evcc - electric vehicle charging control](https://evcc.io), a project that provides a control center for electric vehicle charging.
 
 evcc controls your wallbox(es) with multiple charging modes and allows you to charge your ev with your photovoltaik's excess current.
-To provide an intelligent charging control, evcc supports over 30 wallboxes and over 20 energy meters/home energy managment systems from many manufacturers as well as electric vehicles from over 20 car manufacturers.
+To provide an intelligent charging control, evcc supports over 30 wallboxes and over 20 energy meters/home energy management systems from many manufacturers as well as electric vehicles from over 20 car manufacturers.
 Furthermore, evcc calculates your money savings.
 
 This binding enables openHAB to retrieve status data from your evcc installation and to control the charging process.
@@ -17,9 +17,6 @@ For more advanced features like calculated savings, you have to visit the web UI
 
 No auto discovery supported.
 
-## Binding Configuration
-
-No binding configuration required.
 ## Thing Configuration
 
 ### `device` Thing Configuration
@@ -27,7 +24,7 @@ No binding configuration required.
 | Parameter       | Type   | Description                                     | Advanced | Required |
 |-----------------|--------|-------------------------------------------------|----------|----------|
 | url             | String | URL of evcc web UI, e.g. *https://demo.evcc.io* | false    | true     |
-| refreshInterval | Number | Interval the status is polled in sec.           | true     | false    |
+| refreshInterval | Number | Interval the status is polled in seconds.       | true     | false    |
 
 Default value for *refreshInterval* is 60 seconds.
 
@@ -134,8 +131,6 @@ String                    evcc_demo_loadpoint0_vehicleName                 "Vehi
 ```
 
 ### Sitemap
-
-This example Sitemap is not complete!
 
 ```
 sitemap evcc label="evcc Demo" {
