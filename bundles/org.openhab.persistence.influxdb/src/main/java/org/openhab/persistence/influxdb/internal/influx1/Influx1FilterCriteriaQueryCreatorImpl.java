@@ -19,7 +19,6 @@ import static org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtil
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.influxdb.dto.Query;
-import org.influxdb.querybuilder.Appender;
 import org.influxdb.querybuilder.BuiltQuery;
 import org.influxdb.querybuilder.Select;
 import org.influxdb.querybuilder.Where;
