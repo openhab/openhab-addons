@@ -39,6 +39,7 @@ import org.openhab.binding.tado.internal.api.TadoApiTypeUtils;
 import org.openhab.binding.tado.internal.api.model.ACFanLevel;
 import org.openhab.binding.tado.internal.api.model.ACHorizontalSwing;
 import org.openhab.binding.tado.internal.api.model.ACVerticalSwing;
+import org.openhab.binding.tado.internal.api.model.AcMode;
 import org.openhab.binding.tado.internal.api.model.AcModeCapabilities;
 import org.openhab.binding.tado.internal.api.model.CoolingZoneSetting;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
@@ -356,31 +357,38 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             return;
         }
 
-        AcModeCapabilities acCapabilities = TadoApiTypeUtils
-                .getModeCapabilities(((CoolingZoneSetting) setting).getMode(), capabilities);
+        AcMode acMode = ((CoolingZoneSetting) setting).getMode();
+        AcModeCapabilities acModeCapabilities = acMode == null ? new AcModeCapabilities()
+                : TadoApiTypeUtils.getModeCapabilities(acMode, capabilities);
 
         // update the options list of supported fan levels
         Channel channel = thing.getChannel(TadoBindingConstants.CHANNEL_ZONE_FAN_LEVEL);
-        List<ACFanLevel> fanLevels = acCapabilities.getFanLevel();
-        if (channel != null && fanLevels != null) {
-            stateDescriptionProvider.setStateOptions(channel.getUID(),
-                    fanLevels.stream().map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
+        if (channel != null) {
+            List<ACFanLevel> fanLevels = acModeCapabilities.getFanLevel();
+            if (fanLevels != null) {
+                stateDescriptionProvider.setStateOptions(channel.getUID(),
+                        fanLevels.stream().map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
+            }
         }
 
         // update the options list of supported horizontal swing settings
         channel = thing.getChannel(TadoBindingConstants.CHANNEL_ZONE_HORIZONTAL_SWING);
-        List<ACHorizontalSwing> horizontalSwings = acCapabilities.getHorizontalSwing();
-        if (channel != null && horizontalSwings != null) {
-            stateDescriptionProvider.setStateOptions(channel.getUID(), horizontalSwings.stream()
-                    .map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
+        if (channel != null) {
+            List<ACHorizontalSwing> horizontalSwings = acModeCapabilities.getHorizontalSwing();
+            if (horizontalSwings != null) {
+                stateDescriptionProvider.setStateOptions(channel.getUID(), horizontalSwings.stream()
+                        .map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
+            }
         }
 
         // update the options list of supported vertical swing settings
         channel = thing.getChannel(TadoBindingConstants.CHANNEL_ZONE_VERTICAL_SWING);
-        List<ACVerticalSwing> verticalSwings = acCapabilities.getVerticalSwing();
-        if (channel != null && verticalSwings != null) {
-            stateDescriptionProvider.setStateOptions(channel.getUID(),
-                    verticalSwings.stream().map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
+        if (channel != null) {
+            List<ACVerticalSwing> verticalSwings = acModeCapabilities.getVerticalSwing();
+            if (verticalSwings != null) {
+                stateDescriptionProvider.setStateOptions(channel.getUID(), verticalSwings.stream()
+                        .map(u -> new StateOption(u.name(), u.name())).collect(Collectors.toList()));
+            }
         }
     }
 
