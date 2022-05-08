@@ -47,6 +47,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapHandler;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
+import org.openhab.binding.shelly.internal.api2.Shelly2RpcApi;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
@@ -111,28 +112,29 @@ public class ShellyBaseHandler extends BaseThingHandler
     private ShellyBindingConfiguration bindingConfig;
     protected ShellyThingConfiguration config = new ShellyThingConfiguration();
     protected ShellyDeviceProfile profile = new ShellyDeviceProfile(); // init empty profile to avoid NPE
-    protected ShellyDeviceStats stats = new ShellyDeviceStats();
-    private final Shelly1CoapHandler coap;
-    public boolean autoCoIoT = false;
+    private ShellyDeviceStats stats = new ShellyDeviceStats();
+    private @Nullable Shelly1CoapHandler coap;
 
     private final ShellyTranslationProvider messages;
-    protected boolean stopping = false;
+    private final ShellyChannelCache cache;
+    private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
+
+    private final boolean gen2;
+    protected boolean autoCoIoT = false;
+
+    // Thing status
     private boolean channelsCreated = false;
+    private boolean stopping = false;
+    private int vibrationFilter = 0;
+    private String lastWakeupReason = "";
 
+    // Scheduler
     private long watchdog = now();
-
-    private @Nullable ScheduledFuture<?> statusJob;
-    public int scheduledUpdates = 0;
+    protected int scheduledUpdates = 0;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
     private boolean refreshSettings = false;
-
-    // delay before enabling channel
-    private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
-    private final ShellyChannelCache cache;
-
-    private String lastWakeupReason = "";
-    private int vibrationFilter = 0;
+    private @Nullable ScheduledFuture<?> statusJob;
 
     /**
      * Constructor
@@ -157,9 +159,20 @@ public class ShellyBaseHandler extends BaseThingHandler
         this.config = getConfigAs(ShellyThingConfiguration.class);
 
         this.httpClient = httpClient;
-        this.api = new Shelly1HttpApi(thingName, config, httpClient);
 
-        coap = new Shelly1CoapHandler(this, coapServer);
+        Map<String, String> properties = thing.getProperties();
+        String gen = getString(properties.get(PROPERTY_DEV_GEN));
+        String thingType = this.getThing().getThingTypeUID().getId();
+        if (gen.isEmpty() && thingType.startsWith("shellyplus") || thingType.startsWith("shellypro")) {
+            gen = "2";
+        }
+        gen2 = "2".equals(gen);
+        this.api = !gen2 ? new Shelly1HttpApi(thingName, this) : new Shelly2RpcApi(thingName, this);
+        if (gen2) {
+            config.eventsCoIoT = false;
+        } else {
+            this.coap = new Shelly1CoapHandler(this, coapServer);
+        }
     }
 
     @Override
@@ -263,10 +276,10 @@ public class ShellyBaseHandler extends BaseThingHandler
             return false;
         }
 
-        // Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing could not be
-        // fully initialized here. In this case the CoAP messages triggers auto-initialization (like the Action URL does
-        // when enabled)
-        if (config.eventsCoIoT && !profile.alwaysOn) {
+        // Gen 1 only: Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing
+        // could not be fully initialized here. In this case the CoAP messages triggers auto-initialization (like the
+        // Action URL does when enabled)
+        if (coap != null && config.eventsCoIoT && !profile.alwaysOn) {
             coap.start(thingName, config);
         }
 
@@ -312,7 +325,7 @@ public class ShellyBaseHandler extends BaseThingHandler
         }
 
         tmpPrf.auth = devInfo.auth; // missing in /settings
-        tmpPrf.status = api.getStatus();
+        tmpPrf.status = api.getStatus(); // update thing properties
         tmpPrf.updateFromStatus(tmpPrf.status);
 
         if (tmpPrf.isTRV) {
@@ -329,39 +342,14 @@ public class ShellyBaseHandler extends BaseThingHandler
         showThingConfig(tmpPrf);
         checkVersion(tmpPrf, tmpPrf.status);
 
-        if (config.eventsCoIoT && (tmpPrf.settings.coiot != null) && (tmpPrf.settings.coiot.enabled != null)) {
-            String devpeer = getString(tmpPrf.settings.coiot.peer);
-            String ourpeer = config.localIp + ":" + Shelly1CoapJSonDTO.COIOT_PORT;
-            if (!tmpPrf.settings.coiot.enabled || (profile.isMotion && devpeer.isEmpty())) {
-                try {
-                    api.setCoIoTPeer(ourpeer);
-                    logger.info("{}: CoIoT peer updated to {}", thingName, ourpeer);
-                } catch (ShellyApiException e) {
-                    logger.warn("{}: Unable to set CoIoT peer: {}", thingName, e.toString());
-                }
-            } else if (!devpeer.isEmpty() && !devpeer.equals(ourpeer)) {
-                logger.warn("{}: CoIoT peer in device settings does not point this to this host", thingName);
-            }
-        }
-        if (autoCoIoT) {
-            logger.debug("{}: Auto-CoIoT is enabled, disabling action urls", thingName);
-            config.eventsCoIoT = true;
-            config.eventsSwitch = false;
-            config.eventsButton = false;
-            config.eventsPush = false;
-            config.eventsRoller = false;
-            config.eventsSensorReport = false;
-            api.setConfig(thingName, config);
+        startCoap(config, tmpPrf);
+        if (!gen2) {
+            api.setActionURLs(); // register event urls
         }
 
         // All initialization done, so keep the profile and set Thing to ONLINE
         fillDeviceStatus(tmpPrf.status, false);
         postEvent(ALARM_TYPE_NONE, false);
-        api.setActionURLs(); // register event urls
-        if (config.eventsCoIoT) {
-            logger.debug("{}: Starting CoIoT (autoCoIoT={}/{})", thingName, bindingConfig.autoCoIoT, autoCoIoT);
-            coap.start(thingName, config);
-        }
 
         logger.debug("{}: Thing successfully initialized.", thingName);
         profile = tmpPrf;
@@ -379,9 +367,9 @@ public class ShellyBaseHandler extends BaseThingHandler
         logger.debug("{}: Device "
                 + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{})"
                 + ",isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isMotion:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}"
-                + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays, profile.isRoller,
-                profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter, profile.isSensor,
-                profile.isDW, profile.hasBattery,
+                + ",alwaysOn:{}, ,updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays,
+                profile.isRoller, profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter,
+                profile.isSensor, profile.isDW, profile.hasBattery,
                 profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "", profile.isSense,
                 profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2, profile.inColor,
                 profile.alwaysOn, profile.updatePeriod);
@@ -453,7 +441,7 @@ public class ShellyBaseHandler extends BaseThingHandler
                     break;
                 case CHANNEL_CONTROL_MODE:
                     logger.debug("{}: Set mode to {}", thingName, command);
-                    api.setValveMode(0, SHELLY_TRV_MODE_AUTO.equalsIgnoreCase(command.toString()));
+                    api.setValveMode(0, "automatic".equalsIgnoreCase(command.toString()));
                     break;
                 case CHANNEL_CONTROL_SETTEMP:
                     logger.debug("{}: Set temperature to {}", thingName, command);
@@ -785,6 +773,10 @@ public class ShellyBaseHandler extends BaseThingHandler
         }
     }
 
+    public boolean isUpdateScheduled() {
+        return scheduledUpdates > 0;
+    }
+
     /**
      * Callback for device events
      *
@@ -980,12 +972,12 @@ public class ShellyBaseHandler extends BaseThingHandler
             if (version.checkBeta(getString(prf.fwVersion))) {
                 logger.info("{}: {}", prf.hostname, messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate));
             } else {
-                if ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWVERSION) < 0) && !profile.isMotion) {
+                if ((!gen2 && version.compare(prf.fwVersion, SHELLY_API_MIN_FWVERSION) < 0) && !profile.isMotion) {
                     logger.warn("{}: {}", prf.hostname,
                             messages.get("versioncheck.tooold", prf.fwVersion, prf.fwDate, SHELLY_API_MIN_FWVERSION));
                 }
             }
-            if (bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
+            if (!gen2 && bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
                     || (prf.fwVersion.equalsIgnoreCase("production_test"))) {
                 if (!config.eventsCoIoT) {
                     logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
@@ -1001,6 +993,39 @@ public class ShellyBaseHandler extends BaseThingHandler
         }
     }
 
+    public void startCoap(ShellyThingConfiguration config, ShellyDeviceProfile profile) throws ShellyApiException {
+        if (coap == null || !config.eventsCoIoT) {
+            return;
+        }
+        if (profile.settings.coiot != null && profile.settings.coiot.enabled != null) {
+            String devpeer = getString(profile.settings.coiot.peer);
+            String ourpeer = config.localIp + ":" + Shelly1CoapJSonDTO.COIOT_PORT;
+            if (!profile.settings.coiot.enabled || (profile.isMotion && devpeer.isEmpty())) {
+                try {
+                    api.setCoIoTPeer(ourpeer);
+                    logger.info("{}: CoIoT peer updated to {}", thingName, ourpeer);
+                } catch (ShellyApiException e) {
+                    logger.debug("{}: Unable to set CoIoT peer: {}", thingName, e.toString());
+                }
+            } else if (!devpeer.isEmpty() && !devpeer.equals(ourpeer)) {
+                logger.warn("{}: CoIoT peer in device settings does not point this to this host", thingName);
+            }
+        }
+        if (autoCoIoT) {
+            logger.debug("{}: Auto-CoIoT is enabled, disabling action urls", thingName);
+            config.eventsCoIoT = true;
+            config.eventsSwitch = false;
+            config.eventsButton = false;
+            config.eventsPush = false;
+            config.eventsRoller = false;
+            config.eventsSensorReport = false;
+            api.setConfig(thingName, config);
+        }
+
+        logger.debug("{}: Starting CoIoT (autoCoIoT={}/{})", thingName, bindingConfig.autoCoIoT, autoCoIoT);
+        coap.start(thingName, config);
+    }
+
     /**
      * Checks the http response for authorization error.
      * If the authorization failed the binding can't access the device settings and determine the thing type. In this
@@ -1012,6 +1037,7 @@ public class ShellyBaseHandler extends BaseThingHandler
     protected boolean isAuthorizationFailed(ShellyApiResult result) {
         if (result.isHttpAccessUnauthorized()) {
             // If the device is password protected the API doesn't provide settings to the device settings
+            logger.info("{}: {}", thingName, messages.get("init.protected"));
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-access-denied");
             return true;
         }
@@ -1079,10 +1105,6 @@ public class ShellyBaseHandler extends BaseThingHandler
             return true;
         }
         return false;
-    }
-
-    public boolean isUpdateScheduled() {
-        return scheduledUpdates > 0;
     }
 
     /**
@@ -1431,7 +1453,6 @@ public class ShellyBaseHandler extends BaseThingHandler
             statusJob = null;
             logger.debug("{}: Shelly statusJob stopped", thingName);
         }
-
         if (coap != null) {
             coap.stop();
         }
@@ -1483,13 +1504,13 @@ public class ShellyBaseHandler extends BaseThingHandler
         return api;
     }
 
-    public Map<String, String> getStatsProp() {
-        return stats.asProperties();
-    }
-
     @Override
     public long getScheduledUpdates() {
         return scheduledUpdates;
+    }
+
+    public Map<String, String> getStatsProp() {
+        return stats.asProperties();
     }
 
     public String checkForUpdate() {

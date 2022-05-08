@@ -405,7 +405,12 @@ public class ShellyComponents {
                             toQuantityType(temp.doubleValue(), DIGITS_TEMP, SIUnits.CELSIUS));
                     temp = convertToC(t.targetTemp.value, getString(t.targetTemp.unit));
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
-                            toQuantityType(t.targetTemp.value, DIGITS_TEMP, SIUnits.CELSIUS));
+                            /* t.targetTemp.enabled ? */toQuantityType(t.targetTemp.value, DIGITS_TEMP, SIUnits.CELSIUS)
+                    /*
+                     * toQuantityType(t.targetTemp.value, DIGITS_NONE,
+                     * Units.PERCENT)
+                     * : UnDefType.UNDEF
+                     */);
                 }
                 if (t.pos != null) {
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_POSITION,

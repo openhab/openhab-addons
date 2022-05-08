@@ -199,7 +199,6 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                 if (idx >= 0) {
                     // H&T, Fllod, DW only have 1 channel, 1/1PM with Addon have up to to 3 sensors
                     String channel = profile.isSensor ? CHANNEL_SENSOR_TEMP : CHANNEL_SENSOR_TEMP + idx;
-                    // Some devices report values = -999 or 99 during fw update
                     updateChannel(updates, CHANNEL_GROUP_SENSOR, channel,
                             toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
                 } else {

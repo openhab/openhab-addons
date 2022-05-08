@@ -465,6 +465,22 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="inputState3" advanced="true">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.inputState3.label</label>
+		<description>@text/channel-type.shelly.inputState3.description </description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="inputState4" advanced="true">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.inputState4.label</label>
+		<description>@text/channel-type.shelly.inputState4.description </description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
 	<channel-type id="dimmerBrightness">
 		<item-type>Dimmer</item-type>
 		<label>@text/channel-type.shelly.dimmerBrightness.label</label>

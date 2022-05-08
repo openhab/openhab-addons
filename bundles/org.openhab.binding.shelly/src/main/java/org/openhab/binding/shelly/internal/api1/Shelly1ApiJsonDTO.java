@@ -266,6 +266,7 @@ public class Shelly1ApiJsonDTO {
         public String fw;
         public Boolean auth;
         public Integer gen;
+
         public String coiot;
         public Integer longid;
 
@@ -701,7 +702,14 @@ public class Shelly1ApiJsonDTO {
         public String name; // FW 1.8: Symbolic Device name is configurable
 
         @SerializedName("wifi_sta")
-        public ShellySettingsWiFiNetwork wifiSta = new ShellySettingsWiFiNetwork();
+<<<<<<< HEAD
+        public ShellySettingsWiFiNetwork wifiSta = new ShellySettingsWiFiNetwork();=======
+        public ShellySettingsWiFiNetwork wifiSta = new ShellySettingsWiFiNetwork(); // WiFi client configuration. See
+                                                                                    // /settings/sta for details
+        >>>>>>>
+
+        fecfa8cb84 (Gen2 support: relay, roller/cover)
+
         public ShellyStatusCloud cloud = new ShellyStatusCloud();
         public ShellyStatusMqtt mqtt = new ShellyStatusMqtt();
 
@@ -716,12 +724,21 @@ public class Shelly1ApiJsonDTO {
         @SerializedName("actions_stats")
         public ShellyActionsStats astats;
         public Double voltage; // Shelly 2.5
+        <<<<<<<HEAD
 
         public Integer input; // RGBW2 has no JSON array
         public ArrayList<ShellySettingsRelay> relays;
         public ArrayList<ShellyRollerStatus> rollers;
         public ArrayList<ShellyShortLightStatus> dimmers;
+        public ArrayList<ShellyInputState> inputs;=======
+        public Integer input; // RGBW2 has no JSON array
         public ArrayList<ShellyInputState> inputs;
+        public ArrayList<ShellyShortLightStatus> dimmers;
+        public ArrayList<ShellyRollerStatus> rollers;
+        public ArrayList<ShellySettingsLight> lights;>>>>>>>
+
+        fecfa8cb84 (Gen2 support: relay, roller/cover)
+
         public ArrayList<ShellySettingsMeter> meters;
         public ArrayList<ShellySettingsEMeter> emeters;
         @SerializedName("ext_temperature")
@@ -730,7 +747,14 @@ public class Shelly1ApiJsonDTO {
         public ShellyStatusSensor.ShellyExtHumidity extHumidity; // Shelly 1/1PM: sensor values
 
         // Internal device temp
+        <<<<<<<HEAD
         public ShellySensorTmp tmp = new ShellySensorTmp(); // Shelly 1PM
+        =======
+        public ShellySensorTmp tmp; // Shelly 1PM
+        >>>>>>>
+
+        fecfa8cb84 (Gen2 support: relay, roller/cover)
+
         public Double temperature; // Shelly 2.5
         public Boolean overtemperature;
 
@@ -742,7 +766,11 @@ public class Shelly1ApiJsonDTO {
         public Boolean calibrated;
         public ArrayList<ShellyThermnostat> thermostats;
 
-        public ShellySettingsUpdate update = new ShellySettingsUpdate();
+        public ShellySettingsUpdate update = new ShellySettingsUpdate();<<<<<<<HEAD
+
+        =======>>>>>>>
+
+        fecfa8cb84 (Gen2 support: relay, roller/cover)
 
         @SerializedName("ram_total")
         public Long ramTotal;
@@ -798,7 +826,6 @@ public class Shelly1ApiJsonDTO {
         public Boolean ison; // Whether output channel is on or off
         public String mode; // color or white - valid only for Bulb and RGBW2 even Dimmer returns it also
         public Integer brightness; // brightness: 0.100%
-
         @SerializedName("has_timer")
         public Boolean hasTimer;
     }
