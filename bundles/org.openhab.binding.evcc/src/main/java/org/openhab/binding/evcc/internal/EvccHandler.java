@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.dto.Loadpoint;
+import org.openhab.binding.evcc.internal.dto.Result;
 import org.openhab.binding.evcc.internal.dto.Status;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
@@ -64,7 +65,7 @@ public class EvccHandler extends BaseThingHandler {
 
     private @Nullable EvccConfiguration config;
 
-    private @Nullable Status status;
+    private @Nullable Result result;
 
     private int numberOfLoadpoints = 0;
     private @Nullable String sitename;
@@ -96,7 +97,7 @@ public class EvccHandler extends BaseThingHandler {
     private String mode = "off";
     private int phases = 3;
     private int targetSoC = 100;
-    private String targetTime = "null";
+    private @Nullable String targetTime = "null";
     private boolean targetTimeEnabled = false;
     private ZonedDateTime targetTimeZDT = ZonedDateTime.now();
     private String title = "";
@@ -117,25 +118,30 @@ public class EvccHandler extends BaseThingHandler {
             refresh();
         } else {
             logger.debug("Handling command {} for channel {}", command, channelUID);
-            if (channelUID.getGroupId() == null) {
-                logger.debug("Early returning due to null pointer access.");
+            String groupId = channelUID.getGroupId();
+            if (groupId == null)
                 return;
-            }
             String channelIdWithoutGroup = channelUID.getIdWithoutGroup();
-            int loadpoint = Integer.parseInt(channelUID.getGroupId().toString().substring(9));
+            int loadpoint = Integer.parseInt(groupId.toString().substring(9));
+            EvccConfiguration config = this.config;
+            if (config == null)
+                return;
+            String url = config.url;
+            if (url == null)
+                return;
             switch (channelIdWithoutGroup) {
                 case CHANNEL_LOADPOINT_MODE:
-                    setMode(config.url, loadpoint, command.toString());
+                    setMode(url, loadpoint, command.toString());
                 case CHANNEL_LOADPOINT_MIN_SOC:
-                    setMinSoC(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
+                    setMinSoC(url, loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
                     break;
                 case CHANNEL_LOADPOINT_TARGET_SOC:
-                    setTargetSoC(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
+                    setTargetSoC(url, loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
                     break;
                 case CHANNEL_LOADPOINT_TARGET_TIME:
                     if (targetTimeEnabled == true) {
                         targetTimeZDT = new DateTimeType(command.toString()).getZonedDateTime();
-                        setTargetCharge(config.url, loadpoint, targetSoC, targetTimeZDT);
+                        setTargetCharge(url, loadpoint, targetSoC, targetTimeZDT);
                         ChannelUID channel = new ChannelUID(getThing().getUID(), "loadpoint" + loadpoint,
                                 CHANNEL_LOADPOINT_TARGET_TIME);
                         updateState(channel, new DateTimeType(targetTimeZDT));
@@ -144,20 +150,20 @@ public class EvccHandler extends BaseThingHandler {
                 case CHANNEL_LOADPOINT_TARGET_TIME_ENABLED:
                     if (command == OnOffType.ON) {
                         targetTimeEnabled = true;
-                        setTargetCharge(config.url, loadpoint, targetSoC, targetTimeZDT);
+                        setTargetCharge(url, loadpoint, targetSoC, targetTimeZDT);
                     } else {
                         targetTimeEnabled = false;
-                        unsetTargetCharge(config.url, loadpoint);
+                        unsetTargetCharge(url, loadpoint);
                     }
                     break;
                 case CHANNEL_LOADPOINT_PHASES:
-                    setPhases(config.url, loadpoint, Integer.parseInt(command.toString()));
+                    setPhases(url, loadpoint, Integer.parseInt(command.toString()));
                     break;
                 case CHANNEL_LOADPOINT_MIN_CURRENT:
-                    setMinCurrent(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
+                    setMinCurrent(url, loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
                     break;
                 case CHANNEL_LOADPOINT_MAX_CURRENT:
-                    setMaxCurrent(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
+                    setMaxCurrent(url, loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
                     break;
                 default:
                     return;
@@ -168,26 +174,30 @@ public class EvccHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(EvccConfiguration.class);
-        if ("".equals(config.url)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.no-host");
-        } else {
-            // Background initialization:
-            scheduler.execute(() -> {
-                status = getStatus(config.url);
-                if (status == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            "@text/offline.communication-error.request-failed");
-                } else {
-                    sitename = status.getResult().getSiteTitle();
-                    numberOfLoadpoints = status.getResult().getLoadpoints().length;
-                    logger.debug("Found {} loadpoints on site {} (host: {}).", numberOfLoadpoints, sitename,
-                            config.url);
-                    updateStatus(ThingStatus.ONLINE);
-                    refreshOnStartup();
-                }
-            });
+        this.config = getConfigAs(EvccConfiguration.class);
+        EvccConfiguration config = this.config;
+        if (config != null) {
+            if (config.url == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "@text/offline.configuration-error.no-host");
+            } else {
+                // Background initialization:
+                scheduler.execute(() -> {
+                    this.result = getResult(config.url);
+                    Result result = this.result;
+                    if (result == null) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                "@text/offline.communication-error.request-failed");
+                    } else {
+                        sitename = result.getSiteTitle();
+                        numberOfLoadpoints = result.getLoadpoints().length;
+                        logger.debug("Found {} loadpoints on site {} (host: {}).", numberOfLoadpoints, sitename,
+                                config.url);
+                        updateStatus(ThingStatus.ONLINE);
+                        refreshOnStartup();
+                    }
+                });
+            }
         }
     }
 
@@ -197,18 +207,24 @@ public class EvccHandler extends BaseThingHandler {
     }
 
     private void refresh() {
-        status = getStatus(config.url);
-        if (status == null) {
+        EvccConfiguration config = this.config;
+        if (config == null)
+            return;
+        if (config.url == null)
+            return;
+        this.result = getResult(config.url);
+        Result result = this.result;
+        if (result == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "@text/offline.communication-error.request-failed");
         } else {
-            sitename = status.getResult().getSiteTitle();
-            numberOfLoadpoints = status.getResult().getLoadpoints().length;
+            sitename = result.getSiteTitle();
+            numberOfLoadpoints = result.getLoadpoints().length;
             logger.debug("Found {} loadpoints on site {} (host: {}).", numberOfLoadpoints, sitename, config.url);
             updateStatus(ThingStatus.ONLINE);
-            batteryConfigured = status.getResult().getBatteryConfigured();
-            gridConfigured = status.getResult().getGridConfigured();
-            pvConfigured = status.getResult().getPvConfigured();
+            batteryConfigured = result.getBatteryConfigured();
+            gridConfigured = result.getGridConfigured();
+            pvConfigured = result.getPvConfigured();
             updateChannelsGeneral();
             for (int i = 0; i < numberOfLoadpoints; i++) {
                 updateChannelsLoadpoint(i);
@@ -217,14 +233,17 @@ public class EvccHandler extends BaseThingHandler {
     }
 
     private void refreshOnStartup() {
-        batteryConfigured = status.getResult().getBatteryConfigured();
-        gridConfigured = status.getResult().getGridConfigured();
-        pvConfigured = status.getResult().getPvConfigured();
-        createChannelsGeneral();
-        updateChannelsGeneral();
-        for (int i = 0; i < this.numberOfLoadpoints; i++) {
-            createChannelsLoadpoint(i);
-            updateChannelsLoadpoint(i);
+        Result result = this.result;
+        if (result != null) {
+            batteryConfigured = result.getBatteryConfigured();
+            gridConfigured = result.getGridConfigured();
+            pvConfigured = result.getPvConfigured();
+            createChannelsGeneral();
+            updateChannelsGeneral();
+            for (int i = 0; i < this.numberOfLoadpoints; i++) {
+                createChannelsLoadpoint(i);
+                updateChannelsLoadpoint(i);
+            }
         }
         logger.debug("Setting up polling job ...");
         statePollingJob = scheduler.scheduleWithFixedDelay(this::statePolling, 60, 60, TimeUnit.SECONDS);
@@ -232,6 +251,7 @@ public class EvccHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> statePollingJob = this.statePollingJob;
         if (statePollingJob != null) {
             statePollingJob.cancel(true);
             statePollingJob = null;
@@ -307,37 +327,46 @@ public class EvccHandler extends BaseThingHandler {
 
     // Units and description for vars: https://docs.evcc.io/docs/reference/configuration/messaging/#msg
     private void updateChannelsGeneral() {
+        Result result = this.result;
+        if (result == null)
+            return;
         ChannelUID channel;
+        boolean batteryConfigured = this.batteryConfigured;
         if (batteryConfigured == true) {
-            batteryPower = status.getResult().getBatteryPower();
+            batteryPower = result.getBatteryPower();
             channel = new ChannelUID(getThing().getUID(), "general", CHANNEL_BATTERY_POWER);
             updateState(channel, new QuantityType<>(batteryPower, Units.WATT));
-            batterySoC = status.getResult().getBatterySoC();
+            batterySoC = result.getBatterySoC();
             channel = new ChannelUID(getThing().getUID(), "general", CHANNEL_BATTERY_SOC);
             updateState(channel, new QuantityType<>(batterySoC, Units.PERCENT));
-            batteryPrioritySoC = status.getResult().getBatterySoC();
+            batteryPrioritySoC = result.getBatterySoC();
             channel = new ChannelUID(getThing().getUID(), "general", CHANNEL_BATTERY_PRIORITY_SOC);
             updateState(channel, new QuantityType<>(batteryPrioritySoC, Units.PERCENT));
         }
+        boolean gridConfigured = this.gridConfigured;
         if (gridConfigured == true) {
-            gridPower = status.getResult().getGridPower();
+            gridPower = result.getGridPower();
             channel = new ChannelUID(getThing().getUID(), "general", CHANNEL_GRID_POWER);
             updateState(channel, new QuantityType<>(gridPower, Units.WATT));
         }
-        homePower = status.getResult().getHomePower();
+        homePower = result.getHomePower();
         channel = new ChannelUID(getThing().getUID(), "general", CHANNEL_HOME_POWER);
         updateState(channel, new QuantityType<>(homePower, Units.WATT));
+        boolean pvConfigured = this.pvConfigured;
         if (pvConfigured == true) {
-            pvPower = status.getResult().getPvPower();
+            pvPower = result.getPvPower();
             channel = new ChannelUID(getThing().getUID(), "general", CHANNEL_PV_POWER);
             updateState(channel, new QuantityType<>(pvPower, Units.WATT));
         }
     }
 
     private void updateChannelsLoadpoint(int loadpointId) {
+        Result result = this.result;
+        if (result == null)
+            return;
         String loadpointName = "loadpoint" + loadpointId;
         ChannelUID channel;
-        Loadpoint loadpoint = status.getResult().getLoadpoints()[loadpointId];
+        Loadpoint loadpoint = result.getLoadpoints()[loadpointId];
         activePhases = loadpoint.getActivePhases();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_ACTIVE_PHASES);
         updateState(channel, new DecimalType(activePhases));
@@ -392,8 +421,9 @@ public class EvccHandler extends BaseThingHandler {
         targetSoC = loadpoint.getTargetSoC();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_SOC);
         updateState(channel, new QuantityType<>(targetSoC, Units.PERCENT));
-        targetTime = loadpoint.getTargetTime();
-        if ("null".equals(targetTime) || targetTime == null) {
+        this.targetTime = loadpoint.getTargetTime();
+        String targetTime = this.targetTime;
+        if (targetTime == null) {
             channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_TIME_ENABLED);
             updateState(channel, OnOffType.OFF);
             targetTimeEnabled = false;
@@ -468,10 +498,13 @@ public class EvccHandler extends BaseThingHandler {
      * @param host hostname of IP address of the evcc instance
      * @return Status object or null if request failed
      */
-    private @Nullable Status getStatus(@Nullable String host) {
+    private @Nullable Result getResult(@Nullable String host) {
         final String response = httpRequest("Status", host + EVCC_REST_API + "state", "GET");
         try {
-            return gson.fromJson(response, Status.class);
+            Status status = gson.fromJson(response, Status.class);
+            if (status == null)
+                return null;
+            return status.getResult();
         } catch (JsonSyntaxException e) {
             logger.debug("Failed to get status:", e);
             return null;
