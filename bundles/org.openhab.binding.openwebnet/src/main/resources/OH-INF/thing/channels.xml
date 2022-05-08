@@ -32,9 +32,9 @@
 				<option value="DOWN">Down</option>
 				<option value="ENABLED">Enabled</option>
 				<option value="DISABLED">Disabled</option>
-				<option value="RESET_GEN">Reset_gen</option>
-				<option value="RESET_BI">Reset_bi</option>
-				<option value="RESET_TRI">Reset_tri</option>
+				<option value="RESET_GEN">Reset gen</option>
+				<option value="RESET_BI">Reset bi</option>
+				<option value="RESET_TRI">Reset tri</option>
 			</options>
 		</state>
 	</channel-type>
