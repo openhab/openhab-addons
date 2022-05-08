@@ -21,10 +21,10 @@ No auto discovery supported.
 
 ### `device` Thing Configuration
 
-| Parameter       | Type   | Description                                     | Advanced | Required |
-|-----------------|--------|-------------------------------------------------|----------|----------|
-| url             | String | URL of evcc web UI, e.g. *https://demo.evcc.io* | false    | true     |
-| refreshInterval | Number | Interval the status is polled in seconds.       | true     | false    |
+| Parameter       | Type   | Description                                              | Advanced | Required |
+|-----------------|--------|----------------------------------------------------------|----------|----------|
+| url             | String | URL of evcc web UI, e.g. *https://demo.evcc.io*          | false    | true     |
+| refreshInterval | Number | Interval the status is polled in seconds (minimum is 15) | true     | false    |
 
 Default value for *refreshInterval* is 60 seconds.
 

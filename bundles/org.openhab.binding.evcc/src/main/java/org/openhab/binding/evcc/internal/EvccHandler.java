@@ -14,9 +14,7 @@ package org.openhab.binding.evcc.internal;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
-import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -24,8 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.dto.Loadpoint;
 import org.openhab.binding.evcc.internal.dto.Result;
-import org.openhab.binding.evcc.internal.dto.Status;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -48,9 +44,6 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-
 /**
  * The {@link EvccHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -60,7 +53,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class EvccHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EvccHandler.class);
-    private final Gson gson = new Gson();
+    private @Nullable EvccAPI evccAPI;
     private @Nullable ScheduledFuture<?> statePollingJob;
 
     private @Nullable EvccConfiguration config;
@@ -123,25 +116,23 @@ public class EvccHandler extends BaseThingHandler {
                 return;
             String channelIdWithoutGroup = channelUID.getIdWithoutGroup();
             int loadpoint = Integer.parseInt(groupId.toString().substring(9));
-            EvccConfiguration config = this.config;
-            if (config == null)
-                return;
-            String url = config.url;
-            if (url == null)
+            EvccAPI evccAPI = this.evccAPI;
+            if (evccAPI == null)
                 return;
             switch (channelIdWithoutGroup) {
                 case CHANNEL_LOADPOINT_MODE:
-                    setMode(url, loadpoint, command.toString());
+                    evccAPI.setMode(loadpoint, command.toString());
+                    break;
                 case CHANNEL_LOADPOINT_MIN_SOC:
-                    setMinSoC(url, loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
+                    evccAPI.setMinSoC(loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
                     break;
                 case CHANNEL_LOADPOINT_TARGET_SOC:
-                    setTargetSoC(url, loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
+                    evccAPI.setTargetSoC(loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
                     break;
                 case CHANNEL_LOADPOINT_TARGET_TIME:
                     if (targetTimeEnabled == true) {
                         targetTimeZDT = new DateTimeType(command.toString()).getZonedDateTime();
-                        setTargetCharge(url, loadpoint, targetSoC, targetTimeZDT);
+                        evccAPI.setTargetCharge(loadpoint, targetSoC, targetTimeZDT);
                         ChannelUID channel = new ChannelUID(getThing().getUID(), "loadpoint" + loadpoint,
                                 CHANNEL_LOADPOINT_TARGET_TIME);
                         updateState(channel, new DateTimeType(targetTimeZDT));
@@ -150,20 +141,20 @@ public class EvccHandler extends BaseThingHandler {
                 case CHANNEL_LOADPOINT_TARGET_TIME_ENABLED:
                     if (command == OnOffType.ON) {
                         targetTimeEnabled = true;
-                        setTargetCharge(url, loadpoint, targetSoC, targetTimeZDT);
+                        evccAPI.setTargetCharge(loadpoint, targetSoC, targetTimeZDT);
                     } else {
                         targetTimeEnabled = false;
-                        unsetTargetCharge(url, loadpoint);
+                        evccAPI.unsetTargetCharge(loadpoint);
                     }
                     break;
                 case CHANNEL_LOADPOINT_PHASES:
-                    setPhases(url, loadpoint, Integer.parseInt(command.toString()));
+                    evccAPI.setPhases(loadpoint, Integer.parseInt(command.toString()));
                     break;
                 case CHANNEL_LOADPOINT_MIN_CURRENT:
-                    setMinCurrent(url, loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
+                    evccAPI.setMinCurrent(loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
                     break;
                 case CHANNEL_LOADPOINT_MAX_CURRENT:
-                    setMaxCurrent(url, loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
+                    evccAPI.setMaxCurrent(loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
                     break;
                 default:
                     return;
@@ -181,8 +172,9 @@ public class EvccHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "@text/offline.configuration-error.no-host");
             } else {
+                this.evccAPI = new EvccAPI(config.url);
                 logger.debug("Setting up refresh job ...");
-                statePollingJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, 60, TimeUnit.SECONDS);
+                statePollingJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, 15, TimeUnit.SECONDS);
             }
         }
     }
@@ -201,7 +193,10 @@ public class EvccHandler extends BaseThingHandler {
             return;
         if (config.url == null)
             return;
-        this.result = getResult(config.url);
+        EvccAPI evccAPI = this.evccAPI;
+        if (evccAPI == null)
+            return;
+        this.result = evccAPI.getResult();
         Result result = this.result;
         if (result == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -444,90 +439,4 @@ public class EvccHandler extends BaseThingHandler {
             updateThing(thingBuilder.build());
         }
     }
-
-    /**
-     * Make a HTTP request.
-     * 
-     * @param description request description for logger
-     * @param url full request URL
-     * @param method reguest method, e.g. GET, POST
-     * @return the response body or null if request failed
-     */
-    private @Nullable String httpRequest(@Nullable String description, String url, String method) {
-        String response = "";
-        try {
-            response = HttpUtil.executeUrl(method, url, LONG_CONNECTION_TIMEOUT_MILLISEC);
-            logger.trace("{} - {}, {} - {}", description, url, method, response);
-            return response;
-        } catch (IOException e) {
-            logger.debug("IO Exception - {} - {}, {} - {}", description, url, method, e.toString());
-            return null;
-        }
-    }
-    // End utility functions
-
-    // API calls to evcc
-    /**
-     * Get the status from evcc.
-     * 
-     * @param host hostname of IP address of the evcc instance
-     * @return Status object or null if request failed
-     */
-    private @Nullable Result getResult(@Nullable String host) {
-        final String response = httpRequest("Status", host + EVCC_REST_API + "state", "GET");
-        try {
-            Status status = gson.fromJson(response, Status.class);
-            if (status == null)
-                return null;
-            return status.getResult();
-        } catch (JsonSyntaxException e) {
-            logger.debug("Failed to get status:", e);
-            return null;
-        }
-    }
-
-    // Loadpoint specific API calls.
-    private @Nullable String setMode(@Nullable String host, int loadpoint, String mode) {
-        return httpRequest("Set mode of loadpoint " + loadpoint,
-                host + EVCC_REST_API + "loadpoints/" + loadpoint + "/mode/" + mode, "POST");
-    }
-
-    private @Nullable String setMinSoC(@Nullable String host, int loadpoint, int minSoC) {
-        return httpRequest("Set minSoC of loadpoint " + loadpoint,
-                host + EVCC_REST_API + "loadpoints/" + loadpoint + "/minsoc/" + minSoC, "POST");
-    }
-
-    private @Nullable String setTargetSoC(@Nullable String host, int loadpoint, int targetSoC) {
-        return httpRequest("Set targetSoC of loadpoint " + loadpoint,
-                host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetsoc/" + targetSoC, "POST");
-    }
-
-    private @Nullable String setPhases(@Nullable String host, int loadpoint, int phases) {
-        return httpRequest("Set phases of loadpoint " + loadpoint,
-                host + EVCC_REST_API + "loadpoints/" + loadpoint + "/phases/" + phases, "POST");
-    }
-
-    private @Nullable String setMinCurrent(@Nullable String host, int loadpoint, int minCurrent) {
-        return httpRequest("Set minCurrent of loadpoint " + loadpoint,
-                host + EVCC_REST_API + "loadpoints/" + loadpoint + "/mincurrent/" + minCurrent, "POST");
-    }
-
-    private @Nullable String setMaxCurrent(@Nullable String host, int loadpoint, int maxCurrent) {
-        return httpRequest("Set maxCurrent of loadpoint " + loadpoint,
-                host + EVCC_REST_API + "loadpoints/" + loadpoint + "/maxcurrent/" + maxCurrent, "POST");
-    }
-
-    private @Nullable String setTargetCharge(@Nullable String host, int loadpoint, int targetSoC,
-            ZonedDateTime targetTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        return httpRequest("Set targetTime of loadpoint " + loadpoint, host + EVCC_REST_API + "loadpoints/" + loadpoint
-                + "/targetcharge/" + targetSoC + "/" + targetTime.toLocalDateTime().format(formatter), "POST");
-    }
-
-    private @Nullable String unsetTargetCharge(@Nullable String host, int loadpoint) {
-        return httpRequest("Unset targetTime of loadpoint " + loadpoint,
-                host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetcharge", "DELETE");
-    }
-    // End loadpoint specific API calls
-    // End API calls to evcc
 }
