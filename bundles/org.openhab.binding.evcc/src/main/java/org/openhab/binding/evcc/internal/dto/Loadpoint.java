@@ -40,7 +40,7 @@ public class Loadpoint {
     private long chargeRemainingDuration;
 
     @SerializedName("chargeRemainingEnergy")
-    private long chargeRemainingEnergy;
+    private double chargeRemainingEnergy;
 
     @SerializedName("chargedEnergy")
     private double chargedEnergy;
@@ -149,7 +149,7 @@ public class Loadpoint {
     /**
      * @return the chargeRemainingEnergy
      */
-    public long getChargeRemainingEnergy() {
+    public double getChargeRemainingEnergy() {
         return chargeRemainingEnergy;
     }
 

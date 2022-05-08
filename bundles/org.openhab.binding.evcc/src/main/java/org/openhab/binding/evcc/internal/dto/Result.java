@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents the result object of the status response (/api/state).
- * This DTO was written for evcc version 0.91. 
+ * This DTO was written for evcc version 0.91.
  *
  * @author Florian Hotze - Initial contribution
  */
