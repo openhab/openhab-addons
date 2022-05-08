@@ -132,8 +132,10 @@ public class EvccHandler extends BaseThingHandler {
                     }
                 case CHANNEL_LOADPOINT_MIN_SOC:
                     setMinSoC(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
+                    break;
                 case CHANNEL_LOADPOINT_TARGET_SOC:
                     setTargetSoC(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
+                    break;
                 case CHANNEL_LOADPOINT_TARGET_TIME:
                     if (targetTimeEnabled == true) {
                         targetTimeZDT = new DateTimeType(command.toString()).getZonedDateTime();
@@ -142,6 +144,7 @@ public class EvccHandler extends BaseThingHandler {
                                 CHANNEL_LOADPOINT_TARGET_TIME);
                         updateState(channel, new DateTimeType(targetTimeZDT));
                     }
+                    break;
                 case CHANNEL_LOADPOINT_TARGET_TIME_ENABLED:
                     if (command == OnOffType.ON) {
                         targetTimeEnabled = true;
@@ -150,17 +153,20 @@ public class EvccHandler extends BaseThingHandler {
                         targetTimeEnabled = false;
                         unsetTargetCharge(config.url, loadpoint);
                     }
+                    break;
                 case CHANNEL_LOADPOINT_PHASES:
                     setPhases(config.url, loadpoint, Integer.parseInt(command.toString()));
+                    break;
                 case CHANNEL_LOADPOINT_MIN_CURRENT:
                     setMinCurrent(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
+                    break;
                 case CHANNEL_LOADPOINT_MAX_CURRENT:
                     setMaxCurrent(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
+                    break;
                 default:
-                    logger.debug("Handled command {} for channel {}", command, channelUID);
-                    refresh();
                     return;
             }
+            refresh();
         }
     }
 
