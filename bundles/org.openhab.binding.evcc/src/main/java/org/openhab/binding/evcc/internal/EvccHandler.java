@@ -125,11 +125,7 @@ public class EvccHandler extends BaseThingHandler {
             int loadpoint = Integer.parseInt(channelUID.getGroupId().toString().substring(9));
             switch (channelIdWithoutGroup) {
                 case CHANNEL_LOADPOINT_MODE:
-                    if (setMode(config.url, loadpoint, command.toString()) == null) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                "Request failed");
-                        break;
-                    }
+                    setMode(config.url, loadpoint, command.toString());
                 case CHANNEL_LOADPOINT_MIN_SOC:
                     setMinSoC(config.url, loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
                     break;
@@ -174,13 +170,15 @@ public class EvccHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(EvccConfiguration.class);
         if ("".equals(config.url)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "No host configured");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.no-host");
         } else {
             // Background initialization:
             scheduler.execute(() -> {
                 status = getStatus(config.url);
                 if (status == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Request failed");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                            "@text/offline.communication-error.request-failed");
                 } else {
                     sitename = status.getResult().getSiteTitle();
                     numberOfLoadpoints = status.getResult().getLoadpoints().length;
@@ -201,7 +199,8 @@ public class EvccHandler extends BaseThingHandler {
     private void refresh() {
         status = getStatus(config.url);
         if (status == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Request failed");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "@text/offline.communication-error.request-failed");
         } else {
             sitename = status.getResult().getSiteTitle();
             numberOfLoadpoints = status.getResult().getLoadpoints().length;
