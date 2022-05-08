@@ -22,6 +22,7 @@ import org.openhab.core.thing.Bridge;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.WhereAuxiliary;
 import org.openwebnet4j.message.WhereCEN;
 import org.openwebnet4j.message.WhereEnergyManagement;
 import org.openwebnet4j.message.WhereLightAutom;
@@ -38,6 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Massimo Valla - Initial contribution
  * @author Andrea Conte - Energy management
+ * @author Giovanni Fabiani - AAuxiliary message support
  */
 @NonNullByDefault
 public class OwnIdTest {
@@ -64,7 +66,7 @@ public class OwnIdTest {
      * BUS CEN              51              51                  15.51           51
      * BUS CEN+             212             212                 25.212          212
      * BUS DryContact       399             399                 25.399          399
-     *
+     * BUS AUX                4               4                    9.4            4
      */
 // @formatter:on
 
@@ -83,7 +85,9 @@ public class OwnIdTest {
         bus_energy(new WhereEnergyManagement("51"), Who.fromValue(18), "*#18*51*113##", "51", "18.51", "51"),
         bus_cen(new WhereCEN("51"), Who.fromValue(15), "*15*31*51##", "51", "15.51", "51"),
         bus_cen_plus(new WhereCEN("212"), Who.fromValue(25), "*25*21#31*212##", "212", "25.212", "212"),
-        bus_drycontact(new WhereCEN("399"), Who.fromValue(25), "*25*32#1*399##", "399", "25.399", "399");
+        bus_drycontact(new WhereCEN("399"), Who.fromValue(25), "*25*32#1*399##", "399", "25.399", "399"),
+        bus_aux(new WhereAuxiliary("4"), Who.fromValue(9), "*9*1*4##","4","9.4","4");
+
 
         // @formatter:on
 
