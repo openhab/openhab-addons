@@ -15,8 +15,6 @@ package org.openhab.binding.evcc.internal;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ScheduledFuture;
@@ -150,8 +148,9 @@ public class EvccHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.ONLINE);
                         refreshOnStartup();
                     } catch (Exception e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                                "Failed to connect to evcc: " + e);
+                        logger.debug("Initialization failed:", e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                                "Initialization failed due to: " + e);
                     }
                 }
             });
@@ -165,21 +164,26 @@ public class EvccHandler extends BaseThingHandler {
 
     private void refresh() {
         status = getStatus(config.url);
-        try {
-            sitename = status.getResult().getSiteTitle();
-            numberOfLoadpoints = status.getResult().getLoadpoints().length;
-            logger.debug("Found {} loadpoints on site {} (host: {}).", numberOfLoadpoints, sitename, config.url);
-            updateStatus(ThingStatus.ONLINE);
-            batteryConfigured = status.getResult().getBatteryConfigured();
-            gridConfigured = status.getResult().getGridConfigured();
-            pvConfigured = status.getResult().getPvConfigured();
-            updateChannelsGeneral();
-            for (int i = 0; i < numberOfLoadpoints; i++) {
-                updateChannelsLoadpoint(i);
+        if (status == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Request failed");
+        } else {
+            try {
+                sitename = status.getResult().getSiteTitle();
+                numberOfLoadpoints = status.getResult().getLoadpoints().length;
+                logger.debug("Found {} loadpoints on site {} (host: {}).", numberOfLoadpoints, sitename, config.url);
+                updateStatus(ThingStatus.ONLINE);
+                batteryConfigured = status.getResult().getBatteryConfigured();
+                gridConfigured = status.getResult().getGridConfigured();
+                pvConfigured = status.getResult().getPvConfigured();
+                updateChannelsGeneral();
+                for (int i = 0; i < numberOfLoadpoints; i++) {
+                    updateChannelsLoadpoint(i);
+                }
+            } catch (Exception e) {
+                logger.debug("Initialization failed:", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                        "Initialization failed: " + e);
             }
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Failed to connect to evcc: " + e);
         }
     }
 
@@ -359,36 +363,22 @@ public class EvccHandler extends BaseThingHandler {
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_SOC);
         updateState(channel, new QuantityType<>(targetSoC, Units.PERCENT));
         String targetTime = loadpoint.getTargetTime();
-        ZonedDateTime newTargetTimeZDT = ZonedDateTime.now().plusSeconds(30);
-        try {
-            Instant instant = Instant.parse(targetTime);
-            newTargetTimeZDT = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
-        } catch (Exception e) {
-            try {
-                newTargetTimeZDT = ZonedDateTime.parse(targetTime);
-            } catch (Exception f) {
-                logger.debug("Failed parsing targetTime {}. Error: {}.", targetTime, f.toString());
-            }
-        }
-        if (newTargetTimeZDT.isAfter(ZonedDateTime.now())) {
-            targetTimeZDT = newTargetTimeZDT;
-            logger.debug("Updating targetTime to {}", targetTimeZDT);
-            channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_TIME);
-            updateState(channel, new DateTimeType(targetTimeZDT));
-            channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_TIME_ENABLED);
-            updateState(channel, OnOffType.ON);
-            targetTimeEnabled = true;
-        } else {
+        if (targetTime == "null" || targetTime == null) {
             channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_TIME_ENABLED);
             updateState(channel, OnOffType.OFF);
             targetTimeEnabled = false;
-        }
-        boolean targetTimeActive = loadpoint.getTargetTimeActive();
-        channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_TIME_ACTIVE);
-        if (targetTimeActive == true) {
-            updateState(channel, OnOffType.ON);
         } else {
-            updateState(channel, OnOffType.OFF);
+            try {
+                ZonedDateTime targetTimeZDT = ZonedDateTime.parse(targetTime);
+                channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_TIME);
+                updateState(channel, new DateTimeType(targetTimeZDT));
+
+            } catch (NullPointerException e) {
+                logger.debug("Failed to parse targetTime {} due to: {}", targetTime, e);
+            }
+            channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TARGET_TIME_ENABLED);
+            updateState(channel, OnOffType.ON);
+            targetTimeEnabled = true;
         }
         String title = loadpoint.getTitle();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TITLE);
