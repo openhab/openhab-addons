@@ -126,6 +126,13 @@
 		<category>Time</category>
 		<state pattern="%.1f min" readOnly="true"/>
 	</channel-type>
+	<channel-type id="chargeRemainingEnergy">
+		<item-type>Number:Energy</item-type>
+		<label>Charging remaining energy</label>
+		<description>Remaining energy until target SoC is reached</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="chargedEnergy">
 		<item-type>Number:Energy</item-type>
 		<label>Charged energy</label>
@@ -216,18 +223,6 @@
 		<state min="0" step="1" max="3" pattern="%d" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="pvAction" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Charging PV action</label>
-		<description>PV (solarplant) activity</description>
-		<category>Solarplant</category>
-		<state readOnly="true">
-			<options>
-				<option value="ON">active</option>
-				<option value="OFF">inactive</option>
-			</options>
-		</state>
-	</channel-type>
 	<channel-type id="targetSoC">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Charging target SoC</label>
@@ -243,18 +238,6 @@
 		<category>Time</category>
 		<state readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-	<channel-type id="targetTimeActive">
-		<item-type>Switch</item-type>
-		<label>Charging to target time</label>
-		<description>Whether the loadpoint is currently charging to target SoC until target time</description>
-		<category>Switch</category>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Charging</option>
-				<option value="OFF">Not charging</option>
-			</options>
-		</state>
 	</channel-type>
 	<channel-type id="targetTimeEnabled">
 		<item-type>Switch</item-type>

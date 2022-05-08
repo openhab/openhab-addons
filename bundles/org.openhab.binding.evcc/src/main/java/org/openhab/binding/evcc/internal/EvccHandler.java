@@ -234,6 +234,7 @@ public class EvccHandler extends BaseThingHandler {
                 "Number:Power");
         createChannel(CHANNEL_LOADPOINT_CHARGE_REMAINING_DURATION, loadpointName,
                 CHANNEL_TYPE_UID_LOADPOINT_CHARGE_REMAINING_DURATION, "Number:Time");
+        createChannel(CHANNEL_LOADPOINT_CHARGE_REMAINING_ENERGY, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_CHARGE_REMAINING_ENERGY, "Number:Energy");
         createChannel(CHANNEL_LOADPOINT_CHARGED_ENERGY, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_CHARGED_ENERGY,
                 "Number:Energy");
         createChannel(CHANNEL_LOADPOINT_CHARGING, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_CHARGING, "Switch");
@@ -253,8 +254,6 @@ public class EvccHandler extends BaseThingHandler {
         createChannel(CHANNEL_LOADPOINT_TARGET_SOC, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_TARGET_SOC,
                 "Number:Dimensionless");
         createChannel(CHANNEL_LOADPOINT_TARGET_TIME, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME, "DateTime");
-        createChannel(CHANNEL_LOADPOINT_TARGET_TIME_ACTIVE, loadpointName,
-                CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME_ACTIVE, "Switch");
         createChannel(CHANNEL_LOADPOINT_TARGET_TIME_ENABLED, loadpointName,
                 CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME_ENABLED, "Switch");
         createChannel(CHANNEL_LOADPOINT_TITLE, loadpointName, CHANNEL_TYPE_UID_LOADPOINT_TITLE, "String");
@@ -320,6 +319,9 @@ public class EvccHandler extends BaseThingHandler {
         long chargeRemainingDuration = loadpoint.getChargeRemainingDuration();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CHARGE_REMAINING_DURATION);
         updateState(channel, new QuantityType<>(chargeRemainingDuration, MetricPrefix.NANO(Units.SECOND)));
+        long chargeRemainingEnergy = loadpoint.getChargeRemainingEnergy();
+        channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CHARGE_REMAINING_ENERGY);
+        updateState(channel, new QuantityType<>(chargeRemainingEnergy, Units.WATT_HOUR));
         double chargedEnergy = loadpoint.getChargedEnergy();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CHARGED_ENERGY);
         updateState(channel, new QuantityType<>(chargedEnergy, Units.WATT_HOUR));

@@ -56,6 +56,7 @@ Please note that you have to replace *N* with your loadpoint number.
 | loadpointN#chargeCurrent            | Number:ElectricCurrent | R          | Current amperage per connected phase while charging                                                 |
 | loadpointN#chargeDuration           | Number:Time            | R          | Charging duration                                                                                   |
 | loadpointN#chargeRemainingDuration  | Number:Time            | R          | Remaining duration until target SoC is reached                                                      |
+| loadpointN#chargeRemainingEnergy    | Number:Energy          | R          | Remaining energy until target SoC is reached                                                        |
 | loadpointN#chargePower              | Number:Power           | R          | Current power of charging                                                                           |
 | loadpointN#chargedEnergy            | Number:Energy          | R          | Energy charged since plugged-in                                                                     |
 | loadpointN#charging                 | Switch                 | R          | Loadpoint is currently charging                                                                     |
@@ -68,7 +69,6 @@ Please note that you have to replace *N* with your loadpoint number.
 | loadpointN#phases                   | Number                 | RW         | The maximum number of phases which can be used                                                      |
 | loadpointN#targetSoC                | Number:Dimensionless   | RW         | Until which state of charge (SoC) should the vehicle be charged                                     |
 | loadpointN#targetTime               | DateTime               | RW         | When the target SoC should be reached                                                               |
-| loadpointN#targetTimeActive         | Switch                 | R          | Whether the loadpoint is currently charging to target SoC until target time                         |
 | loadpointN#targetTimeEnabled        | Switch                 | RW         | Target time for charging enabled                                                                    |
 | loadpointN#title                    | String                 | R          | Title of loadpoint                                                                                  |
 | loadpointN#vehicleConnected         | Switch                 | R          | Whether vehicle is connected to loadpoint                                                           |
@@ -104,6 +104,7 @@ Number                    evcc_demo_loadpoint0_activePhases                "Acti
 Number:ElectricCurrent    evcc_demo_loadpoint0_chargeCurrent               "Charging current [%.0f A]"                       <energy>          {channel="evcc:device:demo:loadpoint0#chargeCurrent"}
 Number:Time               evcc_demo_loadpoint0_chargeDuration              "Charging duration [%1$tH:%1$tM]"                 <time>            {channel="evcc:device:demo:loadpoint0#chargeDuration"}
 Number:Time               evcc_demo_loadpoint0_chargeRemainingDuration     "Charging remaining duration [%1$tH:%1$tM]"       <time>            {channel="evcc:device:demo:loadpoint0#chargeRemainingDuration"}
+Number:Energy             evcc_demo_loadpoint0_chargeRemainingEnergy       "Charging remaining energy [%.1f kWh]"            <energy>          {channel="evcc:device:demo:loadpoint0#chargeRemainingEnergy"}
 Number:Power              evcc_demo_loadpoint0_chargePower                 "Charging power [%.1f kW]"                        <energy>          {channel="evcc:device:demo:loadpoint0#chargePower"}
 Number:Energy             evcc_demo_loadpoint0_chargedEnergy               "Charged energy [%.1f kWh]"                       <energy>          {channel="evcc:device:demo:loadpoint0#chargedEnergy"}
 Switch                    evcc_demo_loadpoint0_charging                    "Currently charging [%s]"                         <battery>         {channel="evcc:device:demo:loadpoint0#charging"}
@@ -116,7 +117,6 @@ String                    evcc_demo_loadpoint0_mode                        "Mode
 Number                    evcc_demo_loadpoint0_phases                      "Enabled phases [%d]"                                               {channel="evcc:device:demo:loadpoint0#phases"}
 Number:Dimensionless      evcc_demo_loadpoint0_targetSoC                   "Target SoC [%d %%]"                              <batterylevel>    {channel="evcc:device:demo:loadpoint0#targetSoC"}
 DateTime                  evcc_demo_loadpoint0_targetTime                  "Target time [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]"    <time>            {channel="evcc:device:demo:loadpoint0#targetTime"}
-Switch                    evcc_demo_loadpoint0_targetTimeActive            "Charging for target time [%s]"                   <switch>          {channel="evcc:device:demo:loadpoint0#targetTimeActive"}
 Switch                    evcc_demo_loadpoint0_targetTimeEnabled           "Target time enabled [%s]"                        <switch>          {channel="evcc:device:demo:loadpoint0#targetTimeEnabled"}
 String                    evcc_demo_loadpoint0_title                       "Loadpoint title [%s]"                            <text>            {channel="evcc:device:demo:loadpoint0#title"}
 // Vehicle on loadpoint
@@ -150,6 +150,7 @@ sitemap evcc label="evcc Demo" {
             Text item=evcc_demo_loadpoint0_activePhases
             Text item=evcc_demo_loadpoint0_chargeDuration
             Text item=evcc_demo_loadpoint0_chargeRemainingDuration
+            Text item=evcc_demo_loadpoint0_chargeRemainingEnergy
         }
         Switch item=evcc_demo_loadpoint0_mode mappings=["off"="Stop","now"="Now","minpv"="Min + PV", "pv"="Only PV"]
         Text label="Charging settings" icon="settings" {

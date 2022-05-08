@@ -48,6 +48,7 @@ public class EvccBindingConstants {
             "chargePower");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_REMAINING_DURATION = new ChannelTypeUID(
             BINDING_ID, "chargeRemainingDuration");
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_REMAINING_ENERGY = new ChannelTypeUID(BINDING_ID, "chargeRemainingEnergy");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGED_ENERGY = new ChannelTypeUID(BINDING_ID,
             "chargedEnergy");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGING = new ChannelTypeUID(BINDING_ID, "charging");
@@ -65,18 +66,12 @@ public class EvccBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MIN_SOC = new ChannelTypeUID(BINDING_ID, "minSoC");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MODE = new ChannelTypeUID(BINDING_ID, "mode");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_PHASES = new ChannelTypeUID(BINDING_ID, "phases");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_PV_ACTION = new ChannelTypeUID(BINDING_ID,
-            "pvAction");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_PV_REMAINING = new ChannelTypeUID(BINDING_ID,
-            "pvRemaining");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_SOC = new ChannelTypeUID(BINDING_ID,
             "targetSoC");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME = new ChannelTypeUID(BINDING_ID,
             "targetTime");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME_ENABLED = new ChannelTypeUID(BINDING_ID,
             "targetTimeEnabled");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME_ACTIVE = new ChannelTypeUID(BINDING_ID,
-            "targetTimeActive");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TITLE = new ChannelTypeUID(BINDING_ID, "title");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_CAPACITY = new ChannelTypeUID(BINDING_ID,
             "vehicleCapacity");
@@ -103,6 +98,7 @@ public class EvccBindingConstants {
     public static final String CHANNEL_LOADPOINT_CHARGE_DURATION = "chargeDuration";
     public static final String CHANNEL_LOADPOINT_CHARGE_POWER = "chargePower";
     public static final String CHANNEL_LOADPOINT_CHARGE_REMAINING_DURATION = "chargeRemainingDuration";
+    public static final String CHANNEL_LOADPOINT_CHARGE_REMAINING_ENERGY = "chargeRemainingEnergy";
     public static final String CHANNEL_LOADPOINT_CHARGED_ENERGY = "chargedEnergy";
     public static final String CHANNEL_LOADPOINT_CHARGING = "charging";
     public static final String CHANNEL_LOADPOINT_CONNECTED = "vehicleConnected";
@@ -114,14 +110,8 @@ public class EvccBindingConstants {
     public static final String CHANNEL_LOADPOINT_MIN_SOC = "minSoC";
     public static final String CHANNEL_LOADPOINT_MODE = "mode";
     public static final String CHANNEL_LOADPOINT_PHASES = "phases";
-    public static final String CHANNEL_LOADPOINT_PV_ACTION = "pvAction";
-    public static final String CHANNEL_LOADPOINT_PV_REMAINING = "pvRemaining";
     public static final String CHANNEL_LOADPOINT_TARGET_SOC = "targetSoC";
     public static final String CHANNEL_LOADPOINT_TARGET_TIME = "targetTime";
-    /**
-     * Whether loadpoint is currently charging to the target.
-     */
-    public static final String CHANNEL_LOADPOINT_TARGET_TIME_ACTIVE = "targetTimeActive";
     /**
      * Whether a target time is set on loadpoint.
      */
