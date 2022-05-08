@@ -15,8 +15,6 @@ package org.openhab.binding.netatmo.internal.handler.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
-import java.time.ZonedDateTime;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
@@ -37,7 +35,6 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class EventChannelHelper extends ChannelHelper {
     private boolean isLocal;
-    private @Nullable ZonedDateTime lastEventTime;
     private @Nullable String vpnUrl, localUrl;
     private ModuleType moduleType = ModuleType.UNKNOWN;
 
@@ -63,12 +60,9 @@ public class EventChannelHelper extends ChannelHelper {
     public void setNewData(@Nullable NAObject data) {
         if (data instanceof Event) {
             Event event = (Event) data;
-            ZonedDateTime localLast = lastEventTime;
-            ZonedDateTime eventTime = event.getTime();
-            if ((localLast != null && !eventTime.isAfter(localLast)) || !event.getEventType().appliesOn(moduleType)) {
-                return; // ignore incoming events if they are deprecated
+            if (!event.getEventType().appliesOn(moduleType)) {
+                return;
             }
-            lastEventTime = eventTime;
         }
         super.setNewData(data);
     }
