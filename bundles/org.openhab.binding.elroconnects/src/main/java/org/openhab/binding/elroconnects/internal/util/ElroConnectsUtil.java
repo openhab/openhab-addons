@@ -46,8 +46,10 @@ public final class ElroConnectsUtil {
      */
     public static String encode(String input, int length) {
         byte[] bytes = input.getBytes(StandardCharsets.UTF_8);
-        String content = "@".repeat(length - bytes.length) + new String(bytes, StandardCharsets.UTF_8) + "$";
-        bytes = content.getBytes(StandardCharsets.UTF_8);
+        String content = "@".repeat((length > bytes.length) ? (length - bytes.length) : 0)
+                + new String(bytes, StandardCharsets.UTF_8);
+        bytes = Arrays.copyOf(content.getBytes(StandardCharsets.UTF_8), length);
+        bytes[length] = (byte) "$".charAt(0);
         return HexUtils.bytesToHex(bytes);
     }
 
