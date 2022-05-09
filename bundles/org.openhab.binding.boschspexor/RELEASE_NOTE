@@ -1,0 +1,19 @@
+INITIAL Commit
+--------------
+
+This bundle is released the first time with the openHAB 3.2.1 
+
+The contained functionality is:
+
+- Authorization mechanism to permit the openHAB system to retrieve data from Bosch spexor API via an OAuth 2.0 OAuth Device Code Flow.
+
+- Management UI to setup the Account binding to a specific customer account.
+
+- Discovery Service to create new "Things" in openHAB
+
+- Supported Fields:
+    - device information
+    - sensor data
+    - observation types
+    - profiles
+

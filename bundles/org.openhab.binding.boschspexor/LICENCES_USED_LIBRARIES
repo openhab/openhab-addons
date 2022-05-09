@@ -1,0 +1,71 @@
+Dependency
+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+oauth2-oidc-sdk-9.20.jar
+pgk:maven/com.nimbusds/oauth2-oidc-sdk@9.20
+
+- Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0.txt
+
+------------------------------------------------------
+
+content-type-2.1.jar
+pgk:maven/com.nimbusds/content-type@2.1
+
+- Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0.txt
+
+------------------------------------------------------
+
+nimbus-jose-jwt-9.14.jar
+pgk:maven/com.nimbusds/nimbus-jose-jwt@9.14
+
+- Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0.txt
+
+------------------------------------------------------
+
+lang-tag-1.5.jar
+pgk:maven/com.nimbusds/lang-tag@1.5
+
+- Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0.txt
+
+------------------------------------------------------
+
+jcip-annotations-1.0.-1.jar
+pgk:maven/com.github.stephenc.jcip/jcip-annotations@1.0-1
+
+- Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0.txt
+
+------------------------------------------------------
+
+json-smart-2.4.7.jar
+pgk:maven/net.minidev/json-smart@2.4.7
+
+- Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0.txt
+
+------------------------------------------------------
+
+accessors-smart-2.4.7.jar
+pgk:maven/net.minidev/accessors-smart@2.4.7
+
+- Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0.txt
+
+------------------------------------------------------
+
+jquery.min.js - v1.8.3
+
+- MIT License - https://github.com/jquery/jquery/blob/main/LICENSE.txt
+
+------------------------------------------------------
+
+qrcode.min.js
+
+- MIT License - https://github.com/davidshimjs/qrcodejs/blob/master/LICENSE
+
+
+
+
+
+
+
+
+
+

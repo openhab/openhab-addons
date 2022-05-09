@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="boschspexor"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Bosch spexor Bridge -->
+	<bridge-type id="BoschSpexorAPIBrigde">
+		<label>Bosch spexor API Controller</label>
+		<description>The Bosch spexor API Bridge representing the Bosch spexor API.
+			Please visit http://localhost:8080/spexor
+			to complete the configuration.
+		</description>
+		<config-description-ref uri="thing-type:boschspexor:bridge"/>
+	</bridge-type>
+
+	<thing-type id="BoschSpexorThing" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="BoschSpexorAPIBrigde"/>
+		</supported-bridge-type-refs>
+		<label>BoschSpexor Binding Thing</label>
+		<description>Sample thing for BoschSpexor Binding</description>
+
+		<channel-groups>
+			<channel-group typeId="status" id="status"/>
+			<channel-group typeId="profile" id="profile"/>
+			<channel-group typeId="observations" id="observations"/>
+			<channel-group typeId="sensors" id="sensors"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="deviceID" type="text" readOnly="true" required="true">
+				<label>spexor ID</label>
+				<description>Unique indentifier of the spexor</description>
+			</parameter>
+			<parameter name="deviceName" type="text" readOnly="true" required="true">
+				<label>spexor Name</label>
+				<description>Indentifier of the spexor given by the user</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="10" max="900" required="true">
+				<label>spexor refresh interval</label>
+				<description>Interval to check the new state of the spexor in seconds</description>
+				<default>30</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-group-type id="status">
+		<label>spexor Status</label>
+		<description>Status information about the spexor</description>
+		<channels>
+			<channel id="soc" typeId="soc"/>
+			<channel id="lastConnected" typeId="lastConnected"/>
+			<channel id="connectionType" typeId="connectionType"/>
+			<channel id="powered" typeId="powered"/>
+			<channel id="energyMode" typeId="energyMode"/>
+			<channel id="installedVersion" typeId="installedVersion"/>
+			<channel id="availableVersion" typeId="availableVersion"/>
+			<channel id="firmwareState" typeId="firmwareState"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="profile">
+		<label>spexor profile</label>
+		<description>Status information about the spexor profile</description>
+		<channels>
+			<channel id="profileName" typeId="profileName"/>
+			<channel id="profileType" typeId="profileType"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sensors">
+		<label>spexor sensors</label>
+		<description>Status information about the spexor sensors</description>
+	</channel-group-type>
+
+	<channel-group-type id="observations">
+		<label>spexor observation information</label>
+		<description>Status information about the spexor observations</description>
+	</channel-group-type>
+
+	<channel-type id="profileName">
+		<item-type>String</item-type>
+		<label>Profile Name</label>
+		<description>Used Profile</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="profileType">
+		<item-type>String</item-type>
+		<label>Profile type</label>
+		<description>Description of the profile type</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="soc">
+		<item-type>Number</item-type>
+		<label>State of charge</label>
+		<description>Battery state in %</description>
+		<state min="0" max="1" step="0.01" pattern="%.2f %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="connectionType">
+		<item-type>String</item-type>
+		<label>Connection State</label>
+		<description>Information about the connection State</description>
+		<state pattern="%s" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="lastConnected">
+		<item-type>DateTime</item-type>
+		<label>Last Connected</label>
+		<description>Information about the Date Time when the spexor was connected</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="powered">
+		<item-type>Switch</item-type>
+		<label>Powered</label>
+		<description>Information about the charging port state</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="energyMode">
+		<item-type>String</item-type>
+		<label>Energy Mode</label>
+		<description>Information about spexor energy mode</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="installedVersion">
+		<item-type>String</item-type>
+		<label>Installed Firmware Version</label>
+		<description>Information about installed Firmware Version</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="availableVersion">
+		<item-type>String</item-type>
+		<label>Available Firmware Version</label>
+		<description>Information about the latest available firmware Version</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="firmwareState">
+		<item-type>String</item-type>
+		<label>Firmware State</label>
+		<description>Information about spexor firmware state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sampleObservationState">
+		<item-type>String</item-type>
+		<label>Sample State</label>
+		<description>Information about spexor observation state</description>
+		<state>
+			<options>
+				<option value="Deactivated">deactivated</option>
+				<option value="InActivation">in activation</option>
+				<option value="InCalibration">in calibration</option>
+				<option value="Activated">activated</option>
+				<option value="Triggered">triggered</option>
+				<option value="InDeactivation">in deactivation</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="sampleStringChannel">
+		<item-type>String</item-type>
+		<label>Sample State</label>
+		<description>Information about spexor state</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sampleNumberChannel">
+		<item-type>String</item-type>
+		<label>Sample State</label>
+		<description>Information about spexor state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
