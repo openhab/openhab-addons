@@ -255,14 +255,14 @@ public enum Command {
         return Arrays.stream(values()).filter(command -> command.getCode() == code).findFirst().orElse(null);
     }
 
-    public boolean isValidateHeader(byte[] data) {
+    public boolean isHeaderValid(byte[] data) {
         if (data.length < 4 + sizeBytes) {
             return false;
         }
         return data[0] == (byte) 0xff && data[1] == (byte) 0xff && data[2] == code;
     }
 
-    public boolean isValidateResponse(byte[] data) {
-        return isValidateHeader(data) && Utils.validateChecksum(data, sizeBytes);
+    public boolean isResponseValid(byte[] data) {
+        return isHeaderValid(data) && Utils.validateChecksum(data, sizeBytes);
     }
 }

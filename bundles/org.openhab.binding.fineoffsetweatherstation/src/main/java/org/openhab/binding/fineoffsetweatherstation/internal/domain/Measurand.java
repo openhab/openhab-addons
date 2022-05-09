@@ -31,11 +31,11 @@ import org.openhab.core.types.State;
  *
  * @author Andreas Berger - Initial contribution
  */
-@SuppressWarnings("unused")
 @NonNullByDefault
 public enum Measurand {
 
-    INTEMP("temperature-indoor", (byte) 0x01, "Indoor Temperature", MeasureType.TEMPERATURE),
+    INTEMP("temperature-indoor", (byte) 0x01, "Indoor Temperature", MeasureType.TEMPERATURE,
+            DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_INDOOR_TEMPERATURE),
 
     OUTTEMP("temperature-outdoor", (byte) 0x02, "Outdoor Temperature", MeasureType.TEMPERATURE,
             DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_OUTDOOR_TEMPERATURE),
@@ -320,24 +320,20 @@ public enum Measurand {
         this.parsers = parsers;
     }
 
-    public byte getCode() {
-        return code;
-    }
-
     public static @Nullable Measurand getByCode(byte code) {
         return MEASURANDS.get(code);
     }
 
-    public int extractMeasuredValues(byte[] data, int offset, List<MeasuredValue> result) {
+    public int extractMeasuredValues(byte[] data, int offset, ConversionContext context, List<MeasuredValue> result) {
         int subOffset = 0;
         for (Parser parser : parsers) {
-            subOffset += parser.extractMeasuredValues(data, offset + subOffset, result);
+            subOffset += parser.extractMeasuredValues(data, offset + subOffset, context, result);
         }
         return subOffset;
     }
 
     private interface Parser {
-        int extractMeasuredValues(byte[] data, int offset, List<MeasuredValue> result);
+        int extractMeasuredValues(byte[] data, int offset, ConversionContext context, List<MeasuredValue> result);
     }
 
     private static class Skip implements Parser {
@@ -348,7 +344,8 @@ public enum Measurand {
         }
 
         @Override
-        public int extractMeasuredValues(byte[] data, int offset, List<MeasuredValue> result) {
+        public int extractMeasuredValues(byte[] data, int offset, ConversionContext context,
+                List<MeasuredValue> result) {
             return skip;
         }
     }
@@ -371,8 +368,9 @@ public enum Measurand {
             this.channelTypeUID = channelTypeUID == null ? measureType.getChannelTypeId() : channelTypeUID;
         }
 
-        public int extractMeasuredValues(byte[] data, int offset, List<MeasuredValue> result) {
-            State state = measureType.toState(data, offset);
+        public int extractMeasuredValues(byte[] data, int offset, ConversionContext context,
+                List<MeasuredValue> result) {
+            State state = measureType.toState(data, offset, context);
             if (state != null) {
                 result.add(new MeasuredValue(measureType, channelId, channelTypeUID, state, name));
             }

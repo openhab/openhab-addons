@@ -22,6 +22,7 @@ import org.openhab.binding.fineoffsetweatherstation.internal.discovery.FineOffse
 import org.openhab.binding.fineoffsetweatherstation.internal.handler.FineOffsetGatewayHandler;
 import org.openhab.binding.fineoffsetweatherstation.internal.handler.FineOffsetSensorHandler;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -48,15 +49,17 @@ public class FineOffsetWeatherStationHandlerFactory extends BaseThingHandlerFact
     private final ChannelTypeRegistry channelTypeRegistry;
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public FineOffsetWeatherStationHandlerFactory(@Reference FineOffsetGatewayDiscoveryService gatewayDiscoveryService,
             @Reference ChannelTypeRegistry channelTypeRegistry, @Reference TranslationProvider translationProvider,
-            @Reference LocaleProvider localeProvider) {
+            @Reference LocaleProvider localeProvider, @Reference TimeZoneProvider timeZoneProvider) {
         this.gatewayDiscoveryService = gatewayDiscoveryService;
         this.channelTypeRegistry = channelTypeRegistry;
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -70,7 +73,7 @@ public class FineOffsetWeatherStationHandlerFactory extends BaseThingHandlerFact
 
         if (THING_TYPE_GATEWAY.equals(thingTypeUID) && thing instanceof Bridge) {
             return new FineOffsetGatewayHandler((Bridge) thing, gatewayDiscoveryService, channelTypeRegistry,
-                    translationProvider, localeProvider);
+                    translationProvider, localeProvider, timeZoneProvider);
         }
         if (THING_TYPE_SENSOR.equals(thingTypeUID)) {
             return new FineOffsetSensorHandler(thing);

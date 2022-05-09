@@ -45,7 +45,6 @@ import static org.openhab.core.library.unit.Units.PARTS_PER_MILLION;
 import static org.openhab.core.library.unit.Units.PERCENT;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.function.BiFunction;
 
@@ -63,7 +62,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.State;
 
 /**
- * Represents the measured type with conversion form the sensors' bytes to the openHAB state.
+ * Represents the measured type with conversion from the sensors' bytes to the openHAB state.
  *
  * @author Andreas Berger - Initial contribution
  */
@@ -95,26 +94,26 @@ public enum MeasureType {
     CO2(PARTS_PER_MILLION, 2, CHANNEL_CO2, Utils::toUInt16),
 
     WATER_LEAK_DETECTION(1, CHANNEL_WATER_LEAK_DETECTION,
-            (data, offset) -> toUInt8(data[offset]) != 0 ? OnOffType.ON : OnOffType.OFF),
+            (data, offset, context) -> toUInt8(data[offset]) != 0 ? OnOffType.ON : OnOffType.OFF),
 
     LIGHTNING_DISTANCE(KILO(METRE), 1, CHANNEL_LIGHTNING_DISTANCE, (data, offset) -> toUInt8(data[offset])),
 
-    LIGHTNING_COUNTER(4, CHANNEL_LIGHTNING_COUNTER, (data, offset) -> new DecimalType(toUInt32(data, offset))),
+    LIGHTNING_COUNTER(4, CHANNEL_LIGHTNING_COUNTER, (data, offset, context) -> new DecimalType(toUInt32(data, offset))),
 
     LIGHTNING_TIME(4, CHANNEL_LIGHTNING_TIME,
-            (data, offset) -> new DateTimeType(
-                    ZonedDateTime.ofInstant(Instant.ofEpochSecond(toUInt32(data, offset)), ZoneOffset.UTC))),
+            (data, offset, context) -> new DateTimeType(
+                    ZonedDateTime.ofInstant(Instant.ofEpochSecond(toUInt32(data, offset)), context.getZoneId()))),
 
     MICROWATT_PER_SQUARE_CENTIMETRE(Units.MICROWATT_PER_SQUARE_CENTIMETRE, 2, CHANNEL_UV_RADIATION, Utils::toUInt16),
 
-    BYTE(1, null, (data, offset) -> new DecimalType(toUInt8(data[offset]))),
+    BYTE(1, null, (data, offset, context) -> new DecimalType(toUInt8(data[offset]))),
 
-    DATE_TIME2(6, null, (data, offset) -> new DateTimeType(
-            ZonedDateTime.ofInstant(Instant.ofEpochSecond(toUInt32(data, offset)), ZoneOffset.UTC)));
+    DATE_TIME2(6, null, (data, offset, context) -> new DateTimeType(
+            ZonedDateTime.ofInstant(Instant.ofEpochSecond(toUInt32(data, offset)), context.getZoneId())));
 
     private final int byteSize;
     private final @Nullable ChannelTypeUID channelTypeUID;
-    private final BiFunction<byte[], Integer, @Nullable State> stateConverter;
+    private final StateConverter stateConverter;
 
     /**
      * @param unit the unit
@@ -124,8 +123,8 @@ public enum MeasureType {
      */
     MeasureType(Unit<?> unit, int byteSize, @Nullable ChannelTypeUID channelTypeUID,
             BiFunction<byte[], Integer, @Nullable Number> valueExtractor) {
-        this(byteSize, channelTypeUID, (bytes, integer) -> {
-            Number value = valueExtractor.apply(bytes, integer);
+        this(byteSize, channelTypeUID, (bytes, offset, context) -> {
+            Number value = valueExtractor.apply(bytes, offset);
             return value == null ? null : new QuantityType<>(value, unit);
         });
     }
@@ -135,8 +134,7 @@ public enum MeasureType {
      * @param channelTypeUID the channel type
      * @param stateConverter a function to extract the sensor data into the openHAB's state
      */
-    MeasureType(int byteSize, @Nullable ChannelTypeUID channelTypeUID,
-            BiFunction<byte[], Integer, @Nullable State> stateConverter) {
+    MeasureType(int byteSize, @Nullable ChannelTypeUID channelTypeUID, StateConverter stateConverter) {
         this.byteSize = byteSize;
         this.channelTypeUID = channelTypeUID;
         this.stateConverter = stateConverter;
@@ -150,7 +148,12 @@ public enum MeasureType {
         return channelTypeUID;
     }
 
-    public @Nullable State toState(byte[] data, int offset) {
-        return stateConverter.apply(data, offset);
+    public @Nullable State toState(byte[] data, int offset, ConversionContext context) {
+        return stateConverter.toState(data, offset, context);
+    }
+
+    private interface StateConverter {
+        @Nullable
+        State toState(byte[] data, int offset, ConversionContext context);
     }
 }

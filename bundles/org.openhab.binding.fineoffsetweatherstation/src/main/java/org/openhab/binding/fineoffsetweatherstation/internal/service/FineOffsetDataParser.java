@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.BatteryStatus;
@@ -143,7 +144,7 @@ public class FineOffsetDataParser {
         return new SystemInfo(frequency, date, dst, useWh24);
     }
 
-    List<MeasuredValue> getLiveData(byte[] data) {
+    List<MeasuredValue> getLiveData(byte[] data, ConversionContext context) {
         /*
          * Pos| Length | Description
          * -------------------------------------------------
@@ -172,7 +173,7 @@ public class FineOffsetDataParser {
                 logger.warn("failed to get measurand 0x{}", Integer.toHexString(code));
                 return result;
             }
-            idx += measurand.extractMeasuredValues(data, idx, result);
+            idx += measurand.extractMeasuredValues(data, idx, context, result);
         }
         return result;
     }

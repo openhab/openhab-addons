@@ -123,7 +123,7 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
     }
 
     private void discover() {
-        startReceiverThreat();
+        startReceiverThread();
         NetUtil.getAllBroadcastAddresses().forEach(this::sendDiscoveryRequest);
     }
 
@@ -222,7 +222,7 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
     /**
      * starts the {@link ReceiverThread} thread
      */
-    private synchronized void startReceiverThreat() {
+    private synchronized void startReceiverThread() {
         final Thread srt = socketReceiveThread;
         if (srt != null) {
             if (srt.isAlive() && !srt.isInterrupted()) {
@@ -282,7 +282,7 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
                                 Utils.toHexString(messageBuf, messageBuf.length, ""));
                     }
 
-                    if (Command.CMD_BROADCAST.isValidateHeader(messageBuf)) {
+                    if (Command.CMD_BROADCAST.isHeaderValid(messageBuf)) {
                         String ip = InetAddress.getByAddress(Arrays.copyOfRange(messageBuf, 11, 15)).getHostAddress();
                         var macAddr = Arrays.copyOfRange(messageBuf, 5, 5 + 6);
                         var port = toUInt16(messageBuf, 15);

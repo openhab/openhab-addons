@@ -59,25 +59,26 @@ public class BatteryStatus {
 
     public BatteryStatus(Type type, byte data) {
         int value = toUInt8(data);
+        double voltage;
         switch (type) {
             case LOW_HIGH:
                 low = value == 1;
                 break;
             case LEVEL:
                 level = value;
-                low = level <= 1;
+                low = value <= 1;
                 break;
             case LEVEL_OR_DC:
                 dc = value == 6;
                 level = value;
-                low = level <= 1;
+                low = value <= 1;
                 break;
             case VOLTAGE_BROAD_STEPS:
-                voltage = value * 0.1;
+                this.voltage = voltage = value * 0.1;
                 low = voltage <= 1.2;
                 break;
             case VOLTAGE_FINE_STEPS:
-                voltage = value * 0.02;
+                this.voltage = voltage = value * 0.02;
                 low = voltage <= 1.2;
                 break;
             default:
@@ -117,8 +118,9 @@ public class BatteryStatus {
         if (dc) {
             return 100;
         }
-        if (level != null) {
-            return (level * 100 / 5);
+        Integer currentLevel = level;
+        if (currentLevel != null) {
+            return (currentLevel * 100 / 5);
         }
         return null;
     }

@@ -1,6 +1,6 @@
 # Fine Offset Weather Station Binding
 
-This binding is for weather stations that are manufactured by [Fine Offset](http://www.foshk.com/).
+This binding is for weather stations manufactured by [Fine Offset](http://www.foshk.com/).
 These weather stations are white labeled products which are re-branded by many distribution companies around the world.
 Some of these brands are e.g.:
 
@@ -68,18 +68,18 @@ This binding support discovery of Fine Offset gateway devices by sending a broad
 
 ### `gateway` Thing Configuration
 
-| Name              | Type    | Description                                                                     | Default | Required | Advanced |
-|-------------------|---------|---------------------------------------------------------------------------------|---------|----------|----------|
-| ip                | text    | Hostname or IP address of the device                                            | N/A     | yes      | no       |
-| port              | text    | Port                                                                            | 45000   | yes      | no       |
-| pollingInterval   | integer | Polling period for refreshing the data in sec                                   | 16      | yes      | yes      |
-| discoverInterval  | integer | Interval in sec to fetch registered sensors, battery status and signal strength | 900     | yes      | yes      |
+| Name              | Type    | Description                                                                         | Default | Required | Advanced |
+|-------------------|---------|-------------------------------------------------------------------------------------|---------|----------|----------|
+| ip                | text    | The Hostname or IP address of the device                                            | N/A     | yes      | no       |
+| port              | integer | The network port of the gateway                                                     | 45000   | yes      | no       |
+| pollingInterval   | integer | Polling period for refreshing the data in seconds                                   | 16      | yes      | yes      |
+| discoverInterval  | integer | Interval in seconds to fetch registered sensors, battery status and signal strength | 900     | yes      | yes      |
 
 ### `sensor` Thing Configuration
 
 | Name             | Type    | Description                                                                                                                            | Default | Required | Advanced |
 |------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
-| sensor           | text    | The Name of sensor attached to the  gateway (multiple sensors of the same type my have different names according to the bound channel) | N/A     | yes      | no       |
+| sensor           | text    | The name of sensor attached to the gateway (multiple sensors of the same type may have different names according to the bound channel) | N/A     | yes      | no       |
 
 Valid sensors:
 

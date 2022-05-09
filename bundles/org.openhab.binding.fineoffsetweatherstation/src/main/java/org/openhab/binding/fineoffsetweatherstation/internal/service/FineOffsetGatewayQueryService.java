@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetGatewayConfiguration;
 import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Command;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
@@ -49,11 +50,14 @@ public class FineOffsetGatewayQueryService implements AutoCloseable {
     private final ThingStatusListener thingStatusListener;
     private final FineOffsetDataParser fineOffsetDataParser;
 
-    public FineOffsetGatewayQueryService(FineOffsetGatewayConfiguration config,
-            ThingStatusListener thingStatusListener) {
+    private final ConversionContext conversionContext;
+
+    public FineOffsetGatewayQueryService(FineOffsetGatewayConfiguration config, ThingStatusListener thingStatusListener,
+            ConversionContext conversionContext) {
         this.config = config;
         this.thingStatusListener = thingStatusListener;
         this.fineOffsetDataParser = new FineOffsetDataParser();
+        this.conversionContext = conversionContext;
     }
 
     public @Nullable String getFirmwareVersion() {
@@ -80,10 +84,9 @@ public class FineOffsetGatewayQueryService implements AutoCloseable {
     }
 
     public @Nullable SystemInfo fetchSystemInfo() {
-
         var data = executeCommand(Command.CMD_READ_SSSS);
         if (data == null) {
-            logger.info("Unexpected response to System Info!");
+            logger.debug("Unexpected response to System Info!");
             return null;
         }
         return fineOffsetDataParser.fetchSystemInfo(data);
@@ -94,7 +97,7 @@ public class FineOffsetGatewayQueryService implements AutoCloseable {
         if (data == null) {
             return Collections.emptyList();
         }
-        return fineOffsetDataParser.getLiveData(data);
+        return fineOffsetDataParser.getLiveData(data, conversionContext);
     }
 
     private synchronized byte @Nullable [] executeCommand(Command command) {
@@ -112,7 +115,7 @@ public class FineOffsetGatewayQueryService implements AutoCloseable {
             if ((bytesRead = in.read(buffer)) == -1) {
                 return null;
             }
-            if (!command.isValidateResponse(buffer)) {
+            if (!command.isResponseValid(buffer)) {
                 if (bytesRead > 0) {
                     logger.debug("executeCommand({}), invalid response: {}", command,
                             Utils.toHexString(buffer, bytesRead, ""));
@@ -123,12 +126,12 @@ public class FineOffsetGatewayQueryService implements AutoCloseable {
             }
 
         } catch (IOException ex) {
-            logger.warn("executeCommand({}): failed to invoke command", command, ex);
             thingStatusListener.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     ex.getMessage());
             try {
                 close();
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                // ignored
             }
             return null;
         } catch (Exception ex) {
@@ -150,7 +153,6 @@ public class FineOffsetGatewayQueryService implements AutoCloseable {
                 this.socket = socket;
                 thingStatusListener.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
             } catch (IOException e) {
-                logger.warn("failed to connect to {}:{}", config.ip, config.port, e);
                 thingStatusListener.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         e.getMessage());
             }

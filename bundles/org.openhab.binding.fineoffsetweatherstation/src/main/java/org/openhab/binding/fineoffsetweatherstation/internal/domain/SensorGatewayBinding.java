@@ -32,7 +32,7 @@ public enum SensorGatewayBinding {
      * wh24 + wh65 share the same id, they are distinguished by user set flag, see also {@link Command#CMD_READ_SSSS}
      */
     WH24((byte) 0, Sensor.WH24, null),
-    WH65((byte) 0, Sensor.WH65, null), //
+    WH65((byte) 0, Sensor.WH65, null),
     // also wh69
     WH68((byte) 1, Sensor.WH68, null),
     WH80((byte) 2, Sensor.WH80, null),
@@ -87,7 +87,12 @@ public enum SensorGatewayBinding {
 
     static {
         for (SensorGatewayBinding sensorGatewayBinding : values()) {
-            SENSOR_LOOKUP.computeIfAbsent(sensorGatewayBinding.id, ArrayList::new).add(sensorGatewayBinding);
+            List<SensorGatewayBinding> bindings = SENSOR_LOOKUP.computeIfAbsent(sensorGatewayBinding.id,
+                    ArrayList::new);
+            // noinspection ConstantConditions
+            if (bindings != null) {
+                bindings.add(sensorGatewayBinding);
+            }
         }
     }
 

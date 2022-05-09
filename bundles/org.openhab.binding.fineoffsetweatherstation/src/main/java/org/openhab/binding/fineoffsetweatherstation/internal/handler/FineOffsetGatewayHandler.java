@@ -31,19 +31,20 @@ import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetGatewayCo
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetSensorConfiguration;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants;
 import org.openhab.binding.fineoffsetweatherstation.internal.discovery.FineOffsetGatewayDiscoveryService;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SystemInfo;
 import org.openhab.binding.fineoffsetweatherstation.internal.service.FineOffsetGatewayQueryService;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -69,8 +70,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class FineOffsetGatewayHandler extends BaseBridgeHandler {
 
+    private static final String PROPERTY_FREQUENCY = "frequency";
+
     private final Logger logger = LoggerFactory.getLogger(FineOffsetGatewayHandler.class);
     private final Bundle bundle;
+    private final ConversionContext conversionContext;
 
     private @Nullable FineOffsetGatewayQueryService gatewayQueryService;
 
@@ -88,14 +92,15 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
 
     public FineOffsetGatewayHandler(Bridge bridge, FineOffsetGatewayDiscoveryService gatewayDiscoveryService,
             ChannelTypeRegistry channelTypeRegistry, TranslationProvider translationProvider,
-            LocaleProvider localeProvider) {
+            LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
         super(bridge);
         bridgeUID = bridge.getUID();
         this.gatewayDiscoveryService = gatewayDiscoveryService;
         this.channelTypeRegistry = channelTypeRegistry;
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
-        bundle = FrameworkUtil.getBundle(FineOffsetGatewayDiscoveryService.class);
+        this.bundle = FrameworkUtil.getBundle(FineOffsetGatewayDiscoveryService.class);
+        this.conversionContext = new ConversionContext(timeZoneProvider.getTimeZone());
     }
 
     @Override
@@ -104,13 +109,8 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        @Nullable
         FineOffsetGatewayConfiguration config = getConfigAs(FineOffsetGatewayConfiguration.class);
-        if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no configuration available");
-            return;
-        }
-        gatewayQueryService = new FineOffsetGatewayQueryService(config, this::updateStatus);
+        gatewayQueryService = new FineOffsetGatewayQueryService(config, this::updateStatus, conversionContext);
 
         updateStatus(ThingStatus.UNKNOWN);
         fetchAndUpdateSensors();
@@ -181,7 +181,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
     private @Nullable Channel createChannel(MeasuredValue measuredValue) {
         ChannelTypeUID channelTypeId = measuredValue.getChannelTypeUID();
         if (channelTypeId == null) {
-            logger.warn("cannot create channel for {}", measuredValue.getDebugName());
+            logger.debug("cannot create channel for {}", measuredValue.getDebugName());
             return null;
         }
         ChannelBuilder builder = ChannelBuilder.create(new ChannelUID(thing.getUID(), measuredValue.getChannelId()))
@@ -220,7 +220,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
 
         SystemInfo systemInfo = query(FineOffsetGatewayQueryService::fetchSystemInfo);
         if (systemInfo != null && systemInfo.getFrequency() != null) {
-            properties.put("frequency", systemInfo.getFrequency() + " MHz");
+            properties.put(PROPERTY_FREQUENCY, systemInfo.getFrequency() + " MHz");
         }
         if (!thing.getProperties().equals(properties)) {
             BridgeBuilder bridge = editThing();

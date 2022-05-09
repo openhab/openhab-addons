@@ -145,10 +145,11 @@
 	<channel-type id="co2">
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO₂</label>
+		<description>Air quality indicator</description>
 		<category>CarbonDioxide</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<tag>CO2</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -157,31 +158,29 @@
 		<item-type>Switch</item-type>
 		<label>Water Leak Detection</label>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lightning-counter">
 		<item-type>Number</item-type>
 		<label>Lightning Counter</label>
-		<category>Energy</category>
+		<category>Light</category>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lightning-time">
 		<item-type>DateTime</item-type>
 		<label>Lightning Time</label>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Timestamp</tag>
-		</tags>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lightning-distance">
 		<item-type>Number:Length</item-type>
 		<label>Lightning Distance</label>
-		<category>Energy</category>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

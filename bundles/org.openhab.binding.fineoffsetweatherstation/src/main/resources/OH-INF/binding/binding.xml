@@ -5,6 +5,5 @@
 
 	<name>Fine Offset Weather Station</name>
 	<description>A binding for the Weather Stations Manufactured by Fine Offset</description>
-	<author>Andreas Berger</author>
 
 </binding:binding>
