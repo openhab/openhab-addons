@@ -23,8 +23,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.evcc.internal.dto.Loadpoint;
-import org.openhab.binding.evcc.internal.dto.Result;
+import org.openhab.binding.evcc.internal.api.EvccAPI;
+import org.openhab.binding.evcc.internal.api.dto.Loadpoint;
+import org.openhab.binding.evcc.internal.api.dto.Result;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;

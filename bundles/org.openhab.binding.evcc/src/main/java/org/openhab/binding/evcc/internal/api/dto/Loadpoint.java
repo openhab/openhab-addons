@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evcc.internal.dto;
+package org.openhab.binding.evcc.internal.api.dto;
 
 import com.google.gson.annotations.SerializedName;
 
