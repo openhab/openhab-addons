@@ -46,7 +46,7 @@
 	<channel-type id="switch-control">
 		<item-type>Switch</item-type>
 		<label>Switch Control</label>
-		<description>Control a switch item via KNX (i.e. the status is not owned by KNX)</description>
+		<description>switch-control: Control an openHAB switch item via KNX (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 
@@ -60,7 +60,7 @@
 	<channel-type id="dimmer-control">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer Control</label>
-		<description>Control a dimmer item via KNX (i.e. the status is not owned by KNX)</description>
+		<description>dimmer-control: Control an openHAB dimmer item via KNX (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:dimmer-control"/>
 	</channel-type>
 
@@ -74,7 +74,7 @@
 	<channel-type id="rollershutter-control">
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter Control</label>
-		<description>Control a rollershutter item (i.e. the status is not owned by KNX)</description>
+		<description>rollershutter-control: Control an openHAB rollershutter item (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:rollershutter"/>
 	</channel-type>
 
@@ -88,7 +88,7 @@
 	<channel-type id="color-control">
 		<item-type>Color</item-type>
 		<label>Color Control</label>
-		<description>Control a color item (i.e. the status is not owned by KNX)</description>
+		<description>color-control: Control an openHAB a color item (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:color-control"/>
 	</channel-type>
 
@@ -102,7 +102,7 @@
 	<channel-type id="contact-control">
 		<item-type>Contact</item-type>
 		<label>Contact Control</label>
-		<description>Control a contact item (i.e. the status is not owned by KNX)</description>
+		<description>contact-control: Control an openHAB contact item (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 
@@ -116,7 +116,7 @@
 	<channel-type id="number-control">
 		<item-type>Number</item-type>
 		<label>Number Control</label>
-		<description>Control a number item (i.e. the status is not owned by KNX)</description>
+		<description>number-control: Control an openHAB number item (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 
@@ -130,7 +130,7 @@
 	<channel-type id="string-control">
 		<item-type>String</item-type>
 		<label>String Control</label>
-		<description>Control a string item (i.e. the status is not owned by KNX)</description>
+		<description>string-control: Control an openHAB string item (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 
@@ -144,7 +144,7 @@
 	<channel-type id="datetime-control">
 		<item-type>DateTime Control</item-type>
 		<label>DateTime Control</label>
-		<description>Control a date/time item (i.e. the status is not owned by KNX)</description>
+		<description>datetime-control: Control an openHAB date/time item (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 
