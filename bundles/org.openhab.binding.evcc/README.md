@@ -23,8 +23,8 @@ No auto discovery supported.
 
 | Parameter       | Type   | Description                                              | Advanced | Required |
 |-----------------|--------|----------------------------------------------------------|----------|----------|
-| url             | String | URL of evcc web UI, e.g. *https://demo.evcc.io*          | false    | true     |
-| refreshInterval | Number | Interval the status is polled in seconds (minimum is 15) | true     | false    |
+| url             | String | URL of evcc web UI, e.g. *https://demo.evcc.io*          | No       | Yes      |
+| refreshInterval | Number | Interval the status is polled in seconds (minimum is 15) | Yes      | No       |
 
 Default value for *refreshInterval* is 60 seconds.
 

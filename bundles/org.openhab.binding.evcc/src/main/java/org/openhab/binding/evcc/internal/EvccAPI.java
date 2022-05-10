@@ -37,8 +37,8 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class EvccAPI {
-    private static final Logger logger = LoggerFactory.getLogger(EvccAPI.class);
-    private static final Gson gson = new Gson();
+    private final Logger logger = LoggerFactory.getLogger(EvccAPI.class);
+    private final Gson gson = new Gson();
     private String host = "";
 
     public EvccAPI(String host) {
@@ -51,18 +51,13 @@ public class EvccAPI {
      * @param description request description for logger
      * @param url full request URL
      * @param method reguest method, e.g. GET, POST
-     * @return the response body or null if request failed
+     * @return the response body
+     * @throws IOException if HTTP request failed
      */
-    private @Nullable String httpRequest(@Nullable String description, String url, String method) {
-        String response = "";
-        try {
-            response = HttpUtil.executeUrl(method, url, LONG_CONNECTION_TIMEOUT_MILLISEC);
-            logger.trace("{} - {}, {} - {}", description, url, method, response);
-            return response;
-        } catch (IOException e) {
-            logger.debug("IO Exception - {} - {}, {} - {}", description, url, method, e.toString());
-            return null;
-        }
+    private @Nullable String httpRequest(@Nullable String description, String url, String method) throws IOException {
+        String response = HttpUtil.executeUrl(method, url, LONG_CONNECTION_TIMEOUT_MILLISEC);
+        logger.trace("{} - {}, {} - {}", description, url, method, response);
+        return response;
     }
 
     // End utility functions
@@ -72,60 +67,58 @@ public class EvccAPI {
      * Get the status from evcc.
      * 
      * @param host hostname of IP address of the evcc instance
-     * @return Status object or null if request failed
+     * @return {@link org.openhab.binding.evcc.internal.dto.Result} object or null
+     * @throws IOException if HTTP request failed
+     * @throws JsonSyntaxException if response JSON read failed
      */
-    public @Nullable Result getResult() {
+    public @Nullable Result getResult() throws IOException, JsonSyntaxException {
         final String response = httpRequest("Status", this.host + EVCC_REST_API + "state", "GET");
-        try {
-            Status status = gson.fromJson(response, Status.class);
-            if (status == null)
-                return null;
-            return status.getResult();
-        } catch (JsonSyntaxException e) {
-            logger.debug("Failed to get status:", e);
+        Status status = gson.fromJson(response, Status.class);
+        if (status == null) {
             return null;
         }
+        return status.getResult();
     }
 
     // Loadpoint specific API calls.
-    public @Nullable String setMode(int loadpoint, String mode) {
+    public @Nullable String setMode(int loadpoint, String mode) throws IOException {
         return httpRequest("Set mode of loadpoint " + loadpoint,
                 this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/mode/" + mode, "POST");
     }
 
-    public @Nullable String setMinSoC(int loadpoint, int minSoC) {
+    public @Nullable String setMinSoC(int loadpoint, int minSoC) throws IOException {
         return httpRequest("Set minSoC of loadpoint " + loadpoint,
                 this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/minsoc/" + minSoC, "POST");
     }
 
-    public @Nullable String setTargetSoC(int loadpoint, int targetSoC) {
+    public @Nullable String setTargetSoC(int loadpoint, int targetSoC) throws IOException {
         return httpRequest("Set targetSoC of loadpoint " + loadpoint,
                 this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetsoc/" + targetSoC, "POST");
     }
 
-    public @Nullable String setPhases(int loadpoint, int phases) {
+    public @Nullable String setPhases(int loadpoint, int phases) throws IOException {
         return httpRequest("Set phases of loadpoint " + loadpoint,
                 this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/phases/" + phases, "POST");
     }
 
-    public @Nullable String setMinCurrent(int loadpoint, int minCurrent) {
+    public @Nullable String setMinCurrent(int loadpoint, int minCurrent) throws IOException {
         return httpRequest("Set minCurrent of loadpoint " + loadpoint,
                 this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/mincurrent/" + minCurrent, "POST");
     }
 
-    public @Nullable String setMaxCurrent(int loadpoint, int maxCurrent) {
+    public @Nullable String setMaxCurrent(int loadpoint, int maxCurrent) throws IOException {
         return httpRequest("Set maxCurrent of loadpoint " + loadpoint,
                 this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/maxcurrent/" + maxCurrent, "POST");
     }
 
-    public @Nullable String setTargetCharge(int loadpoint, int targetSoC, ZonedDateTime targetTime) {
+    public @Nullable String setTargetCharge(int loadpoint, int targetSoC, ZonedDateTime targetTime) throws IOException {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         return httpRequest("Set targetTime of loadpoint " + loadpoint, this.host + EVCC_REST_API + "loadpoints/"
                 + loadpoint + "/targetcharge/" + targetSoC + "/" + targetTime.toLocalDateTime().format(formatter),
                 "POST");
     }
 
-    public @Nullable String unsetTargetCharge(int loadpoint) {
+    public @Nullable String unsetTargetCharge(int loadpoint) throws IOException {
         return httpRequest("Unset targetTime of loadpoint " + loadpoint,
                 this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetcharge", "DELETE");
     }

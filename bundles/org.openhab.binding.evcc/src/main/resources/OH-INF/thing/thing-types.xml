@@ -28,7 +28,6 @@
 				<context>network-address</context>
 				<label>URL</label>
 				<description>URL of evcc web UI, e.g. https://demo.evcc.io</description>
-				<default>https://demo.evcc.io</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="15">
 				<label>Refresh Interval</label>
@@ -85,7 +84,7 @@
 	<channel-type id="pvPower">
 		<item-type>Number:Power</item-type>
 		<label>PV Power</label>
-		<description> Current power from photovoltaik</description>
+		<description>Current power from photovoltaik</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -207,7 +206,7 @@
 		<category>String</category>
 		<state readOnly="false">
 			<options>
-				<option value="off">Stop</option>
+				<option value="off">Off</option>
 				<option value="now">Now</option>
 				<option value="minpv">Min + PV</option>
 				<option value="pv">Only PV</option>
