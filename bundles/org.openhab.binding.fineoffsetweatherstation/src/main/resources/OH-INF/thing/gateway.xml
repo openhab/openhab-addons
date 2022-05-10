@@ -167,7 +167,6 @@
 	<channel-type id="lightning-counter">
 		<item-type>Number</item-type>
 		<label>Lightning Counter</label>
-		<category>Light</category>
 		<state readOnly="true"/>
 	</channel-type>
 
