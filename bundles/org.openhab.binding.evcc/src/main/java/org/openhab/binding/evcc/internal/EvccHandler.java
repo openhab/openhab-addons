@@ -16,6 +16,7 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -96,33 +97,34 @@ public class EvccHandler extends BaseThingHandler {
                     try {
                         evccAPI.setMode(loadpoint, command.toString());
                     } catch (IOException e) {
-                        logger.debug("Failed to set mode");
+                        logger.debug("Failed to set mode", e);
                     }
                     break;
                 case CHANNEL_LOADPOINT_MIN_SOC:
                     try {
                         evccAPI.setMinSoC(loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
                     } catch (IOException e) {
-                        logger.debug("Failed to set min SoC");
+                        logger.debug("Failed to set min SoC", e);
                     }
                     break;
                 case CHANNEL_LOADPOINT_TARGET_SOC:
                     try {
                         evccAPI.setTargetSoC(loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
                     } catch (IOException e) {
-                        logger.debug("Failed to set target SoC");
+                        logger.debug("Failed to set target SoC", e);
                     }
                     break;
                 case CHANNEL_LOADPOINT_TARGET_TIME:
                     if (targetTimeEnabled) {
                         try {
-                            targetTimeZDT = ZonedDateTime.parse(command.toString());
+                            targetTimeZDT = ZonedDateTime.parse(command.toString(),
+                                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")); // RFC 922 timezone
                             evccAPI.setTargetCharge(loadpoint, targetSoC, targetTimeZDT);
                             ChannelUID channel = new ChannelUID(getThing().getUID(), "loadpoint" + loadpoint,
                                     CHANNEL_LOADPOINT_TARGET_TIME);
                             updateState(channel, new DateTimeType(targetTimeZDT));
                         } catch (IOException | DateTimeParseException e) {
-                            logger.debug("Failed to set target charge");
+                            logger.debug("Failed to set target charge", e);
                         }
                     }
                     break;
@@ -132,14 +134,14 @@ public class EvccHandler extends BaseThingHandler {
                             evccAPI.setTargetCharge(loadpoint, targetSoC, targetTimeZDT);
                             targetTimeEnabled = true;
                         } catch (IOException e) {
-                            logger.debug("Failed to set target charge");
+                            logger.debug("Failed to set target charge", e);
                         }
                     } else {
                         try {
                             evccAPI.unsetTargetCharge(loadpoint);
                             targetTimeEnabled = false;
                         } catch (Exception e) {
-                            logger.debug("Failed to unset target charge");
+                            logger.debug("Failed to unset target charge", e);
                         }
                     }
                     break;
@@ -147,21 +149,21 @@ public class EvccHandler extends BaseThingHandler {
                     try {
                         evccAPI.setPhases(loadpoint, Integer.parseInt(command.toString()));
                     } catch (IOException e) {
-                        logger.debug("setPhases failed");
+                        logger.debug("setPhases failed", e);
                     }
                     break;
                 case CHANNEL_LOADPOINT_MIN_CURRENT:
                     try {
                         evccAPI.setMinCurrent(loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
                     } catch (IOException e) {
-                        logger.debug("Failed to set min current");
+                        logger.debug("Failed to set min current", e);
                     }
                     break;
                 case CHANNEL_LOADPOINT_MAX_CURRENT:
                     try {
                         evccAPI.setMaxCurrent(loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
                     } catch (IOException e) {
-                        logger.debug("Failed to set max current");
+                        logger.debug("Failed to set max current", e);
                     }
                     break;
                 default:
