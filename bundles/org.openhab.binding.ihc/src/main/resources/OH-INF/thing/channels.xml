@@ -193,7 +193,7 @@
 		</config-description>
 	</channel-type>
 	<channel-type id="rollershutter">
-		<item-type>RollerShutter</item-type>
+		<item-type>Rollershutter</item-type>
 		<label>Generic Roller Shutter</label>
 		<description>Generic roller shutter channel</description>
 		<state readOnly="false"></state>

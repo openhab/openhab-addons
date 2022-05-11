@@ -61,7 +61,7 @@
 	</channel-type>
 
 	<channel-type id="number-readonly">
-		<item-type>number</item-type>
+		<item-type>Number</item-type>
 		<label>Value Readonly DataPoint</label>
 		<state readOnly="true"/>
 		<config-description>
@@ -87,7 +87,7 @@
 	</channel-type>
 
 	<channel-type id="number">
-		<item-type>number</item-type>
+		<item-type>Number</item-type>
 		<label>Value DataPoint</label>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
