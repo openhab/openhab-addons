@@ -17,15 +17,24 @@
 			<context>password</context>
 		</parameter>
 
-		<parameter name="username" type="text" required="true">
-			<label>Username</label>
-			<description>Your Netatmo API username (email).</description>
+		<parameter name="code" type="text">
+			<label>Authentication Code</label>
+			<description>Authentication code, provided by the oAuth2 authentication process.</description>
+			<context>password</context>
+			<advanced>true</advanced>
 		</parameter>
 
-		<parameter name="password" type="text" required="true">
-			<label>Password</label>
-			<description>Your Netatmo API password.</description>
+		<parameter name="redirectUri" type="text">
+			<label>Redirect Uri</label>
+			<description>Redirection Uri used by Netatmo to reach the openHab server. Provided during authentication process.</description>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="refreshToken" type="text">
+			<label>Refresh Token</label>
+			<description>Refresh token provided by the oAuth2 authentication process.</description>
 			<context>password</context>
+			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="webHookUrl" type="text" required="false">

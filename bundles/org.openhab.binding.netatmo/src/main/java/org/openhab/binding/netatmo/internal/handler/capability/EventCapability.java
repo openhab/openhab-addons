@@ -17,7 +17,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
-import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
+import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
 
 /**
  * {@link EventCapability} is the base class for handlers
@@ -29,7 +29,7 @@ import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
  */
 @NonNullByDefault
 public class EventCapability extends Capability {
-    private Optional<NetatmoServlet> servlet = Optional.empty();
+    private Optional<WebhookServlet> servlet = Optional.empty();
 
     public EventCapability(CommonInterface handler) {
         super(handler);
