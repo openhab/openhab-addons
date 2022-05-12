@@ -126,7 +126,7 @@ public class EvccHandler extends BaseThingHandler {
                         if (command == OnOffType.ON) {
                             evccAPI.setTargetCharge(loadpoint, targetSoC, targetTimeZDT);
                             targetTimeEnabled = true;
-                        } else {
+                        } else if (command == OnOffType.OFF) {
                             evccAPI.unsetTargetCharge(loadpoint);
                             targetTimeEnabled = false;
                         }
