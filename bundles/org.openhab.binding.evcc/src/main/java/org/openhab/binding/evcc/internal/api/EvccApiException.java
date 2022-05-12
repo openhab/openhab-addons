@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class EvccApiException extends Exception {
 
-    private static final long serialVersionUID = 0L; // uniquely generated UID
+    private static final long serialVersionUID = -1935778974024277328L;
 
     public EvccApiException(String message) {
         super(message);

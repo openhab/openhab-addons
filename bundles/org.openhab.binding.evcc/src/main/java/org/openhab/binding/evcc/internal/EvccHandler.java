@@ -140,9 +140,9 @@ public class EvccHandler extends BaseThingHandler {
             } catch (EvccApiException e) {
                 Throwable cause = e.getCause();
                 if (cause == null) {
-                    logger.debug("Failed to command channel {}: {}", channelUID, e.getMessage());
+                    logger.debug("Failed to handle command {} for channel {}: {}", command.toString(), channelUID, e.getMessage());
                 } else {
-                    logger.debug("Failed to command channel {}: {} -> {}", channelUID, e.getMessage(),
+                    logger.debug("Failed to handle command {} for channel {}: {} -> {}", command.toString(), channelUID, e.getMessage(),
                             cause.getMessage());
                 }
             }

@@ -20,7 +20,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.api.dto.Result;
 import org.openhab.binding.evcc.internal.api.dto.Status;
 import org.openhab.core.io.net.http.HttpUtil;
@@ -51,9 +50,9 @@ public class EvccAPI {
      * @param url full request URL
      * @param method reguest method, e.g. GET, POST
      * @return the response body
-     * @throws IOException if HTTP request failed
+     * @throws {@link EvccApiException} if HTTP request failed
      */
-    private @Nullable String httpRequest(String url, String method) throws EvccApiException {
+    private String httpRequest(String url, String method) throws EvccApiException {
         try {
             String response = HttpUtil.executeUrl(method, url, LONG_CONNECTION_TIMEOUT_MILLISEC);
             logger.trace("{} {} - {}", method, url, response);
@@ -70,16 +69,15 @@ public class EvccAPI {
      * Get the status from evcc.
      * 
      * @param host hostname of IP address of the evcc instance
-     * @return {@link org.openhab.binding.evcc.internal.api.dto.Result} object or null
-     * @throws IOException if HTTP request failed
-     * @throws JsonSyntaxException if response JSON read failed
+     * @return {@link Result} result object from API
+     * @throws {@link EvccApiException} if status request failed
      */
-    public @Nullable Result getResult() throws EvccApiException {
+    public Result getResult() throws EvccApiException {
         final String response = httpRequest(this.host + EVCC_REST_API + "state", "GET");
         try {
             Status status = gson.fromJson(response, Status.class);
             if (status == null) {
-                return null;
+                throw new EvccApiException("Status is null");
             }
             return status.getResult();
         } catch (JsonSyntaxException e) {
@@ -88,38 +86,38 @@ public class EvccAPI {
     }
 
     // Loadpoint specific API calls.
-    public @Nullable String setMode(int loadpoint, String mode) throws EvccApiException {
+    public String setMode(int loadpoint, String mode) throws EvccApiException {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/mode/" + mode, "POST");
     }
 
-    public @Nullable String setMinSoC(int loadpoint, int minSoC) throws EvccApiException {
+    public String setMinSoC(int loadpoint, int minSoC) throws EvccApiException {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/minsoc/" + minSoC, "POST");
     }
 
-    public @Nullable String setTargetSoC(int loadpoint, int targetSoC) throws EvccApiException {
+    public String setTargetSoC(int loadpoint, int targetSoC) throws EvccApiException {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetsoc/" + targetSoC, "POST");
     }
 
-    public @Nullable String setPhases(int loadpoint, int phases) throws EvccApiException {
+    public String setPhases(int loadpoint, int phases) throws EvccApiException {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/phases/" + phases, "POST");
     }
 
-    public @Nullable String setMinCurrent(int loadpoint, int minCurrent) throws EvccApiException {
+    public String setMinCurrent(int loadpoint, int minCurrent) throws EvccApiException {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/mincurrent/" + minCurrent, "POST");
     }
 
-    public @Nullable String setMaxCurrent(int loadpoint, int maxCurrent) throws EvccApiException {
+    public String setMaxCurrent(int loadpoint, int maxCurrent) throws EvccApiException {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/maxcurrent/" + maxCurrent, "POST");
     }
 
-    public @Nullable String setTargetCharge(int loadpoint, int targetSoC, ZonedDateTime targetTime)
+    public String setTargetCharge(int loadpoint, int targetSoC, ZonedDateTime targetTime)
             throws EvccApiException {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetcharge/" + targetSoC + "/"
                 + targetTime.toLocalDateTime().format(formatter), "POST");
     }
 
-    public @Nullable String unsetTargetCharge(int loadpoint) throws EvccApiException {
+    public String unsetTargetCharge(int loadpoint) throws EvccApiException {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetcharge", "DELETE");
     }
 }
