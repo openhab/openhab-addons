@@ -112,56 +112,56 @@ public class Loadpoint {
     private String vehicleTitle;
 
     /**
-     * @return the active phases
+     * @return number of active phases
      */
     public int getActivePhases() {
         return activePhases;
     }
 
     /**
-     * @return the charge current
+     * @return charge current
      */
     public double getChargeCurrent() {
         return chargeCurrent;
     }
 
     /**
-     * @return the charge duration
+     * @return charge duration
      */
     public long getChargeDuration() {
         return chargeDuration;
     }
 
     /**
-     * @return the charge power
+     * @return charge power
      */
     public double getChargePower() {
         return chargePower;
     }
 
     /**
-     * @return the charge remaining duration
+     * @return charge remaining duration until the target SoC is reached
      */
     public long getChargeRemainingDuration() {
         return chargeRemainingDuration;
     }
 
     /**
-     * @return the chargeRemainingEnergy
+     * @return charge remaining energy until the target SoC is reached
      */
     public double getChargeRemainingEnergy() {
         return chargeRemainingEnergy;
     }
 
     /**
-     * @return the charged energy
+     * @return charged energy
      */
     public double getChargedEnergy() {
         return chargedEnergy;
     }
 
     /**
-     * @return wtether loadpoint is charging a vehicle
+     * @return whether loadpoint is charging a vehicle
      */
     public boolean getCharging() {
         return charging;
@@ -175,7 +175,7 @@ public class Loadpoint {
     }
 
     /**
-     * @return the connected duration
+     * @return vehicle connected duration
      */
     public long getConnectedDuration() {
         return connectedDuration;
@@ -189,49 +189,49 @@ public class Loadpoint {
     }
 
     /**
-     * @return whether loadpoint has vehicle
+     * @return whether vehicle is configured for loadpoint
      */
     public boolean getHasVehicle() {
         return hasVehicle;
     }
 
     /**
-     * @return the loadpoint
+     * @return loadpoint id
      */
     public int getLoadpoint() {
         return loadpoint;
     }
 
     /**
-     * @return the maximum current
+     * @return maximum current
      */
     public double getMaxCurrent() {
         return maxCurrent;
     }
 
     /**
-     * @return the minimum current
+     * @return minimum current
      */
     public double getMinCurrent() {
         return minCurrent;
     }
 
     /**
-     * @return the minimum state of charge
+     * @return minimum state of charge
      */
     public int getMinSoC() {
         return minSoC;
     }
 
     /**
-     * @return the mode: off, now, minpv, pv
+     * @return charging mode: off, now, minpv, pv
      */
     public String getMode() {
         return mode;
     }
 
     /**
-     * @return the phases
+     * @return number of enabled phases
      */
     public int getPhases() {
         return phases;
@@ -252,63 +252,63 @@ public class Loadpoint {
     }
 
     /**
-     * @return the target state of charge
+     * @return target state of charge (SoC)
      */
     public int getTargetSoC() {
         return targetSoC;
     }
 
     /**
-     * @return the target time for the target state of charge
+     * @return target time for the target state of charge
      */
     public String getTargetTime() {
         return targetTime;
     }
 
     /**
-     * @return the loadpoint's title
+     * @return loadpoint's title/name
      */
     public String getTitle() {
         return title;
     }
 
     /**
-     * @return the vehicle's capacity
+     * @return vehicle's capacity
      */
     public double getVehicleCapacity() {
         return vehicleCapacity;
     }
 
     /**
-     * @return the vehicle's odometer
+     * @return vehicle's odometer
      */
     public double getVehicleOdometer() {
         return vehicleOdometer;
     }
 
     /**
-     * @return whether a vehicle is present
+     * @return whether evcc is able to get data from vehicle
      */
     public boolean getVehiclePresent() {
         return vehiclePresent;
     }
 
     /**
-     * @return the vehicle's range
+     * @return vehicle's range
      */
     public long getVehicleRange() {
         return vehicleRange;
     }
 
     /**
-     * @return the vehicle's state of charge
+     * @return vehicle's state of charge (SoC)
      */
     public int getVehicleSoC() {
         return vehicleSoC;
     }
 
     /**
-     * @return the vehicle's title
+     * @return vehicle's title/name
      */
     public String getVehicleTitle() {
         return vehicleTitle;

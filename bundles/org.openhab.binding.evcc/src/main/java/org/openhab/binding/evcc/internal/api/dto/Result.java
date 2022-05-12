@@ -69,21 +69,21 @@ public class Result {
     }
 
     /**
-     * @return the battery's power
+     * @return battery's power
      */
     public double getBatteryPower() {
         return batteryPower;
     }
 
     /**
-     * @return the battery's priority state of charge
+     * @return battery's priority state of charge
      */
     public double getBatteryPrioritySoC() {
         return batteryPrioritySoC;
     }
 
     /**
-     * @return the battery's state of charge
+     * @return battery's state of charge
      */
     public int getBatterySoC() {
         return batterySoC;
@@ -97,21 +97,21 @@ public class Result {
     }
 
     /**
-     * @return the grid's power
+     * @return grid's power
      */
     public double getGridPower() {
         return gridPower;
     }
 
     /**
-     * @return the home's power
+     * @return home's power
      */
     public double getHomePower() {
         return homePower;
     }
 
     /**
-     * @return the loadpoints
+     * @return all configured loadpoints
      */
     public Loadpoint[] getLoadpoints() {
         return loadpoints;
@@ -125,14 +125,14 @@ public class Result {
     }
 
     /**
-     * @return the pv's power
+     * @return pv's power
      */
     public double getPvPower() {
         return pvPower;
     }
 
     /**
-     * @return the site's title
+     * @return site's title/name
      */
     public String getSiteTitle() {
         return siteTitle;
