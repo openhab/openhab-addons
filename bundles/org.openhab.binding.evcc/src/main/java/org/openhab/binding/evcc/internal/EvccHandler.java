@@ -15,7 +15,6 @@ package org.openhab.binding.evcc.internal;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -69,7 +68,7 @@ public class EvccHandler extends BaseThingHandler {
 
     private int targetSoC = 100;
     private boolean targetTimeEnabled = false;
-    private ZonedDateTime targetTimeZDT = ZonedDateTime.now();
+    private ZonedDateTime targetTimeZDT = ZonedDateTime.now().plusHours(12);
 
     public EvccHandler(Thing thing) {
         super(thing);
@@ -80,7 +79,7 @@ public class EvccHandler extends BaseThingHandler {
         if (command.equals(RefreshType.REFRESH)) {
             refresh();
         } else {
-            logger.debug("Handling command {} for channel {}", command, channelUID);
+            logger.debug("Handling command {} ({}) for channel {}", command, command.getClass(), channelUID);
             String groupId = channelUID.getGroupId();
             if (groupId == null) {
                 return;
@@ -94,25 +93,32 @@ public class EvccHandler extends BaseThingHandler {
             try {
                 switch (channelIdWithoutGroup) {
                     case CHANNEL_LOADPOINT_MODE:
-                        evccAPI.setMode(loadpoint, command.toString());
+                        if (command instanceof StringType) {
+                            evccAPI.setMode(loadpoint, command.toString());
+                        }
                         break;
                     case CHANNEL_LOADPOINT_MIN_SOC:
-                        evccAPI.setMinSoC(loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
+                        if (command instanceof QuantityType) {
+                            evccAPI.setMinSoC(loadpoint, ((QuantityType<?>) command).intValue());
+                        }
                         break;
                     case CHANNEL_LOADPOINT_TARGET_SOC:
-                        evccAPI.setTargetSoC(loadpoint, Integer.parseInt(command.toString().replaceAll(" %", "")));
+                        if (command instanceof QuantityType) {
+                            evccAPI.setTargetSoC(loadpoint, ((QuantityType<?>) command).intValue());
+                        }
                         break;
                     case CHANNEL_LOADPOINT_TARGET_TIME:
-                        if (targetTimeEnabled) {
-                            try {
-                                targetTimeZDT = ZonedDateTime.parse(command.toString(),
-                                        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")); // RFC 922 timezone
-                                evccAPI.setTargetCharge(loadpoint, targetSoC, targetTimeZDT);
-                                ChannelUID channel = new ChannelUID(getThing().getUID(), "loadpoint" + loadpoint,
-                                        CHANNEL_LOADPOINT_TARGET_TIME);
-                                updateState(channel, new DateTimeType(targetTimeZDT));
-                            } catch (DateTimeParseException e) {
-                                logger.debug("Failed to set target charge", e);
+                        if (command instanceof DateTimeType) {
+                            targetTimeZDT = ((DateTimeType) command).getZonedDateTime();
+                            ChannelUID channel = new ChannelUID(getThing().getUID(), "loadpoint" + loadpoint,
+                                    CHANNEL_LOADPOINT_TARGET_TIME);
+                            updateState(channel, new DateTimeType(targetTimeZDT));
+                            if (targetTimeEnabled) {
+                                try {
+                                    evccAPI.setTargetCharge(loadpoint, targetSoC, targetTimeZDT);
+                                } catch (DateTimeParseException e) {
+                                    logger.debug("Failed to set target charge", e);
+                                }
                             }
                         }
                         break;
@@ -126,13 +132,19 @@ public class EvccHandler extends BaseThingHandler {
                         }
                         break;
                     case CHANNEL_LOADPOINT_PHASES:
-                        evccAPI.setPhases(loadpoint, Integer.parseInt(command.toString()));
+                        if (command instanceof DecimalType) {
+                            evccAPI.setPhases(loadpoint, ((DecimalType) command).intValue());
+                        }
                         break;
                     case CHANNEL_LOADPOINT_MIN_CURRENT:
-                        evccAPI.setMinCurrent(loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
+                        if (command instanceof QuantityType) {
+                            evccAPI.setMinCurrent(loadpoint, ((QuantityType<?>) command).intValue());
+                        }
                         break;
                     case CHANNEL_LOADPOINT_MAX_CURRENT:
-                        evccAPI.setMaxCurrent(loadpoint, Integer.parseInt(command.toString().replaceAll(" A", "")));
+                        if (command instanceof QuantityType) {
+                            evccAPI.setMaxCurrent(loadpoint, ((QuantityType<?>) command).intValue());
+                        }
                         break;
                     default:
                         return;
@@ -140,10 +152,11 @@ public class EvccHandler extends BaseThingHandler {
             } catch (EvccApiException e) {
                 Throwable cause = e.getCause();
                 if (cause == null) {
-                    logger.debug("Failed to handle command {} for channel {}: {}", command.toString(), channelUID, e.getMessage());
+                    logger.debug("Failed to handle command {} for channel {}: {}", command.toString(), channelUID,
+                            e.getMessage());
                 } else {
-                    logger.debug("Failed to handle command {} for channel {}: {} -> {}", command.toString(), channelUID, e.getMessage(),
-                            cause.getMessage());
+                    logger.debug("Failed to handle command {} for channel {}: {} -> {}", command.toString(), channelUID,
+                            e.getMessage(), cause.getMessage());
                 }
             }
             refresh();
