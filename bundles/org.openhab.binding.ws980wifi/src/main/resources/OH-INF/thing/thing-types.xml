@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ws980wifi"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ws980wifi">
+
+		<label>ws980wifi Binding Thing</label>
+		<description>Thing for wetterstationws980wifi Binding</description>
+		<category>Sensor</category>
+
+		<channels>                                                                      <!-- id = Channel-Name, typeID referenziert den Typ vom Channel -->
+			<channel id="tempInside" typeId="system.outdoor-temperature">               <!-- id korrespondiert mit der Def. aus ws980wifiBindingConstants -->
+				<label>Temperature Inside</label>
+			</channel>
+			<channel id="tempOutside" typeId="system.outdoor-temperature">              <!-- hier mit einer Referenz auf einen System-Typ -->
+				<label>Temperature Outside</label>
+			</channel>
+			<channel id="tempDewPoint" typeId="system.outdoor-temperature">
+				<label>Dew Point Temperature</label>
+			</channel>
+			<channel id="tempWindChill" typeId="system.outdoor-temperature">
+				<label>Wind Chill Temperature</label>
+			</channel>
+			<channel id="heatIndex" typeId="system.outdoor-temperature">
+				<label>Heat Index Temperature</label>
+			</channel>
+			<channel id="humidityInside" typeId="system.atmospheric-humidity">
+				<label>Humidity Inside</label>
+			</channel>
+			<channel id="humidityOutside" typeId="system.atmospheric-humidity">
+				<label>Humidity Outside</label>
+			</channel>
+			<channel id="pressureAbsolut" typeId="system.barometric-pressure">
+				<label>Pressure Absolut</label>
+			</channel>
+			<channel id="pressureRelative" typeId="system.barometric-pressure">
+				<label>Pressure Relative</label>
+			</channel>
+			<channel id="windDirection" typeId="system.wind-direction">
+				<label>Wind Direction</label>
+			</channel>
+			<channel id="windSpeed" typeId="system.wind-speed">
+				<label>Wind Speed</label>
+			</channel>
+			<channel id="windSpeedGust" typeId="system.wind-speed">
+				<label>Wind Gust Speed</label>
+			</channel>
+			<channel id="rainLastHour" typeId="rain">
+				<label>Rain Last Hour</label>
+			</channel>
+			<channel id="rainLastDay" typeId="rain">
+				<label>Rain Last Day</label>
+			</channel>
+			<channel id="rainLastWeek" typeId="rain">
+				<label>Rain Last Week</label>
+			</channel>
+			<channel id="rainLastMonth" typeId="rain">
+				<label>Rain Last Month</label>
+			</channel>
+			<channel id="rainLastYear" typeId="rain">
+				<label>Rain Last Year</label>
+			</channel>
+			<channel id="rainTotal" typeId="rain">
+				<label>Rain Total</label>
+			</channel>
+			<channel id="lightLevel" typeId="lux">
+				<label>Light Level</label>
+			</channel>
+			<channel id="uvRaw" typeId="solarRadiation">
+				<label>UV Radiation</label>
+			</channel>
+			<channel id="uvIndex" typeId="uvIndex">
+				<label>UV Index</label>
+			</channel>
+		</channels>
+
+		<properties>                                                                    <!-- static properties, that are the same for all instances -->
+			<property name="vendor">ELV</property>
+			<property name="modelId">WS980WiFi</property>
+		</properties>
+
+		<representation-property>macAddress</representation-property>                   <!-- eindeutiger Identifier fuer jede WS -->
+
+		<config-description>                                                            <!-- konfigurierbare Parameter, indiv. fuer jede WS -->
+			<parameter name="host" type="text" required="true">
+				<label>Hostname</label>
+				<description>The hostname/IP address the device is bound to, e.g. 192.168.0.2</description>
+				<context>network-address</context>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="macAddress" type="text" required="true">
+				<label>MAC Address</label>
+				<description>The unique MAC address of the device, e.g. 00:10:FA:6E:38:4A</description>
+				<context>network-address</context>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="port" type="text" required="true">
+				<label>Data Request Port</label>
+				<default>45000</default>
+				<description>Port number to request data from the device, e.g. 45000</description>
+				<context>network-address</context>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="30">
+				<label>Refresh Interval</label>
+				<default>60</default>
+				<description>
+					Interval the data of the device is polled in sec. (min. 30, default 60)
+				</description>
+				<context>network-address</context>
+				<advanced>false</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="temperature">                                                     <!-- hier wird der oben referenzierte Type indiv. spezifiziert -->
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature in degree Celsius</description>
+		<category>Temperature</category>
+		<state pattern="%+.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rain">
+		<item-type>Number</item-type>
+		<label>Precipitation Rain</label>
+		<description>Rain in 0,1 mm</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="lux">
+		<item-type>Number:Illuminance</item-type>
+		<label>Light Level</label>
+		<description>Current Light Level in lux</description>
+		<category>Light</category>
+		<state pattern="%+.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="solarRadiation">
+		<item-type>Number:Intensity</item-type>
+		<label>Solar Radiation</label>
+		<description>Solar radiation</description>
+		<category>Ultraviolet</category>
+		<state readOnly="true" pattern="%.2f"/>
+	</channel-type>
+
+	<channel-type id="uvIndex">
+		<item-type>Number</item-type>
+		<label>UV Index</label>
+		<description>UV index</description>
+		<state readOnly="true" pattern="%.0f"></state>
+	</channel-type>
+
+</thing:thing-descriptions>
