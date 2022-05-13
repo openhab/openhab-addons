@@ -118,10 +118,18 @@ public class ShellyWebSocket {
             try {
                 Shelly2RpcBaseMessage message = fromJson(gson, receivedMessage, Shelly2RpcBaseMessage.class);
                 logger.trace("{}: Inbound WebSocket message: {}", message.src, receivedMessage);
+                if (message.method == null) {
+                    message.method = SHELLYRPC_METHOD_NOTIFYFULLSTATUS;
+                }
+
                 switch (getString(message.method)) {
                     case SHELLYRPC_METHOD_NOTIFYSTATUS:
                     case SHELLYRPC_METHOD_NOTIFYFULLSTATUS:
-                        handler.onNotifyStatus(fromJson(gson, receivedMessage, Shelly2RpcNotifyStatus.class));
+                        Shelly2RpcNotifyStatus status = fromJson(gson, receivedMessage, Shelly2RpcNotifyStatus.class);
+                        if (status.params == null) {
+                            status.params = status.result;
+                        }
+                        handler.onNotifyStatus(status);
                         return;
                     case SHELLYRPC_METHOD_NOTIFYEVENT:
                         handler.onNotifyEvent(fromJson(gson, receivedMessage, Shelly2RpcNotifyEvent.class));

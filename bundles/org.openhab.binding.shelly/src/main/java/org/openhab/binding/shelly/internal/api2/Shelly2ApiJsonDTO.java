@@ -387,6 +387,31 @@ public class Shelly2ApiJsonDTO {
                 public ArrayList<String> errors;
             }
 
+            public class Shelly2DeviceStatusHumidity {
+                public Integer id;
+                public Double rh;
+            }
+
+            public class Shelly2DeviceStatusTemp extends Shelly2DeviceStatusSTemp {
+                public Integer id;
+            }
+
+            public static class Shelly2DeviceStatusPower {
+                public static class Shelly2DeviceStatusBattery {
+                    @SerializedName("V")
+                    public Double volt;
+                    public Double percent;
+                }
+
+                public static class Shelly2DeviceStatusCharger {
+                    public Boolean present;
+                }
+
+                public Integer id;
+                public Shelly2DeviceStatusBattery battery;
+                public Shelly2DeviceStatusCharger external;
+            }
+
             public Shelly2DeviceStatusBle ble;
             public Shelly2DeviceStatusCloud cloud;
             public Shelly2DeviceStatusMqqt mqtt;
@@ -413,6 +438,13 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("cover:0")
             public Shelly2CoverStatus cover0;
+
+            @SerializedName("humidity:0")
+            public Shelly2DeviceStatusHumidity humidity0;
+            @SerializedName("temperature:0")
+            public Shelly2DeviceStatusTemp temperature0;
+            @SerializedName("devicepower:0")
+            public Shelly2DeviceStatusPower devicepower0;
         }
 
         public class Shelly2DeviceStatusSys {
@@ -475,12 +507,12 @@ public class Shelly2ApiJsonDTO {
         public String[] errors;
     }
 
-    public class Shelly2DeviceStatusSTemp {
+    public static class Shelly2DeviceStatusSTemp {
         public Double tC;
         public Double tF;
     }
 
-    public class Shelly2Energy {
+    public static class Shelly2Energy {
         // "switch:1":{"id":1,"aenergy":{"total":0.003,"by_minute":[0.000,0.000,0.000],"minute_ts":1619910239}}}}
         public Double total;
         @SerializedName("by_minute")
@@ -510,7 +542,8 @@ public class Shelly2ApiJsonDTO {
             public Double ts;
         }
 
-        Shelly2NotifyStatus params;
+        public Shelly2NotifyStatus params;
+        public Shelly2NotifyStatus result;
     }
 
     public class Shelly2NotifyEvent {

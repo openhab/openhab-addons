@@ -31,6 +31,7 @@ import org.openhab.binding.shelly.internal.api.ShellyHttpClient;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorTmp;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsInput;
@@ -44,6 +45,8 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortSta
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorBat;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorHum;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigInput;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigSwitch;
@@ -51,6 +54,9 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceC
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceSettings;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2CoverStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusHumidity;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusTemp;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
@@ -119,6 +125,7 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
 
     private final Logger logger = LoggerFactory.getLogger(Shelly2RpcApi.class);
     private final ShellyStatusRelay relayStatus = new ShellyStatusRelay();
+    private final ShellyStatusSensor sdata = new ShellyStatusSensor();
     private final ArrayList<ShellyRollerStatus> rollerStatus = new ArrayList<>();
 
     private boolean initialized = false;
@@ -301,6 +308,19 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
                     updated |= fillRollerStatus(status, message.params.cover0, true);
                 }
 
+                if (message.params.humidity0 != null) {
+                    updateHumidityStatus(sdata, message.params.humidity0);
+                }
+                if (message.params.temperature0 != null) {
+                    updateTemperatureStatus(sdata, message.params.temperature0);
+                }
+                if (message.params.devicepower0 != null) {
+                    updateBatteryStatus(sdata, message.params.devicepower0);
+                }
+                if (status.temperature == -999.0) {
+                    // no device temp available
+                    status.temperature = null;
+                }
                 profile.status = status;
             }
         } catch (ShellyApiException e) {
@@ -541,7 +561,7 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
                 operation = "Stop";
                 break;
         }
-        callApi("/rpc/Cover." + operation + "?id?" + relayIndex, String.class);
+        callApi("/rpc/Cover." + operation + "?id=" + relayIndex, String.class);
     }
 
     @Override
@@ -730,6 +750,32 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
         return rs;
     }
 
+    private void updateHumidityStatus(ShellyStatusSensor sdata, Shelly2DeviceStatusHumidity value) {
+        if (sdata.hum == null) {
+            sdata.hum = new ShellySensorHum();
+        }
+        sdata.hum.value = value.rh;
+    }
+
+    private void updateTemperatureStatus(ShellyStatusSensor sdata, Shelly2DeviceStatusTemp value) {
+        if (sdata.tmp == null) {
+            sdata.tmp = new ShellySensorTmp();
+        }
+        sdata.tmp.isValid = true;
+        sdata.tmp.units = SHELLY_TEMP_CELSIUS;
+        sdata.tmp.tC = value.tC;
+        sdata.tmp.tF = value.tF;
+    }
+
+    private void updateBatteryStatus(ShellyStatusSensor sdata, Shelly2DeviceStatusPower value) {
+        if (sdata.bat == null) {
+            sdata.bat = new ShellySensorBat();
+        }
+        sdata.bat.voltage = value.battery.volt;
+        sdata.bat.value = value.battery.percent;
+        sdata.charger = value.external.present;
+    }
+
     private void postAlarms(@Nullable ArrayList<@Nullable String> errors) throws ShellyApiException {
         if (errors != null) {
             for (String e : errors) {
@@ -869,7 +915,7 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
 
     @Override
     public ShellyStatusSensor getSensorStatus() throws ShellyApiException {
-        throw new ShellyApiException("API call not implemented");
+        return sdata;
     }
 
     @Override
