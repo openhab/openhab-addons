@@ -83,7 +83,8 @@
             "main_brush",
             "spot_area_cleaning",
             "custom_area_cleaning",
-            "clean_speed_control"
+            "clean_speed_control",
+            "mapping"
         ]
     },
     {
@@ -269,6 +270,11 @@
         "deviceClass": "85as7h",
         "deviceClassLink": "fqxoiu"
     },
+    {
+        "modelName": "DEEBOT N8 Neo",
+        "deviceClass": "z0gd1j",
+        "deviceClassLink": "h18jkh"
+    },
 
     {
         "modelName": "DEEBOT OZMO T8+",
@@ -358,8 +364,33 @@
         "deviceClassLink": "fqxoiu"
     },
     {
+        "modelName": "DEEBOT X1",
+        "deviceClass": "3yqsch",
+        "deviceClassLink": "fqxoiu"
+    },
+    {
         "modelName": "DEEBOT X1 Omni",
         "deviceClass": "8bja83",
+        "deviceClassLink": "fqxoiu"
+    },
+    {
+        "modelName": "DEEBOT X1 Omni",
+        "deviceClass": "1b23du",
+        "deviceClassLink": "fqxoiu"
+    },
+    {
+        "modelName": "DEEBOT X1 Omni",
+        "deviceClass": "1vxt52",
+        "deviceClassLink": "fqxoiu"
+    },
+    {
+        "modelName": "DEEBOT X1 Turbo",
+        "deviceClass": "2o4lnm",
+        "deviceClassLink": "fqxoiu"
+    },
+    {
+        "modelName": "DEEBOT X1 Plus",
+        "deviceClass": "n4gstt",
         "deviceClassLink": "fqxoiu"
     },
 
