@@ -30,6 +30,7 @@ public class ModbusTcpConfiguration {
     private int timeBetweenReconnectMillis;
     private int connectMaxTries = 1;
     private int reconnectAfterMillis;
+    private int afterConnectionDelayMillis;
     private int connectTimeoutMillis = 10_000;
     private boolean enableDiscovery;
     private boolean rtuEncoded;
@@ -92,6 +93,14 @@ public class ModbusTcpConfiguration {
 
     public void setReconnectAfterMillis(int reconnectAfterMillis) {
         this.reconnectAfterMillis = reconnectAfterMillis;
+    }
+
+    public int getAfterConnectionDelayMillis() {
+        return afterConnectionDelayMillis;
+    }
+
+    public void setAfterConnectionDelayMillis(int afterConnectionDelayMillis) {
+        this.afterConnectionDelayMillis = afterConnectionDelayMillis;
     }
 
     public int getConnectTimeoutMillis() {

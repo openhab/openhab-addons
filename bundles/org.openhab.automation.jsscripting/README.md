@@ -611,7 +611,7 @@ Additionally all the above triggers have the following functions:
 //Basic rule, when the BedroomLight1 is changed, run a custom function
 rules.when().item('BedroomLight1').changed().then(e => {
     console.log("BedroomLight1 state", e.newState)
-}.build();
+}).build();
 
 //turn on the kitchen light at SUNSET
 rules.when().timeOfDay("SUNSET").then().sendOn().toItem("KitchenLight").build("Sunset Rule","turn on the kitchen light

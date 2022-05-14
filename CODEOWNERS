@@ -91,6 +91,7 @@
 /bundles/org.openhab.binding.enturno/ @klocsson
 /bundles/org.openhab.binding.epsonprojector/ @mlobstein
 /bundles/org.openhab.binding.etherrain/ @dfad1469
+/bundles/org.openhab.binding.evcc/ @florian-h05
 /bundles/org.openhab.binding.evohome/ @Nebula83
 /bundles/org.openhab.binding.exec/ @kgoderis
 /bundles/org.openhab.binding.feed/ @svilenvul
@@ -152,7 +153,7 @@
 /bundles/org.openhab.binding.kaleidescape/ @mlobstein
 /bundles/org.openhab.binding.keba/ @kgoderis
 /bundles/org.openhab.binding.km200/ @Markinus
-/bundles/org.openhab.binding.knx/ @sjka
+/bundles/org.openhab.binding.knx/ @kaikreuzer
 /bundles/org.openhab.binding.kodi/ @pail23 @cweitkamp
 /bundles/org.openhab.binding.konnected/ @volfan6415
 /bundles/org.openhab.binding.kostalinverter/ @cschneider

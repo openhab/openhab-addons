@@ -123,6 +123,7 @@
     <module>org.openhab.binding.enturno</module>
     <module>org.openhab.binding.epsonprojector</module>
     <module>org.openhab.binding.etherrain</module>
+    <module>org.openhab.binding.evcc</module>
     <module>org.openhab.binding.evohome</module>
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
@@ -371,6 +372,7 @@
     <module>org.openhab.binding.venstarthermostat</module>
     <module>org.openhab.binding.ventaair</module>
     <module>org.openhab.binding.verisure</module>
+    <module>org.openhab.binding.vesync</module>
     <module>org.openhab.binding.vigicrues</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.volvooncall</module>
