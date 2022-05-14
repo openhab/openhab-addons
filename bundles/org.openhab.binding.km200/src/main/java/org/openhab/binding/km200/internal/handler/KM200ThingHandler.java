@@ -153,13 +153,10 @@ public class KM200ThingHandler extends BaseThingHandler {
         Channel newChannel = null;
         ChannelType channelType = null;
         Map<String, String> chProperties = new HashMap<>();
-        String itemType = "";
         String category = null;
         if (CoreItemFactory.NUMBER.equals(type)) {
-            itemType = "NumberType";
             category = "Number";
         } else if (CoreItemFactory.STRING.equals(type)) {
-            itemType = "StringType";
             category = "Text";
         } else {
             logger.info("Channeltype {} not supported", type);
@@ -167,7 +164,7 @@ public class KM200ThingHandler extends BaseThingHandler {
         }
         try {
             configDescriptionUriChannel = new URI(CONFIG_DESCRIPTION_URI_CHANNEL);
-            channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType) //
+            channelType = ChannelTypeBuilder.state(channelTypeUID, label, type) //
                     .withDescription(description) //
                     .withCategory(checkCategory(unitOfMeasure, category, state.isReadOnly())) //
                     .withStateDescriptionFragment(state) //
@@ -175,7 +172,7 @@ public class KM200ThingHandler extends BaseThingHandler {
         } catch (URISyntaxException ex) {
             logger.warn("Can't create ConfigDescription URI '{}', ConfigDescription for channels not avilable!",
                     CONFIG_DESCRIPTION_URI_CHANNEL);
-            channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType) //
+            channelType = ChannelTypeBuilder.state(channelTypeUID, label, type) //
                     .withDescription(description) //
                     .withCategory(checkCategory(unitOfMeasure, category, state.isReadOnly())).build();
         }
