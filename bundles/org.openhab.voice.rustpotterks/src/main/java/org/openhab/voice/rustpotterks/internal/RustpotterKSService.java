@@ -21,8 +21,10 @@ import java.nio.ByteOrder;
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,8 +34,12 @@ import org.openhab.core.audio.AudioStream;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.voice.*;
-import org.osgi.framework.BundleContext;
+import org.openhab.core.voice.KSErrorEvent;
+import org.openhab.core.voice.KSException;
+import org.openhab.core.voice.KSListener;
+import org.openhab.core.voice.KSService;
+import org.openhab.core.voice.KSServiceHandle;
+import org.openhab.core.voice.KSpottedEvent;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -43,6 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.givimad.rustpotter_java.RustpotterJava;
+import io.github.givimad.rustpotter_java.RustpotterJavaBuilder;
+import io.github.givimad.rustpotter_java.VadMode;
 
 /**
  * The {@link RustpotterKSService} is responsible for creating things and thing
@@ -59,8 +67,6 @@ public class RustpotterKSService implements KSService {
     private final Logger logger = LoggerFactory.getLogger(RustpotterKSService.class);
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("OH-voice-porcupineks");
     private RustpotterKSConfiguration config = new RustpotterKSConfiguration();
-    private boolean loop = false;
-    private @Nullable BundleContext bundleContext;
     static {
         Logger logger = LoggerFactory.getLogger(RustpotterKSService.class);
         File directory = new File(RUSTPOTTER_FOLDER);
@@ -73,7 +79,6 @@ public class RustpotterKSService implements KSService {
 
     @Activate
     protected void activate(ComponentContext componentContext, Map<String, Object> config) {
-        this.bundleContext = componentContext.getBundleContext();
         modified(config);
     }
 
@@ -99,54 +104,85 @@ public class RustpotterKSService implements KSService {
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return Set
-                .of(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, 16000L));
+        return Set.of(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, null));
     }
 
     @Override
     public KSServiceHandle spot(KSListener ksListener, AudioStream audioStream, Locale locale, String keyword)
             throws KSException {
+        logger.debug("Loading library");
         RustpotterJava.loadLibrary();
-        var rustpotter = new RustpotterJava();
+        var audioFormat = audioStream.getFormat();
+        var frequency = Objects.requireNonNull(audioFormat.getFrequency());
+        var bitDepth = Objects.requireNonNull(audioFormat.getBitDepth());
+        var channels = Objects.requireNonNull(audioFormat.getChannels());
+        logger.debug("Input frequency '{}', bit depth '{}', channels '{}'", frequency, bitDepth, channels);
+        RustpotterJava rustpotter = initRustpotter(frequency, bitDepth, channels);
         var modelName = keyword.replaceAll("\\s", "_") + ".rpw";
         var modelPath = Path.of(RUSTPOTTER_FOLDER, modelName);
         if (!modelPath.toFile().exists()) {
             throw new KSException("Missing model " + modelName);
         }
-        rustpotter.addModel(modelPath.toString());
-        executor.submit(() -> processAudioStream(rustpotter, ksListener, audioStream));
+        rustpotter.addWakewordModelFile(modelPath.toString());
+        logger.debug("Model '{}' loaded", modelPath);
+        AtomicBoolean aborted = new AtomicBoolean(false);
+        executor.submit(() -> processAudioStream(rustpotter, ksListener, audioStream, aborted));
         return new KSServiceHandle() {
             @Override
             public void abort() {
-                logger.debug("stopping service");
-                loop = false;
+                logger.debug("Stopping service");
+                aborted.set(true);
             }
         };
     }
 
-    private void processAudioStream(RustpotterJava rustpotter, KSListener ksListener, AudioStream audioStream) {
+    private RustpotterJava initRustpotter(long frequency, int bitDepth, int channels) {
+        var rustpotterBuilder = new RustpotterJavaBuilder();
+        rustpotterBuilder.setThreshold(config.threshold);
+        rustpotterBuilder.setAveragedThreshold(config.averagedThreshold);
+        rustpotterBuilder.setComparatorRef(config.comparatorRef);
+        rustpotterBuilder.setComparatorBandSize(config.comparatorBandSize);
+        rustpotterBuilder.setVADSensitivity(config.vadSensitivity);
+        rustpotterBuilder.setVADDelay(config.vadDelay);
+        @Nullable
+        VadMode vadMode = getVADMode(config.vadMode);
+        if (vadMode != null) {
+            rustpotterBuilder.setVADMode(vadMode);
+        }
+        rustpotterBuilder.setEagerMode(config.eagerMode);
+        rustpotterBuilder.setBitsPerSample(bitDepth);
+        rustpotterBuilder.setSampleRate(frequency);
+        rustpotterBuilder.setChannels(channels);
+        var rustpotter = rustpotterBuilder.build();
+        rustpotterBuilder.delete();
+        return rustpotter;
+    }
+
+    private void processAudioStream(RustpotterJava rustpotter, KSListener ksListener, AudioStream audioStream,
+            AtomicBoolean aborted) {
         int numBytesRead;
         var frameSize = (int) rustpotter.getFrameSize();
-        ByteBuffer captureBuffer = ByteBuffer.allocate(frameSize * 2);
-        captureBuffer.order(ByteOrder.nativeOrder());
+        var bufferSize = frameSize * 2;
+        ByteBuffer captureBuffer = ByteBuffer.allocate(bufferSize);
+        captureBuffer.order(ByteOrder.LITTLE_ENDIAN);
         short[] audioBuffer = new short[frameSize];
-        this.loop = true;
-        while (loop) {
+        while (!aborted.get()) {
             try {
                 // read a buffer of audio
                 numBytesRead = audioStream.read(captureBuffer.array(), 0, captureBuffer.capacity());
-                if (!loop) {
+                if (aborted.get()) {
                     break;
                 }
-                if (numBytesRead != frameSize * 2) {
+                if (numBytesRead != bufferSize) {
                     Thread.sleep(100);
                     continue;
                 }
                 captureBuffer.asShortBuffer().get(audioBuffer);
-                var result = rustpotter.processPCMSigned(audioBuffer);
+                var result = rustpotter.processSort(audioBuffer);
                 if (result.isPresent()) {
                     var detection = result.get();
                     logger.debug("keyword '{}' detected with score {}!", detection.getName(), detection.getScore());
+                    detection.delete();
                     ksListener.ksEventReceived(new KSpottedEvent());
                 }
             } catch (IOException | InterruptedException e) {
@@ -156,5 +192,20 @@ public class RustpotterKSService implements KSService {
         }
         rustpotter.delete();
         logger.debug("rustpotter stopped");
+    }
+
+    private @Nullable VadMode getVADMode(String mode) {
+        switch (mode) {
+            case "low-bitrate":
+                return VadMode.LOW_BITRATE;
+            case "quality":
+                return VadMode.QUALITY;
+            case "aggressive":
+                return VadMode.AGGRESSIVE;
+            case "very-aggressive":
+                return VadMode.VERY_AGGRESSIVE;
+            default:
+                return null;
+        }
     }
 }

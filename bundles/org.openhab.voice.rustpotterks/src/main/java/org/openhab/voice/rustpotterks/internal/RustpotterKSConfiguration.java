@@ -21,5 +21,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class RustpotterKSConfiguration {
-
+    public float threshold = 0.5f;
+    public float averagedThreshold = 0.0f;
+    public float comparatorRef = 0.22f;
+    public int comparatorBandSize = 6;
+    public float vadSensitivity = 0.5f;
+    public int vadDelay = 3;
+    public String vadMode = "disabled";
+    public boolean eagerMode = true;
 }

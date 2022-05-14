@@ -5,6 +5,53 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="voice:rustpotterks">
+		<parameter name="threshold" type="decimal" min="0" max="1">
+			<label>Threshold</label>
+			<description></description>
+			<default>0.5</default>
+		</parameter>
+		<parameter name="averagedThreshold" type="decimal" min="0" max="1">
+			<label>Averaged Threshold</label>
+			<description></description>
+			<default>0.</default>
+		</parameter>
+		<parameter name="comparatorRef" type="decimal" min="0" max="1">
+			<label>Comparator Ref</label>
+			<description></description>
+			<default>0.22</default>
+		</parameter>
+		<parameter name="comparatorBandSize" type="integer">
+			<label>Comparator Band Size</label>
+			<description></description>
+			<default>6</default>
+		</parameter>
+		<parameter name="vadSensitivity" type="decimal" min="0" max="1">
+			<label>VAD Sensitivity</label>
+			<description></description>
+			<default>0.5</default>
+		</parameter>
+		<parameter name="vadDelay" type="integer">
+			<label>VAD Delay</label>
+			<description></description>
+			<default>3</default>
+		</parameter>
+		<parameter name="vadMode" type="text">
+			<label>VAD Mode</label>
+			<description></description>
+			<default>quality</default>
+			<options>
+				<option value="disabled">Disabled</option>
+				<option value="low-bitrate">Low Bitrate</option>
+				<option value="quality">Quality</option>
+				<option value="aggressive">Aggressive</option>
+				<option value="very-aggressive">Very Aggressive</option>
+			</options>
+		</parameter>
+		<parameter name="eagerMode" type="boolean">
+			<label>Eager Mode</label>
+			<description></description>
+			<default>true</default>
+		</parameter>
 
 	</config-description>
 
