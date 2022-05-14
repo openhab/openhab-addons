@@ -53,7 +53,6 @@ public class ws980wifiDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger log = LoggerFactory.getLogger(ws980wifiDiscoveryService.class);
     private final NetworkAddressService networkAddressService;
-
     private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(THING_TYPE_WS980WIFI);
     private static final int DISCOVERY_TIMEOUT_SECONDS = 30;
     private @Nullable ScheduledFuture<?> backgroundDiscoveryFuture;
@@ -66,7 +65,6 @@ public class ws980wifiDiscoveryService extends AbstractDiscoveryService {
 
     private void createScanner() {
         long timestampOfLastScan = getTimestampOfLastScan();
-
         ws980wifi[] ws980wifiDevices = new ws980wifi[0]; // Array of devices with length zero, easy to rotate through
         try {
             @Nullable
@@ -80,10 +78,8 @@ public class ws980wifiDiscoveryService extends AbstractDiscoveryService {
         } catch (Exception e) {
             log.debug("Error while trying to discover ws980wifi devices: {}", e.getMessage());
         }
-
         for (ws980wifi dev : ws980wifiDevices) {
             log.debug("Scanner: identified ws980wifi device {}", dev.getHost());
-
             ThingUID thingUID;
             String id = dev.getHost().replaceAll("\\.", "-");
             log.debug("Device ID with IP address replacement: {}", id);
@@ -97,7 +93,6 @@ public class ws980wifiDiscoveryService extends AbstractDiscoveryService {
             log.debug("Scanner: Will create device ID with Name: {}", id);
             thingUID = new ThingUID(THING_TYPE_WS980WIFI, id);
             log.debug("Scanner: New ThingUID {} created", thingUID);
-
             Map<String, Object> properties = new HashMap<>();
             properties.put(ws980wifiBindingConstants.HOST, dev.getHost());
             properties.put(Thing.PROPERTY_MAC_ADDRESS, dev.getMac());
@@ -105,13 +100,10 @@ public class ws980wifiDiscoveryService extends AbstractDiscoveryService {
             properties.put(ws980wifiBindingConstants.IP, dev.getIP());
             properties.put(ws980wifiBindingConstants.PORT, dev.getPort().toString());
             log.debug("Scanner: New Properties Map created: {}", properties);
-
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withLabel(dev.getDescription() + " (" + id + ")")
                     .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
-
             thingDiscovered(discoveryResult);
-
             log.debug("---> discovered device {} in Thing Discovery Result Liste inserted", thingUID);
         }
         removeOlderResults(timestampOfLastScan);

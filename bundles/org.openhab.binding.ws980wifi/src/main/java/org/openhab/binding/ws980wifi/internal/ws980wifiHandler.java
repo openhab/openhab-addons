@@ -65,10 +65,9 @@ public class ws980wifiHandler extends BaseThingHandler {
             config = getConfigAs(ws980wifiConfiguration.class);
             host = config.getHost();
             port = config.getPort();
-
+            updateStatus(ThingStatus.UNKNOWN);
             pollingJob = scheduler.scheduleWithFixedDelay(this::updateWeatherData, 0, config.getRefreshInterval(),
                     TimeUnit.SECONDS);
-            updateStatus(ThingStatus.ONLINE);
             log.debug("ws980wifi Handler is initialized");
         }
     }
@@ -89,6 +88,7 @@ public class ws980wifiHandler extends BaseThingHandler {
         log.debug("wsObject for refresh created with {}, {}", wsObject.getHost(), wsObject.getPort());
 
         if (wsObject.refreshValues()) {
+            updateStatus(ThingStatus.ONLINE);
             updateState(ws980wifiBindingConstants.CHANNEL_TEMPERATURE_INSIDE,
                     new QuantityType<>(wsObject.tempInside, SIUnits.CELSIUS));
             updateState(ws980wifiBindingConstants.CHANNEL_TEMPERATURE_OUTSIDE,
@@ -133,6 +133,7 @@ public class ws980wifiHandler extends BaseThingHandler {
             log.debug("refreshValues successfully done");
         } else {
             log.debug("refreshValues stops with Error");
+            updateStatus(ThingStatus.UNKNOWN);
             getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
         }
     }
