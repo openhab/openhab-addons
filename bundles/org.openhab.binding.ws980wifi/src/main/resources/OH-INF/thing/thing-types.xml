@@ -78,12 +78,12 @@
 
 		<properties>                                                                    <!-- static properties, that are the same for all instances -->
 			<property name="vendor">ELV</property>
-			<property name="modelId">WS980WiFi</property>
+			<property name="modelId">WS980WIFI</property>
 		</properties>
 
-		<representation-property>macAddress</representation-property>                   <!-- eindeutiger Identifier fuer jede WS -->
+		<representation-property>macAddress</representation-property>                   <!-- Identifyer for each WS980WIFI -->
 
-		<config-description>                                                            <!-- konfigurierbare Parameter, indiv. fuer jede WS -->
+		<config-description>                                                            <!-- Config Parameter, indiv. for each WS980WIFI -->
 			<parameter name="host" type="text" required="true">
 				<label>Hostname</label>
 				<description>The hostname/IP address the device is bound to, e.g. 192.168.0.2</description>
@@ -93,14 +93,12 @@
 			<parameter name="macAddress" type="text" required="true">
 				<label>MAC Address</label>
 				<description>The unique MAC address of the device, e.g. 00:10:FA:6E:38:4A</description>
-				<context>network-address</context>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="port" type="text" required="true">
 				<label>Data Request Port</label>
 				<default>45000</default>
 				<description>Port number to request data from the device, e.g. 45000</description>
-				<context>network-address</context>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="30">
@@ -109,23 +107,14 @@
 				<description>
 					Interval the data of the device is polled in sec. (min. 30, default 60)
 				</description>
-				<context>network-address</context>
 				<advanced>false</advanced>
 			</parameter>
 		</config-description>
 
 	</thing-type>
 
-	<channel-type id="temperature">                                                     <!-- hier wird der oben referenzierte Type indiv. spezifiziert -->
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<description>Current temperature in degree Celsius</description>
-		<category>Temperature</category>
-		<state pattern="%+.1f %unit%" readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="rain">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Precipitation Rain</label>
 		<description>Rain in 0,1 mm</description>
 		<category>Rain</category>
@@ -149,7 +138,7 @@
 	</channel-type>
 
 	<channel-type id="uvIndex">
-		<item-type>Number</item-type>
+		<item-type>Number:Irradiance</item-type>
 		<label>UV Index</label>
 		<description>UV index</description>
 		<state readOnly="true" pattern="%.0f"></state>

@@ -5,6 +5,5 @@
 
 	<name>ws980wifi Weather Station</name>
 	<description>This is the binding for ELV Wetterstation WS980WiFi. It allows to retrieve the weather data.</description>
-	<author>Joerg Dokupil</author>
 
 </binding:binding>

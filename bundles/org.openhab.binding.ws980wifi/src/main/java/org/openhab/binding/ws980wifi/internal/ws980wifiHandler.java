@@ -20,16 +20,16 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ws980wifi.internal.discovery.ws980wifi;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tech.units.indriya.unit.Units;
 
 /**
  * The {@link ws980wifiHandler} is responsible for handling commands, which are
@@ -66,7 +66,7 @@ public class ws980wifiHandler extends BaseThingHandler {
             host = config.getHost();
             port = config.getPort();
 
-            pollingJob = scheduler.scheduleWithFixedDelay(this::updateWeatherData, 0, config.refreshInterval,
+            pollingJob = scheduler.scheduleWithFixedDelay(this::updateWeatherData, 0, config.getRefreshInterval(),
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
             log.debug("ws980wifi Handler is initialized");
@@ -89,38 +89,51 @@ public class ws980wifiHandler extends BaseThingHandler {
         log.debug("wsObject for refresh created with {}, {}", wsObject.getHost(), wsObject.getPort());
 
         if (wsObject.refreshValues()) {
-            updateState("tempInside", new QuantityType<>(wsObject.tempInside, SIUnits.CELSIUS));
-            updateState("tempOutside", new QuantityType<>(wsObject.tempOutside, SIUnits.CELSIUS));
-            updateState("tempDewPoint", new QuantityType<>(wsObject.tempDewPoint, SIUnits.CELSIUS));
-            updateState("tempWindChill", new QuantityType<>(wsObject.tempWindChill, SIUnits.CELSIUS));
-            updateState("heatIndex", new QuantityType<>(wsObject.heatIndex, SIUnits.CELSIUS));
-            updateState("humidityInside", new QuantityType<>(wsObject.humidityInside, Units.PERCENT));
-            updateState("humidityOutside", new QuantityType<>(wsObject.humidityOutside, Units.PERCENT));
-            updateState("pressureAbsolut", new QuantityType<>(wsObject.pressureAbsolut, SIUnits.PASCAL));
-            updateState("pressureRelative", new QuantityType<>(wsObject.pressureRelative, SIUnits.PASCAL));
-            updateState("windDirection",
-                    new QuantityType<>(wsObject.windDirection, org.openhab.core.library.unit.Units.DEGREE_ANGLE));
-            updateState("windSpeed", new QuantityType<>(wsObject.windSpeed, Units.KILOMETRE_PER_HOUR));
-            updateState("windSpeedGust", new QuantityType<>(wsObject.windSpeedGust, Units.KILOMETRE_PER_HOUR));
-            updateState("rainLastHour",
-                    new QuantityType<>(wsObject.rainLastHour, org.openhab.core.library.unit.Units.MILLIMETRE_PER_HOUR));
-            updateState("rainLastDay",
-                    new QuantityType<>(wsObject.rainLastDay, org.openhab.core.library.unit.Units.MILLIMETRE_PER_HOUR));
-            updateState("rainLastWeek",
-                    new QuantityType<>(wsObject.rainLastWeek, org.openhab.core.library.unit.Units.MILLIMETRE_PER_HOUR));
-            updateState("rainLastMonth", new QuantityType<>(wsObject.rainLastMonth,
-                    org.openhab.core.library.unit.Units.MILLIMETRE_PER_HOUR));
-            updateState("rainLastYear",
-                    new QuantityType<>(wsObject.rainLastYear, org.openhab.core.library.unit.Units.MILLIMETRE_PER_HOUR));
-            updateState("rainTotal",
-                    new QuantityType<>(wsObject.rainTotal, org.openhab.core.library.unit.Units.MILLIMETRE_PER_HOUR));
-            updateState("lightLevel", new QuantityType<>(wsObject.lightLevel, org.openhab.core.library.unit.Units.LUX));
-            updateState("uvRaw", new QuantityType<>(wsObject.uvRaw, org.openhab.core.library.unit.Units.IRRADIANCE));
-            updateState("uvIndex",
-                    new QuantityType<>(wsObject.uvIndex, org.openhab.core.library.unit.Units.IRRADIANCE));
+            updateState(ws980wifiBindingConstants.CHANNEL_TEMPERATURE_INSIDE,
+                    new QuantityType<>(wsObject.tempInside, SIUnits.CELSIUS));
+            updateState(ws980wifiBindingConstants.CHANNEL_TEMPERATURE_OUTSIDE,
+                    new QuantityType<>(wsObject.tempOutside, SIUnits.CELSIUS));
+            updateState(ws980wifiBindingConstants.CHANNEL_TEMPERATURE_DEWPOINT,
+                    new QuantityType<>(wsObject.tempDewPoint, SIUnits.CELSIUS));
+            updateState(ws980wifiBindingConstants.CHANNEL_TEMPERATURE_WINDCHILL,
+                    new QuantityType<>(wsObject.tempWindChill, SIUnits.CELSIUS));
+            updateState(ws980wifiBindingConstants.CHANNEL_TEMPERATURE_HEATINDEX,
+                    new QuantityType<>(wsObject.heatIndex, SIUnits.CELSIUS));
+            updateState(ws980wifiBindingConstants.CHANNEL_HUMIDITY_INSIDE,
+                    new QuantityType<>(wsObject.humidityInside, Units.PERCENT));
+            updateState(ws980wifiBindingConstants.CHANNEL_HUMIDITY_OUTSIDE,
+                    new QuantityType<>(wsObject.humidityOutside, Units.PERCENT));
+            updateState(ws980wifiBindingConstants.CHANNEL_PRESSURE_ABSOLUT,
+                    new QuantityType<>(wsObject.pressureAbsolut, SIUnits.PASCAL));
+            updateState(ws980wifiBindingConstants.CHANNEL_PRESSURE_RELATIVE,
+                    new QuantityType<>(wsObject.pressureRelative, SIUnits.PASCAL));
+            updateState(ws980wifiBindingConstants.CHANNEL_WIND_DIRECTION,
+                    new QuantityType<>(wsObject.windDirection, Units.DEGREE_ANGLE));
+            updateState(ws980wifiBindingConstants.CHANNEL_WINDSPEED,
+                    new QuantityType<>(wsObject.windSpeed, SIUnits.KILOMETRE_PER_HOUR));
+            updateState(ws980wifiBindingConstants.CHANNEL_WINDSPEED_GUST,
+                    new QuantityType<>(wsObject.windSpeedGust, SIUnits.KILOMETRE_PER_HOUR));
+            updateState(ws980wifiBindingConstants.CHANNEL_RAIN_LAST_HOUR,
+                    new QuantityType<>(wsObject.rainLastHour, Units.MILLIMETRE_PER_HOUR));
+            updateState(ws980wifiBindingConstants.CHANNEL_RAIN_LAST_DAY,
+                    new QuantityType<>(wsObject.rainLastDay, Units.MILLIMETRE_PER_HOUR));
+            updateState(ws980wifiBindingConstants.CHANNEL_RAIN_LAST_WEEK,
+                    new QuantityType<>(wsObject.rainLastWeek, Units.MILLIMETRE_PER_HOUR));
+            updateState(ws980wifiBindingConstants.CHANNEL_RAIN_LAST_MONTH,
+                    new QuantityType<>(wsObject.rainLastMonth, Units.MILLIMETRE_PER_HOUR));
+            updateState(ws980wifiBindingConstants.CHANNEL_RAIN_LAST_YEAR,
+                    new QuantityType<>(wsObject.rainLastYear, Units.MILLIMETRE_PER_HOUR));
+            updateState(ws980wifiBindingConstants.CHANNEL_RAIN_TOTAL,
+                    new QuantityType<>(wsObject.rainTotal, Units.MILLIMETRE_PER_HOUR));
+            updateState(ws980wifiBindingConstants.CHANNEL_LIGTH_LEVEL,
+                    new QuantityType<>(wsObject.lightLevel, Units.LUX));
+            updateState(ws980wifiBindingConstants.CHANNEL_UV_RAW, new QuantityType<>(wsObject.uvRaw, Units.IRRADIANCE));
+            updateState(ws980wifiBindingConstants.CHANNEL_UV_INDEX,
+                    new QuantityType<>(wsObject.uvIndex, Units.IRRADIANCE));
             log.debug("refreshValues successfully done");
         } else {
             log.debug("refreshValues stops with Error");
+            getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
         }
     }
 }

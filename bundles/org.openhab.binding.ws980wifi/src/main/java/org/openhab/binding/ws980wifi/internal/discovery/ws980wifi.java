@@ -148,7 +148,7 @@ public class ws980wifi {
             receive = new byte[1024];
             answerFromServer.read(receive);
             return receive;
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.debug("---> tcpipRequest created an exception: {}", e.getMessage());
             return receive;
         }
@@ -163,7 +163,7 @@ public class ws980wifi {
         List<ws980wifi> devices = new ArrayList<ws980wifi>(50);
         ws980wifi[] out = new ws980wifi[0];
 
-        log.debug("Discovering ws980wifi devices");
+        log.debug("Discovering WS980WIFI devices");
 
         try (DatagramSocket sock = new DatagramSocket()) {
             sock.setBroadcast(true);
@@ -249,7 +249,7 @@ public class ws980wifi {
                 log.debug("the response from ws908wifi could not be processed, {}", e.getMessage());
             }
         } else {
-            log.debug("invalid ws980wifi header data in discovery result");
+            log.debug("invalid WS980WIFI header data in discovery result");
         }
     }
 

@@ -25,9 +25,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ws980wifiConfiguration {
 
-    public int refreshInterval;
-    public String host;
-    public String port;
+    private int refreshInterval;
+    private String host;
+    private String port;
 
     public ws980wifiConfiguration() {
         this.host = "0.0.0.0";
@@ -48,5 +48,13 @@ public class ws980wifiConfiguration {
 
     public void setPort(String port) {
         this.port = port;
+    }
+
+    public int getRefreshInterval() {
+        return this.refreshInterval;
+    }
+
+    public void setRefreshInterval(int refreshInterval) {
+        this.refreshInterval = refreshInterval;
     }
 }
