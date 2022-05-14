@@ -58,7 +58,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService impl
     private @NonNullByDefault({}) TouchWandBridgeHandler touchWandBridgeHandler;
     private final Logger logger = LoggerFactory.getLogger(TouchWandUnitDiscoveryService.class);
 
-    private @Nullable ScheduledFuture<?> scanningJob;    
+    private @Nullable ScheduledFuture<?> scanningJob;
 
     public TouchWandUnitDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME_SEC, true);
