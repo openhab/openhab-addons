@@ -156,10 +156,10 @@ public class KM200ThingHandler extends BaseThingHandler {
         String itemType = "";
         String category = null;
         if (CoreItemFactory.NUMBER.equals(type)) {
-            itemType = "NumberType";
+            itemType = CoreItemFactory.NUMBER;
             category = "Number";
         } else if (CoreItemFactory.STRING.equals(type)) {
-            itemType = "StringType";
+            itemType = CoreItemFactory.STRING;
             category = "Text";
         } else {
             logger.info("Channeltype {} not supported", type);
