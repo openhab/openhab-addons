@@ -17,6 +17,7 @@ import java.util.Locale;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.webthing.internal.client.dto.Property;
+import org.openhab.core.library.CoreItemFactory;
 
 /**
  * The {@link TypeMapping} class defines the mapping of Item types <-> WebThing Property types.
@@ -36,7 +37,7 @@ public class TypeMapping {
      * @return the associated item type
      */
     public static ItemType toItemType(Property propertyMetadata) {
-        String type = "String";
+        String type = CoreItemFactory.STRING;
         @Nullable
         String tag = null;
 
@@ -48,46 +49,46 @@ public class TypeMapping {
             case "MotionProperty":
             case "OnOffProperty":
             case "PushedProperty":
-                type = "Switch";
+                type = CoreItemFactory.SWITCH;
                 tag = "Switchable";
                 break;
             case "CurrentProperty":
             case "FrequencyProperty":
             case "InstantaneousPowerProperty":
             case "VoltageProperty":
-                type = "Number";
+                type = CoreItemFactory.NUMBER;
                 break;
             case "HeatingCoolingProperty":
             case "ImageProperty":
             case "VideoProperty":
-                type = "String";
+                type = CoreItemFactory.STRING;
                 break;
             case "BrightnessProperty":
             case "HumidityProperty":
-                type = "Dimmer";
+                type = CoreItemFactory.DIMMER;
                 break;
             case "ColorModeProperty":
-                type = "String";
+                type = CoreItemFactory.STRING;
                 tag = "lighting";
                 break;
             case "ColorProperty":
-                type = "Color";
+                type = CoreItemFactory.COLOR;
                 tag = "Lighting";
                 break;
             case "ColorTemperatureProperty":
-                type = "Dimmer";
+                type = CoreItemFactory.DIMMER;
                 tag = "Lighting";
                 break;
             case "OpenProperty":
-                type = "Contact";
+                type = CoreItemFactory.CONTACT;
                 tag = "ContactSensor";
                 break;
             case "TargetTemperatureProperty":
-                type = "Number";
+                type = CoreItemFactory.NUMBER;
                 tag = "TargetTemperature";
                 break;
             case "TemperatureProperty":
-                type = "Number";
+                type = CoreItemFactory.NUMBER;
                 tag = "CurrentTemperature";
                 break;
             case "ThermostatModeProperty":
@@ -95,23 +96,23 @@ public class TypeMapping {
             case "LevelProperty":
                 if ((propertyMetadata.unit != null)
                         && propertyMetadata.unit.toLowerCase(Locale.ENGLISH).equals("percent")) {
-                    type = "Dimmer";
+                    type = CoreItemFactory.DIMMER;
                 } else {
-                    type = "Number";
+                    type = CoreItemFactory.NUMBER;
                 }
                 break;
             default:
                 switch (propertyMetadata.type.toLowerCase(Locale.ENGLISH)) {
                     case "boolean":
-                        type = "Switch";
+                        type = CoreItemFactory.SWITCH;
                         tag = "Switchable";
                         break;
                     case "integer":
                     case "number":
-                        type = "Number";
+                        type = CoreItemFactory.NUMBER;
                         break;
                     default:
-                        type = "String";
+                        type = CoreItemFactory.STRING;
                         break;
                 }
                 break;
