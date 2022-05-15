@@ -40,6 +40,8 @@ import org.openhab.binding.tado.internal.api.model.Power;
 import org.openhab.binding.tado.internal.api.model.TadoSystemType;
 import org.openhab.binding.tado.internal.api.model.TemperatureObject;
 import org.openhab.binding.tado.internal.api.model.TemperatureRange;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -52,7 +54,8 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
     private static final float DEFAULT_TEMPERATURE_C = 20.0f;
     private static final float DEFAULT_TEMPERATURE_F = 68.0f;
 
-    private static final String VALUE_NOT_ALLOWED_FORMAT_STRING = "Device does not allow setting '%s' to value '%s' when it is in '%s' mode.";
+    private static final String STATE_VALUE_NOT_SUPPORTED = "Your a/c unit does not support '{}:{}' when in state '{}:{}', (supported values: [{}]).";
+    private Logger logger = LoggerFactory.getLogger(AirConditioningZoneSettingsBuilder.class);
 
     @Override
     public GenericZoneSetting build(ZoneStateProvider zoneStateProvider, GenericZoneCapabilities genericCapabilities)
@@ -97,7 +100,7 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
          * In the latest API release Tado introduced extra AC settings that have an open ended list of possible
          * supported state values. And for any particular device, its specific list of supported values is available
          * via its 'capabilities' structure. So before setting a new value, we check if the respective new value is in
-         * the capabilities list that corresponds to the target AC mode. And if not, an exception is thrown.
+         * the capabilities list that corresponds to the target AC mode. And if not, a warning message is logged.
          */
         AcModeCapabilities targetModeCapabilities = TadoApiTypeUtils.getModeCapabilities(targetMode,
                 genericCapabilities);
@@ -106,33 +109,37 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
         if (fanLevel != null) {
             ACFanLevel targetFanLevel = getFanLevel(fanLevel);
             List<ACFanLevel> targetFanLevels = targetModeCapabilities.getFanLevel();
-            if (targetFanLevels == null || !targetFanLevels.contains(targetFanLevel)) {
-                throw new IllegalArgumentException(String.format(VALUE_NOT_ALLOWED_FORMAT_STRING,
-                        targetFanLevel.getClass().getName(), targetFanLevel.name(), targetMode.name()));
+            if (targetFanLevels != null && targetFanLevels.contains(targetFanLevel)) {
+                newSetting.setFanLevel(targetFanLevel);
+            } else {
+                logger.warn(STATE_VALUE_NOT_SUPPORTED, targetFanLevel.getClass().getSimpleName(), targetFanLevel,
+                        targetMode.getClass().getSimpleName(), targetMode, targetFanLevels);
             }
-            newSetting.setFanLevel(targetFanLevel);
         }
 
         HorizontalSwing horizontalSwing = this.horizontalSwing;
         if (horizontalSwing != null) {
             ACHorizontalSwing targetHorizontalSwing = getHorizontalSwing(horizontalSwing);
             List<ACHorizontalSwing> targetHorizontalSwings = targetModeCapabilities.getHorizontalSwing();
-            if (targetHorizontalSwings == null || !targetHorizontalSwings.contains(targetHorizontalSwing)) {
-                throw new IllegalArgumentException(String.format(VALUE_NOT_ALLOWED_FORMAT_STRING,
-                        targetHorizontalSwing.getClass().getName(), targetHorizontalSwing.name(), targetMode.name()));
+            if (targetHorizontalSwings != null && targetHorizontalSwings.contains(targetHorizontalSwing)) {
+                newSetting.setHorizontalSwing(targetHorizontalSwing);
+            } else {
+                logger.warn(STATE_VALUE_NOT_SUPPORTED, targetHorizontalSwing.getClass().getSimpleName(),
+                        targetHorizontalSwing, targetMode.getClass().getSimpleName(), targetMode,
+                        targetHorizontalSwings);
             }
-            newSetting.setHorizontalSwing(targetHorizontalSwing);
         }
 
         VerticalSwing verticalSwing = this.verticalSwing;
         if (verticalSwing != null) {
             ACVerticalSwing targetVerticalSwing = getVerticalSwing(verticalSwing);
             List<ACVerticalSwing> targetVerticalSwings = targetModeCapabilities.getVerticalSwing();
-            if (targetVerticalSwings == null || !targetVerticalSwings.contains(targetVerticalSwing)) {
-                throw new IllegalArgumentException(String.format(VALUE_NOT_ALLOWED_FORMAT_STRING,
-                        targetVerticalSwing.getClass().getName(), targetVerticalSwing.name(), targetMode.name()));
+            if (targetVerticalSwings != null && targetVerticalSwings.contains(targetVerticalSwing)) {
+                newSetting.setVerticalSwing(targetVerticalSwing);
+            } else {
+                logger.warn(STATE_VALUE_NOT_SUPPORTED, targetVerticalSwing.getClass().getSimpleName(),
+                        targetVerticalSwing, targetMode.getClass().getSimpleName(), targetMode, targetVerticalSwings);
             }
-            newSetting.setVerticalSwing(targetVerticalSwing);
         }
 
         addMissingSettingParts(zoneStateProvider, genericCapabilities, newSetting);
