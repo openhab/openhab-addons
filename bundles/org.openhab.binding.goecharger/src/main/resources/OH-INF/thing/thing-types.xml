@@ -22,6 +22,7 @@
 			<channel id="powerL1" typeId="pl1"/>
 			<channel id="powerL2" typeId="pl2"/>
 			<channel id="powerL3" typeId="pl3"/>
+			<channel id="powerAll" typeId="pall"/>
 			<channel id="allowCharging" typeId="alw"/>
 			<channel id="cableCurrent" typeId="cbl"/>
 			<channel id="firmware" typeId="fmw"/>
