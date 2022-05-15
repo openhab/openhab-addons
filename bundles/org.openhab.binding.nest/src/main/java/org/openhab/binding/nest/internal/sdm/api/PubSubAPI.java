@@ -79,6 +79,7 @@ public class PubSubAPI {
             }
 
             try {
+                checkAccessTokenValidity();
                 String messages = pullSubscriptionMessages(subscriptionId);
 
                 PubSubPullResponse pullResponse = GSON.fromJson(messages, PubSubPullResponse.class);
@@ -104,7 +105,8 @@ public class PubSubAPI {
                     scheduler.schedule(this, RETRY_TIMEOUT.toNanos(), TimeUnit.NANOSECONDS);
                 }
             } catch (InvalidPubSubAccessTokenException e) {
-                logger.warn("Cannot pull messages for '{}' subscription (access token invalid)", subscriptionId, e);
+                logger.warn("Cannot pull messages for '{}' subscription (access or refresh token invalid)",
+                        subscriptionId, e);
                 forEachListener(listener -> listener.onError(e));
             } catch (Exception e) {
                 logger.warn("Unexpected exception while pulling message for '{}' subscription", subscriptionId, e);
@@ -224,6 +226,10 @@ public class PubSubAPI {
             if (response == null || response.getAccessToken() == null || response.getAccessToken().isEmpty()) {
                 throw new InvalidPubSubAccessTokenException(
                         "No Pub/Sub access token. Client may not have been authorized.");
+            }
+            if (response.getRefreshToken() == null || response.getRefreshToken().isEmpty()) {
+                throw new InvalidPubSubAccessTokenException(
+                        "No Pub/Sub refresh token. Delete and readd credentials, then reauthorize.");
             }
             return BEARER + response.getAccessToken();
         } catch (OAuthException | OAuthResponseException e) {
