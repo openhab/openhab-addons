@@ -59,7 +59,7 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
  * @author David Graeff - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class MqttTopicClassMapperTests {
     @Retention(RetentionPolicy.RUNTIME)

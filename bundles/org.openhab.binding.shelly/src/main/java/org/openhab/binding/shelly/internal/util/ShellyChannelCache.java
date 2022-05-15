@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.shelly.internal.util;
 
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.mkChannelId;
@@ -88,8 +87,6 @@ public class ShellyChannelCache {
                 } else {
                     channelData.replace(channelId, newValue);
                 }
-                logger.debug("{}: Channel {} updated with {} (type {}).", thingName, channelId, newValue,
-                        newValue.getClass());
                 return true;
             }
         } catch (IllegalArgumentException e) {

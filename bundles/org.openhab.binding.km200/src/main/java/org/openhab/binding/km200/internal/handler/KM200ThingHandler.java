@@ -21,7 +21,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -109,23 +108,6 @@ public class KM200ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Choose a tag for a channel
-     */
-    Set<String> checkTags(String unitOfMeasure, @Nullable Boolean readOnly) {
-        Set<String> tags = new HashSet<>();
-        if (unitOfMeasure.indexOf("°C") == 0 || unitOfMeasure.indexOf("K") == 0) {
-            if (null != readOnly) {
-                if (readOnly) {
-                    tags.add("CurrentTemperature");
-                } else {
-                    tags.add("TargetTemperature");
-                }
-            }
-        }
-        return tags;
-    }
-
-    /**
      * Choose a category for a channel
      */
     String checkCategory(String unitOfMeasure, String topCategory, @Nullable Boolean readOnly) {
@@ -171,13 +153,10 @@ public class KM200ThingHandler extends BaseThingHandler {
         Channel newChannel = null;
         ChannelType channelType = null;
         Map<String, String> chProperties = new HashMap<>();
-        String itemType = "";
         String category = null;
         if (CoreItemFactory.NUMBER.equals(type)) {
-            itemType = "NumberType";
             category = "Number";
         } else if (CoreItemFactory.STRING.equals(type)) {
-            itemType = "StringType";
             category = "Text";
         } else {
             logger.info("Channeltype {} not supported", type);
@@ -185,19 +164,17 @@ public class KM200ThingHandler extends BaseThingHandler {
         }
         try {
             configDescriptionUriChannel = new URI(CONFIG_DESCRIPTION_URI_CHANNEL);
-            channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType) //
+            channelType = ChannelTypeBuilder.state(channelTypeUID, label, type) //
                     .withDescription(description) //
                     .withCategory(checkCategory(unitOfMeasure, category, state.isReadOnly())) //
-                    .withTags(checkTags(unitOfMeasure, state.isReadOnly())) //
                     .withStateDescriptionFragment(state) //
                     .withConfigDescriptionURI(configDescriptionUriChannel).build();
         } catch (URISyntaxException ex) {
             logger.warn("Can't create ConfigDescription URI '{}', ConfigDescription for channels not avilable!",
                     CONFIG_DESCRIPTION_URI_CHANNEL);
-            channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType) //
+            channelType = ChannelTypeBuilder.state(channelTypeUID, label, type) //
                     .withDescription(description) //
-                    .withCategory(checkCategory(unitOfMeasure, category, state.isReadOnly())) //
-                    .withTags(checkTags(unitOfMeasure, state.isReadOnly())).build();
+                    .withCategory(checkCategory(unitOfMeasure, category, state.isReadOnly())).build();
         }
         channelTypeProvider.addChannelType(channelType);
 

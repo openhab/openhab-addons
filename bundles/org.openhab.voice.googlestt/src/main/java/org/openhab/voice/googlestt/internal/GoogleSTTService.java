@@ -85,7 +85,7 @@ public class GoogleSTTService implements STTService {
 
     private static final String GCP_AUTH_URI = "https://accounts.google.com/o/oauth2/auth";
     private static final String GCP_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
-    private static final String GCP_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
+    private static final String GCP_REDIRECT_URI = "https://www.google.com";
     private static final String GCP_SCOPE = "https://www.googleapis.com/auth/cloud-platform";
 
     private final Logger logger = LoggerFactory.getLogger(GoogleSTTService.class);
@@ -382,12 +382,10 @@ public class GoogleSTTService implements STTService {
                 String transcript = transcriptBuilder.toString();
                 if (!transcript.isBlank()) {
                     sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, averageConfidence));
+                } else if (!config.noResultsMessage.isBlank()) {
+                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
                 } else {
-                    if (!config.noResultsMessage.isBlank()) {
-                        sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
-                    } else {
-                        sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("No results"));
-                    }
+                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("No results"));
                 }
             }
         }

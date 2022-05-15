@@ -25,7 +25,7 @@ import org.mockito.quality.Strictness;
  * @author Tomasz Maruszak - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public abstract class AbstractXMLProtocolTest {
 
     protected @Mock XMLConnection con;

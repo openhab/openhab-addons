@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.synopanalyzer.internal.synop;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link WindDirections} enum possible wind directions
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public enum WindDirections {
     N,
     NNE,
@@ -39,8 +42,8 @@ public enum WindDirections {
      * Returns the wind direction based on degree.
      */
     public static WindDirections getWindDirection(int degree) {
-        double step = 360.0 / WindDirections.values().length;
+        double step = 360.0 / values().length;
         double b = Math.floor((degree + (step / 2.0)) / step);
-        return WindDirections.values()[(int) (b % WindDirections.values().length)];
+        return values()[(int) (b % values().length)];
     }
 }

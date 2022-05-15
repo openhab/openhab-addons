@@ -3,16 +3,17 @@
 Binding for the Bosch Smart Home.
 
 - [Bosch Smart Home Binding](#bosch-smart-home-binding)
-  - [Changelog](#changelog)
   - [Supported Things](#supported-things)
-    - [In-Wall switches & Smart Plugs](#in-wall-switches--smart-plugs)
+    - [In-Wall switches & Smart Plugs](#in-wall-switches-smart-plugs)
     - [TwinGuard smoke detector](#twinguard-smoke-detector)
-    - [Door/Window contact](#doorwindow-contact)
+    - [Door/Window contact](#door-window-contact)
     - [Motion Detector](#motion-detector)
     - [Shutter Control](#shutter-control)
     - [Thermostat](#thermostat)
     - [Climate Control](#climate-control)
     - [Wall Thermostat](#wall-thermostat)
+    - [Security Camera 360](#security-camera-360)
+    - [Security Camera Eyes](#security-camera-eyes)
   - [Limitations](#limitations)
   - [Discovery](#discovery)
   - [Bridge Configuration](#bridge-configuration)
@@ -114,6 +115,28 @@ Display of the current room temperature as well as the relative humidity in the 
 | --------------- | -------------------- | :------: | ------------------------------------- |
 | temperature     | Number:Temperature   | &#9744;  | Current measured temperature.         |
 | humidity        | Number:Dimensionless | &#9744;  | Current measured humidity (0 to 100). |
+
+### Security Camera 360
+
+Indoor security camera with 360° view and motion detection.
+
+**Thing Type ID**: `security-camera-360`
+
+| Channel Type ID       | Item Type            | Writable | Description                                                        |
+| --------------------- | -------------------- | :------: | ------------------------------------------------------------------ |
+| privacy-mode          | Switch               | &#9745;  | If privacy mode is enabled, the camera is disabled and vice versa. |
+| camera-notification   | Switch               | &#9745;  | Enables or disables notifications for the camera.                  |
+
+### Security Camera Eyes
+
+Outdoor security camera with motion detection and light.
+
+**Thing Type ID**: `security-camera-eyes`
+
+| Channel Type ID       | Item Type            | Writable | Description                                                        |
+| --------------------- | -------------------- | :------: | ------------------------------------------------------------------ |
+| privacy-mode          | Switch               | &#9745;  | If privacy mode is enabled, the camera is disabled and vice versa. |
+| camera-notification   | Switch               | &#9745;  | Enables or disables notifications for the camera.                  |
 
 ## Limitations
 

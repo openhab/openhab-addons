@@ -33,6 +33,7 @@ import org.openhab.core.items.Item;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -40,6 +41,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
@@ -72,6 +74,9 @@ import io.github.hapjava.characteristics.impl.carbondioxidesensor.CarbonDioxideL
 import io.github.hapjava.characteristics.impl.carbondioxidesensor.CarbonDioxidePeakLevelCharacteristic;
 import io.github.hapjava.characteristics.impl.carbonmonoxidesensor.CarbonMonoxideLevelCharacteristic;
 import io.github.hapjava.characteristics.impl.carbonmonoxidesensor.CarbonMonoxidePeakLevelCharacteristic;
+import io.github.hapjava.characteristics.impl.common.ActiveCharacteristic;
+import io.github.hapjava.characteristics.impl.common.ActiveEnum;
+import io.github.hapjava.characteristics.impl.common.ConfiguredNameCharacteristic;
 import io.github.hapjava.characteristics.impl.common.NameCharacteristic;
 import io.github.hapjava.characteristics.impl.common.ObstructionDetectedCharacteristic;
 import io.github.hapjava.characteristics.impl.common.StatusActiveCharacteristic;
@@ -90,10 +95,14 @@ import io.github.hapjava.characteristics.impl.fan.SwingModeCharacteristic;
 import io.github.hapjava.characteristics.impl.fan.SwingModeEnum;
 import io.github.hapjava.characteristics.impl.fan.TargetFanStateCharacteristic;
 import io.github.hapjava.characteristics.impl.fan.TargetFanStateEnum;
+import io.github.hapjava.characteristics.impl.filtermaintenance.FilterLifeLevelCharacteristic;
+import io.github.hapjava.characteristics.impl.filtermaintenance.ResetFilterIndicationCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.BrightnessCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.ColorTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.HueCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.SaturationCharacteristic;
+import io.github.hapjava.characteristics.impl.slat.CurrentTiltAngleCharacteristic;
+import io.github.hapjava.characteristics.impl.slat.TargetTiltAngleCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.CoolingThresholdTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.HeatingThresholdTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.valve.RemainingDurationCharacteristic;
@@ -135,6 +144,8 @@ public class HomekitCharacteristicFactory {
             put(TARGET_HORIZONTAL_TILT_ANGLE,
                     HomekitCharacteristicFactory::createTargetHorizontalTiltAngleCharacteristic);
             put(TARGET_VERTICAL_TILT_ANGLE, HomekitCharacteristicFactory::createTargetVerticalTiltAngleCharacteristic);
+            put(CURRENT_TILT_ANGLE, HomekitCharacteristicFactory::createCurrentTiltAngleCharacteristic);
+            put(TARGET_TILT_ANGLE, HomekitCharacteristicFactory::createTargetTiltAngleCharacteristic);
             put(HUE, HomekitCharacteristicFactory::createHueCharacteristic);
             put(BRIGHTNESS, HomekitCharacteristicFactory::createBrightnessCharacteristic);
             put(SATURATION, HomekitCharacteristicFactory::createSaturationCharacteristic);
@@ -156,6 +167,10 @@ public class HomekitCharacteristicFactory {
             put(PM25_DENSITY, HomekitCharacteristicFactory::createPM25DensityCharacteristic);
             put(PM10_DENSITY, HomekitCharacteristicFactory::createPM10DensityCharacteristic);
             put(VOC_DENSITY, HomekitCharacteristicFactory::createVOCDensityCharacteristic);
+            put(FILTER_LIFE_LEVEL, HomekitCharacteristicFactory::createFilterLifeLevelCharacteristic);
+            put(FILTER_RESET_INDICATION, HomekitCharacteristicFactory::createFilterResetCharacteristic);
+            put(ACTIVE, HomekitCharacteristicFactory::createActiveCharacteristic);
+            put(CONFIGURED_NAME, HomekitCharacteristicFactory::createConfiguredNameCharacteristic);
         }
     };
 
@@ -512,6 +527,20 @@ public class HomekitCharacteristicFactory {
                 getUnsubscriber(taggedItem, TARGET_HORIZONTAL_TILT_ANGLE, updater));
     }
 
+    private static CurrentTiltAngleCharacteristic createCurrentTiltAngleCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        return new CurrentTiltAngleCharacteristic(getAngleSupplier(taggedItem, 0),
+                getSubscriber(taggedItem, CURRENT_TILT_ANGLE, updater),
+                getUnsubscriber(taggedItem, CURRENT_TILT_ANGLE, updater));
+    }
+
+    private static TargetTiltAngleCharacteristic createTargetTiltAngleCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        return new TargetTiltAngleCharacteristic(getAngleSupplier(taggedItem, 0), setAngleConsumer(taggedItem),
+                getSubscriber(taggedItem, TARGET_TILT_ANGLE, updater),
+                getUnsubscriber(taggedItem, TARGET_TILT_ANGLE, updater));
+    }
+
     private static HueCharacteristic createHueCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new HueCharacteristic(() -> {
@@ -782,5 +811,37 @@ public class HomekitCharacteristicFactory {
                         taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
                                 VOCDensityCharacteristic.DEFAULT_MIN_VALUE)),
                 getSubscriber(taggedItem, VOC_DENSITY, updater), getUnsubscriber(taggedItem, VOC_DENSITY, updater));
+    }
+
+    private static FilterLifeLevelCharacteristic createFilterLifeLevelCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        return new FilterLifeLevelCharacteristic(getDoubleSupplier(taggedItem, 0),
+                getSubscriber(taggedItem, FILTER_LIFE_LEVEL, updater),
+                getUnsubscriber(taggedItem, FILTER_LIFE_LEVEL, updater));
+    }
+
+    private static ResetFilterIndicationCharacteristic createFilterResetCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        return new ResetFilterIndicationCharacteristic(
+                (value) -> ((SwitchItem) taggedItem.getItem()).send(OnOffType.ON));
+    }
+
+    private static ActiveCharacteristic createActiveCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        return new ActiveCharacteristic(
+                () -> getEnumFromItem(taggedItem, ActiveEnum.ACTIVE, ActiveEnum.INACTIVE, ActiveEnum.INACTIVE),
+                (value) -> setValueFromEnum(taggedItem, value, ActiveEnum.ACTIVE, ActiveEnum.INACTIVE),
+                getSubscriber(taggedItem, ACTIVE, updater), getUnsubscriber(taggedItem, ACTIVE, updater));
+    }
+
+    private static ConfiguredNameCharacteristic createConfiguredNameCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        return new ConfiguredNameCharacteristic(() -> {
+            final State state = taggedItem.getItem().getState();
+            return CompletableFuture
+                    .completedFuture(state instanceof UnDefType ? taggedItem.getName() : state.toString());
+        }, (value) -> ((StringItem) taggedItem.getItem()).send(new StringType(value)),
+                getSubscriber(taggedItem, CONFIGURED_NAME, updater),
+                getUnsubscriber(taggedItem, CONFIGURED_NAME, updater));
     }
 }

@@ -33,7 +33,7 @@ to common openHAB functionality within rules including items, things, actions, l
 
 This add-on includes by default the [openhab-js](https://github.com/openhab/openhab-js/) NPM library and exports it's namespaces onto the global namespace. This allows the use of `items`, `actions`, `cache` and other objects without the need to explicitly import using `require()`.  This functionality can be disabled for users who prefer to manage their own imports via the add-on configuration options. 
 
-![openHAB Rule Configuration](./doc/settings.png)
+![openHAB Rule Configuration](doc/settings.png)
 
 ## UI Based Rules
 
@@ -44,7 +44,7 @@ Advanced users, or users migrating scripts from existing systems may want to use
 ### Adding Triggers
 Using the openHAB UI, first create a new rule and set a trigger condition
 
-![openHAB Rule Configuration](./doc/rule-config.png)
+![openHAB Rule Configuration](doc/rule-config.png)
 
 
 ### Adding Actions
@@ -52,11 +52,11 @@ Select "Add Action" and then select "ECMAScript 262 Edition 11".
 Its important this is "Edition 11" or higher, earlier versions will not work.
 This will bring up a empty script editor where you can enter your javascript.
 
-![openHAB Rule Engines](./doc/rule-engines.png)
+![openHAB Rule Engines](doc/rule-engines.png)
 
 You can now write rules using standard ES6 Javascript along with the included openHAB [standard library](#standard-library).
 
-![openHAB Rule Script](./doc/rule-script.png)
+![openHAB Rule Script](doc/rule-script.png)
 
 For example, turning a light on:
 ```javascript
@@ -413,7 +413,7 @@ logger.debug("Hello {}!", "world");
 ### Time
 
 openHAB internally makes extensive use of the `java.time` package.
-openHAB-JS exports the excellent [JS-Joda](#https://js-joda.github.io/js-joda/) library via the `time` namespace, which is a native Javascript port of the same API standard used in Java for `java.time`.
+openHAB-JS exports the excellent [JS-Joda](https://js-joda.github.io/js-joda/) library via the `time` namespace, which is a native Javascript port of the same API standard used in Java for `java.time`.
 Anywhere that a native Java `ZonedDateTime` or `Duration` is required, the runtime will automatically convert a JS-Joda `ZonedDateTime` or `Duration` to its Java counterpart.
 
 Examples:
@@ -443,7 +443,7 @@ See [openhab-js : utils](https://openhab.github.io/openhab-js/utils.html) for fu
 
 The JSScripting binding  will load scripts from `automation/js` in the user configuration directory.
 The system will automatically reload scripts when changes are detected to files.
-Local variable state is not persisted among reloads, see using the [cache](#cache) for a connivent way to persist objects.
+Local variable state is not persisted among reloads, see using the [cache](#cache) for a convenient way to persist objects.
 
 File based rules can be created in 2 different ways: using [JSRule](#jsrule) or the [Rule Builder](#rule-builder).
 
@@ -611,7 +611,7 @@ Additionally all the above triggers have the following functions:
 //Basic rule, when the BedroomLight1 is changed, run a custom function
 rules.when().item('BedroomLight1').changed().then(e => {
     console.log("BedroomLight1 state", e.newState)
-}.build();
+}).build();
 
 //turn on the kitchen light at SUNSET
 rules.when().timeOfDay("SUNSET").then().sendOn().toItem("KitchenLight").build("Sunset Rule","turn on the kitchen light

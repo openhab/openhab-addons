@@ -21,6 +21,7 @@ import java.util.function.Function;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
+import org.openhab.binding.boschshc.internal.devices.camera.CameraHandler;
 import org.openhab.binding.boschshc.internal.devices.climatecontrol.ClimateControlHandler;
 import org.openhab.binding.boschshc.internal.devices.lightcontrol.LightControlHandler;
 import org.openhab.binding.boschshc.internal.devices.motiondetector.MotionDetectorHandler;
@@ -69,7 +70,9 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL, ShutterControlHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_THERMOSTAT, ThermostatHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_CLIMATE_CONTROL, ClimateControlHandler::new),
-            new ThingTypeHandlerMapping(THING_TYPE_WALL_THERMOSTAT, WallThermostatHandler::new));
+            new ThingTypeHandlerMapping(THING_TYPE_WALL_THERMOSTAT, WallThermostatHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_CAMERA_360, CameraHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_CAMERA_EYES, CameraHandler::new));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

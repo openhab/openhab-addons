@@ -40,7 +40,7 @@ import org.openhab.core.thing.ThingUID;
  * @author Kai Kreuzer - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TradfriDiscoveryParticipantOSGITest extends JavaOSGiTest {
 
     private MDNSDiscoveryParticipant discoveryParticipant;

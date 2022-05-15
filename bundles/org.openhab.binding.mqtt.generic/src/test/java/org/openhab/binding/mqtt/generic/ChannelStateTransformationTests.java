@@ -47,7 +47,7 @@ import org.openhab.core.transform.TransformationService;
  * @author David Graeff - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class ChannelStateTransformationTests {
 

@@ -711,7 +711,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         sendCommand(COMMAND_WAKE_UP, account.wakeUpTarget);
     }
 
-    protected synchronized Vehicle queryVehicle() {
+    protected Vehicle queryVehicle() {
         String authHeader = account.getAuthHeader();
 
         if (authHeader != null) {

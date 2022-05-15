@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="vesync"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>VeSync Bridge</label>
+		<description>The VeSync bridge represents the VeSync cloud service.</description>
+
+		<properties>
+			<property name="Registration Time"/>
+			<property name="Country Code"/>
+			<property name="Accept Language"/>
+		</properties>
+
+		<config-description>
+			<parameter name="username" type="text">
+				<context>email</context>
+				<required>true</required>
+				<label>Username</label>
+				<description>Name of a registered VeSync user, that allows to access the mobile application.</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<required>true</required>
+				<label>Password</label>
+				<description>Password for the registered VeSync username, that allows to access the mobile application.</description>
+			</parameter>
+			<parameter name="backgroundDeviceDiscovery" type="boolean">
+				<label>Background Device Scans</label>
+				<description>Enable background scanning for new devices.</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="airPurifierPollInterval" type="integer" min="5" step="1" unit="s">
+				<label>Air Filters/Humidifiers Poll Rate</label>
+				<description>Seconds between fetching background updates about the air purifiers / humidifiers.</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="airPurifier">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Air Purifier via VeSync</label>
+		<description>A Air Purifier uplinking to VeSync</description>
+
+		<channels>
+			<channel id="enabled" typeId="deviceEnabledType"/>
+			<channel id="childLock" typeId="deviceChildLockEnabledType"/>
+			<channel id="display" typeId="deviceDisplayEnabledType"/>
+			<channel id="filterLifePercentage" typeId="deviceFilterLifePercentageType"/>
+			<channel id="fanMode" typeId="airPurifierModeType"/>
+			<channel id="manualFanSpeed" typeId="airPurifierFanLevelType"/>
+			<channel id="errorCode" typeId="deviceErrorCodeType"/>
+			<channel id="airQuality" typeId="deviceAirQualityBasicType"/>
+			<channel id="airQualityPM25" typeId="airQualityPM25"/>
+			<channel id="configDisplayForever" typeId="deviceAFConfigDisplayForever"/>
+			<channel id="configAutoMode" typeId="deviceAFConfigAutoPrefType"/>
+			<channel id="timerExpiry" typeId="deviceAFTimerExpiry"/>
+			<channel id="configAutoRoomSize" typeId="deviceAFConfigAutoPrefRoomSizeType"/>
+			<channel id="schedulesCount" typeId="deviceAFConfigAutoScheduleCountType"/>
+			<channel id="nightLightMode" typeId="deviceAFNightLight"/>
+		</channels>
+
+		<properties>
+			<property name="Device Name"/>
+			<property name="Device Type"/>
+			<property name="MAC Id"/>
+		</properties>
+		<representation-property>macId</representation-property>
+
+		<config-description>
+			<parameter name="macId" type="text">
+				<label>MAC Id</label>
+				<description>The MAC Id of the device as reported by the API.</description>
+			</parameter>
+			<parameter name="deviceName" type="text">
+				<label>Device Name</label>
+				<description>The name allocated to the device by the app. (Must be unique if used)</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="airHumidifier">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Air Humidifier via VeSync</label>
+		<description>A Air Humidifier uplinking to VeSync</description>
+
+		<channels>
+			<channel id="enabled" typeId="deviceEnabledType"/>
+			<channel id="display" typeId="deviceDisplayEnabledType"/>
+			<channel id="waterLacking" typeId="deviceWaterLackingType"/>
+			<channel id="humidityHigh" typeId="deviceHighHumidityType"/>
+			<channel id="waterTankLifted" typeId="deviceWaterTankLiftedType"/>
+			<channel id="stopAtHumiditySetpoint" typeId="deviceAutomaticStopReachTargetType"/>
+			<channel id="humidity" typeId="deviceHumidityType"/>
+			<channel id="mistLevel" typeId="deviceMistLevelType"/>
+			<channel id="humidifierMode" typeId="airHumidifierModeType"/>
+			<channel id="nightLightMode" typeId="deviceAFNightLight"/>
+			<channel id="humiditySetpoint" typeId="deviceConfigTargetHumidity"/>
+			<channel id="warmEnabled" typeId="warmModeEnabled"/>
+			<channel id="warmLevel" typeId="warmLevel"/>
+		</channels>
+
+		<properties>
+			<property name="Device Name"/>
+			<property name="Device Type"/>
+			<property name="MAC Id"/>
+		</properties>
+		<representation-property>macId</representation-property>
+
+		<config-description>
+			<parameter name="macId" type="text">
+				<label>MAC Id</label>
+				<description>The MAC Id of the device as reported by the API.</description>
+			</parameter>
+			<parameter name="deviceName" type="text">
+				<label>Device Name</label>
+				<description>The name allocated to the device by the app. (Must be unique if used)</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="deviceEnabledType">
+		<item-type>Switch</item-type>
+		<label>Switched On</label>
+		<description>Indicator if the device is switched on</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="deviceChildLockEnabledType">
+		<item-type>Switch</item-type>
+		<label>Display Lock</label>
+		<description>Indicator if the devices child lock is enabled (Display Lock)</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="deviceDisplayEnabledType">
+		<item-type>Switch</item-type>
+		<label>Display</label>
+		<description>Indicator if the devices display is enabled</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="deviceFilterLifePercentageType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Filter Life Remaining</label>
+		<description>Indicator of the remaining filter life</description>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="airPurifierModeType">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>The operating mode the air purifier is currently set to</description>
+		<state readOnly="false">
+			<options>
+				<option value="auto">Auto</option>
+				<option value="manual">Manual Fan Control</option>
+				<option value="sleep">Sleeping Auto</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="deviceAFNightLight">
+		<item-type>String</item-type>
+		<label>Night Light</label>
+		<description>The operating mode of the night light functionality</description>
+		<state readOnly="false">
+			<options>
+				<option value="on">On</option>
+				<option value="dim">Dimmed</option>
+				<option value="off">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+
+	<channel-type id="airPurifierFanLevelType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fan Speed</label>
+		<description>Indicator of the current fan speed</description>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="deviceErrorCodeType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Device Error Code</label>
+		<description>Indicator of the current error code of the device</description>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="deviceAirQualityBasicType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Air Quality</label>
+		<description>System representation of air quality</description>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="airQualityPM25">
+		<item-type>Number:Density</item-type>
+		<label>Air Quality PPM2.5</label>
+		<description>Indicator of current air quality</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="deviceAFConfigDisplayForever">
+		<item-type>Switch</item-type>
+		<label>Config: Display Forever</label>
+		<description>Configuration: If the devices display is enabled forever</description>
+	</channel-type>
+
+	<channel-type id="deviceAFConfigAutoPrefType">
+		<item-type>String</item-type>
+		<label>Config: Auto Mode</label>
+		<description>The operating mode when the air purifier is set to auto</description>
+		<state readOnly="true">
+			<options>
+				<option value="default">Auto (Air Quality)</option>
+				<option value="quiet">Quiet (No High Speed)</option>
+				<option value="efficient">Auto (Room Size)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="deviceAFTimerExpiry">
+		<item-type>DateTime</item-type>
+		<label>Auto Off Expiry</label>
+		<description>The time when the auto off timer will be reached</description>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+
+	<channel-type id="deviceAFConfigAutoPrefRoomSizeType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Config: Room size</label>
+		<description>Room size (foot sq) for efficient auto mode</description>
+		<state readOnly="true" pattern="%.0f sq ft"/>
+	</channel-type>
+
+	<channel-type id="deviceAFConfigAutoScheduleCountType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Config: Schedules Count</label>
+		<description>The current number of schedules configured</description>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+
+	<channel-type id="deviceWaterLackingType">
+		<item-type>Switch</item-type>
+		<label>Water Low/Empty</label>
+		<description>Indicator if the devices water is low or empty</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="deviceHighHumidityType">
+		<item-type>Switch</item-type>
+		<label>High Humidity</label>
+		<description>Indicator if the device is measuring high humidity</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="deviceWaterTankLiftedType">
+		<item-type>Switch</item-type>
+		<label>Water Tank Removed</label>
+		<description>Indicator if the device is reporting the water tank as removed</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="deviceAutomaticStopReachTargetType">
+		<item-type>Switch</item-type>
+		<label>Stop @ Set Point</label>
+		<description>Indicator if the device is set to stop when the humidity set point has been reached</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="deviceHumidityType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity Level</label>
+		<description>System representation of humidity</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="deviceConfigTargetHumidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity Set Point</label>
+		<description>Humidity Set Point</description>
+		<state readOnly="false" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="deviceMistLevelType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Mist Level</label>
+		<description>System representation of mist level</description>
+		<state readOnly="false" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="airHumidifierModeType">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>The operating mode the air humidifier is currently set to</description>
+		<state readOnly="false">
+			<options>
+				<option value="auto">Auto</option>
+				<option value="manual">Manual Control</option>
+				<option value="sleep">Sleeping Auto</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="warmModeEnabled">
+		<item-type>Switch</item-type>
+		<label>Warm Mode Enabled</label>
+		<description>Indicator if the device is set to warm mist</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="warmLevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Warm Level</label>
+		<description>Warm Level</description>
+		<state readOnly="false" pattern="%.0f"/>
+	</channel-type>
+
+
+</thing:thing-descriptions>

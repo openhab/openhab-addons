@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.elroconnects.internal.devices;
 
-import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.POWER_STATE;
+import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.*;
 
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsBridgeHandler;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsDeviceHandler;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -70,6 +71,10 @@ public class ElroConnectsDevicePowerSocket extends ElroConnectsDevice {
             logger.debug("Could not decode device status: {}", deviceStatus);
             return;
         }
+
+        int signalStrength = Integer.parseInt(deviceStatus.substring(0, 2), 16);
+        signalStrength = (signalStrength > 4) ? 4 : ((signalStrength < 0) ? 0 : signalStrength);
+        handler.updateState(SIGNAL_STRENGTH, new DecimalType(signalStrength));
 
         String status = deviceStatus.substring(4, 6);
         State state = STAT_ON.equals(status) ? OnOffType.ON

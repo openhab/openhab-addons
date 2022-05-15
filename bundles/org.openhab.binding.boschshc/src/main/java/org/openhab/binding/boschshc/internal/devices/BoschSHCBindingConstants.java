@@ -39,6 +39,8 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
     public static final ThingTypeUID THING_TYPE_CLIMATE_CONTROL = new ThingTypeUID(BINDING_ID, "climate-control");
     public static final ThingTypeUID THING_TYPE_WALL_THERMOSTAT = new ThingTypeUID(BINDING_ID, "wall-thermostat");
+    public static final ThingTypeUID THING_TYPE_CAMERA_360 = new ThingTypeUID(BINDING_ID, "security-camera-360");
+    public static final ThingTypeUID THING_TYPE_CAMERA_EYES = new ThingTypeUID(BINDING_ID, "security-camera-eyes");
 
     // List of all Channel IDs
     // Auto-generated from thing-types.xml via script, don't modify
@@ -59,4 +61,6 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_VALVE_TAPPET_POSITION = "valve-tappet-position";
     public static final String CHANNEL_SETPOINT_TEMPERATURE = "setpoint-temperature";
     public static final String CHANNEL_CHILD_LOCK = "child-lock";
+    public static final String CHANNEL_PRIVACY_MODE = "privacy-mode";
+    public static final String CHANNEL_CAMERA_NOTIFICATION = "camera-notification";
 }
