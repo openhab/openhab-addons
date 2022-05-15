@@ -1,6 +1,6 @@
 # ws980wifi Binding
 
-The ws980wifi binding connects openHAB with ELV WS980WIFI Weather Stations (see de.elv.com).
+The WS980WIFI binding connects openHAB with ELV WS980WIFI Weather Stations (see de.elv.com).
 It discovers WS980WIFI Weather Stations in the local network and polls the actual data on a regular basis.
 The WS980WIFI has to be part of the local network via WiFi integration.
 Only the actual measures are supported, no historical data.
