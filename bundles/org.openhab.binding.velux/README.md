@@ -38,6 +38,10 @@ The binding will automatically discover Velux Bridges within the local network, 
 Once a Velux Bridge has been discovered, you will need to enter the `password` Configuration Parameter (see below) before the binding can communicate with it.
 And once the Velux Bridge is fully configured, the binding will automatically discover all its respective scenes and actuators (like windows and rollershutters), and place them in the Inbox.
 
+Note: When the KLF200 hub is started it provides a temporary private WiFi Access Point for initial configuration.
+And if any device connects to this AP, it disables the normal LAN connection, thus preventing the binding from connecting.
+So make sure this AP is not permanently on (the default setting is that the AP will turn off after some time).
+
 ## Thing Configuration
 
 ### Thing Configuration for "bridge"
