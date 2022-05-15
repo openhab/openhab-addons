@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ws980wifi.internal.discovery.ws980wifi;
+import org.openhab.binding.ws980wifi.internal.discovery.WS980WIFI;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -84,7 +84,7 @@ public class ws980wifiHandler extends BaseThingHandler {
 
     private void updateWeatherData() {
         log.debug("updateWeatherData started by pollingJob");
-        ws980wifi wsObject = new ws980wifi(host, port);
+        WS980WIFI wsObject = new WS980WIFI(host, port);
         log.debug("wsObject for refresh created with {}, {}", wsObject.getHost(), wsObject.getPort());
 
         if (wsObject.refreshValues()) {

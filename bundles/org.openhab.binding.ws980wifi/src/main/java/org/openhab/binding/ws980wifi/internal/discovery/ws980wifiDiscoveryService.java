@@ -65,20 +65,20 @@ public class ws980wifiDiscoveryService extends AbstractDiscoveryService {
 
     private void createScanner() {
         long timestampOfLastScan = getTimestampOfLastScan();
-        ws980wifi[] ws980wifiDevices = new ws980wifi[0]; // Array of devices with length zero, easy to rotate through
+        WS980WIFI[] ws980wifiDevices = new WS980WIFI[0]; // Array of devices with length zero, easy to rotate through
         try {
             @Nullable
             InetAddress sourceAddress = getIpAddress(); // gets the ip address of the local host
             if (sourceAddress != null) {
                 log.debug("Scanner: Using source address {} for sending out broadcast request.", sourceAddress);
-                ws980wifiDevices = ws980wifi.discoverDevices(10000, sourceAddress);
+                ws980wifiDevices = WS980WIFI.discoverDevices(10000, sourceAddress);
             } else {
                 log.debug("Error: no address of the local host! Scan aborted...");
             }
         } catch (Exception e) {
             log.debug("Error while trying to discover ws980wifi devices: {}", e.getMessage());
         }
-        for (ws980wifi dev : ws980wifiDevices) {
+        for (WS980WIFI dev : ws980wifiDevices) {
             log.debug("Scanner: identified ws980wifi device {}", dev.getHost());
             ThingUID thingUID;
             String id = dev.getHost().replaceAll("\\.", "-");

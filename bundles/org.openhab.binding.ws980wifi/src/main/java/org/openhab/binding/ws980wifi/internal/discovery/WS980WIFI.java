@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Joerg Dokupil - Initial contribution
  */
 @NonNullByDefault
-public class ws980wifi {
+public class WS980WIFI {
 
     private Mac wsMac = new Mac("00:00:00:00:00:00");
     private String wsHost = "";
@@ -67,13 +67,13 @@ public class ws980wifi {
     public float uvRaw; // uW/qm uvStaerke
     public float uvIndex; // 1-12
 
-    protected static final Logger log = LoggerFactory.getLogger(ws980wifi.class);
+    protected static final Logger log = LoggerFactory.getLogger(WS980WIFI.class);
 
     public static final int DISCOVERY_DEST_PORT = 46000;
     public static final int DATA_REQUEST_PORT = 45000;
     public static final int DISCOVERY_RECEIVE_BUFFER_SIZE = 128;
 
-    protected ws980wifi(Mac mac, InetAddress ip, String description, Integer port) {
+    protected WS980WIFI(Mac mac, InetAddress ip, String description, Integer port) {
         this.wsMac = mac;
         this.wsHost = ip.getHostName();
         this.wsDescription = description;
@@ -81,7 +81,7 @@ public class ws980wifi {
         this.wsPort = port;
     }
 
-    public ws980wifi(String host, String port) {
+    public WS980WIFI(String host, String port) {
         this.wsHost = host;
         this.wsPort = Integer.parseInt(port);
     }
@@ -158,10 +158,10 @@ public class ws980wifi {
      * Class Method to discover objects of the class
      */
 
-    public static ws980wifi[] discoverDevices(int timeout, InetAddress sourceAddress) {
+    public static WS980WIFI[] discoverDevices(int timeout, InetAddress sourceAddress) {
         byte[] receBytes = new byte[DISCOVERY_RECEIVE_BUFFER_SIZE];
-        List<ws980wifi> devices = new ArrayList<ws980wifi>(50);
-        ws980wifi[] out = new ws980wifi[0];
+        List<WS980WIFI> devices = new ArrayList<WS980WIFI>(50);
+        WS980WIFI[] out = new WS980WIFI[0];
 
         log.debug("Discovering WS980WIFI devices");
 
@@ -216,7 +216,7 @@ public class ws980wifi {
         }
 
         log.debug("Converting list to array: {}", devices.size());
-        out = new ws980wifi[devices.size()];
+        out = new WS980WIFI[devices.size()];
         for (int i = 0; i < out.length; i++) {
             out[i] = devices.get(i);
         }
@@ -224,7 +224,7 @@ public class ws980wifi {
         return out;
     }
 
-    private static void buildDevFromData(byte[] receBytes, List<ws980wifi> devices) {
+    private static void buildDevFromData(byte[] receBytes, List<WS980WIFI> devices) {
         Mac mac;
         InetAddress ip;
         String description;
@@ -239,7 +239,7 @@ public class ws980wifi {
                 description = new String(Arrays.copyOfRange(receBytes, 18, 18 + byteCount), "UTF-8");
                 port = toIntExact(Long.decode("0x" + bytesToHex(Arrays.copyOfRange(receBytes, 15, 17))));
 
-                ws980wifi instance = new ws980wifi(mac, ip, description, port); // create device object
+                WS980WIFI instance = new WS980WIFI(mac, ip, description, port); // create device object
 
                 if (instance != null) {
                     log.debug("Adding device ws980wifi to found devices list");
