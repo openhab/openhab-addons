@@ -164,14 +164,17 @@ public class CloudClient {
     public void connect() {
         try {
             Options options = new Options();
-            Builder okHttpBuilder = new Builder();
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(Level.BASIC);
-            okHttpBuilder.addInterceptor(loggingInterceptor);
-            okHttpBuilder.addNetworkInterceptor(loggingInterceptor);
-            // okHttpBuilder.pingInterval(60, TimeUnit.SECONDS); // Can this hurt?
-            options.callFactory = okHttpBuilder.build();
-            options.webSocketFactory = okHttpBuilder.build();
+            if (logger.isTraceEnabled()) {
+                // When trace level logging is enabled, we activate further logging of HTTP calls
+                // of the Socket.IO library
+                Builder okHttpBuilder = new Builder();
+                HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+                loggingInterceptor.setLevel(Level.BASIC);
+                okHttpBuilder.addInterceptor(loggingInterceptor);
+                okHttpBuilder.addNetworkInterceptor(loggingInterceptor);
+                options.callFactory = okHttpBuilder.build();
+                options.webSocketFactory = okHttpBuilder.build();
+            }
             socket = IO.socket(baseURL, options);
             URL parsed = new URL(baseURL);
             protocol = parsed.getProtocol();
