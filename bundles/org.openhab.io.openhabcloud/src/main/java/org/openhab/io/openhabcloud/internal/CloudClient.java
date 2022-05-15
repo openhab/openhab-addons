@@ -351,14 +351,6 @@ public class CloudClient {
     }
 
     /**
-     * Callback method for socket.io client which is called when an error occurs
-     */
-
-    public void onError(IOException error) {
-        logger.debug("{}", error.getMessage());
-    }
-
-    /**
      * Callback method for socket.io client which is called when a message is received
      */
 
