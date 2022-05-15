@@ -141,10 +141,17 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     public Overlay setOverlay(Overlay overlay) throws IOException, ApiException {
-        logApiTransaction(overlay, true);
-        Overlay newOverlay = getApi().updateZoneOverlay(getHomeId(), getZoneId(), overlay);
-        logApiTransaction(newOverlay, false);
-        return newOverlay;
+        try {
+            logApiTransaction(overlay, true);
+            Overlay newOverlay = getApi().updateZoneOverlay(getHomeId(), getZoneId(), overlay);
+            logApiTransaction(newOverlay, false);
+            return newOverlay;
+        } catch (ApiException e) {
+            if (!logger.isTraceEnabled()) {
+                logger.warn("ApiException sending JSON content:\n{}", convertToJsonString(overlay));
+            }
+            throw e;
+        }
     }
 
     public void removeOverlay() throws IOException, ApiException {
@@ -444,16 +451,23 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
      * @param isCommand marks whether the transaction is a command to, or a response from, the server.
      */
     private void logApiTransaction(Object object, boolean isCommand) {
-        if (logger.isTraceEnabled()) {
-            Gson gson = this.gson;
-            if (gson == null) {
-                gson = this.gson = GsonBuilderFactory.defaultGsonBuilder().setPrettyPrinting().create();
+        if (logger.isDebugEnabled() || logger.isTraceEnabled()) {
+            String logType = isCommand ? "command" : "response";
+            if (logger.isDebugEnabled()) {
+                logger.debug("Api {}: homeId:{}, zoneId:{}, objectId:{}", logType, getHomeId(), getZoneId(),
+                        object.getClass().getSimpleName());
+            } else {
+                logger.trace("Api {}: homeId:{}, zoneId:{}, objectId:{}, content:\n{}", logType, getHomeId(),
+                        getZoneId(), object.getClass().getSimpleName(), convertToJsonString(object));
             }
-            logger.trace("Api {}: homeId:{}, zoneId:{}, objectId:{}, content:\n{}", isCommand ? "command" : "response",
-                    getHomeId(), getZoneId(), object.getClass().getSimpleName(), gson.toJson(object));
-        } else if (logger.isDebugEnabled()) {
-            logger.debug("Api {}: homeId:{}, zoneId:{}, objectId:{}", isCommand ? "command" : "response", getHomeId(),
-                    getZoneId(), object.getClass().getSimpleName());
         }
+    }
+
+    private String convertToJsonString(Object object) {
+        Gson gson = this.gson;
+        if (gson == null) {
+            gson = this.gson = GsonBuilderFactory.defaultGsonBuilder().setPrettyPrinting().create();
+        }
+        return gson.toJson(object);
     }
 }
