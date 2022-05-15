@@ -150,6 +150,10 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
         }
     }
 
+    public @Nullable ShellyWebSocketRpc getRpc() {
+        return rpc;
+    }
+
     /**
      * Simple initialization - called by discovery handler
      *

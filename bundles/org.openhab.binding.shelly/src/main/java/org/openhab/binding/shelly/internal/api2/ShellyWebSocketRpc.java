@@ -44,11 +44,10 @@ public class ShellyWebSocketRpc implements ShellyWebSocketInterface {
     private final Logger logger = LoggerFactory.getLogger(ShellyWebSocketRpc.class);
     private final Gson gson = new Gson();
     private final Random random = new Random();
-    private final int clientId;
 
     private @Nullable ShellyThingInterface thing;
     private final ShellyThingConfiguration config;
-    private final ShellyWebSocket rpcClient;
+    private final ShellyWebSocket rpcSocket;
     private final ShellyWebSocketInterface wsCaller;
     private SocketStatus actualStatus = SocketStatus.UNINITIALIZED_STATE;
     private @Nullable Future<?> webSocketPollingJob;
@@ -71,28 +70,26 @@ public class ShellyWebSocketRpc implements ShellyWebSocketInterface {
         this.thing = thingInterface;
         this.config = thingInterface.getThingConfig();
         this.wsCaller = wsCaller;
-        this.clientId = random.nextInt();
-        this.rpcClient = new ShellyWebSocket(config.deviceIp);
-        rpcClient.addMessageHandler(this);
+        this.rpcSocket = new ShellyWebSocket(config.deviceIp);
+        rpcSocket.addMessageHandler(this);
     }
 
     public ShellyWebSocketRpc(ShellyThingConfiguration config, ShellyWebSocketInterface wsCaller) {
         this.config = config;
-        this.clientId = random.nextInt();
         this.wsCaller = wsCaller;
-        this.rpcClient = new ShellyWebSocket(config.deviceIp);
-        rpcClient.addMessageHandler(this);
+        this.rpcSocket = new ShellyWebSocket(config.deviceIp);
+        rpcSocket.addMessageHandler(this);
     }
 
     public void initialize() throws ShellyApiException {
-        if (!rpcClient.isConnected()) {
-            rpcClient.connect();
+        if (!rpcSocket.isConnected()) {
+            rpcSocket.connect();
         }
     }
 
     public void apiRequest(String src, String method, String data) throws ShellyApiException {
         Shelly2RpcBaseMessage request = builRequest(src, method, data);
-        rpcClient.sendMessage(gson.toJson(request)); // submit, result wull be async
+        rpcSocket.sendMessage(gson.toJson(request)); // submit, result wull be async
     }
 
     @Override
@@ -153,7 +150,7 @@ public class ShellyWebSocketRpc implements ShellyWebSocketInterface {
                 logger.debug("Reconnecting YIORemoteHandler");
                 try {
                     disposeWebsocketPollingJob();
-                    rpcClient.closeWebsocketSession();
+                    rpcSocket.closeWebsocketSession();
                     if (thing != null) {
                         thing.setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "statusupdate.failed");
                     }
@@ -161,7 +158,7 @@ public class ShellyWebSocketRpc implements ShellyWebSocketInterface {
                 } catch (Exception e) {
                     logger.debug("Connection error {}", e.getMessage());
                 }
-                rpcClient.connect();
+                rpcSocket.connect();
                 break;
             case AUTHENTICATION_COMPLETE:
                 if (webSocketReconnectionPollingJob != null) {

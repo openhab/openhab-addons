@@ -606,6 +606,7 @@ public class Shelly1ApiJsonDTO {
         @SerializedName("max_power")
         public Double maxPower;
         public Boolean calibrated;
+
         public Double voltage; // AC voltage for Shelly 2.5
         @SerializedName("supply_voltage")
         public Long supplyVoltage; // Shelly 1PM/1L: 0=110V, 1=220V
@@ -702,14 +703,8 @@ public class Shelly1ApiJsonDTO {
         public String name; // FW 1.8: Symbolic Device name is configurable
 
         @SerializedName("wifi_sta")
-<<<<<<< HEAD
-        public ShellySettingsWiFiNetwork wifiSta = new ShellySettingsWiFiNetwork();=======
         public ShellySettingsWiFiNetwork wifiSta = new ShellySettingsWiFiNetwork(); // WiFi client configuration. See
                                                                                     // /settings/sta for details
-        >>>>>>>
-
-        fecfa8cb84 (Gen2 support: relay, roller/cover)
-
         public ShellyStatusCloud cloud = new ShellyStatusCloud();
         public ShellyStatusMqtt mqtt = new ShellyStatusMqtt();
 
@@ -723,22 +718,14 @@ public class Shelly1ApiJsonDTO {
         public Integer cfgChangedCount; // FW 1.8
         @SerializedName("actions_stats")
         public ShellyActionsStats astats;
-        public Double voltage; // Shelly 2.5
-        <<<<<<<HEAD
 
-        public Integer input; // RGBW2 has no JSON array
         public ArrayList<ShellySettingsRelay> relays;
-        public ArrayList<ShellyRollerStatus> rollers;
-        public ArrayList<ShellyShortLightStatus> dimmers;
-        public ArrayList<ShellyInputState> inputs;=======
+        public Double voltage; // Shelly 2.5
         public Integer input; // RGBW2 has no JSON array
         public ArrayList<ShellyInputState> inputs;
         public ArrayList<ShellyShortLightStatus> dimmers;
         public ArrayList<ShellyRollerStatus> rollers;
-        public ArrayList<ShellySettingsLight> lights;>>>>>>>
-
-        fecfa8cb84 (Gen2 support: relay, roller/cover)
-
+        public ArrayList<ShellySettingsLight> lights;
         public ArrayList<ShellySettingsMeter> meters;
         public ArrayList<ShellySettingsEMeter> emeters;
         @SerializedName("ext_temperature")
@@ -747,14 +734,7 @@ public class Shelly1ApiJsonDTO {
         public ShellyStatusSensor.ShellyExtHumidity extHumidity; // Shelly 1/1PM: sensor values
 
         // Internal device temp
-        <<<<<<<HEAD
         public ShellySensorTmp tmp = new ShellySensorTmp(); // Shelly 1PM
-        =======
-        public ShellySensorTmp tmp; // Shelly 1PM
-        >>>>>>>
-
-        fecfa8cb84 (Gen2 support: relay, roller/cover)
-
         public Double temperature; // Shelly 2.5
         public Boolean overtemperature;
 
@@ -766,12 +746,7 @@ public class Shelly1ApiJsonDTO {
         public Boolean calibrated;
         public ArrayList<ShellyThermnostat> thermostats;
 
-        public ShellySettingsUpdate update = new ShellySettingsUpdate();<<<<<<<HEAD
-
-        =======>>>>>>>
-
-        fecfa8cb84 (Gen2 support: relay, roller/cover)
-
+        public ShellySettingsUpdate update = new ShellySettingsUpdate();
         @SerializedName("ram_total")
         public Long ramTotal;
         @SerializedName("ram_free")
@@ -941,6 +916,7 @@ public class Shelly1ApiJsonDTO {
 
     public static class ShellyStatusSensor {
         // https://shelly-api-docs.shelly.cloud/#h-amp-t-settings
+
         public static class ShellySensorHum {
             public Double value; // relative humidity in %
         }

@@ -105,6 +105,7 @@ public class ShellyBaseHandler extends BaseThingHandler
 
     public String thingName = "";
     public String thingType = "";
+    public String serviceName = "";
 
     protected final ShellyApiInterface api;
     private final HttpClient httpClient;
@@ -178,7 +179,7 @@ public class ShellyBaseHandler extends BaseThingHandler
     @Override
     public boolean checkRepresentation(String key) {
         return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(config.deviceIp)
-                || key.equalsIgnoreCase(config.serviceName) || key.equalsIgnoreCase(thing.getUID().getAsString());
+                || key.equalsIgnoreCase(serviceName) || key.equalsIgnoreCase(thing.getUID().getAsString());
     }
 
     @Override

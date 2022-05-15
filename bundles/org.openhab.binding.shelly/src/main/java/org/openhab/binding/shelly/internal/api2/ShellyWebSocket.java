@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.SHELLY_API_TIMEOUT_MS;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.HttpHeaders;
 
@@ -38,6 +36,8 @@ import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
+import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
+import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,9 +61,18 @@ public class ShellyWebSocket {
     private @Nullable Session session;
     private @Nullable ShellyWebSocketInterface websocketHandler;
     private final WebSocketClient client = new WebSocketClient();
+    private @Nullable ShellyThingTable thingTable;
+
+    public ShellyWebSocket() {
+        int i = 1;
+    }
 
     public ShellyWebSocket(String deviceIp) {
         this.deviceIp = deviceIp;
+    }
+
+    public ShellyWebSocket(ShellyThingTable thingTable) {
+        this.thingTable = thingTable;
     }
 
     public void addMessageHandler(ShellyWebSocketInterface interfacehandler) {
@@ -82,7 +91,7 @@ public class ShellyWebSocket {
             request.setHeader("Sec-WebSocket-Key", "w4X+F1orCcE5Ja3x1hcuhQ==");
             request.setHeader("Sec-WebSocket-Version", "13");
             request.setHeader("Sec-WebSocket-Extensions", "x-webkit-deflate-frame");
-            request.setTimeout(SHELLY_API_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            // request.setTimeout(SHELLY_API_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
             client.start();
             client.connect(this, uri, request);
@@ -94,6 +103,24 @@ public class ShellyWebSocket {
     @OnWebSocketConnect
     public void onConnect(Session session) {
         this.session = session;
+        if (deviceIp.isEmpty()) {
+            // This is the inbound event web socket
+            deviceIp = session.getRemoteAddress().getAddress().getHostAddress();
+            logger.debug("Inbound WebSocket created iwth {}", deviceIp);
+        }
+        if (websocketHandler == null) {
+            if (thingTable != null) {
+                try {
+                    ShellyThingInterface thing = thingTable.getThing(deviceIp);
+                    Shelly2RpcApi api = (Shelly2RpcApi) thing.getApi();
+                    if (api != null) {
+                        websocketHandler = api.getRpc();
+                    }
+                } catch (IllegalArgumentException e) {
+                    logger.debug("Event for unknown device ip ({})", deviceIp);
+                }
+            }
+        }
         if (websocketHandler != null) {
             websocketHandler.onConnect(true);
         }
