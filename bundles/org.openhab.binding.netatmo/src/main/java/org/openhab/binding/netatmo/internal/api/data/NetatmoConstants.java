@@ -119,6 +119,7 @@ public class NetatmoConstants {
     public static final String PATH_OAUTH = "oauth2/token";
     public static final String PATH_API = "api";
     public static final String PATH_COMMAND = "command";
+    public static final String PATH_STATE = "setstate";
     public static final String SUB_PATH_PERSON_AWAY = "setpersonsaway";
     public static final String SUB_PATH_PERSON_HOME = "setpersonshome";
     public static final String SUB_PATH_HOMES_DATA = "homesdata";
@@ -134,7 +135,6 @@ public class NetatmoConstants {
     public static final String SUB_PATH_GETEVENTS = "getevents";
     public static final String SUB_PATH_PING = "ping";
     public static final String SUB_PATH_CHANGESTATUS = "changestatus";
-    public static final String SUB_PATH_FLOODLIGHTSET = "floodlight_set_config";
     public static final String PARAM_DEVICEID = "device_id";
     public static final String PARAM_MODULEID = "module_id";
     public static final String PARAM_HOMEID = "home_id";
