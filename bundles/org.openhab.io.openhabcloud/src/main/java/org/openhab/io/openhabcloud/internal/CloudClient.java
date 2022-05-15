@@ -177,8 +177,10 @@ public class CloudClient {
             protocol = parsed.getProtocol();
         } catch (URISyntaxException e) {
             logger.error("Error creating Socket.IO: {}", e.getMessage());
+            return;
         } catch (MalformedURLException e) {
             logger.error("Error parsing baseURL to get protocol, assuming https. Error: {}", e.getMessage());
+            return;
         }
         //
         // socket manager events
