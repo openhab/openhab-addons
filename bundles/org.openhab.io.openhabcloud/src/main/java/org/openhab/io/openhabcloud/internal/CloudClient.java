@@ -236,7 +236,7 @@ public class CloudClient {
                             type = "<unknown type>";
                         }
                     }
-                    logger.debug("Socket.IO Packet: {} ({})", type, packetTypeIndex);
+                    logger.trace("Socket.IO Packet: {} ({})", type, packetTypeIndex);
                 })//
         ;
 
@@ -265,19 +265,25 @@ public class CloudClient {
                         args -> logger.debug("Socket.IO re-connect attempts failed. Stopping reconnection."))//
                 .on(Socket.EVENT_DISCONNECT, args -> {
                     if (args.length > 0) {
-                        logger.debug("Socket.IO disconnected: {}", args[0]);
+                        logger.info("Socket.IO disconnected: {}", args[0]);
                     } else {
-                        logger.debug("Socket.IO disconnected");
+                        logger.info("Socket.IO disconnected");
                     }
                     isConnected = false;
                     onDisconnect();
                 })//
                 .on(Socket.EVENT_ERROR, args -> {
                     if (CloudClient.this.socket.connected()) {
-                        if (logger.isDebugEnabled() && args.length > 0) {
-                            logger.error("Error during communication: {}", args[0]);
+                        if (args.length > 0) {
+                            if (args[0] instanceof Exception) {
+                                Exception e = (Exception) args[0];
+                                logger.warn("Error during communication: {} {}", e.getClass().getSimpleName(),
+                                        e.getMessage());
+                            } else {
+                                logger.warn("Error during communication: {}", args[0]);
+                            }
                         } else {
-                            logger.error("Error during communication");
+                            logger.warn("Error during communication");
                         }
                     } else {
                         // We are not connected currently, manual reconnection is needed to keep trying to
@@ -295,30 +301,31 @@ public class CloudClient {
                         // errors that are retried by the library automatically!
                         long delay = reconnectBackoff.duration();
                         // Try reconnecting on connection errors
-                        if (logger.isDebugEnabled() && args.length > 0) {
+                        if (args.length > 0) {
                             if (args[0] instanceof Exception) {
                                 Exception e = (Exception) args[0];
-                                logger.error(
+                                logger.warn(
                                         "Error connecting to the openHAB Cloud instance: {} {}. Reconnecting after {} ms.",
                                         e.getClass().getSimpleName(), e.getMessage(), delay);
                             } else {
-                                logger.error(
+                                logger.warn(
                                         "Error connecting to the openHAB Cloud instance: {}. Reconnecting after {} ms.",
                                         args[0], delay);
                             }
                         } else {
-                            logger.error("Error connecting to the openHAB Cloud instance. Reconnecting.");
+                            logger.warn("Error connecting to the openHAB Cloud instance. Reconnecting.");
                         }
                         socket.close();
                         sleepSocketIO(delay);
                         socket.connect();
                     }
                 })//
+
+                .on(Socket.EVENT_PING, args -> logger.debug("Socket.IO ping"))//
+                .on(Socket.EVENT_PONG, args -> logger.debug("Socket.IO pong: {} ms", args[0]))//
                 .on("request", args -> onEvent("request", (JSONObject) args[0]))//
                 .on("cancel", args -> onEvent("cancel", (JSONObject) args[0]))//
                 .on("command", args -> onEvent("command", (JSONObject) args[0]))//
-                .on(Socket.EVENT_PING, args -> logger.debug("Socket.IO ping"))//
-                .on(Socket.EVENT_PONG, args -> logger.debug("Socket.IO pong: {} ms", args[0]))//
         ;
         socket.connect();
     }
@@ -332,13 +339,6 @@ public class CloudClient {
                 this.localBaseUrl);
         reconnectBackoff.reset();
         isConnected = true;
-    }
-
-    private static String sensored(String secret) {
-        if (secret.length() < 4) {
-            return "*******";
-        }
-        return secret.substring(0, 2) + "..." + secret.substring(secret.length() - 2, secret.length());
     }
 
     /**
@@ -693,5 +693,12 @@ public class CloudClient {
 
             }
         });
+    }
+
+    private static String sensored(String secret) {
+        if (secret.length() < 4) {
+            return "*******";
+        }
+        return secret.substring(0, 2) + "..." + secret.substring(secret.length() - 2, secret.length());
     }
 }

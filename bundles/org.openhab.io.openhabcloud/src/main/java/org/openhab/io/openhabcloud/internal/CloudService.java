@@ -251,13 +251,6 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         NotificationAction.cloudService = this;
     }
 
-    private static String sensored(String secret) {
-        if (secret.length() < 4) {
-            return "*******";
-        }
-        return secret.substring(0, 2) + "..." + secret.substring(secret.length() - 2, secret.length());
-    }
-
     @Override
     public String getActionClassName() {
         return NotificationAction.class.getCanonicalName();
@@ -326,6 +319,13 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         }
 
         return newSecretString;
+    }
+
+    private static String sensored(String secret) {
+        if (secret.length() < 4) {
+            return "*******";
+        }
+        return secret.substring(0, 2) + "..." + secret.substring(secret.length() - 2, secret.length());
     }
 
     @Override
