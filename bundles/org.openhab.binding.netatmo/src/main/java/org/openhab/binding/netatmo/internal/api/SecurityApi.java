@@ -103,7 +103,6 @@ public class SecurityApi extends RestManager {
 
     public void changeFloodLightMode(String homeId, String cameraId, FloodLightMode mode) throws NetatmoException {
         UriBuilder uriBuilder = getAppUriBuilder(PATH_STATE);
-        uriBuilder.queryParam("config", "%7B%22mode%22:%22" + mode.toString() + "%22%7D");
         String payload = String.format(
                 "{\"home\": {\"id\":\"%s\",\"modules\": [ {\"id\":\"%s\",\"floodlight\":\"%s\"} ]}}", homeId, cameraId,
                 mode.name().toLowerCase());
