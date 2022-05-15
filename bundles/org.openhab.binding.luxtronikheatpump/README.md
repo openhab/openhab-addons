@@ -25,7 +25,7 @@ This binding only supports one thing type "Luxtronik Heatpump" (heatpump).
 
 ## Discovery
 
-This binding will try to detect heat pumps that a reachable in the same IPv4 subnet.
+This binding will try to detect heat pumps that are reachable in the same IPv4 subnet.
 
 ## Thing Configuration
 

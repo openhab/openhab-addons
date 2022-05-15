@@ -158,7 +158,9 @@ public class LuxtronikHeatpumpDiscovery extends AbstractDiscoveryService {
                 if (scanning && baseAdr != null) {
                     String ipAdd = getNextIPAddress(baseAdr);
 
-                    boolean detection = (discoverFromIp(ipAdd, 8889) || discoverFromIp(ipAdd, 8888));
+                    if (!discoverFromIp(ipAdd, 8889)) {
+                        discoverFromIp(ipAdd, 8888);
+                    }
                 }
             });
         }
@@ -183,7 +185,7 @@ public class LuxtronikHeatpumpDiscovery extends AbstractDiscoveryService {
 
             return true;
         } catch (IOException e) {
-            // Ignore, this is the expected behavior.
+            // no heatpump found on given ip / port
         }
 
         return false;

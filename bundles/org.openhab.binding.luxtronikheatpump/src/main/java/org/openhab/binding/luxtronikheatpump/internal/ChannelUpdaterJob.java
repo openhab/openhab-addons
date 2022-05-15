@@ -248,7 +248,6 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
     }
 
     private void updateProperties(Integer[] heatpumpValues) {
-
         Map<String, Object> properties = getProperties(heatpumpValues);
 
         for (Map.Entry<String, Object> property : properties.entrySet()) {
@@ -264,10 +263,6 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         String translation = translationProvider
                 .getText("channel-type.luxtronikheatpump." + name + ".state.option." + option);
         return translation == null ? "" : translation;
-    }
-
-    private void setProperty(String name, String value) {
-        handler.updateProperty(name, value);
     }
 
     private String formatHours(@Nullable Integer value) {
