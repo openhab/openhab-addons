@@ -228,7 +228,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 default:
             }
 
-            if (mainPosition.isValid()) {
+            if (!mainPosition.equals(VeluxProductPosition.UNKNOWN)) {
                 LOGGER.debug("handleCommand(): sending command '{}' for channel id '{}'.", command, channelId);
                 new VeluxBridgeRunProductCommand().sendCommand(thisBridgeHandler.thisBridge,
                         veluxActuator.getProductBridgeIndex().toInt(), mainPosition,
