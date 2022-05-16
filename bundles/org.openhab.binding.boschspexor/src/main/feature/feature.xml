@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.boschspexor-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
+
+	<feature name="openhab-binding-boschspexor" description="BoschSpexor Binding" version="${project.version}">
+		<feature>openhab-runtime-base</feature>
+		<bundle dependency="true">mvn:com.nimbusds/oauth2-oidc-sdk/9.20</bundle>
+		<bundle dependency="true">mvn:com.nimbusds/content-type/2.1</bundle>
+		<bundle dependency="true">mvn:com.nimbusds/nimbus-jose-jwt/9.14</bundle>
+		<bundle dependency="true">mvn:com.nimbusds/lang-tag/1.5</bundle>
+		<bundle dependency="true">mvn:net.minidev/json-smart/2.4.7</bundle>
+		<bundle dependency="true">mvn:net.minidev/accessors-smart/2.4.7</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.boschspexor/${project.version}</bundle>
+	</feature>
+</features>
