@@ -152,22 +152,23 @@ This is the notation used in QR Codes that can be scanned by mobile phones.
 
 The `wirelessClient` information that is retrieved is available as these channels:
 
-| Channel ID | Item Type | Description                                                          | Permissions |
-|------------|-----------|----------------------------------------------------------------------|-------------|
-| online     | Switch    | Online status of the client                                          | Read        |
-| site       | String    | Site name (from the controller web UI) the client is associated with | Read        |
-| macAddress | String    | MAC address of the client                                            | Read        |
-| ipAddress  | String    | IP address of the client                                             | Read        |
-| guest      | Switch    | On if this is a guest client                                         | Read        |
-| ap         | String    | Access point (AP) the client is connected to                         | Read        |
-| essid      | String    | Network name (ESSID) the client is connected to                      | Read        |
-| rssi       | Number    | Received signal strength indicator (RSSI) of the client              | Read        |
-| uptime     | Number    | Uptime of the client (in seconds)                                    | Read        |
-| lastSeen   | DateTime  | Date and Time the client was last seen                               | Read        |
-| experience | Number    | Overall health indication of the client (in percentage)              | Read        |
-| blocked    | Switch    | Blocked status of the client                                         | Read, Write |
-| cmd        | String    | Command channel: `reconnect` to force the client to be reconnect     | Write       |
-| reconnect  | Switch    | Force the client to be reconnect                                     | Write       |
+| Channel ID | Item Type            | Description                                                          | Permissions |
+|------------|----------------------|----------------------------------------------------------------------|-------------|
+| online     | Switch               | Online status of the client                                          | Read        |
+| site       | String               | Site name (from the controller web UI) the client is associated with | Read        |
+| macAddress | String               | MAC address of the client                                            | Read        |
+| ipAddress  | String               | IP address of the client                                             | Read        |
+| guest      | Switch               | On if this is a guest client                                         | Read        |
+| ap         | String               | Access point (AP) the client is connected to                         | Read        |
+| essid      | String               | Network name (ESSID) the client is connected to                      | Read        |
+| rssi       | Number               | Received signal strength indicator (RSSI) of the client              | Read        |
+| uptime     | Number               | Uptime of the client (in seconds)                                    | Read        |
+| lastSeen   | DateTime             | Date and Time the client was last seen                               | Read        |
+| experience | Number:Dimensionless | Overall health indication of the client (in percentage)              | Read        |
+| blocked    | Switch               | Blocked status of the client                                         | Read, Write |
+| cmd        | String               | Command channel: `reconnect` to force the client to be reconnect     | Write       |
+| reconnect  | Switch               | Force the client to be reconnect                                     | Write       |
+
 
 _Note: All channels with the Write permission require administrator credentials as defined in the controller._
 
@@ -175,16 +176,16 @@ _Note: All channels with the Write permission require administrator credentials 
 
 The `wiredClient` information that is retrieved is available as these channels:
 
-| Channel ID | Item Type | Description                                                          | Permissions |
-|------------|-----------|----------------------------------------------------------------------|-------------|
-| online     | Switch    | Online status of the client                                          | Read        |
-| site       | String    | Site name (from the controller web UI) the client is associated with | Read        |
-| macAddress | String    | MAC address of the client                                            | Read        |
-| ipAddress  | String    | IP address of the client                                             | Read        |
-| uptime     | Number    | Uptime of the client (in seconds)                                    | Read        |
-| lastSeen   | DateTime  | Date and Time the client was last seen                               | Read        |
-| experience | Number    | Experience of the client                                             | Read        |
-| blocked    | Switch    | Blocked status of the client                                         | Read, Write |
+| Channel ID | Item Type            | Description                                                          | Permissions |
+|------------|----------------------|----------------------------------------------------------------------|-------------|
+| online     | Switch               | Online status of the client                                          | Read        |
+| site       | String               | Site name (from the controller web UI) the client is associated with | Read        |
+| macAddress | String               | MAC address of the client                                            | Read        |
+| ipAddress  | String               | IP address of the client                                             | Read        |
+| uptime     | Number               | Uptime of the client (in seconds)                                    | Read        |
+| lastSeen   | DateTime             | Date and Time the client was last seen                               | Read        |
+| experience | Number:Dimensionless | Experience of the client                                             | Read        |
+| blocked    | Switch               | Blocked status of the client                                         | Read, Write |
 
 ##### `blocked`
 

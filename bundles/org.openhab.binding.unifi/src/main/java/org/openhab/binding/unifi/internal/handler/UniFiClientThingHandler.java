@@ -48,7 +48,9 @@ import org.openhab.binding.unifi.internal.api.dto.UniFiWirelessClient;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -129,7 +131,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
                 break;
             case CHANNEL_EXPERIENCE:
                 // mgb: uptime + experience should default to 0
-                state = DecimalType.ZERO;
+                state = new QuantityType<>(0, Units.PERCENT);
                 break;
             case CHANNEL_LAST_SEEN:
                 // mgb: lastSeen should keep the last state no matter what
@@ -223,7 +225,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             // :experience
             case CHANNEL_EXPERIENCE:
                 if (client.getExperience() != null) {
-                    state = new DecimalType(client.getExperience());
+                    state = new QuantityType<>(client.getExperience(), Units.PERCENT);
                 }
                 break;
 

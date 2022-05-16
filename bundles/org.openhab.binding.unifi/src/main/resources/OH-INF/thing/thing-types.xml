@@ -296,10 +296,10 @@
 	</channel-type>
 
 	<channel-type id="experience">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Experience</label>
 		<description>The wired/wireless experience of the client</description>
-		<state readOnly="true"></state>
+		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="reconnect" advanced="true">
