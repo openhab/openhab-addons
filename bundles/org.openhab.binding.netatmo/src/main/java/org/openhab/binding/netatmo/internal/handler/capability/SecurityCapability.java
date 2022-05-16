@@ -158,14 +158,10 @@ class SecurityCapability extends RestCapability<SecurityApi> {
         });
     }
 
-    public void changeFloodlightMode(@Nullable String localURL, FloodLightMode mode) {
-        if (localURL == null) {
-            logger.info("Changing floodlight mode can only be done on local camera.");
-            return;
-        }
+    public void changeFloodlightMode(String cameraId, FloodLightMode mode) {
         getApi().ifPresent(api -> {
             try {
-                api.changeFloodLightMode(localURL, mode);
+                api.changeFloodLightMode(handler.getId(), cameraId, mode);
                 handler.expireData();
             } catch (NetatmoException e) {
                 logger.warn("Error changing Presence floodlight mode '{}' : {}", mode, e.getMessage());
