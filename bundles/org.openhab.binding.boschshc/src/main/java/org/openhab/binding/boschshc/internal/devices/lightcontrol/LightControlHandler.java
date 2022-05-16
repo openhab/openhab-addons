@@ -20,7 +20,7 @@ import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCDeviceHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.powermeter.PowerMeterService;
 import org.openhab.binding.boschshc.internal.services.powermeter.dto.PowerMeterServiceState;
@@ -41,7 +41,7 @@ import org.openhab.core.types.State;
  * @author Stefan Kästle - Initial contribution
  */
 @NonNullByDefault
-public class LightControlHandler extends BoschSHCHandler {
+public class LightControlHandler extends BoschSHCDeviceHandler {
 
     private final PowerSwitchService powerSwitchService;
 
