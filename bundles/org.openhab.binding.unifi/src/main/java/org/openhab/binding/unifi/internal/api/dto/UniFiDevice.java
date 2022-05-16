@@ -10,8 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.unifi.internal.api.model;
+package org.openhab.binding.unifi.internal.api.dto;
 
+import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.util.UniFiTidyLowerCaseStringDeserializer;
 
 import com.google.gson.annotations.JsonAdapter;
@@ -22,10 +23,11 @@ import com.google.gson.annotations.SerializedName;
  * (better known as an Access Point).
  *
  * @author Matthew Bowman - Initial contribution
+ * @author Hilbrand Bouwkamp - Added PoEPort support
  */
-public class UniFiDevice {
+public class UniFiDevice implements HasId {
 
-    protected final transient UniFiController controller;
+    protected final transient UniFiControllerCache cache;
 
     @SerializedName("_id")
     private String id;
@@ -39,10 +41,13 @@ public class UniFiDevice {
 
     private String siteId;
 
-    public UniFiDevice(UniFiController controller) {
-        this.controller = controller;
+    private UniFiPortTable[] portTable;
+
+    public UniFiDevice(final UniFiControllerCache cache) {
+        this.cache = cache;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -60,7 +65,11 @@ public class UniFiDevice {
     }
 
     public UniFiSite getSite() {
-        return controller.getSite(siteId);
+        return cache.getSite(siteId);
+    }
+
+    public UniFiPortTable[] getPortTable() {
+        return portTable;
     }
 
     @Override
