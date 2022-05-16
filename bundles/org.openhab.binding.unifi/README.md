@@ -140,7 +140,7 @@ The `wlan` information that is retrieved is available as these channels:
 | qrcodeEncoding  | String    | MECARD like encoding to generate a QR Code for easy access to the Wi-Fi network | Read        |
 
 ::: warning Attention
-If you link an item to the `xPrassphrase` or `qrcodeEncoding` channel your Wi-Fi password will be  exposed in openHAB.
+If you link an item to the `prassphrase` or `qrcodeEncoding` channel your Wi-Fi password will be  exposed in openHAB.
 The password will also be visible in openHAB event log.
 :::
 
@@ -166,8 +166,8 @@ The `wirelessClient` information that is retrieved is available as these channel
 | lastSeen   | DateTime             | Date and Time the client was last seen                               | Read        |
 | experience | Number:Dimensionless | Overall health indication of the client (in percentage)              | Read        |
 | blocked    | Switch               | Blocked status of the client                                         | Read, Write |
-| cmd        | String               | Command channel: `reconnect` to force the client to be reconnect     | Write       |
-| reconnect  | Switch               | Force the client to be reconnect                                     | Write       |
+| cmd        | String               | Command channel: `reconnect` to force the client to reconnect        | Write       |
+| reconnect  | Switch               | Force the client to reconnect                                        | Write       |
 
 
 _Note: All channels with the Write permission require administrator credentials as defined in the controller._
@@ -184,7 +184,7 @@ The `wiredClient` information that is retrieved is available as these channels:
 | ipAddress  | String               | IP address of the client                                             | Read        |
 | uptime     | Number               | Uptime of the client (in seconds)                                    | Read        |
 | lastSeen   | DateTime             | Date and Time the client was last seen                               | Read        |
-| experience | Number:Dimensionless | Experience of the client                                             | Read        |
+| experience | Number:Dimensionless | Overall health indication of the client (in percentage)              | Read        |
 | blocked    | Switch               | Blocked status of the client                                         | Read, Write |
 
 ##### `blocked`
