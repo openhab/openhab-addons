@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.unifi.internal.api.model;
+package org.openhab.binding.unifi.internal.api.dto;
+
+import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -19,12 +21,12 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Matthew Bowman - Initial contribution
  */
-public class UniFiSite {
+public class UniFiSite implements HasId {
 
-    private final transient UniFiController controller;
+    private final transient UniFiControllerCache cache;
 
-    public UniFiSite(UniFiController controller) {
-        this.controller = controller;
+    public UniFiSite(final UniFiControllerCache cache) {
+        this.cache = cache;
     }
 
     @SerializedName("_id")
@@ -34,6 +36,7 @@ public class UniFiSite {
 
     private String desc;
 
+    @Override
     public String getId() {
         return id;
     }
@@ -46,12 +49,20 @@ public class UniFiSite {
         return desc;
     }
 
-    public boolean matchesName(String siteName) {
+    public UniFiControllerCache getCache() {
+        return cache;
+    }
+
+    public boolean isSite(final UniFiSite site) {
+        return site != null && id.equals(site.getId());
+    }
+
+    public boolean matchesName(final String siteName) {
         return siteName.equalsIgnoreCase(desc) || siteName.equalsIgnoreCase(name) || siteName.equalsIgnoreCase(id);
     }
 
     @Override
     public String toString() {
-        return String.format("UniFiSite{name: '%s', desc: '%s'}", name, desc);
+        return String.format("UniFiSite{id: '%s', name: '%s', desc: '%s'}", id, name, desc);
     }
 }

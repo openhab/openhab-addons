@@ -10,8 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.unifi.internal.api.model;
+package org.openhab.binding.unifi.internal.api;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -28,32 +31,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentProvider;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpURI;
 import org.eclipse.jetty.http.MimeTypes;
-import org.openhab.binding.unifi.internal.api.UniFiCommunicationException;
-import org.openhab.binding.unifi.internal.api.UniFiException;
-import org.openhab.binding.unifi.internal.api.UniFiExpiredSessionException;
-import org.openhab.binding.unifi.internal.api.UniFiInvalidCredentialsException;
-import org.openhab.binding.unifi.internal.api.UniFiInvalidHostException;
-import org.openhab.binding.unifi.internal.api.UniFiNotAuthorizedException;
-import org.openhab.binding.unifi.internal.api.UniFiSSLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link UniFiControllerRequest} encapsulates a request sent by the {@link UniFiController}.
@@ -63,9 +57,9 @@ import com.google.gson.JsonSyntaxException;
  * @param <T> The response type expected as a result of the request's execution
  */
 @NonNullByDefault
-public class UniFiControllerRequest<T> {
+class UniFiControllerRequest<T> {
 
-    private static final String CONTENT_TYPE_APPLICATION_JSON = MimeTypes.Type.APPLICATION_JSON.asString();
+    private static final String CONTENT_TYPE_APPLICATION_JSON_UTF_8 = MimeTypes.Type.APPLICATION_JSON_UTF_8.asString();
 
     private static final long TIMEOUT_SECONDS = 5;
 
@@ -81,32 +75,35 @@ public class UniFiControllerRequest<T> {
 
     private final int port;
 
-    private String path = "/";
-
     private final boolean unifios;
+
+    private final HttpMethod method;
+
+    private String path = "/";
 
     private String csrfToken;
 
-    private Map<String, String> queryParameters = new HashMap<>();
+    private final Map<String, String> queryParameters = new HashMap<>();
 
-    private Map<String, String> bodyParameters = new HashMap<>();
+    private final Map<String, Object> bodyParameters = new HashMap<>();
 
     private final Class<T> resultType;
 
     // Public API
 
-    public UniFiControllerRequest(Class<T> resultType, Gson gson, HttpClient httpClient, String host, int port,
-            String csrfToken, boolean unifios) {
+    public UniFiControllerRequest(final Class<T> resultType, final Gson gson, final HttpClient httpClient,
+            final HttpMethod method, final String host, final int port, final String csrfToken, final boolean unifios) {
         this.resultType = resultType;
         this.gson = gson;
         this.httpClient = httpClient;
+        this.method = method;
         this.host = host;
         this.port = port;
         this.csrfToken = csrfToken;
         this.unifios = unifios;
     }
 
-    public void setAPIPath(String relativePath) {
+    public void setAPIPath(final String relativePath) {
         if (unifios) {
             this.path = "/proxy/network" + relativePath;
         } else {
@@ -114,24 +111,25 @@ public class UniFiControllerRequest<T> {
         }
     }
 
-    public void setPath(String path) {
+    public void setPath(final String path) {
         this.path = path;
     }
 
-    public void setBodyParameter(String key, Object value) {
-        this.bodyParameters.put(key, String.valueOf(value));
+    public void setBodyParameter(final String key, final Object value) {
+        this.bodyParameters.put(key, value);
     }
 
-    public void setQueryParameter(String key, Object value) {
+    public void setQueryParameter(final String key, final Object value) {
         this.queryParameters.put(key, String.valueOf(value));
     }
 
     public @Nullable T execute() throws UniFiException {
         T result = null;
-        String json = getContent();
+        final String json = getContent();
         // mgb: only try and unmarshall non-void result types
         if (!Void.class.equals(resultType)) {
-            JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
+            final JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
+
             if (jsonObject.has(PROPERTY_DATA) && jsonObject.get(PROPERTY_DATA).isJsonArray()) {
                 result = gson.fromJson(jsonObject.getAsJsonArray(PROPERTY_DATA), resultType);
             }
@@ -143,43 +141,47 @@ public class UniFiControllerRequest<T> {
 
     private String getContent() throws UniFiException {
         String content;
-        ContentResponse response = getContentResponse();
-        int status = response.getStatus();
+        final InputStreamResponseListener listener = new InputStreamResponseListener();
+        final Response response = getContentResponse(listener);
+        final int status = response.getStatus();
         switch (status) {
             case HttpStatus.OK_200:
-                content = response.getContentAsString();
+                content = responseToString(listener);
                 if (logger.isTraceEnabled()) {
                     logger.trace("<< {} {} \n{}", status, HttpStatus.getMessage(status), prettyPrintJson(content));
                 }
 
-                String csrfToken = response.getHeaders().get("X-CSRF-Token");
+                final String csrfToken = response.getHeaders().get("X-CSRF-Token");
                 if (csrfToken != null && !csrfToken.isEmpty()) {
                     this.csrfToken = csrfToken;
                 }
                 break;
             case HttpStatus.BAD_REQUEST_400:
+                logger.info("UniFi returned a status 400: {}", prettyPrintJson(responseToString(listener)));
                 throw new UniFiInvalidCredentialsException("Invalid Credentials");
             case HttpStatus.UNAUTHORIZED_401:
                 throw new UniFiExpiredSessionException("Expired Credentials");
             case HttpStatus.FORBIDDEN_403:
                 throw new UniFiNotAuthorizedException("Unauthorized Access");
             default:
+                logger.info("UniFi returned a status code {}: {}", status, prettyPrintJson(responseToString(listener)));
                 throw new UniFiException("Unknown HTTP status code " + status + " returned by the controller");
         }
         return content;
     }
 
-    private ContentResponse getContentResponse() throws UniFiException {
-        Request request = newRequest();
+    private Response getContentResponse(final InputStreamResponseListener listener) throws UniFiException {
+        final Request request = newRequest();
         logger.trace(">> {} {}", request.getMethod(), request.getURI());
-        ContentResponse response;
+        Response response;
         try {
-            response = request.send();
+            request.send(listener);
+            response = listener.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException e) {
             throw new UniFiCommunicationException(e);
-        } catch (ExecutionException e) {
+        } catch (final ExecutionException e) {
             // mgb: unwrap the cause and try to cleanly handle it
-            Throwable cause = e.getCause();
+            final Throwable cause = e.getCause();
             if (cause instanceof UnknownHostException) {
                 // invalid hostname
                 throw new UniFiInvalidHostException(cause);
@@ -193,9 +195,9 @@ public class UniFiControllerRequest<T> {
                     && ((HttpResponseException) cause).getResponse() instanceof ContentResponse) {
                 // the UniFi controller violates the HTTP protocol
                 // - it returns 401 UNAUTHORIZED without the WWW-Authenticate response header
-                // - this causes an ExceptionException to be thrown
+                // - this causes an ExecutionException to be thrown
                 // - we unwrap the response from the exception for proper handling of the 401 status code
-                response = (ContentResponse) ((HttpResponseException) cause).getResponse();
+                response = ((HttpResponseException) cause).getResponse();
             } else {
                 // catch all
                 throw new UniFiException(cause);
@@ -204,23 +206,32 @@ public class UniFiControllerRequest<T> {
         return response;
     }
 
+    private static String responseToString(final InputStreamResponseListener listener) throws UniFiException {
+        final ByteArrayOutputStream responseContent = new ByteArrayOutputStream();
+        try (InputStream input = listener.getInputStream()) {
+            input.transferTo(responseContent);
+        } catch (final IOException e) {
+            throw new UniFiException(e);
+        }
+        return new String(responseContent.toByteArray(), StandardCharsets.UTF_8);
+    }
+
     public String getCsrfToken() {
         return csrfToken;
     }
 
     private Request newRequest() {
-        HttpMethod method = bodyParameters.isEmpty() ? HttpMethod.GET : HttpMethod.POST;
-        HttpURI uri = new HttpURI(HttpScheme.HTTPS.asString(), host, port, path);
-        Request request = httpClient.newRequest(uri.toString()).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        final HttpURI uri = new HttpURI(HttpScheme.HTTPS.asString(), host, port, path);
+        final Request request = httpClient.newRequest(uri.toString()).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 .method(method);
-        for (Entry<String, String> entry : queryParameters.entrySet()) {
+        for (final Entry<String, String> entry : queryParameters.entrySet()) {
             request.param(entry.getKey(), entry.getValue());
         }
         if (!bodyParameters.isEmpty()) {
-            String jsonBody = getRequestBodyAsJson();
-            ContentProvider content = new StringContentProvider(CONTENT_TYPE_APPLICATION_JSON, jsonBody,
-                    StandardCharsets.UTF_8);
-            request = request.content(content);
+            final String jsonBody = gson.toJson(bodyParameters);
+
+            request.content(
+                    new StringContentProvider(CONTENT_TYPE_APPLICATION_JSON_UTF_8, jsonBody, StandardCharsets.UTF_8));
         }
 
         if (!csrfToken.isEmpty()) {
@@ -230,23 +241,15 @@ public class UniFiControllerRequest<T> {
         return request;
     }
 
-    private String getRequestBodyAsJson() {
-        JsonObject jsonObject = new JsonObject();
-        JsonElement jsonElement = null;
-        for (Entry<String, String> entry : bodyParameters.entrySet()) {
-            try {
-                jsonElement = JsonParser.parseString(entry.getValue());
-            } catch (JsonSyntaxException e) {
-                jsonElement = new JsonPrimitive(entry.getValue());
-            }
-            jsonObject.add(entry.getKey(), jsonElement);
-        }
-        return jsonObject.toString();
-    }
+    private static String prettyPrintJson(final String content) {
+        try {
+            final JsonObject json = JsonParser.parseString(content).getAsJsonObject();
+            final Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
 
-    private static String prettyPrintJson(String content) {
-        JsonObject json = JsonParser.parseString(content).getAsJsonObject();
-        Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
-        return prettyGson.toJson(json);
+            return prettyGson.toJson(json);
+        } catch (final RuntimeException e) {
+            // If could not parse the string as json, just return the string
+            return content;
+        }
     }
 }

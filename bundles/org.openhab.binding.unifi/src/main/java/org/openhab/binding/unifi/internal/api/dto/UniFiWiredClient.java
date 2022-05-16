@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.unifi.internal.api.model;
+package org.openhab.binding.unifi.internal.api.dto;
+
+import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 
 /**
  * A {@link UniFiWiredClient} represents a wired {@link UniFiClient}.
@@ -23,8 +25,8 @@ public class UniFiWiredClient extends UniFiClient {
 
     private String swMac;
 
-    public UniFiWiredClient(UniFiController controller) {
-        super(controller);
+    public UniFiWiredClient(final UniFiControllerCache cache) {
+        super(cache);
     }
 
     @Override

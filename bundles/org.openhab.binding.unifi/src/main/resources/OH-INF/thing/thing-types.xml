@@ -7,47 +7,83 @@
 	<bridge-type id="controller">
 
 		<label>UniFi Controller</label>
-		<description>A UniFi controller.</description>
+		<description>A UniFi controller</description>
 
-		<config-description>
-			<parameter name="host" type="text" required="true">
-				<label>Hostname</label>
-				<description>Hostname of IP address of the UniFi Controller</description>
-				<default>unifi</default>
-				<context>network-address</context>
-			</parameter>
-			<parameter name="port" type="integer" max="65535" min="1" required="false">
-				<label>Port</label>
-				<description>Port of the UniFi Controller</description>
-				<default>8443</default>
-			</parameter>
-			<parameter name="unifios" type="boolean" required="true">
-				<label>UniFi OS</label>
-				<description>If the UniFi Controller is running on UniFi OS.</description>
-				<default>false</default>
-			</parameter>
-			<parameter name="username" type="text" required="true">
-				<label>Username</label>
-				<description>The username to access the UniFi Controller.</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<label>Password</label>
-				<description>The password to access the UniFi Controller.</description>
-				<context>password</context>
-			</parameter>
-			<parameter name="refresh" type="integer" required="false">
-				<label>Refresh Interval</label>
-				<description>The refresh interval in seconds to poll the UniFi controller</description>
-				<default>10</default>
-			</parameter>
-		</config-description>
-
+		<config-description-ref uri="thing-type:unifi:controller"/>
 	</bridge-type>
 
-	<!-- <thing-type id="wiredClient"> .. coming soon .. </thing-type> -->
+	<thing-type id="site">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+
+		<label>UniFi Site</label>
+		<description>A site defined in a UniFi network</description>
+
+		<channels>
+			<channel id="totalClients" typeId="totalClients"/>
+			<channel id="wirelessClients" typeId="wirelessClients"/>
+			<channel id="wiredClients" typeId="wiredClients"/>
+			<channel id="guestClients" typeId="guestClients"/>
+		</channels>
+
+		<representation-property>sid</representation-property>
+
+		<config-description-ref uri="thing-type:unifi:site"/>
+	</thing-type>
+
+	<thing-type id="wlan">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+
+		<label>UniFi WLAN</label>
+		<description>A UniFi Wireless LAN</description>
+
+		<channels>
+			<channel id="enable" typeId="wlanEnable"/>
+			<channel id="wirelessClients" typeId="wirelessClients"/>
+			<channel id="guestClients" typeId="guestClients"/>
+			<channel id="essid" typeId="wlanEssid"/>
+			<channel id="site" typeId="site"/>
+			<channel id="security" typeId="security"/>
+			<channel id="wlanBand" typeId="wlanBand"/>
+			<channel id="wpaEnc" typeId="wpaEnc"/>
+			<channel id="wpaMode" typeId="wpaMode"/>
+			<channel id="passphrase" typeId="passphrase"/>
+			<channel id="qrcodeEncoding" typeId="qrcodeEncoding"/>
+		</channels>
+
+		<representation-property>wid</representation-property>
+
+		<config-description-ref uri="thing-type:unifi:wlan"/>
+	</thing-type>
+
+	<thing-type id="wiredClient">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>UniFi Wired Client</label>
+		<description>A wired client connected to a UniFi switch</description>
+
+		<channels>
+			<!-- common wired + wireless client channels -->
+			<channel id="online" typeId="online"/>
+			<channel id="site" typeId="site"/>
+			<channel id="macAddress" typeId="macAddress"/>
+			<channel id="ipAddress" typeId="ipAddress"/>
+			<channel id="uptime" typeId="uptime"/>
+			<channel id="lastSeen" typeId="lastSeen"/>
+			<channel id="blocked" typeId="blocked"/>
+			<channel id="experience" typeId="experience"/>
+		</channels>
+
+		<representation-property>cid</representation-property>
+
+		<config-description-ref uri="thing-type:unifi:client"/>
+	</thing-type>
 
 	<thing-type id="wirelessClient">
-
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="controller"/>
 		</supported-bridge-type-refs>
@@ -63,44 +99,138 @@
 			<channel id="uptime" typeId="uptime"/>
 			<channel id="lastSeen" typeId="lastSeen"/>
 			<channel id="blocked" typeId="blocked"/>
+			<channel id="experience" typeId="experience"/>
 			<!-- additional wireless client channels -->
+			<channel id="guest" typeId="guest"/>
 			<channel id="ap" typeId="ap"/>
 			<channel id="essid" typeId="essid"/>
 			<channel id="rssi" typeId="rssi"/>
+			<channel id="cmd" typeId="wirelessCmd"/>
 			<channel id="reconnect" typeId="reconnect"/>
 		</channels>
 
 		<representation-property>cid</representation-property>
 
-		<config-description>
-			<parameter name="cid" type="text" required="true">
-				<label>Client ID</label>
-				<description>The MAC address, IP address, hostname or alias of the client</description>
-			</parameter>
-			<parameter name="site" type="text" required="false">
-				<label>Site</label>
-				<description>The site where the client should be found (optional)</description>
-			</parameter>
-			<parameter name="considerHome" type="integer" required="false">
-				<label>Consider Home Interval</label>
-				<description>The interval in seconds to consider the client as home</description>
-				<default>180</default>
-			</parameter>
-		</config-description>
-
+		<config-description-ref uri="thing-type:unifi:client"/>
 	</thing-type>
+
+	<thing-type id="poePort">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+
+		<label>UniFi PoE Port</label>
+		<description>A Power Over Ethernet (PoE) port on a UniFi switch</description>
+
+		<channels>
+			<channel id="online" typeId="portOnline"/>
+			<channel id="mode" typeId="poeMode"/>
+			<channel id="enable" typeId="poeEnable"/>
+			<channel id="cmd" typeId="poeCmd"/>
+			<channel id="power" typeId="poePower"/>
+			<channel id="voltage" typeId="poeVoltage"/>
+			<channel id="current" typeId="poeCurrent"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:unifi:poePort"/>
+	</thing-type>
+
+	<!-- Channels -->
+
+	<channel-type id="totalClients">
+		<item-type>Number</item-type>
+		<label>Total Clients</label>
+		<description>Total number of clients connected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="wirelessClients">
+		<item-type>Number</item-type>
+		<label>Wireless Clients</label>
+		<description>Number of wireless clients connected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="wiredClients">
+		<item-type>Number</item-type>
+		<label>Wired Clients</label>
+		<description>Number of wired clients connected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="guestClients">
+		<item-type>Number</item-type>
+		<label>Guest Clients</label>
+		<description>Number of guest clients connected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="wlanEnable">
+		<item-type>Switch</item-type>
+		<label>Enable</label>
+		<description>Enable status of the wLAN</description>
+	</channel-type>
+
+	<channel-type id="wlanEssid">
+		<item-type>String</item-type>
+		<label>Wireless Network</label>
+		<description>Wireless Network (ESSID)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="security" advanced="true">
+		<item-type>String</item-type>
+		<label>Security</label>
+		<description>Security protocol of the Wi-Fi network</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="wlanBand" advanced="true">
+		<item-type>String</item-type>
+		<label>WLAN Band</label>
+		<description>Wireless LAN band of the Wi-Fi network</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="wpaEnc" advanced="true">
+		<item-type>String</item-type>
+		<label>WPA Encoding</label>
+		<description>WPA Encoding of the Wi-Fi network</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="wpaMode" advanced="true">
+		<item-type>String</item-type>
+		<label>WPA Mode</label>
+		<description>WPA Mode of the Wi-Fi network</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="passphrase" advanced="true">
+		<item-type>String</item-type>
+		<label>Passphrase</label>
+		<description>Passphrase of the Wi-Fi network</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="qrcodeEncoding">
+		<item-type>String</item-type>
+		<label>QR Code Encoding</label>
+		<description>MECARD like encoding to generate a QRCode for easy access to the Wi-Fi network</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
 	<channel-type id="online">
 		<item-type>Switch</item-type>
 		<label>Online</label>
-		<description>Online status of the wireless client</description>
+		<description>Online status of the client</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="site">
 		<item-type>String</item-type>
 		<label>Site Name</label>
-		<description>UniFi Site the client is associated with</description>
+		<description>UniFi Site the device is associated with</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -159,10 +289,94 @@
 		<description>Is device blocked</description>
 	</channel-type>
 
-	<channel-type id="reconnect">
+	<channel-type id="guest">
+		<item-type>Switch</item-type>
+		<label>Guest</label>
+		<description>Is the client connected a guest</description>
+	</channel-type>
+
+	<channel-type id="experience">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Experience</label>
+		<description>The wired/wireless experience of the client</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="reconnect" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Reconnect</label>
 		<description>Forces a client to reconnect</description>
+	</channel-type>
+
+	<channel-type id="wirelessCmd">
+		<item-type>String</item-type>
+		<label>Wireless Command</label>
+		<description>Command that can be given to the wireless client</description>
+		<command>
+			<options>
+				<option value="reconnect">Reconnect</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="portOnline">
+		<item-type>Switch</item-type>
+		<label>Port Active</label>
+		<description>PoE port is active</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="poeEnable">
+		<item-type>Switch</item-type>
+		<label>Enabled</label>
+		<description>If PoE is enabled</description>
+		<config-description-ref uri="channel-type:unifi:poeEnable"/>
+	</channel-type>
+
+	<channel-type id="poeMode">
+		<item-type>String</item-type>
+		<label>PoE Mode</label>
+		<description>The PoE mode the port is in</description>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="auto">Auto</option>
+				<option value="24v">24V</option>
+				<option value="passthrough">Passthrough</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="poeCmd">
+		<item-type>String</item-type>
+		<label>PoE Command</label>
+		<description>Command that can be given to the PoE port</description>
+		<command>
+			<options>
+				<option value="power-cycle">Power Cycle</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="poePower" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Port PoE Power</label>
+		<description>Power usage of the PoE port</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="poeVoltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Port PoE Voltage</label>
+		<description>Voltage usage of the PoE port</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="poeCurrent" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Port PoE Current</label>
+		<description>Current usage of the PoE port</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

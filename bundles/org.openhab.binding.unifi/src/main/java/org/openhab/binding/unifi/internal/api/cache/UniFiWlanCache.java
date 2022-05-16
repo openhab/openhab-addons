@@ -12,38 +12,35 @@
  */
 package org.openhab.binding.unifi.internal.api.cache;
 
-import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.DESC;
 import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.ID;
 import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.NAME;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
+import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
 
 /**
- * The {@link UniFiSiteCache} is a specific implementation of {@link UniFiCache} for the purpose of caching
- * {@link UniFiSite} instances.
+ * The {@link UniFiWlanCache} is a specific implementation of {@link UniFiCache} for the purpose of caching
+ * {@link UniFiWlan} instances.
  *
- * The cache uses the following prefixes: <code>id</code>, <code>name</code>, <code>desc</code>
+ * The cache uses the following prefixes: <code>id</code>, <code>name</code>
  *
- * @author Matthew Bowman - Initial contribution
+ * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-class UniFiSiteCache extends UniFiCache<UniFiSite> {
+class UniFiWlanCache extends UniFiCache<UniFiWlan> {
 
-    public UniFiSiteCache() {
-        super(ID, NAME, DESC);
+    public UniFiWlanCache() {
+        super(ID, NAME);
     }
 
     @Override
-    protected @Nullable String getSuffix(final UniFiSite site, final Prefix prefix) {
+    protected @Nullable String getSuffix(final UniFiWlan wlan, final Prefix prefix) {
         switch (prefix) {
             case ID:
-                return site.getId();
+                return wlan.getId();
             case NAME:
-                return site.getName();
-            case DESC:
-                return site.getDescription();
+                return wlan.getName();
             default:
                 return null;
         }

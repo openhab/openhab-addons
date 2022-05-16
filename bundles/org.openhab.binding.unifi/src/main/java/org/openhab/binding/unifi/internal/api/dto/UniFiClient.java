@@ -10,11 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.unifi.internal.api.model;
+package org.openhab.binding.unifi.internal.api.dto;
 
-import java.util.Calendar;
+import java.time.Instant;
 
-import org.openhab.binding.unifi.internal.api.UniFiException;
+import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.util.UniFiTidyLowerCaseStringDeserializer;
 import org.openhab.binding.unifi.internal.api.util.UniFiTimestampDeserializer;
 
@@ -27,38 +27,48 @@ import com.google.gson.annotations.SerializedName;
  * @author Matthew Bowman - Initial contribution
  * @author Patrik Wimnell - Blocking / Unblocking client support
  */
-public abstract class UniFiClient {
+public abstract class UniFiClient implements HasId {
 
-    protected final transient UniFiController controller;
+    private final transient UniFiControllerCache cache;
 
     @SerializedName("_id")
-    protected String id;
+    private String id;
 
-    protected String siteId;
-
-    @JsonAdapter(UniFiTidyLowerCaseStringDeserializer.class)
-    protected String mac;
-
-    protected String ip;
+    private String siteId;
 
     @JsonAdapter(UniFiTidyLowerCaseStringDeserializer.class)
-    protected String hostname;
+    private String mac;
+
+    private String ip;
+
+    @JsonAdapter(UniFiTidyLowerCaseStringDeserializer.class)
+    private String hostname;
 
     @SerializedName("name")
     @JsonAdapter(UniFiTidyLowerCaseStringDeserializer.class)
-    protected String alias;
+    private String alias;
 
-    protected Integer uptime;
+    private Integer uptime;
 
     @JsonAdapter(UniFiTimestampDeserializer.class)
-    protected Calendar lastSeen;
+    private Instant lastSeen;
 
-    protected boolean blocked;
+    private boolean blocked;
 
-    protected UniFiClient(UniFiController controller) {
-        this.controller = controller;
+    @SerializedName("is_guest")
+    private boolean guest;
+
+    @SerializedName("fixed_ip")
+    private String fixedIp;
+
+    @SerializedName("satisfaction")
+    private Integer experience;
+
+    protected UniFiClient(final UniFiControllerCache cache) {
+        this.cache = cache;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -68,7 +78,7 @@ public abstract class UniFiClient {
     }
 
     public String getIp() {
-        return this.ip;
+        return this.ip == null || this.ip.isBlank() ? this.fixedIp : this.ip;
     }
 
     public String getHostname() {
@@ -83,7 +93,7 @@ public abstract class UniFiClient {
         return uptime;
     }
 
-    public Calendar getLastSeen() {
+    public Instant getLastSeen() {
         return lastSeen;
     }
 
@@ -94,33 +104,31 @@ public abstract class UniFiClient {
     public abstract Boolean isWired();
 
     public final Boolean isWireless() {
-        return isWired() == null ? null : (isWired().booleanValue() ? Boolean.FALSE : Boolean.TRUE);
+        return isWired() == null ? null : Boolean.FALSE.equals(isWired());
     }
 
     protected abstract String getDeviceMac();
 
     public UniFiSite getSite() {
-        return controller.getSite(siteId);
+        return cache.getSite(siteId);
     }
 
     public UniFiDevice getDevice() {
-        return controller.getDevice(getDeviceMac());
+        return cache.getDevice(getDeviceMac());
     }
 
-    // Functional API
-
-    public void block(boolean blocked) throws UniFiException {
-        controller.block(this, blocked);
+    public boolean isGuest() {
+        return guest;
     }
 
-    public void reconnect() throws UniFiException {
-        controller.reconnect(this);
+    public Integer getExperience() {
+        return experience;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "UniFiClient{id: '%s', mac: '%s', ip: '%s', hostname: '%s', alias: '%s', wired: %b, blocked: %b, device: %s}",
-                id, mac, ip, hostname, alias, isWired(), blocked, getDevice());
+                "UniFiClient{id: '%s', mac: '%s', ip: '%s', hostname: '%s', alias: '%s', wired: %b, guest: %b, blocked: %b, experience: %d, device: %s}",
+                id, mac, getIp(), hostname, alias, isWired(), guest, blocked, experience, getDevice());
     }
 }

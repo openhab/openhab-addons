@@ -17,27 +17,32 @@ import java.lang.reflect.Type;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
-import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
+import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
 
 import com.google.gson.InstanceCreator;
+import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link UniFiDeviceInstanceCreator} creates instances of {@link UniFiDevice}s during the JSON unmarshalling of
+ * The {@link UniFiWlanInstanceCreator} creates instances of {@link UniFiWlan}s during the JSON unmarshalling of
  * controller responses.
  *
- * @author Matthew Bowman - Initial contribution
+ * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public class UniFiDeviceInstanceCreator implements InstanceCreator<UniFiDevice> {
+public class UniFiWlanInstanceCreator implements InstanceCreator<UniFiWlan> {
 
     private final UniFiControllerCache cache;
 
-    public UniFiDeviceInstanceCreator(final UniFiControllerCache cache) {
+    public UniFiWlanInstanceCreator(final UniFiControllerCache cache) {
         this.cache = cache;
     }
 
     @Override
-    public UniFiDevice createInstance(final @Nullable Type type) {
-        return new UniFiDevice(cache);
+    public UniFiWlan createInstance(final @Nullable Type type) {
+        if (UniFiWlan.class.equals(type)) {
+            return new UniFiWlan(cache);
+        } else {
+            throw new JsonSyntaxException("Expected a UniFiWlan type, but got " + type);
+        }
     }
 }
