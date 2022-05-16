@@ -34,7 +34,7 @@ public class GoEStatusResponseV2DTO extends GoEStatusResponseBaseDTO {
     public Double[] temperatures;
 
     @SerializedName("wh")
-    public Long sessionChargeConsumption;
+    public Double sessionChargeConsumption;
 
     @SerializedName("dwo")
     public Double sessionChargeConsumptionLimit;

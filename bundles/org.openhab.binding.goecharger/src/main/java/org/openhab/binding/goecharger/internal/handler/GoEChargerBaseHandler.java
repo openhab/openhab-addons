@@ -142,7 +142,7 @@ public abstract class GoEChargerBaseHandler extends BaseThingHandler {
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
                 updateChannelsAndStatus(null, ie.getMessage());
-            } catch (TimeoutException | ExecutionException e) {
+            } catch (TimeoutException | ExecutionException | JsonSyntaxException e) {
                 updateChannelsAndStatus(null, e.getMessage());
             }
         }
