@@ -32,8 +32,8 @@
 		<parameter name="preloadModel" type="boolean" groupName="stt">
 			<label>Preload Model</label>
 			<description>Keep the language model loaded. If the parameter is set to true, the model will be reloaded only on
-				configuration updates, but If the model is not loaded when needed, the service will try to load it. If the parameter
-				is set to false, the model will be loaded and unloaded on each run.
+				configuration updates. If the model is not loaded when needed, the service will try to load it. If the parameter is
+				set to false, the model will be loaded and unloaded on each run.
 			</description>
 			<default>false</default>
 		</parameter>
