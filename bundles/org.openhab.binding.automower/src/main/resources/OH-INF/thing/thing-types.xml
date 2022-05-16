@@ -260,7 +260,7 @@
 	</channel-type>
 
 	<channel-type id="positionType">
-		<item-type>Point</item-type>
+		<item-type>Location</item-type>
 		<label>GPS Position</label>
 		<description>The channel providing a waypoint of the mower's activity.</description>
 		<state readOnly="true"/>

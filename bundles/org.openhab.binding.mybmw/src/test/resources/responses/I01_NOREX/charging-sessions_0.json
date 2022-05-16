@@ -1,0 +1,23 @@
+{
+  "chargingSessions": {
+    "chargingListState": "HAS_SESSIONS",
+    "numberOfSessions": "1",
+    "sessions": [
+      {
+        "energyCharged": "~ 36 kWh",
+        "id": "2021-11-09T18:06:18Z_some_id",
+        "isPublic": false,
+        "sessionStatus": "FINISHED",
+        "subtitle": "some_place \u2022 3h 42min \u2022 -- EUR",
+        "title": "Tuesday 7:06 PM"
+      }
+    ],
+    "total": "~ 36 kWh"
+  },
+  "datePicker": {
+    "endDate": "2021-11-11T00:44:47Z",
+    "selectedDate": "2021-11-09T18:06:18Z",
+    "startDate": "2021-08-08T15:51:27Z"
+  },
+  "paginationInfo": {}
+}

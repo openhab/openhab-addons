@@ -29,8 +29,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link OpenUVResult} is responsible for storing
- * the "result" node from the OpenUV JSON response
+ * The {@link OpenUVResult} is responsible for storing the result node from the OpenUV JSON response
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -54,10 +53,10 @@ public class OpenUVResult {
     }
 
     private double uv;
-    private @Nullable ZonedDateTime uvTime;
     private double uvMax;
-    private @Nullable ZonedDateTime uvMaxTime;
     private double ozone;
+    private @Nullable ZonedDateTime uvTime;
+    private @Nullable ZonedDateTime uvMaxTime;
     private @Nullable ZonedDateTime ozoneTime;
     private Map<FitzpatrickType, @Nullable Integer> safeExposureTime = new HashMap<>();
 
@@ -73,19 +72,20 @@ public class OpenUVResult {
         return ozone;
     }
 
+    private State getValueOrNull(@Nullable ZonedDateTime value) {
+        return value == null ? UnDefType.NULL : new DateTimeType(value);
+    }
+
     public State getUVTime() {
-        ZonedDateTime value = uvTime;
-        return value != null ? new DateTimeType(value) : UnDefType.NULL;
+        return getValueOrNull(uvTime);
     }
 
     public State getUVMaxTime() {
-        ZonedDateTime value = uvMaxTime;
-        return value != null ? new DateTimeType(value) : UnDefType.NULL;
+        return getValueOrNull(uvMaxTime);
     }
 
     public State getOzoneTime() {
-        ZonedDateTime value = ozoneTime;
-        return value != null ? new DateTimeType(value) : UnDefType.NULL;
+        return getValueOrNull(ozoneTime);
     }
 
     public State getSafeExposureTime(String index) {
@@ -93,7 +93,7 @@ public class OpenUVResult {
             FitzpatrickType value = FitzpatrickType.valueOf(index);
             Integer duration = safeExposureTime.get(value);
             if (duration != null) {
-                return new QuantityType<>(duration, Units.MINUTE);
+                return QuantityType.valueOf(duration, Units.MINUTE);
             }
         } catch (IllegalArgumentException e) {
             logger.warn("Unexpected Fitzpatrick index value '{}' : {}", index, e.getMessage());

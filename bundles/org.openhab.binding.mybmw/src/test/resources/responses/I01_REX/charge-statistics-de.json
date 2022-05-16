@@ -1,0 +1,11 @@
+{
+	"description": "Dezember 2021",
+	"optStateType": "OPT_IN_WITH_SESSIONS",
+	"statistics": {
+		"totalEnergyCharged": 173,
+		"totalEnergyChargedSemantics": "Insgesamt circa 173 Kilowattstunden geladen",
+		"symbol": "~",
+		"numberOfChargingSessions": 13,
+		"numberOfChargingSessionsSemantics": "13 Ladevorgänge"
+	}
+}

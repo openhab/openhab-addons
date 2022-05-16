@@ -24,6 +24,7 @@
 			<channel id="screen-state" typeId="screen-state-channel"/>
 			<channel id="shutdown" typeId="shutdown-channel"/>
 			<channel id="awake-state" typeId="awake-state-channel"/>
+			<channel id="start-intent" typeId="start-intent-channel"/>
 		</channels>
 		<representation-property>macAddress</representation-property>
 		<config-description>
@@ -445,6 +446,12 @@
 		<label>Screen State</label>
 		<description>Screen Power State</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="start-intent-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Start Intent</label>
+		<description>Start application intent</description>
 	</channel-type>
 
 </thing:thing-descriptions>

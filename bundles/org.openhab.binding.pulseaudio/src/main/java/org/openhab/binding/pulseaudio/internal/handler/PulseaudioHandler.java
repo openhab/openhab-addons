@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -78,7 +79,7 @@ public class PulseaudioHandler extends BaseThingHandler {
                     SOURCE_THING_TYPE, SOURCE_OUTPUT_THING_TYPE).collect(Collectors.toSet()));
     private final Logger logger = LoggerFactory.getLogger(PulseaudioHandler.class);
 
-    private String name = "";
+    private @Nullable DeviceIdentifier deviceIdentifier;
     private @Nullable PulseAudioAudioSink audioSink;
     private @Nullable PulseAudioAudioSource audioSource;
     private @Nullable Integer savedVolume;
@@ -96,12 +97,20 @@ public class PulseaudioHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         Configuration config = getThing().getConfiguration();
-        name = (String) config.get(DEVICE_PARAMETER_NAME);
+        try {
+            deviceIdentifier = new DeviceIdentifier((String) config.get(DEVICE_PARAMETER_NAME_OR_DESCRIPTION),
+                    (String) config.get(DEVICE_PARAMETER_ADDITIONAL_FILTERS));
+        } catch (PatternSyntaxException p) {
+            deviceIdentifier = null;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Incorrect regular expression: " + (String) config.get(DEVICE_PARAMETER_ADDITIONAL_FILTERS));
+            return;
+        }
         initializeWithTheBridge();
     }
 
-    public String getName() {
-        return name;
+    public @Nullable DeviceIdentifier getDeviceIdentifier() {
+        return deviceIdentifier;
     }
 
     private void audioSinkSetup() {
@@ -214,7 +223,7 @@ public class PulseaudioHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.trace("Thing {} {} disposed.", getThing().getUID(), name);
+        logger.trace("Thing {} {} disposed.", getThing().getUID(), safeGetDeviceNameOrDescription());
         super.dispose();
         audioSinkUnsetup();
         audioSourceUnsetup();
@@ -232,21 +241,22 @@ public class PulseaudioHandler extends BaseThingHandler {
         } else if (pulseaudioBridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
-            deviceUpdate(pulseaudioBridgeHandler.getDevice(name));
+            deviceUpdate(pulseaudioBridgeHandler.getDevice(deviceIdentifier));
         }
     }
 
     private synchronized @Nullable PulseaudioBridgeHandler getPulseaudioBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            logger.debug("Required bridge not defined for device {}.", name);
+            logger.debug("Required bridge not defined for device {}.", safeGetDeviceNameOrDescription());
             return null;
         }
         ThingHandler handler = bridge.getHandler();
         if (handler instanceof PulseaudioBridgeHandler) {
             return (PulseaudioBridgeHandler) handler;
         } else {
-            logger.debug("No available bridge handler found for device {} bridge {} .", name, bridge.getUID());
+            logger.debug("No available bridge handler found for device {} bridge {} .",
+                    safeGetDeviceNameOrDescription(), bridge.getUID());
             return null;
         }
     }
@@ -263,9 +273,9 @@ public class PulseaudioHandler extends BaseThingHandler {
             return;
         }
 
-        AbstractAudioDeviceConfig device = briHandler.getDevice(name);
+        AbstractAudioDeviceConfig device = briHandler.getDevice(deviceIdentifier);
         if (device == null) {
-            logger.warn("device {} not found", name);
+            logger.warn("device {} not found", safeGetDeviceNameOrDescription());
             deviceUpdate(null);
             return;
         } else {
@@ -274,7 +284,7 @@ public class PulseaudioHandler extends BaseThingHandler {
                 if (command instanceof IncreaseDecreaseType) {
                     // refresh to get the current volume level
                     briHandler.getClient().update();
-                    device = briHandler.getDevice(name);
+                    device = briHandler.getDevice(deviceIdentifier);
                     if (device == null) {
                         logger.warn("missing device info, aborting");
                         return;
@@ -360,7 +370,7 @@ public class PulseaudioHandler extends BaseThingHandler {
             if (briHandler != null) {
                 // refresh to get the current volume level
                 briHandler.getClient().update();
-                AbstractAudioDeviceConfig device = briHandler.getDevice(name);
+                AbstractAudioDeviceConfig device = briHandler.getDevice(deviceIdentifier);
                 if (device != null) {
                     savedVolume = savedVolumeFinal = device.getVolume();
                 }
@@ -375,7 +385,7 @@ public class PulseaudioHandler extends BaseThingHandler {
             logger.warn("bridge is not ready");
             return;
         }
-        AbstractAudioDeviceConfig device = briHandler.getDevice(name);
+        AbstractAudioDeviceConfig device = briHandler.getDevice(deviceIdentifier);
         if (device == null) {
             logger.warn("missing device info, aborting");
             return;
@@ -386,7 +396,7 @@ public class PulseaudioHandler extends BaseThingHandler {
     }
 
     public void deviceUpdate(@Nullable AbstractAudioDeviceConfig device) {
-        if (device != null && device.getPaName().equals(name)) {
+        if (device != null) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             logger.debug("Updating states of {} id: {}", device, VOLUME_CHANNEL);
             int actualVolume = device.getVolume();
@@ -404,7 +414,7 @@ public class PulseaudioHandler extends BaseThingHandler {
             }
             audioSinkSetup();
             audioSourceSetup();
-        } else if (device == null) {
+        } else {
             updateState(VOLUME_CHANNEL, UnDefType.UNDEF);
             updateState(MUTE_CHANNEL, UnDefType.UNDEF);
             updateState(STATE_CHANNEL, UnDefType.UNDEF);
@@ -443,9 +453,10 @@ public class PulseaudioHandler extends BaseThingHandler {
         if (briHandler == null) {
             throw new IOException("bridge is not ready");
         }
-        AbstractAudioDeviceConfig device = briHandler.getDevice(name);
+        AbstractAudioDeviceConfig device = briHandler.getDevice(deviceIdentifier);
         if (device == null) {
-            throw new IOException("missing device info, device appears to be offline");
+            throw new IOException(
+                    "missing device info, device " + safeGetDeviceNameOrDescription() + " appears to be offline");
         }
         String simpleTcpPortPrefName = (device instanceof Source) ? DEVICE_PARAMETER_AUDIO_SOURCE_PORT
                 : DEVICE_PARAMETER_AUDIO_SINK_PORT;
@@ -501,7 +512,7 @@ public class PulseaudioHandler extends BaseThingHandler {
         var idleTimeout = 3000;
         var handler = getPulseaudioBridgeHandler();
         if (handler != null) {
-            AbstractAudioDeviceConfig device = handler.getDevice(name);
+            AbstractAudioDeviceConfig device = handler.getDevice(deviceIdentifier);
             String idleTimeoutPropName = (device instanceof Source) ? DEVICE_PARAMETER_AUDIO_SOURCE_IDLE_TIMEOUT
                     : DEVICE_PARAMETER_AUDIO_SINK_IDLE_TIMEOUT;
             var idleTimeoutB = (BigDecimal) getThing().getConfiguration().get(idleTimeoutPropName);
@@ -510,6 +521,11 @@ public class PulseaudioHandler extends BaseThingHandler {
             }
         }
         return idleTimeout;
+    }
+
+    private String safeGetDeviceNameOrDescription() {
+        DeviceIdentifier deviceIdentifierFinal = deviceIdentifier;
+        return deviceIdentifierFinal == null ? "UNKNOWN" : deviceIdentifierFinal.getNameOrDescription();
     }
 
     public int getBasicProtocolSOTimeout() {

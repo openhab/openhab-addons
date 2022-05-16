@@ -33,13 +33,13 @@
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="openedState">
-		<item-type>contact</item-type>
+		<item-type>Contact</item-type>
 		<label>Zone State</label>
 		<description>State of zone</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="tamperedState">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>Tampered</label>
 		<description>State of zone</description>
 		<state readOnly="true" pattern="%s"/>

@@ -17,6 +17,7 @@ import java.util.Locale;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.webthing.internal.client.dto.Property;
+import org.openhab.core.library.CoreItemFactory;
 
 /**
  * The {@link TypeMapping} class defines the mapping of Item types <-> WebThing Property types.
@@ -31,12 +32,12 @@ public class TypeMapping {
 
     /**
      * maps a property type to an item type
-     * 
+     *
      * @param propertyMetadata the property meta data
      * @return the associated item type
      */
     public static ItemType toItemType(Property propertyMetadata) {
-        String type = "string";
+        String type = CoreItemFactory.STRING;
         @Nullable
         String tag = null;
 
@@ -48,46 +49,46 @@ public class TypeMapping {
             case "MotionProperty":
             case "OnOffProperty":
             case "PushedProperty":
-                type = "switch";
+                type = CoreItemFactory.SWITCH;
                 tag = "Switchable";
                 break;
             case "CurrentProperty":
             case "FrequencyProperty":
             case "InstantaneousPowerProperty":
             case "VoltageProperty":
-                type = "number";
+                type = CoreItemFactory.NUMBER;
                 break;
             case "HeatingCoolingProperty":
             case "ImageProperty":
             case "VideoProperty":
-                type = "string";
+                type = CoreItemFactory.STRING;
                 break;
             case "BrightnessProperty":
             case "HumidityProperty":
-                type = "dimmer";
+                type = CoreItemFactory.DIMMER;
                 break;
             case "ColorModeProperty":
-                type = "string";
+                type = CoreItemFactory.STRING;
                 tag = "lighting";
                 break;
             case "ColorProperty":
-                type = "color";
+                type = CoreItemFactory.COLOR;
                 tag = "Lighting";
                 break;
             case "ColorTemperatureProperty":
-                type = "dimmer";
+                type = CoreItemFactory.DIMMER;
                 tag = "Lighting";
                 break;
             case "OpenProperty":
-                type = "contact";
+                type = CoreItemFactory.CONTACT;
                 tag = "ContactSensor";
                 break;
             case "TargetTemperatureProperty":
-                type = "number";
+                type = CoreItemFactory.NUMBER;
                 tag = "TargetTemperature";
                 break;
             case "TemperatureProperty":
-                type = "number";
+                type = CoreItemFactory.NUMBER;
                 tag = "CurrentTemperature";
                 break;
             case "ThermostatModeProperty":
@@ -95,23 +96,23 @@ public class TypeMapping {
             case "LevelProperty":
                 if ((propertyMetadata.unit != null)
                         && propertyMetadata.unit.toLowerCase(Locale.ENGLISH).equals("percent")) {
-                    type = "dimmer";
+                    type = CoreItemFactory.DIMMER;
                 } else {
-                    type = "number";
+                    type = CoreItemFactory.NUMBER;
                 }
                 break;
             default:
                 switch (propertyMetadata.type.toLowerCase(Locale.ENGLISH)) {
                     case "boolean":
-                        type = "switch";
+                        type = CoreItemFactory.SWITCH;
                         tag = "Switchable";
                         break;
                     case "integer":
                     case "number":
-                        type = "number";
+                        type = CoreItemFactory.NUMBER;
                         break;
                     default:
-                        type = "string";
+                        type = CoreItemFactory.STRING;
                         break;
                 }
                 break;
