@@ -101,10 +101,12 @@ public class SecurityApi extends RestManager {
         post(uriBuilder, ApiResponse.Ok.class, null, null);
     }
 
-    public void changeFloodLightMode(String localCameraURL, FloodLightMode mode) throws NetatmoException {
-        UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(PATH_COMMAND).path(SUB_PATH_FLOODLIGHTSET);
-        uriBuilder.queryParam("config", "%7B%22mode%22:%22" + mode.toString() + "%22%7D");
-        get(uriBuilder, ApiResponse.Ok.class);
+    public void changeFloodLightMode(String homeId, String cameraId, FloodLightMode mode) throws NetatmoException {
+        UriBuilder uriBuilder = getAppUriBuilder(PATH_STATE);
+        String payload = String.format(
+                "{\"home\": {\"id\":\"%s\",\"modules\": [ {\"id\":\"%s\",\"floodlight\":\"%s\"} ]}}", homeId, cameraId,
+                mode.name().toLowerCase());
+        post(uriBuilder, ApiResponse.Ok.class, payload, "application/json;charset=utf-8");
     }
 
     public void setPersonAwayStatus(String homeId, String personId, boolean away) throws NetatmoException {
