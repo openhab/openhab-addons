@@ -140,7 +140,7 @@ The `wlan` information that is retrieved is available as these channels:
 | qrcodeEncoding  | String    | MECARD like encoding to generate a QR Code for easy access to the Wi-Fi network | Read        |
 
 ::: warning Attention
-If you link an item to the `prassphrase` or `qrcodeEncoding` channel your Wi-Fi password will be  exposed in openHAB.
+If you link an item to the `passphrase` or `qrcodeEncoding` channel your Wi-Fi password will be  exposed in openHAB.
 The password will also be visible in openHAB event log.
 :::
 
