@@ -1,4 +1,4 @@
-# ws980wifi Binding
+# WS980WiFi Binding
 
 The WS980WIFI binding connects openHAB with ELV WS980WIFI Weather Stations (see de.elv.com).
 It discovers WS980WIFI Weather Stations in the local network and polls the actual data on a regular basis.
@@ -52,6 +52,7 @@ The advanced configuration parameters should not be modified.
 ## Full Example
 
 ```
+Thing-File
 Thing ws980wifi:ws980wifi:WS `AZ WS`
     @ `Office`
     [ host=`your.weatherstation`,
@@ -59,6 +60,7 @@ Thing ws980wifi:ws980wifi:WS `AZ WS`
       port=`45000`,
       refreshInterval=`60` ]
 
+Items-File
 Group    gWS `Weatherstation WS980WIFI` 
 Number   ws_tempWindChill `WS Windchill [%.2f]°C` (gWS) {channel = `ws980wifi:ws980wifi:WS:tempWindChill`}
 Number   ws_tempOutside `WS Temp. Outside [%.2f]°C` (gWS) {channel = `ws980wifi:ws980wifi:WS:tempOutside`}
