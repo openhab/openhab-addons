@@ -31,9 +31,10 @@
 		</parameter>
 		<parameter name="preloadModel" type="boolean" groupName="stt">
 			<label>Preload Model</label>
-			<description>Keep language model loaded. If true model is just reload the model on config updates, if not model will
-				be loaded and offloaded on each execution. It will fallback to try to load the model when executed if it was not
-				able to load it before.</description>
+			<description>Keep the language model loaded. If the parameter is set to true, the model will be reloaded only on
+				configuration updates. If the model is not loaded when needed, the service will try to load it. If the parameter is
+				set to false, the model will be loaded and unloaded on each run.
+			</description>
 			<default>false</default>
 		</parameter>
 		<parameter name="noResultsMessage" type="text" groupName="messages">
