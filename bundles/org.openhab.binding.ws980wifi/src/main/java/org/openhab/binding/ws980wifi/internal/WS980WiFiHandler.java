@@ -133,7 +133,7 @@ public class WS980WiFiHandler extends BaseThingHandler {
             log.debug("refreshValues successfully done");
         } else {
             log.debug("refreshValues stops with Error");
-            updateStatus(ThingStatus.UNKNOWN);
+            updateStatus(ThingStatus.OFFLINE);
             getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
         }
     }
