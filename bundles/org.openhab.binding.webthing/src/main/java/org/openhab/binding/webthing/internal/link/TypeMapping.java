@@ -13,9 +13,9 @@
 package org.openhab.binding.webthing.internal.link;
 
 import java.util.Locale;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.webthing.internal.client.dto.Property;
 import org.openhab.core.library.CoreItemFactory;
 
@@ -38,8 +38,7 @@ public class TypeMapping {
      */
     public static ItemType toItemType(Property propertyMetadata) {
         String type = CoreItemFactory.STRING;
-        @Nullable
-        String tag = null;
+        Set<String> tags = Set.of();
 
         switch (propertyMetadata.typeKeyword) {
             case "AlarmProperty":
@@ -50,7 +49,6 @@ public class TypeMapping {
             case "OnOffProperty":
             case "PushedProperty":
                 type = CoreItemFactory.SWITCH;
-                tag = "Switchable";
                 break;
             case "CurrentProperty":
             case "FrequencyProperty":
@@ -64,32 +62,35 @@ public class TypeMapping {
                 type = CoreItemFactory.STRING;
                 break;
             case "BrightnessProperty":
+                type = CoreItemFactory.DIMMER;
+                tags = Set.of("Control", "Light");
+                break;
             case "HumidityProperty":
                 type = CoreItemFactory.DIMMER;
+                tags = Set.of("Measurement", "Humidity");
                 break;
             case "ColorModeProperty":
                 type = CoreItemFactory.STRING;
-                tag = "lighting";
                 break;
             case "ColorProperty":
                 type = CoreItemFactory.COLOR;
-                tag = "Lighting";
+                tags = Set.of("Control", "Light");
                 break;
             case "ColorTemperatureProperty":
                 type = CoreItemFactory.DIMMER;
-                tag = "Lighting";
+                tags = Set.of("Control", "ColorTemperature");
                 break;
             case "OpenProperty":
                 type = CoreItemFactory.CONTACT;
-                tag = "ContactSensor";
+                tags = Set.of("OpenState");
                 break;
             case "TargetTemperatureProperty":
                 type = CoreItemFactory.NUMBER;
-                tag = "TargetTemperature";
+                tags = Set.of("Setpoint", "Temperature");
                 break;
             case "TemperatureProperty":
                 type = CoreItemFactory.NUMBER;
-                tag = "CurrentTemperature";
+                tags = Set.of("Measurement", "Temperature");
                 break;
             case "ThermostatModeProperty":
                 break;
@@ -105,7 +106,6 @@ public class TypeMapping {
                 switch (propertyMetadata.type.toLowerCase(Locale.ENGLISH)) {
                     case "boolean":
                         type = CoreItemFactory.SWITCH;
-                        tag = "Switchable";
                         break;
                     case "integer":
                     case "number":
@@ -118,7 +118,7 @@ public class TypeMapping {
                 break;
         }
 
-        return new ItemType(type, tag);
+        return new ItemType(type, tags);
     }
 
     /**
@@ -126,19 +126,19 @@ public class TypeMapping {
      */
     public static class ItemType {
         private final String type;
-        private final @Nullable String tag;
+        private final Set<String> tags;
 
-        ItemType(String type, @Nullable String tag) {
+        ItemType(String type, Set<String> tags) {
             this.type = type;
-            this.tag = tag;
+            this.tags = tags;
         }
 
         public String getType() {
             return type;
         }
 
-        public @Nullable String getTag() {
-            return tag;
+        public Set<String> getTags() {
+            return tags;
         }
     }
 }
