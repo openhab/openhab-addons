@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Joerg Dokupil - Initial contribution
  */
 @NonNullByDefault
-public class WS980WIFI {
+public class WS980WiFi {
 
     private Mac wsMac = new Mac("00:00:00:00:00:00");
     private String wsHost = "";
@@ -67,13 +67,13 @@ public class WS980WIFI {
     public float uvRaw; // uW/qm uvStaerke
     public float uvIndex; // 1-12
 
-    protected static final Logger log = LoggerFactory.getLogger(WS980WIFI.class);
+    protected final Logger log = LoggerFactory.getLogger(WS980WiFi.class);
 
     public static final int DISCOVERY_DEST_PORT = 46000;
     public static final int DATA_REQUEST_PORT = 45000;
     public static final int DISCOVERY_RECEIVE_BUFFER_SIZE = 128;
 
-    protected WS980WIFI(Mac mac, InetAddress ip, String description, Integer port) {
+    protected WS980WiFi(Mac mac, InetAddress ip, String description, Integer port) {
         this.wsMac = mac;
         this.wsHost = ip.getHostName();
         this.wsDescription = description;
@@ -81,7 +81,7 @@ public class WS980WIFI {
         this.wsPort = port;
     }
 
-    public WS980WIFI(String host, String port) {
+    public WS980WiFi(String host, String port) {
         this.wsHost = host;
         this.wsPort = Integer.parseInt(port);
     }
@@ -158,12 +158,13 @@ public class WS980WIFI {
      * Class Method to discover objects of the class
      */
 
-    public static WS980WIFI[] discoverDevices(int timeout, InetAddress sourceAddress) {
+    public static WS980WiFi[] discoverDevices(int timeout, InetAddress sourceAddress) {
+        final Logger logger = LoggerFactory.getLogger(WS980WiFi.class);
         byte[] receBytes = new byte[DISCOVERY_RECEIVE_BUFFER_SIZE];
-        List<WS980WIFI> devices = new ArrayList<WS980WIFI>(50);
-        WS980WIFI[] out = new WS980WIFI[0];
+        List<WS980WiFi> devices = new ArrayList<WS980WiFi>(50);
+        WS980WiFi[] out = new WS980WiFi[0];
 
-        log.debug("Discovering WS980WIFI devices");
+        logger.debug("Discovering WS980WIFI devices");
 
         try (DatagramSocket sock = new DatagramSocket()) {
             sock.setBroadcast(true);
@@ -178,60 +179,61 @@ public class WS980WIFI {
             DatagramPacket dpSend = new DatagramPacket(sendBytes, sendBytes.length, broadcastAddress,
                     DISCOVERY_DEST_PORT);
             sock.send(dpSend);
-            log.debug("Broadcast has been sent to {} and port {}", broadcastAddress.toString(), DISCOVERY_DEST_PORT);
+            logger.debug("Broadcast has been sent to {} and port {}", broadcastAddress.toString(), DISCOVERY_DEST_PORT);
 
             DatagramPacket dpReceive = new DatagramPacket(receBytes, receBytes.length);
             if (timeout == 0) {
-                log.debug("No discovery timeout was set. Blocking thread until answer received");
+                logger.debug("No discovery timeout was set. Blocking thread until answer received");
                 sock.receive(dpReceive);
-                log.debug("Answer received");
+                logger.debug("Answer received");
                 buildDevFromData(receBytes, devices);
-                log.debug("data received processed");
+                logger.debug("data received processed");
             } else {
-                log.debug("Discovery timeout was set to {}", timeout);
+                logger.debug("Discovery timeout was set to {}", timeout);
                 long startTime = System.currentTimeMillis();
                 long elapsed;
                 while ((elapsed = System.currentTimeMillis() - startTime) < timeout) {
-                    log.debug("Elapsed: {} ms", elapsed);
-                    log.debug("Socket timeout: timeout-elapsed={}", (timeout - elapsed));
+                    logger.debug("Elapsed: {} ms", elapsed);
+                    logger.debug("Socket timeout: timeout-elapsed={}", (timeout - elapsed));
 
                     sock.setSoTimeout((int) (timeout - elapsed));
 
                     try {
-                        log.debug("Waiting for datagrams");
+                        logger.debug("Waiting for datagrams");
                         sock.receive(dpReceive);
                     } catch (SocketTimeoutException e) {
-                        log.debug("SocketTimeoutException: Socket timed out {} ms", sock.getSoTimeout());
-                        log.debug("SocketTimeOut after {} ms", System.currentTimeMillis() - startTime);
+                        logger.debug("SocketTimeoutException: Socket timed out {} ms", sock.getSoTimeout());
+                        logger.debug("SocketTimeOut after {} ms", System.currentTimeMillis() - startTime);
                         break;
                     }
 
-                    log.debug("Answer received");
+                    logger.debug("Answer received");
                     buildDevFromData(receBytes, devices);
-                    log.debug("data received processed");
+                    logger.debug("data received processed");
                 }
             }
         } catch (IOException e) {
-            log.warn("IOException during discovering ws980wifi");
+            logger.warn("IOException during discovering ws980wifi");
         }
 
-        log.debug("Converting list to array: {}", devices.size());
-        out = new WS980WIFI[devices.size()];
+        logger.debug("Converting list to array: {}", devices.size());
+        out = new WS980WiFi[devices.size()];
         for (int i = 0; i < out.length; i++) {
             out[i] = devices.get(i);
         }
-        log.debug("End of device discovery: {}", out.length);
+        logger.debug("End of device discovery: {}", out.length);
         return out;
     }
 
-    private static void buildDevFromData(byte[] receBytes, List<WS980WIFI> devices) {
+    private static void buildDevFromData(byte[] receBytes, List<WS980WiFi> devices) {
+        final Logger logger = LoggerFactory.getLogger(WS980WiFi.class);
         Mac mac;
         InetAddress ip;
         String description;
         Integer port;
 
         if (receBytes[0] == (byte) 0xff) {
-            log.debug("Extract data from device response");
+            logger.debug("Extract data from device response");
             try {
                 mac = new Mac(Arrays.copyOfRange(receBytes, 5, 11));
                 ip = InetAddress.getByAddress(Arrays.copyOfRange(receBytes, 11, 15));
@@ -239,17 +241,17 @@ public class WS980WIFI {
                 description = new String(Arrays.copyOfRange(receBytes, 18, 18 + byteCount), "UTF-8");
                 port = toIntExact(Long.decode("0x" + bytesToHex(Arrays.copyOfRange(receBytes, 15, 17))));
 
-                WS980WIFI instance = new WS980WIFI(mac, ip, description, port); // create device object
+                WS980WiFi instance = new WS980WiFi(mac, ip, description, port); // create device object
 
                 if (instance != null) {
-                    log.debug("Adding device ws980wifi to found devices list");
+                    logger.debug("Adding device ws980wifi to found devices list");
                     devices.add(instance);
                 }
             } catch (Exception e) {
-                log.debug("the response from ws908wifi could not be processed, {}", e.getMessage());
+                logger.debug("the response from ws908wifi could not be processed, {}", e.getMessage());
             }
         } else {
-            log.debug("invalid WS980WIFI header data in discovery result");
+            logger.debug("invalid WS980WIFI header data in discovery result");
         }
     }
 

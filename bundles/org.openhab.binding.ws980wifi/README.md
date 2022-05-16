@@ -50,6 +50,7 @@ The advanced configuration parameters should not be modified.
 | uvIndex          | Number:Irradiance  | R          | UV Index                    |
 
 ## Full Example
+
 ```
 Thing ws980wifi:ws980wifi:WS `AZ WS`
     @ `Office`
@@ -81,6 +82,7 @@ Number   ws_lightLevel `WS Light Level [%.2f]` (gWS) {channel = `ws980wifi:ws980
 Number   ws_uvRaw `WS UV Radiation [%.2f]` (gWS) {channel = `ws980wifi:ws980wifi:WS:uvRaw`}
 Number   ws_uvIndex `WS UV Index [%.d]` (gWS) {channel = `ws980wifi:ws980wifi:WS:uvIndex`}
 ```
+
 ## References
 
 This binding is based on the work of R. Petzoldt (R.Petzoldt@web.de), who has analysed the ws980wifi and its wlan interface.

@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ws980wifi.internal.discovery.WS980WIFI;
+import org.openhab.binding.ws980wifi.internal.discovery.WS980WiFi;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -32,21 +32,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ws980wifiHandler} is responsible for handling commands, which are
+ * The {@link WS980WiFiHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Joerg Dokupil - Initial contribution
  */
 @NonNullByDefault
-public class ws980wifiHandler extends BaseThingHandler {
+public class WS980WiFiHandler extends BaseThingHandler {
 
-    private final Logger log = LoggerFactory.getLogger(ws980wifiHandler.class);
+    private final Logger log = LoggerFactory.getLogger(WS980WiFiHandler.class);
     private @Nullable ScheduledFuture<?> pollingJob = null;
-    private @Nullable ws980wifiConfiguration config;
+    private @Nullable WS980WiFiConfiguration config;
     private String host = "";
     private String port = "";
 
-    public ws980wifiHandler(Thing thing) {
+    public WS980WiFiHandler(Thing thing) {
         super(thing);
     }
 
@@ -62,7 +62,7 @@ public class ws980wifiHandler extends BaseThingHandler {
         if (thing == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Thing is NULL");
         } else {
-            config = getConfigAs(ws980wifiConfiguration.class);
+            config = getConfigAs(WS980WiFiConfiguration.class);
             host = config.getHost();
             port = config.getPort();
             updateStatus(ThingStatus.UNKNOWN);
@@ -84,51 +84,51 @@ public class ws980wifiHandler extends BaseThingHandler {
 
     private void updateWeatherData() {
         log.debug("updateWeatherData started by pollingJob");
-        WS980WIFI wsObject = new WS980WIFI(host, port);
+        WS980WiFi wsObject = new WS980WiFi(host, port);
         log.debug("wsObject for refresh created with {}, {}", wsObject.getHost(), wsObject.getPort());
 
         if (wsObject.refreshValues()) {
             updateStatus(ThingStatus.ONLINE);
-            updateState(ws980wifiBindingConstants.CHANNEL_TEMPERATURE_INSIDE,
+            updateState(WS980WiFiBindingConstants.CHANNEL_TEMPERATURE_INSIDE,
                     new QuantityType<>(wsObject.tempInside, SIUnits.CELSIUS));
-            updateState(ws980wifiBindingConstants.CHANNEL_TEMPERATURE_OUTSIDE,
+            updateState(WS980WiFiBindingConstants.CHANNEL_TEMPERATURE_OUTSIDE,
                     new QuantityType<>(wsObject.tempOutside, SIUnits.CELSIUS));
-            updateState(ws980wifiBindingConstants.CHANNEL_TEMPERATURE_DEWPOINT,
+            updateState(WS980WiFiBindingConstants.CHANNEL_TEMPERATURE_DEWPOINT,
                     new QuantityType<>(wsObject.tempDewPoint, SIUnits.CELSIUS));
-            updateState(ws980wifiBindingConstants.CHANNEL_TEMPERATURE_WINDCHILL,
+            updateState(WS980WiFiBindingConstants.CHANNEL_TEMPERATURE_WINDCHILL,
                     new QuantityType<>(wsObject.tempWindChill, SIUnits.CELSIUS));
-            updateState(ws980wifiBindingConstants.CHANNEL_TEMPERATURE_HEATINDEX,
+            updateState(WS980WiFiBindingConstants.CHANNEL_TEMPERATURE_HEATINDEX,
                     new QuantityType<>(wsObject.heatIndex, SIUnits.CELSIUS));
-            updateState(ws980wifiBindingConstants.CHANNEL_HUMIDITY_INSIDE,
+            updateState(WS980WiFiBindingConstants.CHANNEL_HUMIDITY_INSIDE,
                     new QuantityType<>(wsObject.humidityInside, Units.PERCENT));
-            updateState(ws980wifiBindingConstants.CHANNEL_HUMIDITY_OUTSIDE,
+            updateState(WS980WiFiBindingConstants.CHANNEL_HUMIDITY_OUTSIDE,
                     new QuantityType<>(wsObject.humidityOutside, Units.PERCENT));
-            updateState(ws980wifiBindingConstants.CHANNEL_PRESSURE_ABSOLUT,
+            updateState(WS980WiFiBindingConstants.CHANNEL_PRESSURE_ABSOLUT,
                     new QuantityType<>(wsObject.pressureAbsolut, SIUnits.PASCAL));
-            updateState(ws980wifiBindingConstants.CHANNEL_PRESSURE_RELATIVE,
+            updateState(WS980WiFiBindingConstants.CHANNEL_PRESSURE_RELATIVE,
                     new QuantityType<>(wsObject.pressureRelative, SIUnits.PASCAL));
-            updateState(ws980wifiBindingConstants.CHANNEL_WIND_DIRECTION,
+            updateState(WS980WiFiBindingConstants.CHANNEL_WIND_DIRECTION,
                     new QuantityType<>(wsObject.windDirection, Units.DEGREE_ANGLE));
-            updateState(ws980wifiBindingConstants.CHANNEL_WINDSPEED,
+            updateState(WS980WiFiBindingConstants.CHANNEL_WINDSPEED,
                     new QuantityType<>(wsObject.windSpeed, SIUnits.KILOMETRE_PER_HOUR));
-            updateState(ws980wifiBindingConstants.CHANNEL_WINDSPEED_GUST,
+            updateState(WS980WiFiBindingConstants.CHANNEL_WINDSPEED_GUST,
                     new QuantityType<>(wsObject.windSpeedGust, SIUnits.KILOMETRE_PER_HOUR));
-            updateState(ws980wifiBindingConstants.CHANNEL_RAIN_LAST_HOUR,
+            updateState(WS980WiFiBindingConstants.CHANNEL_RAIN_LAST_HOUR,
                     new QuantityType<>(wsObject.rainLastHour, Units.MILLIMETRE_PER_HOUR));
-            updateState(ws980wifiBindingConstants.CHANNEL_RAIN_LAST_DAY,
+            updateState(WS980WiFiBindingConstants.CHANNEL_RAIN_LAST_DAY,
                     new QuantityType<>(wsObject.rainLastDay, Units.MILLIMETRE_PER_HOUR));
-            updateState(ws980wifiBindingConstants.CHANNEL_RAIN_LAST_WEEK,
+            updateState(WS980WiFiBindingConstants.CHANNEL_RAIN_LAST_WEEK,
                     new QuantityType<>(wsObject.rainLastWeek, Units.MILLIMETRE_PER_HOUR));
-            updateState(ws980wifiBindingConstants.CHANNEL_RAIN_LAST_MONTH,
+            updateState(WS980WiFiBindingConstants.CHANNEL_RAIN_LAST_MONTH,
                     new QuantityType<>(wsObject.rainLastMonth, Units.MILLIMETRE_PER_HOUR));
-            updateState(ws980wifiBindingConstants.CHANNEL_RAIN_LAST_YEAR,
+            updateState(WS980WiFiBindingConstants.CHANNEL_RAIN_LAST_YEAR,
                     new QuantityType<>(wsObject.rainLastYear, Units.MILLIMETRE_PER_HOUR));
-            updateState(ws980wifiBindingConstants.CHANNEL_RAIN_TOTAL,
+            updateState(WS980WiFiBindingConstants.CHANNEL_RAIN_TOTAL,
                     new QuantityType<>(wsObject.rainTotal, Units.MILLIMETRE_PER_HOUR));
-            updateState(ws980wifiBindingConstants.CHANNEL_LIGTH_LEVEL,
+            updateState(WS980WiFiBindingConstants.CHANNEL_LIGTH_LEVEL,
                     new QuantityType<>(wsObject.lightLevel, Units.LUX));
-            updateState(ws980wifiBindingConstants.CHANNEL_UV_RAW, new QuantityType<>(wsObject.uvRaw, Units.IRRADIANCE));
-            updateState(ws980wifiBindingConstants.CHANNEL_UV_INDEX,
+            updateState(WS980WiFiBindingConstants.CHANNEL_UV_RAW, new QuantityType<>(wsObject.uvRaw, Units.IRRADIANCE));
+            updateState(WS980WiFiBindingConstants.CHANNEL_UV_INDEX,
                     new QuantityType<>(wsObject.uvIndex, Units.IRRADIANCE));
             log.debug("refreshValues successfully done");
         } else {

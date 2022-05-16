@@ -15,7 +15,7 @@ package org.openhab.binding.ws980wifi.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ws980wifiConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link WS980WiFiConfiguration} class contains fields mapping thing configuration parameters.
  * Configuration parameters have an individual value for each thing. In contrast property values are
  * the same for all Things of one Thing-Type.
  * The configuration parameters can be modified via the administration interfac. properties not.
@@ -23,13 +23,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Joerg Dokupil - Initial contribution
  */
 @NonNullByDefault
-public class ws980wifiConfiguration {
+public class WS980WiFiConfiguration {
 
     private int refreshInterval;
     private String host;
     private String port;
 
-    public ws980wifiConfiguration() {
+    public WS980WiFiConfiguration() {
         this.host = "0.0.0.0";
         this.port = "45000";
     }

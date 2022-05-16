@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ws980wifi.internal.discovery;
 
-import static org.openhab.binding.ws980wifi.internal.ws980wifiBindingConstants.THING_TYPE_WS980WIFI;
+import static org.openhab.binding.ws980wifi.internal.WS980WiFiBindingConstants.THING_TYPE_WS980WIFI;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ws980wifi.internal.ws980wifiBindingConstants;
+import org.openhab.binding.ws980wifi.internal.WS980WiFiBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ws980wifiDiscoveryService} is responsible for discovering ws980wifi devices through
+ * The {@link WS980WiFiDiscoveryService} is responsible for discovering ws980wifi devices through
  * Broadcast.
  *
  * @author Joerg Dokupil - Initial contribution
@@ -49,36 +49,36 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, configurationPid = "discovery.ws980wifi")
 @NonNullByDefault
 
-public class ws980wifiDiscoveryService extends AbstractDiscoveryService {
+public class WS980WiFiDiscoveryService extends AbstractDiscoveryService {
 
-    private final Logger log = LoggerFactory.getLogger(ws980wifiDiscoveryService.class);
+    private final Logger log = LoggerFactory.getLogger(WS980WiFiDiscoveryService.class);
     private final NetworkAddressService networkAddressService;
     private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(THING_TYPE_WS980WIFI);
     private static final int DISCOVERY_TIMEOUT_SECONDS = 30;
     private @Nullable ScheduledFuture<?> backgroundDiscoveryFuture;
 
     @Activate
-    public ws980wifiDiscoveryService(@Reference NetworkAddressService networkAddressService) {
+    public WS980WiFiDiscoveryService(@Reference NetworkAddressService networkAddressService) {
         super(DISCOVERABLE_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS);
         this.networkAddressService = networkAddressService;
     }
 
     private void createScanner() {
         long timestampOfLastScan = getTimestampOfLastScan();
-        WS980WIFI[] ws980wifiDevices = new WS980WIFI[0]; // Array of devices with length zero, easy to rotate through
+        WS980WiFi[] ws980wifiDevices = new WS980WiFi[0]; // Array of devices with length zero, easy to rotate through
         try {
             @Nullable
             InetAddress sourceAddress = getIpAddress(); // gets the ip address of the local host
             if (sourceAddress != null) {
                 log.debug("Scanner: Using source address {} for sending out broadcast request.", sourceAddress);
-                ws980wifiDevices = WS980WIFI.discoverDevices(10000, sourceAddress);
+                ws980wifiDevices = WS980WiFi.discoverDevices(10000, sourceAddress);
             } else {
                 log.debug("Error: no address of the local host! Scan aborted...");
             }
         } catch (Exception e) {
             log.debug("Error while trying to discover ws980wifi devices: {}", e.getMessage());
         }
-        for (WS980WIFI dev : ws980wifiDevices) {
+        for (WS980WiFi dev : ws980wifiDevices) {
             log.debug("Scanner: identified ws980wifi device {}", dev.getHost());
             ThingUID thingUID;
             String id = dev.getHost().replaceAll("\\.", "-");
@@ -94,11 +94,11 @@ public class ws980wifiDiscoveryService extends AbstractDiscoveryService {
             thingUID = new ThingUID(THING_TYPE_WS980WIFI, id);
             log.debug("Scanner: New ThingUID {} created", thingUID);
             Map<String, Object> properties = new HashMap<>();
-            properties.put(ws980wifiBindingConstants.HOST, dev.getHost());
+            properties.put(WS980WiFiBindingConstants.HOST, dev.getHost());
             properties.put(Thing.PROPERTY_MAC_ADDRESS, dev.getMac());
-            properties.put(ws980wifiBindingConstants.DESCRIPTION, dev.getDescription());
-            properties.put(ws980wifiBindingConstants.IP, dev.getIP());
-            properties.put(ws980wifiBindingConstants.PORT, dev.getPort().toString());
+            properties.put(WS980WiFiBindingConstants.DESCRIPTION, dev.getDescription());
+            properties.put(WS980WiFiBindingConstants.IP, dev.getIP());
+            properties.put(WS980WiFiBindingConstants.PORT, dev.getPort().toString());
             log.debug("Scanner: New Properties Map created: {}", properties);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withLabel(dev.getDescription() + " (" + id + ")")

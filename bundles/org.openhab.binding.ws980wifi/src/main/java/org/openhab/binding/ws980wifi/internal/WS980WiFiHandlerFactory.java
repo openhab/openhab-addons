@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ws980wifi.internal;
 
-import static org.openhab.binding.ws980wifi.internal.ws980wifiBindingConstants.THING_TYPE_WS980WIFI;
+import static org.openhab.binding.ws980wifi.internal.WS980WiFiBindingConstants.THING_TYPE_WS980WIFI;
 
 import java.util.Set;
 
@@ -26,14 +26,14 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link ws980wifiHandlerFactory} is responsible for creating things and thing
+ * The {@link WS980WiFiHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Joerg Dokupil - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.ws980wifi", service = ThingHandlerFactory.class)
-public class ws980wifiHandlerFactory extends BaseThingHandlerFactory {
+public class WS980WiFiHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_WS980WIFI);
 
@@ -47,7 +47,7 @@ public class ws980wifiHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_WS980WIFI.equals(thingTypeUID)) {
-            return new ws980wifiHandler(thing);
+            return new WS980WiFiHandler(thing);
         }
 
         return null;

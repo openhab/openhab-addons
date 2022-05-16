@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Mac {
 
-    protected static final Logger log = LoggerFactory.getLogger(Mac.class);
+    protected final Logger log = LoggerFactory.getLogger(Mac.class);
     private final byte[] mac;
 
     /**
@@ -80,7 +80,7 @@ public class Mac {
      * @return Converted mac address in bytes or empty byte array
      * 
      */
-    public static byte[] macStrToBytes(String macStr) {
+    public byte[] macStrToBytes(String macStr) {
         if (macStr == null) {
             log.debug("macStrToBytes param macStr is null.");
             return new byte[0];

@@ -18,13 +18,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link ws980wifiBindingConstants} class defines common constants, which are
+ * The {@link WS980WiFiBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Joerg Dokupil - Initial contribution
  */
 @NonNullByDefault
-public class ws980wifiBindingConstants {
+public class WS980WiFiBindingConstants {
 
     private static final String BINDING_ID = "ws980wifi";
 
