@@ -30,6 +30,7 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 | vin               | Vehicle Identification Number.                                             | yes      |
 | refreshInterval   | Interval the car is polled in minutes.                                     | no       |
 | updateDelay       | How long to wait for commands to reach car and update to server in seconds.| no       |
+| kamereonApiKey    | Kamereon API Key.                                                          | no       | 
 
 
 ## Channels
