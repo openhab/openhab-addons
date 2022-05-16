@@ -67,7 +67,7 @@ To build all add-ons from the command-line, type in:
 mvn clean install
 ```
 
-Most of the time you don't need to build all bindings, but only the binding you are working on.
+Most of the time you do not need to build all bindings, but only the binding you are working on.
 To simply build only your binding use the `-pl` option.
 For example to build only the astro binding:
 
@@ -108,18 +108,26 @@ Parallel builds are also less easy to debug and the increased load may cause tim
 #### Translations
 
 Add-on translations are managed via [Crowdin](https://crowdin.com/project/openhab-addons).
-The english translation is taken from the openHAB-addons GitHub repo and automatically imported in Crowdin when changes are made to the english i18n properties file.
-When translations are added or updated and approved in Crowdin a pull request is automatically created by Crowdin.
-Therefor translations should not be edited in the openHAB-addons repo, but only in Crowdin.
+The English translation is taken from the openHAB-addons GitHub repo and automatically imported in Crowdin when changes are made to the English i18n properties file.
+When translations are added or updated and approved in Crowdin, a pull request is automatically created by Crowdin.
+Therefore translations should not be edited in the openHAB-addons repo, but only in Crowdin.
 Otherwise translation are overridden by the automatic process.
 
-To fill the english properties file run the following maven command on an addon-on:
+To fill the English properties file run the following maven command on an add-on:
 
 ```shell
 mvn i18n:generate-default-translations
 ```
 
 This command can also update the file when things or channel are added or updated.
+
+In some cases the command does not work, and requires the full plug-in name.
+In that case use:
+
+```shell
+mvn org.openhab.core.tools:i18n-maven-plugin:3.2.0:generate-default-translations
+```
+
 
 #### Code Quality
 
