@@ -57,7 +57,7 @@ public class GenericResponseTransformer {
             if (channel == null) {
                 // As we have a generic response mapper it ould happen that a subset of key/values in the response
                 // cannot be mapped to openhab channels.
-                logger.debug("Channel not found: {}", channelId);
+                logger.debug("Channel not found: {}#{}", group, channelId);
             } else {
                 logger.debug("mapping value '{}' to channel {}", value, channel.getUID().getId());
                 String channelType = channel.getAcceptedItemType();

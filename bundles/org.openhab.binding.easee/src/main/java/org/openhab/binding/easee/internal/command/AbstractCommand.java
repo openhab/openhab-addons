@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.easee.internal.command;
 
-import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
+import static org.openhab.binding.easee.internal.EaseeBindingConstants.WEB_REQUEST_BEARER_TOKEN_PREFIX;
 
 import java.lang.reflect.Type;
 import java.net.SocketTimeoutException;
@@ -174,7 +174,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
                     Map<String, Object> jsonObject = gson.fromJson(json, genericStringMap);
                     if (jsonObject != null) {
                         logger.info("success");
-                        handler.updateChannelStatus(transformer.transform(jsonObject, CHANNEL_GROUP_CHARGER_STATE));
+                        handler.updateChannelStatus(transformer.transform(jsonObject, getChannelGroup()));
                     }
                 }
                 break;

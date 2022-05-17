@@ -8,7 +8,8 @@
 		<description>Cloud connected Easee Wallbox.</description>
 
 		<channel-groups>
-			<channel-group typeId="wallbox-charger_state" id="charger_state"/>
+            <channel-group typeId="wallbox-charger_state" id="charger_state"/>
+            <channel-group typeId="wallbox-charger_config" id="charger_config"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:easee:cloud"/>

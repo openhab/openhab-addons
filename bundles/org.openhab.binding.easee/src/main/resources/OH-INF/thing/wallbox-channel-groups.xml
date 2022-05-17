@@ -42,10 +42,6 @@
 				<label>Voltage</label>
 				<description>Voltage</description>
 			</channel>
-			<channel id="lockCablePermanently" typeId="type-switch">
-				<label>Lock Cable Permanently</label>
-				<description>Lock Cable Permanently status of the wallbox.</description>
-			</channel>
 			<channel id="outputCurrent" typeId="type-current">
 				<label>Output Current</label>
 				<description>Actual charging current.</description>
@@ -76,4 +72,27 @@
 			</channel>
 		</channels>
 	</channel-group-type>
+	<channel-group-type id="wallbox-charger_config">
+		<label>Charger Configuration</label>
+		<channels>
+			<channel id="lockCablePermanently" typeId="type-switch">
+				<label>Lock Cable Permanently</label>
+				<description>Lock Cable Permanently status of the wallbox.</description>
+			</channel>
+			<channel id="authorizationRequired" typeId="type-switch">
+				<label>Authorization Required</label>
+				<description>Indicates if authorization is required to start charging.</description>
+			</channel>
+			<channel id="limitToSinglePhaseCharging" typeId="type-switch">
+				<label>Limit To Single Phase Charging</label>
+				<description>Indicates if charging should be limited to single phase mode.</description>
+			</channel>
+			<channel id="phaseMode" typeId="type-integer">
+				<label>Phase Mode</label>
+				<description>Phase Mode.</description>
+			</channel>
+		</channels>
+
+	</channel-group-type>
+	<!-- <channel-group-type id="wallbox-charger_latest_session"> <label>Charger Status</label> <channels> </channels> </channel-group-type> -->
 </thing:thing-descriptions>

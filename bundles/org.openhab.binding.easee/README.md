@@ -35,25 +35,31 @@ interval (minutes) in which live data values are retrieved from the Easee Cloud 
 The binding only supports a subset of the available endpoints that is provided by the Easee Cloud API.
 The table below shows all channels that are available and which of them are writable.
 
-| Channel Type ID                        | Item Type                | Writable | Description                                | Allowed Values (write access)                 |
-|----------------------------------------|--------------------------|----------|--------------------------------------------|-----------------------------------------------|
-| charger_state#smartCharging            | Switch                   | no       |                                            |                                               |
-| charger_state#cableLocked              | Switch                   | no       |                                            |                                               |
-| charger_state#chargerOpMode            | Number                   | no       |                                            |                                               |
-| charger_state#totalPower               | Number:Power             | no       |                                            |                                               |
-| charger_state#sessionEnergy            | Number:Energy            | no       |                                            |                                               |
-| charger_state#latestPulse              | DateTime                 | no       |                                            |                                               |
-| charger_state#chargerFirmware          | Number                   | no       |                                            |                                               |
-| charger_state#latestFirmware           | Number                   | no       |                                            |                                               |
-| charger_state#voltage                  | Number:ElectricPotential | no       |                                            |                                               |
-| charger_state#lockCablePermanently     | Switch                   | no       |                                            |                                               |
-| charger_state#outputCurrent            | Number:ElectricCurrent   | no       |                                            |                                               |
-| charger_state#isOnline                 | Switch                   | no       |                                            |                                               |
-| charger_state#dynamicChargerCurrent    | Number:ElectricCurrent   | no       |                                            |                                               |
-| charger_state#reasonForNoCurrent       | Number                   | no       |                                            |                                               |
-| charger_state#lifetimeEnergy           | Number:Energy            | no       |                                            |                                               |
-| charger_state#errorCode                | Number                   | no       |                                            |                                               |
-| charger_state#fatalErrorCode           | Number                   | no       |                                            |                                               |
+| Channel Type ID                             | Item Type                | Writable | Description                                | Allowed Values (write access)                 |
+|---------------------------------------------|--------------------------|----------|--------------------------------------------|-----------------------------------------------|
+| charger_state#smartCharging                 | Switch                   | no       |                                            |                                               |
+| charger_state#cableLocked                   | Switch                   | no       |                                            |                                               |
+| charger_state#chargerOpMode                 | Number                   | no       |                                            |                                               |
+| charger_state#totalPower                    | Number:Power             | no       |                                            |                                               |
+| charger_state#sessionEnergy                 | Number:Energy            | no       |                                            |                                               |
+| charger_state#latestPulse                   | DateTime                 | no       |                                            |                                               |
+| charger_state#chargerFirmware               | Number                   | no       |                                            |                                               |
+| charger_state#latestFirmware                | Number                   | no       |                                            |                                               |
+| charger_state#voltage                       | Number:ElectricPotential | no       |                                            |                                               |
+| charger_state#outputCurrent                 | Number:ElectricCurrent   | no       |                                            |                                               |
+| charger_state#isOnline                      | Switch                   | no       |                                            |                                               |
+| charger_state#dynamicChargerCurrent         | Number:ElectricCurrent   | no       |                                            |                                               |
+| charger_state#reasonForNoCurrent            | Number                   | no       |                                            |                                               |
+| charger_state#lifetimeEnergy                | Number:Energy            | no       |                                            |                                               |
+| charger_state#errorCode                     | Number                   | no       |                                            |                                               |
+| charger_state#fatalErrorCode                | Number                   | no       |                                            |                                               |
+| charger_config#lockCablePermanently         | Switch                   | no*      |                                            |                                               |
+| charger_config#lockCablePermanently         | Switch                   | no*      |                                            |                                               |
+| charger_config#limitToSinglePhaseCharging   | Switch                   | no*      |                                            |                                               |
+| charger_config#phaseMode                    | Number                   | no*      |                                            |                                               |
+
+*write access not yet implemented
+
 
 ## Full Example
 
