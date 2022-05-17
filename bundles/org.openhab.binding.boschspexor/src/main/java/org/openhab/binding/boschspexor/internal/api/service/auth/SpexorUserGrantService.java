@@ -21,10 +21,13 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -42,38 +45,43 @@ import org.slf4j.LoggerFactory;
  * @author Marc Fischer - Initial contribution *
  */
 @Component(service = SpexorUserGrantService.class, configurationPid = "binding.spexor.userGrantService")
+@NonNullByDefault
 public class SpexorUserGrantService {
     private static final String HTML_FOLDER = "html/";
     private static final String HTML_DEVICE_CODE_AUTH = HTML_FOLDER + "deviceCode.html";
 
     private final Logger logger = LoggerFactory.getLogger(SpexorUserGrantService.class);
 
-    private HttpService httpService;
-    private BundleContext bundleContext;
+    private Optional<HttpService> httpService = Optional.empty();
+    private Optional<BundleContext> bundleContext = Optional.empty();
 
-    private SpexorAuthorizationService authService;
+    private Optional<SpexorAuthorizationService> authService = Optional.empty();
 
     @Activate
     protected void activate(ComponentContext componentContext, Map<String, Object> properties) {
-        try {
-            bundleContext = componentContext.getBundleContext();
-            httpService.registerServlet(SPEXOR_OPENHAB_URL, createServlet(), new Hashtable<>(),
-                    httpService.createDefaultHttpContext());
-            httpService.registerResources(SPEXOR_OPENHAB_RESOURCES_URL, "html/resources", null);
-        } catch (NamespaceException | ServletException | IOException e) {
-            logger.error("unknown error in openHAB spexor grant service", e);
-        }
+        bundleContext = Optional.of(componentContext.getBundleContext());
+        httpService.ifPresent(service -> {
+            try {
+                service.registerServlet(SPEXOR_OPENHAB_URL, createServlet(), new Hashtable<>(),
+                        service.createDefaultHttpContext());
+                service.registerResources(SPEXOR_OPENHAB_RESOURCES_URL, "html/resources", null);
+            } catch (NamespaceException | ServletException | IOException e) {
+                logger.error("unknown error in openHAB spexor grant service", e);
+            }
+        });
     }
 
     @Deactivate
     protected void deactivate(ComponentContext componentContext) {
-        httpService.unregister(SPEXOR_OPENHAB_URL);
-        httpService.unregister(SPEXOR_OPENHAB_RESOURCES_URL);
+        httpService.ifPresent(service -> {
+            service.unregister(SPEXOR_OPENHAB_URL);
+            service.unregister(SPEXOR_OPENHAB_RESOURCES_URL);
+        });
     }
 
     public void initialize(SpexorAuthorizationService authService) {
         logger.debug("authService is assigned and can be used");
-        this.authService = authService;
+        this.authService = Optional.of(authService);
     }
 
     /**
@@ -83,7 +91,12 @@ public class SpexorUserGrantService {
      * @throws IOException thrown when an invalid state in the processing occurs
      */
     private HttpServlet createServlet() throws IOException {
-        return new SpexorAuthServlet(this, loadHtmlResource(HTML_DEVICE_CODE_AUTH));
+        String html = loadHtmlResource(HTML_DEVICE_CODE_AUTH);
+        if (html != null) {
+            return new SpexorAuthServlet(this, html);
+        } else {
+            throw new IOException("html file could not be loaded");
+        }
     }
 
     /**
@@ -93,15 +106,18 @@ public class SpexorUserGrantService {
      * @return The content of the html file
      * @throws IOException thrown when the requested resource couldn't be loaded
      */
+    @Nullable
     private String loadHtmlResource(String htmlFilePath) throws IOException {
-        final URL index = bundleContext.getBundle().getEntry(htmlFilePath);
         String result = null;
-        if (index == null) {
-            throw new FileNotFoundException(
-                    String.format("'{}' was not found. Failed to initialize spexor auth servlet", htmlFilePath));
-        } else {
-            try (InputStream inputStream = index.openStream()) {
-                result = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        if (bundleContext.isPresent()) {
+            final URL index = bundleContext.get().getBundle().getEntry(htmlFilePath);
+            if (index == null) {
+                throw new FileNotFoundException(
+                        String.format("'{}' was not found. Failed to initialize spexor auth servlet", htmlFilePath));
+            } else {
+                try (InputStream inputStream = index.openStream()) {
+                    result = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                }
             }
         }
         return result;
@@ -109,14 +125,14 @@ public class SpexorUserGrantService {
 
     @Reference
     protected void setHttpService(HttpService httpService) {
-        this.httpService = httpService;
+        this.httpService = Optional.of(httpService);
     }
 
     protected void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
+        this.httpService = Optional.empty();
     }
 
-    public SpexorAuthorizationService getAuthService() {
+    public Optional<SpexorAuthorizationService> getAuthService() {
         return authService;
     }
 }

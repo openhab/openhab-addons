@@ -33,6 +33,7 @@ import org.openhab.binding.boschspexor.internal.api.model.Profile;
 import org.openhab.binding.boschspexor.internal.api.model.SensorValue;
 import org.openhab.binding.boschspexor.internal.api.model.SpexorInfo;
 import org.openhab.binding.boschspexor.internal.api.service.SpexorAPIService;
+import org.openhab.binding.boschspexor.internal.api.service.SpexorBridgeHandler;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -81,35 +82,50 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BoschSpexorThingHandler.class);
 
-    private @NonNullByDefault({}) SpexorAPIService apiService;
-
     private Optional<ScheduledFuture<?>> pollEvent;
 
-    public BoschSpexorThingHandler(Thing thing, @Nullable SpexorAPIService apiService) {
+    public BoschSpexorThingHandler(Thing thing) {
         super(thing);
-        this.apiService = apiService;
         this.pollEvent = Optional.empty();
-        logger.debug("Bosch spexor handler was created");
+        if (logger.isDebugEnabled()) {
+            logger.debug("Bosch spexor handler was created");
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("received ChannelUID {} with command {}", channelUID, command);
+        if (logger.isDebugEnabled()) {
+            logger.debug("received ChannelUID {} with command {}", channelUID, command);
+        }
         if (CHANNEL_BOSCH_SPEXOR.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 updateStatus();
             }
-        } else if (channelUID.getId().contains(GROUP_ID_OBSERVATIONS + "#")) {
+        } else if (GROUP_ID_OBSERVATIONS.equals(channelUID.getGroupId())) {
+            SpexorAPIService apiService = getSpexorAPIService();
             if (command instanceof StringType) {
-                SensorMode mode = SensorMode.valueOf(command.toString());
-                String type = channelUID.getId().substring(channelUID.getId().lastIndexOf('#') + 1);
-                if (SensorMode.Activated.equals(mode) || SensorMode.Deactivated.equals(mode)) {
+                if (apiService == null) {
+                    logger.warn("spexor API service is not available and comand won't be performed");
+                    return;
+                }
+                SensorMode mode = null;
+                try {
+                    mode = SensorMode.valueOf(command.toString().toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    logger.warn("no SensorMode could be found for command '{}'", command, e);
+                }
+                String type = channelUID.getIdWithoutGroup();
+                if (SensorMode.ACTIVATED.equals(mode) || SensorMode.DEACTIVATED.equals(mode)) {
                     ObservationChangeStatus newObservationState = apiService.setObservation(getThing().getUID().getId(),
-                            type, SensorMode.Activated.equals(mode));
-                    logger.debug("setting new observation state for {} to {} was {}", type, mode,
-                            newObservationState.getStatusCode());
+                            type, SensorMode.ACTIVATED.equals(mode));
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("setting new observation state for {} to {} was {}", type, mode,
+                                newObservationState.getStatusCode());
+                    }
                     updateState(channelUID, new StringType(newObservationState.getSensorMode().name()));
                 } else {
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "setting observation state not allowed. Only 'ACTIVATED' and 'DEACTIVATED' are valid options ");
                     logger.warn(
                             "setting observation state for {} to {} not allowed. Only 'Activated' and 'Deactivated' are valid options ",
                             channelUID, mode);
@@ -120,101 +136,113 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
 
     @Override
     public void thingUpdated(Thing thing) {
-        logger.debug("thing {} got update with {} channels", thing.getUID(), thing.getChannels().size());
+        if (logger.isDebugEnabled()) {
+            logger.debug("thing {} got update with {} channels", thing.getUID(), thing.getChannels().size());
+        }
         super.thingUpdated(thing);
     }
 
     @SuppressWarnings("unchecked")
     private void updateStatus() {
-        logger.debug("updating {} with new values from backend", getThing().getUID());
-        SpexorInfo spexor = apiService.getSpexor(getThing().getUID().getId());
-        if (spexor == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.UNKNOWN.NONE,
-                    "Could not determine further information.");
+        if (logger.isDebugEnabled()) {
+            logger.debug("updating {} with new values from backend", getThing().getUID());
+        }
+        SpexorAPIService apiService = getSpexorAPIService();
+        if (apiService == null) {
+            logger.warn("spexor API service is not available and device won't be updated");
         } else {
-            Connection connection = spexor.getStatus().getConnection();
-            boolean thingReachable = connection.isOnline();
-            if (thingReachable) {
-                // CONNECTION STATUS
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.ONLINE.NONE);
-                updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_CONNECTION_TYPE),
-                        new StringType(connection.getConnectionType().name()));
-                updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_LAST_CONNECTED),
-                        new DateTimeType(connection.getLastConnected()));
-                // ENERGY STATUS
-                Energy energy = spexor.getStatus().getEnergy();
-                updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_ENERGY_MODE),
-                        new StringType(energy.getEnergyMode().name()));
-                updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_POWERED), OnOffType.from(energy.isPowered()));
-                updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_SOC),
-                        new PercentType(energy.getStateOfCharge().getValue()));
+            SpexorInfo spexor = apiService.getSpexor(getThing().getUID().getId());
+            if (spexor == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Could not determine further information.");
+            } else {
+                Connection connection = spexor.getStatus().getConnection();
+                boolean thingReachable = connection.isOnline();
+                if (thingReachable) {
+                    // CONNECTION STATUS
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.ONLINE.NONE);
+                    updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_CONNECTION_TYPE),
+                            new StringType(connection.getConnectionType().name()));
+                    updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_LAST_CONNECTED),
+                            new DateTimeType(connection.getLastConnected()));
+                    // ENERGY STATUS
+                    Energy energy = spexor.getStatus().getEnergy();
+                    updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_ENERGY_MODE),
+                            new StringType(energy.getEnergyMode().name()));
+                    updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_POWERED), OnOffType.from(energy.isPowered()));
+                    updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_SOC),
+                            new PercentType(energy.getStateOfCharge().getValue()));
 
-                // FIRMWARE INFO
-                Firmware firmware = spexor.getStatus().getFirmware();
-                updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_AVAILABLE_VERSION),
-                        new StringType(firmware.getAvailableVersion()));
-                updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_INSTALLED_VERSION),
-                        new StringType(firmware.getCurrentVersion()));
-                updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_FIRMWARE_STATE),
-                        new StringType(firmware.getState().name()));
+                    // FIRMWARE INFO
+                    Firmware firmware = spexor.getStatus().getFirmware();
+                    updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_AVAILABLE_VERSION),
+                            new StringType(firmware.getAvailableVersion()));
+                    updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_INSTALLED_VERSION),
+                            new StringType(firmware.getCurrentVersion()));
+                    updateState(getChannelID(GROUP_ID_STATUS, CHANNEL_ID_FIRMWARE_STATE),
+                            new StringType(firmware.getState().name()));
 
-                // PROFILE
-                Profile profile = spexor.getProfile();
-                updateState(getChannelID(GROUP_ID_PROFILE, CHANNEL_ID_PROFILE_NAME), new StringType(profile.getName()));
-                updateState(getChannelID(GROUP_ID_PROFILE, CHANNEL_ID_PROFILE_TYPE),
-                        new StringType(profile.getProfileType().name()));
+                    // PROFILE
+                    Profile profile = spexor.getProfile();
+                    updateState(getChannelID(GROUP_ID_PROFILE, CHANNEL_ID_PROFILE_NAME),
+                            new StringType(profile.getName()));
+                    updateState(getChannelID(GROUP_ID_PROFILE, CHANNEL_ID_PROFILE_TYPE),
+                            new StringType(profile.getProfileType().name()));
 
-                boolean thingStructureChanged = false;
-                ThingBuilder thingBuilder = editThing();
+                    boolean thingStructureChanged = false;
+                    ThingBuilder thingBuilder = editThing();
 
-                // OBSERVATION
-                for (ObservationStatus observationStatus : spexor.getStatus().getObservation()) {
-                    @SuppressWarnings("null")
-                    String observationType = observationStatus.getObservationType();
-                    Channel channel = getThing().getChannel(getChannelID(GROUP_ID_OBSERVATIONS, observationType));
-                    if (channel == null) {
-                        channel = createObservationChannel(observationType);
-                        thingBuilder.withoutChannel(channel.getUID()).withChannel(channel);
-                        thingStructureChanged = true;
-                    }
-                    updateState(channel.getUID(), new StringType(observationStatus.getSensorMode().name()));
-                }
-
-                // SENSORS
-                Map<String, SensorValue<?>> values = apiService.getSensorValues(spexor.getId(), spexor.getSensors());
-                for (String sensor : spexor.getSensors()) {
-                    String sensorType = sensor;
-                    Channel channel = getThing().getChannel(getChannelID(GROUP_ID_SENSORS, sensorType));
-                    if (channel == null) {
-                        channel = createSensorChannel(sensor, sensorType);
-                        if (channel != null) {
+                    // OBSERVATION
+                    for (ObservationStatus observationStatus : spexor.getStatus().getObservation()) {
+                        @SuppressWarnings("null")
+                        String observationType = observationStatus.getObservationType();
+                        Channel channel = getThing().getChannel(getChannelID(GROUP_ID_OBSERVATIONS, observationType));
+                        if (channel == null) {
+                            channel = createObservationChannel(observationType);
                             thingBuilder.withoutChannel(channel.getUID()).withChannel(channel);
                             thingStructureChanged = true;
                         }
+                        updateState(channel.getUID(), new StringType(observationStatus.getSensorMode().name()));
                     }
-                    if (channel != null) {
-                        SensorValue<?> sensorValue = values.get(sensor);
-                        if (sensorValue != null) {
-                            if (sensorValue.getValue() instanceof Integer) {
-                                updateState(channel.getUID(),
-                                        new DecimalType(((SensorValue<Integer>) sensorValue).getValue()));
-                            } else if (sensorValue.getValue() instanceof String) {
-                                updateState(channel.getUID(),
-                                        new StringType(((SensorValue<String>) sensorValue).getValue()));
+
+                    // SENSORS
+                    Map<String, SensorValue<?>> values = apiService.getSensorValues(spexor.getId(),
+                            spexor.getSensors());
+                    for (String sensor : spexor.getSensors()) {
+                        String sensorType = sensor;
+                        Channel channel = getThing().getChannel(getChannelID(GROUP_ID_SENSORS, sensorType));
+                        if (channel == null) {
+                            channel = createSensorChannel(sensor, sensorType);
+                            if (channel != null) {
+                                thingBuilder.withoutChannel(channel.getUID()).withChannel(channel);
+                                thingStructureChanged = true;
+                            }
+                        }
+                        if (channel != null) {
+                            SensorValue<?> sensorValue = values.get(sensor);
+                            if (sensorValue != null) {
+                                if (sensorValue.getValue() instanceof Integer) {
+                                    Integer value = ((SensorValue<Integer>) sensorValue).getValue();
+                                    updateState(channel.getUID(), new DecimalType(value.doubleValue()));
+                                } else if (sensorValue.getValue() instanceof String) {
+                                    String value = ((SensorValue<String>) sensorValue).getValue();
+                                    updateState(channel.getUID(), new StringType(value));
+                                }
                             }
                         }
                     }
-                }
 
-                if (thingStructureChanged) {
-                    updateThing(thingBuilder.build());
-                    logger.debug("structural change of thing \"{}\"", getThing().getUID());
-                }
+                    if (thingStructureChanged) {
+                        updateThing(thingBuilder.build());
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("structural change of thing \"{}\"", getThing().getUID());
+                        }
+                    }
 
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, "spexor is not reachable");
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "spexor is not reachable");
+                }
             }
-
         }
     }
 
@@ -259,9 +287,21 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
         return new ChannelUID(channelGroupUIDStatus, channelID);
     }
 
+    @SuppressWarnings("null")
+    @Nullable
+    public SpexorAPIService getSpexorAPIService() {
+        if (getBridge().getHandler() instanceof SpexorBridgeHandler) {
+            return ((SpexorBridgeHandler) getBridge().getHandler()).getApiService();
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public void initialize() {
-        logger.debug("Bosch Spexor ID is {}", getThing().getUID().getId());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Bosch Spexor ID is {}", getThing().getUID().getId());
+        }
         int refreshRate = ((BigDecimal) getConfig().get("refreshInterval")).intValue();
         if (pollEvent.isPresent()) {
             pollEvent.get().cancel(false);

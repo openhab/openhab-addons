@@ -14,12 +14,9 @@ package org.openhab.binding.boschspexor.internal;
 
 import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstants.*;
 
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.boschspexor.internal.api.service.SpexorAPIService;
 import org.openhab.binding.boschspexor.internal.api.service.SpexorBridgeHandler;
 import org.openhab.binding.boschspexor.internal.api.service.auth.SpexorUserGrantService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -46,7 +43,6 @@ import org.osgi.service.component.annotations.Reference;
 public class BoschSpexorHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
     private final SpexorUserGrantService authGrantService;
-    private Optional<SpexorAPIService> apiService = Optional.empty();
     private StorageService storageService;
 
     @Activate
@@ -70,11 +66,10 @@ public class BoschSpexorHandlerFactory extends BaseThingHandlerFactory {
         if (SPEXOR_BRIDGE_TYPE.equals(thingTypeUID)) {
             SpexorBridgeHandler spexorBridgeHandler = new SpexorBridgeHandler((Bridge) thing, httpClient,
                     storageService);
-            this.apiService = Optional.of(spexorBridgeHandler.getApiService());
             this.authGrantService.initialize(spexorBridgeHandler.getAuthService());
             result = spexorBridgeHandler;
         } else if (SPEXOR_THING_TYPE.equals(thingTypeUID)) {
-            result = new BoschSpexorThingHandler(thing, apiService.get());
+            result = new BoschSpexorThingHandler(thing);
         }
 
         return result;

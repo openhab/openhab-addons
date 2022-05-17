@@ -23,7 +23,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -34,6 +33,7 @@ import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstants;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationChangeStatus;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationChangeStatus.StatusCode;
+import org.openhab.binding.boschspexor.internal.api.model.ObservationRequest;
 import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus.SensorMode;
 import org.openhab.binding.boschspexor.internal.api.model.SensorValue;
 import org.openhab.binding.boschspexor.internal.api.model.Spexor;
@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -53,7 +54,7 @@ import com.nimbusds.common.contenttype.ContentType;
  * Bosch Spexor API Service
  * calls the endpoint to determine information about spexors
  *
- * @author Marc Fischer
+ * @author Marc Fischer - Initial contribution
  *
  */
 @NonNullByDefault
@@ -61,7 +62,7 @@ public class SpexorAPIService {
     private final Logger logger = LoggerFactory.getLogger(SpexorAPIService.class);
 
     private final SpexorAuthorizationService authService;
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public SpexorAPIService(SpexorAuthorizationService authService) {
         this.authService = authService;
@@ -101,7 +102,7 @@ public class SpexorAPIService {
     }
 
     public Map<String, SensorValue<?>> getSensorValues(String id, List<String> sensors) {
-        Map<@NonNull String, @NonNull SensorValue<?>> values = new HashMap<String, SensorValue<?>>();
+        Map<String, SensorValue<?>> values = new HashMap<String, SensorValue<?>>();
         String keys = sensors.stream().collect(Collectors.joining(","));
         Optional<Request> request = authService.newRequest(BoschSpexorBindingConstants.ENDPOINT_SPEXOR, id,
                 BoschSpexorBindingConstants.ENDPOINT_SENSORVALUE, keys);
@@ -143,37 +144,40 @@ public class SpexorAPIService {
     public ObservationChangeStatus setObservation(String id, String observationType, boolean enable) {
         Optional<Request> request = authService.newRequest(BoschSpexorBindingConstants.ENDPOINT_SPEXOR, id,
                 BoschSpexorBindingConstants.ENDPOINT_OBSERVATION);
+        String errorMessage = "unknown error";
         if (request.isPresent()) {
+            ObservationRequest observationRequest = new ObservationRequest(observationType,
+                    enable ? SensorMode.ACTIVATED : SensorMode.DEACTIVATED);
             request.get().method(HttpMethod.PATCH);
             request.get().accept(MimeTypes.Type.APPLICATION_JSON.asString());
-            request.get()
-                    .content(new StringContentProvider(
-                            "[{\"observationType\":\"" + observationType + "\", \"sensorMode\":\""
-                                    + (enable ? SensorMode.Activated : SensorMode.Deactivated).name() + "\"}]",
-                            "UTF-8"), ContentType.APPLICATION_JSON.toString());
             try {
+                request.get()
+                        .content(new StringContentProvider(new StringBuilder().append("[")
+                                .append(mapper.writeValueAsString(observationRequest)).append("]").toString(), "UTF-8"),
+                                ContentType.APPLICATION_JSON.toString());
                 List<ObservationChangeStatus> result = send(request.get(),
                         new TypeReference<List<ObservationChangeStatus>>() {
                         });
-                if (result.size() > 0) {
+                if (!result.isEmpty()) {
                     for (ObservationChangeStatus observationChangeStatus : result) {
                         if (observationType.equals(observationChangeStatus.getObservationType())) {
                             return observationChangeStatus;
                         }
                     }
                 }
+            } catch (JsonProcessingException e) {
+                logger.warn("failed to marshal observation request with key '{}' and state {}", observationType,
+                        observationRequest.getSensorMode(), e);
+                errorMessage = e.getLocalizedMessage();
             } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
                 logger.warn("failed to get '{}' : {}", request.get().getURI(), e.getMessage(), e);
-                ObservationChangeStatus statusFailed = new ObservationChangeStatus();
-                statusFailed.setObservationType(observationType);
-                statusFailed.setStatusCode(StatusCode.FAILURE);
-                statusFailed.setMessage(e.getLocalizedMessage());
-                return statusFailed;
+                errorMessage = e.getLocalizedMessage();
             }
         }
         ObservationChangeStatus statusFailed = new ObservationChangeStatus();
         statusFailed.setObservationType(observationType);
         statusFailed.setStatusCode(StatusCode.FAILURE);
+        statusFailed.setMessage(errorMessage);
         return statusFailed;
     }
 

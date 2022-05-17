@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Representation of a Bosch spexor
  *
- * @author Marc Fischer - Initial contribution *
+ * @author Marc Fischer - Initial contribution
  */
 @NonNullByDefault
 public class Spexor {

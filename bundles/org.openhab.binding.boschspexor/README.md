@@ -28,13 +28,12 @@ No additional configuration needed.
 ## Thing Configuration
 
 The spexor thing can be configured by setting up a refresh interval.
-The spexor contains 3 properties
+The spexor contains 2 properties
 
 | property                  | type   | description                                                              | editable      |
 |---------------------------|--------|--------------------------------------------------------------------------|---------------|
-| spexor ID                 | ID     | identifies the thing                                                     | no            |
-| spexor Name               | String | given Name of the spexor                                                 | no            |
-| spexor refresh interval   | number | defintion how often a spexor should check its state with the spexor API  | yes           |
+| ID                        | ID     | identifies the thing                                                     | no            |
+| spexor refresh interval   | number | definition how often a spexor should check its state with the spexor API | yes           |
                                        
 
 ## Channels
@@ -42,4 +41,9 @@ The spexor contains 3 properties
 Definition and explanation of the channels is provided in the UI.
 To change the observation of Burglary or other (Observation Type Burglary) you can change the state (BurglaryState f.e.) by selecting the values *deactivated* or *activated*. 
 A drop-down menu should be available via the UI.
+
+There are also additional channels upcomming. Dependent on your use and purchased features within the spexor. The channels will be named dependent on the avaliable Observation Types defined in the official Bosch documentation https://developer.bosch.com/products-and-services/apis/spexor-api/documentation/spexor-device
+
+If you have subscribed to Fire it will automatically appear as a new channel. Same for any sensor values that are unlocked / available on your spexor. The implementation is dynamically updateing your model as soon as your feature is available. If any channel or sensor value will not be available any more it won't get updated and also would disappear. 
+
 

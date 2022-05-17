@@ -11,3 +11,50 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+oauth2-oidc-sdk-9.20.jar
+* License: Apache License 2.0
+* Project: https://connect2id.com/products/nimbus-oauth-openid-connect-sdk
+* Source: https://bitbucket.org/connect2id/oauth-2.0-sdk-with-openid-connect-extensions/src/master/
+
+content-type-2.1.jar
+* License: Apache License 2.0
+* Project: https://connect2id.com/products/nimbus-oauth-openid-connect-sdk
+* Source:https://bitbucket.org/connect2id/nimbus-content-type/src/master/
+
+nimbus-jose-jwt-9.14.jar
+* License: Apache License 2.0
+* Project: https://connect2id.com/products/nimbus-jose-jwt
+* Source: https://bitbucket.org/connect2id/nimbus-jose-jwt/src/master/
+
+lang-tag-1.5.jar
+* License: Apache License 2.0
+* Project: https://bitbucket.org/connect2id/nimbus-language-tags/src/master/
+* Source: https://bitbucket.org/connect2id/nimbus-language-tags/src/master/
+
+jcip-annotations-1.0.-1.jar
+* License: Apache License 2.0
+* Project: https://github.com/stephenc/jcip-annotations
+* Source: https://github.com/stephenc/jcip-annotations
+
+json-smart-2.4.7.jar
+* License: Apache License 2.0
+* Project: https://github.com/netplex/json-smart-v2
+* Source: https://github.com/netplex/json-smart-v2
+
+accessors-smart-2.4.7.jar
+* License: Apache License 2.0
+* Project: https://github.com/netplex/json-smart-v2
+* Source: https://github.com/netplex/json-smart-v2/accessors-smart/
+
+jquery.min.js - v1.8.3
+* License: MIT License - https://github.com/jquery/jquery/blob/main/LICENSE.txt
+* Project: https://github.com/jquery
+* Source: https://github.com/jquery/jquery
+
+qrcode.min.js
+* License: MIT License - https://github.com/davidshimjs/qrcodejs/blob/master/LICENSE
+* Project:https://github.com/davidshimjs/qrcodejs
+* Source: https://github.com/davidshimjs/qrcodejs

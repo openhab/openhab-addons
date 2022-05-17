@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Representation of a Spexor Info Object
  *
- * @author Marc Fischer - Initial contribution *
+ * @author Marc Fischer - Initial contribution
  */
 @NonNullByDefault
 public class SpexorInfo {

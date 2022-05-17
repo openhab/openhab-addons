@@ -19,14 +19,12 @@ import org.openhab.binding.boschspexor.internal.api.model.ObservationStatus.Sens
 /**
  * Representation of Observation Change Status
  *
- * @author Marc Fischer - Initial contribution *
+ * @author Marc Fischer - Initial contribution
  */
 @NonNullByDefault
 public class ObservationChangeStatus {
     /**
      * StatusCode
-     *
-     * @author Marc Fischer - Initial contribution
      *
      */
     public enum StatusCode {
@@ -35,7 +33,7 @@ public class ObservationChangeStatus {
     }
 
     private String observationType = ObservationStatus.TYPE_BURGLARY;
-    private SensorMode sensorMode = SensorMode.Deactivated;
+    private SensorMode sensorMode = SensorMode.DEACTIVATED;
     private StatusCode statusCode = StatusCode.FAILURE;
     @Nullable
     private String message;

@@ -53,7 +53,7 @@ public class BoschSpexorBindingConstants {
 
     public static final String DEVICE_CODE = "deviceCode";
     public static final String USER_CODE = "userCode";
-    public static final String PROPERTY_SPEXOR_ID = "deviceID";
+    public static final String PROPERTY_SPEXOR_ID = "ID";
     public static final String PROPERTY_SPEXOR_NAME = "deviceName";
 
     public static final String DEVICE_CODE_REQUEST_TIME = DEVICE_CODE + ".requestTime";

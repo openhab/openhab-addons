@@ -477,24 +477,15 @@ public class SpexorAuthorizationService {
         return this.executor;
     }
 
-    public boolean isNumeric(@Nullable String candidate) {
-        if (candidate == null) {
-            return false;
-        }
-        return pattern.matcher(candidate).matches();
-    }
-
     public boolean isEmpty(@Nullable String candidate) {
-        if (candidate == null) {
-            return true;
-        }
-        return "".equalsIgnoreCase(candidate.trim());
+        return candidate == null || candidate.isBlank();
     }
 
     public boolean isNotEmpty(@Nullable String candidate) {
-        if (candidate == null) {
-            return false;
-        }
-        return !"".equalsIgnoreCase(candidate.trim());
+        return !isEmpty(candidate);
+    }
+
+    public boolean isNumeric(@Nullable String candidate) {
+        return isNotEmpty(candidate) && pattern.matcher(candidate).matches();
     }
 }

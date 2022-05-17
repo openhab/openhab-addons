@@ -19,24 +19,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Representation object of Engery information
  *
- * @author Marc Fischer - Initial contribution *
+ * @author Marc Fischer - Initial contribution
  */
 @NonNullByDefault
 public class Energy {
     /**
      * Possible Energy Modes
      *
-     * @author Marc Fischer - Initial contribution
-     *
      */
     public enum EnergyMode {
-        EnergySavingOff,
-        EnergySavingAlwaysOn,
-        EnergySavingOnBattery
+        @JsonProperty("EnergySavingOff")
+        ENERGY_SAVING_OFF,
+        @JsonProperty("EnergySavingAlwaysOn")
+        ENERGY_SAVING_ALWAYS_ON,
+        @JsonProperty("EnergySavingOnBattery")
+        ENERGY_SAVING_ON_BATTERY
     }
 
     private SensorValue<Integer> stateOfCharge = new SensorValue<Integer>();
-    private EnergyMode energyMode = EnergyMode.EnergySavingAlwaysOn;
+    private EnergyMode energyMode = EnergyMode.ENERGY_SAVING_ALWAYS_ON;
     @JsonProperty("isPowered")
     private boolean powered = false;
 

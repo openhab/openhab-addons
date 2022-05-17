@@ -14,29 +14,34 @@ package org.openhab.binding.boschspexor.internal.api.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Representaion of Firmware information
  *
- * @author Marc Fischer - Initial contribution *
+ * @author Marc Fischer - Initial contribution
  */
 @NonNullByDefault
 public class Firmware {
     /**
      * Available information about Firmware
      *
-     * @author Marc Fischer - Initial contribution
-     *
      */
     public enum FirmwareState {
-        UpToDate,
-        UpdateAvailable,
-        Scheduled,
-        Installing,
-        InstallationFailed,
+        @JsonProperty("UpToDate")
+        UP_TO_DATE,
+        @JsonProperty("UpdateAvailable")
+        UPDATE_AVAILABLE,
+        @JsonProperty(" Scheduled")
+        SCHEDULED,
+        @JsonProperty(" Installing")
+        INSTALLING,
+        @JsonProperty("InstallationFailed")
+        INSTALLATION_FAILED,
     }
 
     private String currentVersion = "";
-    private FirmwareState state = FirmwareState.UpToDate;
+    private FirmwareState state = FirmwareState.UP_TO_DATE;
     private String availableVersion = "";
 
     public String getCurrentVersion() {

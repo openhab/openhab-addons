@@ -88,7 +88,7 @@ class SpexorAPIServiceTest {
         assertEquals("860906043381800", actual.getId());
         assertEquals("dev", actual.getName());
         assertEquals("Vehicle", actual.getProfile().getName());
-        assertEquals(ProfileType.Car, actual.getProfile().getProfileType());
+        assertEquals(ProfileType.CAR, actual.getProfile().getProfileType());
         assertEquals("2021-12-15T09:38:58.750Z", actual.getStatus().getLastConnected());
         assertTrue(actual.getStatus().isOnline());
         assertEquals("10.6.3", actual.getStatus().getVersion());
@@ -97,12 +97,12 @@ class SpexorAPIServiceTest {
         assertEquals(3, actual.getStatus().getObservationStatus().size());
         ObservationStatus burglaryStatus = actual.getStatus().getObservationStatus().get(0);
         assertEquals("Burglary", burglaryStatus.getObservationType());
-        assertEquals(SensorMode.Deactivated, burglaryStatus.getSensorMode());
+        assertEquals(SensorMode.DEACTIVATED, burglaryStatus.getSensorMode());
         ObservationStatus coStatus = actual.getStatus().getObservationStatus().get(1);
-        assertEquals(SensorMode.Deactivated, coStatus.getSensorMode());
+        assertEquals(SensorMode.DEACTIVATED, coStatus.getSensorMode());
         ObservationStatus fireStatus = actual.getStatus().getObservationStatus().get(2);
         assertEquals("Fire", fireStatus.getObservationType());
-        assertEquals(SensorMode.Activated, fireStatus.getSensorMode());
+        assertEquals(SensorMode.ACTIVATED, fireStatus.getSensorMode());
     }
 
     @Test
@@ -120,32 +120,32 @@ class SpexorAPIServiceTest {
         assertEquals("860906043381800", spexor.getId());
         assertEquals("dev", spexor.getName());
         assertEquals("Vehicle", spexor.getProfile().getName());
-        assertEquals(ProfileType.Car, spexor.getProfile().getProfileType());
+        assertEquals(ProfileType.CAR, spexor.getProfile().getProfileType());
 
         Energy energy = spexor.getStatus().getEnergy();
-        assertEquals(EnergyMode.EnergySavingOff, energy.getEnergyMode());
+        assertEquals(EnergyMode.ENERGY_SAVING_OFF, energy.getEnergyMode());
         assertTrue(energy.isPowered());
         assertEquals(94, energy.getStateOfCharge().getValue());
 
         Firmware firmware = spexor.getStatus().getFirmware();
         assertEquals("10.6.3", firmware.getCurrentVersion());
         assertEquals("10.6.3", firmware.getAvailableVersion());
-        assertEquals(FirmwareState.UpToDate, firmware.getState());
+        assertEquals(FirmwareState.UP_TO_DATE, firmware.getState());
 
         Connection connection = spexor.getStatus().getConnection();
 
         assertEquals("2021-12-15T11:12:41.738Z", connection.getLastConnected());
         assertFalse(connection.isOnline());
-        assertEquals(ConnectionType.Wifi, connection.getConnectionType());
+        assertEquals(ConnectionType.WIFI, connection.getConnectionType());
 
         assertEquals(2, spexor.getStatus().getObservation().size());
         ObservationStatus burglaryStatus = spexor.getStatus().getObservation().get(0);
         assertEquals("Burglary", burglaryStatus.getObservationType());
-        assertEquals(SensorMode.Deactivated, burglaryStatus.getSensorMode());
+        assertEquals(SensorMode.DEACTIVATED, burglaryStatus.getSensorMode());
 
         ObservationStatus fireStatus = spexor.getStatus().getObservation().get(1);
         assertEquals("Fire", fireStatus.getObservationType());
-        assertEquals(SensorMode.Activated, fireStatus.getSensorMode());
+        assertEquals(SensorMode.ACTIVATED, fireStatus.getSensorMode());
     }
 
     @Test
@@ -177,12 +177,12 @@ class SpexorAPIServiceTest {
         ObservationChangeStatus observationChange = apiService.setObservation("123456", "Burglary", true);
         assertNotNull(observationChange);
         assertEquals("Burglary", observationChange.getObservationType());
-        assertEquals(SensorMode.Deactivated, observationChange.getSensorMode());
+        assertEquals(SensorMode.DEACTIVATED, observationChange.getSensorMode());
         assertEquals(StatusCode.FAILURE, observationChange.getStatusCode());
         verify(request).method(HttpMethod.PATCH);
         verify(request, times(2)).accept(MimeTypes.Type.APPLICATION_JSON.toString());
         verify(request).content(
-                argThat(matches("[{\"observationType\":\"Burglary\", \"sensorMode\":\"Activated\"}]", "UTF-8")),
+                argThat(matches("[{\"observationType\":\"Burglary\",\"sensorMode\":\"Activated\"}]", "UTF-8")),
                 eq(ContentType.APPLICATION_JSON.toString()));
     }
 
@@ -232,13 +232,13 @@ class SpexorAPIServiceTest {
         ObservationChangeStatus observationChange = apiService.setObservation("123456", "Burglary", true);
         assertNotNull(observationChange);
         assertEquals("Burglary", observationChange.getObservationType());
-        assertEquals(SensorMode.InActivation, observationChange.getSensorMode());
+        assertEquals(SensorMode.IN_ACTIVATION, observationChange.getSensorMode());
         assertEquals(StatusCode.SUCCESS, observationChange.getStatusCode());
         verify(request).method(HttpMethod.PATCH);
         verify(request, times(2)).accept(MimeTypes.Type.APPLICATION_JSON.toString());
 
         verify(request).content(
-                argThat(matches("[{\"observationType\":\"Burglary\", \"sensorMode\":\"Activated\"}]", "UTF-8")),
+                argThat(matches("[{\"observationType\":\"Burglary\",\"sensorMode\":\"Activated\"}]", "UTF-8")),
                 eq(ContentType.APPLICATION_JSON.toString()));
     }
 

@@ -79,7 +79,9 @@ public class BoschSpexorDiscoveryService extends AbstractDiscoveryService
     @Override
     public void deactivate() {
         super.deactivate();
-        bridgeHandler.get().setDiscoveryService(null);
+        if (bridgeHandler.isPresent()) {
+            bridgeHandler.get().setDiscoveryService(null);
+        }
     }
 
     @Override

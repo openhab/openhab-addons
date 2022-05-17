@@ -14,10 +14,12 @@ package org.openhab.binding.boschspexor.internal.api.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Representation of the spexor connection information
  *
- * @author Marc Fischer - Initial contribution *
+ * @author Marc Fischer - Initial contribution
  */
 @NonNullByDefault
 public class Connection {
@@ -25,17 +27,17 @@ public class Connection {
     /**
      * Options of a connection type
      *
-     * @author Marc Fischer - Initial contribution
-     *
      */
     public enum ConnectionType {
-        MobileNetwork,
-        Wifi
+        @JsonProperty("MobileNetwork")
+        MOBILE_NETWORK,
+        @JsonProperty("Wifi")
+        WIFI
     }
 
     private String lastConnected = "2020-01-01T00:00:00Z";
     private boolean online;
-    private ConnectionType connectionType = ConnectionType.Wifi;
+    private ConnectionType connectionType = ConnectionType.WIFI;
 
     public String getLastConnected() {
         return lastConnected;

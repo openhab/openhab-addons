@@ -17,6 +17,7 @@ import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstan
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,18 +43,17 @@ import org.slf4j.LoggerFactory;
 /**
  * Spexor Bridge Handler
  *
- * @author Marc Fischer - Initial contribution *
+ * @author Marc Fischer - Initial contribution
  */
 @NonNullByDefault
 public class SpexorBridgeHandler extends BaseBridgeHandler implements SpexorAuthorizationProcessListener {
     private final Logger logger = LoggerFactory.getLogger(SpexorBridgeHandler.class);
 
-    // private @NonNullByDefault Future<?> pollingFuture;
     private BoschSpexorBridgeConfig bridgeConfig;
     private SpexorAuthorizationService authService;
     private SpexorAPIService apiService;
 
-    private @Nullable BoschSpexorDiscoveryService discoveryService;
+    private Optional<BoschSpexorDiscoveryService> discoveryService = Optional.empty();
 
     public SpexorBridgeHandler(Bridge bridge, HttpClient httpClient, StorageService storageService) {
         super(bridge);
@@ -93,14 +93,9 @@ public class SpexorBridgeHandler extends BaseBridgeHandler implements SpexorAuth
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Command '{}' received for channel '{}'", command, channelUID);
-        if (command instanceof RefreshType && discoveryService != null) {
-            discoveryService.startScan(null);
+        if (command instanceof RefreshType) {
+            discoveryService.ifPresent(service -> service.startScan(null));
         }
-    }
-
-    @Override
-    public void dispose() {
-        super.scheduler.shutdown();
     }
 
     public BoschSpexorBridgeConfig getBridgeConfig() {
@@ -140,7 +135,7 @@ public class SpexorBridgeHandler extends BaseBridgeHandler implements SpexorAuth
      * Called by the discovery service to let this handler have a reference.
      */
     public void setDiscoveryService(@Nullable BoschSpexorDiscoveryService discoveryService) {
-        this.discoveryService = discoveryService;
+        this.discoveryService = Optional.ofNullable(discoveryService);
     }
 
     @Override

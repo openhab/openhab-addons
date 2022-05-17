@@ -14,10 +14,12 @@ package org.openhab.binding.boschspexor.internal.api.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Representation of Observation Status
  *
- * @author Marc Fischer - Initial contribution *
+ * @author Marc Fischer - Initial contribution
  */
 @NonNullByDefault
 public class ObservationStatus {
@@ -27,20 +29,24 @@ public class ObservationStatus {
     /**
      * Sensor modes
      *
-     * @author Marc Fischer - Initial contribution
-     *
      */
     public enum SensorMode {
-        Deactivated,
-        InActivation,
-        InCalibration,
-        Activated,
-        Triggered,
-        InDeactivation
+        @JsonProperty("Deactivated")
+        DEACTIVATED,
+        @JsonProperty("InActivation")
+        IN_ACTIVATION,
+        @JsonProperty("InCalibration")
+        IN_CALIBRATION,
+        @JsonProperty("Activated")
+        ACTIVATED,
+        @JsonProperty("Triggered")
+        TRIGGERED,
+        @JsonProperty("InDeactivation")
+        IN_DEACTIVATION
     }
 
     private String observationType = TYPE_BURGLARY;
-    private SensorMode sensorMode = SensorMode.Deactivated;
+    private SensorMode sensorMode = SensorMode.DEACTIVATED;
 
     public String getObservationType() {
         return observationType;

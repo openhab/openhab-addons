@@ -14,28 +14,32 @@ package org.openhab.binding.boschspexor.internal.api.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Representation of a profile
  *
- * @author Marc Fischer - Initial contribution *
+ * @author Marc Fischer - Initial contribution
  */
 @NonNullByDefault
 public class Profile {
     /**
      * Profile Types
      *
-     * @author Marc Fischer - Initial contribution
-     *
      */
     public enum ProfileType {
-        House,
-        GardenHouse,
-        Car,
-        Camper
+        @JsonProperty("House")
+        HOUSE,
+        @JsonProperty("GardenHouse")
+        GARDEN_HOUSE,
+        @JsonProperty("Car")
+        CAR,
+        @JsonProperty("Camper")
+        CAMPER
     }
 
     private String name = "default";
-    private ProfileType profileType = ProfileType.House;
+    private ProfileType profileType = ProfileType.HOUSE;
 
     public String getName() {
         return name;

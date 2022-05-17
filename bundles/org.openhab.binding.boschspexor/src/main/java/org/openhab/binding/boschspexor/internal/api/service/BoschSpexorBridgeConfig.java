@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Main settings.
  *
- * @author Marc Fischer - Initial contribution.
+ * @author Marc Fischer - Initial contribution
  */
 @NonNullByDefault
 public class BoschSpexorBridgeConfig {
@@ -25,16 +25,16 @@ public class BoschSpexorBridgeConfig {
     /**
      * The host name of the Bosch spexor backend.
      */
-    private String host = "https://api.spexor-bosch.com/";
+    private static final String HOST = "https://api.spexor-bosch.com/";
 
     /**
      * The OAuth2 client id
      */
-    private String clientId = "spexor-3rdparty-service-auth";
+    private static final String CLIENTID = "spexor-3rdparty-service-auth";
     /**
      * The OAuth2 scope
      */
-    private String scope = "3rdparty-service";
+    private static final String SCOPE = "3rdparty-service";
     /**
      * Interval (in seconds) at which state updates are polled.
      */
@@ -43,26 +43,26 @@ public class BoschSpexorBridgeConfig {
     /**
      * The token path to request the OAuth2 token.
      */
-    private String tokenUrl = "api/public/token";
+    private static final String TOKEN_URL = "api/public/token";
     /**
      * The refresh token path to request the OAuth2 token.
      */
-    private String refreshUrl = "api/public/refresh";
+    private static final String REFRESH_URL = "api/public/refresh";
     /**
      * The token path to request the OAuth2 token.
      */
-    private String authorizationUrl = "api/public/auth";
+    private static final String AUTHORIZATION_URL = "api/public/auth";
 
     public String getHost() {
-        return host;
+        return HOST;
     }
 
     public String getClientId() {
-        return clientId;
+        return CLIENTID;
     }
 
     public String getScope() {
-        return scope;
+        return SCOPE;
     }
 
     public int getRefreshInterval() {
@@ -70,26 +70,26 @@ public class BoschSpexorBridgeConfig {
     }
 
     public String getRefreshUrl() {
-        return refreshUrl;
+        return REFRESH_URL;
     }
 
     public String getTokenUrl() {
-        return tokenUrl;
+        return TOKEN_URL;
     }
 
     public String getAuthorizationUrl() {
-        return authorizationUrl;
+        return AUTHORIZATION_URL;
     }
 
     public String buildTokenUrl() {
-        return String.join("", getHost(), tokenUrl);
+        return getHost() + TOKEN_URL;
     }
 
     public String buildAuthorizationUrl() {
-        return String.join("", getHost(), authorizationUrl);
+        return getHost() + AUTHORIZATION_URL;
     }
 
     public String buildRefreshUrl() {
-        return String.join("", getHost(), refreshUrl);
+        return getHost() + REFRESH_URL;
     }
 }

@@ -13,6 +13,7 @@
 package org.openhab.binding.boschspexor.internal.api.service.auth;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -54,10 +55,10 @@ public class SpexorAuthServlet extends HttpServlet {
             resp.setContentType(MimeTypes.Type.APPLICATION_JSON.asString());
             String action = req.getParameter("action");
             if ("authorize".equalsIgnoreCase(action)) {
-                grantService.getAuthService().authorize();
+                grantService.getAuthService().ifPresent(service -> service.authorize());
                 // start authorization
             } else if ("reset".equalsIgnoreCase(action)) {
-                grantService.getAuthService().reset();
+                grantService.getAuthService().ifPresent(service -> service.reset());
             }
             AuthProcessingStatus currentStatus = determineCurrentStatus();
             if (currentStatus.isError()) {
@@ -92,13 +93,13 @@ public class SpexorAuthServlet extends HttpServlet {
 
     private AuthProcessingStatus determineCurrentStatus() {
         AuthProcessingStatus result = null;
-        SpexorAuthorizationService authService = grantService.getAuthService();
-        if (authService == null) {
+        Optional<SpexorAuthorizationService> authService = grantService.getAuthService();
+        if (authService.isEmpty()) {
             result = new AuthProcessingStatus();
             result.bridgeNotConfigured();
             logger.error("openHAB spexorGrantService grant process is null");
         } else {
-            result = authService.getStatus();
+            result = authService.get().getStatus();
         }
         return result;
     }
