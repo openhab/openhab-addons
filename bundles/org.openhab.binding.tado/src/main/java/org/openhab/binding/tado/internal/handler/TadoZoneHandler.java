@@ -463,7 +463,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         }
     }
 
-    private String convertToJsonString(Object object) {
+    private synchronized String convertToJsonString(Object object) {
         Gson gson = this.gson;
         if (gson == null) {
             gson = this.gson = GsonBuilderFactory.defaultGsonBuilder().setPrettyPrinting().create();
