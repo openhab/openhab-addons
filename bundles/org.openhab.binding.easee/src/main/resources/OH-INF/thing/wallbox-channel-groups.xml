@@ -75,15 +75,15 @@
 	<channel-group-type id="wallbox-charger_config">
 		<label>Charger Configuration</label>
 		<channels>
-			<channel id="lockCablePermanently" typeId="type-switch">
+			<channel id="lockCablePermanently" typeId="rwtype-switch">
 				<label>Lock Cable Permanently</label>
 				<description>Lock Cable Permanently status of the wallbox.</description>
 			</channel>
-			<channel id="authorizationRequired" typeId="type-switch">
+			<channel id="authorizationRequired" typeId="rwtype-switch">
 				<label>Authorization Required</label>
 				<description>Indicates if authorization is required to start charging.</description>
 			</channel>
-			<channel id="limitToSinglePhaseCharging" typeId="type-switch">
+			<channel id="limitToSinglePhaseCharging" typeId="rwtype-switch">
 				<label>Limit To Single Phase Charging</label>
 				<description>Indicates if charging should be limited to single phase mode.</description>
 			</channel>

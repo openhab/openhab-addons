@@ -43,6 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.ToNumberPolicy;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -109,7 +111,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         this.handler = handler;
         this.updateHandlerOnFailure = updateHandlerOnFailure;
         this.retryOnFailure = retryOnFailure;
-        this.gson = new Gson();
+        this.gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
     }
 
     /**

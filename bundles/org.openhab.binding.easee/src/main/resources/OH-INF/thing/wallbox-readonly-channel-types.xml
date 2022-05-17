@@ -34,7 +34,7 @@
 	</channel-type>
 	<channel-type id="type-integer">
 		<item-type>Number</item-type>
-		<label>ElectricPotential</label>
+		<label>generic integer</label>
 		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>

@@ -51,6 +51,8 @@ public class EaseeBindingConstants {
     public static final String CHANNEL_TYPE_DATE = "DateTime";
     public static final String CHANNEL_TYPE_NUMBER = "Number";
 
+    public static final String CHANNEL_TYPENAME_INTEGER = "type-integer";
+
     // web request constants
     public static final long WEB_REQUEST_INITIAL_DELAY = TimeUnit.SECONDS.toMillis(30);
     public static final long WEB_REQUEST_INTERVAL = TimeUnit.SECONDS.toMillis(5);
@@ -64,6 +66,7 @@ public class EaseeBindingConstants {
     public static final String REFRESH_TOKEN_URL = "https://api.easee.cloud/api/accounts/refresh_token";
     public static final String STATE_URL = "https://api.easee.cloud/api/chargers/{id}/state";
     public static final String GET_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/config";
+    public static final String CHANGE_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/settings";
     public static final String LATEST_CHARGING_SESSION_URL = "https://api.easee.cloud/api/chargers/{id}/sessions/latest";
 
     // other

@@ -21,6 +21,7 @@ import javax.measure.MetricPrefix;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.easee.internal.handler.ChannelProvider;
+import org.openhab.binding.easee.internal.handler.ChannelUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -88,7 +89,13 @@ public class GenericResponseTransformer {
                                 result.put(channel, new DateTimeType(value));
                                 break;
                             case CHANNEL_TYPE_NUMBER:
-                                result.put(channel, new DecimalType(value));
+                                if (ChannelUtil.getChannelId(channel).equals(CHANNEL_TYPENAME_INTEGER)) {
+                                    // explicit type long is needed in case of integer/long values otherwise automatic
+                                    // transformation to a decimal type is applied.
+                                    result.put(channel, new DecimalType(Long.parseLong(value)));
+                                } else {
+                                    result.put(channel, new DecimalType(Double.parseDouble(value)));
+                                }
                                 break;
                             default:
                                 logger.warn("no mapping implemented for channel type '{}'", channelType);
