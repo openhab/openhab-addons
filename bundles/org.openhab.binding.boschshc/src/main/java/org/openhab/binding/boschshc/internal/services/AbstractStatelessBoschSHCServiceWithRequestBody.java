@@ -51,8 +51,9 @@ public abstract class AbstractStatelessBoschSHCServiceWithRequestBody<TRequest e
      */
     public void postAction(TRequest request) throws InterruptedException, TimeoutException, ExecutionException {
         BridgeHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler == null)
+        if (bridgeHandler == null) {
             return;
+        }
 
         bridgeHandler.postAction(getEndpoint(), request);
     }

@@ -57,7 +57,7 @@ public class BoschSHCDeviceHandler extends BoschSHCHandler {
         var config = this.config = getConfigAs(BoschSHCConfiguration.class);
 
         String deviceId = config.id;
-        if (deviceId == null || deviceId.isEmpty()) {
+        if (deviceId == null || deviceId.isBlank()) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.empty-device-id");
             return;

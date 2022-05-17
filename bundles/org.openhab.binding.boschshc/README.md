@@ -148,8 +148,8 @@ Allows to retrieve notifications in case of intrusions. The system can be armed 
 | Channel Type ID              | Item Type            | Writable | Description                                                    |
 | ---------------------------- | -------------------- | :------: | -------------------------------------------------------------- |
 | system-availability          | Switch               | &#9744;  | Indicates whether the intrusion detection system is available. |
-| arming-state                 | Switch               | &#9744;  | Read-only channel to retrieve the current arming state. Possible values are SYSTEM_ARMING, SYSTEM_ARMED and SYSTEM_DISARMED. |
-| alarm-state                  | String               | &#9744;  | Read-only channel to retrieve the current alarm state. Possible values are ALARM_OFF, PRE_ALARM, ALARM_ON, ALARM_MUTED and UNKNOWN. |
+| arming-state                 | String               | &#9744;  | Read-only channel to retrieve the current arming state. Possible values are `SYSTEM_ARMING`, `SYSTEM_ARMED` and `SYSTEM_DISARMED`. |
+| alarm-state                  | String               | &#9744;  | Read-only channel to retrieve the current alarm state. Possible values are `ALARM_OFF`, `PRE_ALARM`, `ALARM_ON`, `ALARM_MUTED` and `UNKNOWN`. |
 | active-configuration-profile | String               | &#9744;  | The name of the active configuration profile used for the intrusion detection system. |
 | arm-action                   | String               | &#9745;  | Arms the intrusion detection system using the given profile ID (default is "0"). |
 | disarm-action                | Switch               | &#9745;  | Disarms the intrusion detection system when an ON command is received. |
