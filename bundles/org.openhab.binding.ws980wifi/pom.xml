@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.ws980wifi</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: ws980wifi Binding</name>
+  <name>openHAB Add-ons :: Bundles :: WS980WiFi Binding</name>
 
 </project>

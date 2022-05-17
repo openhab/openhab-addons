@@ -1,28 +1,26 @@
 # WS980WiFi Binding
 
-The WS980WIFI binding connects openHAB with ELV WS980WIFI Weather Stations (see de.elv.com).
-It discovers WS980WIFI Weather Stations in the local network and polls the actual data on a regular basis.
-The WS980WIFI has to be part of the local network via WiFi integration.
+The WS980WiFi binding connects openHAB with ELV WS980WiFi Weather Stations (see https://de.elv.com).
+It discovers WS980WiFi Weather Stations in the local network and polls the actual data on a regular basis.
+The WS980WiFi has to be part of the local network via Wi-Fi integration.
 Only the actual measures are supported, no historical data.
 The binding reads the data of the station, but does not support to write data back (e.g. updates, configuration parameters).
 
 ## Supported Things
 
-ELV WS980WIFI Weather Station.
+ELV WS980WiFi Weather Station.
 
 ## Discovery
 
-As soon as the WS980WIFI Weather Station is integrated into your local network, this binding is able to discover the weather station automatically and provides  21 measures as channels of the discovered thing. 
-
-## Binding Configuration
-
-The binding provides no configuration parameters.
+As soon as the WS980WiFi Weather Station is integrated into your local network, this binding is able to discover the weather station automatically. 
 
 ## Thing Configuration
 
-Discovered things have one non advanced configuration parameter, which can be modified. 
-It is the Refresh Interval. Default is 60 seconds, min. is 30 seconds.
-The advanced configuration parameters should not be modified.
+Things have one non advanced configuration parameter, the Refresh Interval. 
+Default is 60 seconds, min. is 30 seconds.
+
+There are 3 additional advanced configuration parameters for manually adding WS980WiFi things.
+Hostname, MAC Address and Data Request Port. Normally a manual configuration is not necessary.
 
 ## Channels
 
@@ -37,14 +35,14 @@ The advanced configuration parameters should not be modified.
 | pressureAbsolut  | Number:Pressure    | R          | Pressure Absolut in Pascal  |
 | pressureRelative | Number:Pressure    | R          | Pressure Relativ in Pascal  |
 | windDirection    | Number             | R          | Wind Direction in Grad      |
-| windSpeed        | Number             | R          | Wind Speed in km/h          |
-| windSpeedGust    | Number             | R          | Wind Speed Gust in km/h     |
-| rainLastHour     | Number             | R          | Rain Last Hour in mm        |
-| rainLastDay      | Number             | R          | Rain Last Day in mm         |
-| rainLastWeek     | Number             | R          | Rain Last Week in mm        |
-| rainLastMonth    | Number             | R          | Rain Last Month in mm       |
-| rainLastYear     | Number             | R          | Rain Last Year in mm        |
-| rainTotal        | Number             | R          | Rain Total in mm            |
+| windSpeed        | Number:Speed       | R          | Wind Speed in km/h          |
+| windSpeedGust    | Number:Speed       | R          | Wind Speed Gust in km/h     |
+| rainLastHour     | Number:Length      | R          | Rain Last Hour in mm        |
+| rainLastDay      | Number:Length      | R          | Rain Last Day in mm         |
+| rainLastWeek     | Number:Length      | R          | Rain Last Week in mm        |
+| rainLastMonth    | Number:Length      | R          | Rain Last Month in mm       |
+| rainLastYear     | Number:Length      | R          | Rain Last Year in mm        |
+| rainTotal        | Number:Length      | R          | Rain Total in mm            |
 | lightLevel       | Number:Lux         | R          | Light Level in lux          |
 | uvRaw            | Number:Irradiance  | R          | UV Light                    |
 | uvIndex          | Number:Irradiance  | R          | UV Index                    |
@@ -61,7 +59,7 @@ Thing ws980wifi:ws980wifi:WS `AZ WS`
       refreshInterval=`60` ]
 
 Items-File
-Group    gWS `Weatherstation WS980WIFI` 
+Group    gWS `Weatherstation WS980WiFi` 
 Number   ws_tempWindChill `WS Windchill [%.2f]°C` (gWS) {channel = `ws980wifi:ws980wifi:WS:tempWindChill`}
 Number   ws_tempOutside `WS Temp. Outside [%.2f]°C` (gWS) {channel = `ws980wifi:ws980wifi:WS:tempOutside`}
 Number   ws_tempInside `WS Temp. Inside [%.2f]°C` (gWS) {channel = `ws980wifi:ws980wifi:WS:tempInside`}

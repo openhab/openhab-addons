@@ -62,6 +62,4 @@ public class WS980WiFiBindingConstants {
     public static final String DESCRIPTION = "description";
     public static final String REFRESH_INTERVAL = "refreshInterval";
     public static final String MAC_ADDRESS = "macAddress";
-    public static final String MODEL_ID = "modelId";
-    public static final String VENDOR = "vendor";
 }

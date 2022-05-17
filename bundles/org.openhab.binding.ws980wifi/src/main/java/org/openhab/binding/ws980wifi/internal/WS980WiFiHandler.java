@@ -24,7 +24,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
@@ -58,18 +57,13 @@ public class WS980WiFiHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        Thing thing = getThing();
-        if (thing == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Thing is NULL");
-        } else {
-            config = getConfigAs(WS980WiFiConfiguration.class);
-            host = config.getHost();
-            port = config.getPort();
-            updateStatus(ThingStatus.UNKNOWN);
-            pollingJob = scheduler.scheduleWithFixedDelay(this::updateWeatherData, 0, config.getRefreshInterval(),
-                    TimeUnit.SECONDS);
-            log.debug("ws980wifi Handler is initialized");
-        }
+        config = getConfigAs(WS980WiFiConfiguration.class);
+        host = config.getHost();
+        port = config.getPort();
+        updateStatus(ThingStatus.UNKNOWN);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::updateWeatherData, 0, config.getRefreshInterval(),
+                TimeUnit.SECONDS);
+        log.debug("ws980wifi Handler is initialized");
     }
 
     @Override

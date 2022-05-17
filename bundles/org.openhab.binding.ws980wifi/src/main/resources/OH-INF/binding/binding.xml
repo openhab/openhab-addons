@@ -3,7 +3,7 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
-	<name>ws980wifi Weather Station</name>
+	<name>WS980WiFi Weather Station</name>
 	<description>This is the binding for ELV Wetterstation WS980WiFi. It allows to retrieve the weather data.</description>
 
 </binding:binding>

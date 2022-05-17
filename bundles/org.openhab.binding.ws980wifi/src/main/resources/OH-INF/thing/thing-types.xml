@@ -6,8 +6,8 @@
 
 	<thing-type id="ws980wifi">
 
-		<label>ws980wifi Binding Thing</label>
-		<description>Thing for wetterstationws980wifi Binding</description>
+		<label>WS980WiFi</label>
+		<description>ELV WiFi Weather Station WS980WiFi</description>
 		<category>Sensor</category>
 
 		<channels>                                                                      <!-- id = Channel-Name, typeID referenziert den Typ vom Channel -->
@@ -78,12 +78,12 @@
 
 		<properties>                                                                    <!-- static properties, that are the same for all instances -->
 			<property name="vendor">ELV</property>
-			<property name="modelId">WS980WIFI</property>
+			<property name="modelId">WS980WiFi</property>
 		</properties>
 
-		<representation-property>macAddress</representation-property>                   <!-- Identifyer for each WS980WIFI -->
+		<representation-property>macAddress</representation-property>                   <!-- Identifyer for each WS980WiFi -->
 
-		<config-description>                                                            <!-- Config Parameter, indiv. for each WS980WIFI -->
+		<config-description>                                                            <!-- Config Parameter, indiv. for each WS980WiFi -->
 			<parameter name="host" type="text" required="true">
 				<label>Hostname</label>
 				<description>The hostname/IP address the device is bound to, e.g. 192.168.0.2</description>
