@@ -236,6 +236,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
 
     @Override
     public void updateListenerStatus(@Nullable ResultData data) {
+        StatusUpdateListener listener = this.listener;
         if (listener != null) {
             listener.update(communicationStatus, data);
         }

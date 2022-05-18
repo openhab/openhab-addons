@@ -14,7 +14,6 @@ package org.openhab.binding.easee.internal.command.charger;
 
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.COMMANDS_URL;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
@@ -44,7 +43,7 @@ public class SendCommand extends AbstractWriteCommand implements EaseeCommand {
     }
 
     @Override
-    protected @NonNull String getURL() {
+    protected String getURL() {
         String url = COMMANDS_URL;
         url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
         url = url.replaceAll("\\{command\\}", getCommandValue());

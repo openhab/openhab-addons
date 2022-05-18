@@ -121,7 +121,7 @@
 		<label>Charger Commands</label>
 		<channels>
 			<channel id="genericCommand" typeId="rwtype-command">
-				<label>Charger Command</label>
+				<label>Generic Charger Command</label>
 				<description>Sends a command to the charger. Write only channel.</description>
 				<properties>
 					<property name="writeCommand">SendCommand</property>

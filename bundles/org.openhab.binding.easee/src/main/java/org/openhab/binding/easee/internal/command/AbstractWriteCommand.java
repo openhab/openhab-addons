@@ -17,7 +17,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
-import org.openhab.binding.easee.internal.command.charger.ChangeConfiguration;
 import org.openhab.binding.easee.internal.handler.ChannelUtil;
 import org.openhab.binding.easee.internal.handler.EaseeHandler;
 import org.openhab.binding.easee.internal.model.account.exception.ValidationException;
@@ -35,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class AbstractWriteCommand extends AbstractCommand implements EaseeCommand {
-    private final Logger logger = LoggerFactory.getLogger(ChangeConfiguration.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractWriteCommand.class);
 
     protected final Channel channel;
     protected Command command;

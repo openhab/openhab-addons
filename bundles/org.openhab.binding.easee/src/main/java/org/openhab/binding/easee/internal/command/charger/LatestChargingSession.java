@@ -37,13 +37,13 @@ public class LatestChargingSession extends AbstractCommand implements EaseeComma
     }
 
     @Override
-    protected @NonNull Request prepareRequest(@NonNull Request requestToPrepare) {
+    protected Request prepareRequest(@NonNull Request requestToPrepare) {
         requestToPrepare.method(HttpMethod.GET);
         return requestToPrepare;
     }
 
     @Override
-    protected @NonNull String getURL() {
+    protected String getURL() {
         String url = LATEST_CHARGING_SESSION_URL;
         url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
         return url;

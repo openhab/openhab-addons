@@ -14,7 +14,6 @@ package org.openhab.binding.easee.internal.command.charger;
 
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.CHANGE_CONFIGURATION_URL;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -47,7 +46,7 @@ public class ChangeConfiguration extends AbstractWriteCommand implements EaseeCo
     }
 
     @Override
-    protected @NonNull String getURL() {
+    protected String getURL() {
         String url = CHANGE_CONFIGURATION_URL;
         url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
         return url;

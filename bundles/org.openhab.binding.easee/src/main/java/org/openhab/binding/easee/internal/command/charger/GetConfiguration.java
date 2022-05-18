@@ -37,13 +37,13 @@ public class GetConfiguration extends AbstractCommand implements EaseeCommand {
     }
 
     @Override
-    protected @NonNull Request prepareRequest(@NonNull Request requestToPrepare) {
+    protected Request prepareRequest(@NonNull Request requestToPrepare) {
         requestToPrepare.method(HttpMethod.GET);
         return requestToPrepare;
     }
 
     @Override
-    protected @NonNull String getURL() {
+    protected String getURL() {
         String url = GET_CONFIGURATION_URL;
         url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
         return url;
