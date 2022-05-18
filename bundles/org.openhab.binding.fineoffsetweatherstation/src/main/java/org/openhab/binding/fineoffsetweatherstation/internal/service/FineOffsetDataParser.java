@@ -89,7 +89,8 @@ public class FineOffsetDataParser {
                         : SensorGatewayBinding.WH65;
             }
             if (sensorGatewayBinding == null) {
-                logger.debug("to many sensor candidates for (id={}) and index {}: {}", id, data[idx], sensorCandidates);
+                logger.debug("too many sensor candidates for (id={}) and index {}: {}", id, data[idx],
+                        sensorCandidates);
                 continue;
             }
             switch (id) {
