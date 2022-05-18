@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum ConfigurationLevel {
-    EMPTY_CLIENT_ID("@text/conf-error-no-client-secret"),
+    EMPTY_CLIENT_ID("@text/conf-error-no-client-id"),
     EMPTY_CLIENT_SECRET("@text/conf-error-no-client-secret"),
     REFRESH_TOKEN_NEEDED("@text/conf-error-grant-needed"),
     COMPLETED("");

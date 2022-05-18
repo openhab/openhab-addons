@@ -21,7 +21,7 @@ Follow instructions under:
  1. Registering Your Application
  1. Setting Redirect URI and webhook URI can be skipped, these will be provided by the binding.
 
-The variables you will need to get to setup the binding are:
+Variables needed to for the setup of the binding are:
 
 * `<CLIENT_ID>` Your client ID taken from your App at https://dev.netatmo.com/apps
 * `<CLIENT_SECRET>` A token provided along with the `<CLIENT_ID>`.
@@ -54,7 +54,7 @@ The Account bridge has the following configuration elements:
 1. Make sure you have your _Client ID_ and _Client Secret_ identities available.
 1. Add a new **"Netatmo Account"** thing. Choose new Id for the account, unless you like the generated one, put in the _Client ID_ and _Client Secret_ from the Netatmo Connect Application registration in their respective fields of the bridge configuration. Save the bridge.
 1. The bridge thing will go _OFFLINE_ / _CONFIGURATION_ERROR_ - this is fine. You have to authorize this bridge with Netatmo Connect.
-1. Go to the authorization page of your server. `http://<your openHAB address>:8080/netatmo/connect/<_CLIENT_ID_>`. Your newly added bridge should be listed there.
+1. Go to the authorization page of your server. `http://<your openHAB address>:8080/netatmo/connect/<_CLIENT_ID_>`. Your newly added bridge should be listed there (no need for you to expose your openHAB server outside your local network for this).
 1. Press the _"Authorize Thing"_ button. This will take you either to the login page of Netatmo Connect or directly to the authorization screen. Login and/or authorize the application. You will be returned and the entry should go green. 
 1. The binding will be updated with a refresh token and go _ONLINE_. The refresh token is used to re-authorize the bridge with Netatmo Connect Web API whenever required.
 
