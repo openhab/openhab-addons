@@ -40,7 +40,6 @@ import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
-import org.openhab.binding.netatmo.internal.servlet.ServletService;
 import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -54,6 +53,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,20 +68,20 @@ import org.slf4j.LoggerFactory;
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
 
-    private final NetatmoDescriptionProvider stateDescriptionProvider;
-    private final HttpClient httpClient;
-    private final NADeserializer deserializer;
     private final BindingConfiguration configuration = new BindingConfiguration();
-    private final ServletService servletService;
+    private final NetatmoDescriptionProvider stateDescriptionProvider;
+    private final NADeserializer deserializer;
+    private final HttpClient httpClient;
+    private final HttpService httpService;
 
     @Activate
     public NetatmoHandlerFactory(@Reference NetatmoDescriptionProvider stateDescriptionProvider,
             @Reference HttpClientFactory factory, @Reference NADeserializer deserializer,
-            @Reference ServletService servletService, Map<String, @Nullable Object> config) {
+            @Reference HttpService httpService, Map<String, @Nullable Object> config) {
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpClient = factory.getCommonHttpClient();
         this.deserializer = deserializer;
-        this.servletService = servletService;
+        this.httpService = httpService;
         configChanged(config);
     }
 
@@ -107,10 +107,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
     private BaseThingHandler buildHandler(Thing thing, ModuleType moduleType) {
         if (ModuleType.ACCOUNT.equals(moduleType)) {
-            ApiBridgeHandler bridgeHandler = new ApiBridgeHandler((Bridge) thing, httpClient, servletService,
-                    deserializer, configuration);
-            servletService.addAccountHandler(bridgeHandler);
-            return bridgeHandler;
+            return new ApiBridgeHandler((Bridge) thing, httpClient, deserializer, configuration, httpService);
         }
         CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing) : new ModuleHandler(thing);
 
@@ -156,12 +153,5 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         });
 
         return (BaseThingHandler) handler;
-    }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof ApiBridgeHandler) {
-            servletService.removeAccountHandler((ApiBridgeHandler) thingHandler);
-        }
     }
 }

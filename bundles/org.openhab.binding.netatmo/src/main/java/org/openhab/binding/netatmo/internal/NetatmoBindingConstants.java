@@ -27,9 +27,6 @@ public class NetatmoBindingConstants {
     public static final String BINDING_ID = "netatmo";
     public static final String VENDOR = "Netatmo";
 
-    // Configuration keys
-    public static final String EQUIPMENT_ID = "id";
-
     // Things properties
     public static final String PROPERTY_CITY = "city";
     public static final String PROPERTY_COUNTRY = "country";

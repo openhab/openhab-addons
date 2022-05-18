@@ -58,7 +58,8 @@ public class AuthenticationApi extends RestManager {
         this.scheduler = scheduler;
     }
 
-    public String authorize(ApiHandlerConfiguration credentials, Set<FeatureArea> features) throws NetatmoException {
+    public String authorize(ApiHandlerConfiguration credentials, Set<FeatureArea> features, @Nullable String code,
+            @Nullable String redirectUri) throws NetatmoException {
         String clientId = credentials.clientId;
         String clientSecret = credentials.clientSecret;
         if (!(clientId.isBlank() || clientSecret.isBlank())) {
@@ -67,9 +68,7 @@ public class AuthenticationApi extends RestManager {
             if (!refreshToken.isBlank()) {
                 params.put(REFRESH_TOKEN, refreshToken);
             } else {
-                String code = credentials.code;
-                String redirectUri = credentials.redirectUri;
-                if (!(code.isBlank() || redirectUri.isBlank())) {
+                if (code != null && redirectUri != null) {
                     params.putAll(Map.of(REDIRECT_URI, redirectUri, CODE, code));
                 }
             }
@@ -123,8 +122,8 @@ public class AuthenticationApi extends RestManager {
         return FeatureArea.toScopeString(features.isEmpty() ? FeatureArea.AS_SET : features);
     }
 
-    public static String getAuthorizationUrl(String clientId, String state, Set<FeatureArea> features) {
+    public static UriBuilder getAuthorizationBuilder(String clientId, Set<FeatureArea> features) {
         return AUTH_BUILDER.clone().queryParam(CLIENT_ID, clientId).queryParam(SCOPE, toScopeString(features))
-                .queryParam(STATE, state).build().toString();
+                .queryParam(STATE, clientId);
     }
 }

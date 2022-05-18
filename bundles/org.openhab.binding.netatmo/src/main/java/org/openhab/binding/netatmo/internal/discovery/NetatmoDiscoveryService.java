@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.discovery;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.EQUIPMENT_ID;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,7 +26,7 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAModule;
-import org.openhab.binding.netatmo.internal.config.BindingConfiguration;
+import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -52,7 +50,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
     private final Logger logger = LoggerFactory.getLogger(NetatmoDiscoveryService.class);
     private @Nullable ApiBridgeHandler handler;
-    private @Nullable BindingConfiguration config;
+    private boolean readFriends;
 
     public NetatmoDiscoveryService() {
         super(ModuleType.AS_SET.stream().filter(mt -> !SKIPPED_TYPES.contains(mt)).map(mt -> mt.thingTypeUID)
@@ -61,9 +59,8 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     public void startScan() {
-        BindingConfiguration localConf = config;
         ApiBridgeHandler localHandler = handler;
-        if (localHandler != null && localConf != null) {
+        if (localHandler != null) {
             ThingUID apiBridgeUID = localHandler.getThing().getUID();
             try {
                 AircareApi airCareApi = localHandler.getRestManager(AircareApi.class);
@@ -73,7 +70,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                         body.getElements().stream().forEach(homeCoach -> createThing(homeCoach, apiBridgeUID));
                     }
                 }
-                if (localConf.readFriends) {
+                if (readFriends) {
                     WeatherApi weatherApi = localHandler.getRestManager(WeatherApi.class);
                     if (weatherApi != null) { // Search favorite stations
                         ListBodyResponse<NAMain> body = weatherApi.getStationsData(null, true).getBody();
@@ -127,7 +124,8 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     private ThingUID createThing(NAModule module, @Nullable ThingUID bridgeUID) {
         ThingUID moduleUID = findThingUID(module.getType(), module.getId(), bridgeUID);
         DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(moduleUID)
-                .withProperty(EQUIPMENT_ID, module.getId()).withRepresentationProperty(EQUIPMENT_ID)
+                .withProperty(NAThingConfiguration.ID, module.getId())
+                .withRepresentationProperty(NAThingConfiguration.ID)
                 .withLabel(module.getName() != null ? module.getName() : module.getId());
         if (bridgeUID != null) {
             resultBuilder.withBridge(bridgeUID);
@@ -140,7 +138,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof ApiBridgeHandler) {
             this.handler = (ApiBridgeHandler) handler;
-            this.config = ((ApiBridgeHandler) handler).getConfiguration();
+            this.readFriends = ((ApiBridgeHandler) handler).getReadFriends();
         }
     }
 

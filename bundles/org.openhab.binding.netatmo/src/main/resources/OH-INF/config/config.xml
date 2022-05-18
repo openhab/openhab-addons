@@ -17,19 +17,6 @@
 			<context>password</context>
 		</parameter>
 
-		<parameter name="code" type="text">
-			<label>Authentication Code</label>
-			<description>Authentication code, provided by the oAuth2 authentication process.</description>
-			<context>password</context>
-			<advanced>true</advanced>
-		</parameter>
-
-		<parameter name="redirectUri" type="text">
-			<label>Redirect Uri</label>
-			<description>Redirection Uri used by Netatmo to reach the openHab server. Provided during authentication process.</description>
-			<advanced>true</advanced>
-		</parameter>
-
 		<parameter name="refreshToken" type="text">
 			<label>Refresh Token</label>
 			<description>Refresh token provided by the oAuth2 authentication process.</description>
@@ -39,7 +26,7 @@
 
 		<parameter name="webHookUrl" type="text" required="false">
 			<label>Webhook Address</label>
-			<description>Protocol, public IP and port to access openHAB server from Internet.</description>
+			<description>Protocol, public IP or hostname and port to access openHAB server from Internet.</description>
 		</parameter>
 
 		<parameter name="reconnectInterval" type="integer" unit="s">

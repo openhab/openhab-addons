@@ -22,14 +22,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ApiHandlerConfiguration {
-    public static final String CODE = "code";
-    public static final String REDIRECT_URI = "redirectUri";
+    public static final String CLIENT_ID = "clientId";
     public static final String REFRESH_TOKEN = "refreshToken";
 
     public String clientId = "";
     public String clientSecret = "";
-    public String code = "";
-    public String redirectUri = "";
     public String refreshToken = "";
     public String webHookUrl = "";
     public int reconnectInterval = 300;
@@ -39,11 +36,9 @@ public class ApiHandlerConfiguration {
             return ConfigurationLevel.EMPTY_CLIENT_ID;
         } else if (clientSecret.isBlank()) {
             return ConfigurationLevel.EMPTY_CLIENT_SECRET;
-        } else if (!refreshToken.isBlank()) {
-            return ConfigurationLevel.FINISHED;
-        } else if (!(redirectUri.isBlank() || code.isBlank())) {
-            return ConfigurationLevel.TOKEN_REFRESH_NEEDED;
+        } else if (refreshToken.isBlank()) {
+            return ConfigurationLevel.REFRESH_TOKEN_NEEDED;
         }
-        return ConfigurationLevel.PENDING_GRANT;
+        return ConfigurationLevel.COMPLETED;
     }
 }

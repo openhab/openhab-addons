@@ -45,10 +45,9 @@ public class SecurityApi extends RestManager {
      *
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
-    public boolean dropWebhook() throws NetatmoException {
+    public void dropWebhook() throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_DROPWEBHOOK);
         post(uriBuilder, ApiResponse.Ok.class, null, null);
-        return true;
     }
 
     /**

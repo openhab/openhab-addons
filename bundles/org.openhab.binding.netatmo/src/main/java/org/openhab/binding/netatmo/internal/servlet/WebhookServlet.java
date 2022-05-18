@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.servlet;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.BINDING_ID;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,13 +19,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
@@ -42,6 +36,7 @@ import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.capability.EventCapability;
+import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,52 +46,50 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class WebhookServlet extends HttpServlet implements NetatmoServlet {
+public class WebhookServlet extends NetatmoServlet {
     private static final long serialVersionUID = -354583910860541214L;
 
-    private final Logger logger = LoggerFactory.getLogger(WebhookServlet.class);
     private final Map<String, EventCapability> dataListeners = new ConcurrentHashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(WebhookServlet.class);
+    private final SecurityApi securityApi;
     private final NADeserializer deserializer;
-    private final Optional<SecurityApi> securityApi;
-    private final String clientId;
+    private final String webHookUrl;
 
     private boolean hookSet = false;
 
-    public WebhookServlet(ApiBridgeHandler apiBridge, String webHookUrl, String clientId) {
-        this.deserializer = apiBridge.getDeserializer();
-        this.clientId = clientId;
-        this.securityApi = Optional.ofNullable(apiBridge.getRestManager(SecurityApi.class));
-        securityApi.ifPresent(api -> {
-            URI uri = UriBuilder.fromUri(webHookUrl).path(BINDING_ID).path(clientId).build();
-            try {
-                logger.info("Setting Netatmo Welcome WebHook to {}", uri.toString());
-                hookSet = api.addwebhook(uri);
-            } catch (UriBuilderException e) {
-                logger.info("webhookUrl is not a valid URI '{}' : {}", uri, e.getMessage());
-            } catch (NetatmoException e) {
-                logger.info("Error setting webhook : {}", e.getMessage());
-            }
-        });
-    }
-
-    public void dispose() {
-        if (hookSet) {
-            securityApi.ifPresent(api -> {
-                logger.info("Releasing Netatmo Welcome WebHook");
-                try {
-                    hookSet = api.dropWebhook();
-                } catch (NetatmoException e) {
-                    logger.warn("Error releasing webhook : {}", e.getMessage());
-                }
-                // httpService.unregister(CALLBACK_URI);
-            });
-        }
-        logger.debug("Netatmo Webhook Servlet stopped");
+    public WebhookServlet(ApiBridgeHandler handler, HttpService httpService, NADeserializer deserializer,
+            SecurityApi securityApi, String webHookUrl) {
+        super(handler, httpService, "webhook");
+        this.deserializer = deserializer;
+        this.securityApi = securityApi;
+        this.webHookUrl = webHookUrl;
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        logger.debug("Netatmo webhook callback servlet received GET request {}.", req.getRequestURI());
+    public void startListening() {
+        super.startListening();
+        URI uri = UriBuilder.fromUri(webHookUrl).path(path).build();
+        try {
+            logger.info("Setting up WebHook at Netatmo to {}", uri.toString());
+            hookSet = securityApi.addwebhook(uri);
+        } catch (UriBuilderException e) {
+            logger.info("webhookUrl is not a valid URI '{}' : {}", uri, e.getMessage());
+        } catch (NetatmoException e) {
+            logger.info("Error setting webhook : {}", e.getMessage());
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (hookSet) {
+            logger.info("Releasing WebHook at Netatmo ");
+            try {
+                securityApi.dropWebhook();
+                hookSet = false;
+            } catch (NetatmoException e) {
+                logger.warn("Error releasing webhook : {}", e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -106,13 +99,10 @@ public class WebhookServlet extends HttpServlet implements NetatmoServlet {
             logger.debug("Event transmitted from restService : {}", data);
             try {
                 WebhookEvent event = deserializer.deserialize(WebhookEvent.class, data);
-                List<String> tobeNotified = collectNotified(event);
-                dataListeners.keySet().stream().filter(tobeNotified::contains).forEach(id -> {
-                    EventCapability module = dataListeners.get(id);
-                    if (module != null) {
-                        module.setNewData(event);
-                    }
-                });
+                List<String> toBeNotified = new ArrayList<>();
+                toBeNotified.add(event.getCameraId());
+                toBeNotified.addAll(event.getPersons().keySet());
+                notifyListeners(toBeNotified, event);
             } catch (NetatmoException e) {
                 logger.info("Error deserializing webhook data received : {}. {}", data, e.getMessage());
             }
@@ -126,25 +116,6 @@ public class WebhookServlet extends HttpServlet implements NetatmoServlet {
         resp.getWriter().write("");
     }
 
-    private List<String> collectNotified(WebhookEvent event) {
-        List<String> result = new ArrayList<>();
-        result.add(event.getCameraId());
-        String person = event.getPersonId();
-        if (person != null) {
-            result.add(person);
-        }
-        result.addAll(event.getPersons().keySet());
-        return result.stream().distinct().collect(Collectors.toList());
-    }
-
-    public void registerDataListener(String id, EventCapability dataListener) {
-        dataListeners.put(id, dataListener);
-    }
-
-    public void unregisterDataListener(EventCapability dataListener) {
-        dataListeners.entrySet().removeIf(entry -> entry.getValue().equals(dataListener));
-    }
-
     private String inputStreamToString(InputStream is) throws IOException {
         String value = "";
         try (Scanner scanner = new Scanner(is)) {
@@ -154,8 +125,20 @@ public class WebhookServlet extends HttpServlet implements NetatmoServlet {
         return value;
     }
 
-    @Override
-    public String getPath() {
-        return "webhook/" + clientId;
+    public void notifyListeners(List<String> tobeNotified, WebhookEvent event) {
+        tobeNotified.forEach(id -> {
+            EventCapability module = dataListeners.get(id);
+            if (module != null) {
+                module.setNewData(event);
+            }
+        });
+    }
+
+    public void registerDataListener(String id, EventCapability eventCapability) {
+        dataListeners.put(id, eventCapability);
+    }
+
+    public void unregisterDataListener(String id) {
+        dataListeners.remove(id);
     }
 }
