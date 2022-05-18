@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.boschspexor.internal;
 
-import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstants.CHANNEL_BOSCH_SPEXOR;
+import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstants.*;
 import static org.openhab.binding.boschspexor.internal.api.model.SensorValue.*;
 
 import java.math.BigDecimal;
@@ -92,14 +92,24 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
         }
     }
 
+    private Optional<String> getSpexorID() {
+        return Optional.ofNullable((String) thing.getConfiguration().get(PROPERTY_SPEXOR_ID));
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (logger.isDebugEnabled()) {
             logger.debug("received ChannelUID {} with command {}", channelUID, command);
         }
+
+        if (getSpexorID().isEmpty()) {
+            logger.warn("thing is not well created and can't be used");
+            return;
+        }
+
         if (CHANNEL_BOSCH_SPEXOR.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
-                updateStatus();
+                refreshThing();
             }
         } else if (GROUP_ID_OBSERVATIONS.equals(channelUID.getGroupId())) {
             SpexorAPIService apiService = getSpexorAPIService();
@@ -116,8 +126,8 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
                 }
                 String type = channelUID.getIdWithoutGroup();
                 if (SensorMode.ACTIVATED.equals(mode) || SensorMode.DEACTIVATED.equals(mode)) {
-                    ObservationChangeStatus newObservationState = apiService.setObservation(getThing().getUID().getId(),
-                            type, SensorMode.ACTIVATED.equals(mode));
+                    ObservationChangeStatus newObservationState = apiService.setObservation(getSpexorID().get(), type,
+                            SensorMode.ACTIVATED.equals(mode));
                     if (logger.isDebugEnabled()) {
                         logger.debug("setting new observation state for {} to {} was {}", type, mode,
                                 newObservationState.getStatusCode());
@@ -143,15 +153,17 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
     }
 
     @SuppressWarnings("unchecked")
-    private void updateStatus() {
+    private void refreshThing() {
         if (logger.isDebugEnabled()) {
             logger.debug("updating {} with new values from backend", getThing().getUID());
         }
         SpexorAPIService apiService = getSpexorAPIService();
         if (apiService == null) {
             logger.warn("spexor API service is not available and device won't be updated");
+        } else if (getSpexorID().isEmpty()) {
+            logger.warn("thing is not available and device can't be updated");
         } else {
-            SpexorInfo spexor = apiService.getSpexor(getThing().getUID().getId());
+            SpexorInfo spexor = apiService.getSpexor(getSpexorID().get());
             if (spexor == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not determine further information.");
@@ -194,7 +206,6 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
 
                     // OBSERVATION
                     for (ObservationStatus observationStatus : spexor.getStatus().getObservation()) {
-                        @SuppressWarnings("null")
                         String observationType = observationStatus.getObservationType();
                         Channel channel = getThing().getChannel(getChannelID(GROUP_ID_OBSERVATIONS, observationType));
                         if (channel == null) {
@@ -300,13 +311,13 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         if (logger.isDebugEnabled()) {
-            logger.debug("Bosch Spexor ID is {}", getThing().getUID().getId());
+            logger.debug("Bosch Spexor ID is {}", getSpexorID());
         }
         int refreshRate = ((BigDecimal) getConfig().get("refreshInterval")).intValue();
         if (pollEvent.isPresent()) {
             pollEvent.get().cancel(false);
         }
-        pollEvent = Optional.of(scheduler.scheduleWithFixedDelay(this::updateStatus, 0, refreshRate, TimeUnit.SECONDS));
+        pollEvent = Optional.of(scheduler.scheduleWithFixedDelay(this::refreshThing, 0, refreshRate, TimeUnit.SECONDS));
     }
 
     @Override

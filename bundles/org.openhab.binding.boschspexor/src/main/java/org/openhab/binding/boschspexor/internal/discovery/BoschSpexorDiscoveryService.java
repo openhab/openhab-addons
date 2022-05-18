@@ -102,7 +102,7 @@ public class BoschSpexorDiscoveryService extends AbstractDiscoveryService
     protected synchronized void startBackgroundDiscovery() {
         stopBackgroundDiscovery();
         backgroundFuture = Optional.of(scheduler.scheduleWithFixedDelay(this::startScan,
-                BACKGROUND_SCAN_REFRESH_MINUTES, BACKGROUND_SCAN_REFRESH_MINUTES, TimeUnit.MINUTES));
+                BACKGROUND_SCAN_INITIAL_REFRESH_MINUTES, BACKGROUND_SCAN_REFRESH_MINUTES, TimeUnit.MINUTES));
     }
 
     @Override

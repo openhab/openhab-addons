@@ -49,6 +49,7 @@ public class BoschSpexorBindingConstants {
     public static final String SPEXOR_OPENHAB_URL = "/spexor";
     public static final String SPEXOR_OPENHAB_RESOURCES_URL = SPEXOR_OPENHAB_URL + "/resources";
 
+    public static final int BACKGROUND_SCAN_INITIAL_REFRESH_MINUTES = 0;
     public static final int BACKGROUND_SCAN_REFRESH_MINUTES = 5;
 
     public static final String DEVICE_CODE = "deviceCode";
