@@ -18,7 +18,6 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.LGThinQDeviceDynStateDescriptionProvider;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
@@ -46,8 +45,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LGThinQDryerHandler extends LGThinQAbstractDeviceHandler<DryerCapability, DryerSnapshot> {
 
-    @Nullable
-    private DryerCapability dryerCapability;
     private final ChannelUID stateChannelUUID;
     private final ChannelUID processStateChannelUUID;
     private final ChannelUID dryLevelChannelUUID;
@@ -58,12 +55,6 @@ public class LGThinQDryerHandler extends LGThinQAbstractDeviceHandler<DryerCapab
     private final Logger logger = LoggerFactory.getLogger(LGThinQDryerHandler.class);
     @NonNullByDefault
     private final LGThinQDRApiClientService lgThinqDRApiClientService;
-    // Bridges status that this thing must top scanning for state change
-    private static final Set<ThingStatusDetail> BRIDGE_STATUS_DETAIL_ERROR = Set.of(ThingStatusDetail.BRIDGE_OFFLINE,
-            ThingStatusDetail.BRIDGE_UNINITIALIZED, ThingStatusDetail.COMMUNICATION_ERROR,
-            ThingStatusDetail.CONFIGURATION_ERROR);
-    private @Nullable ScheduledFuture<?> thingStatePollingJob;
-    private @Nullable Future<?> commandExecutorQueueJob;
 
     public LGThinQDryerHandler(Thing thing, LGThinQDeviceDynStateDescriptionProvider stateDescriptionProvider) {
         super(thing, stateDescriptionProvider);
