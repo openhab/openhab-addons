@@ -40,7 +40,6 @@ import org.jupnp.model.types.UDN;
 import org.mockito.Mockito;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.WemoHttpCallFactory;
-import org.openhab.binding.wemo.internal.WemoUtil;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
@@ -101,8 +100,6 @@ public abstract class GenericWemoOSGiTest extends JavaOSGiTest {
     protected Thing thing;
 
     protected void setUpServices() throws IOException {
-        WemoUtil.serviceAvailableFunction = (host, port) -> true;
-
         // StorageService is required from the ManagedThingProvider
         VolatileStorageService volatileStorageService = new VolatileStorageService();
         registerService(volatileStorageService);
@@ -123,6 +120,7 @@ public abstract class GenericWemoOSGiTest extends JavaOSGiTest {
         assertThat(upnpIOService, is(notNullValue()));
 
         mockCaller = Mockito.spy(new WemoHttpCall());
+        doReturn(true).when(mockCaller).probeURL(any());
         WemoHttpCallFactory wemoHttpCallFactory = () -> mockCaller;
         registerService(wemoHttpCallFactory, WemoHttpCallFactory.class.getName());
 

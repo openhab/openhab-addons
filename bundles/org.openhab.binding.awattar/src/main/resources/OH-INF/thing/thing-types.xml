@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="awattar"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="prices">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Hourly Price</label>
+		<description>Prices for one kilowatt-hour at the given hour in Cent</description>
+
+		<channel-groups>
+			<channel-group id="current" typeId="hourly-prices">
+				<label>Current Prices</label>
+				<description>The prices of the current hour</description>
+			</channel-group>
+
+
+			<channel-group id="today00" typeId="hourly-prices">
+				<label>Today 00:00</label>
+				<description>Todays prices from 00:00 to 01:00</description>
+			</channel-group>
+			<channel-group id="today01" typeId="hourly-prices">
+				<label>Today 01:00</label>
+				<description>Todays prices from 01:00 to 02:00</description>
+			</channel-group>
+			<channel-group id="today02" typeId="hourly-prices">
+				<label>Today 02:00</label>
+				<description>Todays prices from 02:00 to 03:00</description>
+			</channel-group>
+			<channel-group id="today03" typeId="hourly-prices">
+				<label>Today 03:00</label>
+				<description>Todays prices from 03:00 to 04:00</description>
+			</channel-group>
+			<channel-group id="today04" typeId="hourly-prices">
+				<label>Today 04:00</label>
+				<description>Todays prices from 04:00 to 05:00</description>
+			</channel-group>
+			<channel-group id="today05" typeId="hourly-prices">
+				<label>Today 05:00</label>
+				<description>Todays prices from 05:00 to 06:00</description>
+			</channel-group>
+			<channel-group id="today06" typeId="hourly-prices">
+				<label>Today 06:00</label>
+				<description>Todays prices from 06:00 to 07:00</description>
+			</channel-group>
+			<channel-group id="today07" typeId="hourly-prices">
+				<label>Today 07:00</label>
+				<description>Todays prices from 07:00 to 08:00</description>
+			</channel-group>
+			<channel-group id="today08" typeId="hourly-prices">
+				<label>Today 08:00</label>
+				<description>Todays prices from 08:00 to 09:00</description>
+			</channel-group>
+			<channel-group id="today09" typeId="hourly-prices">
+				<label>Today 09:00</label>
+				<description>Todays prices from 09:00 to 10:00</description>
+			</channel-group>
+
+			<channel-group id="today10" typeId="hourly-prices">
+				<label>Today 10:00</label>
+				<description>Todays prices from 10:00 to 11:00</description>
+			</channel-group>
+			<channel-group id="today11" typeId="hourly-prices">
+				<label>Today 11:00</label>
+				<description>Todays prices from 11:00 to 12:00</description>
+			</channel-group>
+			<channel-group id="today12" typeId="hourly-prices">
+				<label>Today 12:00</label>
+				<description>Todays prices from 12:00 to 13:00</description>
+			</channel-group>
+			<channel-group id="today13" typeId="hourly-prices">
+				<label>Today 13:00</label>
+				<description>Todays prices from 13:00 to 14:00</description>
+			</channel-group>
+			<channel-group id="today14" typeId="hourly-prices">
+				<label>Today 14:00</label>
+				<description>Todays prices from 14:00 to 15:00</description>
+			</channel-group>
+			<channel-group id="today15" typeId="hourly-prices">
+				<label>Today 15:00</label>
+				<description>Todays prices from 15:00 to 16:00</description>
+			</channel-group>
+			<channel-group id="today16" typeId="hourly-prices">
+				<label>Today 16:00</label>
+				<description>Todays prices from 16:00 to 17:00</description>
+			</channel-group>
+			<channel-group id="today17" typeId="hourly-prices">
+				<label>Today 17:00</label>
+				<description>Todays prices from 17:00 to 18:00</description>
+			</channel-group>
+			<channel-group id="today18" typeId="hourly-prices">
+				<label>Today 18:00</label>
+				<description>Todays prices from 18:00 to 19:00</description>
+			</channel-group>
+			<channel-group id="today19" typeId="hourly-prices">
+				<label>Today 19:00</label>
+				<description>Todays prices from 19:00 to 10:00</description>
+			</channel-group>
+
+			<channel-group id="today20" typeId="hourly-prices">
+				<label>Today 20:00</label>
+				<description>Todays prices from 20:00 to 21:00</description>
+			</channel-group>
+			<channel-group id="today21" typeId="hourly-prices">
+				<label>Today 21:00</label>
+				<description>Todays prices from 21:00 to 22:00</description>
+			</channel-group>
+			<channel-group id="today22" typeId="hourly-prices">
+				<label>Today 22:00</label>
+				<description>Todays prices from 22:00 to 23:00</description>
+			</channel-group>
+			<channel-group id="today23" typeId="hourly-prices">
+				<label>Today 23:00</label>
+				<description>Todays prices from 23:00 to 24:00</description>
+			</channel-group>
+
+			<!-- Tomorrow -->
+			<channel-group id="tomorrow00" typeId="hourly-prices">
+				<label>Tomorrow 00:00</label>
+				<description>Tomorrows prices from 00:00 to 01:00</description>
+			</channel-group>
+			<channel-group id="tomorrow01" typeId="hourly-prices">
+				<label>Tomorrow 01:00</label>
+				<description>Tomorrows prices from 01:00 to 02:00</description>
+			</channel-group>
+			<channel-group id="tomorrow02" typeId="hourly-prices">
+				<label>Tomorrow 02:00</label>
+				<description>Tomorrows prices from 02:00 to 03:00</description>
+			</channel-group>
+			<channel-group id="tomorrow03" typeId="hourly-prices">
+				<label>Tomorrow 03:00</label>
+				<description>Tomorrows prices from 03:00 to 04:00</description>
+			</channel-group>
+			<channel-group id="tomorrow04" typeId="hourly-prices">
+				<label>Tomorrow 04:00</label>
+				<description>Tomorrows prices from 04:00 to 05:00</description>
+			</channel-group>
+			<channel-group id="tomorrow05" typeId="hourly-prices">
+				<label>Tomorrow 05:00</label>
+				<description>Tomorrows prices from 05:00 to 06:00</description>
+			</channel-group>
+			<channel-group id="tomorrow06" typeId="hourly-prices">
+				<label>Tomorrow 06:00</label>
+				<description>Tomorrows prices from 06:00 to 07:00</description>
+			</channel-group>
+			<channel-group id="tomorrow07" typeId="hourly-prices">
+				<label>Tomorrow 07:00</label>
+				<description>Tomorrows prices from 07:00 to 08:00</description>
+			</channel-group>
+			<channel-group id="tomorrow08" typeId="hourly-prices">
+				<label>Tomorrow 08:00</label>
+				<description>Tomorrows prices from 08:00 to 09:00</description>
+			</channel-group>
+			<channel-group id="tomorrow09" typeId="hourly-prices">
+				<label>Tomorrow 09:00</label>
+				<description>Tomorrows prices from 09:00 to 10:00</description>
+			</channel-group>
+
+			<channel-group id="tomorrow10" typeId="hourly-prices">
+				<label>Tomorrow 10:00</label>
+				<description>Tomorrows prices from 10:00 to 11:00</description>
+			</channel-group>
+			<channel-group id="tomorrow11" typeId="hourly-prices">
+				<label>Tomorrow 11:00</label>
+				<description>Tomorrows prices from 11:00 to 12:00</description>
+			</channel-group>
+			<channel-group id="tomorrow12" typeId="hourly-prices">
+				<label>Tomorrow 12:00</label>
+				<description>Tomorrows prices from 12:00 to 13:00</description>
+			</channel-group>
+			<channel-group id="tomorrow13" typeId="hourly-prices">
+				<label>Tomorrow 13:00</label>
+				<description>Tomorrows prices from 13:00 to 14:00</description>
+			</channel-group>
+			<channel-group id="tomorrow14" typeId="hourly-prices">
+				<label>Tomorrow 14:00</label>
+				<description>Tomorrows prices from 14:00 to 15:00</description>
+			</channel-group>
+			<channel-group id="tomorrow15" typeId="hourly-prices">
+				<label>Tomorrow 15:00</label>
+				<description>Tomorrows prices from 15:00 to 16:00</description>
+			</channel-group>
+			<channel-group id="tomorrow16" typeId="hourly-prices">
+				<label>Tomorrow 16:00</label>
+				<description>Tomorrows prices from 16:00 to 17:00</description>
+			</channel-group>
+			<channel-group id="tomorrow17" typeId="hourly-prices">
+				<label>Tomorrow 17:00</label>
+				<description>Tomorrows prices from 17:00 to 18:00</description>
+			</channel-group>
+			<channel-group id="tomorrow18" typeId="hourly-prices">
+				<label>Tomorrow 18:00</label>
+				<description>Tomorrows prices from 18:00 to 19:00</description>
+			</channel-group>
+			<channel-group id="tomorrow19" typeId="hourly-prices">
+				<label>Tomorrow 19:00</label>
+				<description>Tomorrows prices from 19:00 to 10:00</description>
+			</channel-group>
+
+			<channel-group id="tomorrow20" typeId="hourly-prices">
+				<label>Tomorrow 20:00</label>
+				<description>Tomorrows prices from 20:00 to 21:00</description>
+			</channel-group>
+			<channel-group id="tomorrow21" typeId="hourly-prices">
+				<label>Tomorrow 21:00</label>
+				<description>Tomorrows prices from 21:00 to 22:00</description>
+			</channel-group>
+			<channel-group id="tomorrow22" typeId="hourly-prices">
+				<label>Tomorrow 22:00</label>
+				<description>Tomorrows prices from 22:00 to 23:00</description>
+			</channel-group>
+			<channel-group id="tomorrow23" typeId="hourly-prices">
+				<label>Tomorrow 23:00</label>
+				<description>Tomorrows prices from 23:00 to 24:00</description>
+			</channel-group>
+		</channel-groups>
+	</thing-type>
+
+
+	<thing-type id="bestprice">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>
+			Best Price
+		</label>
+
+		<description>Evaluates the lowest price period for the given settings</description>
+		<channels>
+			<channel id="active" typeId="switch-type">
+				<label>Active</label>
+			</channel>
+			<channel id="start" typeId="start-time-stamp"/>
+			<channel id="end" typeId="end-time-stamp"/>
+			<channel id="countdown" typeId="countdown-type"/>
+			<channel id="remaining" typeId="remaining-type"/>
+			<channel id="hours" typeId="hours-type"/>
+		</channels>
+		<config-description-ref uri="thing-type:awattar:bestprice"/>
+	</thing-type>
+
+	<channel-type id="price">
+		<item-type>Number</item-type>
+		<label>Price</label>
+		<description>Price in ct/kWh</description>
+		<state readOnly="true" pattern="%.3f ct"/>
+	</channel-type>
+
+	<channel-type id="input-duration">
+		<item-type>Number</item-type>
+		<label>Duration</label>
+		<description>Length of the bestprice period to search for (hours)</description>
+		<state readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="input-hours">
+		<item-type>Number</item-type>
+		<label>Lookup Time</label>
+		<description>How many hours from now should be checked?</description>
+		<state readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="input-switch">
+		<item-type>Switch</item-type>
+		<label>Consecutive</label>
+		<description>Consecutive range needed?</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+
+	<channel-type id="switch-type">
+		<item-type>Switch</item-type>
+		<label>Active</label>
+		<description>Currently activated</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="start-time-stamp">
+		<item-type>DateTime</item-type>
+		<label>Starttime</label>
+		<description>Starting time of period.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="end-time-stamp">
+		<item-type>DateTime</item-type>
+		<label>Endtime</label>
+		<description>End time of period.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="countdown-type">
+		<item-type>Number:Time</item-type>
+		<label>Countdown</label>
+		<description>Time until start of period.</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="remaining-type">
+		<item-type>Number:Time</item-type>
+		<label>Remaining</label>
+		<description>Time until end of period.</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="hours-type">
+		<item-type>String</item-type>
+		<label>Hours</label>
+		<description>A list of all hours within this bestprice range.</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-group-type id="hourly-prices">
+		<label>Hourly Prices</label>
+		<description>Hourly net and gross prices</description>
+		<channels>
+			<channel id="market-net" typeId="price">
+				<label>Net Marketprice</label>
+			</channel>
+
+			<channel id="market-gross" typeId="price">
+				<label>Gross Marketprice</label>
+			</channel>
+			<channel id="total-net" typeId="price">
+				<label>Net Total</label>
+			</channel>
+			<channel id="total-gross" typeId="price">
+				<label>Gross Total</label>
+			</channel>
+		</channels>
+
+	</channel-group-type>
+
+
+</thing:thing-descriptions>

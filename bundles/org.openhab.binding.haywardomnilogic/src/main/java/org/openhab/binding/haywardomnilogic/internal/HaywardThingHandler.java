@@ -67,7 +67,6 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
             case "Number":
                 return new DecimalType(value);
             case "Switch":
-            case "system.power":
                 return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
             case "Number:Dimensionless":
                 switch (channelID) {

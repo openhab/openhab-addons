@@ -53,6 +53,7 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
         if (bridgeHandler != null) {
             bridgeHandler.setDeviceHandler(deviceId, this);
             updateProperties(bridgeHandler);
+            updateDeviceName(bridgeHandler);
             refreshChannels(bridgeHandler);
         }
     }
@@ -74,15 +75,15 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
     protected @Nullable ElroConnectsBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "No bridge defined for device " + String.valueOf(deviceId));
+            String msg = String.format("@text/offline.no-bridge [ \"%d\" ]", deviceId);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return null;
         }
 
         ElroConnectsBridgeHandler bridgeHandler = (ElroConnectsBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "No bridge handler defined for device " + String.valueOf(deviceId));
+            String msg = String.format("@text/offline.no-bridge-handler [ \"%d\" ]", deviceId);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return null;
         }
 
@@ -110,6 +111,14 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
             Map<String, String> properties = new HashMap<>();
             properties.put("deviceType", ElroConnectsUtil.stringOrEmpty(device.getDeviceType()));
             thing.setProperties(properties);
+        }
+    }
+
+    protected void updateDeviceName(ElroConnectsBridgeHandler bridgeHandler) {
+        ElroConnectsDevice device = bridgeHandler.getDevice(deviceId);
+        String deviceName = thing.getLabel();
+        if ((device != null) && (deviceName != null)) {
+            device.updateDeviceName(deviceName);
         }
     }
 

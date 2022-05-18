@@ -13,12 +13,14 @@
 package org.openhab.binding.pulseaudio.internal.discovery;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants;
+import org.openhab.binding.pulseaudio.internal.handler.DeviceIdentifier;
 import org.openhab.binding.pulseaudio.internal.handler.DeviceStatusListener;
 import org.openhab.binding.pulseaudio.internal.handler.PulseaudioBridgeHandler;
 import org.openhab.binding.pulseaudio.internal.handler.PulseaudioHandler;
@@ -27,6 +29,7 @@ import org.openhab.binding.pulseaudio.internal.items.Sink;
 import org.openhab.binding.pulseaudio.internal.items.SinkInput;
 import org.openhab.binding.pulseaudio.internal.items.Source;
 import org.openhab.binding.pulseaudio.internal.items.SourceOutput;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -70,7 +73,7 @@ public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService i
 
     @Override
     public void onDeviceAdded(Thing bridge, AbstractAudioDeviceConfig device) {
-        if (getAlreadyConfiguredThings().contains(device.getPaName())) {
+        if (getAlreadyConfiguredThings().stream().anyMatch(deviceIdentifier -> device.matches(deviceIdentifier))) {
             return;
         }
 
@@ -79,7 +82,7 @@ public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService i
         ThingTypeUID thingType = null;
         Map<String, Object> properties = new HashMap<>();
         // All devices need this parameter
-        properties.put(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME, uidName);
+        properties.put(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME_OR_DESCRIPTION, uidName);
         if (device instanceof Sink) {
             if (((Sink) device).isCombinedSink()) {
                 thingType = PulseaudioBindingConstants.COMBINED_SINK_THING_TYPE;
@@ -104,10 +107,20 @@ public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService i
         }
     }
 
-    public Set<String> getAlreadyConfiguredThings() {
-        return pulseaudioBridgeHandler.getThing().getThings().stream().map(Thing::getConfiguration)
-                .map(conf -> (String) conf.get(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME))
-                .collect(Collectors.toSet());
+    public Set<DeviceIdentifier> getAlreadyConfiguredThings() {
+        Set<DeviceIdentifier> alreadyConfiguredThings = new HashSet<>();
+        for (Thing thing : pulseaudioBridgeHandler.getThing().getThings()) {
+            Configuration configuration = thing.getConfiguration();
+            try {
+                alreadyConfiguredThings.add(new DeviceIdentifier(
+                        (String) configuration.get(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME_OR_DESCRIPTION),
+                        (String) configuration.get(PulseaudioBindingConstants.DEVICE_PARAMETER_ADDITIONAL_FILTERS)));
+            } catch (PatternSyntaxException p) {
+                logger.debug(
+                        "There is an error with an already configured things. Cannot compare with discovery, skipping it");
+            }
+        }
+        return alreadyConfiguredThings;
     }
 
     @Override

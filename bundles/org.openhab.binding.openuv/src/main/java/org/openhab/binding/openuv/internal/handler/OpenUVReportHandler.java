@@ -40,6 +40,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -208,10 +209,11 @@ public class OpenUVReportHandler extends BaseThingHandler {
                 return openUVData.getUVMaxTime();
             case UV_TIME:
                 return openUVData.getUVTime();
-            case SAFE_EXPOSURE:
-                SafeExposureConfiguration configuration = channel.getConfiguration()
-                        .as(SafeExposureConfiguration.class);
-                return openUVData.getSafeExposureTime(configuration.index);
+        }
+        ChannelTypeUID channelType = channel.getChannelTypeUID();
+        if (channelType != null && SAFE_EXPOSURE.equals(channelType.getId())) {
+            SafeExposureConfiguration configuration = channel.getConfiguration().as(SafeExposureConfiguration.class);
+            return openUVData.getSafeExposureTime(configuration.index);
         }
         return UnDefType.NULL;
     }

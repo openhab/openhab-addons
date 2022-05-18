@@ -56,6 +56,7 @@ public class ModbusTcpThingHandler
         EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
         this.poolConfiguration = poolConfiguration;
         poolConfiguration.setConnectMaxTries(config.getConnectMaxTries());
+        poolConfiguration.setAfterConnectionDelayMillis(config.getAfterConnectionDelayMillis());
         poolConfiguration.setConnectTimeoutMillis(config.getConnectTimeoutMillis());
         poolConfiguration.setInterConnectDelayMillis(config.getTimeBetweenReconnectMillis());
         poolConfiguration.setInterTransactionDelayMillis(config.getTimeBetweenTransactionsMillis());

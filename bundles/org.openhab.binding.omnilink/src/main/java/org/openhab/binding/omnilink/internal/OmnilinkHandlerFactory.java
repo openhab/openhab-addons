@@ -16,6 +16,7 @@ import static org.openhab.binding.omnilink.internal.OmnilinkBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.omnilink.internal.action.OmnilinkActions;
 import org.openhab.binding.omnilink.internal.handler.AudioSourceHandler;
 import org.openhab.binding.omnilink.internal.handler.AudioZoneHandler;
 import org.openhab.binding.omnilink.internal.handler.ButtonHandler;
@@ -34,13 +35,16 @@ import org.openhab.binding.omnilink.internal.handler.units.FlagHandler;
 import org.openhab.binding.omnilink.internal.handler.units.OutputHandler;
 import org.openhab.binding.omnilink.internal.handler.units.UpbRoomHandler;
 import org.openhab.binding.omnilink.internal.handler.units.dimmable.UpbUnitHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link OmnilinkHandlerFactory} is responsible for creating things and thing
@@ -52,6 +56,11 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.omnilink")
 public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
+
+    @Activate
+    public OmnilinkHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider) {
+        OmnilinkActions.setTimeZoneProvider(timeZoneProvider);
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

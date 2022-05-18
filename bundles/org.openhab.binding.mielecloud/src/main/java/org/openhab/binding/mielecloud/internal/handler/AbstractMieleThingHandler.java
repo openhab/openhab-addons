@@ -27,7 +27,6 @@ import org.openhab.binding.mielecloud.internal.discovery.ThingInformationExtract
 import org.openhab.binding.mielecloud.internal.handler.channel.ActionsChannelState;
 import org.openhab.binding.mielecloud.internal.handler.channel.DeviceChannelState;
 import org.openhab.binding.mielecloud.internal.handler.channel.TransitionChannelState;
-import org.openhab.binding.mielecloud.internal.webservice.ActionStateFetcher;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebservice;
 import org.openhab.binding.mielecloud.internal.webservice.UnavailableMieleWebservice;
 import org.openhab.binding.mielecloud.internal.webservice.api.ActionsState;
@@ -59,7 +58,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class AbstractMieleThingHandler extends BaseThingHandler {
-    protected final ActionStateFetcher actionFetcher;
     protected DeviceState latestDeviceState = new DeviceState(getDeviceId(), null);
     protected TransitionState latestTransitionState = new TransitionState(null, latestDeviceState);
     protected ActionsState latestActionsState = new ActionsState(getDeviceId(), null);
@@ -73,7 +71,6 @@ public abstract class AbstractMieleThingHandler extends BaseThingHandler {
      */
     public AbstractMieleThingHandler(Thing thing) {
         super(thing);
-        this.actionFetcher = new ActionStateFetcher(this::getWebservice, scheduler);
     }
 
     private Optional<MieleBridgeHandler> getMieleBridgeHandler() {
@@ -170,8 +167,6 @@ public abstract class AbstractMieleThingHandler extends BaseThingHandler {
      * Invoked when a device state update for the device managed by this handler is received from the Miele cloud.
      */
     public final void onDeviceStateUpdated(DeviceState deviceState) {
-        actionFetcher.onDeviceStateUpdated(deviceState);
-
         latestTransitionState = new TransitionState(latestTransitionState, deviceState);
         latestDeviceState = deviceState;
 

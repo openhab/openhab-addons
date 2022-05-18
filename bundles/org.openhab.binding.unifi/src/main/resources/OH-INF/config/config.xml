@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:unifi:controller">
+		<parameter name="host" type="text" required="true">
+			<label>Hostname</label>
+			<description>Hostname of IP address of the UniFi Controller</description>
+			<default>unifi</default>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="port" type="integer" max="65535" min="1" required="false">
+			<label>Port</label>
+			<description>Port of the UniFi Controller</description>
+			<default>8443</default>
+		</parameter>
+		<parameter name="unifios" type="boolean" required="true">
+			<label>UniFi OS</label>
+			<description>If the UniFi Controller is running on UniFi OS.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="username" type="text" required="true">
+			<label>Username</label>
+			<description>The username to access the UniFi Controller.</description>
+		</parameter>
+		<parameter name="password" type="text" required="true">
+			<label>Password</label>
+			<description>The password to access the UniFi Controller.</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="refresh" type="integer" required="false" unit="s">
+			<label>Refresh Interval</label>
+			<description>The refresh interval in seconds to poll the UniFi controller</description>
+			<default>10</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:unifi:site">
+		<parameter name="sid" type="text" required="true">
+			<label>Site Id</label>
+			<description>The id, name or description of the site</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:unifi:wlan">
+		<parameter name="wid" type="text" required="true">
+			<label>WLAN Id</label>
+			<description>The id or name of the wlan</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:unifi:client">
+		<parameter name="cid" type="text" required="true">
+			<label>Client ID</label>
+			<description>The MAC address, IP address, hostname or alias of the client</description>
+		</parameter>
+		<parameter name="site" type="text" required="false">
+			<label>Site</label>
+			<description>The site where the client should be found (optional)</description>
+		</parameter>
+		<parameter name="considerHome" type="integer" required="false" unit="s">
+			<label>Consider Home Interval</label>
+			<description>The interval in seconds to consider the client as home</description>
+			<default>180</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:unifi:poePort">
+		<parameter name="portNumber" type="integer" required="true">
+			<label>Port Number</label>
+			<description>The number of the port as reported by the UniFi switch</description>
+		</parameter>
+		<parameter name="macAddress" type="text" required="true">
+			<label>Switch MAC Address</label>
+			<description>The MAC address of the switch this port is part of</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:unifi:poeEnable">
+		<parameter name="mode" type="text">
+			<label>On Mode</label>
+			<description>The value to set when setting PoE on.</description>
+			<options>
+				<option value="auto">Auto</option>
+				<option value="24v">24V</option>
+				<option value="passthrough">Passthrough</option>
+			</options>
+			<default>auto</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

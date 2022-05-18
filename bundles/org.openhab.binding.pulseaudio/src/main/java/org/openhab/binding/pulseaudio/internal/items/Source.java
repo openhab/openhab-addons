@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.pulseaudio.internal.items;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -27,8 +29,8 @@ public class Source extends AbstractAudioDeviceConfig {
     @Nullable
     protected Sink monitorOf;
 
-    public Source(int id, String name, @Nullable Module module) {
-        super(id, name, module);
+    public Source(int id, String name, String description, Map<String, String> properties, @Nullable Module module) {
+        super(id, name, description, properties, module);
     }
 
     public @Nullable Sink getMonitorOf() {

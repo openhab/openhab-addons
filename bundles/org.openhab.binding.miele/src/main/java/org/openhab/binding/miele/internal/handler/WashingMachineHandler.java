@@ -116,7 +116,7 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
 
     public void onApplianceExtendedStateChanged(byte[] extendedDeviceState) {
         if (extendedDeviceState.length < EXTENDED_STATE_MIN_SIZE_BYTES) {
-            logger.warn("Unexpected size of extended state: {}", extendedDeviceState);
+            logger.debug("Insufficient extended state data to extract consumption values: {}", extendedDeviceState);
             return;
         }
 
