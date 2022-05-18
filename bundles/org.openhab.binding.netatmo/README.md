@@ -40,19 +40,19 @@ You will have to create at first a bridge to handle communication with your Neta
 
 The Account bridge has the following configuration elements:
 
-| Parameter         | Type   | Required | Description                                                                                                                |
-|-------------------|--------|----------|----------------------------------------------------------------------------------------------------------------------------|
-| clientId          | String | Yes      | Client ID provided for the application you created on http://dev.netatmo.com/createapp                                     |
-| clientSecret      | String | Yes      | Client Secret provided for the application you created                                                                     |
-| webHookUrl        | String | No       | Protocol, public IP and port to access openHAB server from Internet                                                        |
-| reconnectInterval | Number | No       | The reconnection interval to Netatmo API (in s)                                                                            |
-| refreshToken      | String | No       | The refresh token provided by Netatmo API after the granting process. Can be saved for in case of file based configuration |
+| Parameter         | Type   | Required | Description                                                                                                            |
+|-------------------|--------|----------|------------------------------------------------------------------------------------------------------------------------|
+| clientId          | String | Yes      | Client ID provided for the application you created on http://dev.netatmo.com/createapp                                 |
+| clientSecret      | String | Yes      | Client Secret provided for the application you created                                                                 |
+| webHookUrl        | String | No       | Protocol, public IP and port to access openHAB server from Internet                                                    |
+| reconnectInterval | Number | No       | The reconnection interval to Netatmo API (in s)                                                                        |
+| refreshToken      | String | No       | The refresh token provided by Netatmo API after the granting process. Can be saved in case of file based configuration |
 
-### Configure the Dridge
+### Configure the Bridge
 
 1. Complete the Netatmo Application Registration if you have not already done so, see above.
 1. Make sure you have your _Client ID_ and _Client Secret_ identities available.
-1. Add a new **"Netatmo Account"** thing. Choose new Id for the account, unless you like the generated one, put in the _Client ID_ and _Client Secret_ from the Spotify Application registration in their respective fields of the bridge configuration. Save the bridge.
+1. Add a new **"Netatmo Account"** thing. Choose new Id for the account, unless you like the generated one, put in the _Client ID_ and _Client Secret_ from the Netatmo Connect Application registration in their respective fields of the bridge configuration. Save the bridge.
 1. The bridge thing will go _OFFLINE_ / _CONFIGURATION_ERROR_ - this is fine. You have to authorize this bridge with Netatmo Connect.
 1. Go to the authorization page of your server. `http://<your openHAB address>:8080/netatmo/connect/<_CLIENT_ID_>`. Your newly added bridge should be listed there.
 1. Press the _"Authorize Thing"_ button. This will take you either to the login page of Netatmo Connect or directly to the authorization screen. Login and/or authorize the application. You will be returned and the entry should go green. 
