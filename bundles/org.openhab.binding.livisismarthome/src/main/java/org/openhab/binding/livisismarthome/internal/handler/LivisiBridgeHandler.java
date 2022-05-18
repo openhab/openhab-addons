@@ -166,7 +166,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             requestAccessToken();
 
             scheduleRestartClient(false);
-        } catch (AuthenticationException | ApiException | IOException | OAuthException e) {
+        } catch (AuthenticationException | ApiException | IOException | OAuthException | OAuthResponseException e) {
             logger.debug("Error fetching access tokens. Please check your credentials. Detail: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Cannot connect to LIVISI SmartHome service. Please check your credentials!");
@@ -892,22 +892,16 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private void refreshAccessToken() {
         try {
             requestAccessToken();
-        } catch (AuthenticationException | ApiException | IOException | OAuthException e) {
+        } catch (AuthenticationException | ApiException | IOException | OAuthException | OAuthResponseException e) {
             logger.debug("Could not refresh tokens", e);
         }
     }
 
-    private void requestAccessToken() throws OAuthException, IOException, AuthenticationException, ApiException {
+    private void requestAccessToken()
+            throws OAuthException, IOException, AuthenticationException, ApiException, OAuthResponseException {
         if (oAuthService != null && client != null) {
-            try {
-                oAuthService.getAccessTokenByResourceOwnerPasswordCredentials(LivisiBindingConstants.USERNAME,
-                        bridgeConfiguration.password, null);
-            } catch (OAuthResponseException e) {
-                // Fallback for SHC 1 which currently doesn't support x-www-form-urlencoded. //TODO remove when SHC 1 is
-                // updated. The LivisiClient#login() method can also get removed after that.
-                AccessTokenResponse tokenResponse = client.login();
-                oAuthService.importAccessTokenResponse(tokenResponse);
-            }
+            oAuthService.getAccessTokenByResourceOwnerPasswordCredentials(LivisiBindingConstants.USERNAME,
+                    bridgeConfiguration.password, null);
         }
     }
 

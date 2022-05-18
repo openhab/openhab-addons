@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.livisismarthome.internal.client;
 
-import static org.openhab.binding.livisismarthome.internal.client.URLConnectionFactory.CONTENT_TYPE;
-import static org.openhab.binding.livisismarthome.internal.client.URLConnectionFactory.HTTP_REQUEST_TIMEOUT_MILLISECONDS;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,8 +36,6 @@ import org.openhab.binding.livisismarthome.internal.client.api.entity.action.Act
 import org.openhab.binding.livisismarthome.internal.client.api.entity.action.ShutterActionDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.action.ShutterActionType;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.action.StateActionSetterDTO;
-import org.openhab.binding.livisismarthome.internal.client.api.entity.auth.LivisiAccessTokenRequestDTO;
-import org.openhab.binding.livisismarthome.internal.client.api.entity.auth.LivisiAccessTokenResponseDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.capability.CapabilityDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.capability.CapabilityStateDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceDTO;
@@ -79,7 +74,6 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class LivisiClient {
 
-    private static final String BASIC = "Basic ";
     private final Logger logger = LoggerFactory.getLogger(LivisiClient.class);
 
     /**
@@ -181,37 +175,6 @@ public class LivisiClient {
         logger.trace("RAW-RESPONSE: {}", responseContent);
         handleResponseErrors(connection, responseContent);
         return normalizeResponseContent(responseContent);
-    }
-
-    public AccessTokenResponse login() throws AuthenticationException, IOException, ApiException {
-        LivisiAccessTokenRequestDTO requestBody = new LivisiAccessTokenRequestDTO();
-        requestBody.setUserName(LivisiBindingConstants.USERNAME);
-        requestBody.setPassword(bridgeConfiguration.password);
-        requestBody.setGrantType("password");
-
-        final String json = gson.toJson(requestBody);
-        final byte[] jsonBytes = json.getBytes(StandardCharsets.UTF_8);
-
-        String tokenURL = URLCreator.createTokenURL(bridgeConfiguration.host);
-
-        HttpURLConnection connection = connectionFactory.createRequest(tokenURL);
-        connection.setDoOutput(true);
-        connection.setRequestMethod(HttpMethod.POST.asString());
-        connection.setRequestProperty(HttpHeader.ACCEPT.asString(), CONTENT_TYPE);
-        connection.setRequestProperty(HttpHeader.CONTENT_TYPE.asString(), CONTENT_TYPE);
-        connection.setRequestProperty(HttpHeader.AUTHORIZATION.asString(),
-                BASIC + LivisiBindingConstants.AUTH_HEADER_VALUE);
-        connection.setConnectTimeout(HTTP_REQUEST_TIMEOUT_MILLISECONDS);
-        connection.setReadTimeout(HTTP_REQUEST_TIMEOUT_MILLISECONDS);
-        connection.setRequestProperty(HttpHeader.CONTENT_LENGTH.asString(), String.valueOf(jsonBytes.length));
-        try (OutputStream outputStream = connection.getOutputStream()) {
-            outputStream.write(jsonBytes);
-        }
-
-        String responseContent = executeRequest(connection);
-
-        LivisiAccessTokenResponseDTO tokenResponse = gson.fromJson(responseContent, LivisiAccessTokenResponseDTO.class);
-        return tokenResponse.createAccessTokenResponse();
     }
 
     private HttpURLConnection createBaseRequest(String url, HttpMethod httpMethod)
