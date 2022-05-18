@@ -181,13 +181,18 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
          */
         @Override
         public void run() {
+            logger.debug("run queued commands, queue size is {}", commandQueue.size());
             if (!isAuthenticated()) {
                 authenticate();
             } else {
                 refreshAccessToken();
 
                 if (isAuthenticated() && !commandQueue.isEmpty()) {
-                    executeCommand();
+                    try {
+                        executeCommand();
+                    } catch (Exception ex) {
+                        logger.warn("command execution ended with exception:", ex);
+                    }
                 }
             }
         }

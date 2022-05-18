@@ -89,7 +89,7 @@ public class GenericResponseTransformer {
                                 result.put(channel, new DateTimeType(value));
                                 break;
                             case CHANNEL_TYPE_NUMBER:
-                                if (ChannelUtil.getChannelId(channel).equals(CHANNEL_TYPENAME_INTEGER)) {
+                                if (ChannelUtil.getChannelTypeId(channel).contains(CHANNEL_TYPENAME_INTEGER)) {
                                     // explicit type long is needed in case of integer/long values otherwise automatic
                                     // transformation to a decimal type is applied.
                                     result.put(channel, new DecimalType(Long.parseLong(value)));

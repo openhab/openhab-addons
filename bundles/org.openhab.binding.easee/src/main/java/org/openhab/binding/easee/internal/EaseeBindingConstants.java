@@ -51,7 +51,13 @@ public class EaseeBindingConstants {
     public static final String CHANNEL_TYPE_DATE = "DateTime";
     public static final String CHANNEL_TYPE_NUMBER = "Number";
 
+    public static final String CHANNEL_TYPEPREFIX_RW = "rw";
+
     public static final String CHANNEL_TYPENAME_INTEGER = "type-integer";
+
+    // Write Commands
+
+    public static final String COMMAND_CHANGE_CONFIGURATION = "ChangeConfiguration";
 
     // web request constants
     public static final long WEB_REQUEST_INITIAL_DELAY = TimeUnit.SECONDS.toMillis(30);
@@ -67,9 +73,13 @@ public class EaseeBindingConstants {
     public static final String STATE_URL = "https://api.easee.cloud/api/chargers/{id}/state";
     public static final String GET_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/config";
     public static final String CHANGE_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/settings";
+    public static final String COMMANDS_URL = "https://api.easee.cloud/api/chargers/{id}/commands/{command}";
     public static final String LATEST_CHARGING_SESSION_URL = "https://api.easee.cloud/api/chargers/{id}/sessions/latest";
 
     // other
     public static final Date INVALID_DATE = new GregorianCalendar(1900, 1, 1).getTime();
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    public static final String PARAMETER_NAME_WRITE_COMMAND = "writeCommand";
+    public static final String PARAMETER_NAME_VALIDATION_REGEXP = "validationExpression";
 }

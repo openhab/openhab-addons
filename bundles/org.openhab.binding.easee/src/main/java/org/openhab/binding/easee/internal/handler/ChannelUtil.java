@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.easee.internal.handler;
 
+import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.easee.internal.model.account.exception.ConfigurationException;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.slf4j.Logger;
@@ -40,7 +43,7 @@ public final class ChannelUtil {
      * @param channel
      * @return typeID or empty string if typeUID is null.
      */
-    public static String getChannelId(Channel channel) {
+    public static String getChannelTypeId(Channel channel) {
         ChannelTypeUID typeUID = channel.getChannelTypeUID();
         if (typeUID == null) {
             return "";
@@ -48,39 +51,39 @@ public final class ChannelUtil {
         return typeUID.getId();
     }
 
-    // /**
-    // * retrieves the validation expression which is assigned to this channel, fallback to a default, if no validation
-    // is
-    // * defined.
-    // *
-    // * @param channel
-    // * @return the validation expression
-    // */
-    // public static String getValidationExpression(Channel channel) {
-    // String expr = getPropertyOrParameter(channel, NibeUplinkBindingConstants.PARAMETER_NAME_VALIDATION_REGEXP);
-    // if (expr == null) {
-    // logger.info("Channel {} does not have a validation expression configured", channel.getUID().getId());
-    // throw new ConfigurationException(
-    // "channel (" + channel.getUID().getId() + ") does not have a validation expression configured");
-    // }
-    // return expr;
-    // }
-    //
-    // /**
-    // * retrieves the write API url suffix which is assigned to this channel.
-    // *
-    // * @param channel
-    // * @return the url suffix
-    // */
-    // public static String getWriteApiUrlSuffix(Channel channel) {
-    // String suffix = getPropertyOrParameter(channel, NibeUplinkBindingConstants.PARAMETER_NAME_WRITE_API_URL);
-    // if (suffix == null) {
-    // logger.info("channel {} does not have a write api url suffix configured", channel.getUID().getId());
-    // throw new ConfigurationException(
-    // "channel (" + channel.getUID().getId() + ") does not have a write api url suffix configured");
-    // }
-    // return suffix;
-    // }
+    /**
+     * retrieves the validation expression which is assigned to this channel, fallback to a default, if no validation
+     * is
+     * defined.
+     *
+     * @param channel
+     * @return the validation expression
+     */
+    public static String getValidationExpression(Channel channel) {
+        String expr = getPropertyOrParameter(channel, PARAMETER_NAME_VALIDATION_REGEXP);
+        if (expr == null) {
+            logger.warn("Channel {} does not have a validation expression configured", channel.getUID().getId());
+            throw new ConfigurationException(
+                    "channel (" + channel.getUID().getId() + ") does not have a validation expression configured");
+        }
+        return expr;
+    }
+
+    /**
+     * retrieves the write API url suffix which is assigned to this channel.
+     *
+     * @param channel
+     * @return the url suffix
+     */
+    public static String getWriteCommand(Channel channel) {
+        String command = getPropertyOrParameter(channel, PARAMETER_NAME_WRITE_COMMAND);
+        if (command == null) {
+            logger.warn("channel {} does not have a write command configured", channel.getUID().getId());
+            throw new ConfigurationException(
+                    "channel (" + channel.getUID().getId() + ") does not have a write command configured");
+        }
+        return command;
+    }
 
     private static @Nullable String getPropertyOrParameter(Channel channel, String name) {
         String value = channel.getProperties().get(name);

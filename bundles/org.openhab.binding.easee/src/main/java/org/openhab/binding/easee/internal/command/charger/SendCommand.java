@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.easee.internal.command.charger;
 
-import static org.openhab.binding.easee.internal.EaseeBindingConstants.CHANGE_CONFIGURATION_URL;
+import static org.openhab.binding.easee.internal.EaseeBindingConstants.COMMANDS_URL;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractWriteCommand;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
@@ -31,16 +30,14 @@ import org.openhab.core.types.Command;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class ChangeConfiguration extends AbstractWriteCommand implements EaseeCommand {
+public class SendCommand extends AbstractWriteCommand implements EaseeCommand {
 
-    public ChangeConfiguration(EaseeHandler handler, Channel channel, Command command) {
+    public SendCommand(EaseeHandler handler, Channel channel, Command command) {
         super(handler, channel, command, true, true);
     }
 
     @Override
     protected Request prepareWriteRequest(Request requestToPrepare) {
-        StringContentProvider cp = new StringContentProvider(getJsonContent());
-        requestToPrepare.content(cp);
         requestToPrepare.method(HttpMethod.POST);
 
         return requestToPrepare;
@@ -48,8 +45,9 @@ public class ChangeConfiguration extends AbstractWriteCommand implements EaseeCo
 
     @Override
     protected @NonNull String getURL() {
-        String url = CHANGE_CONFIGURATION_URL;
+        String url = COMMANDS_URL;
         url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
+        url = url.replaceAll("\\{command\\}", getCommandValue());
         return url;
     }
 }

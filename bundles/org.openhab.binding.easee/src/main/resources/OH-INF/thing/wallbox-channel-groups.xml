@@ -50,9 +50,13 @@
 				<label>Online</label>
 				<description>Online status of the wallbox.</description>
 			</channel>
-			<channel id="dynamicChargerCurrent" typeId="type-current">
+			<channel id="dynamicChargerCurrent" typeId="rwtype-current">
 				<label>Dynamic Charger Current</label>
 				<description>Dynamic set charging current.</description>
+				<properties>
+					<property name="writeCommand">ChangeConfiguration</property>
+					<property name="validationExpression">(6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32)</property>
+				</properties>
 			</channel>
 			<channel id="reasonForNoCurrent" typeId="type-integer">
 				<label>Reason for no Current</label>
@@ -78,18 +82,51 @@
 			<channel id="lockCablePermanently" typeId="rwtype-switch">
 				<label>Lock Cable Permanently</label>
 				<description>Lock Cable Permanently status of the wallbox.</description>
+				<properties>
+					<property name="writeCommand">ChangeConfiguration</property>
+					<property name="validationExpression">.*</property>
+				</properties>
 			</channel>
 			<channel id="authorizationRequired" typeId="rwtype-switch">
 				<label>Authorization Required</label>
 				<description>Indicates if authorization is required to start charging.</description>
+				<properties>
+					<property name="writeCommand">ChangeConfiguration</property>
+					<property name="validationExpression">.*</property>
+				</properties>
 			</channel>
 			<channel id="limitToSinglePhaseCharging" typeId="rwtype-switch">
 				<label>Limit To Single Phase Charging</label>
 				<description>Indicates if charging should be limited to single phase mode.</description>
+				<properties>
+					<property name="writeCommand">ChangeConfiguration</property>
+					<property name="validationExpression">.*</property>
+				</properties>
 			</channel>
-			<channel id="phaseMode" typeId="type-integer">
+			<channel id="phaseMode" typeId="rwtype-integer-phase-mode">
 				<label>Phase Mode</label>
 				<description>Phase Mode.</description>
+				<properties>
+					<property name="writeCommand">ChangeConfiguration</property>
+					<property name="validationExpression">(1|2|3)</property>
+				</properties>
+			</channel>
+			<channel id="maxChargerCurrent" typeId="type-current">
+				<label>Max Charger Current</label>
+				<description>Max charging current.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="wallbox-charger_commands">
+		<label>Charger Commands</label>
+		<channels>
+			<channel id="genericCommand" typeId="rwtype-command">
+				<label>Charger Command</label>
+				<description>Sends a command to the charger. Write only channel.</description>
+				<properties>
+					<property name="writeCommand">SendCommand</property>
+					<property name="validationExpression">(reboot|update_firmware|poll_all|smart_charging|start_charging|stop_charging|pause_charging|resume_charging|toggle_charging|override_schedule)</property>
+				</properties>
 			</channel>
 		</channels>
 
