@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.fineoffsetweatherstation.internal.domain;
 
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_MAX_WIND_SPEED;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_MOISTURE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_UV_INDEX;
 
@@ -62,7 +63,8 @@ public enum Measurand {
     WINDSPEED("speed-wind", (byte) 0x0B, "Wind Speed", MeasureType.SPEED,
             DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_WIND_SPEED),
 
-    GUSTSPEED("speed-gust", (byte) 0x0C, "Gust Speed", MeasureType.SPEED),
+    GUSTSPEED("speed-gust", (byte) 0x0C, "Gust Speed", MeasureType.SPEED,
+            DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_WIND_SPEED),
 
     RAINEVENT("rain-event", (byte) 0x0D, "Rain Event", MeasureType.HEIGHT),
 
@@ -88,7 +90,7 @@ public enum Measurand {
 
     TIME("time", (byte) 0x18, "Date and time", MeasureType.DATE_TIME2),
 
-    DAYLWINDMAX("wind-max-day", (byte) 0X19, "Day max wind", MeasureType.SPEED),
+    DAYLWINDMAX("wind-max-day", (byte) 0X19, "Day max wind", MeasureType.SPEED, CHANNEL_MAX_WIND_SPEED),
 
     TEMP1("temperature-channel-1", (byte) 0x1A, "Temperature 1", MeasureType.TEMPERATURE),
 

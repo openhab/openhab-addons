@@ -29,7 +29,6 @@ import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWe
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TEMPERATURE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_UV_RADIATION;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_WATER_LEAK_DETECTION;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_WIND_SPEED;
 import static org.openhab.binding.fineoffsetweatherstation.internal.Utils.toInt16;
 import static org.openhab.binding.fineoffsetweatherstation.internal.Utils.toUInt16;
 import static org.openhab.binding.fineoffsetweatherstation.internal.Utils.toUInt32;
@@ -77,7 +76,7 @@ public enum MeasureType {
 
     DEGREE(DEGREE_ANGLE, 2, null, Utils::toUInt16),
 
-    SPEED(METRE_PER_SECOND, 2, CHANNEL_WIND_SPEED, (data, offset) -> toUInt16(data, offset) / 10.),
+    SPEED(METRE_PER_SECOND, 2, null, (data, offset) -> toUInt16(data, offset) / 10.),
 
     HEIGHT(MILLI(METRE), 2, CHANNEL_RAIN, (data, offset) -> toUInt16(data, offset) / 10.),
 

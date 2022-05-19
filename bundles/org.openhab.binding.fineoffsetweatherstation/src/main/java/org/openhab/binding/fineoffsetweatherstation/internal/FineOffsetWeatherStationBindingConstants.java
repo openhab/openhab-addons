@@ -36,7 +36,7 @@ public class FineOffsetWeatherStationBindingConstants {
     public static final ChannelTypeUID CHANNEL_TEMPERATURE = new ChannelTypeUID(BINDING_ID, "temperature");
     public static final ChannelTypeUID CHANNEL_HUMIDITY = new ChannelTypeUID(BINDING_ID, "humidity");
     public static final ChannelTypeUID CHANNEL_MOISTURE = new ChannelTypeUID(BINDING_ID, "moisture");
-    public static final ChannelTypeUID CHANNEL_WIND_SPEED = new ChannelTypeUID(BINDING_ID, "wind-speed");
+    public static final ChannelTypeUID CHANNEL_MAX_WIND_SPEED = new ChannelTypeUID(BINDING_ID, "max-wind-speed");
     public static final ChannelTypeUID CHANNEL_RAIN = new ChannelTypeUID(BINDING_ID, "rain");
     public static final ChannelTypeUID CHANNEL_PRESSURE = new ChannelTypeUID(BINDING_ID, "pressure");
     public static final ChannelTypeUID CHANNEL_ILLUMINATION = new ChannelTypeUID(BINDING_ID, "illumination");
