@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.handler.ShellyComponents.updateSensors;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelaySt
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -221,7 +223,6 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
         profile.deviceType = device.type;
         profile.mac = device.mac;
         profile.auth = device.auth;
-        profile.status.uptime = Long.valueOf(0);
 
         profile.fwDate = substringBefore(device.fw, "/");
         profile.fwVersion = substringBefore(ShellyDeviceProfile.extractFwVersion(device.fw.replace("/", "/v")), "-");
@@ -281,7 +282,7 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
     public void onNotifyStatus(Shelly2RpcNotifyStatus message) {
         logger.debug("{}: NotifyStatus update received: {}", thingName, gson.toJson(message));
         try {
-            getThing().restartWatchdog();
+            getThing().setThingOnline();
 
             if (message.error != null) {
                 logger.debug("{}: Error status received - {} {}", thingName, message.error.code, message.error.message);
@@ -291,12 +292,11 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
                 boolean updated = false;
                 ShellyDeviceProfile profile = getProfile();
                 ShellySettingsStatus status = profile.status;
-                if (message.params.sys != null) {
+                if (!profile.hasBattery && message.params.sys != null) {
                     status.uptime = getLong(message.params.sys.uptime);
                 }
-                status.temperature = -999.0; // mark invalid
-                // status.voltage = -999.0;
 
+                status.temperature = -999.0; // mark invalid
                 if (message.params.switch0 != null) {
                     updated |= updateRelayStatus(status, message.params.switch0);
                     updated |= updateRelayStatus(status, message.params.switch1);
@@ -326,6 +326,10 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
                     status.temperature = null;
                 }
                 profile.status = status;
+
+                if (profile.isSensor) {
+                    updated |= updateSensors((ShellyBaseHandler) getThing(), profile.status);
+                }
             }
         } catch (ShellyApiException e) {
             logger.debug("{}: Unable to process status update", thingName, e);
@@ -388,6 +392,10 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
                         getThing().setThingOffline(ThingStatusDetail.CONFIGURATION_PENDING,
                                 "offline.status-error-restarted");
                         getThing().requestUpdates(1, true); // refresh config
+                        break;
+                    case SHELLY2_EVENT_SLEEP:
+                        logger.debug("{}: Device went to sleep mode", thingName);
+                        break;
 
                     default:
                         logger.debug("{}: Event {} was not handled", thingName, e.event);
