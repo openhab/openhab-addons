@@ -127,9 +127,12 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
                     String refreshToken = connectApi.authorize(configuration, bindingConf.features, code, redirectUri);
 
-                    Configuration thingConfig = editConfiguration();
-                    thingConfig.put(ApiHandlerConfiguration.REFRESH_TOKEN, refreshToken);
-                    updateConfiguration(thingConfig);
+                    if (configuration.refreshToken.isBlank()) {
+                        Configuration thingConfig = editConfiguration();
+                        thingConfig.put(ApiHandlerConfiguration.REFRESH_TOKEN, refreshToken);
+                        updateConfiguration(thingConfig);
+                        configuration = getConfiguration();
+                    }
 
                     if (!configuration.webHookUrl.isBlank()) {
                         SecurityApi securityApi = getRestManager(SecurityApi.class);

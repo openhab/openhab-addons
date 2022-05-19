@@ -94,7 +94,11 @@ public class WebhookServlet extends NetatmoServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String data = inputStreamToString(req.getInputStream());
+        replyQuick(resp);
+        processEvent(inputStreamToString(req.getInputStream()));
+    }
+
+    private void processEvent(String data) throws IOException {
         if (!data.isEmpty()) {
             logger.debug("Event transmitted from restService : {}", data);
             try {
@@ -104,9 +108,12 @@ public class WebhookServlet extends NetatmoServlet {
                 toBeNotified.addAll(event.getPersons().keySet());
                 notifyListeners(toBeNotified, event);
             } catch (NetatmoException e) {
-                logger.info("Error deserializing webhook data received : {}. {}", data, e.getMessage());
+                logger.debug("Error deserializing webhook data received : {}. {}", data, e.getMessage());
             }
         }
+    }
+
+    private void replyQuick(HttpServletResponse resp) throws IOException {
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
         resp.setContentType(MediaType.APPLICATION_JSON);
         resp.setHeader("Access-Control-Allow-Origin", "*");
@@ -125,7 +132,7 @@ public class WebhookServlet extends NetatmoServlet {
         return value;
     }
 
-    public void notifyListeners(List<String> tobeNotified, WebhookEvent event) {
+    private void notifyListeners(List<String> tobeNotified, WebhookEvent event) {
         tobeNotified.forEach(id -> {
             EventCapability module = dataListeners.get(id);
             if (module != null) {

@@ -15,7 +15,7 @@ package org.openhab.binding.netatmo.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ConfigurationLevel} describe configuration levels of a given account thing
+ * The {@link ConfigurationLevel} describes configuration levels of a given account thing
  *
  * @author Gaël L'hopital - Initial contribution
  */

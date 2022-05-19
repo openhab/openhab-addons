@@ -535,7 +535,7 @@ All these channels except at-home are read only.
 ## things/netatmo.things
 
 ```
-Bridge netatmo:account:home "Netatmo Account" [clientId="", clientSecret="", username="", password=""] {
+Bridge netatmo:account:home "Netatmo Account" [clientId="xxxxx", clientSecret="yyyy", refreshToken="zzzzz"] {
     Bridge weather-station inside "Inside Weather Station" [id="70:ee:aa:aa:aa:aa"] {
         outdoor outside   "Outside Module" [id="02:00:00:aa:aa:aa"] {
             Channels:
