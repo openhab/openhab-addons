@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="fineoffsetweatherstation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="sensor" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Sensor Device</label>
+		<description>A Sensor connected to the gateway (WN1900, GW1000, GW1100, WH2680, WH2650)</description>
+		<category>Sensor</category>
+
+		<channels>
+			<channel id="signal" typeId="system.signal-strength"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:fineoffsetweatherstation:sensor"/>
+	</thing-type>
+</thing:thing-descriptions>
