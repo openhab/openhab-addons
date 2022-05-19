@@ -6,6 +6,7 @@
 
 	<bridge-type id="gateway">
 		<label>Gateway Device</label>
+		<description>A WiFi connected gateway device (WN1900, GW1000, GW1100, WH2680, WH2650) to bridge Sensors</description>
 		<category>NetworkAppliance</category>
 		<config-description-ref uri="thing-type:fineoffsetweatherstation:gateway"/>
 	</bridge-type>
@@ -23,7 +24,7 @@
 
 	<channel-type id="max-wind-speed">
 		<item-type>Number:Speed</item-type>
-		<label>Max Wind Speed</label>
+		<label>Maximum Wind Speed</label>
 		<category>Wind</category>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
