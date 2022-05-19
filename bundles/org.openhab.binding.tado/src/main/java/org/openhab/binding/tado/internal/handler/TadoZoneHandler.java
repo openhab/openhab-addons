@@ -453,12 +453,12 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     private void logApiTransaction(Object object, boolean isCommand) {
         if (logger.isDebugEnabled() || logger.isTraceEnabled()) {
             String logType = isCommand ? "command" : "response";
-            if (logger.isDebugEnabled()) {
-                logger.debug("Api {}: homeId:{}, zoneId:{}, objectId:{}", logType, getHomeId(), getZoneId(),
-                        object.getClass().getSimpleName());
-            } else {
+            if (logger.isTraceEnabled()) {
                 logger.trace("Api {}: homeId:{}, zoneId:{}, objectId:{}, content:\n{}", logType, getHomeId(),
                         getZoneId(), object.getClass().getSimpleName(), convertToJsonString(object));
+            } else if (logger.isDebugEnabled()) {
+                logger.debug("Api {}: homeId:{}, zoneId:{}, objectId:{}", logType, getHomeId(), getZoneId(),
+                        object.getClass().getSimpleName());
             }
         }
     }
