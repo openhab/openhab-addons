@@ -15,20 +15,20 @@ package org.openhab.binding.fineoffsetweatherstation.internal.domain;
 import static javax.measure.MetricPrefix.HECTO;
 import static javax.measure.MetricPrefix.KILO;
 import static javax.measure.MetricPrefix.MILLI;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_CO2;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_HUMIDITY;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_ILLUMINATION;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_LIGHTNING_COUNTER;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_LIGHTNING_DISTANCE;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_LIGHTNING_TIME;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_PM10;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_PM25;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_PRESSURE;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_RAIN;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_RAIN_RATE;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TEMPERATURE;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_UV_RADIATION;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_WATER_LEAK_DETECTION;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_CO2;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_HUMIDITY;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_ILLUMINATION;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_LIGHTNING_COUNTER;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_LIGHTNING_DISTANCE;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_LIGHTNING_TIME;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_PM10;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_PM25;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_PRESSURE;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_RAIN;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_RAIN_RATE;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_TEMPERATURE;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_UV_RADIATION;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_WATER_LEAK_DETECTION;
 import static org.openhab.binding.fineoffsetweatherstation.internal.Utils.toInt16;
 import static org.openhab.binding.fineoffsetweatherstation.internal.Utils.toUInt16;
 import static org.openhab.binding.fineoffsetweatherstation.internal.Utils.toUInt32;
@@ -68,42 +68,44 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public enum MeasureType {
 
-    TEMPERATURE(CELSIUS, 2, CHANNEL_TEMPERATURE, (data, offset) -> toInt16(data, offset) / 10.),
+    TEMPERATURE(CELSIUS, 2, CHANNEL_TYPE_TEMPERATURE, (data, offset) -> toInt16(data, offset) / 10.),
 
-    PERCENTAGE(PERCENT, 1, CHANNEL_HUMIDITY, (data, offset) -> toUInt8(data[offset])),
+    PERCENTAGE(PERCENT, 1, CHANNEL_TYPE_HUMIDITY, (data, offset) -> toUInt8(data[offset])),
 
-    PRESSURE(HECTO(PASCAL), 2, CHANNEL_PRESSURE, Utils::toUInt16),
+    PRESSURE(HECTO(PASCAL), 2, CHANNEL_TYPE_PRESSURE, Utils::toUInt16),
 
     DEGREE(DEGREE_ANGLE, 2, null, Utils::toUInt16),
 
     SPEED(METRE_PER_SECOND, 2, null, (data, offset) -> toUInt16(data, offset) / 10.),
 
-    HEIGHT(MILLI(METRE), 2, CHANNEL_RAIN, (data, offset) -> toUInt16(data, offset) / 10.),
+    HEIGHT(MILLI(METRE), 2, CHANNEL_TYPE_RAIN, (data, offset) -> toUInt16(data, offset) / 10.),
 
-    HEIGHT_BIG(MILLI(METRE), 4, CHANNEL_RAIN, (data, offset) -> toUInt32(data, offset) / 10.),
+    HEIGHT_BIG(MILLI(METRE), 4, CHANNEL_TYPE_RAIN, (data, offset) -> toUInt32(data, offset) / 10.),
 
-    HEIGHT_PER_HOUR(MILLIMETRE_PER_HOUR, 2, CHANNEL_RAIN_RATE, (data, offset) -> toUInt16(data, offset) / 10.),
+    HEIGHT_PER_HOUR(MILLIMETRE_PER_HOUR, 2, CHANNEL_TYPE_RAIN_RATE, (data, offset) -> toUInt16(data, offset) / 10.),
 
-    LUX(Units.LUX, 4, CHANNEL_ILLUMINATION, (data, offset) -> toUInt32(data, offset) / 10.),
+    LUX(Units.LUX, 4, CHANNEL_TYPE_ILLUMINATION, (data, offset) -> toUInt32(data, offset) / 10.),
 
-    PM25(MICROGRAM_PER_CUBICMETRE, 2, CHANNEL_PM25, (data, offset) -> toUInt16(data, offset) / 10.),
+    PM25(MICROGRAM_PER_CUBICMETRE, 2, CHANNEL_TYPE_PM25, (data, offset) -> toUInt16(data, offset) / 10.),
 
-    PM10(MICROGRAM_PER_CUBICMETRE, 2, CHANNEL_PM10, (data, offset) -> toUInt16(data, offset) / 10.),
+    PM10(MICROGRAM_PER_CUBICMETRE, 2, CHANNEL_TYPE_PM10, (data, offset) -> toUInt16(data, offset) / 10.),
 
-    CO2(PARTS_PER_MILLION, 2, CHANNEL_CO2, Utils::toUInt16),
+    CO2(PARTS_PER_MILLION, 2, CHANNEL_TYPE_CO2, Utils::toUInt16),
 
-    WATER_LEAK_DETECTION(1, CHANNEL_WATER_LEAK_DETECTION,
+    WATER_LEAK_DETECTION(1, CHANNEL_TYPE_WATER_LEAK_DETECTION,
             (data, offset, context) -> toUInt8(data[offset]) != 0 ? OnOffType.ON : OnOffType.OFF),
 
-    LIGHTNING_DISTANCE(KILO(METRE), 1, CHANNEL_LIGHTNING_DISTANCE, (data, offset) -> toUInt8(data[offset])),
+    LIGHTNING_DISTANCE(KILO(METRE), 1, CHANNEL_TYPE_LIGHTNING_DISTANCE, (data, offset) -> toUInt8(data[offset])),
 
-    LIGHTNING_COUNTER(4, CHANNEL_LIGHTNING_COUNTER, (data, offset, context) -> new DecimalType(toUInt32(data, offset))),
+    LIGHTNING_COUNTER(4, CHANNEL_TYPE_LIGHTNING_COUNTER,
+            (data, offset, context) -> new DecimalType(toUInt32(data, offset))),
 
-    LIGHTNING_TIME(4, CHANNEL_LIGHTNING_TIME,
+    LIGHTNING_TIME(4, CHANNEL_TYPE_LIGHTNING_TIME,
             (data, offset, context) -> new DateTimeType(
                     ZonedDateTime.ofInstant(Instant.ofEpochSecond(toUInt32(data, offset)), context.getZoneId()))),
 
-    MICROWATT_PER_SQUARE_CENTIMETRE(Units.MICROWATT_PER_SQUARE_CENTIMETRE, 2, CHANNEL_UV_RADIATION, Utils::toUInt16),
+    MICROWATT_PER_SQUARE_CENTIMETRE(Units.MICROWATT_PER_SQUARE_CENTIMETRE, 2, CHANNEL_TYPE_UV_RADIATION,
+            Utils::toUInt16),
 
     BYTE(1, null, (data, offset, context) -> new DecimalType(toUInt8(data[offset]))),
 

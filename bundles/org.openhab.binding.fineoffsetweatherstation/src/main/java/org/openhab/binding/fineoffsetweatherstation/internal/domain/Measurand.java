@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.fineoffsetweatherstation.internal.domain;
 
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_MAX_WIND_SPEED;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_MOISTURE;
-import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_UV_INDEX;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_MAX_WIND_SPEED;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_MOISTURE;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_UV_INDEX;
 
 import java.util.HashMap;
 import java.util.List;
@@ -86,11 +86,11 @@ public enum Measurand {
 
     UV("irradiation-uv", (byte) 0x16, "UV", MeasureType.MICROWATT_PER_SQUARE_CENTIMETRE),
 
-    UVI("uv-index", (byte) 0x17, "UV index", MeasureType.BYTE, CHANNEL_UV_INDEX),
+    UVI("uv-index", (byte) 0x17, "UV index", MeasureType.BYTE, CHANNEL_TYPE_UV_INDEX),
 
     TIME("time", (byte) 0x18, "Date and time", MeasureType.DATE_TIME2),
 
-    DAYLWINDMAX("wind-max-day", (byte) 0X19, "Day max wind", MeasureType.SPEED, CHANNEL_MAX_WIND_SPEED),
+    DAYLWINDMAX("wind-max-day", (byte) 0X19, "Day max wind", MeasureType.SPEED, CHANNEL_TYPE_MAX_WIND_SPEED),
 
     TEMP1("temperature-channel-1", (byte) 0x1A, "Temperature 1", MeasureType.TEMPERATURE),
 
@@ -156,44 +156,53 @@ public enum Measurand {
 
     SOILTEMP16("temperature-soil-channel-16", (byte) 0x49, "Soil Temperature 16", MeasureType.TEMPERATURE),
 
-    SOILMOISTURE1("moisture-soil-channel-1", (byte) 0x2C, "Soil Moisture 1", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
+    SOILMOISTURE1("moisture-soil-channel-1", (byte) 0x2C, "Soil Moisture 1", MeasureType.PERCENTAGE,
+            CHANNEL_TYPE_MOISTURE),
 
-    SOILMOISTURE2("moisture-soil-channel-2", (byte) 0x2E, "Soil Moisture 2", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
+    SOILMOISTURE2("moisture-soil-channel-2", (byte) 0x2E, "Soil Moisture 2", MeasureType.PERCENTAGE,
+            CHANNEL_TYPE_MOISTURE),
 
-    SOILMOISTURE3("moisture-soil-channel-3", (byte) 0x30, "Soil Moisture 3", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
+    SOILMOISTURE3("moisture-soil-channel-3", (byte) 0x30, "Soil Moisture 3", MeasureType.PERCENTAGE,
+            CHANNEL_TYPE_MOISTURE),
 
-    SOILMOISTURE4("moisture-soil-channel-4", (byte) 0x32, "Soil Moisture 4", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
+    SOILMOISTURE4("moisture-soil-channel-4", (byte) 0x32, "Soil Moisture 4", MeasureType.PERCENTAGE,
+            CHANNEL_TYPE_MOISTURE),
 
-    SOILMOISTURE5("moisture-soil-channel-5", (byte) 0x34, "Soil Moisture 5", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
+    SOILMOISTURE5("moisture-soil-channel-5", (byte) 0x34, "Soil Moisture 5", MeasureType.PERCENTAGE,
+            CHANNEL_TYPE_MOISTURE),
 
-    SOILMOISTURE6("moisture-soil-channel-6", (byte) 0x36, "Soil Moisture 6", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
+    SOILMOISTURE6("moisture-soil-channel-6", (byte) 0x36, "Soil Moisture 6", MeasureType.PERCENTAGE,
+            CHANNEL_TYPE_MOISTURE),
 
-    SOILMOISTURE7("moisture-soil-channel-7", (byte) 0x38, "Soil Moisture 7", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
+    SOILMOISTURE7("moisture-soil-channel-7", (byte) 0x38, "Soil Moisture 7", MeasureType.PERCENTAGE,
+            CHANNEL_TYPE_MOISTURE),
 
-    SOILMOISTURE8("moisture-soil-channel-8", (byte) 0x3A, "Soil Moisture 8", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
+    SOILMOISTURE8("moisture-soil-channel-8", (byte) 0x3A, "Soil Moisture 8", MeasureType.PERCENTAGE,
+            CHANNEL_TYPE_MOISTURE),
 
-    SOILMOISTURE9("moisture-soil-channel-9", (byte) 0x3C, "Soil Moisture 9", MeasureType.PERCENTAGE, CHANNEL_MOISTURE),
+    SOILMOISTURE9("moisture-soil-channel-9", (byte) 0x3C, "Soil Moisture 9", MeasureType.PERCENTAGE,
+            CHANNEL_TYPE_MOISTURE),
 
     SOILMOISTURE10("moisture-soil-channel-10", (byte) 0x3E, "Soil Moisture 10", MeasureType.PERCENTAGE,
-            CHANNEL_MOISTURE),
+            CHANNEL_TYPE_MOISTURE),
 
     SOILMOISTURE11("moisture-soil-channel-11", (byte) 0x40, "Soil Moisture 11", MeasureType.PERCENTAGE,
-            CHANNEL_MOISTURE),
+            CHANNEL_TYPE_MOISTURE),
 
     SOILMOISTURE12("moisture-soil-channel-12", (byte) 0x42, "Soil Moisture 12", MeasureType.PERCENTAGE,
-            CHANNEL_MOISTURE),
+            CHANNEL_TYPE_MOISTURE),
 
     SOILMOISTURE13("moisture-soil-channel-13", (byte) 0x44, "Soil Moisture 13", MeasureType.PERCENTAGE,
-            CHANNEL_MOISTURE),
+            CHANNEL_TYPE_MOISTURE),
 
     SOILMOISTURE14("moisture-soil-channel-14", (byte) 0x46, "Soil Moisture 14", MeasureType.PERCENTAGE,
-            CHANNEL_MOISTURE),
+            CHANNEL_TYPE_MOISTURE),
 
     SOILMOISTURE15("moisture-soil-channel-15", (byte) 0x48, "Soil Moisture 15", MeasureType.PERCENTAGE,
-            CHANNEL_MOISTURE),
+            CHANNEL_TYPE_MOISTURE),
 
     SOILMOISTURE16("moisture-soil-channel-16", (byte) 0x4A, "Soil Moisture 16", MeasureType.PERCENTAGE,
-            CHANNEL_MOISTURE),
+            CHANNEL_TYPE_MOISTURE),
 
     // will no longer be used
     // skip battery-level, since it is read via Command.CMD_READ_SENSOR_ID_NEW
@@ -274,28 +283,28 @@ public enum Measurand {
             new Skip(1)),
 
     ITEM_LEAF_WETNESS_CH1("leaf-wetness-channel-1", (byte) 0x72, "Leaf Moisture channel 1", MeasureType.PERCENTAGE,
-            CHANNEL_MOISTURE),
+            CHANNEL_TYPE_MOISTURE),
 
     ITEM_LEAF_WETNESS_CH2("leaf-wetness-channel-2", (byte) 0x73, "Leaf Moisture channel 2", MeasureType.PERCENTAGE,
-            CHANNEL_MOISTURE),
+            CHANNEL_TYPE_MOISTURE),
 
     ITEM_LEAF_WETNESS_CH3("leaf-wetness-channel-3", (byte) 0x74, "Leaf Moisture channel 3", MeasureType.PERCENTAGE,
-            CHANNEL_MOISTURE),
+            CHANNEL_TYPE_MOISTURE),
 
     ITEM_LEAF_WETNESS_CH4("leaf-wetness-channel-4", (byte) 0x75, "Leaf Moisture channel 4", MeasureType.PERCENTAGE,
-            CHANNEL_MOISTURE),
+            CHANNEL_TYPE_MOISTURE),
 
     ITEM_LEAF_WETNESS_CH5("leaf-wetness-channel-5", (byte) 0x76, "Leaf Moisture channel 5", MeasureType.PERCENTAGE,
-            CHANNEL_MOISTURE),
+            CHANNEL_TYPE_MOISTURE),
 
     ITEM_LEAF_WETNESS_CH6("leaf-wetness-channel-6", (byte) 0x77, "Leaf Moisture channel 6", MeasureType.PERCENTAGE,
-            CHANNEL_MOISTURE),
+            CHANNEL_TYPE_MOISTURE),
 
     ITEM_LEAF_WETNESS_CH7("leaf-wetness-channel-7", (byte) 0x78, "Leaf Moisture channel 7", MeasureType.PERCENTAGE,
-            CHANNEL_MOISTURE),
+            CHANNEL_TYPE_MOISTURE),
 
     ITEM_LEAF_WETNESS_CH8("leaf-wetness-channel-8", (byte) 0x79, "Leaf Moisture channel 8", MeasureType.PERCENTAGE,
-            CHANNEL_MOISTURE),;
+            CHANNEL_TYPE_MOISTURE),;
 
     private static final Map<Byte, Measurand> MEASURANDS = new HashMap<>();
 
