@@ -57,6 +57,7 @@ public class ShellyWebSocket {
     private final Gson gson = new Gson();
 
     private String deviceIp = "";
+    private boolean inbound = false;
 
     private @Nullable Session session;
     private @Nullable ShellyWebSocketInterface websocketHandler;
@@ -71,8 +72,9 @@ public class ShellyWebSocket {
         this.deviceIp = deviceIp;
     }
 
-    public ShellyWebSocket(ShellyThingTable thingTable) {
+    public ShellyWebSocket(ShellyThingTable thingTable, boolean inbound) {
         this.thingTable = thingTable;
+        this.inbound = inbound;
     }
 
     public void addMessageHandler(ShellyWebSocketInterface interfacehandler) {
@@ -173,6 +175,10 @@ public class ShellyWebSocket {
         return session != null && session.isOpen();
     }
 
+    public boolean isInbound() {
+        return inbound;
+    }
+
     public void closeWebsocketSession() throws ShellyApiException {
         disconnect();
         try {
@@ -202,6 +208,10 @@ public class ShellyWebSocket {
         if (statusCode != StatusCode.NORMAL) {
             logger.debug("WebSocket Connection closed: {} - {}", statusCode, reason);
         }
+        if (inbound) {
+            // Ignore disconnect: Device establishes the socket, sends NotifyxFullStatus and disconnects
+            return;
+        }
         if (session != null) {
             if (!session.isOpen()) {
                 if (session != null) {
@@ -217,6 +227,10 @@ public class ShellyWebSocket {
 
     @OnWebSocketError
     public void onError(Throwable cause) {
+        if (inbound) {
+            // Ignore disconnect: Device establishes the socket, sends NotifyxFullStatus and disconnects
+            return;
+        }
         if (websocketHandler != null) {
             websocketHandler.onError(cause);
         }

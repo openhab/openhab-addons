@@ -83,7 +83,7 @@ public class Shelly2InboundWSServlet extends WebSocketServlet {
 
         @Override
         public Object createWebSocket(@Nullable ServletUpgradeRequest req, @Nullable ServletUpgradeResponse resp) {
-            return new ShellyWebSocket(thingTable);
+            return new ShellyWebSocket(thingTable, true);
         }
     }
 }
