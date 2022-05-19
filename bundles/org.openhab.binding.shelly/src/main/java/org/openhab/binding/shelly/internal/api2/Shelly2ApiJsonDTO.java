@@ -38,6 +38,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_RESET = "Shelly.FactoryReset";
     public static final String SHELLYRPC_METHOD_CHECKUPD = "Shelly.CheckForUpdate";
     public static final String SHELLYRPC_METHOD_UPDATE = "Shelly.Update";
+    public static final String SHELLYRPC_METHOD_GETSWITCHSTATUS = "Switch.GetStatus";
+    public static final String SHELLYRPC_METHOD_WSGETCONFIG = "WS.GetConfig";
+    public static final String SHELLYRPC_METHOD_WSSETCONFIG = "WS.SetConfig";
 
     public static final String SHELLYRPC_METHOD_NOTIFYSTATUS = "NotifyStatus"; // inbound status
     public static final String SHELLYRPC_METHOD_NOTIFYFULLSTATUS = "NotifyFullStatus"; // inbound status from bat device
@@ -520,6 +523,36 @@ public class Shelly2ApiJsonDTO {
         public Double[] byMinute;
         @SerializedName("minute_ts")
         public Long minuteTs;
+    }
+
+    public static class Shelly2WsConfig {
+        public Boolean enable;
+        public String server;
+        @SerializedName("ssl_ca")
+        public String sslCA;
+    }
+
+    public static class Shelly2WsConfigRequest {
+        public Integer id;
+        public String method;
+
+        class Shelly2WsConfigRequestPamars {
+            public Shelly2WsConfig config;
+        }
+
+        public Shelly2WsConfigRequestPamars params = new Shelly2WsConfigRequestPamars();
+    }
+
+    public static class Shelly2WsConfigResponse {
+        public Integer id;
+        public String src;
+
+        public static class Shelly2WsConfigResult {
+            @SerializedName("restart_required")
+            public Boolean restartRequired;
+        }
+
+        public Shelly2WsConfigResult result;
     }
 
     public static class Shelly2RpcBaseMessage {

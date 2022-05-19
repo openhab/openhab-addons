@@ -64,6 +64,9 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyE
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2WsConfig;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2WsConfigRequest;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2WsConfigResponse;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
@@ -265,7 +268,33 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
         }
 
         profile.initialized = true;
+
+        if (profile.hasBattery) {
+            checkSetWsCallback();
+        }
+
         return profile;
+    }
+
+    private void checkSetWsCallback() throws ShellyApiException {
+        Shelly2WsConfig wsConfig = callApi("/rpc/" + SHELLYRPC_METHOD_WSGETCONFIG, Shelly2WsConfig.class);
+        ShellyThingConfiguration config = getThing().getThingConfig();
+        String url = "ws://" + config.localIp + ":" + config.localPort + "/shelly/wsevent";
+        if (!wsConfig.enable || !url.equalsIgnoreCase(url)) {
+            logger.debug("{}: A battery device was detected without correct callback, fix it", thingName);
+            wsConfig.enable = true;
+            wsConfig.server = url;
+            Shelly2WsConfigRequest request = new Shelly2WsConfigRequest();
+            request.id = 0;
+            request.method = SHELLYRPC_METHOD_WSSETCONFIG;
+            request.params.config = wsConfig;
+            Shelly2WsConfigResponse response = postApi("/rpc/", gson.toJson(request), Shelly2WsConfigResponse.class);
+            if (response.result.restartRequired) {
+                logger.info("{}: WebSocket callback was updated, restart device", thingName);
+                getThing().getApi().deviceReboot();
+                getThing().reinitializeThing();
+            }
+        }
     }
 
     @Override
@@ -479,7 +508,7 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
     @Override
     public ShellyStatusRelay getRelayStatus(int relayIndex) throws ShellyApiException {
         // Update status for a single relay
-        Shelly2RelayStatus rs = callApi("/rpc/Switch." + SHELLYRPC_METHOD_GETSTATUS + "?id=" + relayIndex,
+        Shelly2RelayStatus rs = callApi("/rpc/" + SHELLYRPC_METHOD_GETSWITCHSTATUS + "?id=" + relayIndex,
                 Shelly2RelayStatus.class);
         return updateRelayStatus(getProfile().status, relayIndex, rs);
     }
