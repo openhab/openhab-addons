@@ -84,6 +84,8 @@ public enum MeasureType {
 
     HEIGHT_PER_HOUR(MILLIMETRE_PER_HOUR, 2, CHANNEL_TYPE_RAIN_RATE, (data, offset) -> toUInt16(data, offset) / 10.),
 
+    HEIGHT_PER_HOUR_BIG(MILLIMETRE_PER_HOUR, 4, CHANNEL_TYPE_RAIN_RATE, (data, offset) -> toUInt32(data, offset) / 10.),
+
     LUX(Units.LUX, 4, CHANNEL_TYPE_ILLUMINATION, (data, offset) -> toUInt32(data, offset) / 10.),
 
     PM25(MICROGRAM_PER_CUBICMETRE, 2, CHANNEL_TYPE_PM25, (data, offset) -> toUInt16(data, offset) / 10.),

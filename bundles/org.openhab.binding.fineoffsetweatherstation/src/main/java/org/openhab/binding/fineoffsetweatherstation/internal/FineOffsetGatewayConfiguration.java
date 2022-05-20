@@ -14,6 +14,7 @@ package org.openhab.binding.fineoffsetweatherstation.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 
 /**
  * The {@link FineOffsetGatewayConfiguration} class contains fields mapping thing configuration parameters.
@@ -26,8 +27,12 @@ public class FineOffsetGatewayConfiguration {
     public static final String IP = "ip";
     public static final String PORT = "port";
 
+    public static final String PROTOCOL = "protocol";
+
     public @Nullable String ip;
     public int port = 45000;
     public int pollingInterval = 16;
     public int discoverInterval = 900;
+
+    public Protocol protocol = Protocol.DEFAULT;
 }

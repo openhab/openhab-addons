@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,7 +37,7 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewa
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SystemInfo;
-import org.openhab.binding.fineoffsetweatherstation.internal.service.FineOffsetGatewayQueryService;
+import org.openhab.binding.fineoffsetweatherstation.internal.service.GatewayQueryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -76,7 +77,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
     private final Bundle bundle;
     private final ConversionContext conversionContext;
 
-    private @Nullable FineOffsetGatewayQueryService gatewayQueryService;
+    private @Nullable GatewayQueryService gatewayQueryService;
 
     private final FineOffsetGatewayDiscoveryService gatewayDiscoveryService;
     private final ChannelTypeRegistry channelTypeRegistry;
@@ -94,7 +95,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
             ChannelTypeRegistry channelTypeRegistry, TranslationProvider translationProvider,
             LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
         super(bridge);
-        bridgeUID = bridge.getUID();
+        this.bridgeUID = bridge.getUID();
         this.gatewayDiscoveryService = gatewayDiscoveryService;
         this.channelTypeRegistry = channelTypeRegistry;
         this.translationProvider = translationProvider;
@@ -110,7 +111,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         FineOffsetGatewayConfiguration config = getConfigAs(FineOffsetGatewayConfiguration.class);
-        gatewayQueryService = new FineOffsetGatewayQueryService(config, this::updateStatus, conversionContext);
+        gatewayQueryService = config.protocol.getGatewayQueryService(config, this::updateStatus, conversionContext);
 
         updateStatus(ThingStatus.UNKNOWN);
         fetchAndUpdateSensors();
@@ -122,7 +123,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
 
     private void fetchAndUpdateSensors() {
         @Nullable
-        Map<SensorGatewayBinding, SensorDevice> deviceMap = query(FineOffsetGatewayQueryService::getRegisteredSensors);
+        Map<SensorGatewayBinding, SensorDevice> deviceMap = query(GatewayQueryService::getRegisteredSensors);
         sensorDeviceMap = deviceMap;
         updateSensors();
         if (deviceMap != null) {
@@ -154,7 +155,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         if (disposed) {
             return;
         }
-        List<MeasuredValue> data = query(FineOffsetGatewayQueryService::getLiveData);
+        List<MeasuredValue> data = query(GatewayQueryService::getMeasuredValues);
         if (data == null) {
             return;
         }
@@ -174,7 +175,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
             }
         }
         if (!channels.isEmpty()) {
-            updateThing(editThing().withChannels(channels).build());
+            updateBridgeThing(bridgeBuilder -> bridgeBuilder.withChannels(channels));
         }
     }
 
@@ -208,25 +209,29 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
 
     private void updateBridgeInfo() {
         @Nullable
-        String firmware = query(FineOffsetGatewayQueryService::getFirmwareVersion);
+        String firmware = query(GatewayQueryService::getFirmwareVersion);
         Map<String, String> properties = new HashMap<>(thing.getProperties());
         if (firmware != null) {
-            var fwString = firmware.split("_V");
+            var fwString = firmware.split("_?V");
             if (fwString.length > 1) {
                 properties.put(Thing.PROPERTY_MODEL_ID, fwString[0]);
                 properties.put(Thing.PROPERTY_FIRMWARE_VERSION, fwString[1]);
             }
         }
 
-        SystemInfo systemInfo = query(FineOffsetGatewayQueryService::fetchSystemInfo);
+        SystemInfo systemInfo = query(GatewayQueryService::fetchSystemInfo);
         if (systemInfo != null && systemInfo.getFrequency() != null) {
             properties.put(PROPERTY_FREQUENCY, systemInfo.getFrequency() + " MHz");
         }
         if (!thing.getProperties().equals(properties)) {
-            BridgeBuilder bridge = editThing();
-            bridge.withProperties(properties);
-            updateThing(bridge.build());
+            updateBridgeThing(bridgeBuilder -> bridgeBuilder.withProperties(properties));
         }
+    }
+
+    private void updateBridgeThing(Consumer<BridgeBuilder> customizer) {
+        BridgeBuilder bridge = editThing();
+        customizer.accept(bridge);
+        updateThing(bridge.build());
     }
 
     private void startDiscoverJob() {
@@ -262,9 +267,9 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         this.pollingJob = null;
     }
 
-    private <T> @Nullable T query(Function<FineOffsetGatewayQueryService, T> delegate) {
+    private <T> @Nullable T query(Function<GatewayQueryService, T> delegate) {
         @Nullable
-        FineOffsetGatewayQueryService queryService = this.gatewayQueryService;
+        GatewayQueryService queryService = this.gatewayQueryService;
         if (queryService == null) {
             return null;
         }
@@ -275,7 +280,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
     public void dispose() {
         disposed = true;
         @Nullable
-        FineOffsetGatewayQueryService queryService = this.gatewayQueryService;
+        GatewayQueryService queryService = this.gatewayQueryService;
         if (queryService != null) {
             try {
                 queryService.close();
