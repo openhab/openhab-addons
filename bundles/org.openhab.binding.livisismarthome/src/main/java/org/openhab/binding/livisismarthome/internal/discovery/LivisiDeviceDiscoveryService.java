@@ -99,7 +99,7 @@ public class LivisiDeviceDiscoveryService extends AbstractDiscoveryService
             if (thingUID.isPresent() && thingTypeUID.isPresent()) {
                 String name = device.getConfig().getName();
                 if (name.isEmpty()) {
-                    name = device.getSerialnumber();
+                    name = device.getSerialNumber();
                 }
 
                 final Map<String, Object> properties = new HashMap<>();

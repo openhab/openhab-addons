@@ -185,7 +185,7 @@ Number myHeatingHumidity       "Bath [%.1f %%]"         <humidity>    {channel="
 
 ## Sitemap configuration
 
-The site configuration works a usual. One special example
+Example:
 
 ```
 sitemap default label="Home" {
@@ -209,6 +209,6 @@ when
 	Channel 'livisismarthome:WSC2:mybridge:myPushButton:button1' triggered PRESSED
 then
     // do something...
-	logInfo("testlogger", "Button 1 pressed")
+    logInfo("testlogger", "Button 1 pressed")
 end
 ```

@@ -281,7 +281,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                 properties.put(PROPERTY_ID, device.getId());
                 properties.put(PROPERTY_PROTOCOL_ID, device.getConfig().getProtocolId());
                 if (device.hasSerialNumber()) {
-                    properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialnumber());
+                    properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber());
                 }
                 properties.put(Thing.PROPERTY_VENDOR, device.getManufacturer());
                 properties.put(PROPERTY_VERSION, device.getVersion());
@@ -590,11 +590,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
 
     private void updateDeviceChannels(DeviceDTO device) {
         if (device.isBatteryPowered()) {
-            if (device.hasLowBattery()) {
-                updateState(CHANNEL_BATTERY_LOW, OnOffType.ON);
-            } else {
-                updateState(CHANNEL_BATTERY_LOW, OnOffType.OFF);
-            }
+            updateState(CHANNEL_BATTERY_LOW, OnOffType.from(device.hasLowBattery()));
         }
     }
 

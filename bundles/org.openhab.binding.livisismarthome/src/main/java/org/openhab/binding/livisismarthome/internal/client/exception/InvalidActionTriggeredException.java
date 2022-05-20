@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class InvalidActionTriggeredException extends ApiException {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5320848072133493770L;
 
     public InvalidActionTriggeredException(String message) {
         super(message);

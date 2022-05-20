@@ -68,7 +68,8 @@ public class DeviceDTO {
     /**
      * Device number or id like SGTIN given by the manufacturer. Optional.
      */
-    private String serialnumber;
+    @SerializedName("serialnumber")
+    private String serialNumber;
 
     /**
      * Specifies the type of the device, which is defined by the manufacturer. The triple of device type, manufacturer
@@ -172,15 +173,15 @@ public class DeviceDTO {
     /**
      * @return the serialnumber
      */
-    public String getSerialnumber() {
-        return serialnumber;
+    public String getSerialNumber() {
+        return serialNumber;
     }
 
     /**
-     * @param serialnumber the serialnumber to set
+     * @param serialNumber the serialnumber to set
      */
-    public void setSerialnumber(String serialnumber) {
-        this.serialnumber = serialnumber;
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
     /**
@@ -189,7 +190,7 @@ public class DeviceDTO {
      * @return true if the device has serial number, otherwise false
      */
     public boolean hasSerialNumber() {
-        return serialnumber != null && !serialnumber.isEmpty();
+        return serialNumber != null && !serialNumber.isEmpty();
     }
 
     /**
@@ -510,7 +511,7 @@ public class DeviceDTO {
     @Override
     public String toString() {
         return "Device [" + "id=" + getId() + " manufacturer=" + getManufacturer() + " version=" + getVersion()
-                + " product=" + getProduct() + " serialnumber=" + getSerialnumber() + " type=" + getType() + " name="
+                + " product=" + getProduct() + " serialnumber=" + getSerialNumber() + " type=" + getType() + " name="
                 + getConfig().getName() + "]";
     }
 }

@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SessionExistsException extends ApiException {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -5497104376650832564L;
 
     public SessionExistsException(String message) {
         super(message);

@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -26,6 +27,7 @@ import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
  *
  * @author Sven Strohschein - Initial contribution
  */
+@NonNullByDefault
 public class URLConnectionFactory {
 
     public static final String CONTENT_TYPE = "application/json";

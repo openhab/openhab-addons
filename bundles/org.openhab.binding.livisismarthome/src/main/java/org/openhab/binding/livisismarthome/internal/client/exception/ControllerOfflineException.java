@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ControllerOfflineException extends IOException {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2851756294511651529L;
 
     public ControllerOfflineException(String message) {
         super(message);

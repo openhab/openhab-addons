@@ -118,17 +118,17 @@ public class LivisiWebSocket {
     @OnWebSocketConnect
     public void onConnect(Session session) {
         this.closing = false;
-        logger.info("Connected to LIVISI SmartHome webservice.");
+        logger.debug("Connected to LIVISI SmartHome webservice.");
         logger.trace("LIVISI SmartHome websocket session: {}", session);
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
         if (statusCode == StatusCode.NORMAL) {
-            logger.info("Connection to LIVISI SmartHome webservice was closed normally.");
+            logger.debug("Connection to LIVISI SmartHome webservice was closed normally.");
         } else if (!closing) {
             // An additional reconnect attempt is only required when the close/stop wasn't executed by the binding.
-            logger.info("Connection to LIVISI SmartHome webservice was closed abnormally (code: {}). Reason: {}",
+            logger.debug("Connection to LIVISI SmartHome webservice was closed abnormally (code: {}). Reason: {}",
                     statusCode, reason);
             eventListener.connectionClosed();
         }

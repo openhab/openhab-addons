@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class RemoteAccessNotAllowedException extends ApiException {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 3399664327165581656L;
 
     public RemoteAccessNotAllowedException(String message) {
         super(message);

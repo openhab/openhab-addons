@@ -307,7 +307,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         final Map<String, String> properties = editProperties();
 
         setPropertyIfPresent(Thing.PROPERTY_VENDOR, bridgeDevice.getManufacturer(), properties);
-        setPropertyIfPresent(Thing.PROPERTY_SERIAL_NUMBER, bridgeDevice.getSerialnumber(), properties);
+        setPropertyIfPresent(Thing.PROPERTY_SERIAL_NUMBER, bridgeDevice.getSerialNumber(), properties);
         setPropertyIfPresent(PROPERTY_ID, bridgeDevice.getId(), properties);
         setPropertyIfPresent(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion(), properties);
         setPropertyIfPresent(Thing.PROPERTY_HARDWARE_VERSION, config.getHardwareVersion(), properties);

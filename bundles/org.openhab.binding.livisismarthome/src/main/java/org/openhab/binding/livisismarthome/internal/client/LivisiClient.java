@@ -242,7 +242,7 @@ public class LivisiClient {
                         throw new ApiException("Unknown error: " + error);
                 }
             } catch (final JsonSyntaxException e) {
-                throw new ApiException("Invalid JSON syntax in error response: " + content);
+                throw new ApiException("Invalid JSON syntax in error response: " + content, e);
             }
         }
     }
