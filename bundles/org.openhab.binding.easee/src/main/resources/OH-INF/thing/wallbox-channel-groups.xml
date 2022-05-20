@@ -14,7 +14,7 @@
 				<label>Cable Locked</label>
 				<description>Cable Locked status of the wallbox.</description>
 			</channel>
-			<channel id="chargerOpMode" typeId="type-integer">
+			<channel id="chargerOpMode" typeId="type-integer-charger-op-mode">
 				<label>Charger Operation Mode</label>
 				<description>Current operation mode.</description>
 			</channel>

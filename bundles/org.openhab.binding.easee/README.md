@@ -70,12 +70,12 @@ The table below shows all channels that are available and which of them are writ
 - minimum configuration
 
 ```
-easee:wallbox:box1 [ username="abc@def.net", passord="secret", wallboxId="EH4711" ]
+easee:wallbox:box1 [ username="abc@def.net", password="secret", wallboxId="EH4711" ]
 ```
 
 - two wallboxes, with pollingInterval
 
 ```
-easee:wallbox:box1 [ username="abc@def.net", passord="secret", wallboxId="EH4711", dataPollingInterval=1 ]
-easee:wallbox:box2 [ username="abc@def.net", passord="secret", wallboxId="EH4712", dataPollingInterval=1 ]
+easee:wallbox:box1 [ username="abc@def.net", password="secret", wallboxId="EH4711", dataPollingInterval=1 ]
+easee:wallbox:box2 [ username="abc@def.net", password="secret", wallboxId="EH4712", dataPollingInterval=1 ]
 ```
