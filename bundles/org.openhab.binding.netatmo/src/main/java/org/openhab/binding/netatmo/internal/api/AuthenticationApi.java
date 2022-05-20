@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
-import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.PATH_OAUTH;
+import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 import static org.openhab.core.auth.oauth2client.internal.Keyword.*;
 
 import java.net.URI;
@@ -24,12 +24,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.api.dto.AccessTokenResponse;
-import org.openhab.binding.netatmo.internal.config.ApiHandlerConfiguration.Credentials;
+import org.openhab.binding.netatmo.internal.config.ApiHandlerConfiguration;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,41 +43,57 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AuthenticationApi extends RestManager {
-    private static final URI OAUTH_URI = getApiBaseBuilder().path(PATH_OAUTH).build();
+    private static final UriBuilder OAUTH_BUILDER = getApiBaseBuilder().path(PATH_OAUTH);
+    private static final UriBuilder AUTH_BUILDER = OAUTH_BUILDER.clone().path(SUB_PATH_AUTHORIZE);
+    private static final URI TOKEN_URI = OAUTH_BUILDER.clone().path(SUB_PATH_TOKEN).build();
 
-    private final ScheduledExecutorService scheduler;
     private final Logger logger = LoggerFactory.getLogger(AuthenticationApi.class);
+    private final ScheduledExecutorService scheduler;
 
-    private @Nullable ScheduledFuture<?> refreshTokenJob;
+    private Optional<ScheduledFuture<?>> refreshTokenJob = Optional.empty();
     private Optional<AccessTokenResponse> tokenResponse = Optional.empty();
-    private String scope = "";
 
     public AuthenticationApi(ApiBridgeHandler bridge, ScheduledExecutorService scheduler) {
         super(bridge, FeatureArea.NONE);
         this.scheduler = scheduler;
     }
 
-    public void authenticate(Credentials credentials, Set<FeatureArea> features) throws NetatmoException {
-        Set<FeatureArea> requestedFeatures = !features.isEmpty() ? features : FeatureArea.AS_SET;
-        scope = FeatureArea.toScopeString(requestedFeatures);
-        requestToken(credentials.clientId, credentials.clientSecret,
-                Map.of(USERNAME, credentials.username, PASSWORD, credentials.password, SCOPE, scope));
+    public String authorize(ApiHandlerConfiguration credentials, Set<FeatureArea> features, @Nullable String code,
+            @Nullable String redirectUri) throws NetatmoException {
+        String clientId = credentials.clientId;
+        String clientSecret = credentials.clientSecret;
+        if (!(clientId.isBlank() || clientSecret.isBlank())) {
+            Map<String, String> params = new HashMap<>(Map.of(SCOPE, toScopeString(features)));
+            String refreshToken = credentials.refreshToken;
+            if (!refreshToken.isBlank()) {
+                params.put(REFRESH_TOKEN, refreshToken);
+            } else {
+                if (code != null && redirectUri != null) {
+                    params.putAll(Map.of(REDIRECT_URI, redirectUri, CODE, code));
+                }
+            }
+            if (params.size() > 1) {
+                return requestToken(clientId, clientSecret, params);
+            }
+        }
+        throw new IllegalArgumentException("Inconsistent configuration state, please file a bug report.");
     }
 
-    private void requestToken(String id, String secret, Map<String, String> entries) throws NetatmoException {
+    private String requestToken(String id, String secret, Map<String, String> entries) throws NetatmoException {
         Map<String, String> payload = new HashMap<>(entries);
-        payload.putAll(Map.of(GRANT_TYPE, entries.keySet().contains(PASSWORD) ? PASSWORD : REFRESH_TOKEN, CLIENT_ID, id,
-                CLIENT_SECRET, secret));
+        payload.put(GRANT_TYPE, payload.keySet().contains(CODE) ? AUTHORIZATION_CODE : REFRESH_TOKEN);
+        payload.putAll(Map.of(CLIENT_ID, id, CLIENT_SECRET, secret));
         disconnect();
-        AccessTokenResponse response = post(OAUTH_URI, AccessTokenResponse.class, payload);
-        refreshTokenJob = scheduler.schedule(() -> {
+        AccessTokenResponse response = post(TOKEN_URI, AccessTokenResponse.class, payload);
+        refreshTokenJob = Optional.of(scheduler.schedule(() -> {
             try {
                 requestToken(id, secret, Map.of(REFRESH_TOKEN, response.getRefreshToken()));
             } catch (NetatmoException e) {
                 logger.warn("Unable to refresh access token : {}", e.getMessage());
             }
-        }, Math.round(response.getExpiresIn() * 0.8), TimeUnit.SECONDS);
+        }, Math.round(response.getExpiresIn() * 0.8), TimeUnit.SECONDS));
         tokenResponse = Optional.of(response);
+        return response.getRefreshToken();
     }
 
     public void disconnect() {
@@ -83,11 +101,8 @@ public class AuthenticationApi extends RestManager {
     }
 
     public void dispose() {
-        ScheduledFuture<?> job = refreshTokenJob;
-        if (job != null) {
-            job.cancel(true);
-        }
-        refreshTokenJob = null;
+        refreshTokenJob.ifPresent(job -> job.cancel(true));
+        refreshTokenJob = Optional.empty();
     }
 
     public @Nullable String getAuthorization() {
@@ -95,12 +110,20 @@ public class AuthenticationApi extends RestManager {
     }
 
     public boolean matchesScopes(Set<Scope> requiredScopes) {
-        // either we do not require any scope, either connected and all scopes available
-        return requiredScopes.isEmpty()
+        return requiredScopes.isEmpty() // either we do not require any scope, either connected and all scopes available
                 || (isConnected() && tokenResponse.map(at -> at.getScope().containsAll(requiredScopes)).orElse(false));
     }
 
     public boolean isConnected() {
-        return !tokenResponse.isEmpty();
+        return tokenResponse.isPresent();
+    }
+
+    private static String toScopeString(Set<FeatureArea> features) {
+        return FeatureArea.toScopeString(features.isEmpty() ? FeatureArea.AS_SET : features);
+    }
+
+    public static UriBuilder getAuthorizationBuilder(String clientId, Set<FeatureArea> features) {
+        return AUTH_BUILDER.clone().queryParam(CLIENT_ID, clientId).queryParam(SCOPE, toScopeString(features))
+                .queryParam(STATE, clientId);
     }
 }

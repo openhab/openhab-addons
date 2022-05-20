@@ -15,15 +15,20 @@ package org.openhab.binding.netatmo.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link NAThingConfiguration} is responsible for holding
- * configuration information for any Netatmo thing module or device
+ * The {@link ConfigurationLevel} describes configuration levels of a given account thing
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class NAThingConfiguration {
-    public static final String ID = "id";
+public enum ConfigurationLevel {
+    EMPTY_CLIENT_ID("@text/conf-error-no-client-id"),
+    EMPTY_CLIENT_SECRET("@text/conf-error-no-client-secret"),
+    REFRESH_TOKEN_NEEDED("@text/conf-error-grant-needed"),
+    COMPLETED("");
 
-    public String id = "";
-    public int refreshInterval = -1;
+    public String message;
+
+    ConfigurationLevel(String message) {
+        this.message = message;
+    }
 }

@@ -11,17 +11,20 @@ See https://www.netatmo.com/ for details on their product.
 
 ## Binding Configuration
 
-Before setting up your 'Things', you will have to grant openHAB to access Netatmo API.
-Here is the procedure:
+The binding requires you to register an Application with Netatmo Connect at [https://dev.netatmo.com/](https://dev.netatmo.com/) - this will get you a set of Client ID and Client Secret parameters to be used by your configuration.
 
-Create an application at https://dev.netatmo.com/dev/createapp
+### Create Netatmo Application
 
-The variables you will need to get to setup the binding are:
+Follow instructions under:
+
+ 1. Setting Up Your Account
+ 1. Registering Your Application
+ 1. Setting Redirect URI and webhook URI can be skipped, these will be provided by the binding.
+
+Variables needed for the setup of the binding are:
 
 * `<CLIENT_ID>` Your client ID taken from your App at https://dev.netatmo.com/apps
 * `<CLIENT_SECRET>` A token provided along with the `<CLIENT_ID>`.
-* `<USERNAME>` The username you use to connect to the Netatmo API (usually your mail address).
-* `<PASSWORD>` The password attached to the above username.
 
 The binding has the following configuration options:
 
@@ -31,18 +34,34 @@ The binding has the following configuration options:
 | readFriends  | Boolean       | Enables or disables the discovery of guest weather stations.                               |
 
 
-## Bridge Configuration
+## Netatmo Account (Bridge) Configuration
 
 You will have to create at first a bridge to handle communication with your Netatmo Application.
 
-The Account bridge has the following configuration options:
+The Account bridge has the following configuration elements:
 
--   **clientId:** Client ID provided for the application you created on http://dev.netatmo.com/createapp.
--   **clientSecret:**  Client Secret provided for the application you created.
--   **username:** Your Netatmo API username (email).
--   **password:** Your Netatmo API password.
--   **webHookUrl:** Protocol, public IP and port to access openHAB server from Internet.
--   **reconnectInterval:** The reconnection interval to Netatmo API (in s).
+| Parameter         | Type   | Required | Description                                                                                                            |
+|-------------------|--------|----------|------------------------------------------------------------------------------------------------------------------------|
+| clientId          | String | Yes      | Client ID provided for the application you created on http://dev.netatmo.com/createapp                                 |
+| clientSecret      | String | Yes      | Client Secret provided for the application you created                                                                 |
+| webHookUrl        | String | No       | Protocol, public IP and port to access openHAB server from Internet                                                    |
+| reconnectInterval | Number | No       | The reconnection interval to Netatmo API (in s)                                                                        |
+| refreshToken      | String | Yes*     | The refresh token provided by Netatmo API after the granting process. Can be saved in case of file based configuration |
+
+(*) Strictly said this parameter is not mandatory at first run, until you grant your binding on Netatmo Connect. Once present, you'll not have to grant again.
+
+### Configure the Bridge
+
+1. Complete the Netatmo Application Registration if you have not already done so, see above.
+1. Make sure you have your _Client ID_ and _Client Secret_ identities available.
+1. Add a new **"Netatmo Account"** thing. Choose new Id for the account, unless you like the generated one, put in the _Client ID_ and _Client Secret_ from the Netatmo Connect Application registration in their respective fields of the bridge configuration. Save the bridge.
+1. The bridge thing will go _OFFLINE_ / _CONFIGURATION_ERROR_ - this is fine. You have to authorize this bridge with Netatmo Connect.
+1. Go to the authorization page of your server. `http://<your openHAB address>:8080/netatmo/connect/<_CLIENT_ID_>`. Your newly added bridge should be listed there (no need for you to expose your openHAB server outside your local network for this).
+1. Press the _"Authorize Thing"_ button. This will take you either to the login page of Netatmo Connect or directly to the authorization screen. Login and/or authorize the application. You will be returned and the entry should go green. 
+1. The binding will be updated with a refresh token and go _ONLINE_. The refresh token is used to re-authorize the bridge with Netatmo Connect Web API whenever required.
+1. If you're using file based .things config file, copy the provided refresh token in the **refreshToken** parameter of your thing definition (example below).
+
+Now that you have got your bridge _ONLINE_ you can now start a scan with the binding to auto discover your things.
 
 
 ## List of supported things
@@ -73,7 +92,7 @@ The Account bridge has the following configuration options:
 ### Webhook
 
 Netatmo servers can send push notifications to the Netatmo Binding by using a callback URL.
-The webhook URL is setup at binding level using "Webhook Address" parameter.
+The webhook URL is setup at Netatmo Account level using "Webhook Address" parameter.
 You will define here public way to access your openHAB server:
 
 ```
@@ -83,7 +102,7 @@ http(s)://xx.yy.zz.ww:443
 Your Netatmo App will be configured automatically by the bridge to the endpoint:
 
 ```
-http(s)://xx.yy.zz.ww:443/netatmo
+http(s)://xx.yy.zz.ww:443/netatmo/webhook/<_CLIENT_ID_>
 ```
 
 Please be aware of Netatmo own limits regarding webhook usage that lead to a 24h ban-time when webhook does not answer 5 times.
@@ -519,7 +538,7 @@ All these channels except at-home are read only.
 ## things/netatmo.things
 
 ```
-Bridge netatmo:account:home "Netatmo Account" [clientId="", clientSecret="", username="", password=""] {
+Bridge netatmo:account:home "Netatmo Account" [clientId="xxxxx", clientSecret="yyyy", refreshToken="zzzzz"] {
     Bridge weather-station inside "Inside Weather Station" [id="70:ee:aa:aa:aa:aa"] {
         outdoor outside   "Outside Module" [id="02:00:00:aa:aa:aa"] {
             Channels:
