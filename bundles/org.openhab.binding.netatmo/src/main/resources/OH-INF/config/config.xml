@@ -17,20 +17,16 @@
 			<context>password</context>
 		</parameter>
 
-		<parameter name="username" type="text" required="true">
-			<label>Username</label>
-			<description>Your Netatmo API username (email).</description>
-		</parameter>
-
-		<parameter name="password" type="text" required="true">
-			<label>Password</label>
-			<description>Your Netatmo API password.</description>
+		<parameter name="refreshToken" type="text">
+			<label>Refresh Token</label>
+			<description>Refresh token provided by the oAuth2 authentication process.</description>
 			<context>password</context>
+			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="webHookUrl" type="text" required="false">
 			<label>Webhook Address</label>
-			<description>Protocol, public IP and port to access openHAB server from Internet.</description>
+			<description>Protocol, public IP or hostname and port to access openHAB server from Internet.</description>
 		</parameter>
 
 		<parameter name="reconnectInterval" type="integer" unit="s">

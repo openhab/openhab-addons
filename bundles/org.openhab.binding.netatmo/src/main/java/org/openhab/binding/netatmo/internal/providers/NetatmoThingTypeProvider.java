@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
+import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingTypeProvider;
 import org.openhab.core.thing.i18n.ThingTypeI18nLocalizationService;
@@ -73,7 +74,8 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
                 ModuleType moduleType = ModuleType.from(thingTypeUID);
 
                 ThingTypeBuilder thingTypeBuilder = ThingTypeBuilder.instance(thingTypeUID, thingTypeUID.toString())
-                        .withRepresentationProperty(EQUIPMENT_ID).withExtensibleChannelTypeIds(moduleType.extensions)
+                        .withRepresentationProperty(NAThingConfiguration.ID)
+                        .withExtensibleChannelTypeIds(moduleType.extensions)
                         .withChannelGroupDefinitions(getGroupDefinitions(moduleType))
                         .withConfigDescriptionURI(moduleType.getConfigDescription());
 

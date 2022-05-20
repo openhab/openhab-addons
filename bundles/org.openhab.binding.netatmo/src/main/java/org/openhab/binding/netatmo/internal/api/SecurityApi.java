@@ -56,9 +56,10 @@ public class SecurityApi extends RestManager {
      * @param uri Your webhook callback url (required)
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
-    public void addwebhook(URI uri) throws NetatmoException {
+    public boolean addwebhook(URI uri) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_ADDWEBHOOK, PARAM_URL, uri.toString());
         post(uriBuilder, ApiResponse.Ok.class, null, null);
+        return true;
     }
 
     public Collection<HomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {

@@ -68,11 +68,11 @@ import org.slf4j.LoggerFactory;
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
 
-    private final NetatmoDescriptionProvider stateDescriptionProvider;
-    private final HttpClient httpClient;
-    private final NADeserializer deserializer;
-    private final HttpService httpService;
     private final BindingConfiguration configuration = new BindingConfiguration();
+    private final NetatmoDescriptionProvider stateDescriptionProvider;
+    private final NADeserializer deserializer;
+    private final HttpClient httpClient;
+    private final HttpService httpService;
 
     @Activate
     public NetatmoHandlerFactory(@Reference NetatmoDescriptionProvider stateDescriptionProvider,
@@ -80,8 +80,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             @Reference HttpService httpService, Map<String, @Nullable Object> config) {
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpClient = factory.getCommonHttpClient();
-        this.httpService = httpService;
         this.deserializer = deserializer;
+        this.httpService = httpService;
         configChanged(config);
     }
 
@@ -107,7 +107,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
     private BaseThingHandler buildHandler(Thing thing, ModuleType moduleType) {
         if (ModuleType.ACCOUNT.equals(moduleType)) {
-            return new ApiBridgeHandler((Bridge) thing, httpClient, httpService, deserializer, configuration);
+            return new ApiBridgeHandler((Bridge) thing, httpClient, deserializer, configuration, httpService);
         }
         CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing) : new ModuleHandler(thing);
 
