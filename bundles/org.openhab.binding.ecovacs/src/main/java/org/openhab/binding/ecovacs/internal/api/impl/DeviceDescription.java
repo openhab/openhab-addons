@@ -49,6 +49,9 @@ public class DeviceDescription {
         if (protoVersion != ProtocolVersion.XML && capabilities.contains(DeviceCapability.CLEAN_SPEED_CONTROL)) {
             capabilities.add(DeviceCapability.EXTENDED_CLEAN_SPEED_CONTROL);
         }
+        if (protoVersion != ProtocolVersion.XML) {
+            capabilities.add(DeviceCapability.EXTENDED_CLEAN_LOG_RECORD);
+        }
         if (!capabilities.contains(DeviceCapability.SPOT_AREA_CLEANING)) {
             capabilities.add(DeviceCapability.EDGE_CLEANING);
             capabilities.add(DeviceCapability.SPOT_CLEANING);

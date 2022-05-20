@@ -355,7 +355,11 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         if (!device.hasCapability(DeviceCapability.VOICE_REPORTING)) {
             hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_VOICE_VOLUME);
         }
-        if (!device.hasCapability(DeviceCapability.MAPPING)) {
+        if (!device.hasCapability(DeviceCapability.EXTENDED_CLEAN_LOG_RECORD)) {
+            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_LAST_CLEAN_MODE);
+        }
+        if (!device.hasCapability(DeviceCapability.MAPPING)
+                || !device.hasCapability(DeviceCapability.EXTENDED_CLEAN_LOG_RECORD)) {
             hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_LAST_CLEAN_MAP);
         }
         if (!device.hasCapability(DeviceCapability.READ_NETWORK_INFO)) {
@@ -508,24 +512,26 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                         new DateTimeType(record.timestamp.toInstant().atZone(ZoneId.systemDefault())));
                 updateState(CHANNEL_ID_LAST_CLEAN_DURATION, new QuantityType<>(record.cleaningDuration, Units.SECOND));
                 updateState(CHANNEL_ID_LAST_CLEAN_AREA, new QuantityType<>(record.cleanedArea, SIUnits.SQUARE_METRE));
-                StateOptionEntry<CleanMode> mode = CLEAN_MODE_MAPPING.get(record.mode);
-                updateState(CHANNEL_ID_LAST_CLEAN_MODE, stringToState(mode != null ? mode.value : null));
+                if (device.hasCapability(DeviceCapability.EXTENDED_CLEAN_LOG_RECORD)) {
+                    StateOptionEntry<CleanMode> mode = CLEAN_MODE_MAPPING.get(record.mode);
+                    updateState(CHANNEL_ID_LAST_CLEAN_MODE, stringToState(mode != null ? mode.value : null));
 
-                if (device.hasCapability(DeviceCapability.MAPPING)
-                        && !lastDownloadedCleanMapUrl.equals(record.mapImageUrl)) {
-                    updateState(CHANNEL_ID_LAST_CLEAN_MAP, record.mapImageUrl.flatMap(url -> {
-                        // HttpUtil expects the server to return the correct MIME type, but Ecovacs' server sends
-                        // 'application/octet-stream', so we have to set the correct MIME type by ourselves
-                        @Nullable
-                        RawType mapData = HttpUtil.downloadData(url, null, false, -1);
-                        if (mapData != null) {
-                            mapData = new RawType(mapData.getBytes(), "image/png");
-                            lastDownloadedCleanMapUrl = record.mapImageUrl;
-                        } else {
-                            logger.debug("{}: Downloading cleaning map {} failed", getDeviceSerial(), url);
-                        }
-                        return Optional.ofNullable((State) mapData);
-                    }).orElse(UnDefType.NULL));
+                    if (device.hasCapability(DeviceCapability.MAPPING)
+                            && !lastDownloadedCleanMapUrl.equals(record.mapImageUrl)) {
+                        updateState(CHANNEL_ID_LAST_CLEAN_MAP, record.mapImageUrl.flatMap(url -> {
+                            // HttpUtil expects the server to return the correct MIME type, but Ecovacs' server sends
+                            // 'application/octet-stream', so we have to set the correct MIME type by ourselves
+                            @Nullable
+                            RawType mapData = HttpUtil.downloadData(url, null, false, -1);
+                            if (mapData != null) {
+                                mapData = new RawType(mapData.getBytes(), "image/png");
+                                lastDownloadedCleanMapUrl = record.mapImageUrl;
+                            } else {
+                                logger.debug("{}: Downloading cleaning map {} failed", getDeviceSerial(), url);
+                            }
+                            return Optional.ofNullable((State) mapData);
+                        }).orElse(UnDefType.NULL));
+                    }
                 }
             }
 

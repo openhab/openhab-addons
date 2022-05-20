@@ -44,5 +44,6 @@ public enum DeviceCapability {
     // implicit capabilities added in code
     EDGE_CLEANING,
     SPOT_CLEANING,
-    EXTENDED_CLEAN_SPEED_CONTROL
+    EXTENDED_CLEAN_SPEED_CONTROL,
+    EXTENDED_CLEAN_LOG_RECORD
 }
