@@ -90,6 +90,7 @@ public class WebhookServlet extends NetatmoServlet {
                 logger.warn("Error releasing webhook : {}", e.getMessage());
             }
         }
+        super.dispose();
     }
 
     @Override

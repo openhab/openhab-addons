@@ -21,7 +21,7 @@ Follow instructions under:
  1. Registering Your Application
  1. Setting Redirect URI and webhook URI can be skipped, these will be provided by the binding.
 
-Variables needed to for the setup of the binding are:
+Variables needed for the setup of the binding are:
 
 * `<CLIENT_ID>` Your client ID taken from your App at https://dev.netatmo.com/apps
 * `<CLIENT_SECRET>` A token provided along with the `<CLIENT_ID>`.
