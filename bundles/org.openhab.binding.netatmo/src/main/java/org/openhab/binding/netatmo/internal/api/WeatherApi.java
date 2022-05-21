@@ -45,12 +45,11 @@ public class WeatherApi extends RestManager {
     }
 
     /**
-     *
      * Returns data from a user's Weather Stations (measures and device specific data);
      *
      * @param deviceId Id of the device you want to retrieve information of (optional)
      * @param getFavorites Whether to include the user's favorite Weather Stations in addition to the user's
-     *            own Weather Stations (optional, default to false)
+     *            own Weather Stations
      * @return StationDataResponse
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
@@ -62,8 +61,34 @@ public class WeatherApi extends RestManager {
         return response;
     }
 
-    public NAMain getStationData(String deviceId, boolean getFavorites) throws NetatmoException {
-        ListBodyResponse<NAMain> answer = getStationsData(deviceId, getFavorites).getBody();
+    /**
+     * Returns data from a user's Weather Station, this stations can be a station owned by the user or a favorite
+     * station or a guest station.
+     *
+     * @param deviceId Id of the device you want to retrieve information
+     * @return NAMain
+     * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
+     */
+    public NAMain getStationData(String deviceId) throws NetatmoException {
+        ListBodyResponse<NAMain> answer = getStationsData(deviceId, true).getBody();
+        if (answer != null) {
+            NAMain station = answer.getElement(deviceId);
+            if (station != null) {
+                return station;
+            }
+        }
+        throw new NetatmoException("Unexpected answer searching device '%s' : not found.", deviceId);
+    }
+
+    /**
+     * Returns data from a Weather Station owned by the user
+     *
+     * @param deviceId Id of the device you want to retrieve information
+     * @return NAMain
+     * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
+     */
+    public NAMain getOwnedStationData(String deviceId) throws NetatmoException {
+        ListBodyResponse<NAMain> answer = getStationsData(deviceId, false).getBody();
         if (answer != null) {
             NAMain station = answer.getElement(deviceId);
             if (station != null) {
