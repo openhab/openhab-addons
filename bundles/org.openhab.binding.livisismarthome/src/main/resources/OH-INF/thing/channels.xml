@@ -48,7 +48,7 @@
 		<label>Target Temperature</label>
 		<description>Thermostat target temperature</description>
 		<category>Temperature</category>
-		<state min="6" max="30" step="0.5" pattern="%.1f °C" readOnly="false">
+		<state min="6" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="ThermostatActuator_OperationMode" advanced="true">
@@ -77,7 +77,7 @@
 		<label>Actual Temperature</label>
 		<description>Actual measured room temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="TemperatureSensor_FrostWarning" advanced="true">
