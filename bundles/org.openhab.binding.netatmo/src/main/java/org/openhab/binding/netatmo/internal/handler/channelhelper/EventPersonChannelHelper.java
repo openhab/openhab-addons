@@ -14,10 +14,11 @@ package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.EventType;
-import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.Event;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
@@ -30,18 +31,17 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class EventPersonChannelHelper extends EventChannelHelper {
+    public static final Set<EventType> AT_HOME_MARKERS = Set.of(EventType.PERSON, EventType.PERSON_HOME);
+
     public EventPersonChannelHelper() {
-        // TODO : this would be a small breaking change but we should use the group extension mecanism
-        // person-event would become last-event, the same than other eventable things. Talk with @lolodomo before 3.3
-        super(GROUP_PERSON_EVENT);
+        super(GROUP_PERSON_LAST_EVENT);
     }
 
     @Override
     protected @Nullable State internalGetEvent(String channelId, Event event) {
         EventType eventType = event.getEventType();
-        if (eventType.validFor(ModuleType.PERSON) && CHANNEL_PERSON_AT_HOME.equals(channelId)) {
-            return OnOffType.from(EventType.PERSON.equals(eventType) || EventType.PERSON_HOME.equals(eventType));
-        }
-        return super.internalGetEvent(channelId, event);
+        return eventType.validFor(moduleType) && CHANNEL_PERSON_AT_HOME.equals(channelId)
+                ? OnOffType.from(AT_HOME_MARKERS.contains(eventType))
+                : super.internalGetEvent(channelId, event);
     }
 }

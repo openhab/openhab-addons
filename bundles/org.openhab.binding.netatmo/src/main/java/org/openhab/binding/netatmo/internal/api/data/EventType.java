@@ -46,10 +46,10 @@ public enum EventType {
     @SerializedName("movement") // When the Indoor Camera detects motion
     MOVEMENT(ModuleType.WELCOME),
 
-    @SerializedName("human") // When the Indoor Camera detects human motion
+    @SerializedName("human") // When the camera detects human motion
     HUMAN(ModuleType.WELCOME, ModuleType.OUTDOOR, ModuleType.DOORBELL),
 
-    @SerializedName("animal") // When the Indoor Camera detects animal motion
+    @SerializedName("animal") // When the camera detects animal motion
     ANIMAL(ModuleType.WELCOME, ModuleType.OUTDOOR),
 
     @SerializedName("vehicle") // When the Outdoor Camera detects a car
@@ -70,10 +70,10 @@ public enum EventType {
     @SerializedName("module_end_update") // Module's firmware update is over
     MODULE_END_UPDATE(ModuleType.WELCOME),
 
-    @SerializedName("connection") // When the Camera connects to Netatmo servers
+    @SerializedName("connection") // When the camera connects to Netatmo servers
     CONNECTION(ModuleType.WELCOME, ModuleType.PRESENCE),
 
-    @SerializedName("disconnection") // When the Camera loses connection with Netatmo servers
+    @SerializedName("disconnection") // When the camera loses connection with Netatmo servers
     DISCONNECTION(ModuleType.WELCOME, ModuleType.PRESENCE),
 
     @SerializedName("on") // When Camera Monitoring is resumed

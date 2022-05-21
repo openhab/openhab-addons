@@ -516,18 +516,18 @@ Person things are automatically created in discovery process for all known perso
 
 **Supported channels for the Person thing:**
 
-| Channel Group  | Channel ID     | Item Type    | Description                                            |
-|----------------|----------------|--------------|--------------------------------------------------------|
-| person         | avatar-url     | String       | URL for the avatar of this person                      |
-| person         | avatar         | Image        | Avatar of this person                                  |
-| person         | at-home        | Switch       | Indicates if this person is known to be at home or not |
-| person         | last-seen      | DateTime     | Moment when this person was last seen                  |
-| person-event   | subtype        | String       | Sub-type of event                                      |
-| person-event   | message        | String       | Last event message from this person                    |
-| person-event   | time           | DateTime     | Moment of the last event for this person               |
-| person-event   | snapshot       | Image        | Picture of the last event for this person              |
-| person-event   | snapshot-url   | String       | URL for the picture of the last event for this person  |
-| person-event   | camera-id      | String       | ID of the camera that triggered the event              |
+| Channel Group | Channel ID   | Item Type | Description                                            |
+|---------------|--------------|-----------|--------------------------------------------------------|
+| person        | avatar-url   | String    | URL for the avatar of this person                      |
+| person        | avatar       | Image     | Avatar of this person                                  |
+| person        | at-home      | Switch    | Indicates if this person is known to be at home or not |
+| person        | last-seen    | DateTime  | Moment when this person was last seen                  |
+| last-event    | subtype      | String    | Sub-type of event                                      |
+| last-event    | message      | String    | Last event message from this person                    |
+| last-event    | time         | DateTime  | Moment of the last event for this person               |
+| last-event    | snapshot     | Image     | Picture of the last event for this person              |
+| last-event    | snapshot-url | String    | URL for the picture of the last event for this person  |
+| last-event    | camera-id    | String    | ID of the camera that triggered the event              |
 
 All these channels except at-home are read only.
 

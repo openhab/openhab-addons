@@ -89,28 +89,42 @@
 			</channel>
 		</channels>
 	</channel-group-type>
-	
-    <channel-group-type id="last-event-doorbell">
-        <label>Last Event</label>
-        <channels>
-            <channel id="type" typeId="event-type"/>
-            <channel id="video-status" typeId="video-status"/>
-            <channel id="time" typeId="timestamp">
-                <label>Event Timestamp</label>
-                <description>Moment when event occurred.</description>
-            </channel>
-            <channel id="local-video-url" typeId="video-url">
-                <label>Video Local URL</label>
-                <description>Local URL of the event recording.</description>
-            </channel>
-            <channel id="vpn-video-url" typeId="video-url">
-                <label>Video VPN URL</label>
-                <description>URL of the event recording through Netatmo VPN.</description>
-            </channel>
-        </channels>
-    </channel-group-type>
 
-	<channel-group-type id="person-event">
+	<channel-group-type id="sub-event-doorbell">
+		<label>Sub Event Informations</label>
+		<channels>
+			<channel id="type" typeId="event-type"/>
+			<channel id="time" typeId="timestamp">
+				<label>Sub-Event Timestamp</label>
+				<description>Moment when then sub-event occurred.</description>
+			</channel>
+			<channel id="message" typeId="message"/>
+			<channel id="snapshot-url" typeId="event-picture-url"/>
+			<channel id="vignette-url" typeId="event-picture-url"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="last-event-doorbell">
+		<label>Last Event</label>
+		<channels>
+			<channel id="type" typeId="event-type"/>
+			<channel id="video-status" typeId="video-status"/>
+			<channel id="time" typeId="timestamp">
+				<label>Event Timestamp</label>
+				<description>Moment when event occurred.</description>
+			</channel>
+			<channel id="local-video-url" typeId="video-url">
+				<label>Video Local URL</label>
+				<description>Local URL of the event recording.</description>
+			</channel>
+			<channel id="vpn-video-url" typeId="video-url">
+				<label>Video VPN URL</label>
+				<description>URL of the event recording through Netatmo VPN.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="last-event-person">
 		<label>Last Event</label>
 		<channels>
 			<channel id="subtype" typeId="event-subtype"/>

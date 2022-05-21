@@ -99,7 +99,9 @@ public class CameraCapability extends HomeSecurityThingCapability {
         securityCapability.ifPresent(cap -> {
             Collection<HomeEvent> events = cap.getCameraEvents(handler.getId(), moduleType.apiName);
             if (!events.isEmpty()) {
-                result.add(events.iterator().next());
+                HomeEvent event = events.iterator().next();
+                result.add(event);
+                result.addAll(event.getSubevents());
             }
         });
         return result;

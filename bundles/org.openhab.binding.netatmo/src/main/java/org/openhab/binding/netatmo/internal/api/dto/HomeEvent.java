@@ -93,8 +93,13 @@ public class HomeEvent extends Event {
 
     @Override
     public @Nullable String getSnapshotUrl() {
-        Snapshot localSnap = snapshot;
-        return localSnap != null ? localSnap.getUrl() : null;
+        Snapshot image = snapshot;
+        return image != null ? image.getUrl() : null;
+    }
+
+    public @Nullable String getVignetteUrl() {
+        Snapshot image = vignette;
+        return image != null ? image.getUrl() : null;
     }
 
     public List<HomeEvent> getSubevents() {
@@ -104,5 +109,4 @@ public class HomeEvent extends Event {
     public @Nullable Snapshot getVignette() {
         return vignette;
     }
-
 }
