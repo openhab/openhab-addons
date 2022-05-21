@@ -29,6 +29,7 @@ import org.openhab.binding.livisismarthome.internal.client.api.entity.device.Dev
 import org.openhab.binding.livisismarthome.internal.client.api.entity.event.EventDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.event.EventPropertiesDTO;
 import org.openhab.binding.livisismarthome.internal.listener.DeviceStatusListener;
+import org.openhab.binding.livisismarthome.internal.util.Translator;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -71,6 +72,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
 
     private final Logger logger = LoggerFactory.getLogger(LivisiDeviceHandler.class);
     private final Object lock = new Object();
+    private final Translator translator;
 
     private String deviceId = "";
     private @Nullable LivisiBridgeHandler bridgeHandler;
@@ -80,8 +82,9 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
      *
      * @param thing device thing
      */
-    public LivisiDeviceHandler(final Thing thing) {
+    public LivisiDeviceHandler(final Thing thing, final Translator translator) {
         super(thing);
+        this.translator = translator;
     }
 
     @Override
@@ -248,14 +251,15 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                     if (deviceOptional.isPresent()) {
                         DeviceDTO device = deviceOptional.get();
                         if (device.isReachable() != null && !device.isReachable()) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "Device not reachable.");
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, translator
+                                    .getText("binding.livisismarthome.error.notReachable", "Device not reachable."));
                         } else {
                             updateStatus(ThingStatus.ONLINE);
                         }
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
-                                "Device not found in LIVISI SmartHome config. Was it removed?");
+                                translator.getText("binding.livisismarthome.error.deviceNotFound",
+                                        "Device not found in LIVISI SmartHome config. Was it removed?"));
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -264,7 +268,8 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                 updateStatus(ThingStatus.OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "device id unknown");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    translator.getText("binding.livisismarthome.error.deviceIdUnknown", "Unknown device id"));
         }
     }
 
@@ -581,7 +586,8 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
             if (reachable) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not reachable.");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        translator.getText("binding.livisismarthome.error.notReachable", "Device not reachable."));
                 return false;
             }
         }

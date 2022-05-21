@@ -12,12 +12,18 @@
  */
 package org.openhab.binding.livisismarthome.internal;
 
+import static org.openhab.binding.livisismarthome.internal.LivisiBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.livisismarthome.internal.handler.LivisiBridgeHandler;
 import org.openhab.binding.livisismarthome.internal.handler.LivisiDeviceHandler;
+import org.openhab.binding.livisismarthome.internal.util.Translator;
+import org.openhab.binding.livisismarthome.internal.util.TranslatorImpl;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -47,27 +53,35 @@ public class LivisiHandlerFactory extends BaseThingHandlerFactory implements Thi
 
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
 
     @Activate
-    public LivisiHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory httpClientFactory) {
+    public LivisiHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory httpClientFactory,
+            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
         this.oAuthFactory = oAuthFactory;
-        httpClient = httpClientFactory.getCommonHttpClient();
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return LivisiBindingConstants.SUPPORTED_THING_TYPES.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (LivisiBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())) {
-            return new LivisiBridgeHandler((Bridge) thing, oAuthFactory, httpClient);
-        } else if (LivisiBindingConstants.SUPPORTED_DEVICE_THING_TYPES.contains(thing.getThingTypeUID())) {
-            return new LivisiDeviceHandler(thing);
-        } else {
-            logger.debug("Unsupported thing {}.", thing.getThingTypeUID());
-            return null;
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (THING_TYPE_BRIDGE.equals(thingTypeUID) || SUPPORTED_DEVICE_THING_TYPES.contains(thingTypeUID)) {
+            Translator translator = new TranslatorImpl(translationProvider, localeProvider, getBundleContext());
+            if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
+                return new LivisiBridgeHandler((Bridge) thing, oAuthFactory, httpClient, translator);
+            } else if (SUPPORTED_DEVICE_THING_TYPES.contains(thingTypeUID)) {
+                return new LivisiDeviceHandler(thing, translator);
+            }
         }
+        logger.debug("Unsupported thing {}.", thingTypeUID);
+        return null;
     }
 }

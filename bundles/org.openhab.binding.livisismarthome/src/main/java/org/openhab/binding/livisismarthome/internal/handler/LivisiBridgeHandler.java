@@ -60,6 +60,7 @@ import org.openhab.binding.livisismarthome.internal.listener.DeviceStatusListene
 import org.openhab.binding.livisismarthome.internal.listener.EventListener;
 import org.openhab.binding.livisismarthome.internal.manager.DeviceStructureManager;
 import org.openhab.binding.livisismarthome.internal.manager.FullDeviceManager;
+import org.openhab.binding.livisismarthome.internal.util.Translator;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -107,6 +108,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private final Map<String, DeviceStatusListener> deviceStatusListeners;
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
+    private final Translator translator;
 
     private @Nullable LivisiClient client;
     private @Nullable LivisiWebSocket webSocket;
@@ -125,10 +127,12 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @param oAuthFactory Factory class to get OAuth2 service
      * @param httpClient httpclient instance
      */
-    public LivisiBridgeHandler(final Bridge bridge, final OAuthFactory oAuthFactory, final HttpClient httpClient) {
+    public LivisiBridgeHandler(final Bridge bridge, final OAuthFactory oAuthFactory, final HttpClient httpClient,
+            final Translator translator) {
         super(bridge);
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
+        this.translator = translator;
         deviceStatusListeners = new ConcurrentHashMap<>();
     }
 
@@ -169,7 +173,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         } catch (AuthenticationException | ApiException | IOException | OAuthException | OAuthResponseException e) {
             logger.debug("Error fetching access tokens. Please check your credentials. Detail: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Cannot connect to LIVISI SmartHome service. Please check your credentials!");
+                    translator.getText("binding.livisismarthome.error.connect",
+                            "Can't connect to LIVISI SmartHome service! Please check your credentials."));
         }
     }
 
