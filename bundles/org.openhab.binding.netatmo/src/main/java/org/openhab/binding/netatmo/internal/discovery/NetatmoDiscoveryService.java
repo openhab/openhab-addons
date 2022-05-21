@@ -73,7 +73,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                 if (readFriends) {
                     WeatherApi weatherApi = localHandler.getRestManager(WeatherApi.class);
                     if (weatherApi != null) { // Search favorite stations
-                        ListBodyResponse<NAMain> body = weatherApi.getStationsData(null, true).getBody();
+                        ListBodyResponse<NAMain> body = weatherApi.getFavoriteAndGuestStationsData();
                         if (body != null) {
                             body.getElements().stream().filter(NAMain::isReadOnly).forEach(station -> {
                                 ThingUID bridgeUID = createThing(station, apiBridgeUID);

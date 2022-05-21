@@ -53,7 +53,7 @@ public class WeatherApi extends RestManager {
      * @return StationDataResponse
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
-    public StationDataResponse getStationsData(@Nullable String deviceId, boolean getFavorites)
+    private StationDataResponse getStationsData(@Nullable String deviceId, boolean getFavorites)
             throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GETSTATION, PARAM_DEVICEID, deviceId, //
                 PARAM_FAVORITES, getFavorites);
@@ -96,6 +96,10 @@ public class WeatherApi extends RestManager {
             }
         }
         throw new NetatmoException("Unexpected answer searching device '%s' : not found.", deviceId);
+    }
+
+    public @Nullable ListBodyResponse<NAMain> getFavoriteAndGuestStationsData() throws NetatmoException {
+        return getStationsData(null, true).getBody();
     }
 
     public @Nullable Object getMeasures(String deviceId, @Nullable String moduleId, @Nullable String scale,
