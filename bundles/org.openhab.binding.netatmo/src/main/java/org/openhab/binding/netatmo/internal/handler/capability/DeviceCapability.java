@@ -28,12 +28,15 @@ import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 public class DeviceCapability extends Capability {
     private static final int DATA_AGE_LIMIT_S = 3600;
 
+    protected boolean readonly = true;;
+
     public DeviceCapability(CommonInterface handler) {
         super(handler);
     }
 
     @Override
     protected void updateNAMain(NAMain newData) {
+        readonly = newData.isReadOnly();
         if (firstLaunch) {
             newData.getPlace().ifPresent(place -> {
                 place.getCity().map(city -> properties.put(PROPERTY_CITY, city));

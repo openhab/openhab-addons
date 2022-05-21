@@ -62,8 +62,8 @@ public class WeatherApi extends RestManager {
         return response;
     }
 
-    public NAMain getStationData(String deviceId) throws NetatmoException {
-        ListBodyResponse<NAMain> answer = getStationsData(deviceId, true).getBody();
+    public NAMain getStationData(String deviceId, boolean getFavorites) throws NetatmoException {
+        ListBodyResponse<NAMain> answer = getStationsData(deviceId, getFavorites).getBody();
         if (answer != null) {
             NAMain station = answer.getElement(deviceId);
             if (station != null) {
