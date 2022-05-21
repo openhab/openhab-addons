@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -61,12 +63,17 @@ public class NetatmoBindingConstants {
     // Alternative extended groups
     public static final String OPTION_EXTENDED = "-extended";
     public static final String OPTION_OUTSIDE = "-outside";
+    public static final String OPTION_DOORBELL = "-doorbell";
+    public static final Set<String> GROUP_VARIATIONS = Set.of(OPTION_EXTENDED, OPTION_OUTSIDE, OPTION_DOORBELL);
     public static final String GROUP_TYPE_TIMESTAMP_EXTENDED = GROUP_TIMESTAMP + OPTION_EXTENDED;
     public static final String GROUP_TYPE_BATTERY_EXTENDED = GROUP_BATTERY + OPTION_EXTENDED;
     public static final String GROUP_TYPE_PRESSURE_EXTENDED = GROUP_PRESSURE + OPTION_EXTENDED;
     public static final String GROUP_TYPE_TEMPERATURE_EXTENDED = GROUP_TEMPERATURE + OPTION_EXTENDED;
     public static final String GROUP_TYPE_AIR_QUALITY_EXTENDED = GROUP_AIR_QUALITY + OPTION_EXTENDED;
     public static final String GROUP_TYPE_TEMPERATURE_OUTSIDE = GROUP_TEMPERATURE + OPTION_OUTSIDE;
+    public static final String GROUP_DOORBELL_STATUS = GROUP_CAM_STATUS + OPTION_DOORBELL;
+    public static final String GROUP_DOORBELL_LIVE = GROUP_CAM_LIVE + OPTION_DOORBELL;
+    public static final String GROUP_DOORVELL_LAST_EVENT = GROUP_LAST_EVENT + OPTION_DOORBELL;
 
     // Channel ids
     public static final String CHANNEL_VALUE = "value";

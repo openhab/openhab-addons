@@ -78,7 +78,7 @@ public class PersonCapability extends HomeSecurityThingCapability {
         EventType eventType = event.getEventType();
         ZonedDateTime localLast = lastEventTime;
         ZonedDateTime eventTime = event.getTime();
-        if ((localLast != null && !eventTime.isAfter(localLast)) || !eventType.appliesOn(ModuleType.PERSON)) {
+        if ((localLast != null && !eventTime.isAfter(localLast)) || !eventType.validFor(ModuleType.PERSON)) {
             return; // ignore incoming events if they are deprecated
         }
         lastEventTime = eventTime;

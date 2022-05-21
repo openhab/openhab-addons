@@ -31,13 +31,15 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class EventPersonChannelHelper extends EventChannelHelper {
     public EventPersonChannelHelper() {
+        // TODO : this would be a small breaking change but we should use the group extension mecanism
+        // person-event would become last-event, the same than other eventable things. Talk with @lolodomo before 3.3
         super(GROUP_PERSON_EVENT);
     }
 
     @Override
     protected @Nullable State internalGetEvent(String channelId, Event event) {
         EventType eventType = event.getEventType();
-        if (eventType.appliesOn(ModuleType.PERSON) && CHANNEL_PERSON_AT_HOME.equals(channelId)) {
+        if (eventType.validFor(ModuleType.PERSON) && CHANNEL_PERSON_AT_HOME.equals(channelId)) {
             return OnOffType.from(EventType.PERSON.equals(eventType) || EventType.PERSON_HOME.equals(eventType));
         }
         return super.internalGetEvent(channelId, event);

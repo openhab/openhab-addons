@@ -47,10 +47,13 @@ public enum EventType {
     MOVEMENT(ModuleType.WELCOME),
 
     @SerializedName("human") // When the Indoor Camera detects human motion
-    HUMAN(ModuleType.WELCOME),
+    HUMAN(ModuleType.WELCOME, ModuleType.OUTDOOR, ModuleType.DOORBELL),
 
     @SerializedName("animal") // When the Indoor Camera detects animal motion
-    ANIMAL(ModuleType.WELCOME),
+    ANIMAL(ModuleType.WELCOME, ModuleType.OUTDOOR),
+
+    @SerializedName("vehicle") // When the Outdoor Camera detects a car
+    VEHICLE(ModuleType.OUTDOOR),
 
     @SerializedName("new_module") // A new Module has been paired with the Indoor Camera
     NEW_MODULE(ModuleType.WELCOME),
@@ -86,7 +89,16 @@ public enum EventType {
     SD(ModuleType.WELCOME, ModuleType.PRESENCE),
 
     @SerializedName("alim") // When Camera power supply status changes
-    ALIM(ModuleType.WELCOME, ModuleType.PRESENCE);
+    ALIM(ModuleType.WELCOME, ModuleType.PRESENCE),
+
+    @SerializedName("accepted_call") // When a call is incoming
+    ACCEPTED_CALL(ModuleType.DOORBELL),
+
+    @SerializedName("incoming_call") // When a call as been answered by a user
+    INCOMING_CALL(ModuleType.DOORBELL),
+
+    @SerializedName("missed_call") // When a call has not been answered by anyone
+    MISSED_CALL(ModuleType.DOORBELL);
 
     private final Set<ModuleType> appliesTo;
 
@@ -99,7 +111,7 @@ public enum EventType {
         return name().toLowerCase();
     }
 
-    public boolean appliesOn(ModuleType searched) {
+    public boolean validFor(ModuleType searched) {
         return appliesTo.contains(searched);
     }
 }

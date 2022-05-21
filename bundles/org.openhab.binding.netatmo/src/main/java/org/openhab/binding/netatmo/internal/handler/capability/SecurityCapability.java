@@ -99,10 +99,10 @@ class SecurityCapability extends RestCapability<SecurityApi> {
                 });
     }
 
-    public Collection<HomeEvent> getCameraEvents(String cameraId) {
+    public Collection<HomeEvent> getCameraEvents(String cameraId, String deviceType) {
         return getApi().map(api -> {
             try {
-                return api.getCameraEvents(handler.getId(), cameraId);
+                return api.getCameraEvents(handler.getId(), cameraId, deviceType);
             } catch (NetatmoException e) {
                 logger.warn("Error retrieving last events of camera '{}' : {}", cameraId, e.getMessage());
                 return null;
