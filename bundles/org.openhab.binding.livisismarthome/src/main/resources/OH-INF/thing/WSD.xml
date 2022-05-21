@@ -15,7 +15,7 @@
 		<channels>
 			<channel id="smoke" typeId="SmokeDetectorSensor"/>
 			<channel id="alarm" typeId="AlarmActuator"/>
-			<channel id="battery_low" typeId="system.low-battery"/>
+			<channel id="batteryLow" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:livisismarthome:config"/>

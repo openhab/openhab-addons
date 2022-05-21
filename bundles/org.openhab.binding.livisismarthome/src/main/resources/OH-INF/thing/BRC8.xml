@@ -21,15 +21,15 @@
 			<channel id="button6" typeId="system.button"/>
 			<channel id="button7" typeId="system.button"/>
 			<channel id="button8" typeId="system.button"/>
-			<channel id="button1_count" typeId="PushButtonCounter"/>
-			<channel id="button2_count" typeId="PushButtonCounter"/>
-			<channel id="button3_count" typeId="PushButtonCounter"/>
-			<channel id="button4_count" typeId="PushButtonCounter"/>
-			<channel id="button5_count" typeId="PushButtonCounter"/>
-			<channel id="button6_count" typeId="PushButtonCounter"/>
-			<channel id="button7_count" typeId="PushButtonCounter"/>
-			<channel id="button8_count" typeId="PushButtonCounter"/>
-			<channel id="battery_low" typeId="system.low-battery"/>
+			<channel id="button1Count" typeId="PushButtonCounter"/>
+			<channel id="button2Count" typeId="PushButtonCounter"/>
+			<channel id="button3Count" typeId="PushButtonCounter"/>
+			<channel id="button4Count" typeId="PushButtonCounter"/>
+			<channel id="button5Count" typeId="PushButtonCounter"/>
+			<channel id="button6Count" typeId="PushButtonCounter"/>
+			<channel id="button7Count" typeId="PushButtonCounter"/>
+			<channel id="button8Count" typeId="PushButtonCounter"/>
+			<channel id="batteryLow" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:livisismarthome:config"/>

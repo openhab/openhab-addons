@@ -19,37 +19,37 @@ Without the SHC, you cannot communicate with the devices.
 The following table shows all supported and tested devices and their channels.
 The channels are described in detail in the next chapter.
 
-| Device | Description                                                              | Supported channels                                                                                                        |
-|--------|--------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| SHC    | SmartHome Controller (Bridge)                                            | status, cpu, disk, memory (updated by events; SHC classic: Updated every minute)                                          |
-| BRC8   | Basic Remote Controller                                                  | button1 ... button8, button1_count ... button8_count, battery_low                                                         |
-| ISC2   | In Wall Smart Controller                                                 | button1, button2, button1_count, button2_count, battery_low                                                               |
-| ISD2   | In Wall Smart Dimmer                                                     | button1, button2, button1_count, button2_count, dimmer                                                                    |
-| ISR2   | In Wall Smart Rollershutter                                              | button1, button2, button1_count, button2_count, rollershutter                                                             |
-| ISS2   | In Wall Smart Switch                                                     | button1, button2, button1_count, button2_count, switch                                                                    |
-| PSD    | Pluggable Smart Dimmer                                                   | dimmer                                                                                                                    |
-| PSS    | Pluggable Smart Switch, indoor                                           | switch                                                                                                                    |
-| PSSO   | Pluggable Smart Switch, outdoor                                          | switch                                                                                                                    |
-| BT-PSS | Bluetooth Pluggable Smart Switch, indoor                                 | switch                                                                                                                    |
-| RST    | Radiator Mounted Smart Thermostat                                        | set_temperature, temperature, frost_warning, humidity, mold_warning, operation_mode, window_reduction_active, battery_low |
-| RST2   | Radiator Mounted Smart Thermostat (newer two battery version since 2018) | set_temperature, temperature, frost_warning, humidity, mold_warning, operation_mode, window_reduction_active, battery_low |
-|        | VariableActuator                                                         | switch                                                                                                                    |
-| WDS    | Window Door Sensor                                                       | contact, battery_low                                                                                                      |
-| WMD    | Wall Mounted Motion Detector, indoor                                     | motion_count, luminance, battery_low                                                                                      |
-| WMDO   | Wall Mounted Motion Detector, outdoor                                    | motion_count, luminance, battery_low                                                                                      |
-| WRT    | Wall Mounted Room Thermostat                                             | set_temperature, temperature, frost_warning, humidity, mold_warning, operation_mode, window_reduction_active, battery_low |
-| WSC2   | Wall Mounted Smart Controller                                            | button1, button2, button1_count, button2_count, battery_low                                                               |
-| WSD    | Wall Mounted Smoke Detector, old version                                 | smoke, alarm, battery_low                                                                                                 |
-| WSD2   | Wall Mounted Smoke Detector, new version                                 | smoke, alarm, battery_low                                                                                                 |
+| Device | Description                                                              | Supported channels                                                                                                  |
+|--------|--------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| SHC    | SmartHome Controller (Bridge)                                            | status, cpu, disk, memory (updated by events; SHC classic: Updated every minute)                                    |
+| BRC8   | Basic Remote Controller                                                  | button1 ... button8, button1Count ... button8Count, batteryLow                                                      |
+| ISC2   | In Wall Smart Controller                                                 | button1, button2, button1Count, button2Count, batteryLow                                                            |
+| ISD2   | In Wall Smart Dimmer                                                     | button1, button2, button1Count, button2Count, dimmer                                                                |
+| ISR2   | In Wall Smart Rollershutter                                              | button1, button2, button1Count, button2Count, rollershutter                                                         |
+| ISS2   | In Wall Smart Switch                                                     | button1, button2, button1Count, button2Count, switch                                                                |
+| PSD    | Pluggable Smart Dimmer                                                   | dimmer                                                                                                              |
+| PSS    | Pluggable Smart Switch, indoor                                           | switch                                                                                                              |
+| PSSO   | Pluggable Smart Switch, outdoor                                          | switch                                                                                                              |
+| BT-PSS | Bluetooth Pluggable Smart Switch, indoor                                 | switch                                                                                                              |
+| RST    | Radiator Mounted Smart Thermostat                                        | setTemperature, temperature, frostWarnung, humidity, moldWarning, operationMode, windowReductionActive, batteryLow  |
+| RST2   | Radiator Mounted Smart Thermostat (newer two battery version since 2018) | setTemperature, temperature, frostWarning, humidity, moldWarning, operationMode, windowReductionActive, batteryLow  |
+|        | VariableActuator                                                         | switch                                                                                                              |
+| WDS    | Window Door Sensor                                                       | contact, batteryLow                                                                                                 |
+| WMD    | Wall Mounted Motion Detector, indoor                                     | motionCount, luminance, batteryLow                                                                                  |
+| WMDO   | Wall Mounted Motion Detector, outdoor                                    | motionCount, luminance, batteryLow                                                                                  |
+| WRT    | Wall Mounted Room Thermostat                                             | setTemperature, temperature, frostWarning, humidity, moldWarning, operationMode, windowReductionActive, batteryLow  |
+| WSC2   | Wall Mounted Smart Controller                                            | button1, button2, button1Count, button2Count, batteryLow                                                            |
+| WSD    | Wall Mounted Smoke Detector, old version                                 | smoke, alarm, batteryLow                                                                                            |
+| WSD2   | Wall Mounted Smoke Detector, new version                                 | smoke, alarm, batteryLow                                                                                            |
 
 Powermeter devices
 
-| Device          | Description                                                    | Supported channels                                                                                                                                                                                         |
-|-----------------|----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| AnalogMeter     | The Analog Meter from the LIVISI EnergyControl product         | energy_consumption_month_kwh, absolute_energy_consumption, energy_consumption_month_euro, energy_consumption_day_euro, energy_consumption_day_kwh                                                          |
-| GenerationMeter | The Generation Meter from the LIVISI PowerControlSolar product | energy_generation_month_kwh, total_energy_generation, energy_generation_month_euro, energy_generation_day_euro, energy_generation_day_kwh, power_generation_watt                                           |
-| SmartMeter      | The Smart Meter from the LIVISI PowerControl product.          | energy_consumption_month_kwh, absolute_energy_consumption, energy_consumption_month_euro, energy_consumption_day_euro, energy_consumption_day_kwh, power_consumption_watt                                  |
-| Two-Way-Meter   | The Two-Way-Meter from the LIVISI PowerControlSolar product    | energy_month_kwh, total_energy, energy_month_euro, energy_day_euro, energy_day_kwh, energy_feed_month_kwh, total_energy_fed, energy_feed_month_euro, energy_feed_day_euro, energy_feed_day_kwh, power_watt |
+| Device          | Description                                                    | Supported channels                                                                                                                                                                 |
+|-----------------|----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AnalogMeter     | The Analog Meter from the LIVISI EnergyControl product         | energyConsumptionMonthKwh, absoluteEnergyConsumption, energyConsumptionMonthEuro, energyConsumptionDayEuro, energyConsumptionDayKwh                                                |
+| GenerationMeter | The Generation Meter from the LIVISI PowerControlSolar product | energyGenerationMonthKwh, totalEnergyGeneration, energyGenerationMonthEuro, energyGenerationDayEuro, energyGenerationDayKwh, powerGenerationWatt                                   |
+| SmartMeter      | The Smart Meter from the LIVISI PowerControl product.          | energyConsumptionMonthKwh, absoluteEnergyConsumption, energyConsumptionMonthEuro, energyConsumptionDayEuro, energyConsumptionDayKwh, powerConsumptionWatt                          |
+| Two-Way-Meter   | The Two-Way-Meter from the LIVISI PowerControlSolar product    | energyMonthKwh, totalEnergy, energyMonthEuro, energyDayEuro, energyDayKwh, energyFeedMonthKwh, totalEnergyFed, energyFeedMonthEuro, energyFeedDayEuro, energyFeedDayKwh, powerWatt |
 
 ## Discovery
 
@@ -61,44 +61,44 @@ However, only devices will appear that are added in the LIVISI SmartHome app bef
 
 ## Channels
 
-| Channel Type ID         | Item Type     | Description                                                               | Available on thing                                          |
-|-------------------------|---------------|---------------------------------------------------------------------------|-------------------------------------------------------------|
-| alarm                   | Switch        | Switches the alarm (ON/OFF)                                               | WSD, WSD2                                                   |
-| battery_low             | Switch        | Indicates, if the battery is low (ON/OFF)                                 | BRC8, ISC2, RST, RST2, WDS, WMD, WMD0, WRT, WSC2, WSD, WSD2 |
-| contact                 | Contact       | Indicates the contact state (OPEN/CLOSED)                                 | WDS                                                         |
-| cpu                     | Number        | CPU-Usage of the SHC in percent                                           | SHC (bridge)                                                |
-| dimmer                  | Dimmer        | Allows to dimm a light device                                             | ISD2, PSD                                                   |
-| disk                    | Number        | Disk-Usage of the SHC in percent                                          | SHC (bridge)                                                |
-| frost_warning           | Switch        | active, if the measured temperature is too low (ON/OFF)                   | RST, RST2, WRT                                              |
-| humidity                | Number        | Relative humidity in percent                                              | RST, RST2, WRT                                              |
-| button1                 | -             | Trigger channel for rules, fires with each push                           | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                          |
-| button2                 | -             | Trigger channel for rules, fires with each push                           | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                          |
-| button3                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
-| button4                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
-| button5                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
-| button6                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
-| button7                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
-| button8                 | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
-| button1_count           | Number        | Number of button pushes for button 1, increased with each push            | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                          |
-| button2_count           | Number        | Number of button pushes for button 2, increased with each push            | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                          |
-| button3_count           | Number        | Number of button pushes for button 3, increased with each push            | BRC8                                                        |
-| button4_count           | Number        | Number of button pushes for button 4, increased with each push            | BRC8                                                        |
-| button5_count           | Number        | Number of button pushes for button 5, increased with each push            | BRC8                                                        |
-| button6_count           | Number        | Number of button pushes for button 6, increased with each push            | BRC8                                                        |
-| button7_count           | Number        | Number of button pushes for button 7, increased with each push            | BRC8                                                        |
-| button8_count           | Number        | Number of button pushes for button 8, increased with each push            | BRC8                                                        |
-| luminance               | Number        | Indicates the measured luminance in percent                               | WMD, WMD0                                                   |
-| memory                  | Number        | Memory-Usage of the SHC in percent                                        | SHC (bridge)                                                |
-| mold_warning            | Switch        | Active, if the measured humidity is too low (ON/OFF)                      | RST, RST2, WRT                                              |
-| motion_count            | Number        | Number of detected motions, increases with each detected motion           | WMD, WMDO                                                   |
-| operation_mode          | String        | The mode of a thermostat (auto/manual)                                    | RST, RST2, WRT                                              |
-| rollershutter           | Rollershutter | Controls a roller shutter                                                 | ISR2                                                        |
-| set_temperature         | Number        | Sets the target temperature in °C (min 6 °C, max 30 °C)                   | RST, RST2, WRT                                              |
-| smoke                   | Switch        | Indicates, if smoke was detected (ON/OFF)                                 | WSD, WSD2                                                   |
-| status                  | String        | Status of the SHC (ACTIVE/NORMAL, INITIALIZING/REBOOTING or SHUTTINGDOWN) | SHC (bridge)                                                |
-| switch                  | Switch        | A switch to turn the device or variable on/off (ON/OFF)                   | ISS2, PSS, PSSO, VariableActuator                           |
-| temperature             | Number        | Holds the actual temperature in °C                                        | RST, RST2, WRT                                              |
-| window_reduction_active | Switch        | Indicates if a linked window is open and temperature reduced (ON/OFF)     | RST, RST2, WRT                                              |
+| Channel Type ID       | Item Type     | Description                                                               | Available on thing                                          |
+|-----------------------|---------------|---------------------------------------------------------------------------|-------------------------------------------------------------|
+| alarm                 | Switch        | Switches the alarm (ON/OFF)                                               | WSD, WSD2                                                   |
+| batteryLow            | Switch        | Indicates, if the battery is low (ON/OFF)                                 | BRC8, ISC2, RST, RST2, WDS, WMD, WMD0, WRT, WSC2, WSD, WSD2 |
+| contact               | Contact       | Indicates the contact state (OPEN/CLOSED)                                 | WDS                                                         |
+| cpu                   | Number        | CPU-Usage of the SHC in percent                                           | SHC (bridge)                                                |
+| dimmer                | Dimmer        | Allows to dimm a light device                                             | ISD2, PSD                                                   |
+| disk                  | Number        | Disk-Usage of the SHC in percent                                          | SHC (bridge)                                                |
+| frostWarning          | Switch        | active, if the measured temperature is too low (ON/OFF)                   | RST, RST2, WRT                                              |
+| humidity              | Number        | Relative humidity in percent                                              | RST, RST2, WRT                                              |
+| button1               | -             | Trigger channel for rules, fires with each push                           | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                          |
+| button2               | -             | Trigger channel for rules, fires with each push                           | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                          |
+| button3               | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
+| button4               | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
+| button5               | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
+| button6               | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
+| button7               | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
+| button8               | -             | Trigger channel for rules, fires with each push                           | BRC8                                                        |
+| button1Count          | Number        | Number of button pushes for button 1, increased with each push            | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                          |
+| button2Count          | Number        | Number of button pushes for button 2, increased with each push            | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2                          |
+| button3Count          | Number        | Number of button pushes for button 3, increased with each push            | BRC8                                                        |
+| button4Count          | Number        | Number of button pushes for button 4, increased with each push            | BRC8                                                        |
+| button5Count          | Number        | Number of button pushes for button 5, increased with each push            | BRC8                                                        |
+| button6Count          | Number        | Number of button pushes for button 6, increased with each push            | BRC8                                                        |
+| button7Count          | Number        | Number of button pushes for button 7, increased with each push            | BRC8                                                        |
+| button8Count          | Number        | Number of button pushes for button 8, increased with each push            | BRC8                                                        |
+| luminance             | Number        | Indicates the measured luminance in percent                               | WMD, WMD0                                                   |
+| memory                | Number        | Memory-Usage of the SHC in percent                                        | SHC (bridge)                                                |
+| moldWarning           | Switch        | Active, if the measured humidity is too low (ON/OFF)                      | RST, RST2, WRT                                              |
+| motionCount           | Number        | Number of detected motions, increases with each detected motion           | WMD, WMDO                                                   |
+| operationMode         | String        | The mode of a thermostat (auto/manual)                                    | RST, RST2, WRT                                              |
+| rollershutter         | Rollershutter | Controls a roller shutter                                                 | ISR2                                                        |
+| setTemperature        | Number        | Sets the target temperature in °C (min 6 °C, max 30 °C)                   | RST, RST2, WRT                                              |
+| smoke                 | Switch        | Indicates, if smoke was detected (ON/OFF)                                 | WSD, WSD2                                                   |
+| status                | String        | Status of the SHC (ACTIVE/NORMAL, INITIALIZING/REBOOTING or SHUTTINGDOWN) | SHC (bridge)                                                |
+| switch                | Switch        | A switch to turn the device or variable on/off (ON/OFF)                   | ISS2, PSS, PSSO, VariableActuator                           |
+| temperature           | Number        | Holds the actual temperature in °C                                        | RST, RST2, WRT                                              |
+| windowReductionActive | Switch        | Indicates if a linked window is open and temperature reduced (ON/OFF)     | RST, RST2, WRT                                              |
 
 The `rollershutter` channel has a `boolean` parameter `invert`.
 It is `false` by default.
@@ -175,10 +175,10 @@ You can then configure your items in your *.items config files as usual, for exa
 
 ```
 Contact myWindowContact        "Kitchen"                <window>      {channel="livisismarthome:WDS:mybridge:myWindowContact:contact"}
-Switch myWindowContactBattery  "Battery low"            <battery>     {channel="livisismarthome:WDS:mybridge:myWindowContact:battery_low"}
+Switch myWindowContactBattery  "Battery low"            <battery>     {channel="livisismarthome:WDS:mybridge:myWindowContact:batteryLow"}
 Number myHeatingTemp           "Bath [%.1f °C]"         <temperature> {channel="livisismarthome:RST:mybridge:myHeating:temperature"}
-Number myHeatingModeTempTarget "Settemp bath [%.1f °C]" <temperature> {channel="livisismarthome:RST:mybridge:myHeating:set_temperature"}
-String myHeatingMode           "Mode bath [%s]"         <temperature> {channel="livisismarthome:RST:mybridge:myHeating:operation_mode"}
+Number myHeatingModeTempTarget "Settemp bath [%.1f °C]" <temperature> {channel="livisismarthome:RST:mybridge:myHeating:setTemperature"}
+String myHeatingMode           "Mode bath [%s]"         <temperature> {channel="livisismarthome:RST:mybridge:myHeating:operationMode"}
 Number myHeatingHumidity       "Bath [%.1f %%]"         <humidity>    {channel="livisismarthome:RST:mybridge:myHeating:humidity"}
 
 ```

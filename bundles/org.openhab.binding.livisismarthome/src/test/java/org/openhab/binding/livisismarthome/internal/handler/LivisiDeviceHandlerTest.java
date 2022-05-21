@@ -826,7 +826,7 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertTrue(isChannelUpdated("button1_count", new DecimalType(10)));
+        assertTrue(isChannelUpdated("button1Count", new DecimalType(10)));
         assertTrue(isChannelTriggered("button1", CommonTriggerEvents.SHORT_PRESSED));
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.LONG_PRESSED));
     }
@@ -843,7 +843,7 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertTrue(isChannelUpdated("button1_count", new DecimalType(10)));
+        assertTrue(isChannelUpdated("button1Count", new DecimalType(10)));
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.SHORT_PRESSED));
         assertTrue(isChannelTriggered("button1", CommonTriggerEvents.LONG_PRESSED));
     }
@@ -860,7 +860,7 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertTrue(isChannelUpdated("button2_count", new DecimalType(10)));
+        assertTrue(isChannelUpdated("button2Count", new DecimalType(10)));
         assertTrue(isChannelTriggered("button2", CommonTriggerEvents.SHORT_PRESSED));
         assertFalse(isChannelTriggered("button2", CommonTriggerEvents.LONG_PRESSED));
     }
@@ -877,7 +877,7 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertTrue(isChannelUpdated("button2_count", new DecimalType(10)));
+        assertTrue(isChannelUpdated("button2Count", new DecimalType(10)));
         assertFalse(isChannelTriggered("button2", CommonTriggerEvents.SHORT_PRESSED));
         assertTrue(isChannelTriggered("button2", CommonTriggerEvents.LONG_PRESSED));
     }
@@ -891,7 +891,7 @@ public class LivisiDeviceHandlerTest {
 
         deviceHandler.onDeviceStateChanged(device);
         assertFalse(isChannelUpdated(CHANNEL_BUTTON_COUNT));
-        assertFalse(isChannelUpdated("button1_count"));
+        assertFalse(isChannelUpdated("button1Count"));
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.SHORT_PRESSED));
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.LONG_PRESSED));
     }
@@ -1050,7 +1050,7 @@ public class LivisiDeviceHandlerTest {
         event.setNamespace("CosipDevices.RWE");
 
         deviceHandler.onDeviceStateChanged(device, event);
-        assertTrue(isChannelUpdated("button1_count", new DecimalType(10)));
+        assertTrue(isChannelUpdated("button1Count", new DecimalType(10)));
         assertTrue(isChannelTriggered("button1", CommonTriggerEvents.SHORT_PRESSED));
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.LONG_PRESSED));
     }
@@ -1187,7 +1187,7 @@ public class LivisiDeviceHandlerTest {
         });
 
         deviceHandler.onDeviceStateChanged(device, event);
-        assertTrue(isChannelUpdated("button1_count", new DecimalType(10)));
+        assertTrue(isChannelUpdated("button1Count", new DecimalType(10)));
         assertTrue(isChannelTriggered("button1", CommonTriggerEvents.PRESSED));
         assertTrue(isChannelTriggered("button1", CommonTriggerEvents.SHORT_PRESSED));
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.LONG_PRESSED));
@@ -1211,7 +1211,7 @@ public class LivisiDeviceHandlerTest {
 
         // Nothing should get processed, because it should only react on the more detailed ButtonPressed events
         deviceHandler.onDeviceStateChanged(device, event);
-        assertFalse(isChannelUpdated("button1_count", new DecimalType(10)));
+        assertFalse(isChannelUpdated("button1Count", new DecimalType(10)));
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.PRESSED));
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.SHORT_PRESSED)); // not available for SHC Classic
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.LONG_PRESSED)); // not available for SHC Classic
@@ -1235,7 +1235,7 @@ public class LivisiDeviceHandlerTest {
 
         // Nothing should get processed, because it should only react on the more detailed ButtonPressed events
         deviceHandler.onDeviceStateChanged(device, event);
-        assertFalse(isChannelUpdated("button1_count", new DecimalType(10)));
+        assertFalse(isChannelUpdated("button1Count", new DecimalType(10)));
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.PRESSED));
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.SHORT_PRESSED));
         assertFalse(isChannelTriggered("button1", CommonTriggerEvents.LONG_PRESSED));

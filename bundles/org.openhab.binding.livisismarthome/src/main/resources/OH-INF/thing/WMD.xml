@@ -13,9 +13,9 @@
 		<description>A battery powered motion detector, that also measures luminance.</description>
 
 		<channels>
-			<channel id="motion_count" typeId="MotionDetectionSensor"/>
+			<channel id="motionCount" typeId="MotionDetectionSensor"/>
 			<channel id="luminance" typeId="LuminanceSensor"/>
-			<channel id="battery_low" typeId="system.low-battery"/>
+			<channel id="batteryLow" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:livisismarthome:config"/>
