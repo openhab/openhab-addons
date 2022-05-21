@@ -116,7 +116,9 @@ public class NetatmoConstants {
     // Netatmo API urls
     public static final String URL_API = "https://api.netatmo.com/";
     public static final String URL_APP = "https://app.netatmo.net/";
-    public static final String PATH_OAUTH = "oauth2/token";
+    public static final String PATH_OAUTH = "oauth2";
+    public static final String SUB_PATH_TOKEN = "token";
+    public static final String SUB_PATH_AUTHORIZE = "authorize";
     public static final String PATH_API = "api";
     public static final String PATH_COMMAND = "command";
     public static final String PATH_STATE = "setstate";
@@ -147,6 +149,9 @@ public class NetatmoConstants {
     public static final String PARAM_URL = "url";
     public static final String PARAM_FAVORITES = "get_favorites";
     public static final String PARAM_STATUS = "status";
+
+    // Autentication process params
+    public static final String PARAM_ERROR = "error";
 
     // Global variables
     public static final int THERM_MAX_SETPOINT = 30;

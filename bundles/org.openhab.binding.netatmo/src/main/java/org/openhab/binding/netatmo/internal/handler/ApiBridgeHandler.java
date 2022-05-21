@@ -28,6 +28,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -42,13 +44,16 @@ import org.openhab.binding.netatmo.internal.api.ApiError;
 import org.openhab.binding.netatmo.internal.api.AuthenticationApi;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.RestManager;
+import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.config.ApiHandlerConfiguration;
-import org.openhab.binding.netatmo.internal.config.ApiHandlerConfiguration.Credentials;
 import org.openhab.binding.netatmo.internal.config.BindingConfiguration;
+import org.openhab.binding.netatmo.internal.config.ConfigurationLevel;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoDiscoveryService;
-import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
+import org.openhab.binding.netatmo.internal.servlet.GrantServlet;
+import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -73,64 +78,95 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
     private final BindingConfiguration bindingConf;
-    private final HttpService httpService;
     private final AuthenticationApi connectApi;
     private final HttpClient httpClient;
     private final NADeserializer deserializer;
+    private final HttpService httpService;
 
     private Optional<ScheduledFuture<?>> connectJob = Optional.empty();
-    private Optional<NetatmoServlet> servlet = Optional.empty();
-    private @NonNullByDefault({}) ApiHandlerConfiguration thingConf;
-
     private Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
+    private @Nullable WebhookServlet webHookServlet;
+    private @Nullable GrantServlet grantServlet;
 
-    public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, HttpService httpService, NADeserializer deserializer,
-            BindingConfiguration configuration) {
+    public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
+            BindingConfiguration configuration, HttpService httpService) {
         super(bridge);
         this.bindingConf = configuration;
-        this.httpService = httpService;
         this.connectApi = new AuthenticationApi(this, scheduler);
         this.httpClient = httpClient;
         this.deserializer = deserializer;
+        this.httpService = httpService;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing Netatmo API bridge handler.");
-        thingConf = getConfigAs(ApiHandlerConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(() -> {
-            openConnection();
-            String webHookUrl = thingConf.webHookUrl;
-            if (webHookUrl != null && !webHookUrl.isBlank()) {
-                servlet = Optional.of(new NetatmoServlet(httpService, this, webHookUrl));
-            }
-        });
+        scheduler.execute(() -> openConnection(null, null));
     }
 
-    private void openConnection() {
-        try {
-            Credentials credentials = thingConf.getCredentials();
-            logger.debug("Connecting to Netatmo API.");
-            try {
-                connectApi.authenticate(credentials, bindingConf.features);
-                updateStatus(ThingStatus.ONLINE);
-                getThing().getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler).filter(Objects::nonNull)
-                        .map(CommonInterface.class::cast).forEach(CommonInterface::expireData);
-            } catch (NetatmoException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                prepareReconnection();
-            }
-        } catch (NetatmoException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+    public void openConnection(@Nullable String code, @Nullable String redirectUri) {
+        ApiHandlerConfiguration configuration = getConfiguration();
+        ConfigurationLevel level = configuration.check();
+        switch (level) {
+            case EMPTY_CLIENT_ID:
+            case EMPTY_CLIENT_SECRET:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, level.message);
+                break;
+            case REFRESH_TOKEN_NEEDED:
+                if (code == null || redirectUri == null) {
+                    GrantServlet servlet = new GrantServlet(this, httpService);
+                    servlet.startListening();
+                    this.grantServlet = servlet;
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, level.message);
+                    break;
+                } // else we can proceed to get the token refresh
+            case COMPLETED:
+                try {
+                    logger.debug("Connecting to Netatmo API.");
+
+                    String refreshToken = connectApi.authorize(configuration, bindingConf.features, code, redirectUri);
+
+                    if (configuration.refreshToken.isBlank()) {
+                        Configuration thingConfig = editConfiguration();
+                        thingConfig.put(ApiHandlerConfiguration.REFRESH_TOKEN, refreshToken);
+                        updateConfiguration(thingConfig);
+                        configuration = getConfiguration();
+                    }
+
+                    if (!configuration.webHookUrl.isBlank()) {
+                        SecurityApi securityApi = getRestManager(SecurityApi.class);
+                        if (securityApi != null) {
+                            WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
+                                    configuration.webHookUrl);
+                            servlet.startListening();
+                            this.webHookServlet = servlet;
+                        }
+                    }
+
+                    updateStatus(ThingStatus.ONLINE);
+
+                    getThing().getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler)
+                            .filter(Objects::nonNull).map(CommonInterface.class::cast)
+                            .forEach(CommonInterface::expireData);
+
+                } catch (NetatmoException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    prepareReconnection(code, redirectUri);
+                }
+                break;
         }
     }
 
-    private void prepareReconnection() {
+    public ApiHandlerConfiguration getConfiguration() {
+        return getConfigAs(ApiHandlerConfiguration.class);
+    }
+
+    private void prepareReconnection(@Nullable String code, @Nullable String redirectUri) {
         connectApi.disconnect();
         freeConnectJob();
-        connectJob = Optional
-                .of(scheduler.schedule(() -> openConnection(), thingConf.reconnectInterval, TimeUnit.SECONDS));
+        connectJob = Optional.of(scheduler.schedule(() -> openConnection(code, redirectUri),
+                getConfiguration().reconnectInterval, TimeUnit.SECONDS));
     }
 
     private void freeConnectJob() {
@@ -141,8 +177,14 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.debug("Shutting down Netatmo API bridge handler.");
-        servlet.ifPresent(servlet -> servlet.dispose());
-        servlet = Optional.empty();
+        WebhookServlet localWebHook = this.webHookServlet;
+        if (localWebHook != null) {
+            localWebHook.dispose();
+        }
+        GrantServlet localGrant = this.grantServlet;
+        if (localGrant != null) {
+            localGrant.dispose();
+        }
         connectApi.dispose();
         freeConnectJob();
         super.dispose();
@@ -151,11 +193,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Netatmo Bridge is read-only and does not handle commands");
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(NetatmoDiscoveryService.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -218,24 +255,33 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 return executeUri(uri, method, clazz, payload, contentType, retryCount - 1);
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/request-time-out");
-            prepareReconnection();
+            prepareReconnection(null, null);
             throw new NetatmoException(String.format("%s: \"%s\"", e.getClass().getName(), e.getMessage()));
         }
     }
 
-    public BindingConfiguration getConfiguration() {
-        return bindingConf;
-    }
-
-    public Optional<NetatmoServlet> getServlet() {
-        return servlet;
-    }
-
-    public NADeserializer getDeserializer() {
-        return deserializer;
+    public boolean getReadFriends() {
+        return bindingConf.readFriends;
     }
 
     public boolean isConnected() {
         return connectApi.isConnected();
+    }
+
+    public String getId() {
+        return (String) getThing().getConfiguration().get(ApiHandlerConfiguration.CLIENT_ID);
+    }
+
+    public UriBuilder formatAuthorizationUrl() {
+        return AuthenticationApi.getAuthorizationBuilder(getId(), bindingConf.features);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(NetatmoDiscoveryService.class);
+    }
+
+    public Optional<WebhookServlet> getWebHookServlet() {
+        return Optional.ofNullable(webHookServlet);
     }
 }

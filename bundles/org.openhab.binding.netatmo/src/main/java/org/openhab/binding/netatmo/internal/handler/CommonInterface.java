@@ -106,7 +106,7 @@ public interface CommonInterface {
     }
 
     default String getId() {
-        return (String) getThing().getConfiguration().get("id");
+        return (String) getThing().getConfiguration().get(NAThingConfiguration.ID);
     }
 
     default Stream<Channel> getActiveChannels() {

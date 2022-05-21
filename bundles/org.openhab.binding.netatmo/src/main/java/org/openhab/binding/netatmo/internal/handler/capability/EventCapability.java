@@ -17,19 +17,18 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
-import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
+import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
 
 /**
- * {@link EventCapability} is the base class for handlers
- * subject to receive event notifications. This class registers to webhookservlet so
- * it can be notified when an event arrives.
+ * {@link EventCapability} is the base class for handlers subject to receive event notifications.
+ * This class registers to NetatmoServletService so it can be notified when an event arrives.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
 public class EventCapability extends Capability {
-    private Optional<NetatmoServlet> servlet = Optional.empty();
+    private Optional<WebhookServlet> webhook = Optional.empty();
 
     public EventCapability(CommonInterface handler) {
         super(handler);
@@ -39,13 +38,13 @@ public class EventCapability extends Capability {
     public void initialize() {
         ApiBridgeHandler accountHandler = handler.getAccountHandler();
         if (accountHandler != null) {
-            servlet = accountHandler.getServlet();
-            servlet.ifPresent(s -> s.registerDataListener(handler.getId(), this));
+            webhook = accountHandler.getWebHookServlet();
+            webhook.ifPresent(servlet -> servlet.registerDataListener(handler.getId(), this));
         }
     }
 
     @Override
     public void dispose() {
-        servlet.ifPresent(s -> s.unregisterDataListener(this));
+        webhook.ifPresent(servlet -> servlet.unregisterDataListener(handler.getId()));
     }
 }
