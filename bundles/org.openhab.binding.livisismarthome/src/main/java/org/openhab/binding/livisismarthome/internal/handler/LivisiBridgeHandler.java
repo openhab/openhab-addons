@@ -860,7 +860,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             refreshAccessToken();
         } else if (e instanceof ControllerOfflineException) {
             logger.debug("LIVISI SmartHome Controller is offline.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof AuthenticationException) {
             logger.debug("OAuthenticaton error, refreshing tokens: {}", e.getMessage());
             refreshAccessToken();
