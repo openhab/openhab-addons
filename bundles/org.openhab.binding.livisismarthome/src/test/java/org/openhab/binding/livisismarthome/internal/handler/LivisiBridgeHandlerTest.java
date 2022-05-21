@@ -93,7 +93,7 @@ public class LivisiBridgeHandlerTest {
         bridgeHandler.initialize();
 
         verify(webSocketMock).start();
-        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+        assertEquals(2, bridgeHandler.getDirectExecutionCount());
     }
 
     @Test
@@ -106,8 +106,8 @@ public class LivisiBridgeHandlerTest {
 
         bridgeHandler.initialize();
 
-        verify(webSocketMock, times(MAXIMUM_RETRY_EXECUTIONS)).start();
-        assertEquals(1, bridgeHandler.getDirectExecutionCount()); // only the first execution should be without a delay
+        verify(webSocketMock, times(MAXIMUM_RETRY_EXECUTIONS - 1)).start();
+        assertEquals(2, bridgeHandler.getDirectExecutionCount()); // only the first execution should be without a delay
     }
 
     @Test
@@ -119,17 +119,17 @@ public class LivisiBridgeHandlerTest {
         bridgeHandler.initialize();
 
         verify(webSocketMock).start();
-        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+        assertEquals(2, bridgeHandler.getDirectExecutionCount());
 
         bridgeHandler.connectionClosed();
 
         verify(webSocketMock, times(2)).start(); // automatically restarted (with a delay)
-        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+        assertEquals(2, bridgeHandler.getDirectExecutionCount());
 
         bridgeHandler.connectionClosed();
 
         verify(webSocketMock, times(3)).start(); // automatically restarted (with a delay)
-        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+        assertEquals(2, bridgeHandler.getDirectExecutionCount());
     }
 
     @Test
@@ -141,14 +141,15 @@ public class LivisiBridgeHandlerTest {
         bridgeHandler.initialize();
 
         verify(webSocketMock).start();
-        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+        assertEquals(2, bridgeHandler.getDirectExecutionCount());
 
         doThrow(new ConnectException("Connection refused")).when(webSocketMock).start();
 
         bridgeHandler.connectionClosed();
 
-        verify(webSocketMock, times(10)).start(); // automatic reconnect attempts (with a delay)
-        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+        verify(webSocketMock, times(MAXIMUM_RETRY_EXECUTIONS - 1)).start(); // automatic reconnect attempts (with a
+                                                                            // delay)
+        assertEquals(2, bridgeHandler.getDirectExecutionCount());
     }
 
     @Test
@@ -162,17 +163,17 @@ public class LivisiBridgeHandlerTest {
         bridgeHandler.initialize();
 
         verify(webSocketMock).start();
-        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+        assertEquals(2, bridgeHandler.getDirectExecutionCount());
 
         bridgeHandler.onEvent(disconnectEventJSON);
 
         verify(webSocketMock, times(2)).start(); // automatically restarted (with a delay)
-        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+        assertEquals(2, bridgeHandler.getDirectExecutionCount());
 
         bridgeHandler.onEvent(disconnectEventJSON);
 
         verify(webSocketMock, times(3)).start(); // automatically restarted (with a delay)
-        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+        assertEquals(2, bridgeHandler.getDirectExecutionCount());
     }
 
     @Test

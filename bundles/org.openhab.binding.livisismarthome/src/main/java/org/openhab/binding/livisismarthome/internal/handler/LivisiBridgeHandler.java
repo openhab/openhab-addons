@@ -166,16 +166,19 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         deviceStructMan = new DeviceStructureManager(createFullDeviceManager(clientNonNullable));
 
         oAuthServiceNonNullable.addAccessTokenRefreshListener(this);
-        try {
-            requestAccessToken();
 
-            scheduleRestartClient(false);
-        } catch (AuthenticationException | ApiException | IOException | OAuthException | OAuthResponseException e) {
-            logger.debug("Error fetching access tokens. Please check your credentials. Detail: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    translator.getText("binding.livisismarthome.error.connect",
-                            "Can't connect to LIVISI SmartHome service! Please check your credentials."));
-        }
+        getScheduler().schedule(() -> {
+            try {
+                requestAccessToken();
+
+                scheduleRestartClient(false);
+            } catch (AuthenticationException | ApiException | IOException | OAuthException | OAuthResponseException e) {
+                logger.debug("Error fetching access tokens. Please check your credentials. Detail: {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        translator.getText("binding.livisismarthome.error.connect",
+                                "Can't connect to LIVISI SmartHome service! Please check your credentials."));
+            }
+        }, 0, TimeUnit.SECONDS);
     }
 
     /**
