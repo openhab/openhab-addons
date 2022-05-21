@@ -41,12 +41,12 @@
 			<label>@text/config.period.label</label>
 			<description>@text/config.period.sum_rain.description</description>
 			<options>
-				<option value="30min">@text/config.period.30min</option>
-				<option value="1hour">@text/config.period.1hour</option>
-				<option value="3hours">@text/config.period.3hours</option>
-				<option value="1day">@text/config.period.1day</option>
-				<option value="1week">@text/config.period.1week</option>
-				<option value="1month">@text/config.period.1month</option>
+				<option value="30min">@text/config.period.option.30min</option>
+				<option value="1hour">@text/config.period.option.1hour</option>
+				<option value="3hours">@text/config.period.option.3hours</option>
+				<option value="1day">@text/config.period.option.1day</option>
+				<option value="1week">@text/config.period.option.1week</option>
+				<option value="1month">@text/config.period.option.1month</option>
 			</options>
 			<default>1week</default>
 		</parameter>
@@ -57,8 +57,8 @@
 			<label>@text/config.limit.label</label>
 			<description>@text/config.limit.description</description>
 			<options>
-				<option value="MIN">@text/config.limit.MIN</option>
-				<option value="MAX">@text/config.limit.MAX</option>
+				<option value="MIN">@text/config.limit.option.MIN</option>
+				<option value="MAX">@text/config.limit.option.MAX</option>
 			</options>
 			<default>MIN</default>
 		</parameter>
@@ -66,12 +66,12 @@
 			<label>@text/config.period.label</label>
 			<description>@text/config.period.measure.description</description>
 			<options>
-				<option value="30min">@text/config.period.30min</option>
-				<option value="1hour">@text/config.period.1hour</option>
-				<option value="3hours">@text/config.period.3hours</option>
-				<option value="1day">@text/config.period.1day</option>
-				<option value="1week">@text/config.period.1week</option>
-				<option value="1month">@text/config.period.1month</option>
+				<option value="30min">@text/config.period.option.30min</option>
+				<option value="1hour">@text/config.period.option.1hour</option>
+				<option value="3hours">@text/config.period.option.3hours</option>
+				<option value="1day">@text/config.period.option.1day</option>
+				<option value="1week">@text/config.period.option.1week</option>
+				<option value="1month">@text/config.period.option.1month</option>
 			</options>
 			<default>1week</default>
 		</parameter>
@@ -82,8 +82,8 @@
 			<label>@text/config.limit.label</label>
 			<description>@text/config.limit.description</description>
 			<options>
-				<option value="DATE_MIN">@text/config.limit.DATE_MIN</option>
-				<option value="DATE_MAX">@text/config.limit.DATE_MAX</option>
+				<option value="DATE_MIN">@text/config.limit.option.DATE_MIN</option>
+				<option value="DATE_MAX">@text/config.limit.option.DATE_MAX</option>
 			</options>
 			<default>DATE_MIN</default>
 		</parameter>
@@ -91,8 +91,8 @@
 			<label>@text/config.period.label</label>
 			<description>@text/config.period.timestamp.description</description>
 			<options>
-				<option value="1week">@text/config.period.1week</option>
-				<option value="1month">@text/config.period.1month</option>
+				<option value="1week">@text/config.period.option.1week</option>
+				<option value="1month">@text/config.period.option.1month</option>
 			</options>
 			<default>1week</default>
 		</parameter>
