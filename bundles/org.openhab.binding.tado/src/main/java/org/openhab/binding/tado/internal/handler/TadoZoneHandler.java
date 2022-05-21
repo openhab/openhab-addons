@@ -92,7 +92,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     private @Nullable TadoHvacChange pendingHvacChange;
 
     private boolean disposing = false;
-    private @Nullable Gson gson = null;
+    private @Nullable Gson gson;
 
     public TadoZoneHandler(Thing thing, TadoStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
@@ -168,65 +168,67 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             return;
         }
 
-        TadoHvacChange pendingHvacChange = this.pendingHvacChange;
-        if (pendingHvacChange == null) {
-            throw new IllegalStateException("Zone pendingHvacChange not initialized");
-        }
+        synchronized (this) {
+            TadoHvacChange pendingHvacChange = this.pendingHvacChange;
+            if (pendingHvacChange == null) {
+                throw new IllegalStateException("Zone pendingHvacChange not initialized");
+            }
 
-        switch (id) {
-            case TadoBindingConstants.CHANNEL_ZONE_HVAC_MODE:
-                pendingHvacChange.withHvacMode(((StringType) command).toFullString());
-                scheduleHvacChange();
-                break;
-            case TadoBindingConstants.CHANNEL_ZONE_TARGET_TEMPERATURE:
-                if (command instanceof QuantityType<?>) {
-                    @SuppressWarnings("unchecked")
-                    QuantityType<Temperature> state = (QuantityType<Temperature>) command;
-                    QuantityType<Temperature> stateInTargetUnit = getTemperatureUnit() == TemperatureUnit.FAHRENHEIT
-                            ? state.toUnit(ImperialUnits.FAHRENHEIT)
-                            : state.toUnit(SIUnits.CELSIUS);
+            switch (id) {
+                case TadoBindingConstants.CHANNEL_ZONE_HVAC_MODE:
+                    pendingHvacChange.withHvacMode(((StringType) command).toFullString());
+                    scheduleHvacChange();
+                    break;
+                case TadoBindingConstants.CHANNEL_ZONE_TARGET_TEMPERATURE:
+                    if (command instanceof QuantityType<?>) {
+                        @SuppressWarnings("unchecked")
+                        QuantityType<Temperature> state = (QuantityType<Temperature>) command;
+                        QuantityType<Temperature> stateInTargetUnit = getTemperatureUnit() == TemperatureUnit.FAHRENHEIT
+                                ? state.toUnit(ImperialUnits.FAHRENHEIT)
+                                : state.toUnit(SIUnits.CELSIUS);
 
-                    if (stateInTargetUnit != null) {
-                        pendingHvacChange.withTemperature(stateInTargetUnit.floatValue());
-                        scheduleHvacChange();
+                        if (stateInTargetUnit != null) {
+                            pendingHvacChange.withTemperature(stateInTargetUnit.floatValue());
+                            scheduleHvacChange();
+                        }
                     }
-                }
-                break;
-            case TadoBindingConstants.CHANNEL_ZONE_SWING:
-                pendingHvacChange.withSwing(((OnOffType) command) == OnOffType.ON);
-                scheduleHvacChange();
-                break;
-            case TadoBindingConstants.CHANNEL_ZONE_LIGHT:
-                pendingHvacChange.withLight(((OnOffType) command) == OnOffType.ON);
-                scheduleHvacChange();
-                break;
-            case TadoBindingConstants.CHANNEL_ZONE_FAN_SPEED:
-                pendingHvacChange.withFanSpeed(((StringType) command).toFullString());
-                scheduleHvacChange();
-                break;
-            case TadoBindingConstants.CHANNEL_ZONE_FAN_LEVEL:
-                String fanLevelString = ((StringType) command).toFullString();
-                pendingHvacChange.withFanLevel(FanLevel.valueOf(fanLevelString.toUpperCase()));
-                break;
-            case TadoBindingConstants.CHANNEL_ZONE_HORIZONTAL_SWING:
-                String horizontalSwingString = ((StringType) command).toFullString();
-                pendingHvacChange.withHorizontalSwing(HorizontalSwing.valueOf(horizontalSwingString.toUpperCase()));
-                scheduleHvacChange();
-                break;
-            case TadoBindingConstants.CHANNEL_ZONE_VERTICAL_SWING:
-                String verticalSwingString = ((StringType) command).toFullString();
-                pendingHvacChange.withVerticalSwing(VerticalSwing.valueOf(verticalSwingString.toUpperCase()));
-                scheduleHvacChange();
-                break;
-            case TadoBindingConstants.CHANNEL_ZONE_OPERATION_MODE:
-                String operationMode = ((StringType) command).toFullString();
-                pendingHvacChange.withOperationMode(OperationMode.valueOf(operationMode));
-                scheduleHvacChange();
-                break;
-            case TadoBindingConstants.CHANNEL_ZONE_TIMER_DURATION:
-                pendingHvacChange.activeForMinutes(((DecimalType) command).intValue());
-                scheduleHvacChange();
-                break;
+                    break;
+                case TadoBindingConstants.CHANNEL_ZONE_SWING:
+                    pendingHvacChange.withSwing(((OnOffType) command) == OnOffType.ON);
+                    scheduleHvacChange();
+                    break;
+                case TadoBindingConstants.CHANNEL_ZONE_LIGHT:
+                    pendingHvacChange.withLight(((OnOffType) command) == OnOffType.ON);
+                    scheduleHvacChange();
+                    break;
+                case TadoBindingConstants.CHANNEL_ZONE_FAN_SPEED:
+                    pendingHvacChange.withFanSpeed(((StringType) command).toFullString());
+                    scheduleHvacChange();
+                    break;
+                case TadoBindingConstants.CHANNEL_ZONE_FAN_LEVEL:
+                    String fanLevelString = ((StringType) command).toFullString();
+                    pendingHvacChange.withFanLevel(FanLevel.valueOf(fanLevelString.toUpperCase()));
+                    break;
+                case TadoBindingConstants.CHANNEL_ZONE_HORIZONTAL_SWING:
+                    String horizontalSwingString = ((StringType) command).toFullString();
+                    pendingHvacChange.withHorizontalSwing(HorizontalSwing.valueOf(horizontalSwingString.toUpperCase()));
+                    scheduleHvacChange();
+                    break;
+                case TadoBindingConstants.CHANNEL_ZONE_VERTICAL_SWING:
+                    String verticalSwingString = ((StringType) command).toFullString();
+                    pendingHvacChange.withVerticalSwing(VerticalSwing.valueOf(verticalSwingString.toUpperCase()));
+                    scheduleHvacChange();
+                    break;
+                case TadoBindingConstants.CHANNEL_ZONE_OPERATION_MODE:
+                    String operationMode = ((StringType) command).toFullString();
+                    pendingHvacChange.withOperationMode(OperationMode.valueOf(operationMode));
+                    scheduleHvacChange();
+                    break;
+                case TadoBindingConstants.CHANNEL_ZONE_TIMER_DURATION:
+                    pendingHvacChange.activeForMinutes(((DecimalType) command).intValue());
+                    scheduleHvacChange();
+                    break;
+            }
         }
     }
 
@@ -402,7 +404,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     private void scheduleZoneStateUpdate() {
         ScheduledFuture<?> refreshTimer = this.refreshTimer;
         if (refreshTimer == null || refreshTimer.isCancelled()) {
-            refreshTimer = scheduler.scheduleWithFixedDelay(new Runnable() {
+            this.refreshTimer = scheduler.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
                     updateZoneState(false);
@@ -423,14 +425,15 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         if (scheduledHvacChange != null) {
             scheduledHvacChange.cancel(false);
         }
-
-        scheduledHvacChange = scheduler.schedule(() -> {
+        this.scheduledHvacChange = scheduler.schedule(() -> {
             try {
-                TadoHvacChange pendingHvacChange = this.pendingHvacChange;
-                if (pendingHvacChange != null) {
-                    pendingHvacChange.apply();
+                synchronized (this) {
+                    TadoHvacChange pendingHvacChange = this.pendingHvacChange;
+                    this.pendingHvacChange = new TadoHvacChange(getThing());
+                    if (pendingHvacChange != null) {
+                        pendingHvacChange.apply();
+                    }
                 }
-                this.pendingHvacChange = new TadoHvacChange(getThing());
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (ApiException e) {

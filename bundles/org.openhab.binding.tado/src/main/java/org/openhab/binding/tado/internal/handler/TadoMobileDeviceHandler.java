@@ -140,7 +140,7 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
     private void scheduleZoneStateUpdate() {
         ScheduledFuture<?> refreshTimer = this.refreshTimer;
         if (refreshTimer == null || refreshTimer.isCancelled()) {
-            refreshTimer = scheduler.scheduleWithFixedDelay(this::updateState, 5, configuration.refreshInterval,
+            this.refreshTimer = scheduler.scheduleWithFixedDelay(this::updateState, 5, configuration.refreshInterval,
                     TimeUnit.SECONDS);
         }
     }
