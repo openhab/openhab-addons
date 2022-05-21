@@ -156,18 +156,6 @@ public class ShellyDeviceProfile {
             numMeters = inColor ? 1 : getInteger(settings.device.numOutputs);
         }
 
-        if (settings.sleepMode != null && !isTRV) {
-            // Sensor, usually 12h, H&T in USB mode 10min
-            updatePeriod = getString(settings.sleepMode.unit).equalsIgnoreCase("m") ? settings.sleepMode.period * 60 // minutes
-                    : settings.sleepMode.period * 3600; // hours
-            updatePeriod += 60; // give 1min extra
-        } else if ((settings.coiot != null) && settings.coiot.updatePeriod != null && !isTRV) {
-            // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
-            updatePeriod = Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS, 2 * getInteger(settings.coiot.updatePeriod)) + 10;
-        } else {
-            updatePeriod = UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
-        }
-
         initialized = true;
         return this;
     }

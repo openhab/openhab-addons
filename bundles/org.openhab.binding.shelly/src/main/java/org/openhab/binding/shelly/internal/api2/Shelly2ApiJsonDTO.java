@@ -139,6 +139,11 @@ public class Shelly2ApiJsonDTO {
                 public String server;
             }
 
+            public class Shelly2DeviceConfigSleep {
+                @SerializedName("wakeup_period")
+                public Integer wakeupPeriod;
+            }
+
             public class Shelly2DeviceConfigDebug {
                 public class Shelly2DeviceConfigDebugMqtt {
                     public Boolean enable;
@@ -173,6 +178,7 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceConfigDevice device;
             public Shelly2DeviceConfigLocation location;
             public Shelly2DeviceConfigSntp sntp;
+            public Shelly2DeviceConfigSleep sleep;
             public Shelly2DeviceConfigDebug debug;
             @SerializedName("ui_data")
             public Shelly2DeviceConfigUiData uiData;

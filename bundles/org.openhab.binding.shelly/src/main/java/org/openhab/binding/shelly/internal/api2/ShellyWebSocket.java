@@ -206,7 +206,7 @@ public class ShellyWebSocket {
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
         if (statusCode != StatusCode.NORMAL) {
-            logger.debug("WebSocket Connection closed: {} - {}", statusCode, reason);
+            logger.debug("WebSocket Connection closed: {} - {}", statusCode, getString(reason));
         }
         if (inbound) {
             // Ignore disconnect: Device establishes the socket, sends NotifyxFullStatus and disconnects
