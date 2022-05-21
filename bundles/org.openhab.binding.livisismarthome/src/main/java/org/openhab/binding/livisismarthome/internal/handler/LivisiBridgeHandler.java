@@ -150,6 +150,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     public void initialize() {
         logger.debug("Initializing LIVISI SmartHome BridgeHandler...");
         this.bridgeConfiguration = getConfigAs(LivisiBridgeConfiguration.class);
+        updateStatus(ThingStatus.UNKNOWN);
         initializeClient();
     }
 
