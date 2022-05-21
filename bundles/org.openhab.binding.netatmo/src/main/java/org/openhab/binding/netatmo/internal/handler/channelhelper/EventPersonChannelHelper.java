@@ -31,7 +31,6 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class EventPersonChannelHelper extends EventChannelHelper {
-    public static final Set<EventType> AT_HOME_MARKERS = Set.of(EventType.PERSON, EventType.PERSON_HOME);
 
     public EventPersonChannelHelper() {
         super(GROUP_PERSON_LAST_EVENT);
@@ -41,7 +40,7 @@ public class EventPersonChannelHelper extends EventChannelHelper {
     protected @Nullable State internalGetEvent(String channelId, Event event) {
         EventType eventType = event.getEventType();
         return eventType.validFor(moduleType) && CHANNEL_PERSON_AT_HOME.equals(channelId)
-                ? OnOffType.from(AT_HOME_MARKERS.contains(eventType))
+                ? OnOffType.from(Set.of(EventType.PERSON, EventType.PERSON_HOME).contains(eventType))
                 : super.internalGetEvent(channelId, event);
     }
 }

@@ -133,6 +133,7 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_EVENT_TIME = "time";
     public static final String CHANNEL_EVENT_SNAPSHOT = "snapshot";
     public static final String CHANNEL_EVENT_SNAPSHOT_URL = "snapshot-url";
+    public static final String CHANNEL_EVENT_VIGNETTE = "vignette";
     public static final String CHANNEL_EVENT_VIGNETTE_URL = "vignette-url";
     public static final String CHANNEL_EVENT_VIDEO_VPN_URL = "vpn-video-url";
     public static final String CHANNEL_EVENT_VIDEO_LOCAL_URL = "local-video-url";

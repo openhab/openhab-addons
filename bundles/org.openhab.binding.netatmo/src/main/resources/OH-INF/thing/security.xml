@@ -91,7 +91,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="sub-event-doorbell">
-		<label>Sub Event Informations</label>
+		<label>Sub Event</label>
 		<channels>
 			<channel id="type" typeId="event-type"/>
 			<channel id="time" typeId="timestamp">
@@ -99,8 +99,16 @@
 				<description>Moment when then sub-event occurred.</description>
 			</channel>
 			<channel id="message" typeId="message"/>
+			<channel id="snapshot" typeId="event-picture"/>
 			<channel id="snapshot-url" typeId="event-picture-url"/>
-			<channel id="vignette-url" typeId="event-picture-url"/>
+			<channel id="vignette" typeId="event-picture">
+				<label>Vignette</label>
+				<description>Vignette of the Snapshot.</description>
+			</channel>
+			<channel id="vignette-url" typeId="event-picture-url">
+				<label>Vignette URL</label>
+				<description>URL of the vignette.</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 

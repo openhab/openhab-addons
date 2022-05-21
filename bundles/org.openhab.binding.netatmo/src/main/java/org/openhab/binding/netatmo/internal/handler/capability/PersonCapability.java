@@ -51,7 +51,7 @@ public class PersonCapability extends HomeSecurityThingCapability {
     public PersonCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider,
             List<ChannelHelper> channelHelpers) {
         super(handler, descriptionProvider, channelHelpers);
-        this.cameraChannelUID = new ChannelUID(thing.getUID(), GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID);
+        this.cameraChannelUID = new ChannelUID(thing.getUID(), GROUP_PERSON_LAST_EVENT, CHANNEL_EVENT_CAMERA_ID);
     }
 
     @Override

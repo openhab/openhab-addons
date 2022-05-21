@@ -13,7 +13,7 @@
 package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,8 +44,12 @@ public class EventDoorbellChannelHelper extends EventChannelHelper {
                     return new DateTimeType(event.getTime());
                 case CHANNEL_EVENT_MESSAGE:
                     return toStringType(event.getName());
+                case CHANNEL_EVENT_SNAPSHOT:
+                    return toRawType(event.getSnapshotUrl());
                 case CHANNEL_EVENT_SNAPSHOT_URL:
                     return toStringType(event.getSnapshotUrl());
+                case CHANNEL_EVENT_VIGNETTE:
+                    return toRawType(event.getVignetteUrl());
                 case CHANNEL_EVENT_VIGNETTE_URL:
                     return toStringType(event.getVignetteUrl());
             }

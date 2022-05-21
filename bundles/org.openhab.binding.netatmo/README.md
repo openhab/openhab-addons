@@ -439,7 +439,7 @@ All these channels are read only.
 |                  | TAG_UNINSTALLED        | Triggered when a tag gets uninstalled                                                                                                                                            |  
 |                  | TAG_OPEN               | Triggered when an open event of a tag was detected                                                                                                                               |
 
-### Welcome and Presence Camera
+### Welcome, Presence and Doorbell Cameras
 
 Warnings:
 
@@ -503,6 +503,33 @@ Warnings:
 | last-event     | person-id            | String       | Read-only  | Id of the person the event is about (if any)                                                                                                |
 
 (*) This channel is configurable : low, poor, high.
+
+**Supported channels for the Welcome Doorbell thing:**
+
+| Channel Group | Channel ID        | Item Type    | Read/Write | Description                                                                                                                                 |
+|---------------|-------------------|--------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| status        | sd-card           | String       | Read-only  | State of the SD card                                                                                                                        |
+| status        | alim              | String       | Read-only  | State of the power connector                                                                                                                |
+| live          | picture           | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
+| live          | local-picture-url | String       | Read-only  | Local Url of the live snapshot for this camera                                                                                              |
+| live          | vpn-picture-url   | String       | Read-only  | Url of the live snapshot for this camera through Netatmo VPN.                                                                               |
+| signal        | strength          | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
+| signal        | value             | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
+| last-event    | type              | String       | Read-only  | Type of event                                                                                                                               |
+| last-event    | video-status      | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                       |
+| last-event    | time              | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
+| last-event    | local-video-url   | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding local video URL will be available here |
+| last-event    | vpn-video-url     | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding VPN video URL will be available here   |
+| sub-event     | type              | String       | Read-only  | Type of sub-event                                                                                                                           |
+| sub-event     | time              | DateTime     | Read-only  | Time of occurrence of sub-event                                                                                                             |
+| sub-event     | message           | String       | Read-only  | Message sent by Netatmo corresponding to given sub-event                                                                                    |
+| sub-event     | snapshot-url      | String       | Read-only  | Depending upon event type in the home, a snapshot picture of the corresponding local video URL will be available here                       |
+| sub-event     | vignette-url      | String       | Read-only  | A vignette representing the snapshot                                                                                                        |
+| sub-event     | snapshot          | Image        | Read-only  | picture of the snapshot                                                                                                                     |
+| sub-event     | vignet            | Image        | Read-only  | picture of the vignette                                                                                                                     |
+
+
+Note : live feeds either locally or via VPN are not available in Netatmo API.
 
 
 ### Welcome Person
