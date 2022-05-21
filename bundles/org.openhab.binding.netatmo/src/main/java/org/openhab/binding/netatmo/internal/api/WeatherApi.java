@@ -83,6 +83,9 @@ public class WeatherApi extends RestManager {
     /**
      * Returns data from a Weather Station owned by the user
      *
+     * This method must be preferred to getStationData when you know that the device is a station owned by the user
+     * (because it avoids requesting additional data for favorite/guest stations).
+     *
      * @param deviceId Id of the device you want to retrieve information
      * @return NAMain
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
