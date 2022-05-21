@@ -37,7 +37,7 @@
 	<!-- BooleanSwitch Channel -->
 	<channel-type id="BooleanStateActuator">
 		<item-type>Switch</item-type>
-		<label>Switch</label>
+		<label>State</label>
 		<description>Switches the state on/off</description>
 		<category>Switch</category>
 	</channel-type>
