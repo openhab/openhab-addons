@@ -11,9 +11,14 @@
 			train things.</description>
 
 		<config-description>
-			<parameter name="accessToken" type="text" required="true">
-				<label>Access Token</label>
-				<description>Access Token from Deutsche Bahn developer portal for accessing the webservice api.</description>
+			<parameter name="clientId" type="text" required="true">
+				<label>Client Id</label>
+				<description>Client ID from Application within DB API Marketplace for accessing the timetables webservice api.</description>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="true">
+				<label>Client Secret (API Key)</label>
+				<description>Client Secret (API Key) from Application within DB API Marketplace for accessing the timetables
+					webservice api.</description>
 			</parameter>
 			<parameter name="evaNo" type="text" required="true" pattern="80\d{5,5}">
 				<label>EvaNo of Station</label>
@@ -24,7 +29,7 @@
 				<advanced>true</advanced>
 				<default>departures</default>
 				<label>Train Filter</label>
-				<description>Selects the trains that will be be displayed in this timetable. If not set only departures will be
+				<description>Selects the trains that will be displayed in this timetable. If not set only departures will be
 					provided.</description>
 				<options>
 					<option value="all">All</option>

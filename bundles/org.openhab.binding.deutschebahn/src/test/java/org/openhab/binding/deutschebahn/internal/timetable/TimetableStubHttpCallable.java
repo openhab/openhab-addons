@@ -39,11 +39,11 @@ import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1Impl.Http
 public class TimetableStubHttpCallable implements HttpCallable {
 
     private static final Pattern PLAN_URL_PATTERN = Pattern
-            .compile("https://api.deutschebahn.com/timetables/v1/plan/(\\d+)/(\\d+)/(\\d+)");
+            .compile("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/(\\d+)/(\\d+)/(\\d+)");
     private static final Pattern FULL_CHANGES_URL_PATTERN = Pattern
-            .compile("https://api.deutschebahn.com/timetables/v1/fchg/(\\d+)");
+            .compile("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/fchg/(\\d+)");
     private static final Pattern RECENT_CHANGES_URL_PATTERN = Pattern
-            .compile("https://api.deutschebahn.com/timetables/v1/rchg/(\\d+)");
+            .compile("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/rchg/(\\d+)");
 
     private final File testdataDir;
     private final List<String> requestedPlanUrls;
