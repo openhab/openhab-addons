@@ -5,39 +5,46 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="voice:rustpotterks">
-		<parameter name="threshold" type="decimal" min="0" max="1">
+		<parameter-group name="wakewordDetector">
+			<label>Wakeword Detector</label>
+			<description>Wakeword detection options.</description>
+		</parameter-group>
+		<parameter-group name="vadDetector">
+			<label>VAD Detector</label>
+			<description>Optional voice activity detector options.</description>
+		</parameter-group>
+		<parameter name="threshold" type="decimal" min="0" max="1" groupName="wakewordDetector">
 			<label>Threshold</label>
-			<description></description>
+			<description>Configures the detector threshold, is the min score (in range 0. to 1.) that some of the wakeword
+				templates should obtain to trigger a detection. Model defined value takes prevalence if present.</description>
 			<default>0.5</default>
 		</parameter>
-		<parameter name="averagedThreshold" type="decimal" min="0" max="1">
+		<parameter name="averagedThreshold" type="decimal" min="0" max="1" groupName="wakewordDetector">
 			<label>Averaged Threshold</label>
-			<description></description>
+			<description>Configures the detector averaged threshold, is the min score (in range 0. to 1.) that the averaged
+				wakeword template should obtain to allow to continue with the detection. This way it can prevent to run the
+				comparison of the current frame against each of the wakeword templates. If set to 0 this functionality is disabled.</description>
 			<default>0.</default>
 		</parameter>
-		<parameter name="comparatorRef" type="decimal" min="0" max="1">
+		<parameter name="comparatorRef" type="decimal" min="0" max="1" groupName="wakewordDetector">
 			<label>Comparator Ref</label>
-			<description></description>
+			<description>Configures the reference for the comparator used to match the samples</description>
 			<default>0.22</default>
 		</parameter>
-		<parameter name="comparatorBandSize" type="integer">
+		<parameter name="comparatorBandSize" type="integer" groupName="wakewordDetector">
 			<label>Comparator Band Size</label>
-			<description></description>
+			<description>Configures the band-size for the comparator used to match the samples.</description>
 			<default>6</default>
 		</parameter>
-		<parameter name="vadSensitivity" type="decimal" min="0" max="1">
-			<label>VAD Sensitivity</label>
-			<description></description>
-			<default>0.5</default>
+		<parameter name="eagerMode" type="boolean" groupName="wakewordDetector">
+			<label>Eager Mode</label>
+			<description>Enables eager mode. Terminates the detection as son as one result is above the score, instead of wait to
+				see if the next frame has a higher score.</description>
+			<default>true</default>
 		</parameter>
-		<parameter name="vadDelay" type="integer">
-			<label>VAD Delay</label>
-			<description></description>
-			<default>3</default>
-		</parameter>
-		<parameter name="vadMode" type="text">
+		<parameter name="vadMode" type="text" groupName="vadDetector">
 			<label>VAD Mode</label>
-			<description></description>
+			<description>Use a vad detector to reduce computation on absence of voice sound.</description>
 			<default>quality</default>
 			<options>
 				<option value="disabled">Disabled</option>
@@ -47,12 +54,15 @@
 				<option value="very-aggressive">Very Aggressive</option>
 			</options>
 		</parameter>
-		<parameter name="eagerMode" type="boolean">
-			<label>Eager Mode</label>
-			<description></description>
-			<default>true</default>
+		<parameter name="vadSensitivity" type="decimal" min="0" max="1" groupName="vadDetector">
+			<label>VAD Sensitivity</label>
+			<description>Voice/silence ratio in the last second to consider voice detected.</description>
+			<default>0.5</default>
 		</parameter>
-
+		<parameter name="vadDelay" type="integer" groupName="vadDetector">
+			<label>VAD Delay</label>
+			<description>Seconds to disable the vad detector after voice is detected.</description>
+			<default>3</default>
+		</parameter>
 	</config-description>
-
 </config-description:config-descriptions>
