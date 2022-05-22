@@ -39,26 +39,26 @@ public class LivisiBindingConstants {
 
     // properties
     public static final String PROPERTY_ID = "id";
-    public static final String PROPERTY_VERSION = "Version";
-    public static final String PROPERTY_LOCATION = "Location";
-    public static final String PROPERTY_GEOLOCATION = "Geo Location";
-    public static final String PROPERTY_SOFTWARE_VERSION = "Software version";
-    public static final String PROPERTY_IP_ADDRESS = "IP address";
-    public static final String PROPERTY_REGISTRATION_TIME = "Registration Time";
-    public static final String PROPERTY_TIME_OF_ACCEPTANCE = "Time of acceptance";
-    public static final String PROPERTY_TIME_OF_DISCOVERY = "Time of discovery";
-    public static final String PROPERTY_BATTERY_POWERED = "Battery powered";
-    public static final String PROPERTY_DEVICE_TYPE = "Device Type";
-    public static final String PROPERTY_CONFIGURATION_STATE = "Configuration state";
-    public static final String PROPERTY_SHC_TYPE = "Controller Type";
-    public static final String PROPERTY_TIME_ZONE = "Time Zone";
-    public static final String PROPERTY_CURRENT_UTC_OFFSET = "Current UTC offset (minutes)";
-    public static final String PROPERTY_PROTOCOL_ID = "Protocol ID";
-    public static final String PROPERTY_BACKEND_CONNECTION_MONITORED = "Backend connection monitored";
-    public static final String PROPERTY_RFCOM_FAILURE_NOTIFICATION = "RFComm failure notification";
-    public static final String PROPERTY_DISPLAY_CURRENT_TEMPERATURE = "Display current temperature";
-    public static final String PROPERTY_METER_ID = "Meter ID";
-    public static final String PROPERTY_METER_FIRMWARE_VERSION = "Meter firmware version";
+    public static final String PROPERTY_VERSION = "version";
+    public static final String PROPERTY_LOCATION = "location";
+    public static final String PROPERTY_GEOLOCATION = "geoLocation";
+    public static final String PROPERTY_SOFTWARE_VERSION = "softwareVersion";
+    public static final String PROPERTY_IP_ADDRESS = "ipAddress";
+    public static final String PROPERTY_REGISTRATION_TIME = "registrationTime";
+    public static final String PROPERTY_TIME_OF_ACCEPTANCE = "timeOfAcceptance";
+    public static final String PROPERTY_TIME_OF_DISCOVERY = "timeOfDiscovery";
+    public static final String PROPERTY_BATTERY_POWERED = "batteryPowered";
+    public static final String PROPERTY_DEVICE_TYPE = "deviceType";
+    public static final String PROPERTY_CONFIGURATION_STATE = "configurationState";
+    public static final String PROPERTY_SHC_TYPE = "controllerType";
+    public static final String PROPERTY_TIME_ZONE = "timeZone";
+    public static final String PROPERTY_CURRENT_UTC_OFFSET = "currentUtcOffsetInMinutes";
+    public static final String PROPERTY_PROTOCOL_ID = "protocolId";
+    public static final String PROPERTY_BACKEND_CONNECTION_MONITORED = "backendConnectionMonitored";
+    public static final String PROPERTY_RFCOM_FAILURE_NOTIFICATION = "rfcomFailureNotification";
+    public static final String PROPERTY_DISPLAY_CURRENT_TEMPERATURE = "displayCurrentTemperature";
+    public static final String PROPERTY_METER_ID = "meterId";
+    public static final String PROPERTY_METER_FIRMWARE_VERSION = "meterFirmwareVersion";
 
     // List of main device types
     public static final String DEVICE_SHC = "SHC"; // smarthome controller - the bridge
