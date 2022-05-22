@@ -183,7 +183,7 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
         }
 
         List<ACVerticalSwing> verticalSwings = targetCapabilities.getVerticalSwing();
-        if (verticalSwings != null && !verticalSwings.isEmpty() && newSetting.getHorizontalSwing() == null) {
+        if (verticalSwings != null && !verticalSwings.isEmpty() && newSetting.getVerticalSwing() == null) {
             newSetting.setVerticalSwing(getCurrentOrDefaultVerticalSwing(zoneStateProvider, verticalSwings));
         }
 
