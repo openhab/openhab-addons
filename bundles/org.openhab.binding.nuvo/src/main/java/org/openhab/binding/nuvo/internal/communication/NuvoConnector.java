@@ -41,11 +41,12 @@ public abstract class NuvoConnector {
     private static final String BEGIN_CMD = "*";
     private static final String END_CMD = "\r";
     private static final String QUERY = "?";
-    private static final String VER_STR = "#VER\"NV-";
+    private static final String VER_STR_E6 = "#VER\"NV-E6G";
+    private static final String VER_STR_GC = "#VER\"NV-I8G";
     private static final String ALL_OFF = "#ALLOFF";
     private static final String MUTE = "#MUTE";
     private static final String PAGE = "#PAGE";
-    private static final String RESTART = "#RESTART";
+    private static final String RESTART = "#RESTART\"NuVoNet\"";
     private static final String PING = "#PING";
     private static final String PING_RESPONSE = "PING";
 
@@ -335,7 +336,7 @@ public abstract class NuvoConnector {
             return;
         }
 
-        if (message.contains(VER_STR)) {
+        if (message.contains(VER_STR_E6) || message.contains(VER_STR_GC)) {
             // example: #VER"NV-E6G FWv2.66 HWv0"
             // split on " and return the version number
             dispatchKeyValue(TYPE_VERSION, "", message.split("\"")[1]);
