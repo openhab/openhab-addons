@@ -34,6 +34,7 @@ interval (minutes) in which live data values are retrieved from the Easee Cloud 
 
 The binding only supports a subset of the available endpoints that is provided by the Easee Cloud API.
 The table below shows all channels that are available and which of them are writable.
+The setting that start with "dynamic" can be changed frequently, the other are written to flash and thus should not be changed too often as this could result in damage of your flash.
 
 | Channel Type ID                             | Item Type                | Writable | Description                                | Allowed Values (write access)                                                                                                                                |
 |---------------------------------------------|--------------------------|----------|--------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -42,6 +43,9 @@ The table below shows all channels that are available and which of them are writ
 | charger_state#chargerOpMode                 | Number                   | no       |                                            |                                                                                                                                                              |
 | charger_state#totalPower                    | Number:Power             | no       |                                            |                                                                                                                                                              |
 | charger_state#sessionEnergy                 | Number:Energy            | no       |                                            |                                                                                                                                                              |
+| charger_state#dynamicCircuitCurrentP1       | Number:ElectricCurrent   | no       |                                            |                                                                                                                                                              |
+| charger_state#dynamicCircuitCurrentP2       | Number:ElectricCurrent   | no       |                                            |                                                                                                                                                              |
+| charger_state#dynamicCircuitCurrentP3       | Number:ElectricCurrent   | no       |                                            |                                                                                                                                                              |
 | charger_state#latestPulse                   | DateTime                 | no       |                                            |                                                                                                                                                              |
 | charger_state#chargerFirmware               | Number                   | no       |                                            |                                                                                                                                                              |
 | charger_state#latestFirmware                | Number                   | no       |                                            |                                                                                                                                                              |
@@ -54,13 +58,13 @@ The table below shows all channels that are available and which of them are writ
 | charger_state#errorCode                     | Number                   | no       |                                            |                                                                                                                                                              |
 | charger_state#fatalErrorCode                | Number                   | no       |                                            |                                                                                                                                                              |
 | charger_config#lockCablePermanently         | Switch                   | yes      |                                            | true/false                                                                                                                                                   |
-| charger_config#lockCablePermanently         | Switch                   | yes      |                                            | true/false                                                                                                                                                   |
+| charger_config#authorizationRequired        | Switch                   | yes      |                                            | true/false                                                                                                                                                   |
 | charger_config#limitToSinglePhaseCharging   | Switch                   | yes      |                                            | true/false                                                                                                                                                   |
 | charger_config#phaseMode                    | Number                   | yes      | 1=1phase, 2=auto, 3=3phase                 | 1-3                                                                                                                                                          |
-| charger_config#maxChargerCurrent            | Number:ElectricCurrent   | no*      |                                            |                                                                                                                                                              |
+| charger_config#maxChargerCurrent            | Number:ElectricCurrent   | no       | write access not yet implemented           |                                                                                                                                                              |
 | charger_commands#genericCommand             | String                   | yes      | Generic Endpoint to send commands          | reboot, update_firmware, poll_all, smart_charging, start_charging, stop_charging, pause_charging, resume_charging, toggle_charging, override_schedule        |
 
-*write access not yet implemented
+
 
 
 ## Full Example

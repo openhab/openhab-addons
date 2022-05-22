@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.easee.internal.command;
 
+import static org.openhab.binding.easee.internal.EaseeBindingConstants.CHANNEL_GROUP_NONE;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,7 +105,7 @@ public abstract class AbstractWriteCommand extends AbstractCommand implements Ea
     @Override
     protected String getChannelGroup() {
         // this is a pure write command, thus no channel group needed.
-        return "";
+        return CHANNEL_GROUP_NONE;
     }
 
     /**

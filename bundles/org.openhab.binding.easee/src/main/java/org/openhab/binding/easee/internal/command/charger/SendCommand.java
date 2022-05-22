@@ -24,7 +24,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.types.Command;
 
 /**
- * implements the state api call of the charger.
+ * implements the command api call of the charger.
  *
  * @author Alexander Friese - initial contribution
  */

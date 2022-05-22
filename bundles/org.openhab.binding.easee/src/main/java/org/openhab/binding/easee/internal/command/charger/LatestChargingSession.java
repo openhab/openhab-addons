@@ -23,7 +23,7 @@ import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.handler.EaseeHandler;
 
 /**
- * implements the state api call of the charger.
+ * implements the latest charging session api call of the charger.
  *
  * @author Alexander Friese - initial contribution
  */
