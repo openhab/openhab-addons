@@ -336,7 +336,7 @@
 				<option value="SD">SD card status changed</option>
 				<option value="ALIM">Power status changed</option>
 				<option value="ACCEPTED_CALL">Call is incoming</option>
-				<option value="INCOMING_CALL">Call as been answered by a user</option>
+				<option value="INCOMING_CALL">Call has been answered by a user</option>
 				<option value="MISSED_CALL">Call has not been answered by anyone</option>
 			</options>
 		</state>

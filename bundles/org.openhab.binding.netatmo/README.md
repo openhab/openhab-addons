@@ -529,7 +529,7 @@ Warnings:
 | sub-event     | vignet            | Image        | Read-only  | picture of the vignette                                                                                                                     |
 
 
-Note : live feeds either locally or via VPN are not available in Netatmo API.
+Note: live feeds either locally or via VPN are not available in Netatmo API.
 
 
 ### Welcome Person
