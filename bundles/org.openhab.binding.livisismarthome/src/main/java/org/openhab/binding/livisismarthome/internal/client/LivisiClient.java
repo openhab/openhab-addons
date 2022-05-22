@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -199,7 +198,7 @@ public class LivisiClient {
     }
 
     /**
-     * Handles errors from the {@link ContentResponse} and throws the following errors:
+     * Handles errors from the {@link org.eclipse.jetty.client.api.ContentResponse} and throws the following errors:
      *
      * @param connection connection
      * @param responseContent response content

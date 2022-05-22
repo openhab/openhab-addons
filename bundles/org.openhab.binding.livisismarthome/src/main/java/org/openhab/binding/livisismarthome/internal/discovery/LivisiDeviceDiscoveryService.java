@@ -77,8 +77,9 @@ public class LivisiDeviceDiscoveryService extends AbstractDiscoveryService
     @Override
     protected void startScan() {
         logger.debug("SCAN for new LIVISI SmartHome devices started...");
-        if (bridgeHandler != null) {
-            for (final DeviceDTO d : bridgeHandler.loadDevices()) {
+        final LivisiBridgeHandler bridgeHandlerNonNullable = bridgeHandler;
+        if (bridgeHandlerNonNullable != null) {
+            for (final DeviceDTO d : bridgeHandlerNonNullable.loadDevices()) {
                 onDeviceAdded(d);
             }
         }
@@ -91,8 +92,9 @@ public class LivisiDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     public void onDeviceAdded(DeviceDTO device) {
-        if (bridgeHandler != null) {
-            final ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        final LivisiBridgeHandler bridgeHandlerNonNullable = bridgeHandler;
+        if (bridgeHandlerNonNullable != null) {
+            final ThingUID bridgeUID = bridgeHandlerNonNullable.getThing().getUID();
             final Optional<ThingUID> thingUID = getThingUID(bridgeUID, device);
             final Optional<ThingTypeUID> thingTypeUID = getThingTypeUID(device);
 

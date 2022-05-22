@@ -22,22 +22,6 @@ public class PropertyDTO {
     private String name;
     private Object value;
 
-    @SuppressWarnings("unused")
-    public PropertyDTO() {
-        // used for serialization
-    }
-
-    /**
-     * Constructs a new {@link PropertyDTO} with the given name and value.
-     *
-     * @param name name
-     * @param value value
-     */
-    public PropertyDTO(String name, Object value) {
-        this.name = name;
-        this.value = value;
-    }
-
     /**
      * @return the name
      */
