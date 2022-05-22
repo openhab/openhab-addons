@@ -14,8 +14,8 @@
 			battery version since 2018)</description>
 
 		<channels>
-			<channel id="setTemperature" typeId="ThermostatActuator_PointTemperature"/>
-			<channel id="temperature" typeId="TemperatureSensor_Temperature"/>
+			<channel id="targetTemperature" typeId="ThermostatActuator_PointTemperature"/>
+			<channel id="currentTemperature" typeId="TemperatureSensor_Temperature"/>
 			<channel id="frostWarning" typeId="TemperatureSensor_FrostWarning"/>
 			<channel id="humidity" typeId="HumiditySensor_Humidity"/>
 			<channel id="moldWarning" typeId="HumiditySensor_MoldWarning"/>

@@ -138,8 +138,8 @@ public class LivisiBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";
-    public static final String CHANNEL_SET_TEMPERATURE = "setTemperature";
-    public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_TARGET_TEMPERATURE = "targetTemperature";
+    public static final String CHANNEL_CURRENT_TEMPERATURE = "currentTemperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_CONTACT = "contact";
     public static final String CHANNEL_SMOKE = "smoke";

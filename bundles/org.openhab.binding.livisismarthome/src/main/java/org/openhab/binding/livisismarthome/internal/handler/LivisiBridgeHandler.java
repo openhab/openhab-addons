@@ -259,7 +259,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 webSocketUrl.substring(webSocketUrl.length() - 10));
 
         return new LivisiWebSocket(httpClient, this, URI.create(webSocketUrl),
-                bridgeConfiguration.websocketidletimeout * 1000);
+                bridgeConfiguration.webSocketIdleTimeout * 1000);
     }
 
     @Override

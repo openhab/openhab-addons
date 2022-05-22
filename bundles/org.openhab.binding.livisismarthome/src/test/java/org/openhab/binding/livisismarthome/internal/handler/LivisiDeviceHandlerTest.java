@@ -222,7 +222,7 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertTrue(isChannelUpdated(CHANNEL_TEMPERATURE, QuantityType.valueOf(21.5, SIUnits.CELSIUS)));
+        assertTrue(isChannelUpdated(CHANNEL_CURRENT_TEMPERATURE, QuantityType.valueOf(21.5, SIUnits.CELSIUS)));
         assertTrue(isChannelUpdated(CHANNEL_FROST_WARNING, OnOffType.ON));
     }
 
@@ -237,7 +237,7 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertTrue(isChannelUpdated(CHANNEL_TEMPERATURE, QuantityType.valueOf(21.5, SIUnits.CELSIUS)));
+        assertTrue(isChannelUpdated(CHANNEL_CURRENT_TEMPERATURE, QuantityType.valueOf(21.5, SIUnits.CELSIUS)));
         assertTrue(isChannelUpdated(CHANNEL_FROST_WARNING, OnOffType.OFF));
     }
 
@@ -249,7 +249,7 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertFalse(isChannelUpdated(CHANNEL_TEMPERATURE));
+        assertFalse(isChannelUpdated(CHANNEL_CURRENT_TEMPERATURE));
         assertFalse(isChannelUpdated(CHANNEL_FROST_WARNING));
     }
 
@@ -265,7 +265,7 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertTrue(isChannelUpdated(CHANNEL_SET_TEMPERATURE, QuantityType.valueOf(21.5, SIUnits.CELSIUS)));
+        assertTrue(isChannelUpdated(CHANNEL_TARGET_TEMPERATURE, QuantityType.valueOf(21.5, SIUnits.CELSIUS)));
         assertTrue(isChannelUpdated(CHANNEL_OPERATION_MODE, new StringType(STATE_VALUE_OPERATION_MODE_AUTO)));
         assertTrue(isChannelUpdated(CHANNEL_WINDOW_REDUCTION_ACTIVE, OnOffType.ON));
     }
@@ -282,7 +282,7 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertTrue(isChannelUpdated(CHANNEL_SET_TEMPERATURE, QuantityType.valueOf(21.5, SIUnits.CELSIUS)));
+        assertTrue(isChannelUpdated(CHANNEL_TARGET_TEMPERATURE, QuantityType.valueOf(21.5, SIUnits.CELSIUS)));
         assertTrue(isChannelUpdated(CHANNEL_OPERATION_MODE, new StringType(STATE_VALUE_OPERATION_MODE_MANUAL)));
         assertTrue(isChannelUpdated(CHANNEL_WINDOW_REDUCTION_ACTIVE, OnOffType.OFF));
     }
@@ -295,7 +295,7 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertFalse(isChannelUpdated(CHANNEL_SET_TEMPERATURE));
+        assertFalse(isChannelUpdated(CHANNEL_TARGET_TEMPERATURE));
         assertFalse(isChannelUpdated(CHANNEL_OPERATION_MODE));
         assertFalse(isChannelUpdated(CHANNEL_WINDOW_REDUCTION_ACTIVE));
     }
@@ -1074,7 +1074,7 @@ public class LivisiDeviceHandlerTest {
         });
 
         deviceHandler.onDeviceStateChanged(device, event);
-        assertTrue(isChannelUpdated(CHANNEL_TEMPERATURE, QuantityType.valueOf(21.5, SIUnits.CELSIUS)));
+        assertTrue(isChannelUpdated(CHANNEL_CURRENT_TEMPERATURE, QuantityType.valueOf(21.5, SIUnits.CELSIUS)));
         assertTrue(isChannelUpdated(CHANNEL_FROST_WARNING, OnOffType.ON));
     }
 
@@ -1092,7 +1092,7 @@ public class LivisiDeviceHandlerTest {
         });
 
         deviceHandler.onDeviceStateChanged(device, event);
-        assertTrue(isChannelUpdated(CHANNEL_SET_TEMPERATURE, QuantityType.valueOf(21.5, SIUnits.CELSIUS)));
+        assertTrue(isChannelUpdated(CHANNEL_TARGET_TEMPERATURE, QuantityType.valueOf(21.5, SIUnits.CELSIUS)));
         assertTrue(isChannelUpdated(CHANNEL_OPERATION_MODE, new StringType(STATE_VALUE_OPERATION_MODE_AUTO)));
         assertTrue(isChannelUpdated(CHANNEL_WINDOW_REDUCTION_ACTIVE, OnOffType.ON));
     }

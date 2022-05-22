@@ -117,7 +117,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
             commandSetDimLevel(command, bridgeHandler);
         } else if (CHANNEL_ROLLERSHUTTER.equals(channelUID.getId())) {
             commandRollerShutter(command, bridgeHandler);
-        } else if (CHANNEL_SET_TEMPERATURE.equals(channelUID.getId())) {
+        } else if (CHANNEL_TARGET_TEMPERATURE.equals(channelUID.getId())) {
             commandUpdatePointTemperature(command, bridgeHandler);
         } else if (CHANNEL_OPERATION_MODE.equals(channelUID.getId())) {
             commandSetOperationMode(command, bridgeHandler);
@@ -718,7 +718,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         final Double temperature = capability.getCapabilityState().getTemperatureSensorTemperatureState();
         if (temperature != null) {
             logger.debug("-> Temperature sensor state: {}", temperature);
-            updateState(CHANNEL_TEMPERATURE, QuantityType.valueOf(temperature, SIUnits.CELSIUS));
+            updateState(CHANNEL_CURRENT_TEMPERATURE, QuantityType.valueOf(temperature, SIUnits.CELSIUS));
         } else {
             logStateNull(capability);
         }
@@ -738,7 +738,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (pointTemperature != null) {
             logger.debug("Update CHANNEL_SET_TEMPERATURE: state:{} (DeviceName {}, Capab-ID:{})", pointTemperature,
                     device.getConfig().getName(), capability.getId());
-            updateState(CHANNEL_SET_TEMPERATURE, QuantityType.valueOf(pointTemperature, SIUnits.CELSIUS));
+            updateState(CHANNEL_TARGET_TEMPERATURE, QuantityType.valueOf(pointTemperature, SIUnits.CELSIUS));
         } else {
             logStateNull(capability);
         }

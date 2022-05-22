@@ -19,28 +19,28 @@ Without the SHC, you cannot communicate with the devices.
 The following table shows all supported and tested devices and their channels.
 The channels are described in detail in the next chapter.
 
-| Device | Description                                                              | Supported channels                                                                                                  |
-|--------|--------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
-| SHC    | SmartHome Controller (Bridge)                                            | status, cpu, disk, memory (updated by events; SHC classic: Updated every minute)                                    |
-| BRC8   | Basic Remote Controller                                                  | button1 ... button8, button1Count ... button8Count, batteryLow                                                      |
-| ISC2   | In Wall Smart Controller                                                 | button1, button2, button1Count, button2Count, batteryLow                                                            |
-| ISD2   | In Wall Smart Dimmer                                                     | button1, button2, button1Count, button2Count, dimmer                                                                |
-| ISR2   | In Wall Smart Rollershutter                                              | button1, button2, button1Count, button2Count, rollershutter                                                         |
-| ISS2   | In Wall Smart Switch                                                     | button1, button2, button1Count, button2Count, switch                                                                |
-| PSD    | Pluggable Smart Dimmer                                                   | dimmer                                                                                                              |
-| PSS    | Pluggable Smart Switch, indoor                                           | switch                                                                                                              |
-| PSSO   | Pluggable Smart Switch, outdoor                                          | switch                                                                                                              |
-| BT-PSS | Bluetooth Pluggable Smart Switch, indoor                                 | switch                                                                                                              |
-| RST    | Radiator Mounted Smart Thermostat                                        | setTemperature, temperature, frostWarnung, humidity, moldWarning, operationMode, windowReductionActive, batteryLow  |
-| RST2   | Radiator Mounted Smart Thermostat (newer two battery version since 2018) | setTemperature, temperature, frostWarning, humidity, moldWarning, operationMode, windowReductionActive, batteryLow  |
-|        | VariableActuator                                                         | switch                                                                                                              |
-| WDS    | Window Door Sensor                                                       | contact, batteryLow                                                                                                 |
-| WMD    | Wall Mounted Motion Detector, indoor                                     | motionCount, luminance, batteryLow                                                                                  |
-| WMDO   | Wall Mounted Motion Detector, outdoor                                    | motionCount, luminance, batteryLow                                                                                  |
-| WRT    | Wall Mounted Room Thermostat                                             | setTemperature, temperature, frostWarning, humidity, moldWarning, operationMode, windowReductionActive, batteryLow  |
-| WSC2   | Wall Mounted Smart Controller                                            | button1, button2, button1Count, button2Count, batteryLow                                                            |
-| WSD    | Wall Mounted Smoke Detector, old version                                 | smoke, alarm, batteryLow                                                                                            |
-| WSD2   | Wall Mounted Smoke Detector, new version                                 | smoke, alarm, batteryLow                                                                                            |
+| Device | Description                                                              | Supported channels                                                                                                           |
+|--------|--------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| SHC    | SmartHome Controller (Bridge)                                            | status, cpu, disk, memory (updated by events; SHC classic: Updated every minute)                                             |
+| BRC8   | Basic Remote Controller                                                  | button1 ... button8, button1Count ... button8Count, batteryLow                                                               |
+| ISC2   | In Wall Smart Controller                                                 | button1, button2, button1Count, button2Count, batteryLow                                                                     |
+| ISD2   | In Wall Smart Dimmer                                                     | button1, button2, button1Count, button2Count, dimmer                                                                         |
+| ISR2   | In Wall Smart Rollershutter                                              | button1, button2, button1Count, button2Count, rollershutter                                                                  |
+| ISS2   | In Wall Smart Switch                                                     | button1, button2, button1Count, button2Count, switch                                                                         |
+| PSD    | Pluggable Smart Dimmer                                                   | dimmer                                                                                                                       |
+| PSS    | Pluggable Smart Switch, indoor                                           | switch                                                                                                                       |
+| PSSO   | Pluggable Smart Switch, outdoor                                          | switch                                                                                                                       |
+| BT-PSS | Bluetooth Pluggable Smart Switch, indoor                                 | switch                                                                                                                       |
+| RST    | Radiator Mounted Smart Thermostat                                        | targetTemperature, currentTemperature, frostWarnung, humidity, moldWarning, operationMode, windowReductionActive, batteryLow |
+| RST2   | Radiator Mounted Smart Thermostat (newer two battery version since 2018) | targetTemperature, currentTemperature, frostWarning, humidity, moldWarning, operationMode, windowReductionActive, batteryLow |
+|        | VariableActuator                                                         | switch                                                                                                                       |
+| WDS    | Window Door Sensor                                                       | contact, batteryLow                                                                                                          |
+| WMD    | Wall Mounted Motion Detector, indoor                                     | motionCount, luminance, batteryLow                                                                                           |
+| WMDO   | Wall Mounted Motion Detector, outdoor                                    | motionCount, luminance, batteryLow                                                                                           |
+| WRT    | Wall Mounted Room Thermostat                                             | targetTemperature, currentTemperature, frostWarning, humidity, moldWarning, operationMode, windowReductionActive, batteryLow |
+| WSC2   | Wall Mounted Smart Controller                                            | button1, button2, button1Count, button2Count, batteryLow                                                                     |
+| WSD    | Wall Mounted Smoke Detector, old version                                 | smoke, alarm, batteryLow                                                                                                     |
+| WSD2   | Wall Mounted Smoke Detector, new version                                 | smoke, alarm, batteryLow                                                                                                     |
 
 Powermeter devices
 
@@ -93,11 +93,11 @@ However, only devices will appear that are added in the LIVISI SmartHome app bef
 | motionCount           | Number        | Number of detected motions, increases with each detected motion           | WMD, WMDO                                                   |
 | operationMode         | String        | The mode of a thermostat (auto/manual)                                    | RST, RST2, WRT                                              |
 | rollershutter         | Rollershutter | Controls a roller shutter                                                 | ISR2                                                        |
-| setTemperature        | Number        | Sets the target temperature in °C (min 6 °C, max 30 °C)                   | RST, RST2, WRT                                              |
+| targetTemperature     | Number        | Sets the target temperature in °C (min 6 °C, max 30 °C)                   | RST, RST2, WRT                                              |
 | smoke                 | Switch        | Indicates, if smoke was detected (ON/OFF)                                 | WSD, WSD2                                                   |
 | status                | String        | Status of the SHC (ACTIVE/NORMAL, INITIALIZING/REBOOTING or SHUTTINGDOWN) | SHC (bridge)                                                |
 | switch                | Switch        | A switch to turn the device or variable on/off (ON/OFF)                   | ISS2, PSS, PSSO, VariableActuator                           |
-| temperature           | Number        | Holds the actual temperature in °C                                        | RST, RST2, WRT                                              |
+| currentTemperature    | Number        | Holds the actual temperature in °C                                        | RST, RST2, WRT                                              |
 | windowReductionActive | Switch        | Indicates if a linked window is open and temperature reduced (ON/OFF)     | RST, RST2, WRT                                              |
 
 The `rollershutter` channel has a `boolean` parameter `invert`.
@@ -136,7 +136,7 @@ As an alternative to the automatic discovery process and graphical configuration
 The LIVISI SmartHome Controller (SHC) can be configured using the following syntax:
 
 ```
-Bridge livisismarthome:bridge:<bridge-id> "Livisi: SmartHome Controller (SHC)" [ host="192.168.0.99", password="SomethingSecret", websocketidletimeout=900]
+Bridge livisismarthome:bridge:<bridge-id> "Livisi: SmartHome Controller (SHC)" [ host="192.168.0.99", password="SomethingSecret", webSocketIdleTimeout=900]
 ```
 
 ** *Security warning!**
@@ -176,8 +176,8 @@ You can then configure your items in your *.items config files as usual, for exa
 ```
 Contact myWindowContact        "Kitchen"                <window>      {channel="livisismarthome:WDS:mybridge:myWindowContact:contact"}
 Switch myWindowContactBattery  "Battery low"            <battery>     {channel="livisismarthome:WDS:mybridge:myWindowContact:batteryLow"}
-Number myHeatingTemp           "Bath [%.1f °C]"         <temperature> {channel="livisismarthome:RST:mybridge:myHeating:temperature"}
-Number myHeatingModeTempTarget "Settemp bath [%.1f °C]" <temperature> {channel="livisismarthome:RST:mybridge:myHeating:setTemperature"}
+Number myHeatingTemp           "Bath [%.1f °C]"         <temperature> {channel="livisismarthome:RST:mybridge:myHeating:currentTemperature"}
+Number myHeatingModeTempTarget "Settemp bath [%.1f °C]" <temperature> {channel="livisismarthome:RST:mybridge:myHeating:targetTemperature"}
 String myHeatingMode           "Mode bath [%s]"         <temperature> {channel="livisismarthome:RST:mybridge:myHeating:operationMode"}
 Number myHeatingHumidity       "Bath [%.1f %%]"         <humidity>    {channel="livisismarthome:RST:mybridge:myHeating:humidity"}
 

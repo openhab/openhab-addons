@@ -23,5 +23,5 @@ public class LivisiBridgeConfiguration {
 
     public String host = "";
     public String password = "";
-    public int websocketidletimeout = 900;
+    public int webSocketIdleTimeout = 900;
 }

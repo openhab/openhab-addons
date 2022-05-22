@@ -35,7 +35,7 @@
 				<description>Password for the local API of LIVISI SmartHome</description>
 				<context>password</context>
 			</parameter>
-			<parameter name="websocketidletimeout" type="integer" min="0" max="3600" unit="s" groupName="advanced">
+			<parameter name="webSocketIdleTimeout" type="integer" min="0" max="3600" unit="s" groupName="advanced">
 				<unitLabel>seconds</unitLabel>
 				<label>WebSocket Idle Timeout in Seconds</label>
 				<description>The WebSocket is the connection to the LIVISI service that listens to status updates. If no data is
