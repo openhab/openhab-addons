@@ -27,7 +27,7 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCDeviceHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.airqualitylevel.AirQualityLevelService;
 import org.openhab.binding.boschshc.internal.services.airqualitylevel.dto.AirQualityLevelServiceState;
@@ -44,7 +44,7 @@ import org.openhab.core.thing.Thing;
  * @author Christian Oeing - Use service instead of custom logic
  */
 @NonNullByDefault
-public class TwinguardHandler extends BoschSHCHandler {
+public class TwinguardHandler extends BoschSHCDeviceHandler {
 
     public TwinguardHandler(Thing thing) {
         super(thing);
