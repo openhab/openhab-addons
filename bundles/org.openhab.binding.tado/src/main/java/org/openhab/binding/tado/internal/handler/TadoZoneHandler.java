@@ -208,6 +208,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 case TadoBindingConstants.CHANNEL_ZONE_FAN_LEVEL:
                     String fanLevelString = ((StringType) command).toFullString();
                     pendingHvacChange.withFanLevel(FanLevel.valueOf(fanLevelString.toUpperCase()));
+                    scheduleHvacChange();
                     break;
                 case TadoBindingConstants.CHANNEL_ZONE_HORIZONTAL_SWING:
                     String horizontalSwingString = ((StringType) command).toFullString();
