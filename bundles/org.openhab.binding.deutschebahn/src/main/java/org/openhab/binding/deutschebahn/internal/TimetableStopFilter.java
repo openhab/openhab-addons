@@ -52,5 +52,5 @@ public enum TimetableStopFilter implements TimetableStopPredicate {
         public boolean test(TimetableStop t) {
             return t.getAr() != null;
         }
-    };
+    }
 }

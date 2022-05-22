@@ -185,7 +185,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
             });
         } catch (FilterScannerException | FilterParserException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        } catch (JAXBException | SAXException | URISyntaxException e) {
+        } catch (JAXBException e) {
             this.logger.error("Error initializing api", e);
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
