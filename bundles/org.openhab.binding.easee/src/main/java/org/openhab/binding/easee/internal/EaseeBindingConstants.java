@@ -70,6 +70,7 @@ public class EaseeBindingConstants {
     // URLs
     public static final String LOGIN_URL = "https://api.easee.cloud/api/accounts/login";
     public static final String REFRESH_TOKEN_URL = "https://api.easee.cloud/api/accounts/refresh_token";
+    public static final String GET_SITES_URL = "https://api.easee.cloud/api/sites";
     public static final String STATE_URL = "https://api.easee.cloud/api/chargers/{id}/state";
     public static final String GET_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/config";
     public static final String CHANGE_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/settings";
