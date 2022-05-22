@@ -73,14 +73,12 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                 if (readFriends) {
                     WeatherApi weatherApi = localHandler.getRestManager(WeatherApi.class);
                     if (weatherApi != null) { // Search favorite stations
-                        ListBodyResponse<NAMain> body = weatherApi.getStationsData(null, true).getBody();
-                        if (body != null) {
-                            body.getElements().stream().filter(NAMain::isReadOnly).forEach(station -> {
-                                ThingUID bridgeUID = createThing(station, apiBridgeUID);
-                                station.getModules().values().stream()
-                                        .forEach(module -> createThing(module, bridgeUID));
-                            });
-                        }
+                        weatherApi.getFavoriteAndGuestStationsData().stream().filter(NAMain::isReadOnly)
+                                .forEach(station -> {
+                                    ThingUID bridgeUID = createThing(station, apiBridgeUID);
+                                    station.getModules().values().stream()
+                                            .forEach(module -> createThing(module, bridgeUID));
+                                });
                     }
                 }
                 HomeApi homeApi = localHandler.getRestManager(HomeApi.class);
