@@ -50,7 +50,6 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
     private final Logger logger = LoggerFactory.getLogger(NetatmoDiscoveryService.class);
     private @Nullable ApiBridgeHandler handler;
-    private boolean readFriends;
 
     public NetatmoDiscoveryService() {
         super(ModuleType.AS_SET.stream().filter(mt -> !SKIPPED_TYPES.contains(mt)).map(mt -> mt.thingTypeUID)
@@ -70,7 +69,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                         body.getElements().stream().forEach(homeCoach -> createThing(homeCoach, apiBridgeUID));
                     }
                 }
-                if (readFriends) {
+                if (localHandler.getReadFriends()) {
                     WeatherApi weatherApi = localHandler.getRestManager(WeatherApi.class);
                     if (weatherApi != null) { // Search favorite stations
                         weatherApi.getFavoriteAndGuestStationsData().stream().filter(NAMain::isReadOnly)
@@ -136,7 +135,6 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof ApiBridgeHandler) {
             this.handler = (ApiBridgeHandler) handler;
-            this.readFriends = ((ApiBridgeHandler) handler).getReadFriends();
         }
     }
 
