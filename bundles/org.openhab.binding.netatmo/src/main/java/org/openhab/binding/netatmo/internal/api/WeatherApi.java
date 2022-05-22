@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.api;
 import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.core.UriBuilder;
@@ -101,8 +102,9 @@ public class WeatherApi extends RestManager {
         throw new NetatmoException("Unexpected answer searching device '%s' : not found.", deviceId);
     }
 
-    public @Nullable ListBodyResponse<NAMain> getFavoriteAndGuestStationsData() throws NetatmoException {
-        return getStationsData(null, true).getBody();
+    public Collection<NAMain> getFavoriteAndGuestStationsData() throws NetatmoException {
+        ListBodyResponse<NAMain> answer = getStationsData(null, true).getBody();
+        return answer != null ? answer.getElements() : List.of();
     }
 
     public @Nullable Object getMeasures(String deviceId, @Nullable String moduleId, @Nullable String scale,
