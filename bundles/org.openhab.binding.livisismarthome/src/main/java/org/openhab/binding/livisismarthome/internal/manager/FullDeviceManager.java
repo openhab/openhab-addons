@@ -38,7 +38,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Sven Strohschein - Initial contribution (but only created by refactoring the LivisiClient class)
+ * @author Sven Strohschein - Initial contribution
+ *
+ *         (created by refactoring the LivisiClient class)
  */
 @NonNullByDefault
 public class FullDeviceManager {

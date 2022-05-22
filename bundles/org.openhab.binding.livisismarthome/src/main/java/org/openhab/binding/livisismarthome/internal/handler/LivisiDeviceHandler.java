@@ -334,7 +334,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
 
                 onDeviceStateChanged(device);
             } else {
-                logger.warn("initializeProperties: The device with id {} isn't found", deviceId);
+                logger.debug("initializeProperties: The device with id {} isn't found", deviceId);
             }
         }
     }
@@ -679,7 +679,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (variableActuatorState != null) {
             updateState(CHANNEL_SWITCH, OnOffType.from(variableActuatorState));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
     }
 
@@ -688,7 +688,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (switchActuatorState != null) {
             updateState(CHANNEL_SWITCH, OnOffType.from(switchActuatorState));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
     }
 
@@ -698,7 +698,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
             logger.debug("Dimlevel state {}", dimLevel);
             updateState(CHANNEL_DIMMER, new PercentType(dimLevel));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
     }
 
@@ -709,7 +709,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
             logger.debug("RollerShutterlevel state {}", rollerShutterLevel);
             updateState(CHANNEL_ROLLERSHUTTER, new PercentType(rollerShutterLevel));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
     }
 
@@ -720,7 +720,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
             logger.debug("-> Temperature sensor state: {}", temperature);
             updateState(CHANNEL_TEMPERATURE, QuantityType.valueOf(temperature, SIUnits.CELSIUS));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
 
         // frost warning
@@ -728,7 +728,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (frostWarning != null) {
             updateState(CHANNEL_FROST_WARNING, OnOffType.from(frostWarning));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
     }
 
@@ -740,7 +740,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                     device.getConfig().getName(), capability.getId());
             updateState(CHANNEL_SET_TEMPERATURE, QuantityType.valueOf(pointTemperature, SIUnits.CELSIUS));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
 
         // operation mode
@@ -748,7 +748,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (operationMode != null) {
             updateState(CHANNEL_OPERATION_MODE, new StringType(operationMode));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
 
         // window reduction active
@@ -757,7 +757,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (windowReductionActive != null) {
             updateState(CHANNEL_WINDOW_REDUCTION_ACTIVE, OnOffType.from(windowReductionActive));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
     }
 
@@ -767,7 +767,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (humidity != null) {
             updateState(CHANNEL_HUMIDITY, QuantityType.valueOf(humidity, Units.PERCENT));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
 
         // mold warning
@@ -775,7 +775,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (moldWarning != null) {
             updateState(CHANNEL_MOLD_WARNING, OnOffType.from(moldWarning));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
     }
 
@@ -784,7 +784,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (contactState != null) {
             updateState(CHANNEL_CONTACT, toOpenClosedType(contactState));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
     }
 
@@ -793,7 +793,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (smokeState != null) {
             updateState(CHANNEL_SMOKE, OnOffType.from(smokeState));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
     }
 
@@ -802,7 +802,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (alarmState != null) {
             updateState(CHANNEL_ALARM, OnOffType.from(alarmState));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
     }
 
@@ -812,7 +812,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
             logger.debug("Motion state {} -> count {}", motionCount, motionCount);
             updateState(CHANNEL_MOTION_COUNT, new DecimalType(motionCount));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
     }
 
@@ -821,7 +821,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (luminance != null) {
             updateState(CHANNEL_LUMINANCE, QuantityType.valueOf(luminance, Units.PERCENT));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
     }
 
@@ -847,42 +847,42 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
             capability.getCapabilityState().setPushButtonSensorButtonIndexState(null);
             capability.getCapabilityState().setPushButtonSensorButtonIndexType(null);
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
     }
 
     private void updateEnergyConsumptionSensorChannels(CapabilityDTO capability) {
-        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_CONSUMPTION_MONTH_KWH,
+        updateStateForEnergyChannelKiloWattHour(CHANNEL_ENERGY_CONSUMPTION_MONTH_KWH,
                 capability.getCapabilityState().getEnergyConsumptionSensorEnergyConsumptionMonthKWhState(), capability);
-        updateStateForEnergyChannelWatt(CHANNEL_ABOLUTE_ENERGY_CONSUMPTION,
+        updateStateForEnergyChannelKiloWattHour(CHANNEL_ABOLUTE_ENERGY_CONSUMPTION,
                 capability.getCapabilityState().getEnergyConsumptionSensorAbsoluteEnergyConsumptionState(), capability);
         updateStateForEnergyChannelEuro(CHANNEL_ENERGY_CONSUMPTION_MONTH_EURO,
                 capability.getCapabilityState().getEnergyConsumptionSensorEnergyConsumptionMonthEuroState(),
                 capability);
         updateStateForEnergyChannelEuro(CHANNEL_ENERGY_CONSUMPTION_DAY_EURO,
                 capability.getCapabilityState().getEnergyConsumptionSensorEnergyConsumptionDayEuroState(), capability);
-        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_CONSUMPTION_DAY_KWH,
+        updateStateForEnergyChannelKiloWattHour(CHANNEL_ENERGY_CONSUMPTION_DAY_KWH,
                 capability.getCapabilityState().getEnergyConsumptionSensorEnergyConsumptionDayKWhState(), capability);
     }
 
     private void updateGenerationMeterEnergySensorChannels(CapabilityDTO capability) {
-        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_GENERATION_MONTH_KWH,
+        updateStateForEnergyChannelKiloWattHour(CHANNEL_ENERGY_GENERATION_MONTH_KWH,
                 capability.getCapabilityState().getGenerationMeterEnergySensorEnergyPerMonthInKWhState(), capability);
-        updateStateForEnergyChannelWatt(CHANNEL_TOTAL_ENERGY_GENERATION,
+        updateStateForEnergyChannelKiloWattHour(CHANNEL_TOTAL_ENERGY_GENERATION,
                 capability.getCapabilityState().getGenerationMeterEnergySensorTotalEnergyState(), capability);
         updateStateForEnergyChannelEuro(CHANNEL_ENERGY_GENERATION_MONTH_EURO,
                 capability.getCapabilityState().getGenerationMeterEnergySensorEnergyPerMonthInEuroState(), capability);
         updateStateForEnergyChannelEuro(CHANNEL_ENERGY_GENERATION_DAY_EURO,
                 capability.getCapabilityState().getGenerationMeterEnergySensorEnergyPerDayInEuroState(), capability);
-        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_GENERATION_DAY_KWH,
+        updateStateForEnergyChannelKiloWattHour(CHANNEL_ENERGY_GENERATION_DAY_KWH,
                 capability.getCapabilityState().getGenerationMeterEnergySensorEnergyPerDayInKWhState(), capability);
     }
 
     private void updateTwoWayMeterEnergyConsumptionSensorChannels(CapabilityDTO capability) {
-        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_MONTH_KWH,
+        updateStateForEnergyChannelKiloWattHour(CHANNEL_ENERGY_MONTH_KWH,
                 capability.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorEnergyPerMonthInKWhState(),
                 capability);
-        updateStateForEnergyChannelWatt(CHANNEL_TOTAL_ENERGY,
+        updateStateForEnergyChannelKiloWattHour(CHANNEL_TOTAL_ENERGY,
                 capability.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorTotalEnergyState(), capability);
         updateStateForEnergyChannelEuro(CHANNEL_ENERGY_MONTH_EURO,
                 capability.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorEnergyPerMonthInEuroState(),
@@ -890,21 +890,21 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         updateStateForEnergyChannelEuro(CHANNEL_ENERGY_DAY_EURO,
                 capability.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorEnergyPerDayInEuroState(),
                 capability);
-        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_DAY_KWH,
+        updateStateForEnergyChannelKiloWattHour(CHANNEL_ENERGY_DAY_KWH,
                 capability.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorEnergyPerDayInKWhState(),
                 capability);
     }
 
     private void updateTwoWayMeterEnergyFeedSensorChannels(CapabilityDTO capability) {
-        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_FEED_MONTH_KWH,
+        updateStateForEnergyChannelKiloWattHour(CHANNEL_ENERGY_FEED_MONTH_KWH,
                 capability.getCapabilityState().getTwoWayMeterEnergyFeedSensorEnergyPerMonthInKWhState(), capability);
-        updateStateForEnergyChannelWatt(CHANNEL_TOTAL_ENERGY_FED,
+        updateStateForEnergyChannelKiloWattHour(CHANNEL_TOTAL_ENERGY_FED,
                 capability.getCapabilityState().getTwoWayMeterEnergyFeedSensorTotalEnergyState(), capability);
         updateStateForEnergyChannelEuro(CHANNEL_ENERGY_FEED_MONTH_EURO,
                 capability.getCapabilityState().getTwoWayMeterEnergyFeedSensorEnergyPerMonthInEuroState(), capability);
         updateStateForEnergyChannelEuro(CHANNEL_ENERGY_FEED_DAY_EURO,
                 capability.getCapabilityState().getTwoWayMeterEnergyFeedSensorEnergyPerDayInEuroState(), capability);
-        updateStateForEnergyChannelWatt(CHANNEL_ENERGY_FEED_DAY_KWH,
+        updateStateForEnergyChannelKiloWattHour(CHANNEL_ENERGY_FEED_DAY_KWH,
                 capability.getCapabilityState().getTwoWayMeterEnergyFeedSensorEnergyPerDayInKWhState(), capability);
     }
 
@@ -913,7 +913,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (state != null) {
             updateState(channelId, new DecimalType(state));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
         }
     }
 
@@ -922,7 +922,16 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (state != null) {
             updateState(channelId, QuantityType.valueOf(state, Units.WATT));
         } else {
-            logStateNULL(capability);
+            logStateNull(capability);
+        }
+    }
+
+    private void updateStateForEnergyChannelKiloWattHour(final String channelId, @Nullable final Double state,
+            final CapabilityDTO capability) {
+        if (state != null) {
+            updateState(channelId, QuantityType.valueOf(state, Units.KILOWATT_HOUR));
+        } else {
+            logStateNull(capability);
         }
     }
 
@@ -995,7 +1004,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         return null;
     }
 
-    private void logStateNULL(CapabilityDTO capability) {
+    private void logStateNull(CapabilityDTO capability) {
         logger.debug("State for {} is STILL NULL!! cstate-id: {}, capability-id: {}", capability.getType(),
                 capability.getCapabilityState().getId(), capability.getId());
     }

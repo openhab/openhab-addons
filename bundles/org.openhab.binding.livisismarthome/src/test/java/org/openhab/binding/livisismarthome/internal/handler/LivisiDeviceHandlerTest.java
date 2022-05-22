@@ -49,6 +49,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -63,8 +64,6 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.types.State;
-
-import tech.units.indriya.unit.Units;
 
 /**
  * @author Sven Strohschein - Initial contribution
@@ -616,11 +615,14 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_CONSUMPTION_MONTH_KWH, QuantityType.valueOf(201.51, Units.WATT)));
-        assertTrue(isChannelUpdated(CHANNEL_ABOLUTE_ENERGY_CONSUMPTION, QuantityType.valueOf(5500.51, Units.WATT)));
+        assertTrue(isChannelUpdated(CHANNEL_ENERGY_CONSUMPTION_MONTH_KWH,
+                QuantityType.valueOf(201.51, Units.KILOWATT_HOUR)));
+        assertTrue(isChannelUpdated(CHANNEL_ABOLUTE_ENERGY_CONSUMPTION,
+                QuantityType.valueOf(5500.51, Units.KILOWATT_HOUR)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_CONSUMPTION_MONTH_EURO, new DecimalType(80.32)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_CONSUMPTION_DAY_EURO, new DecimalType(3.72)));
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_CONSUMPTION_DAY_KWH, QuantityType.valueOf(8.71, Units.WATT)));
+        assertTrue(
+                isChannelUpdated(CHANNEL_ENERGY_CONSUMPTION_DAY_KWH, QuantityType.valueOf(8.71, Units.KILOWATT_HOUR)));
     }
 
     @Test
@@ -675,11 +677,14 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_GENERATION_MONTH_KWH, QuantityType.valueOf(201.51, Units.WATT)));
-        assertTrue(isChannelUpdated(CHANNEL_TOTAL_ENERGY_GENERATION, QuantityType.valueOf(5500.51, Units.WATT)));
+        assertTrue(isChannelUpdated(CHANNEL_ENERGY_GENERATION_MONTH_KWH,
+                QuantityType.valueOf(201.51, Units.KILOWATT_HOUR)));
+        assertTrue(
+                isChannelUpdated(CHANNEL_TOTAL_ENERGY_GENERATION, QuantityType.valueOf(5500.51, Units.KILOWATT_HOUR)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_GENERATION_MONTH_EURO, new DecimalType(80.32)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_GENERATION_DAY_EURO, new DecimalType(3.72)));
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_GENERATION_DAY_KWH, QuantityType.valueOf(8.71, Units.WATT)));
+        assertTrue(
+                isChannelUpdated(CHANNEL_ENERGY_GENERATION_DAY_KWH, QuantityType.valueOf(8.71, Units.KILOWATT_HOUR)));
     }
 
     @Test
@@ -734,11 +739,11 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_MONTH_KWH, QuantityType.valueOf(201.51, Units.WATT)));
-        assertTrue(isChannelUpdated(CHANNEL_TOTAL_ENERGY, QuantityType.valueOf(5500.51, Units.WATT)));
+        assertTrue(isChannelUpdated(CHANNEL_ENERGY_MONTH_KWH, QuantityType.valueOf(201.51, Units.KILOWATT_HOUR)));
+        assertTrue(isChannelUpdated(CHANNEL_TOTAL_ENERGY, QuantityType.valueOf(5500.51, Units.KILOWATT_HOUR)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_MONTH_EURO, new DecimalType(80.32)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_DAY_EURO, new DecimalType(3.72)));
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_DAY_KWH, QuantityType.valueOf(8.71, Units.WATT)));
+        assertTrue(isChannelUpdated(CHANNEL_ENERGY_DAY_KWH, QuantityType.valueOf(8.71, Units.KILOWATT_HOUR)));
     }
 
     @Test
@@ -770,11 +775,11 @@ public class LivisiDeviceHandlerTest {
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
         deviceHandler.onDeviceStateChanged(device);
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_FEED_MONTH_KWH, QuantityType.valueOf(201.51, Units.WATT)));
-        assertTrue(isChannelUpdated(CHANNEL_TOTAL_ENERGY_FED, QuantityType.valueOf(5500.51, Units.WATT)));
+        assertTrue(isChannelUpdated(CHANNEL_ENERGY_FEED_MONTH_KWH, QuantityType.valueOf(201.51, Units.KILOWATT_HOUR)));
+        assertTrue(isChannelUpdated(CHANNEL_TOTAL_ENERGY_FED, QuantityType.valueOf(5500.51, Units.KILOWATT_HOUR)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_FEED_MONTH_EURO, new DecimalType(80.32)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_FEED_DAY_EURO, new DecimalType(3.72)));
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_FEED_DAY_KWH, QuantityType.valueOf(8.71, Units.WATT)));
+        assertTrue(isChannelUpdated(CHANNEL_ENERGY_FEED_DAY_KWH, QuantityType.valueOf(8.71, Units.KILOWATT_HOUR)));
     }
 
     @Test
@@ -1259,11 +1264,14 @@ public class LivisiDeviceHandlerTest {
         });
 
         deviceHandler.onDeviceStateChanged(device, event);
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_CONSUMPTION_MONTH_KWH, QuantityType.valueOf(201.51, Units.WATT)));
-        assertTrue(isChannelUpdated(CHANNEL_ABOLUTE_ENERGY_CONSUMPTION, QuantityType.valueOf(5500.51, Units.WATT)));
+        assertTrue(isChannelUpdated(CHANNEL_ENERGY_CONSUMPTION_MONTH_KWH,
+                QuantityType.valueOf(201.51, Units.KILOWATT_HOUR)));
+        assertTrue(isChannelUpdated(CHANNEL_ABOLUTE_ENERGY_CONSUMPTION,
+                QuantityType.valueOf(5500.51, Units.KILOWATT_HOUR)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_CONSUMPTION_MONTH_EURO, new DecimalType(80.32)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_CONSUMPTION_DAY_EURO, new DecimalType(3.72)));
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_CONSUMPTION_DAY_KWH, QuantityType.valueOf(8.71, Units.WATT)));
+        assertTrue(
+                isChannelUpdated(CHANNEL_ENERGY_CONSUMPTION_DAY_KWH, QuantityType.valueOf(8.71, Units.KILOWATT_HOUR)));
     }
 
     @Test
@@ -1295,11 +1303,14 @@ public class LivisiDeviceHandlerTest {
         });
 
         deviceHandler.onDeviceStateChanged(device, event);
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_GENERATION_MONTH_KWH, QuantityType.valueOf(201.51, Units.WATT)));
-        assertTrue(isChannelUpdated(CHANNEL_TOTAL_ENERGY_GENERATION, QuantityType.valueOf(5500.51, Units.WATT)));
+        assertTrue(isChannelUpdated(CHANNEL_ENERGY_GENERATION_MONTH_KWH,
+                QuantityType.valueOf(201.51, Units.KILOWATT_HOUR)));
+        assertTrue(
+                isChannelUpdated(CHANNEL_TOTAL_ENERGY_GENERATION, QuantityType.valueOf(5500.51, Units.KILOWATT_HOUR)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_GENERATION_MONTH_EURO, new DecimalType(80.32)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_GENERATION_DAY_EURO, new DecimalType(3.72)));
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_GENERATION_DAY_KWH, QuantityType.valueOf(8.71, Units.WATT)));
+        assertTrue(
+                isChannelUpdated(CHANNEL_ENERGY_GENERATION_DAY_KWH, QuantityType.valueOf(8.71, Units.KILOWATT_HOUR)));
     }
 
     @Test
@@ -1331,11 +1342,11 @@ public class LivisiDeviceHandlerTest {
         });
 
         deviceHandler.onDeviceStateChanged(device, event);
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_MONTH_KWH, QuantityType.valueOf(201.51, Units.WATT)));
-        assertTrue(isChannelUpdated(CHANNEL_TOTAL_ENERGY, QuantityType.valueOf(5500.51, Units.WATT)));
+        assertTrue(isChannelUpdated(CHANNEL_ENERGY_MONTH_KWH, QuantityType.valueOf(201.51, Units.KILOWATT_HOUR)));
+        assertTrue(isChannelUpdated(CHANNEL_TOTAL_ENERGY, QuantityType.valueOf(5500.51, Units.KILOWATT_HOUR)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_MONTH_EURO, new DecimalType(80.32)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_DAY_EURO, new DecimalType(3.72)));
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_DAY_KWH, QuantityType.valueOf(8.71, Units.WATT)));
+        assertTrue(isChannelUpdated(CHANNEL_ENERGY_DAY_KWH, QuantityType.valueOf(8.71, Units.KILOWATT_HOUR)));
     }
 
     @Test
@@ -1354,11 +1365,11 @@ public class LivisiDeviceHandlerTest {
         });
 
         deviceHandler.onDeviceStateChanged(device, event);
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_FEED_MONTH_KWH, QuantityType.valueOf(201.51, Units.WATT)));
-        assertTrue(isChannelUpdated(CHANNEL_TOTAL_ENERGY_FED, QuantityType.valueOf(5500.51, Units.WATT)));
+        assertTrue(isChannelUpdated(CHANNEL_ENERGY_FEED_MONTH_KWH, QuantityType.valueOf(201.51, Units.KILOWATT_HOUR)));
+        assertTrue(isChannelUpdated(CHANNEL_TOTAL_ENERGY_FED, QuantityType.valueOf(5500.51, Units.KILOWATT_HOUR)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_FEED_MONTH_EURO, new DecimalType(80.32)));
         assertTrue(isChannelUpdated(CHANNEL_ENERGY_FEED_DAY_EURO, new DecimalType(3.72)));
-        assertTrue(isChannelUpdated(CHANNEL_ENERGY_FEED_DAY_KWH, QuantityType.valueOf(8.71, Units.WATT)));
+        assertTrue(isChannelUpdated(CHANNEL_ENERGY_FEED_DAY_KWH, QuantityType.valueOf(8.71, Units.KILOWATT_HOUR)));
     }
 
     @Test

@@ -1,9 +1,9 @@
 # LIVISI SmartHome Binding
 
 The binding integrates the [LIVISI (RWE/innogy) SmartHome](https://www.livisi.de) system into openHAB.
-The binding is the successor of the innogy SmartHome openHAB binding, which is communicating with the LIVISI cloud-servers over the internet.
+The binding is the successor of the innogy SmartHome openHAB binding, which was communicating with the LIVISI cloud servers over the Internet.
 
-This binding uses a DIRECT communication with LIVISI SmartHome Controllers (SHC). It does NOT need to communicate with the LIVISI cloud-services and does NOT require an internet connection.
+This binding communicates directly with LIVISI SmartHome Controllers (SHC) and not through the LIVISI cloud services.
 
 On your SHC you need a minimum software version of 1.2.XX.XXX (SHC 2) or 1.914-3.1.XXXX.XX (SHC 1 / classic) with activated "Local SmartHome".
 
