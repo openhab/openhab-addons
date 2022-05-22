@@ -48,8 +48,11 @@
 		<label>Target Temperature</label>
 		<description>Thermostat target temperature</description>
 		<category>Temperature</category>
-		<state min="6" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false">
-		</state>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="6" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="ThermostatActuator_OperationMode" advanced="true">
 		<item-type>String</item-type>
@@ -77,8 +80,11 @@
 		<label>Actual Temperature</label>
 		<description>Actual measured room temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true">
-		</state>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="TemperatureSensor_FrostWarning" advanced="true">
 		<item-type>Switch</item-type>
@@ -94,6 +100,10 @@
 		<label>Actual Humidity</label>
 		<description>Actual measured room humidity</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.1f%%"/>
 	</channel-type>
 	<channel-type id="HumiditySensor_MoldWarning" advanced="true">
