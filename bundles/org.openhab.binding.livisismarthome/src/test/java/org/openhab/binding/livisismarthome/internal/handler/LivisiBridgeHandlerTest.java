@@ -27,6 +27,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -376,7 +377,9 @@ public class LivisiBridgeHandlerTest {
         }
 
         @Override
-        LivisiWebSocket createWebSocket(DeviceDTO bridgeDevice) {
+        @Nullable
+        LivisiWebSocket createAndStartWebSocket(DeviceDTO bridgeDevice) throws Exception {
+            webSocketMock.start();
             return webSocketMock;
         }
 

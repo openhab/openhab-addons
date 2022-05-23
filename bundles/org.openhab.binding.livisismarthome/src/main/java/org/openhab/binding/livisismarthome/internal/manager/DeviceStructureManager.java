@@ -201,9 +201,11 @@ public class DeviceStructureManager {
      */
     public Optional<String> getCapabilityId(String deviceId, String capabilityType) {
         DeviceDTO device = getDeviceMap().get(deviceId);
-        for (CapabilityDTO c : device.getCapabilityMap().values()) {
-            if (c.getType().equals(capabilityType)) {
-                return Optional.of(c.getId());
+        if (device != null) {
+            for (CapabilityDTO c : device.getCapabilityMap().values()) {
+                if (c.getType().equals(capabilityType)) {
+                    return Optional.of(c.getId());
+                }
             }
         }
         return Optional.empty();

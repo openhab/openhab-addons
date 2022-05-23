@@ -215,11 +215,15 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     @Override
     public void initialize() {
         logger.debug("Initializing LIVISI SmartHome device handler.");
-        initializeThing(getBridgeStatus());
+        initializeThing(isBridgeOnline());
     }
 
     @Override
     public void dispose() {
+        unregisterListeners(bridgeHandler, deviceId);
+    }
+
+    private static void unregisterListeners(@Nullable LivisiBridgeHandler bridgeHandler, String deviceId) {
         if (bridgeHandler != null) {
             bridgeHandler.unregisterDeviceStatusListener(deviceId);
         }
@@ -228,23 +232,23 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     @Override
     public void bridgeStatusChanged(final ThingStatusInfo bridgeStatusInfo) {
         logger.debug("bridgeStatusChanged {}", bridgeStatusInfo);
-        initializeThing(bridgeStatusInfo.getStatus());
+        initializeThing(ThingStatus.ONLINE == bridgeStatusInfo.getStatus());
     }
 
     /**
      * Initializes the {@link Thing} corresponding to the given status of the bridge.
      * 
-     * @param bridgeStatus thing status of the bridge
+     * @param isBridgeOnline true if the bridge thing is online, otherwise false
      */
-    private void initializeThing(@Nullable final ThingStatus bridgeStatus) {
-        logger.debug("initializeThing thing {} bridge status {}", getThing().getUID(), bridgeStatus);
+    private void initializeThing(final boolean isBridgeOnline) {
+        logger.debug("initializeThing thing {} bridge online status: {}", getThing().getUID(), isBridgeOnline);
         final String configDeviceId = (String) getConfig().get(PROPERTY_ID);
         if (configDeviceId != null) {
             deviceId = configDeviceId;
 
             Optional<LivisiBridgeHandler> bridgeHandler = registerAtBridgeHandler();
             if (bridgeHandler.isPresent()) {
-                if (ThingStatus.ONLINE == bridgeStatus) {
+                if (isBridgeOnline) {
                     initializeProperties();
 
                     Optional<DeviceDTO> deviceOptional = getDevice();
@@ -353,19 +357,22 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                 final String linkedCapabilityId = event.getSourceId();
 
                 CapabilityDTO capability = device.getCapabilityMap().get(linkedCapabilityId);
-                logger.trace("Loaded Capability {}, {} with id {}, device {} from device id {}", capability.getType(),
-                        capability.getName(), capability.getId(), capability.getDeviceLink(), device.getId());
+                if (capability != null) {
+                    logger.trace("Loaded Capability {}, {} with id {}, device {} from device id {}",
+                            capability.getType(), capability.getName(), capability.getId(), capability.getDeviceLink(),
+                            device.getId());
 
-                if (capability.hasState()) {
-                    boolean deviceChanged = updateDevice(event, capability);
-                    if (deviceChanged) {
-                        updateChannels(device);
+                    if (capability.hasState()) {
+                        boolean deviceChanged = updateDevice(event, capability);
+                        if (deviceChanged) {
+                            updateChannels(device);
+                        }
+                    } else {
+                        logger.debug("Capability {} has no state (yet?) - refreshing device.", capability.getName());
+
+                        Optional<DeviceDTO> deviceOptional = refreshDevice(linkedCapabilityId);
+                        deviceOptional.ifPresent(this::updateChannels);
                     }
-                } else {
-                    logger.debug("Capability {} has no state (yet?) - refreshing device.", capability.getName());
-
-                    Optional<DeviceDTO> deviceOptional = refreshDevice(linkedCapabilityId);
-                    deviceOptional.ifPresent(this::updateChannels);
                 }
             } else if (event.isLinkedtoDevice()) {
                 if (device.hasDeviceState()) {
@@ -383,7 +390,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (deviceOptional.isPresent()) {
             DeviceDTO device = deviceOptional.get();
             CapabilityDTO capability = device.getCapabilityMap().get(linkedCapabilityId);
-            if (capability.hasState()) {
+            if (capability != null && capability.hasState()) {
                 return Optional.of(device);
             }
         }
@@ -976,8 +983,9 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                 @Nullable
                 final ThingHandler handler = bridge.getHandler();
                 if (handler instanceof LivisiBridgeHandler) {
-                    this.bridgeHandler = (LivisiBridgeHandler) handler;
-                    this.bridgeHandler.registerDeviceStatusListener(deviceId, this);
+                    LivisiBridgeHandler bridgeHandler = (LivisiBridgeHandler) handler;
+                    bridgeHandler.registerDeviceStatusListener(deviceId, this);
+                    this.bridgeHandler = bridgeHandler;
                 } else {
                     return Optional.empty(); // also called when the handler is NULL
                 }
@@ -995,13 +1003,13 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         return Optional.ofNullable(this.bridgeHandler);
     }
 
-    private @Nullable ThingStatus getBridgeStatus() {
+    private boolean isBridgeOnline() {
         @Nullable
         Bridge bridge = getBridge();
         if (bridge != null) {
-            return getBridge().getStatus();
+            return ThingStatus.ONLINE == bridge.getStatus();
         }
-        return null;
+        return false;
     }
 
     private void logStateNull(CapabilityDTO capability) {

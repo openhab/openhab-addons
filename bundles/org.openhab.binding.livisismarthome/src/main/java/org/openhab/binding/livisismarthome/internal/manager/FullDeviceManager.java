@@ -178,8 +178,10 @@ public class FullDeviceManager {
         final HashMap<String, CapabilityDTO> deviceCapabilityMap = new HashMap<>();
         for (final String capabilityValue : device.getCapabilities()) {
             final CapabilityDTO capability = capabilityMap.get(LinkDTO.getId(capabilityValue));
-            final String capabilityId = capability.getId();
-            deviceCapabilityMap.put(capabilityId, capability);
+            if (capability != null) {
+                final String capabilityId = capability.getId();
+                deviceCapabilityMap.put(capabilityId, capability);
+            }
         }
         return deviceCapabilityMap;
     }
@@ -220,7 +222,14 @@ public class FullDeviceManager {
         for (final MessageDTO message : messageList) {
             if (message.getDevices() != null && !message.getDevices().isEmpty()) {
                 final String deviceId = message.getDevices().get(0).replace("/device/", "");
-                List<MessageDTO> ml = deviceMessageMap.computeIfAbsent(deviceId, k -> new ArrayList<>());
+
+                // could get optimized with computeIfAbsent, but the non-null checks doesn't understand that and
+                // produces compiler warnings...
+                List<MessageDTO> ml = deviceMessageMap.get(deviceId);
+                if (ml == null) {
+                    ml = new ArrayList<>();
+                    deviceMessageMap.put(deviceId, ml);
+                }
                 ml.add(message);
             }
         }

@@ -36,6 +36,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.livisismarthome.internal.LivisiBindingConstants;
 import org.openhab.binding.livisismarthome.internal.LivisiWebSocket;
+import org.openhab.binding.livisismarthome.internal.client.GsonOptional;
 import org.openhab.binding.livisismarthome.internal.client.LivisiClient;
 import org.openhab.binding.livisismarthome.internal.client.URLConnectionFactory;
 import org.openhab.binding.livisismarthome.internal.client.URLCreator;
@@ -81,8 +82,6 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link LivisiBridgeHandler} is responsible for handling the LIVISI SmartHome controller including the connection
  * to the LIVISI SmartHome backend for all communications with the LIVISI SmartHome {@link DeviceDTO}s.
@@ -103,7 +102,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         implements AccessTokenRefreshListener, EventListener, DeviceStatusListener {
 
     private final Logger logger = LoggerFactory.getLogger(LivisiBridgeHandler.class);
-    private final Gson gson = new Gson();
+    private final GsonOptional gson = new GsonOptional();
     private final Object lock = new Object();
     private final Map<String, DeviceStatusListener> deviceStatusListeners;
     private final OAuthFactory oAuthFactory;
@@ -159,18 +158,17 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      */
     private void initializeClient() {
         String tokenURL = URLCreator.createTokenURL(bridgeConfiguration.host);
-        final OAuthClientService oAuthServiceNonNullable = oAuthFactory.createOAuthClientService(
+        final OAuthClientService oAuthServiceNonNull = oAuthFactory.createOAuthClientService(
                 thing.getUID().getAsString(), tokenURL, tokenURL, "clientId", "clientPass", null, true);
-        this.oAuthService = oAuthServiceNonNullable;
-        LivisiClient clientNonNullable = createClient(oAuthServiceNonNullable);
-        this.client = clientNonNullable;
-        deviceStructMan = new DeviceStructureManager(createFullDeviceManager(clientNonNullable));
-
-        oAuthServiceNonNullable.addAccessTokenRefreshListener(this);
+        LivisiClient client = createClient(oAuthServiceNonNull);
+        this.deviceStructMan = new DeviceStructureManager(createFullDeviceManager(client));
+        this.client = client;
+        oAuthServiceNonNull.addAccessTokenRefreshListener(this);
+        this.oAuthService = oAuthServiceNonNull;
 
         getScheduler().schedule(() -> {
             try {
-                requestAccessToken();
+                requestAccessToken(oAuthServiceNonNull);
 
                 scheduleRestartClient(false);
             } catch (AuthenticationException | ApiException | IOException | OAuthException | OAuthResponseException e) {
@@ -191,17 +189,17 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         logger.debug("Initializing LIVISI SmartHome client...");
         boolean isSuccessfullyRefreshed = refreshDevices();
         if (isSuccessfullyRefreshed) {
-            Optional<DeviceDTO> bridgeDeviceOptional = deviceStructMan.getBridgeDevice();
+            Optional<DeviceDTO> bridgeDeviceOptional = getBridgeDevice();
             if (bridgeDeviceOptional.isPresent()) {
-                DeviceDTO bridgeDeviceNonNullable = bridgeDeviceOptional.get();
-                bridgeId = bridgeDeviceNonNullable.getId();
-                setBridgeProperties(bridgeDeviceNonNullable);
+                DeviceDTO bridgeDevice = bridgeDeviceOptional.get();
+                bridgeId = bridgeDevice.getId();
+                setBridgeProperties(bridgeDevice);
 
-                registerDeviceStatusListener(bridgeDeviceNonNullable.getId(), this);
-                onDeviceStateChanged(bridgeDeviceNonNullable); // initialize channels
-                scheduleBridgeRefreshJob(bridgeDeviceNonNullable);
+                registerDeviceStatusListener(bridgeDevice.getId(), this);
+                onDeviceStateChanged(bridgeDevice); // initialize channels
+                scheduleBridgeRefreshJob(bridgeDevice);
 
-                startWebSocket(bridgeDeviceNonNullable);
+                startWebSocket(bridgeDevice);
             } else {
                 logger.debug("Failed to get bridge device, re-scheduling startClient.");
                 scheduleRestartClient(true);
@@ -211,9 +209,11 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
     private boolean refreshDevices() {
         try {
-            if (client != null && deviceStructMan != null) {
+            final LivisiClient client = this.client;
+            final DeviceStructureManager deviceStructureManager = this.deviceStructMan;
+            if (client != null && deviceStructureManager != null) {
                 configVersion = client.refreshStatus();
-                deviceStructMan.refreshDevices();
+                deviceStructureManager.refreshDevices();
                 return true;
             }
         } catch (AuthenticationException | ApiException | IOException e) {
@@ -233,8 +233,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             stopWebSocket();
 
             logger.debug("Starting LIVISI SmartHome websocket.");
-            webSocket = createWebSocket(bridgeDevice);
-            webSocket.start();
+            webSocket = createAndStartWebSocket(bridgeDevice);
             updateStatus(ThingStatus.ONLINE);
         } catch (final Exception e) { // Catch Exception because websocket start throws Exception
             logger.warn("Error starting websocket.", e);
@@ -243,23 +242,39 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     private void stopWebSocket() {
+        LivisiWebSocket webSocket = this.webSocket;
         if (webSocket != null && webSocket.isRunning()) {
             logger.debug("Stopping LIVISI SmartHome websocket.");
             webSocket.stop();
-            webSocket = null;
+            this.webSocket = null;
         }
     }
 
-    LivisiWebSocket createWebSocket(DeviceDTO bridgeDevice) throws IOException, AuthenticationException {
-        final AccessTokenResponse accessTokenResponse = client.getAccessTokenResponse();
-        final String webSocketUrl = URLCreator.createEventsURL(bridgeConfiguration.host,
-                accessTokenResponse.getAccessToken(), bridgeDevice.isClassicController());
+    @Nullable
+    LivisiWebSocket createAndStartWebSocket(DeviceDTO bridgeDevice) throws Exception {
+        final Optional<String> accessToken = getAccessToken(client);
+        if (accessToken.isEmpty()) {
+            return null;
+        }
+
+        final String webSocketUrl = URLCreator.createEventsURL(bridgeConfiguration.host, accessToken.get(),
+                bridgeDevice.isClassicController());
 
         logger.debug("WebSocket URL: {}...{}", webSocketUrl.substring(0, 70),
                 webSocketUrl.substring(webSocketUrl.length() - 10));
 
-        return new LivisiWebSocket(httpClient, this, URI.create(webSocketUrl),
+        LivisiWebSocket webSocket = new LivisiWebSocket(httpClient, this, URI.create(webSocketUrl),
                 bridgeConfiguration.webSocketIdleTimeout * 1000);
+        webSocket.start();
+        return webSocket;
+    }
+
+    private static Optional<String> getAccessToken(@Nullable LivisiClient client)
+            throws AuthenticationException, IOException {
+        if (client != null) {
+            return Optional.of(client.getAccessTokenResponse().getAccessToken());
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -301,7 +316,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 this.bridgeRefreshJob = getScheduler().scheduleAtFixedRate(() -> {
                     logger.debug("Refreshing bridge");
 
-                    refreshBridgeState();
+                    refreshBridgeState(client);
                     onDeviceStateChanged(bridgeDevice);
                 }, BRIDGE_REFRESH_SECONDS, BRIDGE_REFRESH_SECONDS, TimeUnit.SECONDS);
             }
@@ -359,14 +374,20 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     private synchronized void cancelJobs() {
-        if (reInitJob != null) {
-            reInitJob.cancel(true);
+        if (cancelJob(reInitJob)) {
             reInitJob = null;
         }
-        if (bridgeRefreshJob != null) {
-            bridgeRefreshJob.cancel(true);
+        if (cancelJob(bridgeRefreshJob)) {
             bridgeRefreshJob = null;
         }
+    }
+
+    private static boolean cancelJob(@Nullable ScheduledFuture<?> job) {
+        if (job != null) {
+            job.cancel(true);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -395,6 +416,10 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @return a Collection of {@link DeviceDTO}s
      */
     public Collection<DeviceDTO> loadDevices() {
+        return loadDevices(deviceStructMan);
+    }
+
+    private static Collection<DeviceDTO> loadDevices(@Nullable DeviceStructureManager deviceStructMan) {
         if (deviceStructMan != null) {
             return deviceStructMan.getDeviceList();
         }
@@ -411,8 +436,14 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @return bridge {@link DeviceDTO}
      */
     private Optional<DeviceDTO> getBridgeDevice() {
-        Optional<String> bridgeIdOptional = Optional.ofNullable(bridgeId);
-        return bridgeIdOptional.flatMap(this::getDeviceById);
+        return getBridgeDevice(deviceStructMan);
+    }
+
+    private static Optional<DeviceDTO> getBridgeDevice(@Nullable final DeviceStructureManager deviceStructureManager) {
+        if (deviceStructureManager != null) {
+            return deviceStructureManager.getBridgeDevice();
+        }
+        return Optional.empty();
     }
 
     /**
@@ -422,13 +453,18 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @return {@link DeviceDTO} or null, if it does not exist or no {@link DeviceStructureManager} is available
      */
     public Optional<DeviceDTO> getDeviceById(final String deviceId) {
+        return getDeviceById(deviceId, deviceStructMan);
+    }
+
+    private static Optional<DeviceDTO> getDeviceById(final String deviceId,
+            @Nullable final DeviceStructureManager deviceStructMan) {
         if (deviceStructMan != null) {
             return deviceStructMan.getDeviceById(deviceId);
         }
         return Optional.empty();
     }
 
-    private void refreshBridgeState() {
+    private void refreshBridgeState(@Nullable LivisiClient client) {
         Optional<DeviceDTO> bridgeOptional = getBridgeDevice();
         if (bridgeOptional.isPresent() && client != null) {
             try {
@@ -451,6 +487,11 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @return the {@link DeviceDTO} or null, if it does not exist or no {@link DeviceStructureManager} is available
      */
     public Optional<DeviceDTO> refreshDevice(final String deviceId) {
+        return refreshDevice(deviceId, deviceStructMan);
+    }
+
+    private Optional<DeviceDTO> refreshDevice(final String deviceId,
+            @Nullable final DeviceStructureManager deviceStructMan) {
         if (deviceStructMan != null) {
             try {
                 return deviceStructMan.refreshDevice(deviceId, isSHCClassic());
@@ -515,17 +556,13 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         logger.trace("onEvent called. Msg: {}", msg);
 
         try {
-            final BaseEventDTO be = gson.fromJson(msg, BaseEventDTO.class);
-            logger.debug("Event no {} found. Type: {}", be.getSequenceNumber(), be.getType());
-            if (!BaseEventDTO.SUPPORTED_EVENT_TYPES.contains(be.getType())) {
-                logger.debug("Event type {} not supported. Skipping...", be.getType());
-            } else {
-                final EventDTO event = gson.fromJson(msg, EventDTO.class);
-
+            final Optional<EventDTO> eventOptional = parseEvent(msg);
+            if (eventOptional.isPresent()) {
+                EventDTO event = eventOptional.get();
                 switch (event.getType()) {
                     case BaseEventDTO.TYPE_STATE_CHANGED:
                     case BaseEventDTO.TYPE_BUTTON_PRESSED:
-                        handleStateChangedEvent(event);
+                        handleStateChangedEvent(event, deviceStructMan);
                         break;
                     case BaseEventDTO.TYPE_DISCONNECT:
                         logger.debug("Websocket disconnected.");
@@ -535,15 +572,17 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                         handleConfigurationChangedEvent(event);
                         break;
                     case BaseEventDTO.TYPE_CONTROLLER_CONNECTIVITY_CHANGED:
-                        handleControllerConnectivityChangedEvent(event);
+                        handleControllerConnectivityChangedEvent(event, deviceStructMan);
                         break;
                     case BaseEventDTO.TYPE_NEW_MESSAGE_RECEIVED:
                     case BaseEventDTO.TYPE_MESSAGE_CREATED:
-                        final MessageEventDTO messageEvent = gson.fromJson(msg, MessageEventDTO.class);
-                        handleNewMessageReceivedEvent(Objects.requireNonNull(messageEvent));
+                        final Optional<MessageEventDTO> messageEvent = gson.fromJson(msg, MessageEventDTO.class);
+                        if (messageEvent.isPresent()) {
+                            handleNewMessageReceivedEvent(Objects.requireNonNull(messageEvent.get()), deviceStructMan);
+                        }
                         break;
                     case BaseEventDTO.TYPE_MESSAGE_DELETED:
-                        handleMessageDeletedEvent(event);
+                        handleMessageDeletedEvent(event, deviceStructMan);
                         break;
                     default:
                         logger.debug("Unsupported event type {}.", event.getType());
@@ -569,7 +608,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      *
      * @param event event
      */
-    private void handleStateChangedEvent(final EventDTO event)
+    private void handleStateChangedEvent(final EventDTO event, @Nullable final DeviceStructureManager deviceStructMan)
             throws ApiException, IOException, AuthenticationException {
 
         if (deviceStructMan != null) {
@@ -604,7 +643,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      *
      * @param event event
      */
-    private void handleControllerConnectivityChangedEvent(final EventDTO event)
+    private void handleControllerConnectivityChangedEvent(final EventDTO event,
+            @Nullable final DeviceStructureManager deviceStructMan)
             throws ApiException, IOException, AuthenticationException {
 
         if (deviceStructMan != null) {
@@ -627,7 +667,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      *
      * @param event event
      */
-    private void handleNewMessageReceivedEvent(final MessageEventDTO event)
+    private void handleNewMessageReceivedEvent(final MessageEventDTO event,
+            @Nullable final DeviceStructureManager deviceStructMan)
             throws ApiException, IOException, AuthenticationException {
 
         if (deviceStructMan != null) {
@@ -655,7 +696,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      *
      * @param event event
      */
-    private void handleMessageDeletedEvent(final EventDTO event)
+    private void handleMessageDeletedEvent(final EventDTO event, @Nullable final DeviceStructureManager deviceStructMan)
             throws ApiException, IOException, AuthenticationException {
 
         if (deviceStructMan != null) {
@@ -724,6 +765,11 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @param state state (boolean)
      */
     public void commandSwitchDevice(final String deviceId, final boolean state) {
+        commandSwitchDevice(deviceId, state, deviceStructMan);
+    }
+
+    private void commandSwitchDevice(final String deviceId, final boolean state,
+            @Nullable final DeviceStructureManager deviceStructMan) {
         if (deviceStructMan != null) {
             // VariableActuator
             Optional<DeviceDTO> device = deviceStructMan.getDeviceById(deviceId);
@@ -731,12 +777,12 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 final String deviceType = device.get().getType();
                 if (DEVICE_VARIABLE_ACTUATOR.equals(deviceType)) {
                     executeCommand(deviceId, CapabilityDTO.TYPE_VARIABLEACTUATOR,
-                            capabilityId -> client.setVariableActuatorState(capabilityId, state));
+                            (capabilityId, client) -> client.setVariableActuatorState(capabilityId, state));
                     // PSS / PSSO / ISS2 / BT-PSS
                 } else if (DEVICE_PSS.equals(deviceType) || DEVICE_PSSO.equals(deviceType)
                         || DEVICE_ISS2.equals(deviceType) || DEVICE_BT_PSS.equals((deviceType))) {
                     executeCommand(deviceId, CapabilityDTO.TYPE_SWITCHACTUATOR,
-                            capabilityId -> client.setSwitchActuatorState(capabilityId, state));
+                            (capabilityId, client) -> client.setSwitchActuatorState(capabilityId, state));
                 }
             } else {
                 logger.debug("No device with id {} could get found!", deviceId);
@@ -754,7 +800,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      */
     public void commandUpdatePointTemperature(final String deviceId, final double pointTemperature) {
         executeCommand(deviceId, CapabilityDTO.TYPE_THERMOSTATACTUATOR,
-                capabilityId -> client.setPointTemperatureState(capabilityId, pointTemperature));
+                (capabilityId, client) -> client.setPointTemperatureState(capabilityId, pointTemperature));
     }
 
     /**
@@ -766,7 +812,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      */
     public void commandSwitchAlarm(final String deviceId, final boolean alarmState) {
         executeCommand(deviceId, CapabilityDTO.TYPE_ALARMACTUATOR,
-                capabilityId -> client.setAlarmActuatorState(capabilityId, alarmState));
+                (capabilityId, client) -> client.setAlarmActuatorState(capabilityId, alarmState));
     }
 
     /**
@@ -779,7 +825,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      */
     public void commandSetOperationMode(final String deviceId, final boolean isAutoMode) {
         executeCommand(deviceId, CapabilityDTO.TYPE_THERMOSTATACTUATOR,
-                capabilityId -> client.setOperationMode(capabilityId, isAutoMode));
+                (capabilityId, client) -> client.setOperationMode(capabilityId, isAutoMode));
     }
 
     /**
@@ -791,7 +837,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      */
     public void commandSetDimmLevel(final String deviceId, final int dimLevel) {
         executeCommand(deviceId, CapabilityDTO.TYPE_DIMMERACTUATOR,
-                capabilityId -> client.setDimmerActuatorState(capabilityId, dimLevel));
+                (capabilityId, client) -> client.setDimmerActuatorState(capabilityId, dimLevel));
     }
 
     /**
@@ -803,7 +849,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      */
     public void commandSetRollerShutterLevel(final String deviceId, final int rollerShutterLevel) {
         executeCommand(deviceId, CapabilityDTO.TYPE_ROLLERSHUTTERACTUATOR,
-                capabilityId -> client.setRollerShutterActuatorState(capabilityId, rollerShutterLevel));
+                (capabilityId, client) -> client.setRollerShutterActuatorState(capabilityId, rollerShutterLevel));
     }
 
     /**
@@ -814,16 +860,20 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      */
     public void commandSetRollerShutterStop(final String deviceId, final ShutterActionType action) {
         executeCommand(deviceId, CapabilityDTO.TYPE_ROLLERSHUTTERACTUATOR,
-                capabilityId -> client.setRollerShutterAction(capabilityId, action));
+                (capabilityId, client) -> client.setRollerShutterAction(capabilityId, action));
     }
 
     private void executeCommand(final String deviceId, final String capabilityType,
             final CommandExecutor commandExecutor) {
-        if (deviceStructMan != null) {
+        @Nullable
+        DeviceStructureManager deviceStructMan = this.deviceStructMan;
+        @Nullable
+        LivisiClient client = this.client;
+        if (deviceStructMan != null && client != null) {
             try {
                 final Optional<String> capabilityId = deviceStructMan.getCapabilityId(deviceId, capabilityType);
                 if (capabilityId.isPresent()) {
-                    commandExecutor.executeCommand(capabilityId.get());
+                    commandExecutor.executeCommand(capabilityId.get(), client);
                 }
             } catch (IOException | ApiException | AuthenticationException e) {
                 handleClientException(e);
@@ -901,18 +951,31 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
     private void refreshAccessToken() {
         try {
-            requestAccessToken();
+            requestAccessToken(oAuthService);
         } catch (AuthenticationException | ApiException | IOException | OAuthException | OAuthResponseException e) {
             logger.debug("Could not refresh tokens", e);
         }
     }
 
-    private void requestAccessToken()
+    private void requestAccessToken(@Nullable OAuthClientService oAuthService)
             throws OAuthException, IOException, AuthenticationException, ApiException, OAuthResponseException {
-        if (oAuthService != null && client != null) {
+        if (oAuthService != null) {
             oAuthService.getAccessTokenByResourceOwnerPasswordCredentials(LivisiBindingConstants.USERNAME,
                     bridgeConfiguration.password, null);
         }
+    }
+
+    private Optional<EventDTO> parseEvent(final String msg) {
+        final Optional<BaseEventDTO> baseEventOptional = gson.fromJson(msg, BaseEventDTO.class);
+        if (baseEventOptional.isPresent()) {
+            BaseEventDTO baseEvent = baseEventOptional.get();
+            logger.debug("Event no {} found. Type: {}", baseEvent.getSequenceNumber(), baseEvent.getType());
+            if (BaseEventDTO.SUPPORTED_EVENT_TYPES.contains(baseEvent.getType())) {
+                return gson.fromJson(msg, EventDTO.class);
+            }
+            logger.debug("Event type {} not supported. Skipping...", baseEvent.getType());
+        }
+        return Optional.empty();
     }
 
     /**
@@ -935,6 +998,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     @FunctionalInterface
     private interface CommandExecutor {
 
-        void executeCommand(String capabilityId) throws IOException, ApiException, AuthenticationException;
+        void executeCommand(String capabilityId, LivisiClient client)
+                throws IOException, ApiException, AuthenticationException;
     }
 }

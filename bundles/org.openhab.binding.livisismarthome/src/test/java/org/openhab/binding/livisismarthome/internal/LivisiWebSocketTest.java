@@ -210,8 +210,12 @@ public class LivisiWebSocketTest {
         }
 
         @Override
-        WebSocketClient startWebSocketClient() {
+        WebSocketClient createWebSocketClient() {
             return webSocketClientMock;
+        }
+
+        @Override
+        void startWebSocketClient(WebSocketClient client) {
         }
     }
 

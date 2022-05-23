@@ -47,8 +47,8 @@ public class LivisiWebSocket {
     private final URI webSocketURI;
     private final int maxIdleTimeout;
 
+    private WebSocketClient client;
     private @Nullable Session session;
-    private @Nullable WebSocketClient client;
     private boolean closing;
 
     /**
@@ -64,22 +64,28 @@ public class LivisiWebSocket {
         this.eventListener = eventListener;
         this.webSocketURI = webSocketURI;
         this.maxIdleTimeout = maxIdleTimeout;
+        this.client = createWebSocketClient();
     }
 
     /**
      * Starts the {@link LivisiWebSocket}.
      */
     public synchronized void start() throws Exception {
-        if (client == null || client.isStopped()) {
-            client = startWebSocketClient();
+        if (client.isStopped()) {
+            client = createWebSocketClient();
+            startWebSocketClient(client);
         }
 
+        session = connectWebSocket(session);
+    }
+
+    private Session connectWebSocket(@Nullable Session session) throws Exception {
         if (session != null) {
             session.close();
         }
 
         logger.debug("Connecting to LIVISI SmartHome webSocket...");
-        session = client.connect(this, webSocketURI).get();
+        return client.connect(this, webSocketURI).get();
     }
 
     /**
@@ -88,21 +94,24 @@ public class LivisiWebSocket {
     public synchronized void stop() {
         this.closing = true;
         if (isRunning()) {
-            logger.debug("Closing session...");
-            session.close();
-            session = null;
+            closeSession(session);
         } else {
-            session = null;
             logger.trace("Stopping websocket ignored - was not running.");
         }
-        if (client != null) {
-            try {
-                client.stop();
-                client.destroy();
-            } catch (Exception e) {
-                logger.debug("Stopping websocket failed", e);
-            }
-            client = null;
+        session = null;
+        try {
+            client.stop();
+            client.destroy();
+        } catch (Exception e) {
+            logger.debug("Stopping websocket failed", e);
+        }
+        client = createWebSocketClient();
+    }
+
+    private void closeSession(@Nullable Session session) {
+        if (session != null) {
+            logger.debug("Closing session...");
+            session.close();
         }
     }
 
@@ -112,6 +121,10 @@ public class LivisiWebSocket {
      * @return true if the websocket is running, otherwise false
      */
     public synchronized boolean isRunning() {
+        return isRunning(session);
+    }
+
+    private boolean isRunning(@Nullable Session session) {
         return session != null && session.isOpen();
     }
 
@@ -150,10 +163,13 @@ public class LivisiWebSocket {
         }
     }
 
-    WebSocketClient startWebSocketClient() throws Exception {
+    WebSocketClient createWebSocketClient() {
         WebSocketClient client = new WebSocketClient(httpClient);
         client.setMaxIdleTimeout(this.maxIdleTimeout);
-        client.start();
         return client;
+    }
+
+    void startWebSocketClient(WebSocketClient client) throws Exception {
+        client.start();
     }
 }
