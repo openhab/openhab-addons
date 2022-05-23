@@ -61,7 +61,7 @@ it is automatically removed from the given thing.
 |----------------------------------|----------------------|-----------------------------------------------------------|-----------|------------|----------|
 | actions#command                  | String               | Command to execute                                        | No        | Event      | [1]      |
 | status#state                     | String               | Current operational state                                 | Yes       | Event      | [2]      |
-| status#current-cleaning-mode     | Number:Time          | Mode used in current cleaning run                         | Yes       | Event      | [3], [4] |
+| status#current-cleaning-mode     | String               | Mode used in current cleaning run                         | Yes       | Event      | [3], [4] |
 | status#current-cleaning-time     | Number:Time          | Time spent in current cleaning run                        | Yes       | Event      | [4]      |
 | status#current-cleaned-area      | Number:Area          | Area cleaned in current cleaning run                      | Yes       | Event      | [4]      |
 | status#water-system-present      | Switch               | Whether the device is currently ready for mopping         | Yes       | Event      | [5]      |
