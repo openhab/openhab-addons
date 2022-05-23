@@ -56,9 +56,10 @@ public class SecurityApi extends RestManager {
      * @param uri Your webhook callback url (required)
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
-    public void addwebhook(URI uri) throws NetatmoException {
+    public boolean addwebhook(URI uri) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_ADDWEBHOOK, PARAM_URL, uri.toString());
         post(uriBuilder, ApiResponse.Ok.class, null, null);
+        return true;
     }
 
     public Collection<HomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {
@@ -101,10 +102,12 @@ public class SecurityApi extends RestManager {
         post(uriBuilder, ApiResponse.Ok.class, null, null);
     }
 
-    public void changeFloodLightMode(String localCameraURL, FloodLightMode mode) throws NetatmoException {
-        UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(PATH_COMMAND).path(SUB_PATH_FLOODLIGHTSET);
-        uriBuilder.queryParam("config", "%7B%22mode%22:%22" + mode.toString() + "%22%7D");
-        get(uriBuilder, ApiResponse.Ok.class);
+    public void changeFloodLightMode(String homeId, String cameraId, FloodLightMode mode) throws NetatmoException {
+        UriBuilder uriBuilder = getAppUriBuilder(PATH_STATE);
+        String payload = String.format(
+                "{\"home\": {\"id\":\"%s\",\"modules\": [ {\"id\":\"%s\",\"floodlight\":\"%s\"} ]}}", homeId, cameraId,
+                mode.name().toLowerCase());
+        post(uriBuilder, ApiResponse.Ok.class, payload, "application/json;charset=utf-8");
     }
 
     public void setPersonAwayStatus(String homeId, String personId, boolean away) throws NetatmoException {

@@ -54,7 +54,7 @@ public enum CosemObjectType {
     METER_VALVE_SWITCH_POSITION(new OBISIdentifier(0, 24, 4, 0), CosemDecimal.INSTANCE),
 
     /* Electricity Meter */
-    EMETER_EQUIPMENT_IDENTIFIER_V2_X(new OBISIdentifier(0, 42, 0, 0), CosemString.INSTANCE),
+    EMETER_EQUIPMENT_IDENTIFIER_V2_X(new OBISIdentifier(0, 42, 0, 0), CosemHexString.INSTANCE),
     EMETER_EQUIPMENT_IDENTIFIER(new OBISIdentifier(0, 96, 1, 1), CosemHexString.INSTANCE),
     EMETER_VALUE(new OBISIdentifier(0, 24, 2, 1, true), CosemDate.INSTANCE, CosemQuantity.KILO_WATT_HOUR),
     EMETER_DELIVERY_TARIFF0(new OBISIdentifier(1, 1, 8, 0), CosemQuantity.KILO_WATT_HOUR),
@@ -102,7 +102,7 @@ public enum CosemObjectType {
     EMETER_INSTANT_VOLTAGE_L3(new OBISIdentifier(1, 72, 7, 0), CosemQuantity.VOLT),
 
     /* Gas Meter */
-    GMETER_EQUIPMENT_IDENTIFIER_V2(new OBISIdentifier(7, 0, 0, 0), CosemString.INSTANCE),
+    GMETER_EQUIPMENT_IDENTIFIER_V2(new OBISIdentifier(7, 0, 0, 0), CosemHexString.INSTANCE),
     GMETER_24H_DELIVERY_V2(new OBISIdentifier(7, 23, 1, 0), CosemQuantity.CUBIC_METRE, CosemDate.INSTANCE),
     GMETER_24H_DELIVERY_COMPENSATED_V2(new OBISIdentifier(7, 23, 2, 0), CosemQuantity.CUBIC_METRE, CosemDate.INSTANCE),
     GMETER_LAST_VALUE(new OBISIdentifier(0, 24, 2, 3), CosemDate.INSTANCE, CosemQuantity.CUBIC_METRE),
@@ -117,15 +117,15 @@ public enum CosemObjectType {
     GMETER_VALVE_POSITION_V2_2(new OBISIdentifier(7, 24, 4, 0), CosemDecimal.INSTANCE),
 
     /* Heating Meter */
-    HMETER_EQUIPMENT_IDENTIFIER_V2_2(new OBISIdentifier(5, 0, 0, 0), CosemString.INSTANCE),
+    HMETER_EQUIPMENT_IDENTIFIER_V2_2(new OBISIdentifier(5, 0, 0, 0), CosemHexString.INSTANCE),
     HMETER_VALUE_V2(new OBISIdentifier(5, 1, 0, 0), CosemQuantity.GIGA_JOULE, CosemDate.INSTANCE),
 
     /* Cooling Meter */
-    CMETER_EQUIPMENT_IDENTIFIER_V2_2(new OBISIdentifier(6, 0, 0, 0), CosemString.INSTANCE),
+    CMETER_EQUIPMENT_IDENTIFIER_V2_2(new OBISIdentifier(6, 0, 0, 0), CosemHexString.INSTANCE),
     CMETER_VALUE_V2(new OBISIdentifier(6, 1, 0, 0), CosemQuantity.GIGA_JOULE, CosemDate.INSTANCE),
 
     /* Water Meter */
-    WMETER_EQUIPMENT_IDENTIFIER_V2_2(new OBISIdentifier(8, 0, 0, 0), CosemString.INSTANCE),
+    WMETER_EQUIPMENT_IDENTIFIER_V2_2(new OBISIdentifier(8, 0, 0, 0), CosemHexString.INSTANCE),
     WMETER_VALUE_V2(new OBISIdentifier(8, 1, 0, 0), CosemQuantity.CUBIC_METRE, CosemDate.INSTANCE),
     WMETER_VALUE_V3(new OBISIdentifier(0, 24, 3, 0, true), CosemQuantity.CUBIC_METRE),
 

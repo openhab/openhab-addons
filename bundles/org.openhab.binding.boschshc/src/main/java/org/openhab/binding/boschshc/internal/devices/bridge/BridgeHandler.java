@@ -59,6 +59,7 @@ import com.google.gson.reflect.TypeToken;
  * @author Stefan Kästle - Initial contribution
  * @author Gerd Zanker - added HttpClient with pairing support
  * @author Christian Oeing - refactorings of e.g. server registration
+ * @author David Pace - Added support for custom endpoints and HTTP POST requests
  */
 @NonNullByDefault
 public class BridgeHandler extends BaseBridgeHandler {
@@ -75,7 +76,13 @@ public class BridgeHandler extends BaseBridgeHandler {
      */
     private final LongPolling longPolling;
 
-    private @Nullable BoschHttpClient httpClient;
+    /**
+     * HTTP client for all communications to and from the bridge.
+     * <p>
+     * This member is package-protected to enable mocking in unit tests.
+     */
+    /* package */ @Nullable
+    BoschHttpClient httpClient;
 
     private @Nullable ScheduledFuture<?> scheduledPairing;
 
@@ -300,14 +307,14 @@ public class BridgeHandler extends BaseBridgeHandler {
     private void handleLongPollResult(LongPollResult result) {
         for (DeviceStatusUpdate update : result.result) {
             if (update != null && update.state != null) {
-                logger.debug("Got update of type {}: {}", update.type, update.state);
+                logger.debug("Got update for service {} of type {}: {}", update.id, update.type, update.state);
 
                 var updateDeviceId = update.deviceId;
                 if (updateDeviceId == null) {
                     continue;
                 }
 
-                logger.debug("Got update for {}", updateDeviceId);
+                logger.debug("Got update for device {}", updateDeviceId);
 
                 boolean handled = false;
 
@@ -437,11 +444,18 @@ public class BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Query the Bosch Smart Home Controller for the state of the given thing.
+     * Query the Bosch Smart Home Controller for the state of the given device.
+     * <p>
+     * The URL used for retrieving the state has the following structure:
+     * 
+     * <pre>
+     * https://{IP}:8444/smarthome/devices/{deviceId}/services/{serviceName}/state
+     * </pre>
      *
      * @param deviceId Id of device to get state for
      * @param stateName Name of the state to query
      * @param stateClass Class to convert the resulting JSON to
+     * @return the deserialized state object, may be <code>null</code>
      * @throws ExecutionException
      * @throws TimeoutException
      * @throws InterruptedException
@@ -457,26 +471,68 @@ public class BridgeHandler extends BaseBridgeHandler {
         }
 
         String url = httpClient.getServiceUrl(stateName, deviceId);
-        Request request = httpClient.createRequest(url, GET).header("Accept", "application/json");
+        logger.debug("getState(): Requesting \"{}\" from Bosch: {} via {}", stateName, deviceId, url);
+        return getState(httpClient, url, stateClass);
+    }
 
-        logger.debug("refreshState: Requesting \"{}\" from Bosch: {} via {}", stateName, deviceId, url);
+    /**
+     * Queries the Bosch Smart Home Controller for the state using an explicit endpoint.
+     * 
+     * @param <T> Type to which the resulting JSON should be deserialized to
+     * @param endpoint The destination endpoint part of the URL
+     * @param stateClass Class to convert the resulting JSON to
+     * @return the deserialized state object, may be <code>null</code>
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     * @throws BoschSHCException
+     */
+    public <T extends BoschSHCServiceState> @Nullable T getState(String endpoint, Class<T> stateClass)
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        @Nullable
+        BoschHttpClient httpClient = this.httpClient;
+        if (httpClient == null) {
+            logger.warn("HttpClient not initialized");
+            return null;
+        }
+
+        String url = httpClient.getBoschSmartHomeUrl(endpoint);
+        logger.debug("getState(): Requesting from Bosch: {}", url);
+        return getState(httpClient, url, stateClass);
+    }
+
+    /**
+     * Sends a HTTP GET request in order to retrieve a state from the Bosch Smart Home Controller.
+     * 
+     * @param <T> Type to which the resulting JSON should be deserialized to
+     * @param httpClient HTTP client used for sending the request
+     * @param url URL at which the state should be retrieved
+     * @param stateClass Class to convert the resulting JSON to
+     * @return the deserialized state object, may be <code>null</code>
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     * @throws BoschSHCException
+     */
+    protected <T extends BoschSHCServiceState> @Nullable T getState(BoschHttpClient httpClient, String url,
+            Class<T> stateClass) throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        Request request = httpClient.createRequest(url, GET).header("Accept", "application/json");
 
         ContentResponse contentResponse = request.send();
 
         String content = contentResponse.getContentAsString();
-        logger.debug("refreshState: Request complete: [{}] - return code: {}", content, contentResponse.getStatus());
+        logger.debug("getState(): Request complete: [{}] - return code: {}", content, contentResponse.getStatus());
 
         int statusCode = contentResponse.getStatus();
         if (statusCode != 200) {
             JsonRestExceptionResponse errorResponse = gson.fromJson(content, JsonRestExceptionResponse.class);
             if (errorResponse != null) {
-                throw new BoschSHCException(String.format(
-                        "State request for service %s of device %s failed with status code %d and error code %s",
-                        stateName, deviceId, errorResponse.statusCode, errorResponse.errorCode));
+                throw new BoschSHCException(
+                        String.format("State request with URL %s failed with status code %d and error code %s", url,
+                                errorResponse.statusCode, errorResponse.errorCode));
             } else {
                 throw new BoschSHCException(
-                        String.format("State request for service %s of device %s failed with status code %d", stateName,
-                                deviceId, statusCode));
+                        String.format("State request with URL %s failed with status code %d", url, statusCode));
             }
         }
 
@@ -514,6 +570,45 @@ public class BridgeHandler extends BaseBridgeHandler {
         Request request = httpClient.createRequest(url, PUT, state);
 
         // Send request
+        return request.send();
+    }
+
+    /**
+     * Sends a HTTP POST request without a request body to the given endpoint.
+     * 
+     * @param endpoint The destination endpoint part of the URL
+     * @return the HTTP response
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     */
+    public @Nullable Response postAction(String endpoint)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        return postAction(endpoint, null);
+    }
+
+    /**
+     * Sends a HTTP POST request with a request body to the given endpoint.
+     * 
+     * @param <T> Type of the request
+     * @param endpoint The destination endpoint part of the URL
+     * @param requestBody object representing the request body to be sent, may be <code>null</code>
+     * @return the HTTP response
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     */
+    public <T extends BoschSHCServiceState> @Nullable Response postAction(String endpoint, @Nullable T requestBody)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        @Nullable
+        BoschHttpClient httpClient = this.httpClient;
+        if (httpClient == null) {
+            logger.warn("HttpClient not initialized");
+            return null;
+        }
+
+        String url = httpClient.getBoschSmartHomeUrl(endpoint);
+        Request request = httpClient.createRequest(url, POST, requestBody);
         return request.send();
     }
 }

@@ -22,6 +22,7 @@
 			<channel id="powerL1" typeId="pl1"/>
 			<channel id="powerL2" typeId="pl2"/>
 			<channel id="powerL3" typeId="pl3"/>
+			<channel id="powerAll" typeId="pAll"/>
 			<channel id="allowCharging" typeId="alw"/>
 			<channel id="cableCurrent" typeId="cbl"/>
 			<channel id="firmware" typeId="fmw"/>
@@ -156,6 +157,12 @@
 		<item-type>Number:Power</item-type>
 		<label>Power L3</label>
 		<description>Power on L3</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="pAll">
+		<item-type>Number:Power</item-type>
+		<label>Power All</label>
+		<description>Power All</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pha">
