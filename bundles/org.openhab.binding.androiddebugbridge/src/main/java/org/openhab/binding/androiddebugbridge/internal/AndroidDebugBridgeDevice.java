@@ -36,6 +36,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -416,7 +417,7 @@ public class AndroidDebugBridgeDevice {
         Map<String, Float> extraFloats = new HashMap<>();
         Map<String, Long> extraLongs = new HashMap<>();
         Map<String, URI> extraUris = new HashMap<>();
-        for (var i = 1; i < commandParts.length - 1; i++) {
+        for (var i = 1; i < commandParts.length; i++) {
             var commandPart = commandParts[i];
             var endToken = commandPart.indexOf(">");
             var argName = commandPart.substring(0, endToken + 1);
@@ -596,7 +597,7 @@ public class AndroidDebugBridgeDevice {
             }
         }
 
-        StringBuilder adbCommandBuilder = new StringBuilder("am start " + targetPackage);
+        StringBuilder adbCommandBuilder = new StringBuilder("am start -n " + targetPackage);
         if (action != null) {
             adbCommandBuilder.append(" -a ").append(action);
         }
@@ -617,23 +618,28 @@ public class AndroidDebugBridgeDevice {
         }
         if (!extraStrings.isEmpty()) {
             adbCommandBuilder.append(extraStrings.entrySet().stream()
-                    .map(entry -> " --es \"" + entry.getKey() + "\" \"" + entry.getValue() + "\""));
+                    .map(entry -> " --es \"" + entry.getKey() + "\" \"" + entry.getValue() + "\"")
+                    .collect(Collectors.joining(" ")));
         }
         if (!extraBooleans.isEmpty()) {
             adbCommandBuilder.append(extraBooleans.entrySet().stream()
-                    .map(entry -> " --ez \"" + entry.getKey() + "\" " + entry.getValue()));
+                    .map(entry -> " --ez \"" + entry.getKey() + "\" " + entry.getValue())
+                    .collect(Collectors.joining(" ")));
         }
         if (!extraIntegers.isEmpty()) {
             adbCommandBuilder.append(extraIntegers.entrySet().stream()
-                    .map(entry -> " --ei \"" + entry.getKey() + "\" " + entry.getValue()));
+                    .map(entry -> " --ei \"" + entry.getKey() + "\" " + entry.getValue())
+                    .collect(Collectors.joining(" ")));
         }
         if (!extraFloats.isEmpty()) {
-            adbCommandBuilder.append(extraFloats.entrySet().stream()
-                    .map(entry -> " --ef \"" + entry.getKey() + "\" " + entry.getValue()));
+            adbCommandBuilder.append(
+                    extraFloats.entrySet().stream().map(entry -> " --ef \"" + entry.getKey() + "\" " + entry.getValue())
+                            .collect(Collectors.joining(" ")));
         }
         if (!extraLongs.isEmpty()) {
-            adbCommandBuilder.append(extraLongs.entrySet().stream()
-                    .map(entry -> " --el \"" + entry.getKey() + "\" " + entry.getValue()));
+            adbCommandBuilder.append(
+                    extraLongs.entrySet().stream().map(entry -> " --el \"" + entry.getKey() + "\" " + entry.getValue())
+                            .collect(Collectors.joining(" ")));
         }
         runAdbShell(adbCommandBuilder.toString());
     }
