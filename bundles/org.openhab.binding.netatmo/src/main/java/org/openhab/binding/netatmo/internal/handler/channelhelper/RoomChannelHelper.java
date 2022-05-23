@@ -33,7 +33,7 @@ import org.openhab.core.types.State;
 public class RoomChannelHelper extends ChannelHelper {
 
     public RoomChannelHelper() {
-        super(GROUP_ROOM_PROPERTIES, GROUP_ROOM_TEMPERATURE);
+        super(GROUP_TYPE_ROOM_TEMPERATURE, GROUP_TYPE_ROOM_PROPERTIES);
     }
 
     @Override

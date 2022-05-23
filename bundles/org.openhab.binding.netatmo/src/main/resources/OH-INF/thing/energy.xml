@@ -11,14 +11,14 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="room-temperature">
+	<channel-group-type id="temperature-room">
 		<label>Room Temperature</label>
 		<channels>
 			<channel id="value" typeId="system.indoor-temperature"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="room-properties">
+	<channel-group-type id="properties-room">
 		<label>Room Status</label>
 		<channels>
 			<channel id="window-open" typeId="window-open"/>
@@ -43,10 +43,10 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="th-properties">
+	<channel-group-type id="properties-thermostat">
 		<label>Thermostat</label>
 		<channels>
-			<channel id="relay-status" typeId="heating-status"/>
+			<channel id="relay" typeId="heating-status"/>
 		</channels>
 	</channel-group-type>
 

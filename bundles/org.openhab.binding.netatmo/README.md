@@ -351,16 +351,16 @@ All these channels are read only.
 
 **Supported channels for the Room thing:**
 
-| Channel Group    | Channel Id            | Item Type            | Description                                             |
-|------------------|-----------------------|----------------------|---------------------------------------------------------|
-| room-temperature | value                 | Number:Temperature   | Current temperature in the room                         |
-| room-properties  | window-open           | Contact              | Windows of the room are opened                          |
-| room-properties  | anticipating          | Switch               | Anticipates next scheduled setpoint                     |
-| room-properties  | heating-power-request | Number:Dimensionless | Percentage of heating power                             |
-| setpoint         | value                 | Number:Temperature   | Thermostat temperature setpoint                         |
-| setpoint         | mode                  | String               | Chosen thermostat mode (home, frost guard, manual, max) |
-| setpoint         | start                 | DateTime             | Start time of the currently applied setpoint            |
-| setpoint         | end                   | DateTime             | End time of the currently applied setpoint              |
+| Channel Group | Channel Id            | Item Type            | Description                                             |
+|---------------|-----------------------|----------------------|---------------------------------------------------------|
+| temperature   | value                 | Number:Temperature   | Current temperature in the room                         |
+| properties    | window-open           | Contact              | Windows of the room are opened                          |
+| properties    | anticipating          | Switch               | Anticipates next scheduled setpoint                     |
+| properties    | heating-power-request | Number:Dimensionless | Percentage of heating power                             |
+| setpoint      | value                 | Number:Temperature   | Thermostat temperature setpoint                         |
+| setpoint      | mode                  | String               | Chosen thermostat mode (home, frost guard, manual, max) |
+| setpoint      | start                 | DateTime             | Start time of the currently applied setpoint            |
+| setpoint      | end                   | DateTime             | End time of the currently applied setpoint              |
 
 All these channels except setpoint and setpoint-mode are read only.
 
@@ -369,14 +369,14 @@ All these channels except setpoint and setpoint-mode are read only.
 
 **Supported channels for the thermostat module:**
 
-| Channel Group       | Channel Id         | Item Type            | Description                                      |
-|---------------------|--------------------|----------------------|--------------------------------------------------|
-| th-properties       | relay-status       | Contact              | Indicates if the boiler is currently heating     |
-| signal              | strength           | Number               | Signal strength (0 for no signal, 1 for weak...) |
-| signal              | value              | Number:Power         | Signal strength in dBm                           |
-| battery             | value              | Number               | Battery level                                    |
-| battery             | low-battery        | Switch               | Low battery                                      |
-| battery             | status             | String               | Description of the battery status (*)            |
+| Channel Group | Channel Id  | Item Type    | Description                                      |
+|---------------|-------------|--------------|--------------------------------------------------|
+| properties    | relay       | Contact      | Indicates if the boiler is currently heating     |
+| signal        | strength    | Number       | Signal strength (0 for no signal, 1 for weak...) |
+| signal        | value       | Number:Power | Signal strength in dBm                           |
+| battery       | value       | Number       | Battery level                                    |
+| battery       | low-battery | Switch       | Low battery                                      |
+| battery       | status      | String       | Description of the battery status (*)            |
 
 (*) Can be UNDEF on some modules
 
