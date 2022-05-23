@@ -24,8 +24,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.boschspexor.internal.BoschSpexorBridgeHandler;
 import org.openhab.binding.boschspexor.internal.api.model.Spexor;
-import org.openhab.binding.boschspexor.internal.api.service.SpexorBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -50,7 +50,7 @@ public class BoschSpexorDiscoveryService extends AbstractDiscoveryService
     private static final int DISCOVERY_TIME_SECONDS = 10;
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(SPEXOR_THING_TYPE);
 
-    private Optional<SpexorBridgeHandler> bridgeHandler = Optional.empty();
+    private Optional<BoschSpexorBridgeHandler> bridgeHandler = Optional.empty();
     private @NonNullByDefault({}) ThingUID bridgeUID;
 
     private Optional<ScheduledFuture<?>> backgroundFuture;
@@ -86,8 +86,8 @@ public class BoschSpexorDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof SpexorBridgeHandler) {
-            bridgeHandler = Optional.of((SpexorBridgeHandler) handler);
+        if (handler instanceof BoschSpexorBridgeHandler) {
+            bridgeHandler = Optional.of((BoschSpexorBridgeHandler) handler);
             bridgeUID = bridgeHandler.get().getUID();
             bridgeHandler.get().setDiscoveryService(this);
         }
@@ -118,6 +118,7 @@ public class BoschSpexorDiscoveryService extends AbstractDiscoveryService
         if (bridgeHandler.isPresent() && bridgeHandler.get().isAuthorized()) {
             logger.debug("Starting spexor discovery for bridge {}", bridgeUID);
             bridgeHandler.get().listSpexors().forEach(this::thingDiscovered);
+            bridgeHandler.get().discoverChannels();
         }
     }
 

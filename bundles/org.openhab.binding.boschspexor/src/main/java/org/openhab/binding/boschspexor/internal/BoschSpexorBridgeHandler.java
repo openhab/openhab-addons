@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschspexor.internal.api.service;
+package org.openhab.binding.boschspexor.internal;
 
 import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstants.SPEXOR_OPENHAB_URL;
 
@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.boschspexor.internal.api.model.Spexor;
+import org.openhab.binding.boschspexor.internal.api.service.SpexorAPIService;
 import org.openhab.binding.boschspexor.internal.api.service.auth.SpexorAuthorizationProcessListener;
 import org.openhab.binding.boschspexor.internal.api.service.auth.SpexorAuthorizationService;
 import org.openhab.binding.boschspexor.internal.api.service.auth.SpexorAuthorizationService.SpexorAuthGrantState;
@@ -30,6 +31,7 @@ import org.openhab.binding.boschspexor.internal.discovery.BoschSpexorDiscoverySe
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
@@ -46,8 +48,8 @@ import org.slf4j.LoggerFactory;
  * @author Marc Fischer - Initial contribution
  */
 @NonNullByDefault
-public class SpexorBridgeHandler extends BaseBridgeHandler implements SpexorAuthorizationProcessListener {
-    private final Logger logger = LoggerFactory.getLogger(SpexorBridgeHandler.class);
+public class BoschSpexorBridgeHandler extends BaseBridgeHandler implements SpexorAuthorizationProcessListener {
+    private final Logger logger = LoggerFactory.getLogger(BoschSpexorBridgeHandler.class);
 
     private BoschSpexorBridgeConfig bridgeConfig;
     private SpexorAuthorizationService authService;
@@ -55,7 +57,7 @@ public class SpexorBridgeHandler extends BaseBridgeHandler implements SpexorAuth
 
     private Optional<BoschSpexorDiscoveryService> discoveryService = Optional.empty();
 
-    public SpexorBridgeHandler(Bridge bridge, HttpClient httpClient, StorageService storageService) {
+    public BoschSpexorBridgeHandler(Bridge bridge, HttpClient httpClient, StorageService storageService) {
         super(bridge);
         bridgeConfig = getConfigAs(BoschSpexorBridgeConfig.class);
         this.authService = new SpexorAuthorizationService(httpClient, storageService, this);
@@ -87,6 +89,16 @@ public class SpexorBridgeHandler extends BaseBridgeHandler implements SpexorAuth
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE);
+        }
+    }
+
+    @SuppressWarnings("null") // instanceof is also checking null - warning can be ignored
+    public void discoverChannels() {
+        for (Thing thing : getThing().getThings()) {
+            if (thing.getHandler() instanceof BoschSpexorThingHandler) {
+                BoschSpexorThingHandler thingHandler = (BoschSpexorThingHandler) thing.getHandler();
+                thingHandler.discoverChannels();
+            }
         }
     }
 

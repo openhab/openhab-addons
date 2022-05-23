@@ -17,7 +17,6 @@ import static org.openhab.binding.boschspexor.internal.BoschSpexorBindingConstan
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.boschspexor.internal.api.service.SpexorBridgeHandler;
 import org.openhab.binding.boschspexor.internal.api.service.auth.SpexorUserGrantService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -64,7 +63,7 @@ public class BoschSpexorHandlerFactory extends BaseThingHandlerFactory {
 
         ThingHandler result = null;
         if (SPEXOR_BRIDGE_TYPE.equals(thingTypeUID)) {
-            SpexorBridgeHandler spexorBridgeHandler = new SpexorBridgeHandler((Bridge) thing, httpClient,
+            BoschSpexorBridgeHandler spexorBridgeHandler = new BoschSpexorBridgeHandler((Bridge) thing, httpClient,
                     storageService);
             this.authGrantService.initialize(spexorBridgeHandler.getAuthService());
             result = spexorBridgeHandler;

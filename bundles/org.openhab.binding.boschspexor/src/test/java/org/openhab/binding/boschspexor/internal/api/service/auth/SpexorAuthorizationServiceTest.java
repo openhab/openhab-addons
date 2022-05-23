@@ -39,7 +39,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
-import org.openhab.binding.boschspexor.internal.api.service.BoschSpexorBridgeConfig;
+import org.openhab.binding.boschspexor.internal.BoschSpexorBridgeConfig;
 import org.openhab.binding.boschspexor.internal.api.service.auth.SpexorAuthorizationService.SpexorAuthGrantState;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;

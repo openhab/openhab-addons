@@ -35,7 +35,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.util.Fields;
-import org.openhab.binding.boschspexor.internal.api.service.BoschSpexorBridgeConfig;
+import org.openhab.binding.boschspexor.internal.BoschSpexorBridgeConfig;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.osgi.service.component.annotations.Reference;
@@ -393,6 +393,7 @@ public class SpexorAuthorizationService {
         return time.plusSeconds(timeoutInSeconds).isBefore(LocalDateTime.now());
     }
 
+    @SuppressWarnings("null") // isNotEmpty is checking null value - warning can be ignored
     private LocalDateTime getDeviceCodeRequestTime() {
         LocalDateTime result = LocalDateTime.MIN;
         String key = getConstantBinding(DEVICE_CODE_REQUEST_TIME);
