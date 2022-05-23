@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -59,8 +60,6 @@ import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -68,19 +67,14 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Oliver Kuhl - Initial contribution
  * @author Hilbrand Bouwkamp - Refactored to use openHAB http and oauth2 libraries
- * @author Sven Strohschein - Renamed from Innogy to Livisi
+ * @author Sven Strohschein - Renamed from Innogy to Livisi and refactored
  */
 @NonNullByDefault
 public class LivisiClient {
 
     private final Logger logger = LoggerFactory.getLogger(LivisiClient.class);
 
-    /**
-     * date format as used in json in API. Example: 2016-07-11T10:55:52.3863424Z
-     */
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-
-    private final Gson gson = new GsonBuilder().setDateFormat(DATE_FORMAT).create();
+    private final GsonOptional gson;
     private final LivisiBridgeConfiguration bridgeConfiguration;
     private final OAuthClientService oAuthService;
     private final URLConnectionFactory connectionFactory;
@@ -90,6 +84,7 @@ public class LivisiClient {
         this.bridgeConfiguration = bridgeConfiguration;
         this.oAuthService = oAuthService;
         this.connectionFactory = connectionFactory;
+        this.gson = new GsonOptional();
     }
 
     /**
@@ -100,12 +95,15 @@ public class LivisiClient {
      */
     public String refreshStatus() throws IOException, ApiException, AuthenticationException {
         logger.debug("Get LIVISI SmartHome status...");
-        final StatusResponseDTO status = executeGet(URLCreator.createStatusURL(bridgeConfiguration.host),
+        final Optional<StatusResponseDTO> status = executeGet(URLCreator.createStatusURL(bridgeConfiguration.host),
                 StatusResponseDTO.class);
 
-        final String configVersion = status.getConfigVersion();
-        logger.debug("LIVISI SmartHome status loaded. Configuration version is {}.", configVersion);
-        return configVersion;
+        if (status.isPresent()) {
+            String configVersion = status.get().getConfigVersion();
+            logger.debug("LIVISI SmartHome status loaded. Configuration version is {}.", configVersion);
+            return configVersion;
+        }
+        return "";
     }
 
     /**
@@ -115,7 +113,7 @@ public class LivisiClient {
      * @param clazz type of data to return
      * @return response content
      */
-    private <T> T executeGet(final String url, final Class<T> clazz)
+    private <T> Optional<T> executeGet(final String url, final Class<T> clazz)
             throws IOException, AuthenticationException, ApiException {
 
         HttpURLConnection connection = createBaseRequest(url, HttpMethod.GET);
@@ -132,9 +130,9 @@ public class LivisiClient {
      */
     private <T> List<T> executeGetList(final String url, final Class<T[]> clazz)
             throws IOException, AuthenticationException, ApiException {
-        T[] objects = executeGet(url, clazz);
-        if (objects != null) {
-            return Arrays.asList(objects);
+        Optional<T[]> objects = executeGet(url, clazz);
+        if (objects.isPresent()) {
+            return Arrays.asList(objects.get());
         }
         return Collections.emptyList();
     }
@@ -218,27 +216,24 @@ public class LivisiClient {
             String content = normalizeResponseContent(responseContent);
             try {
                 logger.trace("Response error content: {}", content);
-                final ErrorResponseDTO error = gson.fromJson(content, ErrorResponseDTO.class);
-                switch (error.getCode()) {
-                    case ErrorResponseDTO.ERR_SESSION_EXISTS:
-                        logger.debug("Session exists: {}", error);
-                        throw new SessionExistsException(error.getDescription());
-                    case ErrorResponseDTO.ERR_SESSION_NOT_FOUND:
-                        logger.debug("Session not found: {}", error);
-                        throw new SessionNotFoundException(error.getDescription());
-                    case ErrorResponseDTO.ERR_CONTROLLER_OFFLINE:
-                        logger.debug("Controller offline: {}", error);
-                        throw new ControllerOfflineException(error.getDescription());
-                    case ErrorResponseDTO.ERR_REMOTE_ACCESS_NOT_ALLOWED:
-                        logger.debug("Remote access not allowed. Access is allowed only from the SHC device network.");
-                        throw new RemoteAccessNotAllowedException(
-                                "Remote access not allowed. Access is allowed only from the SHC device network.");
-                    case ErrorResponseDTO.ERR_INVALID_ACTION_TRIGGERED:
-                        logger.debug("Invalid action triggered. Message: {}", error.getMessages());
-                        throw new InvalidActionTriggeredException(error.getDescription());
-                    default:
-                        logger.debug("Unknown error: {}", error);
-                        throw new ApiException("Unknown error: " + error);
+                final Optional<ErrorResponseDTO> errorOptional = gson.fromJson(content, ErrorResponseDTO.class);
+                if (errorOptional.isPresent()) {
+                    ErrorResponseDTO error = errorOptional.get();
+                    switch (error.getCode()) {
+                        case ErrorResponseDTO.ERR_SESSION_EXISTS:
+                            throw new SessionExistsException("Session exists: " + error.getDescription());
+                        case ErrorResponseDTO.ERR_SESSION_NOT_FOUND:
+                            throw new SessionNotFoundException("Session not found: " + error.getDescription());
+                        case ErrorResponseDTO.ERR_CONTROLLER_OFFLINE:
+                            throw new ControllerOfflineException("Controller offline: " + error.getDescription());
+                        case ErrorResponseDTO.ERR_REMOTE_ACCESS_NOT_ALLOWED:
+                            throw new RemoteAccessNotAllowedException(
+                                    "Remote access not allowed. Access is allowed only from the SHC device network.");
+                        case ErrorResponseDTO.ERR_INVALID_ACTION_TRIGGERED:
+                            throw new InvalidActionTriggeredException(
+                                    "Invalid action triggered. Message: " + error.getDescription());
+                    }
+                    throw new ApiException("Unknown error: " + error);
                 }
             } catch (final JsonSyntaxException e) {
                 throw new ApiException("Invalid JSON syntax in error response: " + content, e);
@@ -336,7 +331,8 @@ public class LivisiClient {
     /**
      * Loads the {@link DeviceDTO} with the given deviceId.
      */
-    public DeviceDTO getDeviceById(final String deviceId) throws IOException, ApiException, AuthenticationException {
+    public Optional<DeviceDTO> getDeviceById(final String deviceId)
+            throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device with id {}...", deviceId);
         return executeGet(URLCreator.createDeviceURL(bridgeConfiguration.host, deviceId), DeviceDTO.class);
     }
@@ -352,15 +348,16 @@ public class LivisiClient {
     /**
      * Loads the device state for the given deviceId.
      */
-    public StateDTO getDeviceStateByDeviceId(final String deviceId, final boolean isSHCClassic)
+    public @Nullable StateDTO getDeviceStateByDeviceId(final String deviceId, final boolean isSHCClassic)
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device states for device id {}...", deviceId);
         if (isSHCClassic) {
-            DeviceStateDTO deviceState = executeGet(URLCreator.createDeviceStateURL(bridgeConfiguration.host, deviceId),
-                    DeviceStateDTO.class);
-            return deviceState.getState();
+            Optional<DeviceStateDTO> deviceState = executeGet(
+                    URLCreator.createDeviceStateURL(bridgeConfiguration.host, deviceId), DeviceStateDTO.class);
+            return deviceState.map(DeviceStateDTO::getState).orElse(null);
         }
-        return executeGet(URLCreator.createDeviceStateURL(bridgeConfiguration.host, deviceId), StateDTO.class);
+        return executeGet(URLCreator.createDeviceStateURL(bridgeConfiguration.host, deviceId), StateDTO.class)
+                .orElse(null);
     }
 
     /**

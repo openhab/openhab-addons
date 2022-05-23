@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -77,18 +78,20 @@ public class FullDeviceManager {
      * Returns the {@link DeviceDTO} with the given deviceId with full configuration details, {@link CapabilityDTO}s and
      * states. Calling this may take a little bit longer...
      */
-    public DeviceDTO getFullDeviceById(final String deviceId, final boolean isSHCClassic)
+    public Optional<DeviceDTO> getFullDeviceById(final String deviceId, final boolean isSHCClassic)
             throws IOException, ApiException, AuthenticationException {
         final Map<String, LocationDTO> locationMap = createLocationMap(client);
         final Map<String, CapabilityDTO> capabilityMap = createCapabilityMap(deviceId, client);
         final List<MessageDTO> messageMap = createMessageMap(deviceId, client);
 
-        final DeviceStateDTO deviceState = new DeviceStateDTO();
-        deviceState.setId(deviceId);
-        deviceState.setState(client.getDeviceStateByDeviceId(deviceId, isSHCClassic));
+        final Optional<DeviceDTO> device = client.getDeviceById(deviceId);
+        if (device.isPresent()) {
+            final DeviceStateDTO deviceState = new DeviceStateDTO();
+            deviceState.setId(deviceId);
+            deviceState.setState(client.getDeviceStateByDeviceId(deviceId, isSHCClassic));
 
-        final DeviceDTO device = client.getDeviceById(deviceId);
-        initializeDevice(device, deviceState, locationMap, capabilityMap, messageMap);
+            initializeDevice(device.get(), deviceState, locationMap, capabilityMap, messageMap);
+        }
         return device;
     }
 

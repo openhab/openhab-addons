@@ -88,12 +88,12 @@ public class DeviceStructureManager {
      *
      * @param deviceId device id
      */
-    public DeviceDTO refreshDevice(final String deviceId, final boolean isSHCClassic)
+    public Optional<DeviceDTO> refreshDevice(final String deviceId, final boolean isSHCClassic)
             throws IOException, ApiException, AuthenticationException {
         logger.trace("Refreshing Device with id '{}'", deviceId);
-        DeviceDTO d = deviceManager.getFullDeviceById(deviceId, isSHCClassic);
-        handleRefreshedDevice(d);
-        return d;
+        Optional<DeviceDTO> device = deviceManager.getFullDeviceById(deviceId, isSHCClassic);
+        device.ifPresent(this::handleRefreshedDevice);
+        return device;
     }
 
     /**

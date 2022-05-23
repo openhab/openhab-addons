@@ -453,8 +453,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     public Optional<DeviceDTO> refreshDevice(final String deviceId) {
         if (deviceStructMan != null) {
             try {
-                deviceStructMan.refreshDevice(deviceId, isSHCClassic());
-                return deviceStructMan.getDeviceById(deviceId);
+                return deviceStructMan.refreshDevice(deviceId, isSHCClassic());
             } catch (IOException | ApiException | AuthenticationException e) {
                 handleClientException(e);
             }
@@ -583,13 +582,15 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 // DEVICE
             } else if (event.isLinkedtoDevice()) {
                 logger.trace("Event is linked to device");
-                String sourceId = event.getSourceId();
+                final String sourceId = event.getSourceId();
 
-                Optional<DeviceDTO> bridgeDevice = deviceStructMan.getBridgeDevice();
+                final Optional<DeviceDTO> bridgeDevice = deviceStructMan.getBridgeDevice();
+                final Optional<DeviceDTO> device;
                 if (bridgeDevice.isPresent() && !sourceId.equals(bridgeDevice.get().getId())) {
-                    deviceStructMan.refreshDevice(sourceId, isSHCClassic());
+                    device = deviceStructMan.refreshDevice(sourceId, isSHCClassic());
+                } else {
+                    device = deviceStructMan.getDeviceById(sourceId);
                 }
-                final Optional<DeviceDTO> device = deviceStructMan.getDeviceById(sourceId);
                 notifyDeviceStatusListeners(device, event);
 
             } else {
@@ -637,8 +638,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             }
             if (MessageDTO.TYPE_DEVICE_LOW_BATTERY.equals(message.getType()) && message.getDevices() != null) {
                 for (final String link : message.getDevices()) {
-                    deviceStructMan.refreshDevice(LinkDTO.getId(link), isSHCClassic());
-                    final Optional<DeviceDTO> device = deviceStructMan.getDeviceById(LinkDTO.getId(link));
+                    final Optional<DeviceDTO> device = deviceStructMan.refreshDevice(LinkDTO.getId(link),
+                            isSHCClassic());
                     notifyDeviceStatusListener(event.getSourceId(), device);
                 }
             } else {
@@ -664,8 +665,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             Optional<DeviceDTO> device = deviceStructMan.getDeviceWithMessageId(messageId);
             if (device.isPresent()) {
                 String id = device.get().getId();
-                DeviceDTO deviceRefreshed = deviceStructMan.refreshDevice(id, isSHCClassic());
-                notifyDeviceStatusListener(event.getSourceId(), Optional.of(deviceRefreshed));
+                Optional<DeviceDTO> deviceRefreshed = deviceStructMan.refreshDevice(id, isSHCClassic());
+                notifyDeviceStatusListener(event.getSourceId(), deviceRefreshed);
             } else {
                 logger.debug("No device found with message id {}.", messageId);
             }
