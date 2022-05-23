@@ -12,7 +12,7 @@ When a fan or light is controlled from the remote control, Wall Controller, or s
 ### Important Notice
 
 The latest firmware for Haiku devices no longer uses the SenseMe protocol.
-As a result, this binding will not work with fans running the latest firmware.
+As a result, this binding will not work with fans running firmware version 3.0.0 or later.
 
 ## Supported Things
 
