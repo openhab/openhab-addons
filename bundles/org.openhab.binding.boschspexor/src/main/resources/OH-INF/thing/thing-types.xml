@@ -92,7 +92,7 @@
 		<item-type>Number</item-type>
 		<label>State of Charge</label>
 		<description>Battery state in %</description>
-		<state min="0" max="100" step="1" readOnly="true"/>
+		<state min="0" max="1" step="0.01" pattern="%0.0f %" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="connectionType">
