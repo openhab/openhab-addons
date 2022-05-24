@@ -30,7 +30,6 @@ The binding has the following configuration options:
 
 | Parameter    | Type          | Description                                                                                |
 |--------------|---------------|--------------------------------------------------------------------------------------------|
-| features     | String        | The perimeter of functionalities given to the binding WEATHER, AIR_CARE, ENERGY, SECURITY  |
 | readFriends  | Boolean       | Enables or disables the discovery of guest weather stations.                               |
 
 

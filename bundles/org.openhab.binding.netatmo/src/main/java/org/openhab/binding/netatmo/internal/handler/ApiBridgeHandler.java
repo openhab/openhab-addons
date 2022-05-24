@@ -125,7 +125,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 try {
                     logger.debug("Connecting to Netatmo API.");
 
-                    String refreshToken = connectApi.authorize(configuration, bindingConf.features, code, redirectUri);
+                    String refreshToken = connectApi.authorize(configuration, code, redirectUri);
 
                     if (configuration.refreshToken.isBlank()) {
                         Configuration thingConfig = editConfiguration();
@@ -273,7 +273,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     public UriBuilder formatAuthorizationUrl() {
-        return AuthenticationApi.getAuthorizationBuilder(getId(), bindingConf.features);
+        return AuthenticationApi.getAuthorizationBuilder(getId());
     }
 
     @Override
