@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -78,7 +79,6 @@ public class PorcupineKSService implements KSService {
     private final Logger logger = LoggerFactory.getLogger(PorcupineKSService.class);
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("OH-voice-porcupineks");
     private PorcupineKSConfiguration config = new PorcupineKSConfiguration();
-    private boolean loop = false;
     private @Nullable BundleContext bundleContext;
 
     static {
@@ -193,12 +193,14 @@ public class PorcupineKSService implements KSService {
         } catch (PorcupineException | IOException e) {
             throw new KSException(e);
         }
-        Future<?> scheduledTask = executor.submit(() -> processInBackground(porcupine, ksListener, audioStream));
+        final AtomicBoolean aborted = new AtomicBoolean(false);
+        Future<?> scheduledTask = executor
+                .submit(() -> processInBackground(porcupine, ksListener, audioStream, aborted));
         return new KSServiceHandle() {
             @Override
             public void abort() {
                 logger.debug("stopping service");
-                loop = false;
+                aborted.set(true);
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -305,19 +307,19 @@ public class PorcupineKSService implements KSService {
         }
     }
 
-    private void processInBackground(Porcupine porcupine, KSListener ksListener, AudioStream audioStream) {
+    private void processInBackground(Porcupine porcupine, KSListener ksListener, AudioStream audioStream,
+            AtomicBoolean aborted) {
         int numBytesRead;
         // buffers for processing audio
         int frameLength = porcupine.getFrameLength();
         ByteBuffer captureBuffer = ByteBuffer.allocate(frameLength * 2);
         captureBuffer.order(ByteOrder.LITTLE_ENDIAN);
         short[] porcupineBuffer = new short[frameLength];
-        this.loop = true;
-        while (loop) {
+        while (!aborted.get()) {
             try {
                 // read a buffer of audio
                 numBytesRead = audioStream.read(captureBuffer.array(), 0, captureBuffer.capacity());
-                if (!loop) {
+                if (aborted.get()) {
                     break;
                 }
                 // don't pass to porcupine if we don't have a full buffer
