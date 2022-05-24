@@ -50,7 +50,7 @@ public class ShadePositionTest {
         assertTrue(db.getCapabilities(4).supportsTilt180());
         assertTrue(db.getCapabilities(5).supportsTilt180());
         assertFalse(db.getCapabilities(5).supportsPrimary());
-        assertTrue(db.getCapabilities(6).isPrimaryStateInverted());
+        assertTrue(db.getCapabilities(6).isPrimaryInverted());
         assertTrue(db.getCapabilities(7).supportsSecondary());
         assertTrue(db.getCapabilities(8).supportsSecondaryDuolite());
         assertTrue(db.getCapabilities(9).supportsSecondaryDuolite());
@@ -61,9 +61,9 @@ public class ShadePositionTest {
         assertFalse(db.isTypeInDatabase(99));
         assertFalse(db.isCapabilitiesInDatabase(99));
 
-        assertFalse(db.getCapabilities(0).isPrimaryStateInverted());
-        assertFalse(db.getCapabilities(-1).isPrimaryStateInverted());
-        assertFalse(db.getCapabilities(99).isPrimaryStateInverted());
+        assertFalse(db.getCapabilities(0).isPrimaryInverted());
+        assertFalse(db.getCapabilities(-1).isPrimaryInverted());
+        assertFalse(db.getCapabilities(99).isPrimaryInverted());
 
         assertFalse(db.getCapabilities(0).supportsSecondary());
         assertFalse(db.getCapabilities(-1).supportsSecondary());

@@ -233,7 +233,7 @@ public class ShadeCapabilitiesDatabase {
          *
          * @return true if the primary shade is inverted.
          */
-        public boolean isPrimaryStateInverted() {
+        public boolean isPrimaryInverted() {
             return primaryInverted;
         }
 
