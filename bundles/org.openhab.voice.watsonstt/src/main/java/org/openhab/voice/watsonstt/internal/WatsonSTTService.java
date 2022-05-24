@@ -123,7 +123,8 @@ public class WatsonSTTService implements STTService {
     @Override
     public STTServiceHandle recognize(STTListener sttListener, AudioStream audioStream, Locale locale, Set<String> set)
             throws STTException {
-        if (this.speechToText == null) {
+        var stt = this.speechToText;
+        if (stt == null) {
             throw new STTException("service is not correctly configured");
         }
         String contentType = getContentType(audioStream);
@@ -140,13 +141,8 @@ public class WatsonSTTService implements STTService {
         final AtomicReference<@Nullable WebSocket> socketRef = new AtomicReference<>();
         final AtomicBoolean aborted = new AtomicBoolean(false);
         executor.submit(() -> {
-            var speechToText = this.speechToText;
-            if (speechToText != null) {
-                socketRef.set(speechToText.recognizeUsingWebSocket(wsOptions,
-                        new TranscriptionListener(socketRef, sttListener, config, aborted)));
-            } else {
-                sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("Service not initialized"));
-            }
+            socketRef.set(stt.recognizeUsingWebSocket(wsOptions,
+                    new TranscriptionListener(socketRef, sttListener, config, aborted)));
         });
         return new STTServiceHandle() {
             @Override
