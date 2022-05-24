@@ -46,7 +46,7 @@ public class SecurityApi extends RestManager {
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
     public void dropWebhook() throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_DROPWEBHOOK);
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_DROP_WEBHOOK);
         post(uriBuilder, ApiResponse.Ok.class, null, null);
     }
 
@@ -57,13 +57,13 @@ public class SecurityApi extends RestManager {
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
     public boolean addwebhook(URI uri) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_ADDWEBHOOK, PARAM_URL, uri.toString());
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_ADD_WEBHOOK, PARAM_URL, uri.toString());
         post(uriBuilder, ApiResponse.Ok.class, null, null);
         return true;
     }
 
     public Collection<HomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GETEVENTS, PARAM_HOMEID, homeId, PARAM_PERSONID, personId,
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GET_EVENTS, PARAM_HOME_ID, homeId, PARAM_PERSON_ID, personId,
                 PARAM_OFFSET, 1);
         NAEventsDataResponse response = get(uriBuilder, NAEventsDataResponse.class);
         BodyResponse<Home> body = response.getBody();
@@ -77,10 +77,11 @@ public class SecurityApi extends RestManager {
         throw new NetatmoException("home should not be null");
     }
 
-    public Collection<HomeEvent> getCameraEvents(String homeId, String cameraId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GETEVENTS, PARAM_HOMEID, homeId, PARAM_DEVICEID, cameraId);
-        NAEventsDataResponse response = get(uriBuilder, NAEventsDataResponse.class);
-        BodyResponse<Home> body = response.getBody();
+    public Collection<HomeEvent> getCameraEvents(String homeId, String deviceId, String deviceType)
+            throws NetatmoException {
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GET_EVENTS, PARAM_HOME_ID, homeId, PARAM_DEVICE_ID, deviceId,
+                PARAM_DEVICES_TYPE, deviceType);
+        BodyResponse<Home> body = get(uriBuilder, NAEventsDataResponse.class).getBody();
         if (body != null) {
             Home home = body.getElement();
             if (home != null) {

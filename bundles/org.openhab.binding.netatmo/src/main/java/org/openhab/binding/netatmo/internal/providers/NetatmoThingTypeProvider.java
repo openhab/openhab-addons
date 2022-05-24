@@ -99,6 +99,10 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
     }
 
     public static String toGroupName(String groupeTypeName) {
-        return groupeTypeName.replace(OPTION_EXTENDED, "").replace(OPTION_OUTSIDE, "");
+        String result = groupeTypeName;
+        for (String variation : GROUP_VARIATIONS) {
+            result = result.replace(variation, "");
+        }
+        return result;
     }
 }

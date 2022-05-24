@@ -39,7 +39,11 @@ public class CameraChannelHelper extends ChannelHelper {
     private @Nullable String localUrl;
 
     public CameraChannelHelper() {
-        super(GROUP_CAM_STATUS, GROUP_CAM_LIVE);
+        this(GROUP_CAM_STATUS, GROUP_CAM_LIVE);
+    }
+
+    protected CameraChannelHelper(String... providedGroups) {
+        super(providedGroups);
     }
 
     public void setUrls(String vpnUrl, @Nullable String localUrl) {

@@ -33,7 +33,7 @@ import org.openhab.core.types.UnDefType;
 public class SetpointChannelHelper extends ChannelHelper {
 
     public SetpointChannelHelper() {
-        super(GROUP_TH_SETPOINT);
+        super(GROUP_SETPOINT);
     }
 
     @Override
