@@ -40,16 +40,16 @@ public class ShadeCapabilitiesDatabase {
      */
     private static final Map<Integer, Capabilities> CAPABILITIES_DATABASE = Arrays.asList(
     // @formatter:off
-            new Capabilities(0).primary()        .tiltOnClosed()                             .text("Bottom Up"),
-            new Capabilities(1).primary()        .tiltOnClosed()                             .text("Bottom Up Tilt 90°"),
-            new Capabilities(2).primary()        .tiltAnywhere().tilt180()                   .text("Bottom Up Tilt 180°"),
-            new Capabilities(3).primary()        .tiltOnClosed()                             .text("Vertical"),
-            new Capabilities(4).primary()        .tiltAnywhere().tilt180()                   .text("Vertical Tilt 180°"),
-            new Capabilities(5)                  .tiltAnywhere().tilt180()                   .text("Tilt Only 180°"),
-            new Capabilities(6).primaryInverted()                                            .text("Top Down"),
-            new Capabilities(7).primary()                                 .secondary()       .text("Top Down Bottom Up"),
-            new Capabilities(8).primary()                                 .secondaryDuolite().text("Duolite Lift"),
-            new Capabilities(9).primary()        .tiltAnywhere()          .secondaryDuolite().text("Duolite Lift and Tilt 90°"),
+            new Capabilities(0).primary()        .tiltOnClosed()                                .text("Bottom Up"),
+            new Capabilities(1).primary()        .tiltOnClosed()                                .text("Bottom Up Tilt 90°"),
+            new Capabilities(2).primary()        .tiltAnywhere().tilt180()                      .text("Bottom Up Tilt 180°"),
+            new Capabilities(3).primary()        .tiltOnClosed()                                .text("Vertical"),
+            new Capabilities(4).primary()        .tiltAnywhere().tilt180()                      .text("Vertical Tilt 180°"),
+            new Capabilities(5)                  .tiltAnywhere().tilt180()                      .text("Tilt Only 180°"),
+            new Capabilities(6).primaryInverted()                                               .text("Top Down"),
+            new Capabilities(7).primary()                                 .secondary()          .text("Top Down Bottom Up"),
+            new Capabilities(8).primary()                                 .secondaryOverlapped().text("Duolite Lift"),
+            new Capabilities(9).primary()        .tiltAnywhere()          .secondaryOverlapped().text("Duolite Lift and Tilt 90°"),
     // @formatter:on
             new Capabilities()).stream().collect(Collectors.toMap(Capabilities::getValue, Function.identity()));
 
@@ -149,15 +149,15 @@ public class ShadeCapabilitiesDatabase {
         private boolean supportsSecondary;
         private boolean supportsTiltOnClosed;
         private boolean supportsTiltAnywhere;
-        private boolean supportsSecondaryDuolite;
+        private boolean supportsSecondaryOverlapped;
         private boolean primaryInverted;
         private boolean tilt180Degrees;
 
         public Capabilities() {
         }
 
-        protected Capabilities secondaryDuolite() {
-            supportsSecondaryDuolite = true;
+        protected Capabilities secondaryOverlapped() {
+            supportsSecondaryOverlapped = true;
             return this;
         }
 
@@ -259,12 +259,13 @@ public class ShadeCapabilitiesDatabase {
         }
 
         /**
-         * Check if the Capabilities class instance supports a secondary 'DuoLite' (blackout) shade.
+         * Check if the Capabilities class instance supports an overlapped secondary shade.
+         * e.g. a 'DuoLite' or blackout shade.
          *
-         * @return true if the shade supports a secondary 'DuoLite' shade.
+         * @return true if the shade supports a secondary overlapped shade.
          */
-        public boolean supportsSecondaryDuolite() {
-            return supportsSecondaryDuolite;
+        public boolean supportsSecondaryOverlapped() {
+            return supportsSecondaryOverlapped;
         }
     }
 

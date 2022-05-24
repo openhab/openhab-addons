@@ -52,8 +52,8 @@ public class ShadePositionTest {
         assertFalse(db.getCapabilities(5).supportsPrimary());
         assertTrue(db.getCapabilities(6).isPrimaryInverted());
         assertTrue(db.getCapabilities(7).supportsSecondary());
-        assertTrue(db.getCapabilities(8).supportsSecondaryDuolite());
-        assertTrue(db.getCapabilities(9).supportsSecondaryDuolite());
+        assertTrue(db.getCapabilities(8).supportsSecondaryOverlapped());
+        assertTrue(db.getCapabilities(9).supportsSecondaryOverlapped());
 
         assertEquals(db.getType(4).getCapabilities(), 0);
         assertEquals(db.getType(-1).getCapabilities(), -1);

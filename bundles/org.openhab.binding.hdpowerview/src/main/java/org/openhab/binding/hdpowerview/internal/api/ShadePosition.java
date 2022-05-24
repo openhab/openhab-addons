@@ -101,7 +101,7 @@ public class ShadePosition {
                  * Secondary, upper rail of a dual action shade: => NOT INVERTED
                  */
                 posKind1 = posKindCoords.ordinal();
-                if (shadeCapabilities.supportsSecondaryDuolite()) {
+                if (shadeCapabilities.supportsSecondaryOverlapped()) {
                     position1 = MAX_SHADE - (int) Math.round((double) percent / 100 * MAX_SHADE);
                 } else {
                     position1 = (int) Math.round((double) percent / 100 * MAX_SHADE);
@@ -142,7 +142,7 @@ public class ShadePosition {
                 if (VANE_TILT_POSITION.equals(posKind1) && shadeCapabilities.supportsTiltOnClosed()) {
                     return PercentType.HUNDRED;
                 }
-                if (SECONDARY_POSITION.equals(posKind1) && shadeCapabilities.supportsSecondaryDuolite()) {
+                if (SECONDARY_POSITION.equals(posKind1) && shadeCapabilities.supportsSecondaryOverlapped()) {
                     return PercentType.HUNDRED;
                 }
                 break;
@@ -153,12 +153,12 @@ public class ShadePosition {
                  * Secondary, upper rail of a dual action shade: => NOT INVERTED
                  */
                 if (posKindCoords.equals(posKind1)) {
-                    if (shadeCapabilities.supportsSecondaryDuolite()) {
+                    if (shadeCapabilities.supportsSecondaryOverlapped()) {
                         return new PercentType(100 - (int) Math.round((double) position1 / MAX_SHADE * 100));
                     }
                     return new PercentType((int) Math.round((double) position1 / MAX_SHADE * 100));
                 }
-                if (PRIMARY_POSITION.equals(posKind1) && shadeCapabilities.supportsSecondaryDuolite()) {
+                if (PRIMARY_POSITION.equals(posKind1) && shadeCapabilities.supportsSecondaryOverlapped()) {
                     return PercentType.ZERO;
                 }
                 break;
@@ -351,7 +351,7 @@ public class ShadePosition {
                     } else {
                         setPosition1(shadeCapabilities, posKindCoords, percent);
                     }
-                } else if (shadeCapabilities.supportsSecondaryDuolite()) {
+                } else if (shadeCapabilities.supportsSecondaryOverlapped()) {
                     setPosition1(shadeCapabilities, posKindCoords, percent);
                 }
                 break;
