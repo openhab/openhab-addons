@@ -6,45 +6,45 @@
 
 	<config-description uri="thing-type:shelly:relay">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.device.deviceIp.label</label>
-			<description>@text/thing-type.config.device.deviceIp.description</description>
+			<label>@text/thing-type.config.shelly.deviceIp.label</label>
+			<description>@text/thing-type.config.shelly.deviceIp.description</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.device.userId.label</label>
-			<description>@text/thing-type.config.device.userId.description</description>
+			<label>@text/thing-type.config.shelly.userId.label</label>
+			<description>@text/thing-type.config.shelly.userId.description</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.device.password.label</label>
-			<description>@text/thing-type.config.device.password.description</description>
+			<label>@text/thing-type.config.shelly.password.label</label>
+			<description>@text/thing-type.config.shelly.password.description</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="eventsButton" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.device.eventsButton.label</label>
-			<description>@text/thing-type.config.shelly.device.eventsButton.description</description>
+			<label>@text/thing-type.config.shelly.eventsButton.label</label>
+			<description>@text/thing-type.config.shelly.eventsButton.description</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsSwitch" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.device.eventsSwitch.label</label>
-			<description>@text/thing-type.config.shelly.device.eventsSwitch.description</description>
+			<label>@text/thing-type.config.shelly.eventsSwitch.label</label>
+			<description>@text/thing-type.config.shelly.eventsSwitch.description</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsPush" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.device.eventsPush.label</label>
-			<description>@text/thing-type.config.shelly.device.eventsPush.description</description>
+			<label>@text/thing-type.config.shelly.eventsPush.label</label>
+			<description>@text/thing-type.config.shelly.eventsPush.description</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.device.eventsCoIoT.label</label>
-			<description>@text/thing-type.config.shelly.device.eventsCoIoT.description</description>
+			<label>@text/thing-type.config.shelly.eventsCoIoT.label</label>
+			<description>@text/thing-type.config.shelly.eventsCoIoT.description</description>
 			<default>true</default>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/@text/thing-type.config.shelly.device.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.device.updateInterval.description</description>
+			<label>@text/thing-type.config.shelly.updateInterval.label</label>
+			<description>@text/thing-type.config.shelly.updateInterval.description</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
@@ -53,17 +53,17 @@
 
 	<config-description uri="thing-type:shelly:roller">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.device.deviceIp.label</label>
-			<description>@text/thing-type.config.device.deviceIp.description</description>
+			<label>@text/thing-type.config.shelly.deviceIp.label</label>
+			<description>@text/thing-type.config.shelly.deviceIp.description</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.device.userId.label</label>
-			<description>@text/thing-type.config.device.userId.description</description>
+			<label>@text/thing-type.config.shelly.userId.label</label>
+			<description>@text/thing-type.config.shelly.userId.description</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.device.password.label</label>
-			<description>@text/thing-type.config.device.password.description</description>
+			<label>@text/thing-type.config.shelly.password.label</label>
+			<description>@text/thing-type.config.shelly.password.description</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="favoriteUP" type="integer" min="0" max="4" required="false">
@@ -83,13 +83,13 @@
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.device.eventsCoIoT.label</label>
-			<description>@text/thing-type.config.shelly.device.eventsCoIoT.description</description>
+			<label>@text/thing-type.config.shelly.eventsCoIoT.label</label>
+			<description>@text/thing-type.config.shelly.eventsCoIoT.description</description>
 			<default>true</default>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/@text/thing-type.config.shelly.device.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.device.updateInterval.description</description>
+			<label>@text/thing-type.config.shelly.updateInterval.label</label>
+			<description>@text/thing-type.config.shelly.updateInterval.description</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
@@ -98,17 +98,17 @@
 
 	<config-description uri="thing-type:shelly:dimmer">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.device.deviceIp.label</label>
-			<description>@text/thing-type.config.device.deviceIp.description</description>
+			<label>@text/thing-type.config.shelly.deviceIp.label</label>
+			<description>@text/thing-type.config.shelly.deviceIp.description</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.device.userId.label</label>
-			<description>@text/thing-type.config.device.userId.description</description>
+			<label>@text/thing-type.config.shelly.userId.label</label>
+			<description>@text/thing-type.config.shelly.userId.description</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.device.password.label</label>
-			<description>@text/thing-type.config.device.password.description</description>
+			<label>@text/thing-type.config.shelly.password.label</label>
+			<description>@text/thing-type.config.shelly.password.description</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="brightnessAutoOn" type="boolean" required="false">
@@ -117,20 +117,20 @@
 			<default>true</default>
 		</parameter>
 		<parameter name="eventsButton" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.device.eventsButton.label</label>
-			<description>@text/thing-type.config.shelly.device.eventsButton.description</description>
+			<label>@text/thing-type.config.shelly.eventsButton.label</label>
+			<description>@text/thing-type.config.shelly.eventsButton.description</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsSwitch" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.device.eventsSwitch.label</label>
-			<description>@text/thing-type.config.shelly.device.eventsSwitch.description</description>
+			<label>@text/thing-type.config.shelly.eventsSwitch.label</label>
+			<description>@text/thing-type.config.shelly.eventsSwitch.description</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsPush" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.device.eventsSwitch.label</label>
-			<description>@text/thing-type.config.shelly.device.eventsSwitch.description</description>
+			<label>@text/thing-type.config.shelly.eventsSwitch.label</label>
+			<description>@text/thing-type.config.shelly.eventsSwitch.description</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
@@ -141,8 +141,8 @@
 			<default>true</default>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/@text/thing-type.config.shelly.device.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.device.updateInterval.description</description>
+			<label>@text/thing-type.config.shelly.updateInterval.label</label>
+			<description>@text/thing-type.config.shelly.updateInterval.description</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
@@ -151,17 +151,17 @@
 
 	<config-description uri="thing-type:shelly:light">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.device.deviceIp.label</label>
-			<description>@text/thing-type.config.device.deviceIp.description</description>
+			<label>@text/thing-type.config.shelly.deviceIp.label</label>
+			<description>@text/thing-type.config.shelly.deviceIp.description</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.device.userId.label</label>
-			<description>@text/thing-type.config.device.userId.description</description>
+			<label>@text/thing-type.config.shelly.userId.label</label>
+			<description>@text/thing-type.config.shelly.userId.description</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.device.password.label</label>
-			<description>@text/thing-type.config.device.password.description</description>
+			<label>@text/thing-type.config.shelly.password.label</label>
+			<description>@text/thing-type.config.shelly.password.description</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="brightnessAutoOn" type="boolean" required="false">
@@ -170,19 +170,19 @@
 			<default>true</default>
 		</parameter>
 		<parameter name="eventsSwitch" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.device.eventsSwitch.label</label>
-			<description>@text/thing-type.config.shelly.device.eventsSwitch.description</description>
+			<label>@text/thing-type.config.shelly.eventsSwitch.label</label>
+			<description>@text/thing-type.config.shelly.eventsSwitch.description</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.device.eventsCoIoT.label</label>
-			<description>@text/thing-type.config.shelly.device.eventsCoIoT.description</description>
+			<label>@text/thing-type.config.shelly.eventsCoIoT.label</label>
+			<description>@text/thing-type.config.shelly.eventsCoIoT.description</description>
 			<default>true</default>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/@text/thing-type.config.shelly.device.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.device.updateInterval.description</description>
+			<label>@text/thing-type.config.shelly.updateInterval.label</label>
+			<description>@text/thing-type.config.shelly.updateInterval.description</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
@@ -191,17 +191,17 @@
 
 	<config-description uri="thing-type:shelly:rgbw2">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.device.deviceIp.label</label>
-			<description>@text/thing-type.config.device.deviceIp.description</description>
+			<label>@text/thing-type.config.shelly.deviceIp.label</label>
+			<description>@text/thing-type.config.shelly.deviceIp.description</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.device.userId.label</label>
-			<description>@text/thing-type.config.device.userId.description</description>
+			<label>@text/thing-type.config.shelly.userId.label</label>
+			<description>@text/thing-type.config.shelly.userId.description</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.device.password.label</label>
-			<description>@text/thing-type.config.device.password.description</description>
+			<label>@text/thing-type.config.shelly.password.label</label>
+			<description>@text/thing-type.config.shelly.password.description</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="brightnessAutoOn" type="boolean" required="false">
@@ -210,14 +210,14 @@
 			<default>true</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.device.eventsCoIoT.label</label>
-			<description>@text/thing-type.config.shelly.device.eventsCoIoT.description</description>
+			<label>@text/thing-type.config.shelly.eventsCoIoT.label</label>
+			<description>@text/thing-type.config.shelly.eventsCoIoT.description</description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/@text/thing-type.config.shelly.device.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.device.updateInterval.description</description>
+			<label>@text/thing-type.config.shelly.updateInterval.label</label>
+			<description>@text/thing-type.config.shelly.updateInterval.description</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
@@ -227,17 +227,17 @@
 
 	<config-description uri="thing-type:shelly:battery">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.device.deviceIp.label</label>
-			<description>@text/thing-type.config.device.deviceIp.description</description>
+			<label>@text/thing-type.config.shelly.deviceIp.label</label>
+			<description>@text/thing-type.config.shelly.deviceIp.description</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.device.userId.label</label>
-			<description>@text/thing-type.config.device.userId.description</description>
+			<label>@text/thing-type.config.shelly.userId.label</label>
+			<description>@text/thing-type.config.shelly.userId.description</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.device.password.label</label>
-			<description>@text/thing-type.config.device.password.description</description>
+			<label>@text/thing-type.config.shelly.password.label</label>
+			<description>@text/thing-type.config.shelly.password.description</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="lowBattery" type="integer" required="false">
@@ -247,20 +247,20 @@
 			<unitLabel>%</unitLabel>
 		</parameter>
 		<parameter name="eventsSensorReport" type="boolean" required="false">
-			<label>thing-type.config.shelly.device.eventsSensorReport.label</label>
-			<description>thing-type.config.shelly.device.eventsSensorReport.description</description>
+			<label>thing-type.config.shelly.eventsSensorReport.label</label>
+			<description>thing-type.config.shelly.eventsSensorReport.description</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.device.eventsCoIoT.label</label>
-			<description>@text/thing-type.config.shelly.device.eventsCoIoT.description</description>
+			<label>@text/thing-type.config.shelly.eventsCoIoT.label</label>
+			<description>@text/thing-type.config.shelly.eventsCoIoT.description</description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="60" required="true" unit="s">
-			<label>@text/@text/thing-type.config.shelly.device.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.device.updateInterval.description</description>
+			<label>@text/thing-type.config.shelly.updateInterval.label</label>
+			<description>@text/thing-type.config.shelly.updateInterval.description</description>
 			<default>900</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
@@ -269,34 +269,34 @@
 
 	<config-description uri="thing-type:shelly:basic">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.device.deviceIp.label</label>
-			<description>@text/thing-type.config.device.deviceIp.description</description>
+			<label>@text/thing-type.config.shelly.deviceIp.label</label>
+			<description>@text/thing-type.config.shelly.deviceIp.description</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.device.userId.label</label>
-			<description>@text/thing-type.config.device.userId.description</description>
+			<label>@text/thing-type.config.shelly.userId.label</label>
+			<description>@text/thing-type.config.shelly.userId.description</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.device.password.label</label>
-			<description>@text/thing-type.config.device.password.description</description>
+			<label>@text/thing-type.config.shelly.password.label</label>
+			<description>@text/thing-type.config.shelly.password.description</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="eventsSensorReport" type="boolean" required="false">
-			<label>thing-type.config.shelly.device.eventsSensorReport.label</label>
-			<description>thing-type.config.shelly.device.eventsSensorReport.description</description>
+			<label>thing-type.config.shelly.eventsSensorReport.label</label>
+			<description>thing-type.config.shelly.eventsSensorReport.description</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.device.eventsCoIoT.label</label>
-			<description>@text/thing-type.config.shelly.device.eventsCoIoT.description</description>
+			<label>@text/thing-type.config.shelly.eventsCoIoT.label</label>
+			<description>@text/thing-type.config.shelly.eventsCoIoT.description</description>
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/@text/thing-type.config.shelly.device.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.device.updateInterval.description</description>
+			<label>@text/thing-type.config.shelly.updateInterval.label</label>
+			<description>@text/thing-type.config.shelly.updateInterval.description</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
