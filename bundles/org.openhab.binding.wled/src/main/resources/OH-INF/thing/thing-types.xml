@@ -27,12 +27,12 @@
 				<label>Address</label>
 				<description>Use this format http://192.168.1.2:80</description>
 			</parameter>
-			<parameter name="pollTime" type="integer" required="true" min="1" unit="s">
+			<parameter name="pollTime" type="integer" min="1" unit="s">
 				<label>Poll Time</label>
 				<description>Time in seconds of how often to fetch the state of the LEDs.</description>
 				<default>5</default>
 			</parameter>
-			<parameter name="saturationThreshold" type="integer" required="true" min="0" max="99">
+			<parameter name="saturationThreshold" type="integer" min="0" max="99">
 				<label>Saturation Threshold</label>
 				<description>This feature allows you to specify a number that if the saturation drops below, will trigger white.
 				</description>
@@ -83,7 +83,7 @@
 			<channel id="spacing" typeId="spacing"/>
 		</channels>
 		<config-description>
-			<parameter name="segmentIndex" type="integer" required="true" min="0">
+			<parameter name="segmentIndex" type="integer" min="0">
 				<label>Segment Index</label>
 				<description>Leave this as 0 if you are not using multiple segments, otherwise set this to the segment index number
 					that you wish to control.</description>
@@ -277,7 +277,7 @@
 		<item-type>String</item-type>
 		<label>Sleep Mode</label>
 		<description>Timed Light Mode selects how the light will fade or increase when the sleep timer is turned ON.</description>
-		<state min="0" max="3" step="1" pattern="%.0f" readOnly="false">
+		<state readOnly="false">
 			<options>
 				<option value="0">Instant</option>
 				<option value="1">Fade</option>
