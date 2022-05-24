@@ -96,10 +96,6 @@ public class WLedSegmentDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void activate() {
-    }
-
-    @Override
     public void deactivate() {
     }
 }
