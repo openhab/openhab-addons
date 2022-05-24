@@ -14,7 +14,6 @@ package org.openhab.binding.wled.internal;
 
 import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,11 +60,11 @@ public class WLedSegmentDiscoveryService extends AbstractDiscoveryService
         }
         String newThingUID = localBridgeUID.getId() + "-" + segmentIndex;
         ThingUID thingUID = new ThingUID(THING_TYPE_SEGMENT, localBridgeUID, newThingUID);
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, newThingUID);
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                .withProperty(CONFIG_SEGMENT_INDEX, segmentIndex).withLabel(segmentName).withProperties(properties)
-                .withBridge(bridgeUID).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
+        Map<String, Object> properties = Map.of(Thing.PROPERTY_SERIAL_NUMBER, newThingUID, CONFIG_SEGMENT_INDEX,
+                segmentIndex);
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(segmentName)
+                .withProperties(properties).withBridge(bridgeUID)
+                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
         thingDiscovered(discoveryResult);
     }
 
