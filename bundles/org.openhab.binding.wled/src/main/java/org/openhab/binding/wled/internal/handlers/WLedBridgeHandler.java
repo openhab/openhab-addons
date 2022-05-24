@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
 public class WLedBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     public final WledDynamicStateDescriptionProvider stateDescriptionProvider;
-    public Map<Integer, WLedSegmentHandler> segmentHandlers = new HashMap<Integer, WLedSegmentHandler>();
+    private Map<Integer, WLedSegmentHandler> segmentHandlers = new HashMap<Integer, WLedSegmentHandler>();
     private WledApiFactory apiFactory;
     public boolean hasWhite = false;
     public @Nullable WledApi api;
@@ -74,6 +74,13 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
         super(bridge);
         this.apiFactory = apiFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
+    }
+
+    /**
+     * If no thing is setup for specified segmentIndex this will return FALSE.
+     */
+    public boolean handlerMissing(int segmentIndex) {
+        return (segmentHandlers.get(segmentIndex) == null);
     }
 
     public void savePreset(int position, String presetName) {

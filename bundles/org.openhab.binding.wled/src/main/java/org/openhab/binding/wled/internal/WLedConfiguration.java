@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class WLedConfiguration {
     public String address = "";
-    public int pollTime;
+    public int pollTime = 5;
     public int saturationThreshold;
     public boolean sortEffects = true;
     public boolean sortPalettes = true;

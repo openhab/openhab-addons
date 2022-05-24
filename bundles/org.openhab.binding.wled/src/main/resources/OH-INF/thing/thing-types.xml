@@ -96,7 +96,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Global Brightness</label>
 		<description>Allows you to fade and turn all segments ON and OFF at the same time</description>
-		<category>DimmableLight</category>
+		<category>ColorLight</category>
 	</channel-type>
 
 	<channel-type id="masterControls">
@@ -114,7 +114,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Segment Brightness</label>
 		<description>Changes the brightness of the whole segment</description>
-		<category>DimmableLight</category>
+		<category>ColorLight</category>
 	</channel-type>
 
 	<channel-type id="primaryColor" advanced="true">
@@ -128,7 +128,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Primary White</label>
 		<description>Changes the brightness of the primary white LED</description>
-		<category>DimmableLight</category>
+		<category>ColorLight</category>
 	</channel-type>
 
 	<channel-type id="secondaryColor" advanced="true">
@@ -142,7 +142,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Secondary White</label>
 		<description>Changes the brightness of the secondary white LED</description>
-		<category>DimmableLight</category>
+		<category>ColorLight</category>
 	</channel-type>
 
 	<channel-type id="tertiaryColor" advanced="true">
@@ -156,7 +156,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Tertiary White</label>
 		<description>Changes the brightness of the third white LED</description>
-		<category>DimmableLight</category>
+		<category>ColorLight</category>
 	</channel-type>
 
 	<channel-type id="palettes">

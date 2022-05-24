@@ -292,7 +292,7 @@ public class WledApiV084 implements WledApi {
             throw new ApiException(
                     "Segment " + segmentIndex + " is not currently setup correctly in the WLED firmware");
         }
-        if (handler.segmentHandlers.get(segmentIndex) == null) {
+        if (handler.handlerMissing(segmentIndex)) {
             // There is no thing setup for this segmentIndex.
             return;
         }

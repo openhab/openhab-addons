@@ -16,6 +16,7 @@ import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.wled.internal.WLedSegmentConfiguration;
@@ -49,7 +50,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WLedSegmentHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    public WLedSegmentConfiguration config = new WLedSegmentConfiguration();
+    private WLedSegmentConfiguration config = new WLedSegmentConfiguration();
     private BigDecimal masterBrightness255 = BigDecimal.ZERO;
     private HSBType primaryColor = new HSBType();
     private HSBType secondaryColor = new HSBType();
@@ -64,7 +65,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
     }
 
     private void removeWhiteChannels() {
-        ArrayList<Channel> removeChannels = new ArrayList<>();
+        List<Channel> removeChannels = new ArrayList<>();
         Channel channel = getThing().getChannel(CHANNEL_PRIMARY_WHITE);
         if (channel != null) {
             removeChannels.add(channel);
@@ -80,7 +81,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
         removeChannels(removeChannels);
     }
 
-    public void removeChannels(ArrayList<Channel> removeChannels) {
+    private void removeChannels(List<Channel> removeChannels) {
         if (!removeChannels.isEmpty()) {
             ThingBuilder thingBuilder = editThing();
             thingBuilder.withoutChannels(removeChannels);
@@ -238,10 +239,11 @@ public class WLedSegmentHandler extends BaseThingHandler {
         config = getConfigAs(WLedSegmentConfiguration.class);
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "No bridge is selected.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge is selected.");
         } else {
             WLedBridgeHandler localBridgeHandler = (WLedBridgeHandler) bridge.getHandler();
             if (localBridgeHandler == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
                 return;
             }
             WledApi localAPI = localBridgeHandler.api;
@@ -255,6 +257,8 @@ public class WLedSegmentHandler extends BaseThingHandler {
                     logger.debug("WLED is not setup to use RGBW, so removing un-needed white channels");
                     removeWhiteChannels();
                 }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
         }
     }
