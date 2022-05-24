@@ -383,7 +383,7 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
         @Nullable
         SessionInfo clientSession = sessions.stream()
                 .filter(session -> Objects.equals(session.getDeviceId(), handler.getThing().getUID().getId()))
-                .findFirst().orElse(null);
+                .sorted((a, b) -> b.getLastActivityDate().compareTo(a.getLastActivityDate())).findFirst().orElse(null);
         handler.updateStateFromSession(clientSession);
     }
 
