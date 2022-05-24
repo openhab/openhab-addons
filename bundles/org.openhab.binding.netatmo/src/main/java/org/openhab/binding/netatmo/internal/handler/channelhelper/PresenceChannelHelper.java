@@ -29,9 +29,10 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class PresenceChannelHelper extends ChannelHelper {
+public class PresenceChannelHelper extends CameraChannelHelper {
+
     public PresenceChannelHelper() {
-        super(GROUP_PRESENCE);
+        super(GROUP_CAM_STATUS, GROUP_CAM_LIVE, GROUP_PRESENCE);
     }
 
     @Override

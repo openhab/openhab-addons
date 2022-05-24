@@ -41,7 +41,9 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.BatteryChannel
 import org.openhab.binding.netatmo.internal.handler.channelhelper.BatteryExtChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.channelhelper.DoorbellChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.channelhelper.EventDoorbellChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventPersonChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.HomeEnergyChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.HomeSecurityChannelHelper;
@@ -75,8 +77,8 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public enum ModuleType {
-    UNKNOWN(FeatureArea.NONE, null, null, List.of(), List.of()),
-    ACCOUNT(FeatureArea.NONE, null, null, List.of(), List.of()),
+    UNKNOWN(FeatureArea.NONE, "", null, List.of(), List.of()),
+    ACCOUNT(FeatureArea.NONE, "", null, List.of(), List.of()),
     @SerializedName("NAHome")
     HOME(FeatureArea.NONE, "NAHome", ACCOUNT,
             List.of(DeviceCapability.class, EventCapability.class, HomeCapability.class, ChannelHelperCapability.class),
@@ -92,14 +94,14 @@ public enum ModuleType {
     @SerializedName("NOC")
     PRESENCE(FeatureArea.SECURITY, "NOC", HOME,
             List.of(EventCapability.class, PresenceCapability.class, ChannelHelperCapability.class),
-            List.of(CameraChannelHelper.class, PresenceChannelHelper.class, SignalChannelHelper.class,
-                    EventChannelHelper.class)),
+            List.of(PresenceChannelHelper.class, SignalChannelHelper.class, EventChannelHelper.class)),
     @SerializedName("NIS")
     SIREN(FeatureArea.SECURITY, "NIS", HOME, List.of(ChannelHelperCapability.class),
             List.of(BatteryChannelHelper.class, TimestampChannelHelper.class, SignalChannelHelper.class)),
     @SerializedName("NDB")
-    DOORBELL(FeatureArea.SECURITY, "NDB", HOME, List.of(ChannelHelperCapability.class),
-            List.of(SignalChannelHelper.class)),
+    DOORBELL(FeatureArea.SECURITY, "NDB", HOME,
+            List.of(EventCapability.class, CameraCapability.class, ChannelHelperCapability.class),
+            List.of(DoorbellChannelHelper.class, SignalChannelHelper.class, EventDoorbellChannelHelper.class)),
     @SerializedName("NAMain")
     WEATHER_STATION(FeatureArea.WEATHER, "NAMain", ACCOUNT,
             List.of(DeviceCapability.class, WeatherCapability.class, MeasureCapability.class,
@@ -156,9 +158,9 @@ public enum ModuleType {
     public final List<Class<? extends Capability>> capabilities;
     public final ThingTypeUID thingTypeUID;
     public final FeatureArea feature;
-    public final @Nullable String apiName;
+    public final String apiName;
 
-    ModuleType(FeatureArea feature, @Nullable String apiName, @Nullable ModuleType bridge,
+    ModuleType(FeatureArea feature, String apiName, @Nullable ModuleType bridge,
             List<Class<? extends Capability>> capabilities, List<Class<? extends ChannelHelper>> helpers) {
         this.channelHelpers = helpers;
         this.bridgeType = bridge;

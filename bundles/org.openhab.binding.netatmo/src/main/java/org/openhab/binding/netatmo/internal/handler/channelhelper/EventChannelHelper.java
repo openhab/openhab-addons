@@ -36,14 +36,14 @@ import org.openhab.core.types.UnDefType;
 public class EventChannelHelper extends ChannelHelper {
     private boolean isLocal;
     private @Nullable String vpnUrl, localUrl;
-    private ModuleType moduleType = ModuleType.UNKNOWN;
+    protected ModuleType moduleType = ModuleType.UNKNOWN;
 
     public EventChannelHelper() {
         this(GROUP_LAST_EVENT);
     }
 
-    protected EventChannelHelper(String groupName) {
-        super(groupName);
+    protected EventChannelHelper(String... providedGroups) {
+        super(providedGroups);
     }
 
     public void setModuleType(ModuleType moduleType) {
@@ -60,7 +60,7 @@ public class EventChannelHelper extends ChannelHelper {
     public void setNewData(@Nullable NAObject data) {
         if (data instanceof Event) {
             Event event = (Event) data;
-            if (!event.getEventType().appliesOn(moduleType)) {
+            if (!event.getEventType().validFor(moduleType)) {
                 return;
             }
         }
@@ -87,16 +87,18 @@ public class EventChannelHelper extends ChannelHelper {
             case CHANNEL_EVENT_SNAPSHOT_URL:
                 return toStringType(event.getSnapshotUrl());
         }
-        if (event instanceof HomeEvent) {
-            HomeEvent homeEvent = (HomeEvent) event;
-            switch (channelId) {
-                case CHANNEL_EVENT_VIDEO_STATUS:
-                    return homeEvent.getVideoId() != null ? toStringType(homeEvent.getVideoStatus()) : UnDefType.NULL;
-                case CHANNEL_EVENT_VIDEO_LOCAL_URL:
-                    return getStreamURL(true, homeEvent.getVideoId(), homeEvent.getVideoStatus());
-                case CHANNEL_EVENT_VIDEO_VPN_URL:
-                    return getStreamURL(false, homeEvent.getVideoId(), homeEvent.getVideoStatus());
-            }
+        return null;
+    }
+
+    @Override
+    protected @Nullable State internalGetHomeEvent(String channelId, @Nullable String groupId, HomeEvent event) {
+        switch (channelId) {
+            case CHANNEL_EVENT_VIDEO_STATUS:
+                return event.getVideoId() != null ? toStringType(event.getVideoStatus()) : UnDefType.NULL;
+            case CHANNEL_EVENT_VIDEO_LOCAL_URL:
+                return getStreamURL(true, event.getVideoId(), event.getVideoStatus());
+            case CHANNEL_EVENT_VIDEO_VPN_URL:
+                return getStreamURL(false, event.getVideoId(), event.getVideoStatus());
         }
         return null;
     }
