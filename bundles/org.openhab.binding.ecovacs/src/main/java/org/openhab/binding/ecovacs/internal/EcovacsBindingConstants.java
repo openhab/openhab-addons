@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ecovacs.internal.api.commands.PlaySoundCommand.SoundType;
 import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
 import org.openhab.binding.ecovacs.internal.api.model.MoppingWaterAmount;
@@ -102,7 +103,7 @@ public class EcovacsBindingConstants {
 
         public @Nullable T findMappedEnumValue(String value) {
             return entrySet().stream().filter(entry -> entry.getValue().value.equals(value))
-                    .map(entry -> entry.getKey()).findFirst().get();
+                    .map(entry -> entry.getKey()).findFirst().orElse(null);
         }
 
         @SafeVarargs
@@ -138,4 +139,11 @@ public class EcovacsBindingConstants {
             new StateOptionEntry<SuctionPower>(SuctionPower.NORMAL, "normal"),
             new StateOptionEntry<SuctionPower>(SuctionPower.HIGH, "high"), new StateOptionEntry<SuctionPower>(
                     SuctionPower.HIGHER, "higher", DeviceCapability.EXTENDED_CLEAN_SPEED_CONTROL));
+
+    public static final StateOptionMapping<SoundType> SOUND_TYPE_MAPPING = StateOptionMapping.<SoundType> of(
+            new StateOptionEntry<SoundType>(SoundType.BEEP, "beep"),
+            new StateOptionEntry<SoundType>(SoundType.I_AM_HERE, "iAmHere"),
+            new StateOptionEntry<SoundType>(SoundType.STARTUP, "startup"),
+            new StateOptionEntry<SoundType>(SoundType.SUSPENDED, "suspended"),
+            new StateOptionEntry<SoundType>(SoundType.BATTERY_LOW, "batteryLow"));
 }

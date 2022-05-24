@@ -17,6 +17,8 @@ import static org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.*;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -28,6 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.StateOptionEntry;
 import org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.StateOptionMapping;
 import org.openhab.binding.ecovacs.internal.EcovacsDynamicStateDescriptionProvider;
+import org.openhab.binding.ecovacs.internal.action.EcovacsVacuumActions;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApi;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
 import org.openhab.binding.ecovacs.internal.api.EcovacsDevice;
@@ -46,6 +49,7 @@ import org.openhab.binding.ecovacs.internal.api.commands.GetVolumeCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetWaterSystemPresentCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GoChargingCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.PauseCleaningCommand;
+import org.openhab.binding.ecovacs.internal.api.commands.PlaySoundCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.ResumeCleaningCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SetMoppingWaterAmountCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SetSuctionPowerCommand;
@@ -83,6 +87,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -131,6 +136,11 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         initTask = new SchedulerTask(scheduler, logger, serial + ": Init", this::initDevice);
         reconnectTask = new SchedulerTask(scheduler, logger, serial + ": Connection", this::connectToDevice);
         pollTask = new SchedulerTask(scheduler, logger, serial + ": Poll", this::pollData);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(EcovacsVacuumActions.class);
     }
 
     @Override
@@ -304,6 +314,16 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     @Override
     public void onFirmwareVersionChanged(EcovacsDevice device, String fwVersion) {
         updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, fwVersion);
+    }
+
+    public void playSound(PlaySoundCommand command) {
+        doWithDevice(device -> {
+            if (device.hasCapability(DeviceCapability.VOICE_REPORTING)) {
+                device.sendCommand(command);
+            } else {
+                logger.info("{}: Device does not support voice reporting, ignoring sound action", getDeviceSerial());
+            }
+        });
     }
 
     private void fetchInitialBatteryStatus(EcovacsDevice device) throws EcovacsApiException, InterruptedException {

@@ -72,6 +72,11 @@ public class PlaySoundCommand extends AbstractNoResponseCommand {
         this.soundId = type.id;
     }
 
+    public PlaySoundCommand(int soundId) {
+        super();
+        this.soundId = soundId;
+    }
+
     @Override
     public String getName(ProtocolVersion version) {
         return version == ProtocolVersion.XML ? "PlaySound" : "playSound";
@@ -85,7 +90,7 @@ public class PlaySoundCommand extends AbstractNoResponseCommand {
     @Override
     protected @Nullable JsonElement getJsonPayloadArgs(ProtocolVersion version) {
         JsonObject args = new JsonObject();
-        args.addProperty("sid", String.valueOf(soundId));
+        args.addProperty("sid", soundId);
         return args;
     }
 }

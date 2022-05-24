@@ -107,6 +107,31 @@ The following actions are supported by the `command` channel:
 | `stop`     | Stop cleaning immediately.                |                                                      |
 | `charge`   | Send device to charging station.          |                                                      |
 
+## Rule actions
+
+This binding includes a rule action, which allows playback of specific sounds on the device in case the device has a speaker.
+There is a separate instance for each device, which can be retrieved like this:
+
+```php
+val vacuumActions = getActions("ecovacs","ecovacs:vacuum:1234567890")
+```
+
+where the first parameter always has to be `ecovacs` and the second is the full Thing UID of the device that should be used.
+Once this action instance is retrieved, you can invoke the `playSound(String type)` method on it:
+
+```php
+vacuumActions.playSound("beep")
+```
+
+Supported sound types include:
+- `beep`
+- `iAmHere`
+- `startup`
+- `suspended`
+- `batteryLow`
+
+For special use cases, there is also a `playSoundWithId(int soundId)` method, where you can pass the numeric ID of the sound to play. The exact meaning of the number depends on the specific device; you'll need to experiment with different numbers to see how the number-to-sound mapping looks like. For reference, a list for the Deebot 900 can be found [here](https://github.com/bmartin5692/sucks/blob/D901/protocol.md#user-content-sounds).
+
 ## File Based Configuration
 
 If you want to create the API bridge in a .things file, the entry has to look as follows:
