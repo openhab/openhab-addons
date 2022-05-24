@@ -22,6 +22,14 @@
 			<channel id="alim" typeId="alim-status"/>
 		</channels>
 	</channel-group-type>
+	
+    <channel-group-type id="siren">
+        <label>Siren Status</label>
+        <channels>
+            <channel id="status" typeId="message"/>
+            <channel id="monitoring" typeId="monitoring-status"/>
+        </channels>
+    </channel-group-type>
 
 	<channel-group-type id="status-doorbell">
 		<label>Camera Status</label>

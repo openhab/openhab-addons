@@ -53,6 +53,7 @@ public class NetatmoBindingConstants {
     public static final String GROUP_CAM_STATUS = "status";
     public static final String GROUP_CAM_LIVE = "live";
     public static final String GROUP_PRESENCE = "presence";
+    public static final String GROUP_SIREN = "siren";
     public static final String GROUP_PERSON = "person";
     public static final String GROUP_PROPERTIES = "properties";
     public static final String GROUP_SETPOINT = "setpoint";
