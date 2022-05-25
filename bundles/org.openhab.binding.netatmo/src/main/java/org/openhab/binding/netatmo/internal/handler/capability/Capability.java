@@ -94,10 +94,9 @@ public class Capability {
         properties = new HashMap<>(thing.getProperties());
         firstLaunch = properties.isEmpty();
         if (firstLaunch && !moduleType.isLogical()) {
-            String name = moduleType.apiName;
-            name = name == null ? moduleType.name() : name;
-            properties.put(PROPERTY_VENDOR, VENDOR);
+            String name = moduleType.apiName.isBlank() ? moduleType.name() : moduleType.apiName;
             properties.put(PROPERTY_MODEL_ID, name);
+            properties.put(PROPERTY_VENDOR, VENDOR);
         }
         statusReason = null;
     }
