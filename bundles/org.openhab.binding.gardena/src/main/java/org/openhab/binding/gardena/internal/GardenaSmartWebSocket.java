@@ -84,7 +84,7 @@ public class GardenaSmartWebSocket {
     /**
      * Stops the websocket session.
      */
-    public void stop() {
+    public synchronized void stop() {
         closing = true;
         final ScheduledFuture<?> connectionTracker = this.connectionTracker;
         if (connectionTracker != null) {
