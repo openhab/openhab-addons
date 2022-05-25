@@ -156,17 +156,17 @@ public enum ModuleType {
     PLUG(FeatureArea.ENERGY, "NAPlug", HOME, List.of(ChannelHelperCapability.class),
             List.of(SignalChannelHelper.class)),
 
+    @SerializedName("NRV")
+    VALVE(FeatureArea.ENERGY, "NRV", PLUG, List.of(ChannelHelperCapability.class),
+            List.of(BatteryExtChannelHelper.class, SignalChannelHelper.class)),
+
     @SerializedName("NATherm1")
-    THERMOSTAT(FeatureArea.ENERGY, "NATherm1", HOME, List.of(ChannelHelperCapability.class),
+    THERMOSTAT(FeatureArea.ENERGY, "NATherm1", PLUG, List.of(ChannelHelperCapability.class),
             List.of(Therm1ChannelHelper.class, BatteryExtChannelHelper.class, SignalChannelHelper.class)),
 
     @SerializedName("NARoom")
     ROOM(FeatureArea.ENERGY, "NARoom", HOME, List.of(RoomCapability.class, ChannelHelperCapability.class),
-            List.of(RoomChannelHelper.class, SetpointChannelHelper.class)),
-
-    @SerializedName("NRV")
-    VALVE(FeatureArea.ENERGY, "NRV", HOME, List.of(ChannelHelperCapability.class),
-            List.of(BatteryExtChannelHelper.class, SignalChannelHelper.class));
+            List.of(RoomChannelHelper.class, SetpointChannelHelper.class));
 
     public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);
 

@@ -58,17 +58,21 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     protected void updateHomeData(HomeData homeData) {
         NAObjectMap<HomeDataRoom> rooms = homeData.getRooms();
         NAObjectMap<HomeDataModule> modules = homeData.getModules();
-        handler.getActiveChildren().forEach(handler -> {
-            HomeDataRoom roomData = rooms.get(handler.getId());
-            if (roomData != null) {
+        handler.getActiveChildren().forEach(childHandler -> {
+            String childId = childHandler.getId();
+            rooms.getOpt(childId).ifPresentOrElse(roomData -> {
                 roomData.setIgnoredForThingUpdate(true);
-                handler.setNewData(roomData);
-            }
-            HomeDataModule moduleData = modules.get(handler.getId());
-            if (moduleData != null) {
-                moduleData.setIgnoredForThingUpdate(true);
-                handler.setNewData(moduleData);
-            }
+                childHandler.setNewData(roomData);
+            }, () -> {
+                modules.getOpt(childId).ifPresent(childData -> {
+                    childData.setIgnoredForThingUpdate(true);
+                    childHandler.setNewData(childData);
+                });
+                modules.values().stream().filter(module -> childId.equals(module.getBridge()))
+                        .forEach(bridgedModule -> {
+                            childHandler.setNewData(bridgedModule);
+                        });
+            });
         });
         descriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), GROUP_ENERGY, CHANNEL_PLANNING),
                 homeData.getThermSchedules().stream().map(p -> new StateOption(p.getId(), p.getName()))
@@ -80,15 +84,23 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     protected void updateHomeStatus(HomeStatus homeStatus) {
         NAObjectMap<Room> rooms = homeStatus.getRooms();
         NAObjectMap<HomeStatusModule> modules = homeStatus.getModules();
-        handler.getActiveChildren().forEach(handler -> {
-            Room roomData = rooms.get(handler.getId());
-            if (roomData != null) {
-                handler.setNewData(roomData);
-            }
-            HomeStatusModule data = modules.get(handler.getId());
-            if (data != null) {
-                handler.setNewData(data);
-            }
+        handler.getActiveChildren().forEach(childHandler -> {
+            String childId = childHandler.getId();
+            rooms.getOpt(childId).ifPresentOrElse(roomData -> childHandler.setNewData(roomData), () -> {
+                modules.getOpt(childId).ifPresentOrElse(childData -> {
+                    childHandler.setNewData(childData);
+                    modules.values().stream().filter(module -> childId.equals(module.getBridge()))
+                            .forEach(bridgedModule -> {
+                                childHandler.setNewData(bridgedModule);
+                            });
+
+                }, () -> {
+                    // This module is not present in the homestatus data, so it is considered as unreachable
+                    HomeStatusModule module = new HomeStatusModule();
+                    module.setReachable(false);
+                    childHandler.setNewData(module);
+                });
+            });
         });
     }
 
