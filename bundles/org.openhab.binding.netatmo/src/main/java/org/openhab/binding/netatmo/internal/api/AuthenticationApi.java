@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AuthenticationApi extends RestManager {
-    private static final String ALL_SCOPES = FeatureArea.toScopeString(FeatureArea.AS_SET);
     private static final UriBuilder OAUTH_BUILDER = getApiBaseBuilder().path(PATH_OAUTH);
     private static final UriBuilder AUTH_BUILDER = OAUTH_BUILDER.clone().path(SUB_PATH_AUTHORIZE);
     private static final URI TOKEN_URI = OAUTH_BUILDER.clone().path(SUB_PATH_TOKEN).build();
@@ -62,7 +61,7 @@ public class AuthenticationApi extends RestManager {
     public String authorize(ApiHandlerConfiguration credentials, @Nullable String code, @Nullable String redirectUri)
             throws NetatmoException {
         if (!(credentials.clientId.isBlank() || credentials.clientSecret.isBlank())) {
-            Map<String, String> params = new HashMap<>(Map.of(SCOPE, ALL_SCOPES));
+            Map<String, String> params = new HashMap<>(Map.of(SCOPE, FeatureArea.ALL_SCOPES));
             String refreshToken = credentials.refreshToken;
             if (!refreshToken.isBlank()) {
                 params.put(REFRESH_TOKEN, refreshToken);
@@ -118,7 +117,7 @@ public class AuthenticationApi extends RestManager {
     }
 
     public static UriBuilder getAuthorizationBuilder(String clientId) {
-        return AUTH_BUILDER.clone().queryParam(CLIENT_ID, clientId).queryParam(SCOPE, ALL_SCOPES).queryParam(STATE,
-                clientId);
+        return AUTH_BUILDER.clone().queryParam(CLIENT_ID, clientId).queryParam(SCOPE, FeatureArea.ALL_SCOPES)
+                .queryParam(STATE, clientId);
     }
 }

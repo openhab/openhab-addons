@@ -26,8 +26,8 @@
 	<channel-group-type id="siren">
 		<label>Siren Status</label>
 		<channels>
-			<channel id="status" typeId="message"/>
-			<channel id="monitoring" typeId="monitoring-status"/>
+			<channel id="status" typeId="siren-status"/>
+			<channel id="monitoring" typeId="monitoring-status-ro"/>
 		</channels>
 	</channel-group-type>
 
