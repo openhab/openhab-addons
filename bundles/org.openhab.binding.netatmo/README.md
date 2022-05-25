@@ -130,6 +130,8 @@ You have to calculate the ID for the outside module as follows: (it cannot be re
 
 - if the first serial character is "h": start with "02"
 - if the first serial character is "i": start with "03"
+- if the first serial character is "j": start with "04"
+- if the first serial character is "k": start with "05"
 
 append ":00:00:",
 
