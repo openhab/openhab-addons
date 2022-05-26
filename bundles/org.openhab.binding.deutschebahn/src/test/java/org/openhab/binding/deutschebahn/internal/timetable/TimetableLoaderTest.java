@@ -45,11 +45,11 @@ public class TimetableLoaderTest implements TimetablesV1ImplTestHelper {
 
         final List<TimetableStop> stops = loader.getTimetableStops();
         assertThat(timeTableTestModule.getRequestedPlanUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/plan/8000226/210816/09",
-                        "https://api.deutschebahn.com/timetables/v1/plan/8000226/210816/10",
-                        "https://api.deutschebahn.com/timetables/v1/plan/8000226/210816/11"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/09",
+                        "https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/10",
+                        "https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/11"));
         assertThat(timeTableTestModule.getRequestedFullChangesUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/fchg/8000226"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/fchg/8000226"));
         assertThat(timeTableTestModule.getRequestedRecentChangesUrls(), empty());
 
         assertThat(stops, hasSize(21));
@@ -75,9 +75,9 @@ public class TimetableLoaderTest implements TimetablesV1ImplTestHelper {
 
         final List<TimetableStop> stops = loader.getTimetableStops();
         assertThat(timeTableTestModule.getRequestedPlanUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/plan/8000226/210816/09"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/09"));
         assertThat(timeTableTestModule.getRequestedFullChangesUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/fchg/8000226"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/fchg/8000226"));
         assertThat(timeTableTestModule.getRequestedRecentChangesUrls(), empty());
 
         assertThat(stops, hasSize(8));
@@ -91,11 +91,11 @@ public class TimetableLoaderTest implements TimetablesV1ImplTestHelper {
         final List<TimetableStop> stops02 = loader.getTimetableStops();
         assertThat(stops02, hasSize(13));
         assertThat(timeTableTestModule.getRequestedPlanUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/plan/8000226/210816/09",
-                        "https://api.deutschebahn.com/timetables/v1/plan/8000226/210816/10"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/09",
+                        "https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/10"));
         assertThat(timeTableTestModule.getRequestedFullChangesUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/fchg/8000226",
-                        "https://api.deutschebahn.com/timetables/v1/fchg/8000226"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/fchg/8000226",
+                        "https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/fchg/8000226"));
         assertThat(timeTableTestModule.getRequestedRecentChangesUrls(), empty());
 
         assertEquals("-5296516961807204721-2108160906-5", stops02.get(0).getId());
@@ -114,9 +114,9 @@ public class TimetableLoaderTest implements TimetablesV1ImplTestHelper {
         // First call - plan and full changes are requested.
         loader.getTimetableStops();
         assertThat(timeTableTestModule.getRequestedPlanUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/plan/8000226/210816/09"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/09"));
         assertThat(timeTableTestModule.getRequestedFullChangesUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/fchg/8000226"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/fchg/8000226"));
         assertThat(timeTableTestModule.getRequestedRecentChangesUrls(), empty());
 
         // Changes are updated only every 30 seconds, so move clock ahead 20 seconds, no request is made
@@ -124,43 +124,43 @@ public class TimetableLoaderTest implements TimetablesV1ImplTestHelper {
         loader.getTimetableStops();
 
         assertThat(timeTableTestModule.getRequestedPlanUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/plan/8000226/210816/09"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/09"));
         assertThat(timeTableTestModule.getRequestedFullChangesUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/fchg/8000226"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/fchg/8000226"));
         assertThat(timeTableTestModule.getRequestedRecentChangesUrls(), empty());
 
         // Move ahead 10 seconds, so recent changes are fetched
         timeProvider.moveAhead(10);
         loader.getTimetableStops();
         assertThat(timeTableTestModule.getRequestedPlanUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/plan/8000226/210816/09"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/09"));
         assertThat(timeTableTestModule.getRequestedFullChangesUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/fchg/8000226"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/fchg/8000226"));
         assertThat(timeTableTestModule.getRequestedRecentChangesUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/rchg/8000226"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/rchg/8000226"));
 
         // Move again ahead 30 seconds, recent changes are fetched again
         timeProvider.moveAhead(30);
         loader.getTimetableStops();
         assertThat(timeTableTestModule.getRequestedPlanUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/plan/8000226/210816/09"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/09"));
         assertThat(timeTableTestModule.getRequestedFullChangesUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/fchg/8000226"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/fchg/8000226"));
         assertThat(timeTableTestModule.getRequestedRecentChangesUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/rchg/8000226",
-                        "https://api.deutschebahn.com/timetables/v1/rchg/8000226"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/rchg/8000226",
+                        "https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/rchg/8000226"));
 
         // If recent change were not updated last 120 seconds the full changes must be requested
         timeProvider.moveAhead(120);
         loader.getTimetableStops();
         assertThat(timeTableTestModule.getRequestedPlanUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/plan/8000226/210816/09"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/09"));
         assertThat(timeTableTestModule.getRequestedFullChangesUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/fchg/8000226",
-                        "https://api.deutschebahn.com/timetables/v1/fchg/8000226"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/fchg/8000226",
+                        "https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/fchg/8000226"));
         assertThat(timeTableTestModule.getRequestedRecentChangesUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/rchg/8000226",
-                        "https://api.deutschebahn.com/timetables/v1/rchg/8000226"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/rchg/8000226",
+                        "https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/rchg/8000226"));
     }
 
     @Test
@@ -171,7 +171,8 @@ public class TimetableLoaderTest implements TimetablesV1ImplTestHelper {
                 EventType.ARRIVAL, timeProvider, EVA_LEHRTE, 20);
 
         // Simulate that only one url is available
-        timeTableTestModule.addAvailableUrl("https://api.deutschebahn.com/timetables/v1/plan/8000226/210816/09");
+        timeTableTestModule.addAvailableUrl(
+                "https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/09");
 
         timeProvider.time = new GregorianCalendar(2021, Calendar.AUGUST, 16, 9, 0);
 
@@ -191,7 +192,8 @@ public class TimetableLoaderTest implements TimetablesV1ImplTestHelper {
                 EventType.DEPARTURE, timeProvider, EVA_LEHRTE, 20);
 
         // Simulate that only one url is available
-        timeTableTestModule.addAvailableUrl("https://api.deutschebahn.com/timetables/v1/plan/8000226/210816/09");
+        timeTableTestModule.addAvailableUrl(
+                "https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/09");
 
         timeProvider.time = new GregorianCalendar(2021, Calendar.AUGUST, 16, 9, 0);
 
@@ -214,9 +216,9 @@ public class TimetableLoaderTest implements TimetablesV1ImplTestHelper {
 
         final List<TimetableStop> stops = loader.getTimetableStops();
         assertThat(timeTableTestModule.getRequestedPlanUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/plan/8000226/210816/09"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/09"));
         assertThat(timeTableTestModule.getRequestedFullChangesUrls(),
-                contains("https://api.deutschebahn.com/timetables/v1/fchg/8000226"));
+                contains("https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/fchg/8000226"));
         assertThat(timeTableTestModule.getRequestedRecentChangesUrls(), empty());
 
         // Stop -5296516961807204721-2108160906-5 has its planned time at 9:34, but its included because its changed
