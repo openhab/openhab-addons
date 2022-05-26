@@ -92,16 +92,16 @@
 		<description>@text/thing-type.shelly.shellypro2-relay.description</description>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
-				<label>@text/thing-type.shelly.shellypro2-relay.group.relay1.label</label>
+				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
 			</channel-group>
 			<channel-group id="meter1" typeId="meter">
-				<label>@text/thing-type.shelly.shellypro2-relay.group.meter1.label</label>
+				<label>@text/channel-group-type.shelly.meter1.label</label>
 			</channel-group>
 			<channel-group id="relay2" typeId="relayChannel">
-				<label>@text/thing-type.shelly.shellypro2-relay.group.relay2.label</label>
+				<label>@text/channel-group-type.shelly.relayChannel2.label</label>
 			</channel-group>
 			<channel-group id="meter2" typeId="meter">
-				<label>@text/thing-type.shelly.shellypro2-relay.group.meter2.label</label>
+				<label>@text/channel-group-type.shelly.meter1.label</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -129,16 +129,16 @@
 		<description>@text/thing-type.shelly.shellypro2pm-relay.description</description>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
-				<label>@text/thing-type.shelly.shellypro2pm-relay.group.relay1.label</label>
+				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
 			</channel-group>
 			<channel-group id="meter1" typeId="meter">
-				<label>@text/thing-type.shelly.shellypro2pm-relay.group.meter1.label</label>
+				<label>@text/channel-group-type.shelly.meter1.label</label>
 			</channel-group>
 			<channel-group id="relay2" typeId="relayChannel">
-				<label>@text/thing-type.shelly.shellypro2pm-relay.group.relay2.label</label>
+				<label>@text/channel-group-type.shelly.relayChannel2.label</label>
 			</channel-group>
 			<channel-group id="meter2" typeId="meter">
-				<label>@text/thing-type.shelly.shellypro2pm-relay.group.meter2.label</label>
+				<label>@text/channel-group-type.shelly.meter2.label</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -167,28 +167,28 @@
 
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
-				<label>@text/thing-type.shelly.shellypro4pm.group.relay1.label</label>
+				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
 			</channel-group>
 			<channel-group id="meter1" typeId="meter">
-				<label>@text/thing-type.shelly.shellypro4pm.group.meter1.label</label>
+				<label>@text/channel-group-type.shelly.meter1.label</label>
 			</channel-group>
 			<channel-group id="relay2" typeId="relayChannel">
-				<label>@text/thing-type.shelly.shellypro4pm.group.relay2.label</label>
+				<label>@text/channel-group-type.shelly.relayChannel2.label</label>
 			</channel-group>
 			<channel-group id="meter2" typeId="meter">
-				<label>@text/thing-type.shelly.shellypro4pm.group.meter2.label</label>
+				<label>@text/channel-group-type.shelly.meter2.label</label>
 			</channel-group>
 			<channel-group id="relay3" typeId="relayChannel">
-				<label>@text/thing-type.shelly.shellypro4pm.group.relay3.label</label>
+				<label>@text/channel-group-type.shelly.relayChannel3.label</label>
 			</channel-group>
 			<channel-group id="meter3" typeId="meter">
-				<label>@text/thing-type.shelly.shellypro4pm.group.meter3.label</label>
+				<label>@text/channel-group-type.shelly.meter3.label</label>
 			</channel-group>
 			<channel-group id="relay4" typeId="relayChannel">
-				<label>@text/thing-type.shelly.shellypro4pm.group.relay4.label</label>
+				<label>@text/channel-group-type.shelly.relayChannel4.label</label>
 			</channel-group>
 			<channel-group id="meter4" typeId="meter">
-				<label>@text/thing-type.shelly.shellypro4pm.group.meter4.label</label>
+				<label>@text/channel-group-type.shelly.meter4.label</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>

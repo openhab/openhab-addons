@@ -352,6 +352,7 @@ public class ShellyThingCreator {
         if (THING_TYPE_SHELLYPROTECTED_STR.equals(hostname)) {
             return THING_TYPE_SHELLYPROTECTED_STR;
         }
+
         String name = hostname.toLowerCase();
         String type = substringBefore(name, "-").toLowerCase();
         String devid = substringAfterLast(name, "-");

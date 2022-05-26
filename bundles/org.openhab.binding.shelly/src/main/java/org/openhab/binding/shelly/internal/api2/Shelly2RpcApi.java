@@ -203,7 +203,6 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
         if (dc.sys.sntp != null) {
             profile.settings.sntp.server = dc.sys.sntp.server;
         }
-        profile.status.hasUpdate = profile.status.update.hasUpdate = false;
 
         profile.isRoller = dc.cover0 != null; // SHELLY2_PROFILE_ROLLER.equalsIgnoreCase(getString(dc.sys.device.profile));
         profile.settings.relays = fillRelaySettings(profile, dc);
@@ -212,7 +211,6 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
 
         profile.isEMeter = true;
         profile.numInputs = profile.settings.inputs != null ? profile.settings.inputs.size() : 0;
-        profile.numMeters = profile.settings.emeters != null ? profile.settings.emeters.size() : 0;
         profile.numRelays = profile.settings.relays != null ? profile.settings.relays.size() : 0;
         profile.numRollers = profile.settings.rollers != null ? profile.settings.rollers.size() : 0;
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
@@ -230,6 +228,8 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
 
         profile.fwDate = substringBefore(device.fw, "/");
         profile.fwVersion = substringBefore(ShellyDeviceProfile.extractFwVersion(device.fw.replace("/", "/v")), "-");
+        profile.status.hasUpdate = profile.status.update.hasUpdate = false;
+        profile.status.update.oldVersion = profile.fwVersion;
 
         profile.status.relays = new ArrayList<>();
         profile.status.emeters = new ArrayList<>();
@@ -241,6 +241,9 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
             relayStatus.relays.add(new ShellyShortStatusRelay());
             relayStatus.meters.add(new ShellySettingsMeter());
         }
+        profile.numMeters = profile.settings.device.numEMeters = profile.status.emeters != null
+                ? profile.status.emeters.size()
+                : 0;
 
         profile.status.inputs = new ArrayList<>();
         for (int i = 0; i < profile.numInputs; i++) {
@@ -449,14 +452,16 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
 
     @Override
     public void onError(Throwable cause) {
-        try {
-            logger.debug("{}: WebSocket error, reinit thing", thingName);
-            // getThing().setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR,
-            // "offline.status-error-unexpected-api-result");
-            getThing().reinitializeThing();
-        } catch (ShellyApiException e) {
-
-        }
+        /*
+         * try {
+         * logger.debug("{}: WebSocket error, reinit thing", thingName);
+         * // getThing().setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+         * // "offline.status-error-unexpected-api-result");
+         * getThing().reinitializeThing();
+         * } catch (ShellyApiException e) {
+         *
+         * }
+         */
     }
 
     @Override
@@ -487,9 +492,9 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
         status.fsSize = ds.sys.fsSize;
         status.discoverable = true;
         status.hasUpdate = status.update.hasUpdate = false;
+        status.update.oldVersion = getProfile().fwVersion;
         if (ds.sys.availableUpdates != null) {
             status.update.hasUpdate = ds.sys.availableUpdates.stable != null || ds.sys.availableUpdates.beta != null;
-            status.update.oldVersion = getProfile().fwVersion;
             if (ds.sys.availableUpdates.stable != null) {
                 status.update.newVersion = "v" + getString(ds.sys.availableUpdates.stable.version);
             }
@@ -516,9 +521,8 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
     @Override
     public ShellyStatusRelay getRelayStatus(int relayIndex) throws ShellyApiException {
         // Update status for a single relay
-        Shelly2RelayStatus rs = callApi("/rpc/" + SHELLYRPC_METHOD_GETSWITCHSTATUS + "?id=" + relayIndex,
-                Shelly2RelayStatus.class);
-        return updateRelayStatus(getProfile().status, relayIndex, rs);
+        getStatus();
+        return relayStatus;
     }
 
     private ShellyStatusRelay updateRelayStatus(ShellySettingsStatus status, int relayIndex, Shelly2RelayStatus rs)

@@ -69,6 +69,28 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 | shellytrv          | Shelly TRV                                             | SHTRV-01  |
 | shellydevice       | A password protected Shelly device or an unknown type  |           |
 
+Generation 2 Plus series:
+
+| thing-type         | Model                                                     | Vendor ID      |
+|--------------------|-----------------------------------------------------------|----------------|
+| shellyplus1         | Shelly Plus 1 with 1xrelay                               | SNSW-001X16EU  |
+| shellyplus1pm       | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU  |
+| shellyplus2pm-relay | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU  |
+| shellyplus2pm-roller| Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU  |
+| shellyplusi4        | Shelly Plus i4 with 4xinput                              | SNSN-0024X     |
+| shellyplusht        | Shelly Plus HT with temp + humidity sensori              | SNSN-0013A     |
+
+Generation 2 Pro series:
+
+| shellypro1          | Shelly Pro 1 with 1xrelay                                | SPSW-001XE16EU |
+| shellypro1pm        | Shelly Pro 1 PM with 1xrelay + power meter               | SPSW-001PE16EU |
+| shellypro2-relay    | Shelly Pro 2 with 2xrelay, relay mode                    | SPSW-002XE16EU |
+| shellypro2-roller   | Shelly Pro 2 with 2xrelay, roller mode                   | SPSW-002XE16EU |
+| shellypro2pm-relay  | Shelly Pro 2 PM with 2xrelay + power meter, relay mode   | SPSW-002PE16EU |
+| shellypro2pm-roller | Shelly Pro 2 PM with 2xrelay + power meter, roller mode  | SPSW-002PE16EU |
+| shellypro4pm        | Shelly Pro 4 PM with 4xrelay + power meter               | SPSW-004PE16EU |
+
+
 ## Binding Configuration
 
 The binding has the following configuration options:
