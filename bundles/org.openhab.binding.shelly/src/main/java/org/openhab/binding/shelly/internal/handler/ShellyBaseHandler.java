@@ -894,7 +894,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             // If the device is password protected the API doesn't provide settings to the device settings
             logger.warn("{}: {}", thingName, messages.get("init.protected"));
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-access-denied");
-            changeThingType(THING_TYPE_SHELLYPROTECTED_STR, "");
             return true;
         }
         return false;
