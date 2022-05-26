@@ -33,6 +33,7 @@ import org.openhab.binding.wled.internal.WledDynamicStateDescriptionProvider;
 import org.openhab.binding.wled.internal.api.ApiException;
 import org.openhab.binding.wled.internal.api.WledApi;
 import org.openhab.binding.wled.internal.api.WledApiFactory;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -90,6 +91,7 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                 localAPI.savePreset(position, presetName);
             }
         } catch (ApiException e) {
+            logger.debug("Error occured when trying to save a preset:{}", e.getMessage());
         }
     }
 
@@ -171,6 +173,8 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                         if (minutes != null) {
                             localApi.setSleepDuration(new BigDecimal(minutes.intValue()));
                         }
+                    } else if (command instanceof DecimalType) {
+                        localApi.setSleepDuration(new BigDecimal(((DecimalType) command).intValue()));
                     }
                     break;
                 case CHANNEL_PLAYLISTS:
@@ -194,6 +198,9 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                         if (seconds != null) {
                             localApi.setTransitionTime(new BigDecimal(seconds.multiply(BigDecimal.TEN).intValue()));
                         }
+                    } else if (command instanceof DecimalType) {
+                        localApi.setTransitionTime(
+                                new BigDecimal(((DecimalType) command).intValue()).multiply(BigDecimal.TEN));
                     }
                     break;
                 case CHANNEL_PRESET_DURATION:// ch removed in firmware 0.13.0 and newer
@@ -203,6 +210,10 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                             BigDecimal bigTemp = new BigDecimal(seconds.intValue()).multiply(new BigDecimal(1000));
                             localApi.sendGetRequest("/win&PT=" + bigTemp.intValue());
                         }
+                    } else if (command instanceof DecimalType) {
+                        BigDecimal bigTemp = new BigDecimal(((DecimalType) command).intValue())
+                                .multiply(new BigDecimal(1000));
+                        localApi.sendGetRequest("/win&PT=" + bigTemp.intValue());
                     }
                     break;
                 case CHANNEL_PRESET_CYCLE: // ch removed in firmware 0.13.0 and newer
@@ -212,7 +223,8 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                     break;
             }
         } catch (ApiException e) {
-            logger.debug("Exception occured:{}", e.getMessage());
+            logger.debug("Exception occured when Channel:{}, Command:{}, Error:{}", channelUID.getId(), command,
+                    e.getMessage());
         }
     }
 

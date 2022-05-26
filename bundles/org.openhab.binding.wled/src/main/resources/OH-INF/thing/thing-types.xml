@@ -225,19 +225,19 @@
 		<category>Time</category>
 		<state>
 			<options>
-				<option value="0 s"/>
-				<option value="0.3 s"/>
-				<option value="0.7 s"/>
-				<option value="1 s"/>
-				<option value="2 s"/>
-				<option value="3 s"/>
-				<option value="4 s"/>
-				<option value="5 s"/>
-				<option value="6 s"/>
-				<option value="7 s"/>
-				<option value="8 s"/>
-				<option value="9 s"/>
-				<option value="10 s"/>
+			<option value="0s">0 Seconds</option>
+			<option value="0.3s">0.3 Seconds</option>
+			<option value="0.7s">0.7 Seconds</option>
+			<option value="1s">1 Second</option>
+			<option value="2s">2 Seconds</option>
+			<option value="3s">3 Seconds</option>
+			<option value="4s">4 Seconds</option>
+			<option value="5s">5 Seconds</option>
+			<option value="6s">6 Seconds</option>
+			<option value="7s">7 Seconds</option>
+			<option value="8s">8 Seconds</option>
+            <option value="9s">9 Seconds</option>
+            <option value="10s">10 Seconds</option>
 			</options>
 		</state>
 	</channel-type>
@@ -294,21 +294,20 @@
 		<category>Time</category>
 		<state min="1" max="255" step="1" readOnly="false">
 			<options>
-				<option value="1 min"/>
-				<option value="5 min"/>
-				<option value="10 min"/>
-				<option value="15 min"/>
-				<option value="20 min"/>
-				<option value="25 min"/>
-				<option value="30 min"/>
-				<option value="35 min"/>
-				<option value="45 min"/>
-				<option value="60 min"/>
-				<option value="80 min"/>
-				<option value="90 min"/>
-				<option value="120 min"/>
-				<option value="180 min"/>
-				<option value="255 min"/>
+                <option value="1min">1 Minute</option>
+                <option value="5min">5 Minutes</option>
+                <option value="10min">10 Minutes</option>
+                <option value="15min">15 Minutes</option>
+                <option value="20min">20 Minutes</option>
+                <option value="25min">25 Minutes</option>
+                <option value="30min">30 Minutes</option>
+                <option value="40min">40 Minutes</option>
+                <option value="50min">50 Minutes</option>
+                <option value="60min">1 Hour</option>
+                <option value="90min">1.5 Hours</option>
+                <option value="120min">2 Hours</option>
+                <option value="150min">2.5 Hours</option>
+                <option value="240min">4 Hours</option>
 			</options>
 		</state>
 	</channel-type>
