@@ -202,7 +202,6 @@ public class LivisiWebSocketTest {
         webSocket.onConnect(sessionMock);
     }
 
-    @NonNullByDefault
     private class LivisiWebSocketAccessible extends LivisiWebSocket {
 
         private LivisiWebSocketAccessible(HttpClient httpClient, EventListener eventListener, URI webSocketURI,
@@ -220,7 +219,6 @@ public class LivisiWebSocketTest {
         }
     }
 
-    @NonNullByDefault
     private static class EventListenerDummy implements EventListener {
 
         private boolean isOnEventCalled;

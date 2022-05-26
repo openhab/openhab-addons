@@ -325,7 +325,6 @@ public class LivisiBridgeHandlerTest {
         return event;
     }
 
-    @NonNullByDefault
     private class LivisiBridgeHandlerAccessible extends LivisiBridgeHandler {
 
         private final LivisiClient livisiClientMock;
