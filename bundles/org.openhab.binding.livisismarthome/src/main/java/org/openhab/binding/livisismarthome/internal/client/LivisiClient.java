@@ -209,7 +209,6 @@ public class LivisiClient {
         if (HttpStatus.OK_200 == status) {
             logger.debug("Statuscode is OK: [{}]", connection.getURL());
         } else if (HttpStatus.SERVICE_UNAVAILABLE_503 == status) {
-            logger.debug("LIVISI SmartHome service is unavailable (503).");
             throw new ServiceUnavailableException("LIVISI SmartHome service is unavailable (503).");
         } else {
             logger.debug("Statuscode {} is NOT OK: [{}]", status, connection.getURL());
