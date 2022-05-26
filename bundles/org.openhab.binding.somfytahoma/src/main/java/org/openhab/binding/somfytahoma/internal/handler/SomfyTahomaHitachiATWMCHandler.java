@@ -14,11 +14,7 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -53,6 +49,8 @@ public class SomfyTahomaHitachiATWMCHandler extends SomfyTahomaBaseThingHandler 
         stateNames.put(LIQUID_TEMP_THMI, "modbus:LiquidTemperatureTHMIState");
         stateNames.put(LIQUID_TEMP, "modbus:LiquidTemperatureState");
         stateNames.put(COMPRESSOR_RUNNING_CURRENT, "modbus:CompressorRunningCurrentState");
+        // override state type because the cloud sends consumption in percent
+        cacheStateType(COMPRESSOR_RUNNING_CURRENT, TYPE_DECIMAL);
         stateNames.put(WATER_TEMP_SETTING, "modbus:WaterTemperatureSettingState");
         stateNames.put(YUTAKI_OPERATING_MODE, "modbus:YutakiVirtualOperatingModeState");
         stateNames.put(ALARM_NUMBER, "modbus:AlarmNumberState");
@@ -95,16 +93,6 @@ public class SomfyTahomaHitachiATWMCHandler extends SomfyTahomaBaseThingHandler 
                     break;
                 default:
                     getLogger().debug("This channel doesn't accept any commands");
-            }
-        }
-    }
-
-    private void sendTempCommand(String cmd, Command command) {
-        if (command instanceof DecimalType || command instanceof QuantityType) {
-            BigDecimal temperature = toTemperature(command);
-            if (temperature != null) {
-                String param = "[" + temperature.toPlainString() + "]";
-                sendCommand(cmd, param);
             }
         }
     }

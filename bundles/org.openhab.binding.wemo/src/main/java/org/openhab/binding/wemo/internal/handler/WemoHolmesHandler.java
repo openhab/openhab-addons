@@ -30,6 +30,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
@@ -74,8 +75,9 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoHolmesHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, wemoHttpCaller);
+    public WemoHolmesHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
+            WemoHttpCall wemoHttpCaller) {
+        super(thing, upnpIOService, upnpService, wemoHttpCaller);
 
         logger.debug("Creating a WemoHolmesHandler for thing '{}'", getThing().getUID());
     }
@@ -143,7 +145,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
 
         if (command instanceof RefreshType) {
             updateWemoState();
-        } else if (CHANNEL_PURIFIERMODE.equals(channelUID.getId())) {
+        } else if (CHANNEL_PURIFIER_MODE.equals(channelUID.getId())) {
             attribute = "Mode";
             String commandString = command.toString();
             switch (commandString) {
@@ -170,7 +172,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
             } else if (OnOffType.OFF.equals(command)) {
                 value = "0";
             }
-        } else if (CHANNEL_HUMIDIFIERMODE.equals(channelUID.getId())) {
+        } else if (CHANNEL_HUMIDIFIER_MODE.equals(channelUID.getId())) {
             attribute = "FanMode";
             String commandString = command.toString();
             switch (commandString) {
@@ -193,7 +195,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                     value = "5";
                     break;
             }
-        } else if (CHANNEL_DESIREDHUMIDITY.equals(channelUID.getId())) {
+        } else if (CHANNEL_DESIRED_HUMIDITY.equals(channelUID.getId())) {
             attribute = "DesiredHumidity";
             String commandString = command.toString();
             switch (commandString) {
@@ -213,7 +215,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                     value = "4";
                     break;
             }
-        } else if (CHANNEL_HEATERMODE.equals(channelUID.getId())) {
+        } else if (CHANNEL_HEATER_MODE.equals(channelUID.getId())) {
             attribute = "Mode";
             String commandString = command.toString();
             switch (commandString) {
@@ -233,7 +235,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                     value = "4";
                     break;
             }
-        } else if (CHANNEL_TARGETTEMP.equals(channelUID.getId())) {
+        } else if (CHANNEL_TARGET_TEMPERATURE.equals(channelUID.getId())) {
             attribute = "SetTemperature";
             value = command.toString();
         }
@@ -341,7 +343,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                                     newMode = new StringType("AUTO");
                                     break;
                             }
-                            updateState(CHANNEL_PURIFIERMODE, newMode);
+                            updateState(CHANNEL_PURIFIER_MODE, newMode);
                         } else {
                             switch (attributeValue) {
                                 case "0":
@@ -360,7 +362,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                                     newMode = new StringType("ECO");
                                     break;
                             }
-                            updateState(CHANNEL_HEATERMODE, newMode);
+                            updateState(CHANNEL_HEATER_MODE, newMode);
                         }
                         break;
                     case "Ionizer":
@@ -386,7 +388,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                                 newMode = new StringType("GOOD");
                                 break;
                         }
-                        updateState(CHANNEL_AIRQUALITY, newMode);
+                        updateState(CHANNEL_AIR_QUALITY, newMode);
                         break;
                     case "FilterLife":
                         int filterLife = Integer.valueOf(attributeValue);
@@ -395,7 +397,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                         } else {
                             filterLife = Math.round((filterLife / 60480) * 100);
                         }
-                        updateState(CHANNEL_FILTERLIFE, new PercentType(String.valueOf(filterLife)));
+                        updateState(CHANNEL_FILTER_LIFE, new PercentType(String.valueOf(filterLife)));
                         break;
                     case "ExpiredFilterTime":
                         switch (attributeValue) {
@@ -406,7 +408,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                                 newMode = OnOffType.ON;
                                 break;
                         }
-                        updateState(CHANNEL_EXPIREDFILTERTIME, newMode);
+                        updateState(CHANNEL_EXPIRED_FILTER_TIME, newMode);
                         break;
                     case "FilterPresent":
                         switch (attributeValue) {
@@ -417,7 +419,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                                 newMode = OnOffType.ON;
                                 break;
                         }
-                        updateState(CHANNEL_FILTERPRESENT, newMode);
+                        updateState(CHANNEL_FILTER_PRESENT, newMode);
                         break;
                     case "FANMode":
                         switch (attributeValue) {
@@ -437,7 +439,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                                 newMode = new StringType("AUTO");
                                 break;
                         }
-                        updateState(CHANNEL_PURIFIERMODE, newMode);
+                        updateState(CHANNEL_PURIFIER_MODE, newMode);
                         break;
                     case "DesiredHumidity":
                         switch (attributeValue) {
@@ -457,27 +459,27 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                                 newMode = new PercentType("100");
                                 break;
                         }
-                        updateState(CHANNEL_DESIREDHUMIDITY, newMode);
+                        updateState(CHANNEL_DESIRED_HUMIDITY, newMode);
                         break;
                     case "CurrentHumidity":
                         newMode = new StringType(attributeValue);
-                        updateState(CHANNEL_CURRENTHUMIDITY, newMode);
+                        updateState(CHANNEL_CURRENT_HUMIDITY, newMode);
                         break;
                     case "Temperature":
                         newMode = new StringType(attributeValue);
-                        updateState(CHANNEL_CURRENTTEMP, newMode);
+                        updateState(CHANNEL_CURRENT_TEMPERATURE, newMode);
                         break;
                     case "SetTemperature":
                         newMode = new StringType(attributeValue);
-                        updateState(CHANNEL_TARGETTEMP, newMode);
+                        updateState(CHANNEL_TARGET_TEMPERATURE, newMode);
                         break;
                     case "AutoOffTime":
                         newMode = new StringType(attributeValue);
-                        updateState(CHANNEL_AUTOOFFTIME, newMode);
+                        updateState(CHANNEL_AUTO_OFF_TIME, newMode);
                         break;
                     case "TimeRemaining":
                         newMode = new StringType(attributeValue);
-                        updateState(CHANNEL_HEATINGREMAINING, newMode);
+                        updateState(CHANNEL_HEATING_REMAINING, newMode);
                         break;
                 }
             }

@@ -50,6 +50,9 @@ public class SomfyTahomaBindingConstants {
     // Uno Roller Shutter
     public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER_UNO = new ThingTypeUID(BINDING_ID, "rollershutter_uno");
 
+    // Shutter
+    public static final ThingTypeUID THING_TYPE_SHUTTER = new ThingTypeUID(BINDING_ID, "shutter");
+
     // Screen
     public static final ThingTypeUID THING_TYPE_SCREEN = new ThingTypeUID(BINDING_ID, "screen");
 
@@ -182,8 +185,9 @@ public class SomfyTahomaBindingConstants {
     public static final String STATUS = "status";
     public static final String SCENARIOS = "scenarios";
 
-    // Roller shutter, Awning, Screen, Blind, Garage door, Window, Curtain
+    // Roller shutter, Shutter, Awning, Screen, Blind, Garage door, Window, Curtain
     public static final String CONTROL = "control";
+    public static final String MOVING = "moving";
 
     // Adjustable slats roller shutter
     public static final String ROCKER = "rocker";
@@ -318,6 +322,9 @@ public class SomfyTahomaBindingConstants {
     public static final String YUTAKI_TARGET_MODE = "yutaki_target_mode";
     public static final String YUTAKI_MODE = "yutaki_mode";
     public static final String HOLIDAY_MODE = "holiday_mode";
+    public static final String THERMOSTAT_SETTING_ZONE1 = "thermostat_setting_zone1";
+    public static final String WH_SETTING_TEMP_ZONE1 = "wh_setting_temp_zone1";
+    public static final String ROOM_AMBIENT_TEMP_ZONE1 = "room_ambient_temp_zone1";
 
     // Hitachi Air To Water Main Component
     public static final String AUTO_MANU_MODE = "auto_manu_mode";
@@ -395,6 +402,8 @@ public class SomfyTahomaBindingConstants {
     public static final String COMMAND_DOWN = "down";
     public static final String COMMAND_OPEN = "open";
     public static final String COMMAND_CLOSE = "close";
+    public static final String COMMAND_DEPLOY = "deploy";
+    public static final String COMMAND_UNDEPLOY = "undeploy";
     public static final String COMMAND_OPEN_SLATS = "openSlats";
     public static final String COMMAND_CLOSE_SLATS = "closeSlats";
     public static final String COMMAND_STOP = "stop";
@@ -443,6 +452,7 @@ public class SomfyTahomaBindingConstants {
 
     // supported uiClasses
     public static final String CLASS_ROLLER_SHUTTER = "RollerShutter";
+    public static final String CLASS_SHUTTER = "Shutter";
     public static final String CLASS_SCREEN = "Screen";
     public static final String CLASS_VENETIAN_BLIND = "VenetianBlind";
     public static final String CLASS_EXTERIOR_SCREEN = "ExteriorScreen";
@@ -499,10 +509,12 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_WATERSENSOR, THING_TYPE_HUMIDITYSENSOR, THING_TYPE_MYFOX_ALARM, THING_TYPE_THERMOSTAT,
             THING_TYPE_DIMMER_LIGHT, THING_TYPE_EXTERIOR_HEATING_SYSTEM, THING_TYPE_VALVE_HEATING_SYSTEM,
             THING_TYPE_BIOCLIMATIC_PERGOLA, THING_TYPE_WATERHEATINGSYSTEM, THING_TYPE_HITACHI_ATWHZ,
-            THING_TYPE_HITACHI_DHW, THING_TYPE_HITACHI_ATWMC, THING_TYPE_RAINSENSOR));
+            THING_TYPE_HITACHI_DHW, THING_TYPE_HITACHI_ATWMC, THING_TYPE_RAINSENSOR, THING_TYPE_SHUTTER));
 
     // somfy gateways
-    public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {
+    public static Map<Integer, String> gatewayTypes = new HashMap<>() {
+        private static final long serialVersionUID = 7473481667820682573L;
+
         {
             put(0, "VIRTUAL_KIZBOX");
             put(2, "KIZBOX_V1");
@@ -539,6 +551,7 @@ public class SomfyTahomaBindingConstants {
             put(72, "TAHOMA_RAIL_DIN");
             put(77, "ELIOT");
             put(88, "WISER");
+            put(99, "CONNECTIVITY KIT");
         }
     };
 }

@@ -18,9 +18,9 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.omnilink.internal.AudioPlayer;
 import org.openhab.binding.omnilink.internal.SystemType;
 import org.openhab.binding.omnilink.internal.TemperatureFormat;
+import org.openhab.binding.omnilink.internal.action.OmnilinkActions;
 import org.openhab.binding.omnilink.internal.config.OmnilinkBridgeConfig;
 import org.openhab.binding.omnilink.internal.discovery.OmnilinkDiscoveryService;
 import org.openhab.binding.omnilink.internal.exceptions.BridgeOfflineException;
@@ -105,7 +106,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(OmnilinkDiscoveryService.class);
+        return Set.of(OmnilinkDiscoveryService.class, OmnilinkActions.class);
     }
 
     public void sendOmnilinkCommand(final int message, final int param1, final int param2)
@@ -158,6 +159,17 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
     }
 
+    public void synchronizeControllerTime(ZonedDateTime zdt) {
+        boolean inDaylightSavings = zdt.getZone().getRules().isDaylightSavings(zdt.toInstant());
+        try {
+            getOmniConnection().setTimeCommand(zdt.getYear() - 2000, zdt.getMonthValue(), zdt.getDayOfMonth(),
+                    zdt.getDayOfWeek().getValue(), zdt.getHour(), zdt.getMinute(), inDaylightSavings);
+        } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
+                | OmniUnknownMessageTypeException e) {
+            logger.debug("Could not send set date time command to OmniLink Controller: {}", e.getMessage());
+        }
+    }
+
     private SystemFeatures reqSystemFeatures()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         try {
@@ -178,22 +190,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
 
         switch (channelUID.getId()) {
-            case CHANNEL_SYSTEMDATE:
-                if (command instanceof DateTimeType) {
-                    ZonedDateTime zdt = ((DateTimeType) command).getZonedDateTime();
-                    boolean inDaylightSavings = zdt.getZone().getRules().isDaylightSavings(zdt.toInstant());
-                    try {
-                        getOmniConnection().setTimeCommand(zdt.getYear() - 2000, zdt.getMonthValue(),
-                                zdt.getDayOfMonth(), zdt.getDayOfWeek().getValue(), zdt.getHour(), zdt.getMinute(),
-                                inDaylightSavings);
-                    } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
-                            | OmniUnknownMessageTypeException e) {
-                        logger.debug("Could not send Set Time command to OmniLink Controller: {}", e.getMessage());
-                    }
-                } else {
-                    logger.debug("Invalid command: {}, must be DateTimeType", command);
-                }
-                break;
             case CHANNEL_CONSOLE_ENABLE_DISABLE_BEEPER:
                 if (command instanceof StringType) {
                     try {
@@ -485,14 +481,14 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             OmniUnknownMessageTypeException {
         SystemStatus status = getOmniConnection().reqSystemStatus();
         logger.debug("Received system status: {}", status);
-        // Let's update system time
+        // Update controller's reported time
         String dateString = new StringBuilder().append(2000 + status.getYear()).append("-")
                 .append(String.format("%02d", status.getMonth())).append("-")
                 .append(String.format("%02d", status.getDay())).append("T")
                 .append(String.format("%02d", status.getHour())).append(":")
                 .append(String.format("%02d", status.getMinute())).append(":")
                 .append(String.format("%02d", status.getSecond())).toString();
-        updateState(CHANNEL_SYSTEMDATE, new DateTimeType(dateString));
+        updateState(CHANNEL_SYSTEM_DATE, new DateTimeType(dateString));
     }
 
     public Message reqObjectProperties(int objectType, int objectNum, int direction, int filter1, int filter2,

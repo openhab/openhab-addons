@@ -33,7 +33,7 @@ public class VoskSTTConfiguration {
      * Only works when singleUtteranceMode is disabled, max seconds without getting new transcriptions to stop
      * listening.
      */
-    public int maxSilenceSeconds = 5;
+    public int maxSilenceSeconds = 3;
     /**
      * Message to be told when no results.
      */

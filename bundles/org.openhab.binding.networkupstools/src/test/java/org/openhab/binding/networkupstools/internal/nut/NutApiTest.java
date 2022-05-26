@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +50,7 @@ public class NutApiTest {
             @Override
             protected Socket newSocket() {
                 return socket;
-            };
+            }
         };
     }
 
@@ -58,9 +59,10 @@ public class NutApiTest {
      */
     @Test
     public void testListVariables() throws IOException, NutException, URISyntaxException {
-        final String expectedCommands = new String(
-                Files.readAllBytes(Paths.get(getClass().getResource("var_list_commands.txt").toURI())));
-        final StringBuffer actualCommands = new StringBuffer();
+        final String expectedCommands = Files
+                .readAllLines(Paths.get(getClass().getResource("var_list_commands.txt").toURI())).stream()
+                .collect(Collectors.joining(System.lineSeparator()));
+        final StringBuilder actualCommands = new StringBuilder();
         try (InputStream in = getClass().getResourceAsStream("var_list.txt"); OutputStream out = new OutputStream() {
             @Override
             public void write(int b) throws IOException {
@@ -84,9 +86,10 @@ public class NutApiTest {
      */
     @Test
     public void testGetVariable() throws IOException, NutException, URISyntaxException {
-        final String expectedCommands = new String(
-                Files.readAllBytes(Paths.get(getClass().getResource("var_get_commands.txt").toURI())));
-        final StringBuffer actualCommands = new StringBuffer();
+        final String expectedCommands = Files
+                .readAllLines(Paths.get(getClass().getResource("var_get_commands.txt").toURI())).stream()
+                .collect(Collectors.joining(System.lineSeparator()));
+        final StringBuilder actualCommands = new StringBuilder();
         try (InputStream in = getClass().getResourceAsStream("var_get.txt"); OutputStream out = new OutputStream() {
             @Override
             public void write(int b) throws IOException {

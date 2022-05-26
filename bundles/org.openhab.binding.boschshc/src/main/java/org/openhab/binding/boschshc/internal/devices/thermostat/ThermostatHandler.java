@@ -19,7 +19,7 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCDeviceHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.childlock.ChildLockService;
 import org.openhab.binding.boschshc.internal.services.childlock.dto.ChildLockServiceState;
@@ -37,7 +37,7 @@ import org.openhab.core.types.Command;
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
-public final class ThermostatHandler extends BoschSHCHandler {
+public final class ThermostatHandler extends BoschSHCDeviceHandler {
 
     private ChildLockService childLockService;
 

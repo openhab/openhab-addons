@@ -7,7 +7,7 @@
 	<!-- Rotel CD14 Connection Thing Type -->
 	<thing-type id="cd14">
 		<label>CD14 CD Player</label>
-		<description>Connection to the Rotel CD14 CD player</description>
+		<description>Connection to the Rotel CD14 or CD14MKII CD player</description>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

@@ -57,25 +57,27 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ### Channels for `powerinverter` Thing
 
-| Channel ID                           | Item Type            | Description                                                                                                       |
-| ------------------------------------ | -------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `inverterdatachanneldayenergy`       | Number               | Energy generated on current day                                                                                   |
-| `inverterdatachannelpac`             | Number               | AC power                                                                                                          |
-| `inverterdatachanneltotal`           | Number               | Energy generated overall                                                                                          |
-| `inverterdatachannelyear`            | Number               | Energy generated in current year                                                                                  |
-| `inverterdatachannelfac`             | Number               | AC frequency                                                                                                      |
-| `inverterdatachanneliac`             | Number               | AC current                                                                                                        |
-| `inverterdatachannelidc`             | Number               | DC current                                                                                                        |
-| `inverterdatachanneluac`             | Number               | AC voltage                                                                                                        |
-| `inverterdatachanneludc`             | Number               | DC voltage                                                                                                        |
-| `inverterdatadevicestatuserrorcode`  | Number               | Device error code                                                                                                 |
-| `inverterdatadevicestatusstatuscode` | Number               | Device status code<br />`0` - `6` Startup<br />`7` Running <br />`8` Standby<br />`9` Bootloading<br />`10` Error |
-| `powerflowchannelpgrid`              | Number:Power         | Power (+ from grid, - to grid)                                                                                    |
-| `powerflowchannelpload`              | Number:Power         | Power (+ generator, - consumer)                                                                                   |
-| `powerflowchannelpakku`              | Number:Power         | Power (+ charge, - discharge)                                                                                     |
-| `powerflowchannelppv`                | Number:Power         | Power (+ production)                                                                                              |
-| `powerflowinverter1power`            | Number:Power         | Current power of inverter 1, null if not running (+ produce/export, - consume/import)                             |
-| `powerflowinverter1soc`              | Number:Dimensionless | Current state of charge of inverter 1 in percent                                                                  |
+| Channel ID                           | Item Type                | Description                                                                                                       |
+| ------------------------------------ | ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `inverterdatachannelpac`             | Number:Power             | Power generated                                                                                                   |
+| `inverterdatachannelfac`             | Number:Frequency         | AC frequency                                                                                                      |
+| `inverterdatachanneliac`             | Number:ElectricCurrent   | AC current                                                                                                        |
+| `inverterdatachannelidc`             | Number:ElectricCurrent   | DC current                                                                                                        |
+| `inverterdatachanneluac`             | Number:ElectricPotential | AC voltage                                                                                                        |
+| `inverterdatachanneludc`             | Number:ElectricPotential | DC voltage                                                                                                        |
+| `inverterdatachanneldayenergy`       | Number:Energy            | Energy generated on current day                                                                                   |
+| `inverterdatachannelyear`            | Number:Energy            | Energy generated in current year                                                                                  |
+| `inverterdatachanneltotal`           | Number:Energy            | Energy generated overall                                                                                          |
+| `inverterdatadevicestatuserrorcode`  | Number                   | Device error code                                                                                                 |
+| `inverterdatadevicestatusstatuscode` | Number                   | Device status code<br />`0` - `6` Startup<br />`7` Running <br />`8` Standby<br />`9` Bootloading<br />`10` Error |
+| `powerflowchannelpgrid`              | Number:Power             | Grid Power (+ from grid, - to grid)                                                                               |
+| `powerflowchannelpload`              | Number:Power             | Load Power (+ generator, - consumer)                                                                              |
+| `powerflowchannelpakku`              | Number:Power             | Battery Power (+ charge, - discharge)                                                                             |
+| `powerflowchannelppv`                | Number:Power             | Solar Power (+ production)                                                                                              |
+| `powerflowautonomy`                  | Number:Dimensionless     | The current relative autonomy in %                                                                                |
+| `powerflowselfconsumption`           | Number:Dimensionless     | The current relative self consumption in %                                                                        |
+| `powerflowinverter1power`            | Number:Power             | Current power of inverter 1, null if not running (+ produce/export, - consume/import)                             |
+| `powerflowinverter1soc`              | Number:Dimensionless     | Current state of charge of inverter 1 in percent                                                                  |
 
 ### Channels for `meter` Thing
 
@@ -98,7 +100,6 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `powerfactorphase3`     | Number                   | Power Factor on Phase 3                                                                                                                                                                                                  |
 | `energyrealsumconsumed` | Number:Energy            | Real Energy consumed                                                                                                                                                                                                     |
 | `energyrealsumproduced` | Number:Energy            | Real Energy produced                                                                                                                                                                                                     |
-|                         |
 
 
 ### Channels for `ohmpilot` Thing
@@ -110,7 +111,6 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `temperaturechannel1`   | Number:Temperature | Temperature                                                                                                                                                              |
 | `errorcode`             | Number             | Device error code                                                                                                                                                        |
 | `statecode`             | Number             | Device state code<br />`0` up and running <br />`1` keep minimum temperature <br />`2` legionella protection <br />`3` critical fault<br />`4` fault<br />`5` boost mode |
-|                         |
 
 
 ## Properties
@@ -144,21 +144,23 @@ Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5] {
 demo.items:
 
 ```
-Number AC_Power { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelpac" }
-Number Day_Energy { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneldayenergy" }
-Number Total_Energy { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneltotal" }
-Number Year_Energy { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelyear" }
-Number FAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelfac" }
-Number IAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneliac" }
-Number IDC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelidc" }
-Number UAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneluac" }
-Number UDC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneludc" }
+Number:Power AC_Power { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelpac" }
+Number:Energy Day_Energy { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneldayenergy" }
+Number:Energy Total_Energy { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneltotal" }
+Number:Energy Year_Energy { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelyear" }
+Number:Frequency FAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelfac" }
+Number:ElectricCurrent IAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneliac" }
+Number:ElectricCurrent IDC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelidc" }
+Number:ElectricPotential UAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneluac" }
+Number:ElectricPotential UDC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneludc" }
 Number ErrorCode { channel="fronius:powerinverter:mybridge:myinverter:inverterdatadevicestatuserrorcode" }
 Number StatusCode { channel="fronius:powerinverter:mybridge:myinverter:inverterdatadevicestatusstatuscode" }
 Number:Power Grid_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpgrid" }
 Number:Power Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpload" }
 Number:Power Battery_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpakku" }
 Number:Power Production_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelppv" }
+Number:Dimensionless Power_Autonomy { channel="fronius:powerinverter:mybridge:myinverter:powerflowautonomy" }
+Number:Dimensionless Power_SelfConsumption { channel="fronius:powerinverter:mybridge:myinverter:powerflowselfconsumption" }
 Number:Power Inverter1_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowinverter1power" }
 Number:Dimensionless Inverter1_SOC { channel="fronius:powerinverter:mybridge:myinverter:powerflowinverter1soc" }
 
@@ -185,5 +187,6 @@ Number:Power Ohmpilot_PowerSum { channel="fronius:ohmpilot:mybridge:myohmpilot:p
 Number:Temperature Ohmpilot_Temperature { channel="fronius:ohmpilot:mybridge:myohmpilot:temperaturechannel1" }
 Number Ohmpilot_State { channel="fronius:ohmpilot:mybridge:myohmpilot:statecode" }
 Number Ohmpilot_Errorcode { channel="fronius:ohmpilot:mybridge:myohmpilot:errorcode" }
-
 ```
+
+Note: Make sure to turn on the **Night Mode** in the Display Settings on the Fronius inverter to keep it from going offline at night.

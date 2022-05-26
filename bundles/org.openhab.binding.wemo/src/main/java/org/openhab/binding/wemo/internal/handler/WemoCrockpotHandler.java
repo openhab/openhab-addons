@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
@@ -60,8 +61,9 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoCrockpotHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, wemoHttpCaller);
+    public WemoCrockpotHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
+            WemoHttpCall wemoHttpCaller) {
+        super(thing, upnpIOService, upnpService, wemoHttpCaller);
 
         logger.debug("Creating a WemoCrockpotHandler for thing '{}'", getThing().getUID());
     }
@@ -128,7 +130,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
         if (command instanceof RefreshType) {
             updateWemoState();
-        } else if (CHANNEL_COOKMODE.equals(channelUID.getId())) {
+        } else if (CHANNEL_COOK_MODE.equals(channelUID.getId())) {
             String commandString = command.toString();
             switch (commandString) {
                 case "OFF":
@@ -202,12 +204,12 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
                 case "50":
                     newMode = new StringType("WARM");
                     State warmTime = DecimalType.valueOf(time);
-                    updateState(CHANNEL_WARMCOOKTIME, warmTime);
+                    updateState(CHANNEL_WARM_COOK_TIME, warmTime);
                     break;
                 case "51":
                     newMode = new StringType("LOW");
                     State lowTime = DecimalType.valueOf(time);
-                    updateState(CHANNEL_LOWCOOKTIME, lowTime);
+                    updateState(CHANNEL_LOW_COOK_TIME, lowTime);
                     break;
                 case "52":
                     newMode = new StringType("HIGH");
@@ -215,8 +217,8 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
                     updateState(CHANNEL_HIGHCOOKTIME, highTime);
                     break;
             }
-            updateState(CHANNEL_COOKMODE, newMode);
-            updateState(CHANNEL_COOKEDTIME, newCoockedTime);
+            updateState(CHANNEL_COOK_MODE, newMode);
+            updateState(CHANNEL_COOKED_TIME, newCoockedTime);
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage(), e);

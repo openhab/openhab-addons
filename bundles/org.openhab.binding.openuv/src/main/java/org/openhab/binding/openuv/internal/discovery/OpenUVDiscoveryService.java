@@ -13,10 +13,10 @@
 package org.openhab.binding.openuv.internal.discovery;
 
 import static org.openhab.binding.openuv.internal.OpenUVBindingConstants.*;
+import static org.openhab.binding.openuv.internal.config.ReportConfiguration.LOCATION;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openuv.internal.config.ReportConfiguration;
 import org.openhab.binding.openuv.internal.handler.OpenUVBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -34,15 +34,12 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OpenUVDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
-    private final Logger logger = LoggerFactory.getLogger(OpenUVDiscoveryService.class);
-
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
+
+    private final Logger logger = LoggerFactory.getLogger(OpenUVDiscoveryService.class);
 
     private @Nullable OpenUVBridgeHandler bridgeHandler;
 
-    /**
-     * Creates a OpenUVDiscoveryService with enabled autostart.
-     */
     public OpenUVDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS);
     }
@@ -51,9 +48,9 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService implements 
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof OpenUVBridgeHandler) {
             OpenUVBridgeHandler localHandler = (OpenUVBridgeHandler) handler;
-            this.bridgeHandler = localHandler;
-            this.i18nProvider = localHandler.getI18nProvider();
-            this.localeProvider = localHandler.getLocaleProvider();
+            bridgeHandler = localHandler;
+            i18nProvider = localHandler.getI18nProvider();
+            localeProvider = localHandler.getLocaleProvider();
         }
     }
 
@@ -75,11 +72,11 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService implements 
             PointType location = bridge.getLocation();
             if (location != null) {
                 ThingUID bridgeUID = bridge.getThing().getUID();
-                thingDiscovered(DiscoveryResultBuilder
-                        .create(new ThingUID(LOCATION_REPORT_THING_TYPE, bridgeUID, LOCAL))
-                        .withLabel("@text/discovery.openuv.uvreport.local.label")
-                        .withProperty(ReportConfiguration.LOCATION, location.toString())
-                        .withRepresentationProperty(ReportConfiguration.LOCATION).withBridge(bridgeUID).build());
+                thingDiscovered(
+                        DiscoveryResultBuilder.create(new ThingUID(LOCATION_REPORT_THING_TYPE, bridgeUID, LOCAL))
+                                .withLabel("@text/discovery.openuv.uvreport.local.label")
+                                .withProperty(LOCATION, location.toString()).withRepresentationProperty(LOCATION)
+                                .withBridge(bridgeUID).build());
             } else {
                 logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
             }

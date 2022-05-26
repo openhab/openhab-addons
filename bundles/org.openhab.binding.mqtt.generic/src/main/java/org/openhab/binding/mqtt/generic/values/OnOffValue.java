@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.mqtt.generic.values;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -65,7 +64,7 @@ public class OnOffValue extends Value {
      */
     public OnOffValue(@Nullable String onState, @Nullable String offState, @Nullable String onCommand,
             @Nullable String offCommand) {
-        super(CoreItemFactory.SWITCH, Stream.of(OnOffType.class, StringType.class).collect(Collectors.toList()));
+        super(CoreItemFactory.SWITCH, List.of(OnOffType.class, StringType.class));
         this.onState = onState == null ? OnOffType.ON.name() : onState;
         this.offState = offState == null ? OnOffType.OFF.name() : offState;
         this.onCommand = onCommand == null ? OnOffType.ON.name() : onCommand;

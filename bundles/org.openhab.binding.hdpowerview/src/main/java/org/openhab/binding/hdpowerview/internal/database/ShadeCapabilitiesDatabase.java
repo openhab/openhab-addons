@@ -40,16 +40,16 @@ public class ShadeCapabilitiesDatabase {
      */
     private static final Map<Integer, Capabilities> CAPABILITIES_DATABASE = Arrays.asList(
     // @formatter:off
-            new Capabilities(0).primary().tiltOnClosed()                      .text("Bottom Up"),
-            new Capabilities(1).primary().tiltOnClosed()                      .text("Bottom Up Tilt 90°"),
-            new Capabilities(2).primary().tiltAnywhere().tilt180()            .text("Bottom Up Tilt 180°"),
-            new Capabilities(3).primary().tiltOnClosed()                      .text("Vertical"),
-            new Capabilities(4).primary().tiltAnywhere().tilt180()            .text("Vertical Tilt 180°"),
-            new Capabilities(5)          .tiltAnywhere().tilt180()            .text("Tilt Only 180°"),
-            new Capabilities(6).primary()                                     .text("Top Down")                 .primaryStateInverted(),
-            new Capabilities(7).primary()                         .secondary().text("Top Down Bottom Up"),
-            new Capabilities(8).primary()                                     .text("Duolite Lift")             .withBlackoutShade(),
-            new Capabilities(9).primary().tiltAnywhere()                      .text("Duolite Lift and Tilt 90°").withBlackoutShade(),
+            new Capabilities(0).primary()        .tiltOnClosed()                                .text("Bottom Up"),
+            new Capabilities(1).primary()        .tiltOnClosed()                                .text("Bottom Up Tilt 90°"),
+            new Capabilities(2).primary()        .tiltAnywhere().tilt180()                      .text("Bottom Up Tilt 180°"),
+            new Capabilities(3).primary()        .tiltOnClosed()                                .text("Vertical"),
+            new Capabilities(4).primary()        .tiltAnywhere().tilt180()                      .text("Vertical Tilt 180°"),
+            new Capabilities(5)                  .tiltAnywhere().tilt180()                      .text("Tilt Only 180°"),
+            new Capabilities(6).primaryInverted()                                               .text("Top Down"),
+            new Capabilities(7).primary()                                 .secondary()          .text("Top Down Bottom Up"),
+            new Capabilities(8).primary()                                 .secondaryOverlapped().text("Duolite Lift"),
+            new Capabilities(9).primary()        .tiltAnywhere()          .secondaryOverlapped().text("Duolite Lift and Tilt 90°"),
     // @formatter:on
             new Capabilities()).stream().collect(Collectors.toMap(Capabilities::getValue, Function.identity()));
 
@@ -66,6 +66,7 @@ public class ShadeCapabilitiesDatabase {
             new Type( 9).capabilities(7).text("Duette DuoLite Top Down Bottom Up"),
             new Type(18).capabilities(1).text("Silhouette"),
             new Type(23).capabilities(1).text("Silhouette"),
+            new Type(38).capabilities(9).text("Silhouette Duolite"),
             new Type(42).capabilities(0).text("M25T Roller Blind"),
             new Type(43).capabilities(1).text("Facette"),
             new Type(44).capabilities(0).text("Twist"),
@@ -148,15 +149,15 @@ public class ShadeCapabilitiesDatabase {
         private boolean supportsSecondary;
         private boolean supportsTiltOnClosed;
         private boolean supportsTiltAnywhere;
-        private boolean supportsBlackoutShade;
-        private boolean primaryStateInverted;
+        private boolean supportsSecondaryOverlapped;
+        private boolean primaryInverted;
         private boolean tilt180Degrees;
 
         public Capabilities() {
         }
 
-        protected Capabilities withBlackoutShade() {
-            supportsBlackoutShade = true;
+        protected Capabilities secondaryOverlapped() {
+            supportsSecondaryOverlapped = true;
             return this;
         }
 
@@ -189,8 +190,9 @@ public class ShadeCapabilitiesDatabase {
             return this;
         }
 
-        protected Capabilities primaryStateInverted() {
-            primaryStateInverted = true;
+        protected Capabilities primaryInverted() {
+            supportsPrimary = true;
+            primaryInverted = true;
             return this;
         }
 
@@ -227,21 +229,21 @@ public class ShadeCapabilitiesDatabase {
         }
 
         /**
-         * Check if the Capabilities class instance supports a secondary shade.
+         * Check if the Capabilities class instance if the primary shade is inverted.
          *
          * @return true if the primary shade is inverted.
          */
-        public boolean isPrimaryStateInverted() {
-            return primaryStateInverted;
+        public boolean isPrimaryInverted() {
+            return primaryInverted;
         }
 
         /**
-         * Check if the Capabilities class instance supports 'tilt when closed'.
+         * Check if the Capabilities class instance supports 'tilt on closed'.
          *
          * Note: Simple bottom up or vertical shades that do not have independent vane controls, can be tilted in a
          * simple way, only when they are fully closed, by moving the shade motor a bit further.
          *
-         * @return true if the primary shade is inverted.
+         * @return true if the it supports tilt on closed.
          */
         public boolean supportsTiltOnClosed() {
             return supportsTiltOnClosed && !supportsTiltAnywhere;
@@ -250,19 +252,20 @@ public class ShadeCapabilitiesDatabase {
         /**
          * Check if the Capabilities class instance supports 180 degrees tilt.
          *
-         * @return true if the primary shade supports 180 degrees.
+         * @return true if the tilt range is 180 degrees.
          */
         public boolean supportsTilt180() {
             return tilt180Degrees;
         }
 
         /**
-         * Check if the Capabilities class instance supports a secondary 'DuoLite' blackout shade.
+         * Check if the Capabilities class instance supports an overlapped secondary shade.
+         * e.g. a 'DuoLite' or blackout shade.
          *
-         * @return true if the primary shade supports a secondary blackout shade.
+         * @return true if the shade supports a secondary overlapped shade.
          */
-        public boolean supportsBlackoutShade() {
-            return supportsBlackoutShade;
+        public boolean supportsSecondaryOverlapped() {
+            return supportsSecondaryOverlapped;
         }
     }
 

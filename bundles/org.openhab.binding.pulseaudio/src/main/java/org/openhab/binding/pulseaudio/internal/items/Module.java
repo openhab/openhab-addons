@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.pulseaudio.internal.items;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * In order to add a {@link Sink} to the pulseaudio server you have to
  * load a corresponding module. Current Module objects are needed to
@@ -19,15 +22,16 @@ package org.openhab.binding.pulseaudio.internal.items;
  *
  * @author Tobias Bräutigam - Initial contribution
  */
+@NonNullByDefault
 public class Module extends AbstractDeviceConfig {
 
-    private String argument;
+    private @Nullable String argument;
 
     public Module(int id, String name) {
         super(id, name);
     }
 
-    public String getArgument() {
+    public @Nullable String getArgument() {
         return argument;
     }
 

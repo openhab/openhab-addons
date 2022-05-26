@@ -13,10 +13,14 @@
 package org.openhab.binding.pulseaudio.internal.discovery;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.PatternSyntaxException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants;
+import org.openhab.binding.pulseaudio.internal.handler.DeviceIdentifier;
 import org.openhab.binding.pulseaudio.internal.handler.DeviceStatusListener;
 import org.openhab.binding.pulseaudio.internal.handler.PulseaudioBridgeHandler;
 import org.openhab.binding.pulseaudio.internal.handler.PulseaudioHandler;
@@ -25,10 +29,11 @@ import org.openhab.binding.pulseaudio.internal.items.Sink;
 import org.openhab.binding.pulseaudio.internal.items.SinkInput;
 import org.openhab.binding.pulseaudio.internal.items.Source;
 import org.openhab.binding.pulseaudio.internal.items.SourceOutput;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -40,6 +45,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tobias Bräutigam - Initial contribution
  */
+@NonNullByDefault
 public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService implements DeviceStatusListener {
 
     private final Logger logger = LoggerFactory.getLogger(PulseaudioDeviceDiscoveryService.class);
@@ -66,13 +72,17 @@ public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService i
     }
 
     @Override
-    public void onDeviceAdded(Bridge bridge, AbstractAudioDeviceConfig device) {
+    public void onDeviceAdded(Thing bridge, AbstractAudioDeviceConfig device) {
+        if (getAlreadyConfiguredThings().stream().anyMatch(deviceIdentifier -> device.matches(deviceIdentifier))) {
+            return;
+        }
+
         String uidName = device.getPaName();
         logger.debug("device {} found", device);
         ThingTypeUID thingType = null;
         Map<String, Object> properties = new HashMap<>();
         // All devices need this parameter
-        properties.put(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME, uidName);
+        properties.put(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME_OR_DESCRIPTION, uidName);
         if (device instanceof Sink) {
             if (((Sink) device).isCombinedSink()) {
                 thingType = PulseaudioBindingConstants.COMBINED_SINK_THING_TYPE;
@@ -97,18 +107,24 @@ public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService i
         }
     }
 
+    public Set<DeviceIdentifier> getAlreadyConfiguredThings() {
+        Set<DeviceIdentifier> alreadyConfiguredThings = new HashSet<>();
+        for (Thing thing : pulseaudioBridgeHandler.getThing().getThings()) {
+            Configuration configuration = thing.getConfiguration();
+            try {
+                alreadyConfiguredThings.add(new DeviceIdentifier(
+                        (String) configuration.get(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME_OR_DESCRIPTION),
+                        (String) configuration.get(PulseaudioBindingConstants.DEVICE_PARAMETER_ADDITIONAL_FILTERS)));
+            } catch (PatternSyntaxException p) {
+                logger.debug(
+                        "There is an error with an already configured things. Cannot compare with discovery, skipping it");
+            }
+        }
+        return alreadyConfiguredThings;
+    }
+
     @Override
     protected void startScan() {
-        // this can be ignored here as we discover via the PulseaudioClient.update() mechanism
-    }
-
-    @Override
-    public void onDeviceStateChanged(ThingUID bridge, AbstractAudioDeviceConfig device) {
-        // this can be ignored here
-    }
-
-    @Override
-    public void onDeviceRemoved(PulseaudioBridgeHandler bridge, AbstractAudioDeviceConfig device) {
-        // this can be ignored here
+        pulseaudioBridgeHandler.resetKnownActiveDevices();
     }
 }

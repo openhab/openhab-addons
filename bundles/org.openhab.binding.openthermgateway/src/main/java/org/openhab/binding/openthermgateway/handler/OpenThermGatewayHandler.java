@@ -50,6 +50,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenThermGatewayCallback {
+    private static final String PROPERTY_GATEWAY_ID_NAME = "gatewayId";
+    private static final String PROPERTY_GATEWAY_ID_TAG = "PR: A=";
 
     private final Logger logger = LoggerFactory.getLogger(OpenThermGatewayHandler.class);
 
@@ -182,6 +184,18 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
     }
 
     @Override
+    public void receiveAcknowledgement(String message) {
+        scheduler.submit(() -> receiveAcknowledgementTask(message));
+    }
+
+    private void receiveAcknowledgementTask(String message) {
+        if (message.startsWith(PROPERTY_GATEWAY_ID_TAG)) {
+            getThing().setProperty(PROPERTY_GATEWAY_ID_NAME,
+                    message.substring(PROPERTY_GATEWAY_ID_TAG.length()).strip());
+        }
+    }
+
+    @Override
     public void handleRemoval() {
         logger.debug("Removing OpenThermGateway handler");
         disconnect();
@@ -223,13 +237,14 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
     }
 
     private void disconnect() {
-        @Nullable
-        OpenThermGatewayConnector conn = connector;
+        updateStatus(ThingStatus.OFFLINE);
 
         autoReconnect = false;
 
         cancelAutoReconnect();
 
+        @Nullable
+        OpenThermGatewayConnector conn = connector;
         if (conn != null) {
             conn.stop();
             connector = null;

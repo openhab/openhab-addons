@@ -1,0 +1,11 @@
+{
+  "description": "November 2021",
+  "optStateType": "OPT_IN_WITH_SESSIONS",
+  "statistics": {
+    "numberOfChargingSessions": 6,
+    "numberOfChargingSessionsSemantics": "mobile20chsChargingSessionNumberSemantics",
+    "symbol": "~",
+    "totalEnergyCharged": 71,
+    "totalEnergyChargedSemantics": "mobile20chsApproximatelyTotalChargedSemantics"
+  }
+}

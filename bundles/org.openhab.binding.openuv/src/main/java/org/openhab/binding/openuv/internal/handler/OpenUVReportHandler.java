@@ -145,9 +145,8 @@ public class OpenUVReportHandler extends BaseThingHandler {
                     location.getLongitude().toString(), location.getAltitude().toString());
             if (openUVData != null) {
                 scheduleUVMaxEvent(openUVData);
-                getThing().getChannels().forEach(channel -> {
-                    updateChannel(channel.getUID(), openUVData);
-                });
+                getThing().getChannels().stream().filter(channel -> isLinked(channel.getUID().getId()))
+                        .forEach(channel -> updateState(channel.getUID(), getState(channel, openUVData)));
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, bridgeStatusInfo.getStatusDetail(),
@@ -159,13 +158,13 @@ public class OpenUVReportHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing the OpenUV handler.");
-        ScheduledFuture<?> refresh = this.refreshJob;
+        ScheduledFuture<?> refresh = refreshJob;
         if (refresh != null && !refresh.isCancelled()) {
             refresh.cancel(true);
         }
         refreshJob = null;
 
-        ScheduledFuture<?> uxMax = this.uvMaxJob;
+        ScheduledFuture<?> uxMax = uvMaxJob;
         if (uxMax != null && !uxMax.isCancelled()) {
             uxMax.cancel(true);
         }
@@ -191,52 +190,32 @@ public class OpenUVReportHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Update the channel from the last OpenUV data retrieved
-     *
-     * @param channelUID the id identifying the channel to be updated
-     * @param openUVData
-     *
-     */
-    private void updateChannel(ChannelUID channelUID, OpenUVResult openUVData) {
-        Channel channel = getThing().getChannel(channelUID.getId());
-        if (channel != null && isLinked(channelUID)) {
-            ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
-            if (channelTypeUID != null) {
-                switch (channelTypeUID.getId()) {
-                    case UV_INDEX:
-                        updateState(channelUID, new DecimalType(openUVData.getUv()));
-                        break;
-                    case ALERT_LEVEL:
-                        updateState(channelUID, asAlertLevel(openUVData.getUv()));
-                        break;
-                    case UV_COLOR:
-                        updateState(channelUID,
-                                ALERT_COLORS.getOrDefault(asAlertLevel(openUVData.getUv()), ALERT_UNDEF));
-                        break;
-                    case UV_MAX:
-                        updateState(channelUID, new DecimalType(openUVData.getUvMax()));
-                        break;
-                    case OZONE:
-                        updateState(channelUID, new QuantityType<>(openUVData.getOzone(), Units.DOBSON_UNIT));
-                        break;
-                    case OZONE_TIME:
-                        updateState(channelUID, openUVData.getOzoneTime());
-                        break;
-                    case UV_MAX_TIME:
-                        updateState(channelUID, openUVData.getUVMaxTime());
-                        break;
-                    case UV_TIME:
-                        updateState(channelUID, openUVData.getUVTime());
-                        break;
-                    case SAFE_EXPOSURE:
-                        SafeExposureConfiguration configuration = channel.getConfiguration()
-                                .as(SafeExposureConfiguration.class);
-                        updateState(channelUID, openUVData.getSafeExposureTime(configuration.index));
-                        break;
-                }
-            }
+    private State getState(Channel channel, OpenUVResult openUVData) {
+        ChannelUID uid = channel.getUID();
+        switch (uid.getId()) {
+            case UV_INDEX:
+                return new DecimalType(openUVData.getUv());
+            case ALERT_LEVEL:
+                return asAlertLevel(openUVData.getUv());
+            case UV_COLOR:
+                return ALERT_COLORS.getOrDefault(asAlertLevel(openUVData.getUv()), ALERT_UNDEF);
+            case UV_MAX:
+                return new DecimalType(openUVData.getUvMax());
+            case OZONE:
+                return new QuantityType<>(openUVData.getOzone(), Units.DOBSON_UNIT);
+            case OZONE_TIME:
+                return openUVData.getOzoneTime();
+            case UV_MAX_TIME:
+                return openUVData.getUVMaxTime();
+            case UV_TIME:
+                return openUVData.getUVTime();
         }
+        ChannelTypeUID channelType = channel.getChannelTypeUID();
+        if (channelType != null && SAFE_EXPOSURE.equals(channelType.getId())) {
+            SafeExposureConfiguration configuration = channel.getConfiguration().as(SafeExposureConfiguration.class);
+            return openUVData.getSafeExposureTime(configuration.index);
+        }
+        return UnDefType.NULL;
     }
 
     private State asAlertLevel(double uv) {

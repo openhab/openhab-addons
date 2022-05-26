@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mybmw"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="front-left-current-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Tire Pressure Front Left</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="front-left-target-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Tire Pressure Front Left Target</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="front-right-current-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Tire Pressure Front Right</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="front-right-target-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Tire Pressure Front Right Target</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="rear-left-current-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Tire Pressure Rear Left</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="rear-left-target-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Tire Pressure Rear Left Target</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="rear-right-current-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Tire Pressure Rear Right</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="rear-right-target-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Tire Pressure Rear Right Target</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

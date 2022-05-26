@@ -29,6 +29,7 @@
 /bundles/org.openhab.binding.autelis/ @digitaldan
 /bundles/org.openhab.binding.automower/ @maxpg
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
+/bundles/org.openhab.binding.awattar/ @Wolfgang1966
 /bundles/org.openhab.binding.benqprojector/ @mlobstein
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
 /bundles/org.openhab.binding.bluetooth/ @cdjackson @cpmeister
@@ -43,7 +44,6 @@
 /bundles/org.openhab.binding.bluetooth.govee/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.roaming/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
-/bundles/org.openhab.binding.bmwconnecteddrive/ @weymann @ntruchsess
 /bundles/org.openhab.binding.boschindego/ @jofleck
 /bundles/org.openhab.binding.boschshc/ @stefan-kaestle @coeing @GerdZanker
 /bundles/org.openhab.binding.bosesoundtouch/ @marvkis @tratho
@@ -82,6 +82,7 @@
 /bundles/org.openhab.binding.ekey/ @hmerk
 /bundles/org.openhab.binding.electroluxair/ @jannegpriv
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
+/bundles/org.openhab.binding.elroconnects/ @mherwege
 /bundles/org.openhab.binding.energenie/ @hmerk
 /bundles/org.openhab.binding.enigma2/ @gdolfen
 /bundles/org.openhab.binding.enocean/ @fruggy83
@@ -89,10 +90,12 @@
 /bundles/org.openhab.binding.enturno/ @klocsson
 /bundles/org.openhab.binding.epsonprojector/ @mlobstein
 /bundles/org.openhab.binding.etherrain/ @dfad1469
+/bundles/org.openhab.binding.evcc/ @florian-h05
 /bundles/org.openhab.binding.evohome/ @Nebula83
 /bundles/org.openhab.binding.exec/ @kgoderis
 /bundles/org.openhab.binding.feed/ @svilenvul
 /bundles/org.openhab.binding.feican/ @Hilbrand
+/bundles/org.openhab.binding.fineoffsetweatherstation/ @Andy2003
 /bundles/org.openhab.binding.flicbutton/ @pfink
 /bundles/org.openhab.binding.fmiweather/ @ssalonen
 /bundles/org.openhab.binding.folderwatcher/ @goopilot
@@ -146,10 +149,11 @@
 /bundles/org.openhab.binding.ism8/ @hans-reiner
 /bundles/org.openhab.binding.jablotron/ @octa22
 /bundles/org.openhab.binding.jeelink/ @vbier
+/bundles/org.openhab.binding.jellyfin/ @GiviMAD
 /bundles/org.openhab.binding.kaleidescape/ @mlobstein
 /bundles/org.openhab.binding.keba/ @kgoderis
 /bundles/org.openhab.binding.km200/ @Markinus
-/bundles/org.openhab.binding.knx/ @sjka
+/bundles/org.openhab.binding.knx/ @kaikreuzer
 /bundles/org.openhab.binding.kodi/ @pail23 @cweitkamp
 /bundles/org.openhab.binding.konnected/ @volfan6415
 /bundles/org.openhab.binding.kostalinverter/ @cschneider
@@ -169,6 +173,7 @@
 /bundles/org.openhab.binding.loxone/ @ppieczul
 /bundles/org.openhab.binding.luftdateninfo/ @weymann
 /bundles/org.openhab.binding.lutron/ @actong @bobadair
+/bundles/org.openhab.binding.luxom/ @jesperskriasoft
 /bundles/org.openhab.binding.luxtronikheatpump/ @sgiehl
 /bundles/org.openhab.binding.magentatv/ @markus7017
 /bundles/org.openhab.binding.mail/ @openhab/add-ons-maintainers
@@ -202,6 +207,7 @@
 /bundles/org.openhab.binding.mqtt.homeassistant/ @davidgraeff @antroids
 /bundles/org.openhab.binding.mqtt.homie/ @davidgraeff
 /bundles/org.openhab.binding.mycroft/ @dalgwen
+/bundles/org.openhab.binding.mybmw/ @weymann @ntruchsess
 /bundles/org.openhab.binding.myq/ @digitaldan
 /bundles/org.openhab.binding.mystrom/ @pail23
 /bundles/org.openhab.binding.nanoleaf/ @raepple @stefan-hoehn
@@ -251,6 +257,7 @@
 /bundles/org.openhab.binding.plugwiseha/ @lsiepel
 /bundles/org.openhab.binding.powermax/ @lolodomo
 /bundles/org.openhab.binding.proteusecometer/ @2chilled
+/bundles/org.openhab.binding.prowl/ @octa22
 /bundles/org.openhab.binding.publictransportswitzerland/ @jeremystucki
 /bundles/org.openhab.binding.pulseaudio/ @peuter
 /bundles/org.openhab.binding.pushbullet/ @hakan42
@@ -392,6 +399,7 @@
 /itests/org.openhab.binding.feed.tests/ @svilenvul
 /itests/org.openhab.binding.hue.tests/ @cweitkamp
 /itests/org.openhab.binding.max.tests/ @marcelrv
+/itests/org.openhab.binding.mielecloud.tests/ @BjoernLange
 /itests/org.openhab.binding.modbus.tests/ @ssalonen
 /itests/org.openhab.binding.mqtt.homeassistant.tests/ @davidgraeff
 /itests/org.openhab.binding.mqtt.homie.tests/ @davidgraeff

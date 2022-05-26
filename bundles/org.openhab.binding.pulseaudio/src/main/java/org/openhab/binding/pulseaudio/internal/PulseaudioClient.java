@@ -18,20 +18,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.math.BigDecimal;
-import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pulseaudio.internal.cli.Parser;
+import org.openhab.binding.pulseaudio.internal.handler.DeviceIdentifier;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig.State;
 import org.openhab.binding.pulseaudio.internal.items.Module;
@@ -129,20 +130,18 @@ public class PulseaudioClient {
      */
     private static final String MODULE_COMBINE_SINK = "module-combine-sink";
 
-    public PulseaudioClient(String host, int port, PulseAudioBindingConfiguration configuration) throws IOException {
+    public PulseaudioClient(String host, int port, PulseAudioBindingConfiguration configuration) {
         this.host = host;
         this.port = port;
         this.configuration = configuration;
 
         items = new ArrayList<>();
         modules = new ArrayList<>();
-
-        connect();
-        update();
     }
 
     public boolean isConnected() {
-        return client != null ? client.isConnected() : false;
+        Socket clientSocket = client;
+        return clientSocket != null ? clientSocket.isConnected() : false;
     }
 
     /**
@@ -153,7 +152,6 @@ public class PulseaudioClient {
         modules = new ArrayList<Module>(Parser.parseModules(listModules()));
 
         List<AbstractAudioDeviceConfig> newItems = new ArrayList<>(); // prepare new list before assigning it
-        newItems.clear();
         if (configuration.sink) {
             logger.debug("reading sinks");
             newItems.addAll(Parser.parseSinks(listSinks(), this));
@@ -249,48 +247,6 @@ public class PulseaudioClient {
     }
 
     /**
-     * retrieves a {@link SinkInput} by its name
-     *
-     * @return the corresponding {@link SinkInput} to the given <code>name</code>
-     */
-    public @Nullable SinkInput getSinkInput(String name) {
-        for (AbstractAudioDeviceConfig item : items) {
-            if (item.getPaName().equalsIgnoreCase(name) && item instanceof SinkInput) {
-                return (SinkInput) item;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * retrieves a {@link SinkInput} by its id
-     *
-     * @return the corresponding {@link SinkInput} to the given <code>id</code>
-     */
-    public @Nullable SinkInput getSinkInput(int id) {
-        for (AbstractAudioDeviceConfig item : items) {
-            if (item.getId() == id && item instanceof SinkInput) {
-                return (SinkInput) item;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * retrieves a {@link Source} by its name
-     *
-     * @return the corresponding {@link Source} to the given <code>name</code>
-     */
-    public @Nullable Source getSource(String name) {
-        for (AbstractAudioDeviceConfig item : items) {
-            if (item.getPaName().equalsIgnoreCase(name) && item instanceof Source) {
-                return (Source) item;
-            }
-        }
-        return null;
-    }
-
-    /**
      * retrieves a {@link Source} by its id
      *
      * @return the corresponding {@link Source} to the given <code>id</code>
@@ -305,47 +261,32 @@ public class PulseaudioClient {
     }
 
     /**
-     * retrieves a {@link SourceOutput} by its name
+     * retrieves a {@link AbstractAudioDeviceConfig} by its identifier
+     * If several devices correspond to the deviceIdentifier, returns the first one (aphabetical order)
      *
-     * @return the corresponding {@link SourceOutput} to the given <code>name</code>
-     */
-    public @Nullable SourceOutput getSourceOutput(String name) {
-        for (AbstractAudioDeviceConfig item : items) {
-            if (item.getPaName().equalsIgnoreCase(name) && item instanceof SourceOutput) {
-                return (SourceOutput) item;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * retrieves a {@link SourceOutput} by its id
-     *
-     * @return the corresponding {@link SourceOutput} to the given <code>id</code>
-     */
-    public @Nullable SourceOutput getSourceOutput(int id) {
-        for (AbstractAudioDeviceConfig item : items) {
-            if (item.getId() == id && item instanceof SourceOutput) {
-                return (SourceOutput) item;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * retrieves a {@link AbstractAudioDeviceConfig} by its name
-     *
+     * @param The device identifier to match against
      * @return the corresponding {@link AbstractAudioDeviceConfig} to the given <code>name</code>
      */
-    public @Nullable AbstractAudioDeviceConfig getGenericAudioItem(String name) {
-        for (AbstractAudioDeviceConfig item : items) {
-            if (item.getPaName().equalsIgnoreCase(name)) {
-                return item;
-            }
+    public @Nullable AbstractAudioDeviceConfig getGenericAudioItem(DeviceIdentifier deviceIdentifier) {
+        List<AbstractAudioDeviceConfig> matchingDevices = items.stream()
+                .filter(device -> device.matches(deviceIdentifier))
+                .sorted(Comparator.comparing(AbstractAudioDeviceConfig::getPaName)).collect(Collectors.toList());
+        if (matchingDevices.size() == 1) {
+            return matchingDevices.get(0);
+        } else if (matchingDevices.size() > 1) {
+            logger.debug(
+                    "Cannot select exactly one audio device, so choosing the first. To choose without ambiguity between the {} devices matching the identifier {}, you can maybe use a more restrictive 'additionalFilter' parameter",
+                    matchingDevices.size(), deviceIdentifier.getNameOrDescription());
+            return matchingDevices.get(0);
         }
         return null;
     }
 
+    /**
+     * Get all items previously parsed from the pulseaudio server.
+     *
+     * @return All items parsed from the pulseaudio server
+     */
     public List<AbstractAudioDeviceConfig> getItems() {
         return items;
     }
@@ -378,9 +319,6 @@ public class PulseaudioClient {
      *            0 - 65536)
      */
     public void setVolume(AbstractAudioDeviceConfig item, int vol) {
-        if (item == null) {
-            return;
-        }
         String itemCommandName = getItemCommandName(item);
         if (itemCommandName == null) {
             return;
@@ -485,16 +423,18 @@ public class PulseaudioClient {
                 .map(portS -> Integer.parseInt(portS));
     }
 
-    private @NonNull Optional<@NonNull String> extractArgumentFromLine(String argumentWanted, String argumentLine) {
+    private Optional<String> extractArgumentFromLine(String argumentWanted, @Nullable String argumentLine) {
         String argument = null;
-        int startPortIndex = argumentLine.indexOf(argumentWanted + "=");
-        if (startPortIndex != -1) {
-            startPortIndex = startPortIndex + argumentWanted.length() + 1;
-            int endPortIndex = argumentLine.indexOf(" ", startPortIndex);
-            if (endPortIndex == -1) {
-                endPortIndex = argumentLine.length();
+        if (argumentLine != null) {
+            int startPortIndex = argumentLine.indexOf(argumentWanted + "=");
+            if (startPortIndex != -1) {
+                startPortIndex = startPortIndex + argumentWanted.length() + 1;
+                int endPortIndex = argumentLine.indexOf(" ", startPortIndex);
+                if (endPortIndex == -1) {
+                    endPortIndex = argumentLine.length();
+                }
+                argument = argumentLine.substring(startPortIndex, endPortIndex);
             }
-            argument = argumentLine.substring(startPortIndex, endPortIndex);
         }
         return Optional.ofNullable(argument);
     }
@@ -525,11 +465,8 @@ public class PulseaudioClient {
      * @param vol the new volume percent value the {@link AbstractAudioDeviceConfig} should be changed to (possible
      *            values from 0 - 100)
      */
-    public void setVolumePercent(@Nullable AbstractAudioDeviceConfig item, int vol) {
+    public void setVolumePercent(AbstractAudioDeviceConfig item, int vol) {
         int volumeToSet = vol;
-        if (item == null) {
-            return;
-        }
         if (volumeToSet <= 100) {
             volumeToSet = toAbsoluteVolume(volumeToSet);
         }
@@ -561,7 +498,10 @@ public class PulseaudioClient {
             slaves.add(sink.getPaName());
         }
         // 1. delete old combined-sink
-        sendRawCommand(CMD_UNLOAD_MODULE + " " + combinedSink.getModule().getId());
+        Module lastModule = combinedSink.getModule();
+        if (lastModule != null) {
+            sendRawCommand(CMD_UNLOAD_MODULE + " " + lastModule.getId());
+        }
         // 2. add new combined-sink with same name and all slaves
         sendRawCommand(CMD_LOAD_MODULE + " " + MODULE_COMBINE_SINK + " sink_name=" + combinedSink.getPaName()
                 + " slaves=" + String.join(",", slaves));
@@ -662,15 +602,16 @@ public class PulseaudioClient {
 
     private synchronized void sendRawCommand(String command) {
         checkConnection();
-        if (client != null && client.isConnected()) {
+        Socket clientSocket = client;
+        if (clientSocket != null && clientSocket.isConnected()) {
             try {
-                PrintStream out = new PrintStream(client.getOutputStream(), true);
+                PrintStream out = new PrintStream(clientSocket.getOutputStream(), true);
                 logger.trace("sending command {} to pa-server {}", command, host);
                 out.print(command + "\r\n");
                 out.close();
-                client.close();
+                clientSocket.close();
             } catch (IOException e) {
-                logger.error("{}", e.getLocalizedMessage(), e);
+                logger.warn("{}", e.getMessage(), e);
             }
         }
     }
@@ -679,12 +620,13 @@ public class PulseaudioClient {
         logger.trace("_sendRawRequest({})", command);
         checkConnection();
         String result = "";
-        if (client != null && client.isConnected()) {
+        Socket clientSocket = client;
+        if (clientSocket != null && clientSocket.isConnected()) {
             try {
-                PrintStream out = new PrintStream(client.getOutputStream(), true);
+                PrintStream out = new PrintStream(clientSocket.getOutputStream(), true);
                 out.print(command + "\r\n");
 
-                InputStream instr = client.getInputStream();
+                InputStream instr = clientSocket.getInputStream();
 
                 try {
                     byte[] buff = new byte[1024];
@@ -709,42 +651,53 @@ public class PulseaudioClient {
                 } catch (SocketException e) {
                     logger.warn("Socket exception while sending pulseaudio command: {}", e.getMessage());
                 } catch (IOException e) {
-                    logger.error("Exception while reading socket: {}", e.getMessage());
+                    logger.warn("Exception while reading socket: {}", e.getMessage());
                 }
                 instr.close();
                 out.close();
-                client.close();
+                clientSocket.close();
                 return result;
             } catch (IOException e) {
-                logger.error("{}", e.getLocalizedMessage(), e);
+                logger.warn("{}", e.getMessage(), e);
             }
         }
         return result;
     }
 
     private void checkConnection() {
-        if (client == null || client.isClosed() || !client.isConnected()) {
-            try {
-                connect();
-            } catch (IOException e) {
-                logger.error("{}", e.getLocalizedMessage(), e);
-            }
+        try {
+            connect();
+        } catch (IOException e) {
+            logger.debug("{}", e.getMessage(), e);
         }
     }
 
     /**
      * Connects to the pulseaudio server (timeout 500ms)
      */
-    private void connect() throws IOException {
-        try {
-            client = new Socket(host, port);
-            client.setSoTimeout(500);
-        } catch (UnknownHostException e) {
-            logger.error("unknown socket host {}", host);
-        } catch (NoRouteToHostException e) {
-            logger.error("no route to host {}", host);
-        } catch (SocketException e) {
-            logger.error("cannot connect to host {} : {}", host, e.getMessage());
+    public void connect() throws IOException {
+        Socket clientSocket = client;
+        if (clientSocket == null || clientSocket.isClosed() || !clientSocket.isConnected()) {
+            logger.trace("Try to connect...");
+            try {
+                var clientFinal = new Socket(host, port);
+                clientFinal.setSoTimeout(500);
+                client = clientFinal;
+                logger.trace("connected");
+            } catch (UnknownHostException e) {
+                client = null;
+                throw new IOException("Unknown host", e);
+            } catch (IllegalArgumentException e) {
+                client = null;
+                throw new IOException("Invalid port", e);
+            } catch (SecurityException | SocketException e) {
+                client = null;
+                throw new IOException(
+                        String.format("Cannot connect socket: %s", e.getMessage() != null ? e.getMessage() : ""), e);
+            } catch (IOException e) {
+                client = null;
+                throw e;
+            }
         }
     }
 
@@ -752,11 +705,12 @@ public class PulseaudioClient {
      * Disconnects from the pulseaudio server
      */
     public void disconnect() {
-        if (client != null) {
+        Socket clientSocket = client;
+        if (clientSocket != null) {
             try {
-                client.close();
+                clientSocket.close();
             } catch (IOException e) {
-                logger.error("{}", e.getLocalizedMessage(), e);
+                logger.debug("{}", e.getMessage(), e);
             }
         }
     }

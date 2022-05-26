@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -53,8 +53,8 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, wemoHttpCaller);
+    public WemoHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService, WemoHttpCall wemoHttpCaller) {
+        super(thing, upnpIOService, upnpService, wemoHttpCaller);
 
         logger.debug("Creating a WemoHandler for thing '{}'", getThing().getUID());
     }
@@ -62,21 +62,13 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-        Configuration configuration = getConfig();
 
-        if (configuration.get(UDN) != null) {
-            logger.debug("Initializing WemoHandler for UDN '{}'", configuration.get(UDN));
-            addSubscription(BASICEVENT);
-            if (THING_TYPE_INSIGHT.equals(thing.getThingTypeUID())) {
-                addSubscription(INSIGHTEVENT);
-            }
-            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
-                    TimeUnit.SECONDS);
-            updateStatus(ThingStatus.UNKNOWN);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/config-status.error.missing-udn");
+        addSubscription(BASICEVENT);
+        if (THING_TYPE_INSIGHT.equals(thing.getThingTypeUID())) {
+            addSubscription(INSIGHTEVENT);
         }
+        pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
+                TimeUnit.SECONDS);
     }
 
     @Override

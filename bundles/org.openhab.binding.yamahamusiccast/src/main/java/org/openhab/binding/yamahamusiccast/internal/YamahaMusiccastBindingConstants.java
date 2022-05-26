@@ -21,6 +21,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  * used across the whole binding.
  *
  * @author Lennert Coopman - Initial contribution
+ * @author Florian Hotze - Add volume in decibel
  */
 @NonNullByDefault
 public class YamahaMusiccastBindingConstants {
@@ -36,6 +37,7 @@ public class YamahaMusiccastBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_UID_MUTE = new ChannelTypeUID("system:mute");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_VOLUME = new ChannelTypeUID("system:volume");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_VOLUMEABS = new ChannelTypeUID(BINDING_ID, "volumeAbs");
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_VOLUMEDB = new ChannelTypeUID(BINDING_ID, "volumeDB");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_INPUT = new ChannelTypeUID(BINDING_ID, "input");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_SOUNDPROGRAM = new ChannelTypeUID(BINDING_ID, "soundProgram");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_SELECTPRESET = new ChannelTypeUID(BINDING_ID, "selectPreset");
@@ -48,6 +50,7 @@ public class YamahaMusiccastBindingConstants {
     public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_VOLUMEABS = "volumeAbs";
+    public static final String CHANNEL_VOLUMEDB = "volumeDB";
     public static final String CHANNEL_INPUT = "input";
     public static final String CHANNEL_SOUNDPROGRAM = "soundProgram";
     public static final String CHANNEL_SELECTPRESET = "selectPreset";

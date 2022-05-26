@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.module.script.AbstractScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigurableService;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -38,7 +39,8 @@ import org.osgi.service.component.annotations.Modified;
  * @author Jimmy Tanagra - Add require injection
  */
 @NonNullByDefault
-@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jrubyscripting")
+@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jrubyscripting", property = Constants.SERVICE_PID
+        + "=org.openhab.automation.jrubyscripting")
 @ConfigurableService(category = "automation", label = "JRuby Scripting", description_uri = "automation:jruby")
 public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
 
@@ -48,9 +50,6 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
     // difficult ways to debug.
     private static final Set<String> FILTERED_PRESETS = Set.of("File", "Files", "Path", "Paths");
     private static final Set<String> INSTANCE_PRESETS = Set.of();
-    private static final Set<String> GLOBAL_PRESETS = Set.of("scriptExtension", "automationManager", "ruleRegistry",
-            "items", "voice", "rules", "things", "events", "itemRegistry", "ir", "actions", "se", "audio",
-            "lifecycleTracker");
 
     private final javax.script.ScriptEngineFactory factory = new org.jruby.embed.jsr223.JRubyEngineFactory();
 
@@ -69,7 +68,8 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
 
     // Adds $ in front of a set of variables so that Ruby recognizes them as global variables
     private static Map.Entry<String, Object> mapGlobalPresets(Map.Entry<String, Object> entry) {
-        if (GLOBAL_PRESETS.contains(entry.getKey())) {
+        if (Character.isLowerCase(entry.getKey().charAt(0)) && !(entry.getValue() instanceof Class)
+                && !(entry.getValue() instanceof Enum)) {
             return Map.entry("$" + entry.getKey(), entry.getValue());
         } else {
             return entry;

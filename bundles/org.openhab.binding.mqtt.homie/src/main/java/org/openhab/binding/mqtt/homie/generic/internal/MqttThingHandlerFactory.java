@@ -13,12 +13,9 @@
 package org.openhab.binding.mqtt.homie.generic.internal;
 
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.homie.internal.handler.HomieThingHandler;
@@ -45,9 +42,8 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements TransformationServiceProvider {
     private @NonNullByDefault({}) MqttChannelTypeProvider typeProvider;
-    private @NonNullByDefault({}) MqttChannelStateDescriptionProvider stateDescriptionProvider;
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(MqttBindingConstants.HOMIE300_MQTT_THING).collect(Collectors.toSet());
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(MqttBindingConstants.HOMIE300_MQTT_THING);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -64,15 +60,6 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements 
     @Override
     protected void deactivate(ComponentContext componentContext) {
         super.deactivate(componentContext);
-    }
-
-    @Reference
-    protected void setStateDescriptionProvider(MqttChannelStateDescriptionProvider stateDescription) {
-        this.stateDescriptionProvider = stateDescription;
-    }
-
-    protected void unsetStateDescriptionProvider(MqttChannelStateDescriptionProvider stateDescription) {
-        this.stateDescriptionProvider = null;
     }
 
     @Reference
