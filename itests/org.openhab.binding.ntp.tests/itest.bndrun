@@ -70,4 +70,6 @@ Fragment-Host: org.openhab.binding.ntp
 	org.eclipse.jetty.servlet;version='[9.4.46,9.4.47)',\
 	org.eclipse.jetty.util;version='[9.4.46,9.4.47)',\
 	org.eclipse.jetty.util.ajax;version='[9.4.46,9.4.47)',\
-	org.ops4j.pax.logging.pax-logging-api;version='[2.0.16,2.0.17)'
+	org.ops4j.pax.logging.pax-logging-api;version='[2.0.16,2.0.17)',\
+	ch.qos.logback.classic;version='[1.2.11,1.2.12)',\
+	ch.qos.logback.core;version='[1.2.11,1.2.12)'
