@@ -56,14 +56,15 @@ import org.openhab.core.types.State;
 /**
  * @author Sven Strohschein - Initial contribution
  */
+@NonNullByDefault
 public class LivisiBridgeHandlerTest {
 
     private static final int MAXIMUM_RETRY_EXECUTIONS = 10;
 
-    private LivisiBridgeHandlerAccessible bridgeHandler;
-    private Bridge bridgeMock;
-    private LivisiWebSocket webSocketMock;
-    private Map<String, State> updatedChannels;
+    private @NonNullByDefault({}) LivisiBridgeHandlerAccessible bridgeHandler;
+    private @NonNullByDefault({}) Bridge bridgeMock;
+    private @NonNullByDefault({}) LivisiWebSocket webSocketMock;
+    private @NonNullByDefault({}) Map<String, State> updatedChannels;
 
     @BeforeEach
     public void before() throws Exception {

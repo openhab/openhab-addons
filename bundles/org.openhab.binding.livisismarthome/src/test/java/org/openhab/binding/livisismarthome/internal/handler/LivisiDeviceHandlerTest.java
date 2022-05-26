@@ -31,6 +31,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.capability.CapabilityConfigDTO;
@@ -68,12 +70,13 @@ import org.openhab.core.types.State;
 /**
  * @author Sven Strohschein - Initial contribution
  */
+@NonNullByDefault
 public class LivisiDeviceHandlerTest {
 
-    private LivisiBridgeHandler bridgeHandlerMock;
-    private ThingStatusInfo thingStatusInfo;
-    private Map<String, State> updatedChannels;
-    private Set<TriggeredEvent> triggeredChannels;
+    private @NonNullByDefault({}) LivisiBridgeHandler bridgeHandlerMock;
+    private @NonNullByDefault({}) ThingStatusInfo thingStatusInfo;
+    private @NonNullByDefault({}) Map<String, State> updatedChannels;
+    private @NonNullByDefault({}) Set<TriggeredEvent> triggeredChannels;
 
     @BeforeEach
     public void before() {
@@ -1431,7 +1434,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     private static void addCapabilityToDevice(String capabilityType,
-            Consumer<CapabilityStateDTO> capabilityStateConsumer, DeviceDTO device) {
+            @Nullable Consumer<CapabilityStateDTO> capabilityStateConsumer, DeviceDTO device) {
         CapabilityConfigDTO capabilityConfig = new CapabilityConfigDTO();
         capabilityConfig.setName("capabilityName");
 
@@ -1532,7 +1535,7 @@ public class LivisiDeviceHandlerTest {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(@Nullable Object o) {
             if (this == o)
                 return true;
             if (o == null || getClass() != o.getClass())

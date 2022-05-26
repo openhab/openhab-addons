@@ -22,6 +22,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 /**
+ * The {@link GsonOptional} supports non-null-compatible methods to use gson.
+ *
  * @author Sven Strohschein - Initial contribution
  */
 @NonNullByDefault

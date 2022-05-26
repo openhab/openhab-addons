@@ -31,12 +31,13 @@ import org.openhab.binding.livisismarthome.internal.listener.EventListener;
 /**
  * @author Sven Strohschein - Initial contribution
  */
+@NonNullByDefault
 public class LivisiWebSocketTest {
 
-    private LivisiWebSocketAccessible webSocket;
-    private EventListenerDummy eventListener;
-    private WebSocketClient webSocketClientMock;
-    private Session sessionMock;
+    private @NonNullByDefault({}) LivisiWebSocketAccessible webSocket;
+    private @NonNullByDefault({}) EventListenerDummy eventListener;
+    private @NonNullByDefault({}) WebSocketClient webSocketClientMock;
+    private @NonNullByDefault({}) Session sessionMock;
 
     @BeforeEach
     @SuppressWarnings("unchecked")

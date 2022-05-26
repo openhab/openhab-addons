@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceStateDTO;
@@ -28,6 +29,7 @@ import org.openhab.binding.livisismarthome.internal.client.api.entity.state.Bool
 /**
  * @author Sven Strohschein - Initial contribution
  */
+@NonNullByDefault
 public class DeviceDTOTest {
 
     @Test
@@ -60,7 +62,7 @@ public class DeviceDTOTest {
     public void testSetMessageListResetByEmpty() {
         DeviceDTO device = createDevice();
 
-        assertNull(device.getMessageList());
+        assertTrue(device.getMessageList().isEmpty());
         assertTrue(device.isReachable());
         assertFalse(device.hasLowBattery());
 
@@ -86,7 +88,7 @@ public class DeviceDTOTest {
     public void testSetMessageListResetByNULL() {
         DeviceDTO device = createDevice();
 
-        assertNull(device.getMessageList());
+        assertTrue(device.getMessageList().isEmpty());
         assertTrue(device.isReachable());
         assertFalse(device.hasLowBattery());
 
@@ -103,7 +105,7 @@ public class DeviceDTOTest {
         // Nothing should get changed.
         // New messages are only set in real-life when the device is refreshed with new data of the API.
         // Therefore the data of the API should be kept / not overwritten when no corresponding messages are available.
-        assertNull(device.getMessageList());
+        assertTrue(device.getMessageList().isEmpty());
         assertFalse(device.isReachable());
         assertTrue(device.hasLowBattery());
     }
@@ -112,7 +114,7 @@ public class DeviceDTOTest {
     public void testSetMessageListResetByUnimportantMessage() {
         DeviceDTO device = createDevice();
 
-        assertNull(device.getMessageList());
+        assertTrue(device.getMessageList().isEmpty());
         assertTrue(device.isReachable());
         assertFalse(device.hasLowBattery());
 

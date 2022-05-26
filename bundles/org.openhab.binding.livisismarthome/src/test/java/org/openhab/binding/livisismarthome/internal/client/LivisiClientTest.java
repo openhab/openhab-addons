@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,14 +35,15 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 /**
  * @author Sven Strohschein - Initial contribution
  */
+@NonNullByDefault
 public class LivisiClientTest {
 
     private static final String STATUS_URL = "http://127.0.0.1:8080/status";
     private static final String DEVICES_URL = "http://127.0.0.1:8080/device";
     private static final String CAPABILITY_STATES_URL = "http://127.0.0.1:8080/capability/states";
 
-    private LivisiClient client;
-    private URLConnectionFactory connectionFactoryMock;
+    private @NonNullByDefault({}) LivisiClient client;
+    private @NonNullByDefault({}) URLConnectionFactory connectionFactoryMock;
 
     @BeforeEach
     public void before() throws Exception {

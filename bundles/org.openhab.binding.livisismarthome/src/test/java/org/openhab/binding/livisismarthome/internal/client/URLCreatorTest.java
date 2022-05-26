@@ -14,11 +14,13 @@ package org.openhab.binding.livisismarthome.internal.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author Sven Strohschein - Initial contribution
  */
+@NonNullByDefault
 public class URLCreatorTest {
 
     @Test
