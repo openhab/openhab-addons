@@ -98,7 +98,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                                     .ifPresent(f -> bridgesUids.put(room.getId(), createThing(room, homeUID)));
                         });
 
-                        // Creating modules that has no bridge first
+                        // Creating modules that have no bridge first
                         home.getModules().values().stream().filter(module -> module.getBridge() == null)
                                 .forEach(device -> bridgesUids.put(device.getId(), createThing(device, homeUID)));
                         // Then the others

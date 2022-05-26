@@ -10,7 +10,7 @@
 		<description>Monitoring state of the camera</description>
 	</channel-type>
 
-	<channel-type id="monitoring-status-ro">
+	<channel-type id="siren-monitoring">
 		<item-type>Switch</item-type>
 		<label>Monitoring</label>
 		<description>Monitoring state of the equipment</description>

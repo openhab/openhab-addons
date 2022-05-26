@@ -43,7 +43,7 @@ public class SirenChannelHelper extends ChannelHelper {
             switch (channelId) {
                 case CHANNEL_MONITORING:
                     return homeStatus.getMonitoring();
-                case GROUP_CAM_STATUS:
+                case CHANNEL_STATUS:
                     return homeStatus.getStatus().map(status -> toStringType(status)).orElse(UnDefType.UNDEF);
             }
         }

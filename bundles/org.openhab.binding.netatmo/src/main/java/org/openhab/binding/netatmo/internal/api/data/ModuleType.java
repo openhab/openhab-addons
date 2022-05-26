@@ -97,8 +97,7 @@ public enum ModuleType {
 
     PRESENCE(FeatureArea.SECURITY, "NOC", HOME,
             List.of(EventCapability.class, PresenceCapability.class, ChannelHelperCapability.class),
-            List.of(CameraChannelHelper.class, PresenceChannelHelper.class, SignalChannelHelper.class,
-                    EventChannelHelper.class)),
+            List.of(PresenceChannelHelper.class, SignalChannelHelper.class, EventChannelHelper.class)),
 
     DOORBELL(FeatureArea.SECURITY, "NDB", HOME,
             List.of(EventCapability.class, CameraCapability.class, ChannelHelperCapability.class),
