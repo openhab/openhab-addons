@@ -80,8 +80,6 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "@text/offline.bridge-unitialized");
             return;
-        } else {
-            updateStatus(ThingStatus.UNKNOWN);
         }
 
         // We need to do this in a separate thread because we may have to wait for the
