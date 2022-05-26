@@ -202,7 +202,7 @@
 			<bridge-type-ref id="connector"/>
 		</supported-bridge-type-refs>
 		<label>Temperature Sensor</label>
-		<description>ELRO Connects motion sensor</description>
+		<description>ELRO Connects temperature sensor</description>
 		<category>Sensor</category>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
