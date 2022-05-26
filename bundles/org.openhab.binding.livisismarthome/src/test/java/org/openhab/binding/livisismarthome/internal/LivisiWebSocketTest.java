@@ -217,6 +217,10 @@ public class LivisiWebSocketTest {
         @Override
         void startWebSocketClient(WebSocketClient client) {
         }
+
+        @Override
+        void stopWebSocketClient(WebSocketClient client) {
+        }
     }
 
     private static class EventListenerDummy implements EventListener {

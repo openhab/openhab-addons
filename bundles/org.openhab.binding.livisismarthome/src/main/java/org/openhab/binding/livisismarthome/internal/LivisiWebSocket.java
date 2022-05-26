@@ -99,12 +99,7 @@ public class LivisiWebSocket {
             logger.trace("Stopping websocket ignored - was not running.");
         }
         session = null;
-        try {
-            client.stop();
-            client.destroy();
-        } catch (Exception e) {
-            logger.debug("Stopping websocket failed", e);
-        }
+        stopWebSocketClient(client);
         client = createWebSocketClient();
     }
 
@@ -171,5 +166,14 @@ public class LivisiWebSocket {
 
     void startWebSocketClient(WebSocketClient client) throws Exception {
         client.start();
+    }
+
+    void stopWebSocketClient(WebSocketClient client) {
+        try {
+            client.stop();
+            client.destroy();
+        } catch (Exception e) {
+            logger.debug("Stopping websocket failed", e);
+        }
     }
 }
