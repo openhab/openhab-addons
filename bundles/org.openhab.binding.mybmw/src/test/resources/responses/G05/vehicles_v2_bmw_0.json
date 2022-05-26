@@ -1,0 +1,401 @@
+[
+  {
+    "a4aType": "NOT_SUPPORTED",
+    "bodyType": "G05",
+    "brand": "BMW",
+    "capabilities": {
+      "canRemoteHistoryBeDeleted": false,
+      "climateNow": {
+        "executionMessage": "Do you want to ventilate now? Remote functions may take a few seconds.",
+        "executionPopup": {
+          "executionMessage": "Turn pre-conditioning on now? Remote functions may take a few seconds.",
+          "iconId": 59733,
+          "popupType": "DIALOG",
+          "primaryButtonText": "Start",
+          "secondaryButtonText": "Cancel",
+          "title": "Start Climatization"
+        },
+        "executionStopPopup": {
+          "executionMessage": "Stop climate control in your vehicle now? Remote functions may take a few seconds.",
+          "title": "Climate control is running"
+        },
+        "isEnabled": true,
+        "isPinAuthenticationRequired": false
+      },
+      "horn": {
+        "executionMessage": "Using your horn is only allowed in certain situations in many countries. Responsibility for the use and adherence to the respective regulations lies solely with you as the user. \n\nDo you want to use the horn now? Remote functions may take a few seconds.",
+        "isEnabled": true,
+        "isPinAuthenticationRequired": false
+      },
+      "isBmwChargingSupported": true,
+      "isCarSharingSupported": false,
+      "isChargeNowForBusinessSupported": false,
+      "isChargingHistorySupported": true,
+      "isChargingHospitalityEnabled": false,
+      "isChargingLoudnessEnable": false,
+      "isChargingPlanSupported": true,
+      "isChargingPowerLimitEnable": false,
+      "isChargingSettingsEnabled": false,
+      "isChargingTargetSocEnable": false,
+      "isCustomerEsimSupported": false,
+      "isDCSContractManagementSupported": true,
+      "isDataPrivacyEnabled": false,
+      "isEasyChargeSupported": false,
+      "isEvGoChargingSupported": false,
+      "isFindChargingEnabled": true,
+      "isMiniChargingSupported": false,
+      "isRemoteHistorySupported": true,
+      "isRemoteServicesActivationRequired": false,
+      "isRemoteServicesBookingRequired": false,
+      "isScanAndChargeSupported": true,
+      "lastStateCall": {
+        "isNonLscFeatureEnabled": false,
+        "lscState": "ACTIVATED"
+      },
+      "lights": {
+        "executionMessage": "Flash headlights now? Remote functions may take a few seconds.",
+        "isEnabled": true,
+        "isPinAuthenticationRequired": false
+      },
+      "lock": {
+        "executionMessage": "Lock your vehicle now? Remote functions may take a few seconds.",
+        "isEnabled": true,
+        "isPinAuthenticationRequired": false
+      },
+      "remote360": {
+        "isComingSoonEnabled": false,
+        "isDataPrivacyEnabled": false,
+        "isEnabled": true,
+        "isPinAuthenticationRequired": false,
+        "isToggleEnabled": true
+      },
+      "remoteSoftwareUpgrade": {
+        "isEnabled": true,
+        "isPinAuthenticationRequired": false
+      },
+      "sendPoi": {
+        "executionMessage": "Send POI now? Remote functions may take a few seconds.",
+        "isEnabled": true,
+        "isPinAuthenticationRequired": false
+      },
+      "unlock": {
+        "executionMessage": "Unlock your vehicle now? Remote functions may take a few seconds.",
+        "isEnabled": true,
+        "isPinAuthenticationRequired": true
+      },
+      "vehicleFinder": {
+        "executionMessage": "Find your vehicle now? Remote functions may take a few seconds.",
+        "isEnabled": true,
+        "isPinAuthenticationRequired": false
+      }
+    },
+    "connectedDriveServices": [
+      "WIFI_HOTSPOT_SERVICE"
+    ],
+    "driveTrain": "PLUGIN_HYBRID",
+    "driverGuideInfo": {
+      "androidAppScheme": "com.bmwgroup.driversguide.row",
+      "androidStoreUrl": "https://play.google.com/store/apps/details?id=com.bmwgroup.driversguide.row",
+      "iosAppScheme": "bmwdriversguide:///open",
+      "iosStoreUrl": "https://apps.apple.com/de/app/id714042749?mt=8",
+      "title": "BMW\nDriver's Guide"
+    },
+    "exFactoryILevel": "S18A-21-03-563",
+    "exFactoryPUStep": "0321",
+    "headUnit": "MGU",
+    "hmiVersion": "id7",
+    "iStep": "S18A-21-07-550",
+    "isLscSupported": true,
+    "isMappingPending": false,
+    "isMappingUnconfirmed": false,
+    "model": "X5 xDrive45e",
+    "properties": {
+      "areDoorsClosed": true,
+      "areDoorsLocked": true,
+      "areDoorsOpen": false,
+      "areWindowsClosed": true,
+      "chargingState": {
+        "chargePercentage": 80,
+        "isChargerConnected": true,
+        "state": "CHARGING",
+        "type": "NOT_AVAILABLE"
+      },
+      "checkControlMessages": [],
+      "climateControl": {
+        "activity": "INACTIVE"
+      },
+      "combinedRange": {
+        "distance": {
+          "units": "KILOMETERS",
+          "value": 466
+        }
+      },
+      "combustionRange": {
+        "distance": {
+          "units": "KILOMETERS",
+          "value": 466
+        }
+      },
+      "doorsAndWindows": {
+        "doors": {
+          "driverFront": "CLOSED",
+          "driverRear": "CLOSED",
+          "passengerFront": "CLOSED",
+          "passengerRear": "CLOSED"
+        },
+        "hood": "CLOSED",
+        "moonroof": "CLOSED",
+        "trunk": "CLOSED",
+        "windows": {
+          "driverFront": "CLOSED",
+          "driverRear": "CLOSED",
+          "passengerFront": "CLOSED",
+          "passengerRear": "CLOSED"
+        }
+      },
+      "electricRange": {
+        "distance": {
+          "units": "KILOMETERS",
+          "value": 48
+        }
+      },
+      "electricRangeAndStatus": {
+        "chargePercentage": 80,
+        "distance": {
+          "units": "KILOMETERS",
+          "value": 48
+        }
+      },
+      "fuelLevel": {
+        "units": "LITERS",
+        "value": 47
+      },
+      "fuelPercentage": {
+        "value": 74
+      },
+      "inMotion": false,
+      "isServiceRequired": false,
+      "lastUpdatedAt": "2021-11-10T22:21:39Z",
+      "originCountryISO": "BE",
+      "serviceRequired": [
+        {
+          "dateTime": "2023-06-01T00:00:00.000Z",
+          "distance": {
+            "units": "KILOMETERS",
+            "value": 32000
+          },
+          "status": "OK",
+          "type": "OIL"
+        },
+        {
+          "dateTime": "2024-06-01T00:00:00.000Z",
+          "status": "OK",
+          "type": "BRAKE_FLUID"
+        },
+        {
+          "dateTime": "2025-06-01T00:00:00.000Z",
+          "distance": {
+            "units": "KILOMETERS",
+            "value": 60000
+          },
+          "status": "OK",
+          "type": "VEHICLE_CHECK"
+        }
+      ],
+      "vehicleLocation": {
+        "address": {
+          "formatted": "some_formatted_address"
+        },
+        "coordinates": {
+          "latitude": 12.3456,
+          "longitude": 34.5678
+        },
+        "heading": 123
+      }
+    },
+    "puStep": "0721",
+    "status": {
+      "chargingProfile": {
+        "chargingControlType": "weeklyPlanner",
+        "chargingMode": "immediateCharging",
+        "chargingPreference": "noPreSelection",
+        "chargingSettings": {
+          "hospitality": "NO_ACTION",
+          "idcc": "NO_ACTION",
+          "isAcCurrentLimitActive": false,
+          "targetSoc": 100
+        },
+        "climatisationOn": true,
+        "departureTimes": [
+          {
+            "action": "deactivate",
+            "id": 1,
+            "timerWeekDays": []
+          },
+          {
+            "action": "activate",
+            "id": 2,
+            "timeStamp": {
+              "hour": 8,
+              "minute": 10
+            },
+            "timerWeekDays": [
+              "monday",
+              "tuesday",
+              "wednesday",
+              "thursday",
+              "friday"
+            ]
+          },
+          {
+            "action": "deactivate",
+            "id": 3,
+            "timerWeekDays": []
+          },
+          {
+            "action": "deactivate",
+            "id": 4,
+            "timeStamp": {
+              "hour": 8,
+              "minute": 10
+            },
+            "timerWeekDays": [
+              "thursday"
+            ]
+          }
+        ],
+        "reductionOfChargeCurrent": {
+          "end": {
+            "hour": 0,
+            "minute": 0
+          },
+          "start": {
+            "hour": 0,
+            "minute": 0
+          }
+        }
+      },
+      "checkControlMessages": [
+        {
+          "criticalness": "nonCritical",
+          "iconId": 60197,
+          "state": "OK",
+          "title": "Engine Oil"
+        }
+      ],
+      "checkControlMessagesGeneralState": "No Issues",
+      "currentMileage": {
+        "formattedMileage": "2667",
+        "mileage": 2667,
+        "units": "km"
+      },
+      "doorsAndWindows": [
+        {
+          "criticalness": "nonCritical",
+          "iconId": 59722,
+          "state": "Closed",
+          "title": "All doors and windows"
+        }
+      ],
+      "doorsGeneralState": "Locked",
+      "fuelIndicators": [
+        {
+          "chargingType": null,
+          "iconOpacity": "high",
+          "infoIconId": 59691,
+          "infoLabel": "Combined Range",
+          "isCircleIcon": false,
+          "isInaccurate": false,
+          "levelIconId": null,
+          "levelUnits": null,
+          "levelValue": null,
+          "mainBarValue": 0,
+          "rangeIconId": 59691,
+          "rangeUnits": "km",
+          "rangeValue": "466",
+          "secondaryBarValue": 0,
+          "showsBar": false
+        },
+        {
+          "barType": null,
+          "chargingStatusIndicatorType": "CHARGING",
+          "chargingStatusType": "CHARGING",
+          "chargingType": "charging",
+          "iconOpacity": "high",
+          "infoIconId": 59689,
+          "infoLabel": "100% at ~03:53 AM",
+          "isCircleIcon": true,
+          "isInaccurate": true,
+          "levelIconId": 59689,
+          "levelUnits": "%",
+          "levelValue": "80",
+          "mainBarValue": 80,
+          "rangeIconId": 59683,
+          "rangeUnits": "km",
+          "rangeValue": "48",
+          "secondaryBarValue": 0,
+          "showBarGoal": false,
+          "showsBar": true
+        },
+        {
+          "chargingType": null,
+          "iconOpacity": "high",
+          "infoIconId": 59930,
+          "infoLabel": "Fuel Level",
+          "isCircleIcon": false,
+          "isInaccurate": false,
+          "levelIconId": 59682,
+          "levelUnits": "%",
+          "levelValue": "74",
+          "mainBarValue": 74,
+          "rangeIconId": 59681,
+          "rangeUnits": "km",
+          "rangeValue": "418",
+          "secondaryBarValue": 0,
+          "showsBar": true
+        }
+      ],
+      "issues": {},
+      "lastUpdatedAt": "2021-11-10T22:21:39Z",
+      "recallExternalUrl": null,
+      "recallMessages": [],
+      "requiredServices": [
+        {
+          "criticalness": "nonCritical",
+          "iconId": 60197,
+          "id": "Oil",
+          "longDescription": "Next service due after the specified distance or date.",
+          "subtitle": "Due in June 2023 or 32000 km",
+          "title": "Engine oil"
+        },
+        {
+          "criticalness": "nonCritical",
+          "iconId": 60223,
+          "id": "BrakeFluid",
+          "longDescription": "Next service due by the specified date.",
+          "subtitle": "Due in June 2024",
+          "title": "Brake fluid"
+        },
+        {
+          "criticalness": "nonCritical",
+          "iconId": 60215,
+          "id": "VehicleCheck",
+          "longDescription": "Next vehicle check due after the specified distance or date.",
+          "subtitle": "Due in June 2025 or 60000 km",
+          "title": "Vehicle check"
+        }
+      ],
+      "timestampMessage": "Updated from vehicle 11/10/2021 11:21 PM"
+    },
+    "telematicsUnit": "ATM02",
+    "themeSpecs": {
+      "vehicleStatusBackgroundColor": {
+        "blue": 77,
+        "green": 38,
+        "red": 31
+      }
+    },
+    "vin": "some_vin_G05",
+    "year": 2021
+  }
+]

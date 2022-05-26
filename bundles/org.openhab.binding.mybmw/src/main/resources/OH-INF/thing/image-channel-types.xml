@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mybmw"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="png-channel">
+		<item-type>Image</item-type>
+		<label>Rendered Vehicle Image</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="image-view-channel">
+		<item-type>String</item-type>
+		<label>Image Viewport</label>
+		<command>
+			<options>
+				<option value="VehicleStatus">Front Side View</option>
+				<option value="VehicleInfo">Front View</option>
+				<option value="ChargingHistory">Side View</option>
+				<option value="Default">Default View</option>
+			</options>
+		</command>
+	</channel-type>
+</thing:thing-descriptions>

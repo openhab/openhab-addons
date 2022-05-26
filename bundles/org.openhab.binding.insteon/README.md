@@ -260,8 +260,6 @@ Usage: openhab:insteon send_extended_message_2 address flags cmd1 cmd2 [up to 12
 
 Here is an example of command: `insteon display_local_database`.
 
-When monitoring devices, the output will be displayed where openHAB was started.
-You may need to redirect the output to a log file to see the messages.
 The send message commands do not display any results.
 If you want to see the response from the device, you will need to monitor the device.
 

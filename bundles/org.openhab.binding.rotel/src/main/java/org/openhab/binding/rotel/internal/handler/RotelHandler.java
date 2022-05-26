@@ -34,13 +34,17 @@ import org.openhab.binding.rotel.internal.communication.RotelCommand;
 import org.openhab.binding.rotel.internal.communication.RotelConnector;
 import org.openhab.binding.rotel.internal.communication.RotelDsp;
 import org.openhab.binding.rotel.internal.communication.RotelIpConnector;
-import org.openhab.binding.rotel.internal.communication.RotelMessageEvent;
-import org.openhab.binding.rotel.internal.communication.RotelMessageEventListener;
-import org.openhab.binding.rotel.internal.communication.RotelProtocol;
 import org.openhab.binding.rotel.internal.communication.RotelSerialConnector;
 import org.openhab.binding.rotel.internal.communication.RotelSimuConnector;
 import org.openhab.binding.rotel.internal.communication.RotelSource;
 import org.openhab.binding.rotel.internal.configuration.RotelThingConfiguration;
+import org.openhab.binding.rotel.internal.protocol.RotelAbstractProtocolHandler;
+import org.openhab.binding.rotel.internal.protocol.RotelMessageEvent;
+import org.openhab.binding.rotel.internal.protocol.RotelMessageEventListener;
+import org.openhab.binding.rotel.internal.protocol.RotelProtocol;
+import org.openhab.binding.rotel.internal.protocol.ascii.RotelAsciiV1ProtocolHandler;
+import org.openhab.binding.rotel.internal.protocol.ascii.RotelAsciiV2ProtocolHandler;
+import org.openhab.binding.rotel.internal.protocol.hex.RotelHexProtocolHandler;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -75,6 +79,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private static final RotelModel DEFAULT_MODEL = RotelModel.RSP1066;
     private static final long POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(60);
     private static final boolean USE_SIMULATED_DEVICE = false;
+    private static final int SLEEP_INTV = 30;
 
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> powerOnJob;
@@ -86,8 +91,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private RotelStateDescriptionOptionProvider stateDescriptionProvider;
     private SerialPortManager serialPortManager;
 
-    private RotelConnector connector = new RotelSimuConnector(DEFAULT_MODEL, RotelProtocol.HEX, new HashMap<>(),
-            "OH-binding-rotel");
+    private RotelModel model;
+    private RotelProtocol protocol;
+    private RotelAbstractProtocolHandler protocolHandler;
+    private RotelConnector connector;
 
     private int minVolume;
     private int maxVolume;
@@ -125,6 +132,12 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private String frontPanelLine1 = "";
     private String frontPanelLine2 = "";
     private int brightness;
+    private boolean tcbypass;
+    private int balance;
+    private int minBalanceLevel;
+    private int maxBalanceLevel;
+    private boolean speakera;
+    private boolean speakerb;
 
     private Object sequenceLock = new Object();
 
@@ -136,181 +149,199 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.serialPortManager = serialPortManager;
+        this.model = DEFAULT_MODEL;
+        this.protocolHandler = new RotelHexProtocolHandler(model, Map.of());
+        this.protocol = protocolHandler.getProtocol();
+        this.connector = new RotelSimuConnector(model, protocolHandler, new HashMap<>(), "OH-binding-rotel");
     }
 
     @Override
     public void initialize() {
         logger.debug("Start initializing handler for thing {}", getThing().getUID());
 
-        RotelModel rotelModel;
         switch (getThing().getThingTypeUID().getId()) {
             case THING_TYPE_ID_RSP1066:
-                rotelModel = RotelModel.RSP1066;
+                model = RotelModel.RSP1066;
                 break;
             case THING_TYPE_ID_RSP1068:
-                rotelModel = RotelModel.RSP1068;
+                model = RotelModel.RSP1068;
                 break;
             case THING_TYPE_ID_RSP1069:
-                rotelModel = RotelModel.RSP1069;
+                model = RotelModel.RSP1069;
                 break;
             case THING_TYPE_ID_RSP1098:
-                rotelModel = RotelModel.RSP1098;
+                model = RotelModel.RSP1098;
                 break;
             case THING_TYPE_ID_RSP1570:
-                rotelModel = RotelModel.RSP1570;
+                model = RotelModel.RSP1570;
                 break;
             case THING_TYPE_ID_RSP1572:
-                rotelModel = RotelModel.RSP1572;
+                model = RotelModel.RSP1572;
                 break;
             case THING_TYPE_ID_RSX1055:
-                rotelModel = RotelModel.RSX1055;
+                model = RotelModel.RSX1055;
                 break;
             case THING_TYPE_ID_RSX1056:
-                rotelModel = RotelModel.RSX1056;
+                model = RotelModel.RSX1056;
                 break;
             case THING_TYPE_ID_RSX1057:
-                rotelModel = RotelModel.RSX1057;
+                model = RotelModel.RSX1057;
                 break;
             case THING_TYPE_ID_RSX1058:
-                rotelModel = RotelModel.RSX1058;
+                model = RotelModel.RSX1058;
                 break;
             case THING_TYPE_ID_RSX1065:
-                rotelModel = RotelModel.RSX1065;
+                model = RotelModel.RSX1065;
                 break;
             case THING_TYPE_ID_RSX1067:
-                rotelModel = RotelModel.RSX1067;
+                model = RotelModel.RSX1067;
                 break;
             case THING_TYPE_ID_RSX1550:
-                rotelModel = RotelModel.RSX1550;
+                model = RotelModel.RSX1550;
                 break;
             case THING_TYPE_ID_RSX1560:
-                rotelModel = RotelModel.RSX1560;
+                model = RotelModel.RSX1560;
                 break;
             case THING_TYPE_ID_RSX1562:
-                rotelModel = RotelModel.RSX1562;
+                model = RotelModel.RSX1562;
                 break;
             case THING_TYPE_ID_A11:
-                rotelModel = RotelModel.A11;
+                model = RotelModel.A11;
                 break;
             case THING_TYPE_ID_A12:
-                rotelModel = RotelModel.A12;
+                model = RotelModel.A12;
                 break;
             case THING_TYPE_ID_A14:
-                rotelModel = RotelModel.A14;
+                model = RotelModel.A14;
                 break;
             case THING_TYPE_ID_CD11:
-                rotelModel = RotelModel.CD11;
+                model = RotelModel.CD11;
                 break;
             case THING_TYPE_ID_CD14:
-                rotelModel = RotelModel.CD14;
+                model = RotelModel.CD14;
                 break;
             case THING_TYPE_ID_RA11:
-                rotelModel = RotelModel.RA11;
+                model = RotelModel.RA11;
                 break;
             case THING_TYPE_ID_RA12:
-                rotelModel = RotelModel.RA12;
+                model = RotelModel.RA12;
                 break;
             case THING_TYPE_ID_RA1570:
-                rotelModel = RotelModel.RA1570;
+                model = RotelModel.RA1570;
                 break;
             case THING_TYPE_ID_RA1572:
-                rotelModel = RotelModel.RA1572;
+                model = RotelModel.RA1572;
                 break;
             case THING_TYPE_ID_RA1592:
-                rotelModel = RotelModel.RA1592;
+                model = RotelModel.RA1592;
                 break;
             case THING_TYPE_ID_RAP1580:
-                rotelModel = RotelModel.RAP1580;
+                model = RotelModel.RAP1580;
                 break;
             case THING_TYPE_ID_RC1570:
-                rotelModel = RotelModel.RC1570;
+                model = RotelModel.RC1570;
                 break;
             case THING_TYPE_ID_RC1572:
-                rotelModel = RotelModel.RC1572;
+                model = RotelModel.RC1572;
                 break;
             case THING_TYPE_ID_RC1590:
-                rotelModel = RotelModel.RC1590;
+                model = RotelModel.RC1590;
                 break;
             case THING_TYPE_ID_RCD1570:
-                rotelModel = RotelModel.RCD1570;
+                model = RotelModel.RCD1570;
                 break;
             case THING_TYPE_ID_RCD1572:
-                rotelModel = RotelModel.RCD1572;
+                model = RotelModel.RCD1572;
                 break;
             case THING_TYPE_ID_RCX1500:
-                rotelModel = RotelModel.RCX1500;
+                model = RotelModel.RCX1500;
                 break;
             case THING_TYPE_ID_RDD1580:
-                rotelModel = RotelModel.RDD1580;
+                model = RotelModel.RDD1580;
                 break;
             case THING_TYPE_ID_RDG1520:
             case THING_TYPE_ID_RT09:
-                rotelModel = RotelModel.RDG1520;
+                model = RotelModel.RDG1520;
                 break;
             case THING_TYPE_ID_RSP1576:
-                rotelModel = RotelModel.RSP1576;
+                model = RotelModel.RSP1576;
                 break;
             case THING_TYPE_ID_RSP1582:
-                rotelModel = RotelModel.RSP1582;
+                model = RotelModel.RSP1582;
                 break;
             case THING_TYPE_ID_RT11:
-                rotelModel = RotelModel.RT11;
+                model = RotelModel.RT11;
                 break;
             case THING_TYPE_ID_RT1570:
-                rotelModel = RotelModel.RT1570;
+                model = RotelModel.RT1570;
                 break;
             case THING_TYPE_ID_T11:
-                rotelModel = RotelModel.T11;
+                model = RotelModel.T11;
                 break;
             case THING_TYPE_ID_T14:
-                rotelModel = RotelModel.T14;
+                model = RotelModel.T14;
+                break;
+            case THING_TYPE_ID_P5:
+                model = RotelModel.P5;
+                break;
+            case THING_TYPE_ID_X3:
+                model = RotelModel.X3;
+                break;
+            case THING_TYPE_ID_X5:
+                model = RotelModel.X5;
                 break;
             default:
-                rotelModel = DEFAULT_MODEL;
+                model = DEFAULT_MODEL;
                 break;
         }
 
         RotelThingConfiguration config = getConfigAs(RotelThingConfiguration.class);
 
-        RotelProtocol rotelProtocol = RotelProtocol.HEX;
+        protocol = RotelProtocol.HEX;
         if (config.protocol != null && !config.protocol.isEmpty()) {
             try {
-                rotelProtocol = RotelProtocol.getFromName(config.protocol);
+                protocol = RotelProtocol.getFromName(config.protocol);
             } catch (RotelException e) {
+                // Invalid protocol name in configuration, HEX will be considered by default
             }
         } else {
             Map<String, String> properties = editProperties();
             String property = properties.get(RotelBindingConstants.PROPERTY_PROTOCOL);
             if (property != null && !property.isEmpty()) {
                 try {
-                    rotelProtocol = RotelProtocol.getFromName(property);
+                    protocol = RotelProtocol.getFromName(property);
                 } catch (RotelException e) {
+                    // Invalid protocol name in thing property, HEX will be considered by default
                 }
             }
         }
-        logger.debug("rotelProtocol {}", rotelProtocol.getName());
+        logger.debug("rotelProtocol {}", protocol.getName());
 
         Map<RotelSource, String> sourcesCustomLabels = new HashMap<>();
         Map<RotelSource, String> sourcesLabels = new HashMap<>();
 
         String readerThreadName = "OH-binding-" + getThing().getUID().getAsString();
 
-        connector = new RotelSimuConnector(rotelModel, rotelProtocol, sourcesLabels, readerThreadName);
-
-        if (rotelModel.hasVolumeControl()) {
-            maxVolume = rotelModel.getVolumeMax();
-            if (!rotelModel.hasDirectVolumeControl()) {
+        if (model.hasVolumeControl()) {
+            maxVolume = model.getVolumeMax();
+            if (!model.hasDirectVolumeControl()) {
                 logger.info(
                         "Set minValue to {} and maxValue to {} for your sitemap widget attached to your volume item.",
                         minVolume, maxVolume);
             }
         }
-        if (rotelModel.hasToneControl()) {
-            maxToneLevel = rotelModel.getToneLevelMax();
+        if (model.hasToneControl()) {
+            maxToneLevel = model.getToneLevelMax();
             minToneLevel = -maxToneLevel;
             logger.info(
                     "Set minValue to {} and maxValue to {} for your sitemap widget attached to your bass or treble item.",
                     minToneLevel, maxToneLevel);
+        }
+        if (model.hasBalanceControl()) {
+            maxBalanceLevel = model.getBalanceLevelMax();
+            minBalanceLevel = -maxBalanceLevel;
+            logger.info("Set minValue to {} and maxValue to {} for your sitemap widget attached to your balance item.",
+                    minBalanceLevel, maxBalanceLevel);
         }
 
         // Check configuration settings
@@ -333,7 +364,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         if (configError != null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configError);
         } else {
-            for (RotelSource src : rotelModel.getSources()) {
+            for (RotelSource src : model.getSources()) {
                 // Consider custom input labels
                 String label = null;
                 switch (src.getName()) {
@@ -382,42 +413,49 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 sourcesLabels.put(src, (label == null || label.isEmpty()) ? src.getLabel() : label);
             }
 
-            if (USE_SIMULATED_DEVICE) {
-                connector = new RotelSimuConnector(rotelModel, rotelProtocol, sourcesLabels, readerThreadName);
-            } else if (config.serialPort != null) {
-                connector = new RotelSerialConnector(serialPortManager, config.serialPort, rotelModel, rotelProtocol,
-                        sourcesLabels, readerThreadName);
+            if (protocol == RotelProtocol.HEX) {
+                protocolHandler = new RotelHexProtocolHandler(model, sourcesLabels);
+            } else if (protocol == RotelProtocol.ASCII_V1) {
+                protocolHandler = new RotelAsciiV1ProtocolHandler(model);
             } else {
-                connector = new RotelIpConnector(config.host, config.port, rotelModel, rotelProtocol, sourcesLabels,
-                        readerThreadName);
+                protocolHandler = new RotelAsciiV2ProtocolHandler(model);
             }
 
-            if (rotelModel.hasSourceControl()) {
+            if (USE_SIMULATED_DEVICE) {
+                connector = new RotelSimuConnector(model, protocolHandler, sourcesLabels, readerThreadName);
+            } else if (config.serialPort != null) {
+                connector = new RotelSerialConnector(serialPortManager, config.serialPort, model.getBaudRate(),
+                        protocolHandler, readerThreadName);
+            } else {
+                connector = new RotelIpConnector(config.host, config.port, protocolHandler, readerThreadName);
+            }
+
+            if (model.hasSourceControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SOURCE),
-                        getStateOptions(rotelModel.getSources(), sourcesCustomLabels));
+                        getStateOptions(model.getSources(), sourcesCustomLabels));
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_MAIN_SOURCE),
-                        getStateOptions(rotelModel.getSources(), sourcesCustomLabels));
+                        getStateOptions(model.getSources(), sourcesCustomLabels));
                 stateDescriptionProvider.setStateOptions(
                         new ChannelUID(getThing().getUID(), CHANNEL_MAIN_RECORD_SOURCE),
-                        getStateOptions(rotelModel.getRecordSources(), sourcesCustomLabels));
+                        getStateOptions(model.getRecordSources(), sourcesCustomLabels));
             }
-            if (rotelModel.hasZone2SourceControl()) {
+            if (model.hasZone2SourceControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ZONE2_SOURCE),
-                        getStateOptions(rotelModel.getZone2Sources(), sourcesCustomLabels));
+                        getStateOptions(model.getZone2Sources(), sourcesCustomLabels));
             }
-            if (rotelModel.hasZone3SourceControl()) {
+            if (model.hasZone3SourceControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ZONE3_SOURCE),
-                        getStateOptions(rotelModel.getZone3Sources(), sourcesCustomLabels));
+                        getStateOptions(model.getZone3Sources(), sourcesCustomLabels));
             }
-            if (rotelModel.hasZone4SourceControl()) {
+            if (model.hasZone4SourceControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ZONE4_SOURCE),
-                        getStateOptions(rotelModel.getZone4Sources(), sourcesCustomLabels));
+                        getStateOptions(model.getZone4Sources(), sourcesCustomLabels));
             }
-            if (rotelModel.hasDspControl()) {
+            if (model.hasDspControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_DSP),
-                        rotelModel.getDspStateOptions());
+                        model.getDspStateOptions());
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_MAIN_DSP),
-                        rotelModel.getDspStateOptions());
+                        model.getDspStateOptions());
             }
 
             updateStatus(ThingStatus.UNKNOWN);
@@ -480,20 +518,20 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         handlePowerCmd(channel, command, getPowerOnCommand(), getPowerOffCommand());
                         break;
                     case CHANNEL_ZONE2_POWER:
-                        if (connector.getModel().hasZone2Commands()) {
+                        if (model.hasZone2Commands()) {
                             handlePowerCmd(channel, command, RotelCommand.ZONE2_POWER_ON, RotelCommand.ZONE2_POWER_OFF);
-                        } else if (connector.getModel().getNbAdditionalZones() == 1) {
+                        } else if (model.getNbAdditionalZones() == 1) {
                             if (isPowerOn() || powerZone2) {
-                                selectZone(2, connector.getModel().getZoneSelectCmd());
+                                selectZone(2, model.getZoneSelectCmd());
                             }
-                            connector.sendCommand(RotelCommand.ZONE_SELECT);
+                            sendCommand(RotelCommand.ZONE_SELECT);
                         } else {
                             success = false;
                             logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
                         }
                         break;
                     case CHANNEL_ZONE3_POWER:
-                        if (connector.getModel().hasZone3Commands()) {
+                        if (model.hasZone3Commands()) {
                             handlePowerCmd(channel, command, RotelCommand.ZONE3_POWER_ON, RotelCommand.ZONE3_POWER_OFF);
                         } else {
                             success = false;
@@ -501,7 +539,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         }
                         break;
                     case CHANNEL_ZONE4_POWER:
-                        if (connector.getModel().hasZone4Commands()) {
+                        if (model.hasZone4Commands()) {
                             handlePowerCmd(channel, command, RotelCommand.ZONE4_POWER_ON, RotelCommand.ZONE4_POWER_OFF);
                         } else {
                             success = false;
@@ -514,11 +552,22 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
                         } else {
-                            src = connector.getModel().getSourceFromName(command.toString());
-                            cmd = connector.getModel().hasOtherThanPrimaryCommands() ? src.getMainZoneCommand()
-                                    : src.getCommand();
+                            src = model.getSourceFromName(command.toString());
+                            cmd = model.hasOtherThanPrimaryCommands() ? src.getMainZoneCommand() : src.getCommand();
                             if (cmd != null) {
-                                connector.sendCommand(cmd);
+                                sendCommand(cmd);
+                                if (model.canGetFrequency()) {
+                                    // send <new-source> returns
+                                    // 1.) the selected <new-source>
+                                    // 2.) the used frequency
+                                    // BUT:
+                                    // at response-time the frequency has the value of <old-source>
+                                    // so we must wait a short moment to get the frequency of <new-source>
+                                    Thread.sleep(1000);
+                                    sendCommand(RotelCommand.FREQUENCY);
+                                    Thread.sleep(100);
+                                    updateChannelState(CHANNEL_FREQUENCY);
+                                }
                             } else {
                                 success = false;
                                 logger.debug("Command {} from channel {} failed: undefined source command", command,
@@ -530,23 +579,23 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (!isPowerOn()) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (connector.getModel().hasOtherThanPrimaryCommands()) {
-                            src = connector.getModel().getSourceFromName(command.toString());
+                        } else if (model.hasOtherThanPrimaryCommands()) {
+                            src = model.getSourceFromName(command.toString());
                             cmd = src.getRecordCommand();
                             if (cmd != null) {
-                                connector.sendCommand(cmd);
+                                sendCommand(cmd);
                             } else {
                                 success = false;
                                 logger.debug("Command {} from channel {} failed: undefined record source command",
                                         command, channel);
                             }
                         } else {
-                            src = connector.getModel().getSourceFromName(command.toString());
+                            src = model.getSourceFromName(command.toString());
                             cmd = src.getCommand();
                             if (cmd != null) {
-                                connector.sendCommand(RotelCommand.RECORD_FONCTION_SELECT);
+                                sendCommand(RotelCommand.RECORD_FONCTION_SELECT);
                                 Thread.sleep(100);
-                                connector.sendCommand(cmd);
+                                sendCommand(cmd);
                             } else {
                                 success = false;
                                 logger.debug("Command {} from channel {} failed: undefined source command", command,
@@ -558,22 +607,22 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (!powerZone2) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: zone 2 in standby", command, channel);
-                        } else if (connector.getModel().hasZone2Commands()) {
-                            src = connector.getModel().getSourceFromName(command.toString());
+                        } else if (model.hasZone2Commands()) {
+                            src = model.getSourceFromName(command.toString());
                             cmd = src.getZone2Command();
                             if (cmd != null) {
-                                connector.sendCommand(cmd);
+                                sendCommand(cmd);
                             } else {
                                 success = false;
                                 logger.debug("Command {} from channel {} failed: undefined zone 2 source command",
                                         command, channel);
                             }
-                        } else if (connector.getModel().getNbAdditionalZones() >= 1) {
-                            src = connector.getModel().getSourceFromName(command.toString());
+                        } else if (model.getNbAdditionalZones() >= 1) {
+                            src = model.getSourceFromName(command.toString());
                             cmd = src.getCommand();
                             if (cmd != null) {
-                                selectZone(2, connector.getModel().getZoneSelectCmd());
-                                connector.sendCommand(cmd);
+                                selectZone(2, model.getZoneSelectCmd());
+                                sendCommand(cmd);
                             } else {
                                 success = false;
                                 logger.debug("Command {} from channel {} failed: undefined source command", command,
@@ -588,11 +637,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (!powerZone3) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: zone 3 in standby", command, channel);
-                        } else if (connector.getModel().hasZone3Commands()) {
-                            src = connector.getModel().getSourceFromName(command.toString());
+                        } else if (model.hasZone3Commands()) {
+                            src = model.getSourceFromName(command.toString());
                             cmd = src.getZone3Command();
                             if (cmd != null) {
-                                connector.sendCommand(cmd);
+                                sendCommand(cmd);
                             } else {
                                 success = false;
                                 logger.debug("Command {} from channel {} failed: undefined zone 3 source command",
@@ -607,11 +656,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (!powerZone4) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: zone 4 in standby", command, channel);
-                        } else if (connector.getModel().hasZone4Commands()) {
-                            src = connector.getModel().getSourceFromName(command.toString());
+                        } else if (model.hasZone4Commands()) {
+                            src = model.getSourceFromName(command.toString());
                             cmd = src.getZone4Command();
                             if (cmd != null) {
-                                connector.sendCommand(cmd);
+                                sendCommand(cmd);
                             } else {
                                 success = false;
                                 logger.debug("Command {} from channel {} failed: undefined zone 4 source command",
@@ -628,7 +677,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
                         } else {
-                            connector.sendCommand(connector.getModel().getCommandFromDspName(command.toString()));
+                            sendCommand(model.getCommandFromDspName(command.toString()));
                         }
                         break;
                     case CHANNEL_VOLUME:
@@ -636,7 +685,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (!isPowerOn()) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (connector.getModel().hasVolumeControl()) {
+                        } else if (model.hasVolumeControl()) {
                             handleVolumeCmd(volume, channel, command, getVolumeUpCommand(), getVolumeDownCommand(),
                                     RotelCommand.VOLUME_SET);
                         } else {
@@ -648,7 +697,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (!isPowerOn()) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (connector.getModel().hasVolumeControl()) {
+                        } else if (model.hasVolumeControl()) {
                             handleVolumeCmd(volume, channel, command, getVolumeUpCommand(), getVolumeDownCommand(),
                                     null);
                         } else {
@@ -664,13 +713,12 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             success = false;
                             logger.debug("Command {} from channel {} ignored: fixed volume in zone 2", command,
                                     channel);
-                        } else if (connector.getModel().hasVolumeControl()
-                                && connector.getModel().getNbAdditionalZones() >= 1) {
-                            if (connector.getModel().hasZone2Commands()) {
+                        } else if (model.hasVolumeControl() && model.getNbAdditionalZones() >= 1) {
+                            if (model.hasZone2Commands()) {
                                 handleVolumeCmd(volumeZone2, channel, command, RotelCommand.ZONE2_VOLUME_UP,
                                         RotelCommand.ZONE2_VOLUME_DOWN, RotelCommand.ZONE2_VOLUME_SET);
                             } else {
-                                selectZone(2, connector.getModel().getZoneSelectCmd());
+                                selectZone(2, model.getZoneSelectCmd());
                                 handleVolumeCmd(volumeZone2, channel, command, RotelCommand.VOLUME_UP,
                                         RotelCommand.VOLUME_DOWN, RotelCommand.VOLUME_SET);
                             }
@@ -687,13 +735,12 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             success = false;
                             logger.debug("Command {} from channel {} ignored: fixed volume in zone 2", command,
                                     channel);
-                        } else if (connector.getModel().hasVolumeControl()
-                                && connector.getModel().getNbAdditionalZones() >= 1) {
-                            if (connector.getModel().hasZone2Commands()) {
+                        } else if (model.hasVolumeControl() && model.getNbAdditionalZones() >= 1) {
+                            if (model.hasZone2Commands()) {
                                 handleVolumeCmd(volumeZone2, channel, command, RotelCommand.ZONE2_VOLUME_UP,
                                         RotelCommand.ZONE2_VOLUME_DOWN, null);
                             } else {
-                                selectZone(2, connector.getModel().getZoneSelectCmd());
+                                selectZone(2, model.getZoneSelectCmd());
                                 handleVolumeCmd(volumeZone2, channel, command, RotelCommand.VOLUME_UP,
                                         RotelCommand.VOLUME_DOWN, null);
                             }
@@ -710,7 +757,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             success = false;
                             logger.debug("Command {} from channel {} ignored: fixed volume in zone 3", command,
                                     channel);
-                        } else if (connector.getModel().hasVolumeControl() && connector.getModel().hasZone3Commands()) {
+                        } else if (model.hasVolumeControl() && model.hasZone3Commands()) {
                             handleVolumeCmd(volumeZone3, channel, command, RotelCommand.ZONE3_VOLUME_UP,
                                     RotelCommand.ZONE3_VOLUME_DOWN, RotelCommand.ZONE3_VOLUME_SET);
                         } else {
@@ -726,7 +773,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             success = false;
                             logger.debug("Command {} from channel {} ignored: fixed volume in zone 4", command,
                                     channel);
-                        } else if (connector.getModel().hasVolumeControl() && connector.getModel().hasZone4Commands()) {
+                        } else if (model.hasVolumeControl() && model.hasZone4Commands()) {
                             handleVolumeCmd(volumeZone4, channel, command, RotelCommand.ZONE4_VOLUME_UP,
                                     RotelCommand.ZONE4_VOLUME_DOWN, RotelCommand.ZONE4_VOLUME_SET);
                         } else {
@@ -739,9 +786,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (!isPowerOn()) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (connector.getModel().hasVolumeControl()) {
-                            handleMuteCmd(connector.getProtocol() == RotelProtocol.HEX, channel, command,
-                                    getMuteOnCommand(), getMuteOffCommand(), getMuteToggleCommand());
+                        } else if (model.hasVolumeControl()) {
+                            handleMuteCmd(protocol == RotelProtocol.HEX, channel, command, getMuteOnCommand(),
+                                    getMuteOffCommand(), getMuteToggleCommand());
                         } else {
                             success = false;
                             logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
@@ -751,7 +798,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (!powerZone2) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: zone 2 in standby", command, channel);
-                        } else if (connector.getModel().hasVolumeControl() && connector.getModel().hasZone2Commands()) {
+                        } else if (model.hasVolumeControl() && model.hasZone2Commands()) {
                             handleMuteCmd(false, channel, command, RotelCommand.ZONE2_MUTE_ON,
                                     RotelCommand.ZONE2_MUTE_OFF, RotelCommand.ZONE2_MUTE_TOGGLE);
                         } else {
@@ -763,7 +810,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (!powerZone3) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: zone 3 in standby", command, channel);
-                        } else if (connector.getModel().hasVolumeControl() && connector.getModel().hasZone3Commands()) {
+                        } else if (model.hasVolumeControl() && model.hasZone3Commands()) {
                             handleMuteCmd(false, channel, command, RotelCommand.ZONE3_MUTE_ON,
                                     RotelCommand.ZONE3_MUTE_OFF, RotelCommand.ZONE3_MUTE_TOGGLE);
                         } else {
@@ -775,7 +822,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (!powerZone4) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: zone 4 in standby", command, channel);
-                        } else if (connector.getModel().hasVolumeControl() && connector.getModel().hasZone4Commands()) {
+                        } else if (model.hasVolumeControl() && model.hasZone4Commands()) {
                             handleMuteCmd(false, channel, command, RotelCommand.ZONE4_MUTE_ON,
                                     RotelCommand.ZONE4_MUTE_OFF, RotelCommand.ZONE4_MUTE_TOGGLE);
                         } else {
@@ -788,6 +835,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (!isPowerOn()) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                        } else if (tcbypass) {
+                            logger.debug("Command {} from channel {} ignored: tone control bypass is ON", command,
+                                    channel);
+                            updateChannelState(CHANNEL_BASS);
                         } else {
                             handleToneCmd(bass, channel, command, 2, RotelCommand.BASS_UP, RotelCommand.BASS_DOWN,
                                     RotelCommand.BASS_SET);
@@ -798,6 +849,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (!isPowerOn()) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                        } else if (tcbypass) {
+                            logger.debug("Command {} from channel {} ignored: tone control bypass is ON", command,
+                                    channel);
+                            updateChannelState(CHANNEL_TREBLE);
                         } else {
                             handleToneCmd(treble, channel, command, 1, RotelCommand.TREBLE_UP, RotelCommand.TREBLE_DOWN,
                                     RotelCommand.TREBLE_SET);
@@ -808,20 +863,18 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
                         } else if (command instanceof PlayPauseType && command == PlayPauseType.PLAY) {
-                            connector.sendCommand(RotelCommand.PLAY);
+                            sendCommand(RotelCommand.PLAY);
                         } else if (command instanceof PlayPauseType && command == PlayPauseType.PAUSE) {
-                            connector.sendCommand(RotelCommand.PAUSE);
-                            if (connector.getProtocol() == RotelProtocol.ASCII_V1
-                                    && connector.getModel() != RotelModel.RCD1570
-                                    && connector.getModel() != RotelModel.RCD1572
-                                    && connector.getModel() != RotelModel.RCX1500) {
-                                Thread.sleep(50);
-                                connector.sendCommand(RotelCommand.PLAY_STATUS);
+                            sendCommand(RotelCommand.PAUSE);
+                            if (protocol == RotelProtocol.ASCII_V1 && model != RotelModel.RCD1570
+                                    && model != RotelModel.RCD1572 && model != RotelModel.RCX1500) {
+                                Thread.sleep(SLEEP_INTV);
+                                sendCommand(RotelCommand.PLAY_STATUS);
                             }
                         } else if (command instanceof NextPreviousType && command == NextPreviousType.NEXT) {
-                            connector.sendCommand(RotelCommand.TRACK_FORWARD);
+                            sendCommand(RotelCommand.TRACK_FORWARD);
                         } else if (command instanceof NextPreviousType && command == NextPreviousType.PREVIOUS) {
-                            connector.sendCommand(RotelCommand.TRACK_BACKWORD);
+                            sendCommand(RotelCommand.TRACK_BACKWORD);
                         } else {
                             success = false;
                             logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
@@ -831,18 +884,62 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (!isPowerOn()) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (!connector.getModel().hasDimmerControl()) {
+                        } else if (!model.hasDimmerControl()) {
                             success = false;
                             logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
                         } else if (command instanceof PercentType) {
                             int dimmer = (int) Math.round(((PercentType) command).doubleValue() / 100.0
-                                    * (connector.getModel().getDimmerLevelMax()
-                                            - connector.getModel().getDimmerLevelMin()))
-                                    + connector.getModel().getDimmerLevelMin();
-                            connector.sendCommand(RotelCommand.DIMMER_LEVEL_SET, dimmer);
+                                    * (model.getDimmerLevelMax() - model.getDimmerLevelMin()))
+                                    + model.getDimmerLevelMin();
+                            sendCommand(RotelCommand.DIMMER_LEVEL_SET, dimmer);
                         } else {
                             success = false;
                             logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
+                        }
+                        break;
+                    case CHANNEL_TCBYPASS:
+                        if (!isPowerOn()) {
+                            success = false;
+                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                        } else if (!model.hasToneControl() || protocol == RotelProtocol.HEX) {
+                            success = false;
+                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
+                        } else {
+                            handleTcbypassCmd(channel, command,
+                                    protocol == RotelProtocol.ASCII_V1 ? RotelCommand.TONE_CONTROLS_OFF
+                                            : RotelCommand.TCBYPASS_ON,
+                                    protocol == RotelProtocol.ASCII_V1 ? RotelCommand.TONE_CONTROLS_ON
+                                            : RotelCommand.TCBYPASS_OFF);
+                        }
+                        break;
+                    case CHANNEL_BALANCE:
+                        if (!isPowerOn()) {
+                            success = false;
+                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                        } else if (!model.hasBalanceControl() || protocol == RotelProtocol.HEX) {
+                            success = false;
+                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
+                        } else {
+                            handleBalanceCmd(channel, command, RotelCommand.BALANCE_LEFT, RotelCommand.BALANCE_RIGHT,
+                                    RotelCommand.BALANCE_SET);
+                        }
+                        break;
+                    case CHANNEL_SPEAKER_A:
+                        if (!isPowerOn()) {
+                            success = false;
+                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                        } else {
+                            handleSpeakerCmd(protocol == RotelProtocol.HEX, channel, command, RotelCommand.SPEAKER_A_ON,
+                                    RotelCommand.SPEAKER_A_OFF, RotelCommand.SPEAKER_A_TOGGLE);
+                        }
+                        break;
+                    case CHANNEL_SPEAKER_B:
+                        if (!isPowerOn()) {
+                            success = false;
+                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                        } else {
+                            handleSpeakerCmd(protocol == RotelProtocol.HEX, channel, command, RotelCommand.SPEAKER_B_ON,
+                                    RotelCommand.SPEAKER_B_OFF, RotelCommand.SPEAKER_B_TOGGLE);
                         }
                         break;
                     default:
@@ -881,9 +978,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private void handlePowerCmd(String channel, Command command, RotelCommand onCmd, RotelCommand offCmd)
             throws RotelException {
         if (command instanceof OnOffType && command == OnOffType.ON) {
-            connector.sendCommand(onCmd);
+            sendCommand(onCmd);
         } else if (command instanceof OnOffType && command == OnOffType.OFF) {
-            connector.sendCommand(offCmd);
+            sendCommand(offCmd);
         } else {
             logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
         }
@@ -904,22 +1001,22 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private void handleVolumeCmd(int current, String channel, Command command, RotelCommand upCmd, RotelCommand downCmd,
             @Nullable RotelCommand setCmd) throws RotelException {
         if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.INCREASE) {
-            connector.sendCommand(upCmd);
+            sendCommand(upCmd);
         } else if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.DECREASE) {
-            connector.sendCommand(downCmd);
+            sendCommand(downCmd);
         } else if (command instanceof DecimalType && setCmd == null) {
             int value = ((DecimalType) command).intValue();
             if (value >= minVolume && value <= maxVolume) {
                 if (value > current) {
-                    connector.sendCommand(upCmd);
+                    sendCommand(upCmd);
                 } else if (value < current) {
-                    connector.sendCommand(downCmd);
+                    sendCommand(downCmd);
                 }
             }
         } else if (command instanceof PercentType && setCmd != null) {
             int value = (int) Math.round(((PercentType) command).doubleValue() / 100.0 * (maxVolume - minVolume))
                     + minVolume;
-            connector.sendCommand(setCmd, value);
+            sendCommand(setCmd, value);
         } else {
             logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
         }
@@ -941,11 +1038,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             RotelCommand offCmd, RotelCommand toggleCmd) throws RotelException {
         if (command instanceof OnOffType) {
             if (onlyToggle) {
-                connector.sendCommand(toggleCmd);
+                sendCommand(toggleCmd);
             } else if (command == OnOffType.ON) {
-                connector.sendCommand(onCmd);
+                sendCommand(onCmd);
             } else if (command == OnOffType.OFF) {
-                connector.sendCommand(offCmd);
+                sendCommand(offCmd);
             }
         } else {
             logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
@@ -970,22 +1067,108 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             RotelCommand downCmd, RotelCommand setCmd) throws RotelException, InterruptedException {
         if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.INCREASE) {
             selectToneControl(nbSelect);
-            connector.sendCommand(upCmd);
+            sendCommand(upCmd);
         } else if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.DECREASE) {
             selectToneControl(nbSelect);
-            connector.sendCommand(downCmd);
+            sendCommand(downCmd);
         } else if (command instanceof DecimalType) {
             int value = ((DecimalType) command).intValue();
             if (value >= minToneLevel && value <= maxToneLevel) {
-                if (connector.getProtocol() != RotelProtocol.HEX) {
-                    connector.sendCommand(setCmd, value);
+                if (protocol != RotelProtocol.HEX) {
+                    sendCommand(setCmd, value);
                 } else if (value > current) {
                     selectToneControl(nbSelect);
-                    connector.sendCommand(upCmd);
+                    sendCommand(upCmd);
                 } else if (value < current) {
                     selectToneControl(nbSelect);
-                    connector.sendCommand(downCmd);
+                    sendCommand(downCmd);
                 }
+            }
+        } else {
+            logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
+        }
+    }
+
+    /**
+     * Handle a tcbypass command (only for ASCII protocol)
+     *
+     * @param channel the channel
+     * @param command the received channel command (OnOffType)
+     * @param onCmd the command to be sent to the device to bypass_on
+     * @param offCmd the command to be sent to the device to bypass_off
+     *
+     * @throws RotelException in case of communication error with the device
+     */
+    private void handleTcbypassCmd(String channel, Command command, RotelCommand onCmd, RotelCommand offCmd)
+            throws RotelException, InterruptedException {
+        if (command instanceof OnOffType) {
+            if (command == OnOffType.ON) {
+                sendCommand(onCmd);
+                bass = 0;
+                treble = 0;
+                updateChannelState(CHANNEL_BASS);
+                updateChannelState(CHANNEL_TREBLE);
+            } else if (command == OnOffType.OFF) {
+                sendCommand(offCmd);
+                Thread.sleep(200);
+                sendCommand(RotelCommand.BASS);
+                Thread.sleep(200);
+                sendCommand(RotelCommand.TREBLE);
+            }
+        } else {
+            logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
+        }
+    }
+
+    /**
+     * Handle a speaker command
+     *
+     * @param onlyToggle true if only the toggle command must be used
+     * @param channel the channel
+     * @param command the received channel command (OnOffType)
+     * @param onCmd the command to be sent to the device to speaker_x_on
+     * @param offCmd the command to be sent to the device to speaker_x_off
+     * @param toggleCmd the command to be sent to the device to toggle the speaker_x state
+     *
+     * @throws RotelException in case of communication error with the device
+     */
+    private void handleSpeakerCmd(boolean onlyToggle, String channel, Command command, RotelCommand onCmd,
+            RotelCommand offCmd, RotelCommand toggleCmd) throws RotelException {
+        if (command instanceof OnOffType) {
+            if (onlyToggle) {
+                sendCommand(toggleCmd);
+            } else if (command == OnOffType.ON) {
+                sendCommand(onCmd);
+            } else if (command == OnOffType.OFF) {
+                sendCommand(offCmd);
+            }
+        } else {
+            logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
+        }
+    }
+
+    /**
+     * Handle a tone balance adjustment command (left or right) (only for ASCII protocol)
+     *
+     * @param channel the channel
+     * @param command the received channel command (IncreaseDecreaseType or DecimalType)
+     * @param rightCmd the command to be sent to the device to "increase" balance (shift to the right side)
+     * @param leftCmd the command to be sent to the device to "decrease" balance (shift to the left side)
+     * @param setCmd the command to be sent to the device to set the balance at a value
+     *
+     * @throws RotelException in case of communication error with the device
+     * @throws InterruptedException in case of interruption during a thread sleep
+     */
+    private void handleBalanceCmd(String channel, Command command, RotelCommand leftCmd, RotelCommand rightCmd,
+            RotelCommand setCmd) throws RotelException, InterruptedException {
+        if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.INCREASE) {
+            sendCommand(rightCmd);
+        } else if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.DECREASE) {
+            sendCommand(leftCmd);
+        } else if (command instanceof DecimalType) {
+            int value = ((DecimalType) command).intValue();
+            if (value >= minBalanceLevel && value <= maxBalanceLevel) {
+                sendCommand(setCmd, value);
             }
         } else {
             logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
@@ -1002,7 +1185,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      */
     private void selectToneControl(int nbSelect) throws RotelException, InterruptedException {
         // No tone control select command for RSX-1065
-        if (connector.getProtocol() == RotelProtocol.HEX && connector.getModel() != RotelModel.RSX1065) {
+        if (protocol == RotelProtocol.HEX && model != RotelModel.RSX1065) {
             selectFeature(nbSelect, RotelCommand.RECORD_FONCTION_SELECT, RotelCommand.TONE_CONTROL_SELECT);
         }
     }
@@ -1018,11 +1201,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      */
     private void selectZone(int zone, @Nullable RotelCommand selectCommand)
             throws RotelException, InterruptedException {
-        if (connector.getProtocol() == RotelProtocol.HEX && connector.getModel().getNbAdditionalZones() >= 1
-                && zone >= 1 && zone != currentZone && selectCommand != null) {
+        if (protocol == RotelProtocol.HEX && model.getNbAdditionalZones() >= 1 && zone >= 1 && zone != currentZone
+                && selectCommand != null) {
             int nbSelect;
             if (zone < currentZone) {
-                nbSelect = zone + connector.getModel().getNbAdditionalZones() - currentZone;
+                nbSelect = zone + model.getNbAdditionalZones() - currentZone;
                 if (isPowerOn() && selectCommand == RotelCommand.RECORD_FONCTION_SELECT) {
                     nbSelect++;
                 }
@@ -1049,13 +1232,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      */
     private void selectFeature(int nbSelect, @Nullable RotelCommand preCmd, RotelCommand selectCmd)
             throws RotelException, InterruptedException {
-        if (connector.getProtocol() == RotelProtocol.HEX) {
+        if (protocol == RotelProtocol.HEX) {
             if (preCmd != null) {
-                connector.sendCommand(preCmd);
+                sendCommand(preCmd);
                 Thread.sleep(100);
             }
             for (int i = 1; i <= nbSelect; i++) {
-                connector.sendCommand(selectCmd);
+                sendCommand(selectCmd);
                 Thread.sleep(200);
             }
         }
@@ -1067,7 +1250,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * @return true if the connection is opened successfully or flase if not
      */
     private synchronized boolean openConnection() {
-        connector.addEventListener(this);
+        protocolHandler.addEventListener(this);
         try {
             connector.open();
         } catch (RotelException e) {
@@ -1082,7 +1265,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      */
     private synchronized void closeConnection() {
         connector.close();
-        connector.removeEventListener(this);
+        protocolHandler.removeEventListener(this);
         logger.debug("closeConnection(): disconnected");
     }
 
@@ -1095,87 +1278,87 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
 
         String key = evt.getKey();
         String value = evt.getValue().trim();
-        if (!RotelConnector.KEY_ERROR.equals(key)) {
+        if (!KEY_ERROR.equals(key)) {
             updateStatus(ThingStatus.ONLINE);
         }
         try {
             switch (key) {
-                case RotelConnector.KEY_ERROR:
+                case KEY_ERROR:
                     logger.debug("Reading feedback message failed");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.comm-error-reading-thread");
                     closeConnection();
                     break;
-                case RotelConnector.KEY_LINE1:
+                case KEY_LINE1:
                     frontPanelLine1 = value;
                     updateChannelState(CHANNEL_LINE1);
                     break;
-                case RotelConnector.KEY_LINE2:
+                case KEY_LINE2:
                     frontPanelLine2 = value;
                     updateChannelState(CHANNEL_LINE2);
                     break;
-                case RotelConnector.KEY_ZONE:
+                case KEY_ZONE:
                     currentZone = Integer.parseInt(value);
                     break;
-                case RotelConnector.KEY_RECORD_SEL:
-                    selectingRecord = RotelConnector.MSG_VALUE_ON.equalsIgnoreCase(value);
+                case KEY_RECORD_SEL:
+                    selectingRecord = MSG_VALUE_ON.equalsIgnoreCase(value);
                     break;
-                case RotelConnector.KEY_POWER:
-                    if (RotelConnector.POWER_ON.equalsIgnoreCase(value)) {
+                case KEY_POWER:
+                    if (POWER_ON.equalsIgnoreCase(value)) {
                         handlePowerOn();
-                    } else if (RotelConnector.STANDBY.equalsIgnoreCase(value)) {
+                    } else if (STANDBY.equalsIgnoreCase(value)) {
                         handlePowerOff();
-                    } else if (RotelConnector.POWER_OFF_DELAYED.equalsIgnoreCase(value)) {
+                    } else if (POWER_OFF_DELAYED.equalsIgnoreCase(value)) {
                         schedulePowerOffJob(false);
                     } else {
                         throw new RotelException("Invalid value");
                     }
                     break;
-                case RotelConnector.KEY_POWER_ZONE2:
-                    if (RotelConnector.POWER_ON.equalsIgnoreCase(value)) {
+                case KEY_POWER_ZONE2:
+                    if (POWER_ON.equalsIgnoreCase(value)) {
                         handlePowerOnZone2();
-                    } else if (RotelConnector.STANDBY.equalsIgnoreCase(value)) {
+                    } else if (STANDBY.equalsIgnoreCase(value)) {
                         handlePowerOffZone2();
                     } else {
                         throw new RotelException("Invalid value");
                     }
                     break;
-                case RotelConnector.KEY_POWER_ZONE3:
-                    if (RotelConnector.POWER_ON.equalsIgnoreCase(value)) {
+                case KEY_POWER_ZONE3:
+                    if (POWER_ON.equalsIgnoreCase(value)) {
                         handlePowerOnZone3();
-                    } else if (RotelConnector.STANDBY.equalsIgnoreCase(value)) {
+                    } else if (STANDBY.equalsIgnoreCase(value)) {
                         handlePowerOffZone3();
                     } else {
                         throw new RotelException("Invalid value");
                     }
                     break;
-                case RotelConnector.KEY_POWER_ZONE4:
-                    if (RotelConnector.POWER_ON.equalsIgnoreCase(value)) {
+                case KEY_POWER_ZONE4:
+                    if (POWER_ON.equalsIgnoreCase(value)) {
                         handlePowerOnZone4();
-                    } else if (RotelConnector.STANDBY.equalsIgnoreCase(value)) {
+                    } else if (STANDBY.equalsIgnoreCase(value)) {
                         handlePowerOffZone4();
                     } else {
                         throw new RotelException("Invalid value");
                     }
                     break;
-                case RotelConnector.KEY_VOLUME_MIN:
+                case KEY_VOLUME_MIN:
                     minVolume = Integer.parseInt(value);
-                    if (!connector.getModel().hasDirectVolumeControl()) {
+                    if (!model.hasDirectVolumeControl()) {
                         logger.info("Set minValue to {} for your sitemap widget attached to your volume item.",
                                 minVolume);
                     }
                     break;
-                case RotelConnector.KEY_VOLUME_MAX:
+                case KEY_VOLUME_MAX:
                     maxVolume = Integer.parseInt(value);
-                    if (!connector.getModel().hasDirectVolumeControl()) {
+                    if (!model.hasDirectVolumeControl()) {
                         logger.info("Set maxValue to {} for your sitemap widget attached to your volume item.",
                                 maxVolume);
                     }
                     break;
-                case RotelConnector.KEY_VOLUME:
-                    if (RotelConnector.MSG_VALUE_MIN.equalsIgnoreCase(value)) {
+                case KEY_VOLUME:
+                    if (MSG_VALUE_MIN.equalsIgnoreCase(value)) {
                         volume = minVolume;
-                    } else if (RotelConnector.MSG_VALUE_MAX.equalsIgnoreCase(value)) {
+                    } else if (MSG_VALUE_MAX.equalsIgnoreCase(value)) {
                         volume = maxVolume;
                     } else {
                         volume = Integer.parseInt(value);
@@ -1184,12 +1367,12 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     updateChannelState(CHANNEL_MAIN_VOLUME);
                     updateChannelState(CHANNEL_MAIN_VOLUME_UP_DOWN);
                     break;
-                case RotelConnector.KEY_MUTE:
-                    if (RotelConnector.MSG_VALUE_ON.equalsIgnoreCase(value)) {
+                case KEY_MUTE:
+                    if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
                         mute = true;
                         updateChannelState(CHANNEL_MUTE);
                         updateChannelState(CHANNEL_MAIN_MUTE);
-                    } else if (RotelConnector.MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+                    } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
                         mute = false;
                         updateChannelState(CHANNEL_MUTE);
                         updateChannelState(CHANNEL_MAIN_MUTE);
@@ -1197,13 +1380,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         throw new RotelException("Invalid value");
                     }
                     break;
-                case RotelConnector.KEY_VOLUME_ZONE2:
+                case KEY_VOLUME_ZONE2:
                     fixedVolumeZone2 = false;
-                    if (RotelConnector.MSG_VALUE_FIX.equalsIgnoreCase(value)) {
+                    if (MSG_VALUE_FIX.equalsIgnoreCase(value)) {
                         fixedVolumeZone2 = true;
-                    } else if (RotelConnector.MSG_VALUE_MIN.equalsIgnoreCase(value)) {
+                    } else if (MSG_VALUE_MIN.equalsIgnoreCase(value)) {
                         volumeZone2 = minVolume;
-                    } else if (RotelConnector.MSG_VALUE_MAX.equalsIgnoreCase(value)) {
+                    } else if (MSG_VALUE_MAX.equalsIgnoreCase(value)) {
                         volumeZone2 = maxVolume;
                     } else {
                         volumeZone2 = Integer.parseInt(value);
@@ -1211,76 +1394,76 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     updateChannelState(CHANNEL_ZONE2_VOLUME);
                     updateChannelState(CHANNEL_ZONE2_VOLUME_UP_DOWN);
                     break;
-                case RotelConnector.KEY_VOLUME_ZONE3:
+                case KEY_VOLUME_ZONE3:
                     fixedVolumeZone3 = false;
-                    if (RotelConnector.MSG_VALUE_FIX.equalsIgnoreCase(value)) {
+                    if (MSG_VALUE_FIX.equalsIgnoreCase(value)) {
                         fixedVolumeZone3 = true;
-                    } else if (RotelConnector.MSG_VALUE_MIN.equalsIgnoreCase(value)) {
+                    } else if (MSG_VALUE_MIN.equalsIgnoreCase(value)) {
                         volumeZone3 = minVolume;
-                    } else if (RotelConnector.MSG_VALUE_MAX.equalsIgnoreCase(value)) {
+                    } else if (MSG_VALUE_MAX.equalsIgnoreCase(value)) {
                         volumeZone3 = maxVolume;
                     } else {
                         volumeZone3 = Integer.parseInt(value);
                     }
                     updateChannelState(CHANNEL_ZONE3_VOLUME);
                     break;
-                case RotelConnector.KEY_VOLUME_ZONE4:
+                case KEY_VOLUME_ZONE4:
                     fixedVolumeZone4 = false;
-                    if (RotelConnector.MSG_VALUE_FIX.equalsIgnoreCase(value)) {
+                    if (MSG_VALUE_FIX.equalsIgnoreCase(value)) {
                         fixedVolumeZone4 = true;
-                    } else if (RotelConnector.MSG_VALUE_MIN.equalsIgnoreCase(value)) {
+                    } else if (MSG_VALUE_MIN.equalsIgnoreCase(value)) {
                         volumeZone4 = minVolume;
-                    } else if (RotelConnector.MSG_VALUE_MAX.equalsIgnoreCase(value)) {
+                    } else if (MSG_VALUE_MAX.equalsIgnoreCase(value)) {
                         volumeZone4 = maxVolume;
                     } else {
                         volumeZone4 = Integer.parseInt(value);
                     }
                     updateChannelState(CHANNEL_ZONE4_VOLUME);
                     break;
-                case RotelConnector.KEY_MUTE_ZONE2:
-                    if (RotelConnector.MSG_VALUE_ON.equalsIgnoreCase(value)) {
+                case KEY_MUTE_ZONE2:
+                    if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
                         muteZone2 = true;
                         updateChannelState(CHANNEL_ZONE2_MUTE);
-                    } else if (RotelConnector.MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+                    } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
                         muteZone2 = false;
                         updateChannelState(CHANNEL_ZONE2_MUTE);
                     } else {
                         throw new RotelException("Invalid value");
                     }
                     break;
-                case RotelConnector.KEY_MUTE_ZONE3:
-                    if (RotelConnector.MSG_VALUE_ON.equalsIgnoreCase(value)) {
+                case KEY_MUTE_ZONE3:
+                    if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
                         muteZone3 = true;
                         updateChannelState(CHANNEL_ZONE3_MUTE);
-                    } else if (RotelConnector.MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+                    } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
                         muteZone3 = false;
                         updateChannelState(CHANNEL_ZONE3_MUTE);
                     } else {
                         throw new RotelException("Invalid value");
                     }
                     break;
-                case RotelConnector.KEY_MUTE_ZONE4:
-                    if (RotelConnector.MSG_VALUE_ON.equalsIgnoreCase(value)) {
+                case KEY_MUTE_ZONE4:
+                    if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
                         muteZone4 = true;
                         updateChannelState(CHANNEL_ZONE4_MUTE);
-                    } else if (RotelConnector.MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+                    } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
                         muteZone4 = false;
                         updateChannelState(CHANNEL_ZONE4_MUTE);
                     } else {
                         throw new RotelException("Invalid value");
                     }
                     break;
-                case RotelConnector.KEY_TONE_MAX:
+                case KEY_TONE_MAX:
                     maxToneLevel = Integer.parseInt(value);
                     minToneLevel = -maxToneLevel;
                     logger.info(
                             "Set minValue to {} and maxValue to {} for your sitemap widget attached to your bass or treble item.",
                             minToneLevel, maxToneLevel);
                     break;
-                case RotelConnector.KEY_BASS:
-                    if (RotelConnector.MSG_VALUE_MIN.equalsIgnoreCase(value)) {
+                case KEY_BASS:
+                    if (MSG_VALUE_MIN.equalsIgnoreCase(value)) {
                         bass = minToneLevel;
-                    } else if (RotelConnector.MSG_VALUE_MAX.equalsIgnoreCase(value)) {
+                    } else if (MSG_VALUE_MAX.equalsIgnoreCase(value)) {
                         bass = maxToneLevel;
                     } else {
                         bass = Integer.parseInt(value);
@@ -1288,10 +1471,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     updateChannelState(CHANNEL_BASS);
                     updateChannelState(CHANNEL_MAIN_BASS);
                     break;
-                case RotelConnector.KEY_TREBLE:
-                    if (RotelConnector.MSG_VALUE_MIN.equalsIgnoreCase(value)) {
+                case KEY_TREBLE:
+                    if (MSG_VALUE_MIN.equalsIgnoreCase(value)) {
                         treble = minToneLevel;
-                    } else if (RotelConnector.MSG_VALUE_MAX.equalsIgnoreCase(value)) {
+                    } else if (MSG_VALUE_MAX.equalsIgnoreCase(value)) {
                         treble = maxToneLevel;
                     } else {
                         treble = Integer.parseInt(value);
@@ -1299,32 +1482,28 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     updateChannelState(CHANNEL_TREBLE);
                     updateChannelState(CHANNEL_MAIN_TREBLE);
                     break;
-                case RotelConnector.KEY_SOURCE:
-                    source = connector.getModel().getSourceFromCommand(RotelCommand.getFromAsciiCommand(value));
+                case KEY_SOURCE:
+                    source = model.getSourceFromCommand(RotelCommand.getFromAsciiCommand(value));
                     updateChannelState(CHANNEL_SOURCE);
                     updateChannelState(CHANNEL_MAIN_SOURCE);
                     break;
-                case RotelConnector.KEY_RECORD:
-                    recordSource = connector.getModel()
-                            .getRecordSourceFromCommand(RotelCommand.getFromAsciiCommand(value));
+                case KEY_RECORD:
+                    recordSource = model.getRecordSourceFromCommand(RotelCommand.getFromAsciiCommand(value));
                     updateChannelState(CHANNEL_MAIN_RECORD_SOURCE);
                     break;
-                case RotelConnector.KEY_SOURCE_ZONE2:
-                    sourceZone2 = connector.getModel()
-                            .getZone2SourceFromCommand(RotelCommand.getFromAsciiCommand(value));
+                case KEY_SOURCE_ZONE2:
+                    sourceZone2 = model.getZone2SourceFromCommand(RotelCommand.getFromAsciiCommand(value));
                     updateChannelState(CHANNEL_ZONE2_SOURCE);
                     break;
-                case RotelConnector.KEY_SOURCE_ZONE3:
-                    sourceZone3 = connector.getModel()
-                            .getZone3SourceFromCommand(RotelCommand.getFromAsciiCommand(value));
+                case KEY_SOURCE_ZONE3:
+                    sourceZone3 = model.getZone3SourceFromCommand(RotelCommand.getFromAsciiCommand(value));
                     updateChannelState(CHANNEL_ZONE3_SOURCE);
                     break;
-                case RotelConnector.KEY_SOURCE_ZONE4:
-                    sourceZone4 = connector.getModel()
-                            .getZone4SourceFromCommand(RotelCommand.getFromAsciiCommand(value));
+                case KEY_SOURCE_ZONE4:
+                    sourceZone4 = model.getZone4SourceFromCommand(RotelCommand.getFromAsciiCommand(value));
                     updateChannelState(CHANNEL_ZONE4_SOURCE);
                     break;
-                case RotelConnector.KEY_DSP_MODE:
+                case KEY_DSP_MODE:
                     if ("dolby_pliix_movie".equals(value)) {
                         value = "dolby_plii_movie";
                     } else if ("dolby_pliix_music".equals(value)) {
@@ -1332,34 +1511,34 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     } else if ("dolby_pliix_game".equals(value)) {
                         value = "dolby_plii_game";
                     }
-                    dsp = connector.getModel().getDspFromFeedback(value);
+                    dsp = model.getDspFromFeedback(value);
                     logger.debug("DSP {}", dsp.getName());
                     updateChannelState(CHANNEL_DSP);
                     updateChannelState(CHANNEL_MAIN_DSP);
                     break;
-                case RotelConnector.KEY1_PLAY_STATUS:
-                case RotelConnector.KEY2_PLAY_STATUS:
-                    if (RotelConnector.PLAY.equalsIgnoreCase(value)) {
+                case KEY1_PLAY_STATUS:
+                case KEY2_PLAY_STATUS:
+                    if (PLAY.equalsIgnoreCase(value)) {
                         playStatus = RotelPlayStatus.PLAYING;
                         updateChannelState(CHANNEL_PLAY_CONTROL);
-                    } else if (RotelConnector.PAUSE.equalsIgnoreCase(value)) {
+                    } else if (PAUSE.equalsIgnoreCase(value)) {
                         playStatus = RotelPlayStatus.PAUSED;
                         updateChannelState(CHANNEL_PLAY_CONTROL);
-                    } else if (RotelConnector.STOP.equalsIgnoreCase(value)) {
+                    } else if (STOP.equalsIgnoreCase(value)) {
                         playStatus = RotelPlayStatus.STOPPED;
                         updateChannelState(CHANNEL_PLAY_CONTROL);
                     } else {
                         throw new RotelException("Invalid value");
                     }
                     break;
-                case RotelConnector.KEY_TRACK:
-                    if (source.getName().equals("CD") && !connector.getModel().hasSourceControl()) {
+                case KEY_TRACK:
+                    if (source.getName().equals("CD") && !model.hasSourceControl()) {
                         track = Integer.parseInt(value);
                         updateChannelState(CHANNEL_TRACK);
                     }
                     break;
-                case RotelConnector.KEY_FREQ:
-                    if (RotelConnector.MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+                case KEY_FREQ:
+                    if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
                         frequency = 0.0;
                     } else {
                         // Suppress a potential ending "k" or "K"
@@ -1370,12 +1549,73 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     }
                     updateChannelState(CHANNEL_FREQUENCY);
                     break;
-                case RotelConnector.KEY_DIMMER:
+                case KEY_DIMMER:
                     brightness = Integer.parseInt(value);
                     updateChannelState(CHANNEL_BRIGHTNESS);
                     break;
-                case RotelConnector.KEY_UPDATE_MODE:
-                case RotelConnector.KEY_DISPLAY_UPDATE:
+                case KEY_UPDATE_MODE:
+                case KEY_DISPLAY_UPDATE:
+                    break;
+                case KEY_TONE:
+                    if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
+                        tcbypass = false;
+                        updateChannelState(CHANNEL_TCBYPASS);
+                    } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+                        tcbypass = true;
+                        updateChannelState(CHANNEL_TCBYPASS);
+                    } else {
+                        throw new RotelException("Invalid value");
+                    }
+                    break;
+                case KEY_TCBYPASS:
+                    if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
+                        tcbypass = true;
+                        updateChannelState(CHANNEL_TCBYPASS);
+                    } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+                        tcbypass = false;
+                        updateChannelState(CHANNEL_TCBYPASS);
+                    } else {
+                        throw new RotelException("Invalid value");
+                    }
+                    break;
+                case KEY_BALANCE:
+                    if (MSG_VALUE_MIN.equalsIgnoreCase(value)) {
+                        balance = minBalanceLevel;
+                    } else if (MSG_VALUE_MAX.equalsIgnoreCase(value)) {
+                        balance = maxBalanceLevel;
+                    } else if (value.toUpperCase().startsWith("L")) {
+                        balance = -Integer.parseInt(value.substring(1));
+                    } else if (value.toLowerCase().startsWith("R")) {
+                        balance = Integer.parseInt(value.substring(1));
+                    } else {
+                        balance = Integer.parseInt(value);
+                    }
+                    updateChannelState(CHANNEL_BALANCE);
+                    break;
+                case KEY_SPEAKER:
+                    if (MSG_VALUE_SPEAKER_A.equalsIgnoreCase(value)) {
+                        speakera = true;
+                        speakerb = false;
+                        updateChannelState(CHANNEL_SPEAKER_A);
+                        updateChannelState(CHANNEL_SPEAKER_B);
+                    } else if (MSG_VALUE_SPEAKER_B.equalsIgnoreCase(value)) {
+                        speakera = false;
+                        speakerb = true;
+                        updateChannelState(CHANNEL_SPEAKER_A);
+                        updateChannelState(CHANNEL_SPEAKER_B);
+                    } else if (MSG_VALUE_SPEAKER_AB.equalsIgnoreCase(value)) {
+                        speakera = true;
+                        speakerb = true;
+                        updateChannelState(CHANNEL_SPEAKER_A);
+                        updateChannelState(CHANNEL_SPEAKER_B);
+                    } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+                        speakera = false;
+                        speakerb = false;
+                        updateChannelState(CHANNEL_SPEAKER_A);
+                        updateChannelState(CHANNEL_SPEAKER_B);
+                    } else {
+                        throw new RotelException("Invalid value");
+                    }
                     break;
                 default:
                     logger.debug("onNewMessageEvent: unhandled key {}", key);
@@ -1425,6 +1665,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         updateChannelState(CHANNEL_TRACK);
         updateChannelState(CHANNEL_FREQUENCY);
         updateChannelState(CHANNEL_BRIGHTNESS);
+        updateChannelState(CHANNEL_TCBYPASS);
+        updateChannelState(CHANNEL_BALANCE);
+        updateChannelState(CHANNEL_SPEAKER_A);
+        updateChannelState(CHANNEL_SPEAKER_B);
     }
 
     /**
@@ -1540,37 +1784,36 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             synchronized (sequenceLock) {
                 logger.debug("Power ON job");
                 try {
-                    switch (connector.getProtocol()) {
+                    switch (protocol) {
                         case HEX:
-                            if (connector.getModel().getRespNbChars() <= 13
-                                    && connector.getModel().hasVolumeControl()) {
-                                connector.sendCommand(getVolumeDownCommand());
+                            if (model.getRespNbChars() <= 13 && model.hasVolumeControl()) {
+                                sendCommand(getVolumeDownCommand());
                                 Thread.sleep(100);
-                                connector.sendCommand(getVolumeUpCommand());
+                                sendCommand(getVolumeUpCommand());
                                 Thread.sleep(100);
                             }
-                            if (connector.getModel().getNbAdditionalZones() >= 1) {
-                                if (currentZone != 1 && connector.getModel()
-                                        .getZoneSelectCmd() == RotelCommand.RECORD_FONCTION_SELECT) {
-                                    selectZone(1, connector.getModel().getZoneSelectCmd());
+                            if (model.getNbAdditionalZones() >= 1) {
+                                if (currentZone != 1
+                                        && model.getZoneSelectCmd() == RotelCommand.RECORD_FONCTION_SELECT) {
+                                    selectZone(1, model.getZoneSelectCmd());
                                 } else if (!selectingRecord) {
-                                    connector.sendCommand(RotelCommand.RECORD_FONCTION_SELECT);
+                                    sendCommand(RotelCommand.RECORD_FONCTION_SELECT);
                                     Thread.sleep(100);
                                 }
                             } else {
-                                connector.sendCommand(RotelCommand.RECORD_FONCTION_SELECT);
+                                sendCommand(RotelCommand.RECORD_FONCTION_SELECT);
                                 Thread.sleep(100);
                             }
-                            if (connector.getModel().hasToneControl()) {
-                                if (connector.getModel() == RotelModel.RSX1065) {
+                            if (model.hasToneControl()) {
+                                if (model == RotelModel.RSX1065) {
                                     // No tone control select command
-                                    connector.sendCommand(RotelCommand.TREBLE_DOWN);
+                                    sendCommand(RotelCommand.TREBLE_DOWN);
                                     Thread.sleep(100);
-                                    connector.sendCommand(RotelCommand.TREBLE_UP);
+                                    sendCommand(RotelCommand.TREBLE_UP);
                                     Thread.sleep(100);
-                                    connector.sendCommand(RotelCommand.BASS_DOWN);
+                                    sendCommand(RotelCommand.BASS_DOWN);
                                     Thread.sleep(100);
-                                    connector.sendCommand(RotelCommand.BASS_UP);
+                                    sendCommand(RotelCommand.BASS_UP);
                                     Thread.sleep(100);
                                 } else {
                                     selectFeature(2, null, RotelCommand.TONE_CONTROL_SELECT);
@@ -1578,112 +1821,126 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             }
                             break;
                         case ASCII_V1:
-                            if (connector.getModel() != RotelModel.RAP1580 && connector.getModel() != RotelModel.RDD1580
-                                    && connector.getModel() != RotelModel.RSP1576
-                                    && connector.getModel() != RotelModel.RSP1582) {
-                                connector.sendCommand(RotelCommand.UPDATE_AUTO);
-                                Thread.sleep(50);
+                            if (model != RotelModel.RAP1580 && model != RotelModel.RDD1580
+                                    && model != RotelModel.RSP1576 && model != RotelModel.RSP1582) {
+                                sendCommand(RotelCommand.UPDATE_AUTO);
+                                Thread.sleep(SLEEP_INTV);
                             }
-                            if (connector.getModel().hasSourceControl()) {
-                                connector.sendCommand(RotelCommand.SOURCE);
-                                Thread.sleep(50);
+                            if (model.hasSourceControl()) {
+                                sendCommand(RotelCommand.SOURCE);
+                                Thread.sleep(SLEEP_INTV);
                             }
-                            if (connector.getModel().hasVolumeControl() || connector.getModel().hasToneControl()) {
-                                if (connector.getModel().hasVolumeControl()
-                                        && connector.getModel() != RotelModel.RAP1580
-                                        && connector.getModel() != RotelModel.RSP1576
-                                        && connector.getModel() != RotelModel.RSP1582) {
-                                    connector.sendCommand(RotelCommand.VOLUME_GET_MIN);
-                                    Thread.sleep(50);
-                                    connector.sendCommand(RotelCommand.VOLUME_GET_MAX);
-                                    Thread.sleep(50);
+                            if (model.hasVolumeControl() || model.hasToneControl()) {
+                                if (model.hasVolumeControl() && model != RotelModel.RAP1580
+                                        && model != RotelModel.RSP1576 && model != RotelModel.RSP1582) {
+                                    sendCommand(RotelCommand.VOLUME_GET_MIN);
+                                    Thread.sleep(SLEEP_INTV);
+                                    sendCommand(RotelCommand.VOLUME_GET_MAX);
+                                    Thread.sleep(SLEEP_INTV);
                                 }
-                                if (connector.getModel().hasToneControl()) {
-                                    connector.sendCommand(RotelCommand.TONE_MAX);
-                                    Thread.sleep(50);
+                                if (model.hasToneControl()) {
+                                    sendCommand(RotelCommand.TONE_MAX);
+                                    Thread.sleep(SLEEP_INTV);
                                 }
                                 // Wait enough to be sure to get the min/max values requested just before
                                 Thread.sleep(250);
-                                if (connector.getModel().hasVolumeControl()) {
-                                    connector.sendCommand(RotelCommand.VOLUME_GET);
-                                    Thread.sleep(50);
-                                    if (connector.getModel() != RotelModel.RA11
-                                            && connector.getModel() != RotelModel.RA12
-                                            && connector.getModel() != RotelModel.RCX1500) {
-                                        connector.sendCommand(RotelCommand.MUTE);
-                                        Thread.sleep(50);
+                                if (model.hasVolumeControl()) {
+                                    sendCommand(RotelCommand.VOLUME_GET);
+                                    Thread.sleep(SLEEP_INTV);
+                                    if (model != RotelModel.RA11 && model != RotelModel.RA12
+                                            && model != RotelModel.RCX1500) {
+                                        sendCommand(RotelCommand.MUTE);
+                                        Thread.sleep(SLEEP_INTV);
                                     }
                                 }
-                                if (connector.getModel().hasToneControl()) {
-                                    connector.sendCommand(RotelCommand.BASS);
-                                    Thread.sleep(50);
-                                    connector.sendCommand(RotelCommand.TREBLE);
-                                    Thread.sleep(50);
+                                if (model.hasToneControl()) {
+                                    sendCommand(RotelCommand.BASS);
+                                    Thread.sleep(SLEEP_INTV);
+                                    sendCommand(RotelCommand.TREBLE);
+                                    Thread.sleep(SLEEP_INTV);
+                                    sendCommand(RotelCommand.TONE_CONTROLS);
+                                    Thread.sleep(SLEEP_INTV);
                                 }
                             }
-                            if (connector.getModel().hasPlayControl()) {
-                                if (connector.getModel() != RotelModel.RCD1570
-                                        && connector.getModel() != RotelModel.RCD1572
-                                        && (connector.getModel() != RotelModel.RCX1500
-                                                || !source.getName().equals("CD"))) {
-                                    connector.sendCommand(RotelCommand.PLAY_STATUS);
-                                    Thread.sleep(50);
+                            if (model.hasBalanceControl()) {
+                                sendCommand(RotelCommand.BALANCE);
+                                Thread.sleep(SLEEP_INTV);
+                            }
+                            if (model.hasPlayControl()) {
+                                if (model != RotelModel.RCD1570 && model != RotelModel.RCD1572
+                                        && (model != RotelModel.RCX1500 || !source.getName().equals("CD"))) {
+                                    sendCommand(RotelCommand.PLAY_STATUS);
+                                    Thread.sleep(SLEEP_INTV);
                                 } else {
-                                    connector.sendCommand(RotelCommand.CD_PLAY_STATUS);
-                                    Thread.sleep(50);
+                                    sendCommand(RotelCommand.CD_PLAY_STATUS);
+                                    Thread.sleep(SLEEP_INTV);
                                 }
                             }
-                            if (connector.getModel().hasDspControl()) {
-                                connector.sendCommand(RotelCommand.DSP_MODE);
-                                Thread.sleep(50);
+                            if (model.hasDspControl()) {
+                                sendCommand(RotelCommand.DSP_MODE);
+                                Thread.sleep(SLEEP_INTV);
                             }
-                            if (connector.getModel().canGetFrequency()) {
-                                connector.sendCommand(RotelCommand.FREQUENCY);
-                                Thread.sleep(50);
+                            if (model.canGetFrequency()) {
+                                sendCommand(RotelCommand.FREQUENCY);
+                                Thread.sleep(SLEEP_INTV);
                             }
-                            if (connector.getModel().hasDimmerControl() && connector.getModel().canGetDimmerLevel()) {
-                                connector.sendCommand(RotelCommand.DIMMER_LEVEL_GET);
-                                Thread.sleep(50);
+                            if (model.hasDimmerControl() && model.canGetDimmerLevel()) {
+                                sendCommand(RotelCommand.DIMMER_LEVEL_GET);
+                                Thread.sleep(SLEEP_INTV);
+                            }
+                            if (model.hasSpeakerGroups()) {
+                                sendCommand(RotelCommand.SPEAKER);
+                                Thread.sleep(SLEEP_INTV);
                             }
                             break;
                         case ASCII_V2:
-                            connector.sendCommand(RotelCommand.UPDATE_AUTO);
-                            Thread.sleep(50);
-                            if (connector.getModel().hasSourceControl()) {
-                                connector.sendCommand(RotelCommand.SOURCE);
-                                Thread.sleep(50);
+                            sendCommand(RotelCommand.UPDATE_AUTO);
+                            Thread.sleep(SLEEP_INTV);
+                            if (model.hasSourceControl()) {
+                                sendCommand(RotelCommand.SOURCE);
+                                Thread.sleep(SLEEP_INTV);
                             }
-                            if (connector.getModel().hasVolumeControl()) {
-                                connector.sendCommand(RotelCommand.VOLUME_GET);
-                                Thread.sleep(50);
-                                connector.sendCommand(RotelCommand.MUTE);
-                                Thread.sleep(50);
+                            if (model.hasVolumeControl()) {
+                                sendCommand(RotelCommand.VOLUME_GET);
+                                Thread.sleep(SLEEP_INTV);
+                                sendCommand(RotelCommand.MUTE);
+                                Thread.sleep(SLEEP_INTV);
                             }
-                            if (connector.getModel().hasToneControl()) {
-                                connector.sendCommand(RotelCommand.BASS);
-                                Thread.sleep(50);
-                                connector.sendCommand(RotelCommand.TREBLE);
-                                Thread.sleep(50);
+                            if (model.hasToneControl()) {
+                                sendCommand(RotelCommand.BASS);
+                                Thread.sleep(SLEEP_INTV);
+                                sendCommand(RotelCommand.TREBLE);
+                                Thread.sleep(SLEEP_INTV);
+                                sendCommand(RotelCommand.TCBYPASS);
+                                Thread.sleep(SLEEP_INTV);
                             }
-                            if (connector.getModel().hasPlayControl()) {
-                                connector.sendCommand(RotelCommand.PLAY_STATUS);
-                                Thread.sleep(50);
-                                if (source.getName().equals("CD") && !connector.getModel().hasSourceControl()) {
-                                    connector.sendCommand(RotelCommand.TRACK);
-                                    Thread.sleep(50);
+                            if (model.hasBalanceControl()) {
+                                sendCommand(RotelCommand.BALANCE);
+                                Thread.sleep(SLEEP_INTV);
+                            }
+                            if (model.hasPlayControl()) {
+                                sendCommand(RotelCommand.PLAY_STATUS);
+                                Thread.sleep(SLEEP_INTV);
+                                if (source.getName().equals("CD") && !model.hasSourceControl()) {
+                                    sendCommand(RotelCommand.TRACK);
+                                    Thread.sleep(SLEEP_INTV);
                                 }
                             }
-                            if (connector.getModel().hasDspControl()) {
-                                connector.sendCommand(RotelCommand.DSP_MODE);
-                                Thread.sleep(50);
+                            if (model.hasDspControl()) {
+                                sendCommand(RotelCommand.DSP_MODE);
+                                Thread.sleep(SLEEP_INTV);
                             }
-                            if (connector.getModel().canGetFrequency()) {
-                                connector.sendCommand(RotelCommand.FREQUENCY);
-                                Thread.sleep(50);
+                            if (model.canGetFrequency()) {
+                                sendCommand(RotelCommand.FREQUENCY);
+                                Thread.sleep(SLEEP_INTV);
                             }
-                            if (connector.getModel().hasDimmerControl() && connector.getModel().canGetDimmerLevel()) {
-                                connector.sendCommand(RotelCommand.DIMMER_LEVEL_GET);
-                                Thread.sleep(50);
+                            if (model.hasDimmerControl() && model.canGetDimmerLevel()) {
+                                sendCommand(RotelCommand.DIMMER_LEVEL_GET);
+                                Thread.sleep(SLEEP_INTV);
+                            }
+                            if (model.hasSpeakerGroups()) {
+                                sendCommand(RotelCommand.SPEAKER);
+                                Thread.sleep(SLEEP_INTV);
                             }
                             break;
                     }
@@ -1721,14 +1978,12 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             synchronized (sequenceLock) {
                 logger.debug("Power ON zone 2 job");
                 try {
-                    if (connector.getProtocol() == RotelProtocol.HEX
-                            && connector.getModel().getNbAdditionalZones() >= 1) {
-                        selectZone(2, connector.getModel().getZoneSelectCmd());
-                        connector.sendCommand(connector.getModel().hasZone2Commands() ? RotelCommand.ZONE2_VOLUME_DOWN
-                                : RotelCommand.VOLUME_DOWN);
+                    if (protocol == RotelProtocol.HEX && model.getNbAdditionalZones() >= 1) {
+                        selectZone(2, model.getZoneSelectCmd());
+                        sendCommand(
+                                model.hasZone2Commands() ? RotelCommand.ZONE2_VOLUME_DOWN : RotelCommand.VOLUME_DOWN);
                         Thread.sleep(100);
-                        connector.sendCommand(connector.getModel().hasZone2Commands() ? RotelCommand.ZONE2_VOLUME_UP
-                                : RotelCommand.VOLUME_UP);
+                        sendCommand(model.hasZone2Commands() ? RotelCommand.ZONE2_VOLUME_UP : RotelCommand.VOLUME_UP);
                         Thread.sleep(100);
                     }
                 } catch (RotelException e) {
@@ -1765,14 +2020,12 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             synchronized (sequenceLock) {
                 logger.debug("Power ON zone 3 job");
                 try {
-                    if (connector.getProtocol() == RotelProtocol.HEX
-                            && connector.getModel().getNbAdditionalZones() >= 2) {
-                        selectZone(3, connector.getModel().getZoneSelectCmd());
-                        connector.sendCommand(connector.getModel().hasZone3Commands() ? RotelCommand.ZONE3_VOLUME_DOWN
-                                : RotelCommand.VOLUME_DOWN);
+                    if (protocol == RotelProtocol.HEX && model.getNbAdditionalZones() >= 2) {
+                        selectZone(3, model.getZoneSelectCmd());
+                        sendCommand(
+                                model.hasZone3Commands() ? RotelCommand.ZONE3_VOLUME_DOWN : RotelCommand.VOLUME_DOWN);
                         Thread.sleep(100);
-                        connector.sendCommand(connector.getModel().hasZone3Commands() ? RotelCommand.ZONE3_VOLUME_UP
-                                : RotelCommand.VOLUME_UP);
+                        sendCommand(model.hasZone3Commands() ? RotelCommand.ZONE3_VOLUME_UP : RotelCommand.VOLUME_UP);
                         Thread.sleep(100);
                     }
                 } catch (RotelException e) {
@@ -1809,14 +2062,12 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             synchronized (sequenceLock) {
                 logger.debug("Power ON zone 4 job");
                 try {
-                    if (connector.getProtocol() == RotelProtocol.HEX
-                            && connector.getModel().getNbAdditionalZones() >= 3) {
-                        selectZone(4, connector.getModel().getZoneSelectCmd());
-                        connector.sendCommand(connector.getModel().hasZone4Commands() ? RotelCommand.ZONE4_VOLUME_DOWN
-                                : RotelCommand.VOLUME_DOWN);
+                    if (protocol == RotelProtocol.HEX && model.getNbAdditionalZones() >= 3) {
+                        selectZone(4, model.getZoneSelectCmd());
+                        sendCommand(
+                                model.hasZone4Commands() ? RotelCommand.ZONE4_VOLUME_DOWN : RotelCommand.VOLUME_DOWN);
                         Thread.sleep(100);
-                        connector.sendCommand(connector.getModel().hasZone4Commands() ? RotelCommand.ZONE4_VOLUME_UP
-                                : RotelCommand.VOLUME_UP);
+                        sendCommand(model.hasZone4Commands() ? RotelCommand.ZONE4_VOLUME_UP : RotelCommand.VOLUME_UP);
                         Thread.sleep(100);
                     }
                 } catch (RotelException e) {
@@ -1859,7 +2110,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     synchronized (sequenceLock) {
                         schedulePowerOffJob(true);
                         try {
-                            connector.sendCommand(connector.getModel().getPowerStateCmd());
+                            sendCommand(model.getPowerStateCmd());
                         } catch (RotelException e) {
                             error = "@text/offline.comm-error-first-command-after-reconnection";
                             logger.debug("First command after connection failed", e);
@@ -1907,18 +2158,19 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         switch (channel) {
             case CHANNEL_POWER:
             case CHANNEL_MAIN_POWER:
-                if (power != null) {
-                    state = power ? OnOffType.ON : OnOffType.OFF;
+                Boolean po = power;
+                if (po != null) {
+                    state = OnOffType.from(po.booleanValue());
                 }
                 break;
             case CHANNEL_ZONE2_POWER:
-                state = powerZone2 ? OnOffType.ON : OnOffType.OFF;
+                state = OnOffType.from(powerZone2);
                 break;
             case CHANNEL_ZONE3_POWER:
-                state = powerZone3 ? OnOffType.ON : OnOffType.OFF;
+                state = OnOffType.from(powerZone3);
                 break;
             case CHANNEL_ZONE4_POWER:
-                state = powerZone4 ? OnOffType.ON : OnOffType.OFF;
+                state = OnOffType.from(powerZone4);
                 break;
             case CHANNEL_SOURCE:
             case CHANNEL_MAIN_SOURCE:
@@ -1998,22 +2250,22 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case CHANNEL_MUTE:
             case CHANNEL_MAIN_MUTE:
                 if (isPowerOn()) {
-                    state = mute ? OnOffType.ON : OnOffType.OFF;
+                    state = OnOffType.from(mute);
                 }
                 break;
             case CHANNEL_ZONE2_MUTE:
                 if (powerZone2) {
-                    state = muteZone2 ? OnOffType.ON : OnOffType.OFF;
+                    state = OnOffType.from(muteZone2);
                 }
                 break;
             case CHANNEL_ZONE3_MUTE:
                 if (powerZone3) {
-                    state = muteZone3 ? OnOffType.ON : OnOffType.OFF;
+                    state = OnOffType.from(muteZone3);
                 }
                 break;
             case CHANNEL_ZONE4_MUTE:
                 if (powerZone4) {
-                    state = muteZone4 ? OnOffType.ON : OnOffType.OFF;
+                    state = OnOffType.from(muteZone4);
                 }
                 break;
             case CHANNEL_BASS:
@@ -2058,12 +2310,30 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 state = new StringType(frontPanelLine2);
                 break;
             case CHANNEL_BRIGHTNESS:
-                if (isPowerOn() && connector.getModel().hasDimmerControl()) {
-                    long dimmerPct = Math.round((double) (brightness - connector.getModel().getDimmerLevelMin())
-                            / (double) (connector.getModel().getDimmerLevelMax()
-                                    - connector.getModel().getDimmerLevelMin())
-                            * 100.0);
+                if (isPowerOn() && model.hasDimmerControl()) {
+                    long dimmerPct = Math.round((double) (brightness - model.getDimmerLevelMin())
+                            / (double) (model.getDimmerLevelMax() - model.getDimmerLevelMin()) * 100.0);
                     state = new PercentType(BigDecimal.valueOf(dimmerPct));
+                }
+                break;
+            case CHANNEL_TCBYPASS:
+                if (isPowerOn()) {
+                    state = OnOffType.from(tcbypass);
+                }
+                break;
+            case CHANNEL_BALANCE:
+                if (isPowerOn()) {
+                    state = new DecimalType(balance);
+                }
+                break;
+            case CHANNEL_SPEAKER_A:
+                if (isPowerOn()) {
+                    state = OnOffType.from(speakera);
+                }
+                break;
+            case CHANNEL_SPEAKER_B:
+                if (isPowerOn()) {
+                    state = OnOffType.from(speakerb);
                 }
                 break;
             default:
@@ -2088,8 +2358,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * @return the command
      */
     private RotelCommand getPowerOnCommand() {
-        return connector.getModel().hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_POWER_ON
-                : RotelCommand.POWER_ON;
+        return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_POWER_ON : RotelCommand.POWER_ON;
     }
 
     /**
@@ -2098,8 +2367,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * @return the command
      */
     private RotelCommand getPowerOffCommand() {
-        return connector.getModel().hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_POWER_OFF
-                : RotelCommand.POWER_OFF;
+        return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_POWER_OFF : RotelCommand.POWER_OFF;
     }
 
     /**
@@ -2108,8 +2376,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * @return the command
      */
     private RotelCommand getVolumeUpCommand() {
-        return connector.getModel().hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_VOLUME_UP
-                : RotelCommand.VOLUME_UP;
+        return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_VOLUME_UP : RotelCommand.VOLUME_UP;
     }
 
     /**
@@ -2118,8 +2385,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * @return the command
      */
     private RotelCommand getVolumeDownCommand() {
-        return connector.getModel().hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_VOLUME_DOWN
-                : RotelCommand.VOLUME_DOWN;
+        return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_VOLUME_DOWN : RotelCommand.VOLUME_DOWN;
     }
 
     /**
@@ -2128,8 +2394,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * @return the command
      */
     private RotelCommand getMuteOnCommand() {
-        return connector.getModel().hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_ON
-                : RotelCommand.MUTE_ON;
+        return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_ON : RotelCommand.MUTE_ON;
     }
 
     /**
@@ -2138,8 +2403,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * @return the command
      */
     private RotelCommand getMuteOffCommand() {
-        return connector.getModel().hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_OFF
-                : RotelCommand.MUTE_OFF;
+        return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_OFF : RotelCommand.MUTE_OFF;
     }
 
     /**
@@ -2148,7 +2412,38 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * @return the command
      */
     private RotelCommand getMuteToggleCommand() {
-        return connector.getModel().hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_TOGGLE
-                : RotelCommand.MUTE_TOGGLE;
+        return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_TOGGLE : RotelCommand.MUTE_TOGGLE;
+    }
+
+    private void sendCommand(RotelCommand cmd) throws RotelException {
+        sendCommand(cmd, null);
+    }
+
+    /**
+     * Request the Rotel device to execute a command
+     *
+     * @param cmd the command to execute
+     * @param value the integer value to consider for volume, bass or treble adjustment
+     *
+     * @throws RotelException - In case of any problem
+     */
+    private void sendCommand(RotelCommand cmd, @Nullable Integer value) throws RotelException {
+        byte[] message;
+        try {
+            message = protocolHandler.buildCommandMessage(cmd, value);
+        } catch (RotelException e) {
+            // Command not supported
+            logger.debug("sendCommand: {}", e.getMessage());
+            return;
+        }
+        connector.writeOutput(cmd.getName(), message);
+
+        if (connector instanceof RotelSimuConnector) {
+            if ((protocol == RotelProtocol.HEX && cmd.getHexType() != 0)
+                    || (protocol == RotelProtocol.ASCII_V1 && cmd.getAsciiCommandV1() != null)
+                    || (protocol == RotelProtocol.ASCII_V2 && cmd.getAsciiCommandV2() != null)) {
+                ((RotelSimuConnector) connector).buildFeedbackMessage(cmd, value);
+            }
+        }
     }
 }

@@ -12,8 +12,14 @@
 		<label>Unit</label>
 		<description>A basic unit configured in the controller.</description>
 		<channels>
-			<channel id="level" typeId="unit_level"/>
-			<channel id="switch" typeId="unit_switch"/>
+			<channel id="level" typeId="system.brightness">
+				<label>Unit Level</label>
+				<description>Increase/Decrease the level of this unit.</description>
+			</channel>
+			<channel id="switch" typeId="system.power">
+				<label>Unit Switch</label>
+				<description>Turn this unit on/off.</description>
+			</channel>
 			<channel id="on_for_seconds" typeId="on_for_seconds"/>
 			<channel id="off_for_seconds" typeId="off_for_seconds"/>
 			<channel id="on_for_minutes" typeId="on_for_minutes"/>
@@ -21,10 +27,6 @@
 			<channel id="on_for_hours" typeId="on_for_hours"/>
 			<channel id="off_for_hours" typeId="off_for_hours"/>
 		</channels>
-		<properties>
-			<property name="name"/>
-			<property name="area"/>
-		</properties>
 		<representation-property>number</representation-property>
 		<config-description>
 			<parameter name="number" type="integer" required="true">
@@ -42,8 +44,14 @@
 		<label>Dimmable Unit</label>
 		<description>A dimmable unit configured in the controller.</description>
 		<channels>
-			<channel id="level" typeId="unit_level"/>
-			<channel id="switch" typeId="unit_switch"/>
+			<channel id="level" typeId="system.brightness">
+				<label>Dimmable Level</label>
+				<description>Increase/Decrease the level of this dimmable unit.</description>
+			</channel>
+			<channel id="switch" typeId="system.power">
+				<label>Dimmable Switch</label>
+				<description>Turn this dimmable unit on/off.</description>
+			</channel>
 			<channel id="on_for_seconds" typeId="on_for_seconds"/>
 			<channel id="off_for_seconds" typeId="off_for_seconds"/>
 			<channel id="on_for_minutes" typeId="on_for_minutes"/>
@@ -73,8 +81,14 @@
 		<label>UPB Unit</label>
 		<description>A UPB unit configured in the controller.</description>
 		<channels>
-			<channel id="level" typeId="unit_level"/>
-			<channel id="switch" typeId="unit_switch"/>
+			<channel id="level" typeId="system.brightness">
+				<label>UPB Level</label>
+				<description>Increase/Decrease the level of this UPB unit.</description>
+			</channel>
+			<channel id="switch" typeId="system.power">
+				<label>UPB Switch</label>
+				<description>Turn this UPB unit on/off.</description>
+			</channel>
 			<channel id="on_for_seconds" typeId="on_for_seconds"/>
 			<channel id="off_for_seconds" typeId="off_for_seconds"/>
 			<channel id="on_for_minutes" typeId="on_for_minutes"/>
@@ -106,7 +120,10 @@
 		<description>A flag configured in the controller.</description>
 		<channels>
 			<channel id="value" typeId="flag_value"/>
-			<channel id="switch" typeId="flag_switch"/>
+			<channel id="switch" typeId="system.power">
+				<label>Flag Switch</label>
+				<description>Turn this flag on/off.</description>
+			</channel>
 			<channel id="on_for_seconds" typeId="on_for_seconds"/>
 			<channel id="off_for_seconds" typeId="off_for_seconds"/>
 			<channel id="on_for_minutes" typeId="on_for_minutes"/>
@@ -135,7 +152,10 @@
 		<label>Voltage Output</label>
 		<description>A voltage output configured in the controller.</description>
 		<channels>
-			<channel id="switch" typeId="unit_switch"/>
+			<channel id="switch" typeId="system.power">
+				<label>Voltage Output Switch</label>
+				<description>Turn this voltage output on/off.</description>
+			</channel>
 			<channel id="on_for_seconds" typeId="on_for_seconds"/>
 			<channel id="off_for_seconds" typeId="off_for_seconds"/>
 			<channel id="on_for_minutes" typeId="on_for_minutes"/>
@@ -164,18 +184,25 @@
 		<label>Room</label>
 		<description>A room configured in the controller.</description>
 		<channels>
-			<channel id="switch" typeId="room_switch"/>
-			<channel id="scene_a" typeId="scene_toggle">
+			<channel id="switch" typeId="system.power">
+				<label>Room Switch</label>
+				<description>Turn this room on/off.</description>
+			</channel>
+			<channel id="scene_a" typeId="system.power">
 				<label>Scene A</label>
+				<description>Turn this scene on/off.</description>
 			</channel>
-			<channel id="scene_b" typeId="scene_toggle">
+			<channel id="scene_b" typeId="system.power">
 				<label>Scene B</label>
+				<description>Turn this scene on/off.</description>
 			</channel>
-			<channel id="scene_c" typeId="scene_toggle">
+			<channel id="scene_c" typeId="system.power">
 				<label>Scene C</label>
+				<description>Turn this scene on/off.</description>
 			</channel>
-			<channel id="scene_d" typeId="scene_toggle">
+			<channel id="scene_d" typeId="system.power">
 				<label>Scene D</label>
+				<description>Turn this scene on/off.</description>
 			</channel>
 			<channel id="state" typeId="room_state"/>
 		</channels>
@@ -193,21 +220,6 @@
 	</thing-type>
 
 	<!-- Unit channels -->
-	<channel-type id="unit_level">
-		<item-type>Dimmer</item-type>
-		<label>Unit Level</label>
-		<description>Increase/Decrease the level of this unit.</description>
-		<category>Slider</category>
-		<state min="0" max="100" pattern="%d %%"/>
-	</channel-type>
-
-	<channel-type id="unit_switch">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Turn this unit on/off.</description>
-		<category>Switch</category>
-	</channel-type>
-
 	<channel-type id="on_for_seconds">
 		<item-type>Number</item-type>
 		<label>On for Seconds</label>
@@ -268,20 +280,6 @@
 		</command>
 	</channel-type>
 
-	<channel-type id="room_switch">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Turn this room on/off.</description>
-		<category>Switch</category>
-	</channel-type>
-
-	<channel-type id="scene_toggle">
-		<item-type>Switch</item-type>
-		<label>Scene Toggle</label>
-		<description>Turn this scene on/off.</description>
-		<category>Switch</category>
-	</channel-type>
-
 	<channel-type id="room_state">
 		<item-type>Number</item-type>
 		<label>State</label>
@@ -305,13 +303,6 @@
 		<description>Numeric value of this flag.</description>
 		<category>Number</category>
 		<state min="0" max="255" pattern="%d"/>
-	</channel-type>
-
-	<channel-type id="flag_switch">
-		<item-type>Switch</item-type>
-		<label>Flag Switch</label>
-		<description>Turn this flag on/off.</description>
-		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="switch_press_event">

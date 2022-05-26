@@ -89,7 +89,7 @@ public class ScheduleTests {
         commonSetup.start(new ResourceConfig().registerInstances(subject));
 
         // Mock random -> always return int=10 or the highest possible int if bounded
-        Random random = mock(Random.class);
+        Random random = mock(Random.class, withSettings().withoutAnnotations());
         doReturn(10).when(random).nextInt();
         doAnswer(a -> {
             Integer bound = a.getArgument(0);

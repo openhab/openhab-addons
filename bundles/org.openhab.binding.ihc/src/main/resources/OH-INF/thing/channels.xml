@@ -30,7 +30,6 @@
 		<config-description>
 			<parameter name="resourceId" type="integer" required="true">
 				<label>Resource Id</label>
-				<description></description>
 			</parameter>
 			<parameter name="direction" type="text" required="false">
 				<label>Channel Direction</label>
@@ -65,7 +64,6 @@
 		<config-description>
 			<parameter name="resourceId" type="integer" required="true">
 				<label>Resource Id</label>
-				<description></description>
 			</parameter>
 			<parameter name="inverted" type="boolean" required="false">
 				<label>Inverted Signal</label>
@@ -81,7 +79,6 @@
 		<config-description>
 			<parameter name="resourceId" type="integer" required="true">
 				<label>Resource Id</label>
-				<description></description>
 			</parameter>
 			<parameter name="direction" type="text" required="false">
 				<label>Channel Direction</label>
@@ -111,7 +108,6 @@
 		<config-description>
 			<parameter name="resourceId" type="integer" required="true">
 				<label>Resource Id</label>
-				<description></description>
 			</parameter>
 			<parameter name="direction" type="text" required="false">
 				<label>Channel Direction</label>
@@ -146,7 +142,6 @@
 		<config-description>
 			<parameter name="resourceId" type="integer" required="true">
 				<label>Resource Id</label>
-				<description></description>
 			</parameter>
 			<parameter name="direction" type="text" required="false">
 				<label>Channel Direction</label>
@@ -176,7 +171,6 @@
 		<config-description>
 			<parameter name="resourceId" type="integer" required="true">
 				<label>Resource Id</label>
-				<description></description>
 			</parameter>
 			<parameter name="direction" type="text" required="false">
 				<label>Channel Direction</label>
@@ -199,14 +193,13 @@
 		</config-description>
 	</channel-type>
 	<channel-type id="rollershutter">
-		<item-type>RollerShutter</item-type>
+		<item-type>Rollershutter</item-type>
 		<label>Generic Roller Shutter</label>
 		<description>Generic roller shutter channel</description>
 		<state readOnly="false"></state>
 		<config-description>
 			<parameter name="resourceId" type="integer" required="true">
 				<label>Resource Id</label>
-				<description></description>
 			</parameter>
 			<parameter name="direction" type="text" required="false">
 				<label>Channel Direction</label>
@@ -278,7 +271,6 @@
 		<config-description>
 			<parameter name="resourceId" type="integer" required="true">
 				<label>Resource Id</label>
-				<description></description>
 			</parameter>
 			<parameter name="longPressTime" type="integer" required="true" step="1000" min="0" max="5000" unit="ms">
 				<label>Long Press Time</label>

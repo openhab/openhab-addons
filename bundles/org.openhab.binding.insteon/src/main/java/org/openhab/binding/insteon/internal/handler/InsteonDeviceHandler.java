@@ -394,7 +394,15 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 logger.debug("removed {} address = {}", getThing().getUID().getAsString(), address);
             }
 
-            getInsteonNetworkHandler().disposed(getThing().getUID());
+            InsteonNetworkHandler handler = null;
+            try {
+                handler = getInsteonNetworkHandler();
+            } catch (IllegalArgumentException e) {
+            }
+
+            if (handler != null) {
+                handler.disposed(getThing().getUID());
+            }
         }
 
         super.dispose();
@@ -402,9 +410,14 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("channel {} was triggered with the command {}", channelUID.getAsString(), command);
+        if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+            logger.debug("channel {} was triggered with the command {}", channelUID.getAsString(), command);
 
-        getInsteonBinding().sendCommand(channelUID.getAsString(), command);
+            getInsteonBinding().sendCommand(channelUID.getAsString(), command);
+        } else {
+            logger.debug("the command {} for channel {} was ignored because the thing is not ONLINE", command,
+                    channelUID.getAsString());
+        }
     }
 
     @Override

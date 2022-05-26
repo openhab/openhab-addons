@@ -56,7 +56,7 @@ import org.openhab.core.types.State;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class SmartHomeHandlerTest {
 
@@ -75,8 +75,8 @@ public class SmartHomeHandlerTest {
         configuration.put(CONFIG_IP, "localhost");
         configuration.put(CONFIG_REFRESH, 1);
         when(thing.getConfiguration()).thenReturn(configuration);
-        when(smartHomeDevice.getUpdateCommand()).thenReturn(Commands.getSysinfo());
-        when(connection.sendCommand(Commands.getSysinfo()))
+        lenient().when(smartHomeDevice.getUpdateCommand()).thenReturn(Commands.getSysinfo());
+        lenient().when(connection.sendCommand(Commands.getSysinfo()))
                 .thenReturn(ModelTestUtil.readJson("plug_get_sysinfo_response"));
         handler = new SmartHomeHandler(thing, smartHomeDevice, TPLinkSmartHomeThingType.HS100, discoveryService) {
             @Override
@@ -84,8 +84,8 @@ public class SmartHomeHandlerTest {
                 return connection;
             }
         };
-        when(smartHomeDevice.handleCommand(eq(CHANNEL_UID_SWITCH), any())).thenReturn(true);
-        when(callback.isChannelLinked(any())).thenReturn(true);
+        lenient().when(smartHomeDevice.handleCommand(eq(CHANNEL_UID_SWITCH), any())).thenReturn(true);
+        lenient().when(callback.isChannelLinked(any())).thenReturn(true);
         handler.setCallback(callback);
     }
 

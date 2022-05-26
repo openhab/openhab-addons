@@ -31,8 +31,7 @@ import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConn
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonDailyForecastData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonHourlyForecastData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonWeatherData;
-import org.openhab.binding.openweathermap.internal.dto.base.Rain;
-import org.openhab.binding.openweathermap.internal.dto.base.Snow;
+import org.openhab.binding.openweathermap.internal.dto.base.Precipitation;
 import org.openhab.binding.openweathermap.internal.dto.forecast.daily.FeelsLikeTemp;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.CommunicationException;
@@ -301,11 +300,11 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     state = getQuantityTypeState(localWeatherData.getClouds().getAll(), PERCENT);
                     break;
                 case CHANNEL_RAIN:
-                    Rain rain = localWeatherData.getRain();
+                    Precipitation rain = localWeatherData.getRain();
                     state = getQuantityTypeState(rain == null ? 0 : rain.getVolume(), MILLI(METRE));
                     break;
                 case CHANNEL_SNOW:
-                    Snow snow = localWeatherData.getSnow();
+                    Precipitation snow = localWeatherData.getSnow();
                     state = getQuantityTypeState(snow == null ? 0 : snow.getVolume(), MILLI(METRE));
                     break;
                 case CHANNEL_VISIBILITY:
@@ -395,11 +394,11 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     state = getQuantityTypeState(forecastData.getClouds().getAll(), PERCENT);
                     break;
                 case CHANNEL_RAIN:
-                    Rain rain = forecastData.getRain();
+                    Precipitation rain = forecastData.getRain();
                     state = getQuantityTypeState(rain == null ? 0 : rain.getVolume(), MILLI(METRE));
                     break;
                 case CHANNEL_SNOW:
-                    Snow snow = forecastData.getSnow();
+                    Precipitation snow = forecastData.getSnow();
                     state = getQuantityTypeState(snow == null ? 0 : snow.getVolume(), MILLI(METRE));
                     break;
             }
@@ -462,7 +461,7 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     state = getQuantityTypeState(forecastData.getTemp().getMax(), CELSIUS);
                     break;
                 case CHANNEL_APPARENT_TEMPERATURE:
-                    FeelsLikeTemp feelsLikeTemp = forecastData.getFeelsLikeTemp();
+                    FeelsLikeTemp feelsLikeTemp = forecastData.getFeelsLike();
                     if (feelsLikeTemp != null) {
                         state = getQuantityTypeState(feelsLikeTemp.getDay(), CELSIUS);
                     }

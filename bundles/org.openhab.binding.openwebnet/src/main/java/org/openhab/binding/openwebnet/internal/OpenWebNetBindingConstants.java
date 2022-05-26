@@ -27,6 +27,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Massimo Valla - Initial contribution
  * @author Gilberto Cocchi - Thermoregulation
  * @author Andrea Conte - Energy management, Thermoregulation
+ * @author Giovanni Fabiani - Aux support
  */
 
 @NonNullByDefault
@@ -59,6 +60,8 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_THERMO_SENSOR = "Thermo Sensor";
     public static final ThingTypeUID THING_TYPE_BUS_THERMO_ZONE = new ThingTypeUID(BINDING_ID, "bus_thermo_zone");
     public static final String THING_LABEL_BUS_THERMO_ZONE = "Thermo Zone";
+    public static final ThingTypeUID THING_TYPE_BUS_THERMO_CU = new ThingTypeUID(BINDING_ID, "bus_thermo_cu");
+    public static final String THING_LABEL_BUS_THERMO_CU = "Thermo Central Unit";
     public static final ThingTypeUID THING_TYPE_BUS_CEN_SCENARIO_CONTROL = new ThingTypeUID(BINDING_ID,
             "bus_cen_scenario_control");
     public static final String THING_LABEL_BUS_CEN_SCENARIO_CONTROL = "CEN Control";
@@ -68,6 +71,8 @@ public class OpenWebNetBindingConstants {
             "bus_cenplus_scenario_control");
     public static final String THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL = "CEN+ Control";
 
+    public static final ThingTypeUID THING_TYPE_BUS_AUX = new ThingTypeUID(BINDING_ID, "bus_aux");
+    public static final String THING_LABEL_BUS_AUX = "Auxiliary";
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ZB_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "zb_on_off_switch");
     public static final String THING_LABEL_ZB_ON_OFF_SWITCH = "ZigBee Switch";
@@ -91,17 +96,20 @@ public class OpenWebNetBindingConstants {
             THING_TYPE_BUS_AUTOMATION);
     // ## Thermoregulation
     public static final Set<ThingTypeUID> THERMOREGULATION_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_THERMO_ZONE,
-            THING_TYPE_BUS_THERMO_SENSOR);
+            THING_TYPE_BUS_THERMO_SENSOR, THING_TYPE_BUS_THERMO_CU);
     // ## Energy Management
     public static final Set<ThingTypeUID> ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_ENERGY_METER);
     // ## CEN/CEN+ Scenario
     public static final Set<ThingTypeUID> SCENARIO_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_CEN_SCENARIO_CONTROL,
             THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL, THING_TYPE_BUS_DRY_CONTACT_IR);
+
+    // ## Aux
+    public static final Set<ThingTypeUID> AUX_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_AUX);
     // ## Groups
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Stream
             .of(LIGHTING_SUPPORTED_THING_TYPES, AUTOMATION_SUPPORTED_THING_TYPES,
                     THERMOREGULATION_SUPPORTED_THING_TYPES, ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES,
-                    SCENARIO_SUPPORTED_THING_TYPES, GENERIC_SUPPORTED_THING_TYPES)
+                    SCENARIO_SUPPORTED_THING_TYPES, GENERIC_SUPPORTED_THING_TYPES, AUX_SUPPORTED_THING_TYPES)
             .flatMap(Collection::stream).collect(Collectors.toCollection(HashSet::new));
     public static final Set<ThingTypeUID> BRIDGE_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ZB_GATEWAY,
             THING_TYPE_BUS_GATEWAY);
@@ -126,6 +134,16 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_CONDITIONING_VALVES = "conditioningValves";
     public static final String CHANNEL_HEATING_VALVES = "heatingValves";
     public static final String CHANNEL_ACTUATORS = "actuators";
+    public static final String CHANNEL_LOCAL_OFFSET = "localOffset";
+    public static final String CHANNEL_CU_REMOTE_CONTROL = "remoteControl";
+    public static final String CHANNEL_CU_BATTERY_STATUS = "batteryStatus";
+    public static final String CHANNEL_CU_WEEKLY_PROGRAM_NUMBER = "weeklyProgram";
+    public static final String CHANNEL_CU_SCENARIO_PROGRAM_NUMBER = "scenarioProgram";
+    public static final String CHANNEL_CU_FAILURE_DISCOVERED = "failureDiscovered";
+    public static final String CHANNEL_CU_AT_LEAST_ONE_PROBE_OFF = "atLeastOneProbeOff";
+    public static final String CHANNEL_CU_AT_LEAST_ONE_PROBE_PROTECTION = "atLeastOneProbeProtection";
+    public static final String CHANNEL_CU_AT_LEAST_ONE_PROBE_MANUAL = "atLeastOneProbeManual";
+
     // energy management
     public static final String CHANNEL_POWER = "power";
     // scenario button channels
@@ -134,11 +152,16 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_TYPE_CEN_PLUS_BUTTON_EVENT = "cenPlusButtonEvent";
     public static final String CHANNEL_DRY_CONTACT_IR = "sensor";
 
+    // Aux
+    public static final String CHANNEL_AUX = "aux";
+
     // devices config properties
     public static final String CONFIG_PROPERTY_WHERE = "where";
     public static final String CONFIG_PROPERTY_SHUTTER_RUN = "shutterRun";
     public static final String CONFIG_PROPERTY_SCENARIO_BUTTONS = "buttons";
-    // BUS gw config properties
+    public static final String CONFIG_PROPERTY_STANDALONE = "standAlone";
+
+    // gw config properties
     public static final String CONFIG_PROPERTY_HOST = "host";
     public static final String CONFIG_PROPERTY_SERIAL_PORT = "serialPort";
     // properties

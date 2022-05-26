@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -94,6 +95,10 @@ public class ChannelState implements MqttMessageSubscriber {
         transformationsIn.add(transformation);
     }
 
+    public void addTransformation(String transformation, TransformationServiceProvider transformationServiceProvider) {
+        parseTransformation(transformation, transformationServiceProvider).forEach(t -> addTransformation(t));
+    }
+
     /**
      * Add a transformation that is applied for each value to be published.
      * The transformations are executed in order.
@@ -102,6 +107,18 @@ public class ChannelState implements MqttMessageSubscriber {
      */
     public void addTransformationOut(ChannelStateTransformation transformation) {
         transformationsOut.add(transformation);
+    }
+
+    public void addTransformationOut(String transformation,
+            TransformationServiceProvider transformationServiceProvider) {
+        parseTransformation(transformation, transformationServiceProvider).forEach(t -> addTransformationOut(t));
+    }
+
+    public static Stream<ChannelStateTransformation> parseTransformation(String transformation,
+            TransformationServiceProvider transformationServiceProvider) {
+        String[] transformations = transformation.split("∩");
+        return Stream.of(transformations).filter(t -> !t.isBlank())
+                .map(t -> new ChannelStateTransformation(t, transformationServiceProvider));
     }
 
     /**
@@ -250,7 +267,7 @@ public class ChannelState implements MqttMessageSubscriber {
     }
 
     private void internalStop() {
-        logger.debug("Unsubscribed channel {} form topic: {}", this.channelUID, config.stateTopic);
+        logger.debug("Unsubscribed channel {} from topic: {}", this.channelUID, config.stateTopic);
         this.connection = null;
         this.channelStateUpdateListener = null;
         hasSubscribed = false;

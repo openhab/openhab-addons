@@ -32,7 +32,8 @@
 				<options>
 					<option value="A5_3F_7F_EltakoFSB">Eltako FSB14/61/71</option>
 					<option value="A5_3F_7F_EltakoFRM">Eltako FRM60</option>
-					<option value="D2_05_00">D2-05-00 Rollershutter (like SIN-2-RS-01)</option>
+					<option value="D2_05_00">D2-05-00 Rollershutter</option>
+					<option value="D2_05_00_NODON">NODON SIN-2-RS-01 (EEP: D2-05-00)</option>
 					<option value="A5_38_08_07">Gateway command - blinds (A5_38_08 sub command 0x07)</option>
 				</options>
 				<default>A5_3F_7F_EltakoFSB</default>
@@ -47,7 +48,8 @@
 				<options>
 					<option value="A5_3F_7F_EltakoFSB">Eltako FSB14/61/71</option>
 					<option value="A5_3F_7F_EltakoFRM">Eltako FRM60</option>
-					<option value="D2_05_00">D2-05-00 Rollershutter (like SIN-2-RS-01)</option>
+					<option value="D2_05_00">D2-05-00 Rollershutter</option>
+					<option value="D2_05_00_NODON">NODON SIN-2-RS-01 (EEP: D2-05-00)</option>
 					<option value="A5_11_03">A5-11-03 Rollershutter status</option>
 					<option value="F6_00_00">PTM200 Rollershutter status</option>
 				</options>

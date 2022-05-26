@@ -68,6 +68,9 @@ public class RotelBindingConstants {
     public static final String THING_TYPE_ID_RT1570 = "rt1570";
     public static final String THING_TYPE_ID_T11 = "t11";
     public static final String THING_TYPE_ID_T14 = "t14";
+    public static final String THING_TYPE_ID_P5 = "p5";
+    public static final String THING_TYPE_ID_X3 = "x3";
+    public static final String THING_TYPE_ID_X5 = "x5";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_RSP1066 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_RSP1066);
@@ -111,6 +114,9 @@ public class RotelBindingConstants {
     public static final ThingTypeUID THING_TYPE_RT1570 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_RT1570);
     public static final ThingTypeUID THING_TYPE_T11 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_T11);
     public static final ThingTypeUID THING_TYPE_T14 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_T14);
+    public static final ThingTypeUID THING_TYPE_P5 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_P5);
+    public static final ThingTypeUID THING_TYPE_X3 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_X3);
+    public static final ThingTypeUID THING_TYPE_X5 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_X5);
 
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";
@@ -148,7 +154,89 @@ public class RotelBindingConstants {
     public static final String CHANNEL_ZONE4_SOURCE = "zone4#source";
     public static final String CHANNEL_ZONE4_VOLUME = "zone4#volume";
     public static final String CHANNEL_ZONE4_MUTE = "zone4#mute";
+    public static final String CHANNEL_TCBYPASS = "tcbypass";
+    public static final String CHANNEL_BALANCE = "balance";
+    public static final String CHANNEL_SPEAKER_A = "speakera";
+    public static final String CHANNEL_SPEAKER_B = "speakerb";
 
     // List of all properties
     public static final String PROPERTY_PROTOCOL = "protocol";
+
+    // Message types (HEX protocol)
+    public static final byte PRIMARY_CMD = (byte) 0x10;
+    public static final byte MAIN_ZONE_CMD = (byte) 0x14;
+    public static final byte RECORD_SRC_CMD = (byte) 0x15;
+    public static final byte ZONE2_CMD = (byte) 0x16;
+    public static final byte ZONE3_CMD = (byte) 0x17;
+    public static final byte ZONE4_CMD = (byte) 0x18;
+    public static final byte VOLUME_CMD = (byte) 0x30;
+    public static final byte ZONE2_VOLUME_CMD = (byte) 0x32;
+    public static final byte ZONE3_VOLUME_CMD = (byte) 0x33;
+    public static final byte ZONE4_VOLUME_CMD = (byte) 0x34;
+    public static final byte TRIGGER_CMD = (byte) 0x40;
+    public static final byte STANDARD_RESPONSE = (byte) 0x20;
+    public static final byte TRIGGER_STATUS = (byte) 0x21;
+    public static final byte SMART_DISPLAY_DATA_1 = (byte) 0x22;
+    public static final byte SMART_DISPLAY_DATA_2 = (byte) 0x23;
+
+    // Common (output) keys used by the HEX and ASCII protocols
+    public static final String KEY_POWER = "power";
+    public static final String KEY_VOLUME = "volume";
+    public static final String KEY_MUTE = "mute";
+    public static final String KEY_BASS = "bass";
+    public static final String KEY_TREBLE = "treble";
+    public static final String KEY_SOURCE = "source";
+    public static final String KEY_DSP_MODE = "dsp_mode";
+    public static final String KEY_ERROR = "error";
+    // Keys only used by the ASCII protocol
+    public static final String KEY_UPDATE_MODE = "update_mode";
+    public static final String KEY_DISPLAY_UPDATE = "display_update";
+    public static final String KEY_VOLUME_MIN = "volume_min";
+    public static final String KEY_VOLUME_MAX = "volume_max";
+    public static final String KEY_TONE_MAX = "tone_max";
+    public static final String KEY1_PLAY_STATUS = "play_status";
+    public static final String KEY2_PLAY_STATUS = "status";
+    public static final String KEY_TRACK = "track";
+    public static final String KEY_DIMMER = "dimmer";
+    public static final String KEY_FREQ = "freq";
+    public static final String KEY_TONE = "tone";
+    public static final String KEY_TCBYPASS = "bypass";
+    public static final String KEY_BALANCE = "balance";
+    public static final String KEY_SPEAKER = "speaker";
+    // Output keys only used by the HEX protocol
+    public static final String KEY_LINE1 = "line1";
+    public static final String KEY_LINE2 = "line2";
+    public static final String KEY_RECORD = "record";
+    public static final String KEY_RECORD_SEL = "record_sel";
+    public static final String KEY_ZONE = "zone";
+    public static final String KEY_POWER_ZONE2 = "power_zone2";
+    public static final String KEY_POWER_ZONE3 = "power_zone3";
+    public static final String KEY_POWER_ZONE4 = "power_zone4";
+    public static final String KEY_SOURCE_ZONE2 = "source_zone2";
+    public static final String KEY_SOURCE_ZONE3 = "source_zone3";
+    public static final String KEY_SOURCE_ZONE4 = "source_zone4";
+    public static final String KEY_VOLUME_ZONE2 = "volume_zone2";
+    public static final String KEY_VOLUME_ZONE3 = "volume_zone3";
+    public static final String KEY_VOLUME_ZONE4 = "volume_zone4";
+    public static final String KEY_MUTE_ZONE2 = "mute_zone2";
+    public static final String KEY_MUTE_ZONE3 = "mute_zone3";
+    public static final String KEY_MUTE_ZONE4 = "mute_zone4";
+
+    // Specific values for keys
+    public static final String MSG_VALUE_OFF = "off";
+    public static final String MSG_VALUE_ON = "on";
+    public static final String POWER_ON = "on";
+    public static final String STANDBY = "standby";
+    public static final String POWER_OFF_DELAYED = "off_delayed";
+    public static final String MSG_VALUE_SPEAKER_A = "a";
+    public static final String MSG_VALUE_SPEAKER_B = "b";
+    public static final String MSG_VALUE_SPEAKER_AB = "a_b";
+    public static final String MSG_VALUE_MIN = "min";
+    public static final String MSG_VALUE_MAX = "max";
+    public static final String MSG_VALUE_FIX = "fix";
+    public static final String AUTO = "auto";
+    public static final String MANUAL = "manual";
+    public static final String PLAY = "play";
+    public static final String PAUSE = "pause";
+    public static final String STOP = "stop";
 }

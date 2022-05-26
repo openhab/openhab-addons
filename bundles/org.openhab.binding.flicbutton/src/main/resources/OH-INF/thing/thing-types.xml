@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="flicbutton"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="flicd-bridge">
+		<label>FlicButton Bridge</label>
+		<description>This bridge represents a running instance of the fliclib-linux-hci server (flicd).</description>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="false">
+				<context>network-address</context>
+				<label>Flic Daemon (flicd) Hostname</label>
+				<description>IP or Host name of the Flic daemon (flicd).</description>
+				<default>localhost</default>
+			</parameter>
+			<parameter name="port" type="integer" required="false">
+				<label>Flic Daemon (flicd) Port</label>
+				<description>Port where flicd is running. Defaults to 5551.</description>
+				<default>5551</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="button">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="flicd-bridge"/>
+		</supported-bridge-type-refs>
+		<label>Flic Button</label>
+		<description>The thing(-type) representing a Flic Button</description>
+		<channels>
+			<channel id="rawbutton" typeId="system.rawbutton"/>
+			<channel id="button" typeId="system.button"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+		</channels>
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

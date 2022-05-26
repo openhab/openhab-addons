@@ -40,11 +40,6 @@ public class NukiSmartLockHandler extends AbstractNukiDeviceHandler<NukiSmartLoc
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-    }
-
-    @Override
     public void refreshState(BridgeApiDeviceStateDto state) {
         updateState(NukiBindingConstants.CHANNEL_SMARTLOCK_LOCK,
                 state.getState() == NukiBindingConstants.LOCK_STATES_LOCKED, OnOffType::from);

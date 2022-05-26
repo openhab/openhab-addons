@@ -194,7 +194,6 @@
 	<channel-type id="currentlyPlayedTrackHref" advanced="true">
 		<item-type>String</item-type>
 		<label>Track URL</label>
-		<description></description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackUri" advanced="true">

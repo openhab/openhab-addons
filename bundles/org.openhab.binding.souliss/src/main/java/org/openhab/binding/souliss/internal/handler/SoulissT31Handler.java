@@ -49,7 +49,6 @@ public class SoulissT31Handler extends SoulissGenericHandler {
     StringType fanStateValue = StringType.EMPTY;
     StringType powerState = StringType.EMPTY;
     StringType fireState = StringType.EMPTY;
-
     StringType lastModeState = StringType.EMPTY;
     StringType modeStateValue = StringType.EMPTY;
 
@@ -166,6 +165,12 @@ public class SoulissT31Handler extends SoulissGenericHandler {
                     break;
 
                 case SoulissBindingConstants.T31_HEATINGMODE_MESSAGE_MODE_CHANNEL:
+                    if (!modeStateValue.equals(state)) {
+                        this.updateState(SoulissBindingConstants.T31_MODE_CHANNEL, (StringType) state);
+                        modeStateValue = (StringType) state;
+                    }
+                    break;
+
                 case SoulissBindingConstants.T31_COOLINGMODE_MESSAGE_MODE_CHANNEL:
                     if (!modeStateValue.equals(state)) {
                         this.updateState(SoulissBindingConstants.T31_MODE_CHANNEL, (StringType) state);
@@ -189,13 +194,13 @@ public class SoulissT31Handler extends SoulissGenericHandler {
                 case SoulissBindingConstants.T31_ON_MESSAGE_FIRE_CHANNEL:
                     if (!fireState.equals(state)) {
                         this.updateState(SoulissBindingConstants.T31_FIRE_CHANNEL, OnOffType.ON);
-                        powerState = (StringType) state;
+                        fireState = (StringType) state;
                     }
                     break;
                 case SoulissBindingConstants.T31_OFF_MESSAGE_FIRE_CHANNEL:
                     if (!fireState.equals(state)) {
                         this.updateState(SoulissBindingConstants.T31_FIRE_CHANNEL, OnOffType.OFF);
-                        powerState = (StringType) state;
+                        fireState = (StringType) state;
                     }
                     break;
 

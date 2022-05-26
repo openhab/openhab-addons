@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="voice:voskstt">
+		<parameter-group name="stt">
+			<label>STT Configuration</label>
+			<description>Configure Speech to Text.</description>
+		</parameter-group>
+		<parameter-group name="messages">
+			<label>Info Messages</label>
+			<description>Configure service information messages.</description>
+		</parameter-group>
+		<parameter name="singleUtteranceMode" type="boolean" groupName="stt">
+			<label>Single Utterance Mode</label>
+			<description>When enabled recognition stops listening after a single utterance.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="maxTranscriptionSeconds" type="integer" unit="s" groupName="stt">
+			<label>Max Transcription Seconds</label>
+			<description>Max seconds to wait to force stop the transcription.</description>
+			<default>60</default>
+		</parameter>
+		<parameter name="maxSilenceSeconds" type="integer" unit="s" groupName="stt">
+			<label>Max Silence Seconds</label>
+			<description>Only works when singleUtteranceMode is disabled, max seconds without getting new transcriptions to stop
+				listening.</description>
+			<default>3</default>
+		</parameter>
+		<parameter name="preloadModel" type="boolean" groupName="stt">
+			<label>Preload Model</label>
+			<description>Keep the language model loaded. If the parameter is set to true, the model will be reloaded only on
+				configuration updates. If the model is not loaded when needed, the service will try to load it. If the parameter is
+				set to false, the model will be loaded and unloaded on each run.
+			</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="noResultsMessage" type="text" groupName="messages">
+			<label>No Results Message</label>
+			<description>Message to be told when no results.</description>
+			<default>Sorry, I didn't understand you</default>
+		</parameter>
+		<parameter name="errorMessage" type="text" groupName="messages">
+			<label>Error Message</label>
+			<description>Message to be told when an error has happened. (Empty for disabled)</description>
+			<default>Sorry, something went wrong</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

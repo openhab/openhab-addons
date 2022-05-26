@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.mqtt.generic.values;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -51,8 +50,7 @@ public class RollershutterValue extends Value {
      */
     public RollershutterValue(@Nullable String upString, @Nullable String downString, @Nullable String stopString) {
         super(CoreItemFactory.ROLLERSHUTTER,
-                Stream.of(UpDownType.class, StopMoveType.class, PercentType.class, StringType.class)
-                        .collect(Collectors.toList()));
+                List.of(UpDownType.class, StopMoveType.class, PercentType.class, StringType.class));
         this.upString = upString;
         this.downString = downString;
         this.stopString = stopString == null ? StopMoveType.STOP.name() : stopString;

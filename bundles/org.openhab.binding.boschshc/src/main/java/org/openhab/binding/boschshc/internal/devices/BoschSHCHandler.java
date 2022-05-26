@@ -24,6 +24,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.services.AbstractBoschSHCService;
+import org.openhab.binding.boschshc.internal.services.AbstractStatelessBoschSHCService;
+import org.openhab.binding.boschshc.internal.services.AbstractStatelessBoschSHCServiceWithRequestBody;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.openhab.core.thing.Bridge;
@@ -42,10 +45,11 @@ import com.google.gson.JsonElement;
 
 /**
  * The {@link BoschSHCHandler} represents Bosch Things. Each type of device
- * inherits from this abstract thing handler.
+ * or system service inherits from this abstract thing handler.
  *
  * @author Stefan Kästle - Initial contribution
  * @author Christian Oeing - refactorings of e.g. server registration
+ * @author David Pace - Handler abstraction
  */
 @NonNullByDefault
 public abstract class BoschSHCHandler extends BaseThingHandler {
@@ -84,32 +88,35 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
-     * Bosch SHC configuration loaded from openHAB configuration.
-     */
-    private @Nullable BoschSHCConfiguration config;
-
-    /**
      * Services of the device.
      */
     private List<DeviceService<? extends BoschSHCServiceState>> services = new ArrayList<>();
 
-    public BoschSHCHandler(Thing thing) {
+    protected BoschSHCHandler(Thing thing) {
         super(thing);
     }
 
     /**
-     * Returns the unique id of the Bosch device.
+     * Returns the unique id of the Bosch device or service.
+     * <p>
+     * For physical devices, the ID looks like
+     * 
+     * <pre>
+     * hdm:Cameras:d20354de-44b5-3acc-924c-24c98d59da42
+     * hdm:ZigBee:000d6f0016d1c087
+     * </pre>
+     * 
+     * For virtual devices / services, static IDs like the following are used:
+     * 
+     * <pre>
+     * ventilationService
+     * smokeDetectionSystem
+     * intrusionDetectionSystem
+     * </pre>
      *
-     * @return Unique id of the Bosch device.
+     * @return Unique ID of the Bosch device or service.
      */
-    public @Nullable String getBoschID() {
-        BoschSHCConfiguration config = this.config;
-        if (config != null) {
-            return config.id;
-        } else {
-            return null;
-        }
-    }
+    public abstract @Nullable String getBoschID();
 
     /**
      * Initializes this handler. Use this method to register all services of the device with
@@ -117,24 +124,6 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        var config = this.config = getConfigAs(BoschSHCConfiguration.class);
-
-        String deviceId = config.id;
-        if (deviceId == null || deviceId.isEmpty()) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.empty-device-id");
-            return;
-        }
-
-        // Try to get device info to make sure the device exists
-        try {
-            var bridgeHandler = this.getBridgeHandler();
-            var info = bridgeHandler.getDeviceInfo(deviceId);
-            logger.trace("Device initialized:\n{}", info.toString());
-        } catch (InterruptedException | TimeoutException | ExecutionException | BoschSHCException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            return;
-        }
 
         // Initialize device services
         try {
@@ -273,16 +262,95 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void registerService(
             TService service, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels)
             throws BoschSHCException {
-        BridgeHandler bridgeHandler = this.getBridgeHandler();
+        registerService(service, stateUpdateListener, affectedChannels, false);
+    }
 
+    /**
+     * Registers a service for this device.
+     *
+     * @param <TService> Type of service.
+     * @param <TState> Type of service state.
+     * @param service Service to register.
+     * @param stateUpdateListener Function to call when a state update was received
+     *            from the device.
+     * @param affectedChannels Channels which are affected by the state of this
+     *            service.
+     * @param shouldFetchInitialState indicates whether the initial state should be actively requested from the device
+     *            or service. Useful if state updates are not included in long poll results.
+     * @throws BoschSHCException If bridge for handler is not set or an invalid bridge is set.
+     * @throws BoschSHCException If no device id is set.
+     */
+    protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void registerService(
+            TService service, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels,
+            boolean shouldFetchInitialState) throws BoschSHCException {
+
+        String deviceId = verifyBoschID();
+        service.initialize(getBridgeHandler(), deviceId, stateUpdateListener);
+        this.registerService(service, affectedChannels);
+
+        if (shouldFetchInitialState) {
+            fetchInitialState(service, stateUpdateListener);
+        }
+    }
+
+    /**
+     * Actively requests the initial state for the given service. This is required if long poll results do not contain
+     * status updates for the given service.
+     * 
+     * @param <TService> Type of the service for which the state should be obtained
+     * @param <TState> Type of the objects to serialize and deserialize the service state
+     * @param service Service for which the state should be requested
+     * @param stateUpdateListener Function to process the obtained state
+     */
+    private <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void fetchInitialState(
+            TService service, Consumer<TState> stateUpdateListener) {
+
+        try {
+            @Nullable
+            TState serviceState = service.getState();
+            if (serviceState != null) {
+                stateUpdateListener.accept(serviceState);
+            }
+        } catch (TimeoutException | ExecutionException | BoschSHCException e) {
+            logger.debug("Could not retrieve the initial state for service {} of device {}", service.getServiceName(),
+                    getBoschID());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Could not retrieve the initial state for service {} of device {}", service.getServiceName(),
+                    getBoschID());
+        }
+    }
+
+    /**
+     * Registers a write-only service that does not receive states from the bridge.
+     * <p>
+     * Examples for such services are the actions of the intrusion detection service.
+     * 
+     * @param <TService> Type of service.
+     * @param service Service to register.
+     * @throws BoschSHCException If no device ID is set.
+     */
+    protected <TService extends AbstractBoschSHCService> void registerStatelessService(TService service)
+            throws BoschSHCException {
+
+        String deviceId = verifyBoschID();
+        service.initialize(getBridgeHandler(), deviceId);
+        // do not register in service list because the service can not receive state updates
+    }
+
+    /**
+     * Verifies that a Bosch device or service ID is set and throws an exception if this is not the case.
+     * 
+     * @return the Bosch ID, if present
+     * @throws BoschSHCException if no Bosch ID is set
+     */
+    private String verifyBoschID() throws BoschSHCException {
         String deviceId = this.getBoschID();
         if (deviceId == null) {
             throw new BoschSHCException(
                     String.format("Could not register service for %s, no device id set", this.getThing()));
         }
-
-        service.initialize(bridgeHandler, deviceId, stateUpdateListener);
-        this.registerService(service, affectedChannels);
+        return deviceId;
     }
 
     /**
@@ -366,5 +434,46 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     private <TState extends BoschSHCServiceState> void registerService(BoschSHCService<TState> service,
             Collection<String> affectedChannels) {
         this.services.add(new DeviceService<TState>(service, affectedChannels));
+    }
+
+    /**
+     * Sends a HTTP POST request with empty body.
+     * 
+     * @param <TService> Type of service.
+     * @param service Service implementing the action
+     */
+    protected <TService extends AbstractStatelessBoschSHCService> void postAction(TService service) {
+        try {
+            service.postAction();
+        } catch (ExecutionException | TimeoutException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    String.format("Error while triggering action %s", service.getEndpoint()));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    String.format("Error while triggering action %s", service.getEndpoint()));
+        }
+    }
+
+    /**
+     * Sends a HTTP POST request with the given request body.
+     * 
+     * @param <TService> Type of service.
+     * @param <TState> Type of the request to be sent.
+     * @param service Service implementing the action
+     * @param request Request object to be serialized to JSON
+     */
+    protected <TService extends AbstractStatelessBoschSHCServiceWithRequestBody<TState>, TState extends BoschSHCServiceState> void postAction(
+            TService service, TState request) {
+        try {
+            service.postAction(request);
+        } catch (ExecutionException | TimeoutException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    String.format("Error while triggering action %s", service.getEndpoint()));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    String.format("Error while triggering action %s", service.getEndpoint()));
+        }
     }
 }

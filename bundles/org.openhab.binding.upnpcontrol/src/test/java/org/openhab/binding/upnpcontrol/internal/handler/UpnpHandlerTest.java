@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings({ "null" })
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class UpnpHandlerTest {
 

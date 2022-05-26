@@ -17,6 +17,7 @@ import static java.util.stream.Collectors.toList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.client.InboundSpec;
 
@@ -28,6 +29,7 @@ import tuwien.auto.calimero.GroupAddress;
  * @author Simon Kaufmann - initial contribution and API.
  *
  */
+@NonNullByDefault
 public class ListenSpecImpl extends AbstractSpec implements InboundSpec {
 
     private final List<GroupAddress> listenAddresses;

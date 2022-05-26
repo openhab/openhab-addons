@@ -17,7 +17,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
 		<description>Dimms the connected light</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 
 	<!-- RollerShutter Channel -->

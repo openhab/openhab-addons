@@ -58,6 +58,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -163,12 +164,14 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             return;
         }
 
+        updateStatus(ThingStatus.UNKNOWN);
         pendingShadeInitializations.clear();
         webTargets = new HDPowerViewWebTargets(httpClient, host);
         refreshInterval = config.refresh;
         hardRefreshPositionInterval = config.hardRefresh;
         hardRefreshBatteryLevelInterval = config.hardRefreshBatteryLevel;
         initializeChannels();
+        firmwareVersions = null;
         schedulePoll();
     }
 
@@ -204,7 +207,11 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         if (childHandler instanceof HDPowerViewShadeHandler) {
             ShadeData shadeData = pendingShadeInitializations.remove(childThing.getUID());
             if (shadeData != null) {
-                updateShadeThing(shadeData.id, childThing, shadeData);
+                if (shadeData.id > 0) {
+                    updateShadeThing(shadeData.id, childThing, shadeData);
+                } else {
+                    updateUnknownShadeThing(childThing);
+                }
             }
         }
         super.childHandlerInitialized(childHandler, childThing);
@@ -277,8 +284,13 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private synchronized void poll() {
         try {
-            logger.debug("Polling for state");
             updateFirmwareProperties();
+        } catch (HubException e) {
+            logger.warn("Failed to update firmware properties: {}", e.getMessage());
+        }
+
+        try {
+            logger.debug("Polling for state");
             pollShades();
 
             List<Scene> scenes = updateSceneChannels();
@@ -299,7 +311,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             // exceptions are logged in HDPowerViewWebTargets
         } catch (HubException e) {
             logger.warn("Error connecting to bridge: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -354,15 +366,15 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             Thing thing = item.getKey();
             int shadeId = item.getValue();
             ShadeData shadeData = idShadeDataMap.get(shadeId);
-            updateShadeThing(shadeId, thing, shadeData);
+            if (shadeData != null) {
+                updateShadeThing(shadeId, thing, shadeData);
+            } else {
+                updateUnknownShadeThing(thing);
+            }
         }
     }
 
-    private void updateShadeThing(int shadeId, Thing thing, @Nullable ShadeData shadeData) {
-        if (shadeData == null) {
-            logger.debug("Shade '{}' has no data in hub", shadeId);
-            return;
-        }
+    private void updateShadeThing(int shadeId, Thing thing, ShadeData shadeData) {
         HDPowerViewShadeHandler thingHandler = ((HDPowerViewShadeHandler) thing.getHandler());
         if (thingHandler == null) {
             logger.debug("Shade '{}' handler not initialized", shadeId);
@@ -386,6 +398,36 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             case REMOVED:
             default:
                 logger.debug("Ignoring shade update for shade '{}' in status {}", shadeId, thingStatus);
+                break;
+        }
+    }
+
+    private void updateUnknownShadeThing(Thing thing) {
+        String shadeId = thing.getUID().getId();
+        logger.debug("Shade '{}' has no data in hub", shadeId);
+        HDPowerViewShadeHandler thingHandler = ((HDPowerViewShadeHandler) thing.getHandler());
+        if (thingHandler == null) {
+            logger.debug("Shade '{}' handler not initialized", shadeId);
+            pendingShadeInitializations.put(thing.getUID(), new ShadeData());
+            return;
+        }
+        ThingStatus thingStatus = thingHandler.getThing().getStatus();
+        switch (thingStatus) {
+            case UNKNOWN:
+            case ONLINE:
+            case OFFLINE:
+                thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                        "@text/offline.gone.shade-unknown-to-hub"));
+                break;
+            case UNINITIALIZED:
+            case INITIALIZING:
+                logger.debug("Shade '{}' handler not yet ready; status: {}", shadeId, thingStatus);
+                pendingShadeInitializations.put(thing.getUID(), new ShadeData());
+                break;
+            case REMOVING:
+            case REMOVED:
+            default:
+                logger.debug("Ignoring shade status update for shade '{}' in status {}", shadeId, thingStatus);
                 break;
         }
     }
@@ -601,6 +643,11 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         Map<Thing, Integer> thingIdMap = getShadeThingIdMap();
         for (Entry<Thing, Integer> item : thingIdMap.entrySet()) {
             Thing thing = item.getKey();
+            if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.GONE) {
+                // Skip shades unknown to the Hub.
+                logger.debug("Shade '{}' is unknown, skipping position refresh", item.getValue());
+                continue;
+            }
             ThingHandler handler = thing.getHandler();
             if (handler instanceof HDPowerViewShadeHandler) {
                 ((HDPowerViewShadeHandler) handler).requestRefreshShadePosition();
@@ -615,6 +662,11 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         Map<Thing, Integer> thingIdMap = getShadeThingIdMap();
         for (Entry<Thing, Integer> item : thingIdMap.entrySet()) {
             Thing thing = item.getKey();
+            if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.GONE) {
+                // Skip shades unknown to the Hub.
+                logger.debug("Shade '{}' is unknown, skipping battery level refresh", item.getValue());
+                continue;
+            }
             ThingHandler handler = thing.getHandler();
             if (handler instanceof HDPowerViewShadeHandler) {
                 ((HDPowerViewShadeHandler) handler).requestRefreshShadeBatteryLevel();

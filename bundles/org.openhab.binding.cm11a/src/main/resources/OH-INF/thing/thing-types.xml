@@ -70,7 +70,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Light Level</label>
 		<description>Increase/decrease the light level</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<state min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
 

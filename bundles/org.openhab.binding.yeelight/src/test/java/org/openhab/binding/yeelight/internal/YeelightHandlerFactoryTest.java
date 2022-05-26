@@ -45,7 +45,7 @@ import org.openhab.core.thing.binding.ThingHandler;
  * @author Nikita Pogudalov - Added YeelightCeilingWithNightHandler for Ceiling 1
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class YeelightHandlerFactoryTest {
 
     private static final List<Object[]> TESTS = Arrays.asList(

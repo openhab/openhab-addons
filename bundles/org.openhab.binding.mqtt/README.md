@@ -17,7 +17,6 @@ MQTT topics. Please check out the available extensions:
 ## Supported Bridges
 
 * Broker: This bridge represents an MQTT Broker connection, configured and managed by this binding.
-* SystemBroker: A system configured broker cannot be changed by this binding and will be listed as read-only system-broker.
 
 ## Bridge Configuration
  
@@ -39,10 +38,22 @@ Reconnect parameters are:
 
 An MQTT last will and testament can be configured:
 
-* __lwtMessage__: An optional last will and testament message. Defaults to empty. 
-* __lwtTopic__: The last will topic. Defaults to empty and therefore disables the last will. 
-* __lwtQos__: The optional qos of the last will. Defaults to 0. 
-* __lwtRetain__: Retain last will message. Defaults to false.
+* __lwtMessage__: An optional last will and testament message. Defaults to empty.
+* __lwtTopic__: The last will topic. Defaults to empty and therefore disables the last will.
+* __lwtQos__: The optional qos of the last will. Defaults to 0.
+* __lwtRetain__: Retain last will message. Defaults to true.
+
+An MQTT message can be published upon a successful connection to the MQTT broker with these parameters:
+
+* __birthMessage__: An optional message to be published once the bridge established a connection to the MQTT broker. Defaults to empty.
+* __birthTopic__: The birth topic. Defaults to empty and therefore no birth message will be published.
+* __birthRetain__: Retain the birth message. Defaults to true.
+
+An MQTT message can be published just before disconnecting from the broker with these parameters:
+
+* __shutdownMessage__: An optional message to be published before the bridge disconnects from the MQTT broker. Defaults to empty.
+* __shutdownTopic__: The shutdown topic. Defaults to empty and therefore no shutdown message will be published.
+* __shutdownRetain__: Retain the shutdown message. Defaults to true.
 
 For more security, the following optional parameters can be altered:
 

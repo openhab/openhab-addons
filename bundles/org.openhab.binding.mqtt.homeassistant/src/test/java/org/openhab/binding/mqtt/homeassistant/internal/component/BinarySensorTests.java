@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.core.library.types.OnOffType;
@@ -27,6 +28,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
+@NonNullByDefault
 public class BinarySensorTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "binary_sensor/0x0000000000000000_binary_sensor_zigbee2mqtt";
 
@@ -148,6 +150,7 @@ public class BinarySensorTests extends AbstractComponentTests {
         waitForAssert(() -> assertState(component, BinarySensor.SENSOR_CHANNEL_ID, UnDefType.UNDEF), 10000, 200);
     }
 
+    @Override
     protected Set<String> getConfigTopics() {
         return Set.of(CONFIG_TOPIC);
     }

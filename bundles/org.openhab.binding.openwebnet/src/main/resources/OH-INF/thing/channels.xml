@@ -16,12 +16,35 @@
 		</tags>
 	</channel-type>
 
+	<!-- Aux channel -->
+	<!--Only ON and OFF options are supported -->
+	<channel-type id="aux">
+		<item-type>String</item-type>
+		<label>Auxiliary</label>
+		<description>Controls an Auxiliary command (read/write)</description>
+		<state>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="ON">On</option>
+				<option value="TOGGLE">Toggle</option>
+				<option value="STOP">Stop</option>
+				<option value="UP">Up</option>
+				<option value="DOWN">Down</option>
+				<option value="ENABLED">Enabled</option>
+				<option value="DISABLED">Disabled</option>
+				<option value="RESET_GEN">Reset gen</option>
+				<option value="RESET_BI">Reset bi</option>
+				<option value="RESET_TRI">Reset tri</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<!-- Brightness Channel -->
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Control the brightness and switch the light ON and OFF</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
 			<tag>Light</tag>
@@ -35,7 +58,8 @@
 		<description>Control the roller shutter position</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Blinds</tag>
+			<tag>OpenLevel</tag>
+			<tag>Opening</tag>
 		</tags>
 	</channel-type>
 
@@ -61,6 +85,18 @@
 				<option value="HEATING">Heating</option>
 				<option value="COOLING">Cooling</option>
 				<option value="GENERIC">Generic</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="functionCentralUnit">
+		<item-type>String</item-type>
+		<label>Thermo Function</label>
+		<description>Thermo function of the Central Unit</description>
+		<state readOnly="true">
+			<options>
+				<option value="HEATING">Heating</option>
+				<option value="COOLING">Cooling</option>
 			</options>
 		</state>
 	</channel-type>
@@ -168,6 +204,132 @@
 				<option value="OFF_SPEED_3">OFF speed 3</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="localOffset" advanced="true">
+		<item-type>String</item-type>
+		<label>Local Offset</label>
+		<description>Local knob status (read only)</description>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">OFF</option>
+				<option value="PROTECTION">PROTECTION</option>
+				<option value="PLUS_3">+3</option>
+				<option value="PLUS_2">+2</option>
+				<option value="PLUS_1">+1</option>
+				<option value="NORMAL">0</option>
+				<option value="MINUS_1">-1</option>
+				<option value="MINUS_2">-2</option>
+				<option value="MINUS_3">-3</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="modeCentralUnit">
+		<item-type>String</item-type>
+		<label>Central Unit Mode</label>
+		<description>Set mode of the Central Unit (read/write)</description>
+		<state>
+			<options>
+				<option value="MANUAL">Manual</option>
+				<option value="PROTECTION">Protection</option>
+				<option value="OFF">Off</option>
+				<option value="WEEKLY">Weekly</option>
+				<option value="SCENARIO">Scenario</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="weeklyProgramCentralUnit">
+		<item-type>Number</item-type>
+		<label>Weekly Program Number</label>
+		<description>Set weekly program number for the Central Unit, valid only with Central Unit mode = "WEEKLY" (read/write)</description>
+		<state>
+			<options>
+				<option value="1">Program 1</option>
+				<option value="2">Program 2</option>
+				<option value="3">Program 3</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="scenarioProgramCentralUnit">
+		<item-type>Number</item-type>
+		<label>Scenario Program Number</label>
+		<description>Set scenario program number for the Central Unit, valid only with Central Unit mode = "SCENARIO"
+			(read/write)</description>
+		<state>
+			<options>
+				<option value="1">Program 1</option>
+				<option value="2">Program 2</option>
+				<option value="3">Program 3</option>
+				<option value="4">Program 4</option>
+				<option value="5">Program 5</option>
+				<option value="6">Program 6</option>
+				<option value="7">Program 7</option>
+				<option value="8">Program 8</option>
+				<option value="9">Program 9</option>
+				<option value="10">Program 10</option>
+				<option value="11">Program 11</option>
+				<option value="12">Program 12</option>
+				<option value="13">Program 13</option>
+				<option value="14">Program 14</option>
+				<option value="15">Program 15</option>
+				<option value="16">Program 16</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="remoteControl" advanced="true">
+		<item-type>String</item-type>
+		<label>Remote Control</label>
+		<description>Central Unit Remote Control status (read only)</description>
+		<state readOnly="true">
+			<options>
+				<option value="DISABLED">DISABLED</option>
+				<option value="ENABLED">ENABLED</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="batteryStatus" advanced="true">
+		<item-type>String</item-type>
+		<label>Battery Status</label>
+		<description>Central Unit Battery status (read only)</description>
+		<state readOnly="true">
+			<options>
+				<option value="OK">OK</option>
+				<option value="KO">KO</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="failureDiscovered" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Failure Discovered</label>
+		<description>Central Unit Failure Discovered (read only)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="atLeastOneProbeOff" advanced="true">
+		<item-type>Switch</item-type>
+		<label>At least one probe OFF</label>
+		<description>At least one probe OFF indicator in Central Unit (read only)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="atLeastOneProbeProtection" advanced="true">
+		<item-type>Switch</item-type>
+		<label>At least one probe in PROTECTION</label>
+		<description>At least one probe in PROTECTION (Anti Freeze/Thermal Protection) indicator in Central Unit (read only)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="atLeastOneProbeManual" advanced="true">
+		<item-type>Switch</item-type>
+		<label>At least one probe in MANUAL</label>
+		<description>At least one probe in MANUAL indicator in Central Unit (read only)</description>
+		<state readOnly="true"></state>
 	</channel-type>
 
 	<!-- Energy channels -->

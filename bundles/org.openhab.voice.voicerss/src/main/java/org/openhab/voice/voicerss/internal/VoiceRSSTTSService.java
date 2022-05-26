@@ -20,6 +20,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
@@ -30,6 +32,7 @@ import org.openhab.core.voice.TTSService;
 import org.openhab.core.voice.Voice;
 import org.openhab.voice.voicerss.internal.cloudapi.CachedVoiceRSSCloudImpl;
 import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
@@ -41,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author Jochen Hiller - Initial contribution and API
  * @author Laurent Garnier - add support for OGG and AAC audio formats
  */
+@NonNullByDefault
 @Component(configurationPid = "org.openhab.voicerss", property = Constants.SERVICE_PID + "=org.openhab.voicerss")
 @ConfigurableService(category = "voice", label = "VoiceRSS Text-to-Speech", description_uri = "voice:voicerss")
 public class VoiceRSSTTSService implements TTSService {
@@ -66,27 +70,28 @@ public class VoiceRSSTTSService implements TTSService {
 
     private final Logger logger = LoggerFactory.getLogger(VoiceRSSTTSService.class);
 
-    private String apiKey;
+    private @Nullable String apiKey;
 
     /**
      * We need the cached implementation to allow for FixedLengthAudioStream.
      */
-    private CachedVoiceRSSCloudImpl voiceRssImpl;
+    private @Nullable CachedVoiceRSSCloudImpl voiceRssImpl;
 
     /**
      * Set of supported voices
      */
-    private Set<Voice> voices;
+    private @Nullable Set<Voice> voices;
 
     /**
      * Set of supported audio formats
      */
-    private Set<AudioFormat> audioFormats;
+    private @Nullable Set<AudioFormat> audioFormats;
 
     /**
      * DS activate, with access to ConfigAdmin
      */
-    protected void activate(Map<String, Object> config) {
+    @Activate
+    protected void activate(@Nullable Map<String, Object> config) {
         try {
             modified(config);
             voiceRssImpl = initVoiceImplementation();
@@ -100,7 +105,7 @@ public class VoiceRSSTTSService implements TTSService {
     }
 
     @Modified
-    protected void modified(Map<String, Object> config) {
+    protected void modified(@Nullable Map<String, Object> config) {
         if (config != null) {
             apiKey = config.containsKey(CONFIG_API_KEY) ? config.get(CONFIG_API_KEY).toString() : null;
         }
@@ -108,37 +113,41 @@ public class VoiceRSSTTSService implements TTSService {
 
     @Override
     public Set<Voice> getAvailableVoices() {
-        return Collections.unmodifiableSet(voices);
+        Set<Voice> localVoices = voices;
+        return localVoices == null ? Set.of() : Collections.unmodifiableSet(localVoices);
     }
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return Collections.unmodifiableSet(audioFormats);
+        Set<AudioFormat> localFormats = audioFormats;
+        return localFormats == null ? Set.of() : Collections.unmodifiableSet(localFormats);
     }
 
     @Override
     public AudioStream synthesize(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
         logger.debug("Synthesize '{}' for voice '{}' in format {}", text, voice.getUID(), requestedFormat);
-        // Validate known api key
-        if (apiKey == null) {
-            throw new TTSException("Missing API key, configure it first before using");
+        CachedVoiceRSSCloudImpl voiceRssCloud = voiceRssImpl;
+        if (voiceRssCloud == null) {
+            throw new TTSException("The service is not correctly initialized");
         }
-        // Validate arguments
-        if (text == null) {
-            throw new TTSException("The passed text is null");
+        // Validate known api key
+        String key = apiKey;
+        if (key == null) {
+            throw new TTSException("Missing API key, configure it first before using");
         }
         // trim text
         String trimmedText = text.trim();
         if (trimmedText.isEmpty()) {
             throw new TTSException("The passed text is empty");
         }
-        if (!voices.contains(voice)) {
+        Set<Voice> localVoices = voices;
+        if (localVoices == null || !localVoices.contains(voice)) {
             throw new TTSException("The passed voice is unsupported");
         }
 
         // now create the input stream for given text, locale, voice, codec and format.
         try {
-            File cacheAudioFile = voiceRssImpl.getTextToSpeechAsFile(apiKey, trimmedText,
+            File cacheAudioFile = voiceRssCloud.getTextToSpeechAsFile(key, trimmedText,
                     voice.getLocale().toLanguageTag(), voice.getLabel(), getApiAudioCodec(requestedFormat),
                     getApiAudioFormat(requestedFormat));
             return new VoiceRSSAudioStream(cacheAudioFile, requestedFormat);
@@ -153,11 +162,16 @@ public class VoiceRSSTTSService implements TTSService {
      * Initializes voices.
      *
      * @return The voices of this instance
+     * @throws IllegalStateException if voiceRssImpl is null
      */
-    private Set<Voice> initVoices() {
+    private Set<Voice> initVoices() throws IllegalStateException {
+        CachedVoiceRSSCloudImpl voiceRssCloud = voiceRssImpl;
+        if (voiceRssCloud == null) {
+            throw new IllegalStateException("The service is not correctly initialized");
+        }
         Set<Voice> voices = new HashSet<>();
-        for (Locale locale : voiceRssImpl.getAvailableLocales()) {
-            for (String voiceLabel : voiceRssImpl.getAvailableVoices(locale)) {
+        for (Locale locale : voiceRssCloud.getAvailableLocales()) {
+            for (String voiceLabel : voiceRssCloud.getAvailableVoices(locale)) {
                 voices.add(new VoiceRSSVoice(locale, voiceLabel));
             }
         }
@@ -168,9 +182,89 @@ public class VoiceRSSTTSService implements TTSService {
      * Initializes audioFormats
      *
      * @return The audio formats of this instance
+     * @throws IllegalStateException if voiceRssImpl is null
      */
-    private Set<AudioFormat> initAudioFormats() {
-        return voiceRssImpl.getAvailableAudioFormats();
+    private Set<AudioFormat> initAudioFormats() throws IllegalStateException {
+        CachedVoiceRSSCloudImpl voiceRssCloud = voiceRssImpl;
+        if (voiceRssCloud == null) {
+            throw new IllegalStateException("The service is not correctly initialized");
+        }
+        Set<AudioFormat> audioFormats = new HashSet<>();
+        for (String codec : voiceRssCloud.getAvailableAudioCodecs()) {
+            switch (codec) {
+                case "MP3":
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null, 16, 64000,
+                            44_100L));
+                    break;
+                case "OGG":
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, null, 16,
+                            null, 44_100L));
+                    break;
+                case "AAC":
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_AAC, null, 16, null,
+                            44_100L));
+                    break;
+                case "WAV":
+                    // Consider only mono formats
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 64_000, 8_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 128_000, 8_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 88_200, 11_025L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 176_400, 11_025L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 96_000, 12_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 192_000, 12_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 128_000, 16_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 256_000, 16_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 176_400, 22_050L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 352_800, 22_050L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 192_000, 24_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 384_000, 24_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 256_000, 32_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 512_000, 32_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 352_800, 44_100L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 705_600, 44_100L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 384_000, 48_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 768_000, 48_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8,
+                            64_000, 8_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8,
+                            88_200, 11_025L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8,
+                            176_400, 22_050L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8,
+                            352_800, 44_100L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8,
+                            64_000, 8_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8,
+                            88_200, 11_025L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8,
+                            176_400, 22_050L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8,
+                            352_800, 44_100L));
+                    break;
+                default:
+                    logger.debug("Audio codec {} not yet supported", codec);
+                    break;
+            }
+        }
+        return audioFormats;
     }
 
     /**
@@ -196,15 +290,18 @@ public class VoiceRSSTTSService implements TTSService {
      * @throws TTSException if {@code format} is not supported
      */
     private String getApiAudioFormat(AudioFormat format) throws TTSException {
-        final int bitDepth = format.getBitDepth() != null ? format.getBitDepth() : 16;
-        final Long frequency = format.getFrequency() != null ? format.getFrequency() : 44_100L;
+        final Integer formatBitDepth = format.getBitDepth();
+        final int bitDepth = formatBitDepth != null ? formatBitDepth.intValue() : 16;
+        final Long formatFrequency = format.getFrequency();
+        final Long frequency = formatFrequency != null ? formatFrequency.longValue() : 44_100L;
         final String apiFrequency = FREQUENCY_MAP.get(frequency);
 
         if (apiFrequency == null || (bitDepth != 8 && bitDepth != 16)) {
             throw new TTSException("Unsupported audio format: " + format);
         }
 
-        switch (format.getCodec() != null ? format.getCodec() : AudioFormat.CODEC_PCM_SIGNED) {
+        String codec = format.getCodec();
+        switch (codec != null ? codec : AudioFormat.CODEC_PCM_SIGNED) {
             case AudioFormat.CODEC_PCM_ALAW:
                 return "alaw_" + apiFrequency + "_mono";
             case AudioFormat.CODEC_PCM_ULAW:
@@ -221,7 +318,7 @@ public class VoiceRSSTTSService implements TTSService {
     }
 
     private CachedVoiceRSSCloudImpl initVoiceImplementation() throws IllegalStateException {
-        return new CachedVoiceRSSCloudImpl(getCacheFolderName());
+        return new CachedVoiceRSSCloudImpl(getCacheFolderName(), true);
     }
 
     private String getCacheFolderName() {
@@ -235,7 +332,7 @@ public class VoiceRSSTTSService implements TTSService {
     }
 
     @Override
-    public String getLabel(Locale locale) {
+    public String getLabel(@Nullable Locale locale) {
         return "VoiceRSS";
     }
 }

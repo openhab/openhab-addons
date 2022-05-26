@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class Connection {
 
     public static final int TP_LINK_SMART_HOME_PORT = 9999;
-    private static final int SOCKET_TIMEOUT_MILLISECONDS = 3_000;
+    private static final int SOCKET_TIMEOUT_MILLISECONDS = 2_000;
 
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
 

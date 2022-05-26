@@ -49,7 +49,7 @@ public class GoogleSTTConfiguration {
      * Only works when singleUtteranceMode is disabled, max seconds without getting new transcriptions to stop
      * listening.
      */
-    public int maxSilenceSeconds = 5;
+    public int maxSilenceSeconds = 3;
     /**
      * Single phrase mode.
      */
