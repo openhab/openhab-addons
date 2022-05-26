@@ -1354,7 +1354,8 @@ public class IpCameraHandler extends BaseThingHandler {
 
     void pollingCameraConnection() {
         keepMjpegRunning();
-        if (thing.getThingTypeUID().getId().equals(GENERIC_THING)) {
+        if (thing.getThingTypeUID().getId().equals(GENERIC_THING)
+                || thing.getThingTypeUID().getId().equals(DOORBIRD_THING)) {
             if (rtspUri.isEmpty()) {
                 logger.warn("Binding has not been supplied with a FFmpeg Input URL, so some features will not work.");
             }
