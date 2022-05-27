@@ -126,8 +126,10 @@ public interface CommonInterface {
     default List<CommonInterface> getActiveChildren() {
         Thing thing = getThing();
         if (thing instanceof Bridge) {
-            return ((Bridge) thing).getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler)
-                    .filter(Objects::nonNull).map(CommonInterface.class::cast).collect(Collectors.toList());
+            return ((Bridge) thing).getThings().stream().filter(Thing::isEnabled)
+                    .filter(th -> th.getStatusInfo().getStatusDetail() != ThingStatusDetail.BRIDGE_OFFLINE)
+                    .map(Thing::getHandler).filter(Objects::nonNull).map(CommonInterface.class::cast)
+                    .collect(Collectors.toList());
         }
         return List.of();
     }
