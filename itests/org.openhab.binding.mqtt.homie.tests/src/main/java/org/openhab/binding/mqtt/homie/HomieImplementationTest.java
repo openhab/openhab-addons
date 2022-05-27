@@ -172,6 +172,7 @@ public class HomieImplementationTest extends MqttOSGiTest {
     }
 
     @SuppressWarnings("null")
+    @Disabled("Temporarily disabled: unstable")
     @Test
     public void retrieveAttributes() throws Exception {
         assertThat(homieConnection.hasSubscribers(), is(false));
