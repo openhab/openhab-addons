@@ -372,7 +372,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                     }
                 });
 
-                if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
+                if (ThingStatus.ONLINE == bridge.getStatus()) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
