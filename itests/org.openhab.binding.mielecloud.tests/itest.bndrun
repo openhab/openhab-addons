@@ -85,4 +85,6 @@ Fragment-Host: org.openhab.binding.mielecloud
 	org.ops4j.pax.web.pax-web-api;version='[7.3.25,7.3.26)',\
 	org.ops4j.pax.web.pax-web-jetty;version='[7.3.25,7.3.26)',\
 	org.ops4j.pax.web.pax-web-runtime;version='[7.3.25,7.3.26)',\
-	org.ops4j.pax.web.pax-web-spi;version='[7.3.25,7.3.26)'
+	org.ops4j.pax.web.pax-web-spi;version='[7.3.25,7.3.26)',\
+	ch.qos.logback.classic;version='[1.2.11,1.2.12)',\
+	ch.qos.logback.core;version='[1.2.11,1.2.12)'
