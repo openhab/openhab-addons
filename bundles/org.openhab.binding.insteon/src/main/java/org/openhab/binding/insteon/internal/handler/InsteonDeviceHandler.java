@@ -415,7 +415,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+        if (ThingStatus.ONLINE == getThing().getStatus()) {
             logger.debug("channel {} was triggered with the command {}", channelUID.getAsString(), command);
 
             getInsteonBinding().sendCommand(channelUID.getAsString(), command);
