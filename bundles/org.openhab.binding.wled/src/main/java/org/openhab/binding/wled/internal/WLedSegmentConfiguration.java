@@ -15,15 +15,11 @@ package org.openhab.binding.wled.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link WLedConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link WLedSegmentConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Matthew Skinner - Initial contribution
  */
 @NonNullByDefault
-public class WLedConfiguration {
-    public String address = "";
-    public int pollTime = 5;
-    public int saturationThreshold;
-    public boolean sortEffects = true;
-    public boolean sortPalettes = true;
+public class WLedSegmentConfiguration {
+    public int segmentIndex;
 }
