@@ -136,7 +136,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
         config = getConfigAs(InsteonDeviceConfiguration.class);
 
         scheduler.execute(() -> {
-            Bridge bridge = getBridge();
+            final Bridge bridge = getBridge();
             if (bridge == null) {
                 String msg = "An Insteon network bridge has not been selected for this device.";
                 logger.warn("{} {}", thing.getUID().getAsString(), msg);
