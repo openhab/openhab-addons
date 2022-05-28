@@ -539,9 +539,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     @Override
     public void setThingOffline(ThingStatusDetail detail, String messageKey) {
         if (!isThingOffline()) {
-            String message = messages.get(messageKey);
-            logger.info("{}: Thing goes OFFLINE: {}", thingName, message);
-            updateStatus(ThingStatus.OFFLINE, detail, message);
+            updateStatus(ThingStatus.OFFLINE, detail, messages.get(messageKey));
             watchdog = 0;
             channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
         }
