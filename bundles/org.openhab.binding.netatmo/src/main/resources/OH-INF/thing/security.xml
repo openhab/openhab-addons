@@ -23,6 +23,14 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="siren">
+		<label>Siren Status</label>
+		<channels>
+			<channel id="status" typeId="siren-status"/>
+			<channel id="monitoring" typeId="siren-monitoring"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="status-doorbell">
 		<label>Camera Status</label>
 		<channels>
