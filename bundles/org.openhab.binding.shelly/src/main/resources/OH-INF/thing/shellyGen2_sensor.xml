@@ -15,7 +15,7 @@
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:battery" />
+		<config-description-ref uri="thing-type:shelly:battery-gen2" />
 	</thing-type>
 
 </thing:thing-descriptions>

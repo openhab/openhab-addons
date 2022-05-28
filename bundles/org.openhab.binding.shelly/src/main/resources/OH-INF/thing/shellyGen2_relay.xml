@@ -14,7 +14,7 @@
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay"/>
+		<config-description-ref uri="thing-type:shelly:relay-gen2-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellyplus1pm">
@@ -28,7 +28,7 @@
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay"/>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellyplus2pm-relay">
@@ -43,7 +43,7 @@
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay"/>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellyplus2pm-roller">
@@ -70,7 +70,7 @@
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay"/>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellypro1pm">
@@ -84,7 +84,7 @@
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay"/>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellypro2-relay">
@@ -107,7 +107,7 @@
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay"/>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellypro2-roller">
@@ -144,7 +144,7 @@
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay"/>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellypro2pm-roller">
@@ -194,7 +194,7 @@
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay"/>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellyplusi4">
@@ -209,7 +209,7 @@
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay"/>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 </thing:thing-descriptions>
