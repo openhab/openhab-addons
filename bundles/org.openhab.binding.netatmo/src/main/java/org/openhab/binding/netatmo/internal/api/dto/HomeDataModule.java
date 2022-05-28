@@ -43,4 +43,9 @@ public class HomeDataModule extends NAThing implements NAModule {
     public List<String> getModuleBridged() {
         return moduleBridged;
     }
+
+    @Override
+    public boolean isIgnoredForThingUpdate() {
+        return true;
+    }
 }

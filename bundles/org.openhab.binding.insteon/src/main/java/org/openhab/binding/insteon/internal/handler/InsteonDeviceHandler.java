@@ -136,7 +136,8 @@ public class InsteonDeviceHandler extends BaseThingHandler {
         config = getConfigAs(InsteonDeviceConfiguration.class);
 
         scheduler.execute(() -> {
-            if (getBridge() == null) {
+            final Bridge bridge = getBridge();
+            if (bridge == null) {
                 String msg = "An Insteon network bridge has not been selected for this device.";
                 logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
@@ -371,7 +372,11 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                     }
                 });
 
-                updateStatus(ThingStatus.ONLINE);
+                if (ThingStatus.ONLINE == bridge.getStatus()) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                }
             } else {
                 String msg = "Product key '" + productKey
                         + "' does not have any features that match existing channels.";
@@ -410,7 +415,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+        if (ThingStatus.ONLINE == getThing().getStatus()) {
             logger.debug("channel {} was triggered with the command {}", channelUID.getAsString(), command);
 
             getInsteonBinding().sendCommand(channelUID.getAsString(), command);

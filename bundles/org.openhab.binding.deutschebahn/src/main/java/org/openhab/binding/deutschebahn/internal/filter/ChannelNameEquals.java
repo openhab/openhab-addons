@@ -31,7 +31,7 @@ public final class ChannelNameEquals extends FilterToken {
 
     private final String channelName;
     private final Pattern filterValue;
-    private String channelGroup;
+    private final String channelGroup;
 
     /**
      * Creates an new {@link ChannelNameEquals}.
@@ -66,7 +66,7 @@ public final class ChannelNameEquals extends FilterToken {
 
     @Override
     public String toString() {
-        return this.channelGroup + "#" + channelName + "=\"" + this.filterValue.toString() + "\"";
+        return this.channelGroup + "#" + channelName + "=\"" + this.filterValue + "\"";
     }
 
     @Override

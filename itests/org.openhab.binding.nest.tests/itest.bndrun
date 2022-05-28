@@ -10,7 +10,8 @@ Fragment-Host: org.openhab.binding.nest
 
 # We would like to use the "volatile" storage only
 -runblacklist: \
-	bnd.identity;id='org.openhab.core.storage.json'
+	bnd.identity;id='org.openhab.core.storage.json',\
+	bnd.identity;id='jakarta.ws.rs-api'
 
 #
 # done
@@ -104,4 +105,6 @@ Fragment-Host: org.openhab.binding.nest
 	org.ops4j.pax.logging.pax-logging-api;version='[2.0.16,2.0.17)',\
 	org.ops4j.pax.web.pax-web-api;version='[7.3.25,7.3.26)',\
 	org.ops4j.pax.web.pax-web-jetty;version='[7.3.25,7.3.26)',\
-	org.ops4j.pax.web.pax-web-spi;version='[7.3.25,7.3.26)'
+	org.ops4j.pax.web.pax-web-spi;version='[7.3.25,7.3.26)',\
+	ch.qos.logback.classic;version='[1.2.11,1.2.12)',\
+	ch.qos.logback.core;version='[1.2.11,1.2.12)'

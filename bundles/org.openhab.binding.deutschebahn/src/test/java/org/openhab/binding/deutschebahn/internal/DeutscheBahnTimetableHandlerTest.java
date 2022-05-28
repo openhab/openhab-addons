@@ -12,8 +12,13 @@
  */
 package org.openhab.binding.deutschebahn.internal;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -172,7 +177,7 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
         final TimetablesV1ApiStub stubWithError = TimetablesV1ApiStub.createWithException();
 
         final DeutscheBahnTimetableHandler handler = createAndInitHandler(callback, bridge,
-                (String authToken, HttpCallable httpCallable) -> stubWithError);
+                (String clientId, String clientSecret, HttpCallable httpCallable) -> stubWithError);
 
         try {
             verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
@@ -212,7 +217,7 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
         final TimetablesV1ApiStub stubWithData = TimetablesV1ApiStub.createWithResult(timetable);
 
         final DeutscheBahnTimetableHandler handler = createAndInitHandler(callback, bridge,
-                (String authToken, HttpCallable httpCallable) -> stubWithData);
+                (String clientId, String clientSecret, HttpCallable httpCallable) -> stubWithData);
 
         try {
             verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));

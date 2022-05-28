@@ -10,6 +10,25 @@
 		<description>Monitoring state of the camera</description>
 	</channel-type>
 
+	<channel-type id="siren-monitoring">
+		<item-type>Switch</item-type>
+		<label>Monitoring</label>
+		<description>Monitoring state of the equipment</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="siren-status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Status of the siren</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="no_sound">Silent</option>
+				<option value="sound">Alarm</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="window-open">
 		<item-type>Contact</item-type>
 		<label>Window Status</label>

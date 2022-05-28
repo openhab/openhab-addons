@@ -4,13 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="plug">
-		<label>Thermostat Plug</label>
-		<channels>
-			<channel id="boiler-status" typeId="boiler-status"/>
-		</channels>
-	</channel-group-type>
-
 	<channel-group-type id="temperature-room">
 		<label>Room Temperature</label>
 		<channels>

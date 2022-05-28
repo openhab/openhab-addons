@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
+import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
@@ -126,8 +127,10 @@ public interface CommonInterface {
     default List<CommonInterface> getActiveChildren() {
         Thing thing = getThing();
         if (thing instanceof Bridge) {
-            return ((Bridge) thing).getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler)
-                    .filter(Objects::nonNull).map(CommonInterface.class::cast).collect(Collectors.toList());
+            return ((Bridge) thing).getThings().stream().filter(Thing::isEnabled)
+                    .filter(th -> th.getStatusInfo().getStatusDetail() != ThingStatusDetail.BRIDGE_OFFLINE)
+                    .map(Thing::getHandler).filter(Objects::nonNull).map(CommonInterface.class::cast)
+                    .collect(Collectors.toList());
         }
         return List.of();
     }
@@ -137,6 +140,14 @@ public interface CommonInterface {
     }
 
     default void setNewData(NAObject newData) {
+        if (newData instanceof NAThing) {
+            NAThing thingData = (NAThing) newData;
+            if (getId().equals(thingData.getBridge())) {
+                getActiveChildren().stream().filter(child -> child.getId().equals(thingData.getId())).findFirst()
+                        .ifPresent(child -> child.setNewData(thingData));
+                return;
+            }
+        }
         String finalReason = null;
         for (Capability cap : getCapabilities().values()) {
             String thingStatusReason = cap.setNewData(newData);
