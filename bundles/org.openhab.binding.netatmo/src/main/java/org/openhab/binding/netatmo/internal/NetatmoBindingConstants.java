@@ -53,6 +53,7 @@ public class NetatmoBindingConstants {
     public static final String GROUP_CAM_STATUS = "status";
     public static final String GROUP_CAM_LIVE = "live";
     public static final String GROUP_PRESENCE = "presence";
+    public static final String GROUP_SIREN = "siren";
     public static final String GROUP_PERSON = "person";
     public static final String GROUP_PROPERTIES = "properties";
     public static final String GROUP_SETPOINT = "setpoint";
@@ -105,6 +106,7 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_SUM_RAIN1 = "sum-1";
     public static final String CHANNEL_SUM_RAIN24 = "sum-24";
     public static final String CHANNEL_WIND_ANGLE = "angle";
+    public static final String CHANNEL_STATUS = GROUP_CAM_STATUS;
     public static final String CHANNEL_WIND_STRENGTH = "strength";
     public static final String CHANNEL_MAX_WIND_STRENGTH = "max-strength";
     public static final String CHANNEL_DATE_MAX_WIND_STRENGTH = "max-strength-date";

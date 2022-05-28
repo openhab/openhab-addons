@@ -17,6 +17,7 @@ import static org.openhab.core.library.CoreItemFactory.*;
 import static org.openhab.core.library.unit.MetricPrefix.*;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -190,35 +191,34 @@ public class NetatmoConstants {
         UNKNOWN;
     }
 
-    private static final Set<Scope> SMOKE = Set.of(Scope.READ_SMOKEDETECTOR);
-    private static final Set<Scope> WELCOME = Set.of(Scope.READ_CAMERA, Scope.WRITE_CAMERA, Scope.ACCESS_CAMERA);
-    private static final Set<Scope> DOORBELL = Set.of(Scope.READ_DOORBELL, Scope.WRITE_DOORBELL, Scope.ACCESS_DOORBELL);
-    private static final Set<Scope> PRESENCE = Set.of(Scope.READ_PRESENCE, Scope.WRITE_PRESENCE, Scope.ACCESS_PRESENCE);
+    private static final Scope[] SMOKE_SCOPES = { Scope.READ_SMOKEDETECTOR };
+    private static final Scope[] AIR_CARE_SCOPES = { Scope.READ_HOMECOACH };
+    private static final Scope[] WEATHER_SCOPES = { Scope.READ_STATION };
+    private static final Scope[] THERMOSTAT_SCOPES = { Scope.READ_THERMOSTAT, Scope.WRITE_THERMOSTAT };
+    private static final Scope[] WELCOME_SCOPES = { Scope.READ_CAMERA, Scope.WRITE_CAMERA, Scope.ACCESS_CAMERA };
+    private static final Scope[] DOORBELL_SCOPES = { Scope.READ_DOORBELL, Scope.WRITE_DOORBELL, Scope.ACCESS_DOORBELL };
+    private static final Scope[] PRESENCE_SCOPES = { Scope.READ_PRESENCE, Scope.WRITE_PRESENCE, Scope.ACCESS_PRESENCE };
+
+    public static enum FeatureArea {
+        AIR_CARE(AIR_CARE_SCOPES),
+        WEATHER(WEATHER_SCOPES),
+        ENERGY(THERMOSTAT_SCOPES),
+        SECURITY(WELCOME_SCOPES, PRESENCE_SCOPES, SMOKE_SCOPES, DOORBELL_SCOPES),
+        NONE();
+
+        public static String ALL_SCOPES = EnumSet.allOf(FeatureArea.class).stream().map(fa -> fa.scopes)
+                .flatMap(Set::stream).map(s -> s.name().toLowerCase()).collect(Collectors.joining(" "));
+
+        public final Set<Scope> scopes;
+
+        FeatureArea(Scope[]... scopeArrays) {
+            this.scopes = Stream.of(scopeArrays).flatMap(Arrays::stream).collect(Collectors.toSet());
+        }
+    }
 
     // Radio signal quality thresholds
     static final int[] WIFI_SIGNAL_LEVELS = new int[] { 99, 84, 69, 54 }; // Resp : bad, average, good, full
     static final int[] RADIO_SIGNAL_LEVELS = new int[] { 90, 80, 70, 60 }; // Resp : low, medium, high, full
-
-    public static enum FeatureArea {
-        AIR_CARE(Scope.READ_HOMECOACH),
-        WEATHER(Scope.READ_STATION),
-        ENERGY(Scope.READ_THERMOSTAT, Scope.WRITE_THERMOSTAT),
-        SECURITY(Stream.of(WELCOME, PRESENCE, SMOKE, DOORBELL).flatMap(Set::stream).toArray(Scope[]::new)),
-        NONE();
-
-        public static final Set<FeatureArea> AS_SET = EnumSet.allOf(FeatureArea.class);
-
-        public static String toScopeString(Set<FeatureArea> featureSet) {
-            return featureSet.stream().map(fa -> fa.scopes).flatMap(Set::stream).map(s -> s.name().toLowerCase())
-                    .collect(Collectors.joining(" "));
-        }
-
-        public final Set<Scope> scopes;
-
-        FeatureArea(Scope... scopes) {
-            this.scopes = Set.of(scopes);
-        }
-    }
 
     // Thermostat definitions
     public static enum SetpointMode {

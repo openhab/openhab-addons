@@ -5,7 +5,9 @@ The Netatmo binding integrates the following Netatmo products:
 - *Personal Weather Station*. Reports temperature, humidity, air pressure, carbon dioxide concentration in the air, as well as the ambient noise level.
 - *Thermostat*. Reports ambient temperature, allow to check target temperature, consult and change furnace heating status.
 - *Indoor Camera / Welcome*. Reports last event and persons at home, consult picture and video from event/camera.
+- *Siren*
 - *Outdoor Camera / Presence*. Reports last event, consult picture and video from event/camera.
+- *Doorbell* 
 
 See https://www.netatmo.com/ for details on their product.
 
@@ -505,7 +507,7 @@ Warnings:
 
 (*) This channel is configurable : low, poor, high.
 
-**Supported channels for the Welcome Doorbell thing:**
+**Supported channels for the Doorbell thing:**
 
 | Channel Group | Channel ID        | Item Type    | Read/Write | Description                                                                                                                                 |
 |---------------|-------------------|--------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------|
@@ -531,6 +533,18 @@ Warnings:
 
 
 Note: live feeds either locally or via VPN are not available in Netatmo API.
+
+**Supported channels for the Siren thing:**
+
+| Channel Group | Channel ID        | Item Type    | Read/Write | Description                                          |
+|---------------|-------------------|--------------|------------|------------------------------------------------------|
+| siren         | status            | String       | Read-only  | Status of the siren, if silent or emitting an alarm  |
+| siren         | monitoring        | Switch       | Read-only  | State of the siren device                            |
+| signal        | strength          | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)     |
+| signal        | value             | Number:Power | Read-only  | Signal strength in dBm                               |
+| timestamp     | last-seen         | DateTime     | Read-only  | Last time the module reported its presence           |
+| battery       | value             | Number       | Read-only  | Battery level                                        |
+| battery       | low-battery       | Switch       | Read-only  | Low battery                                          |
 
 
 ### Welcome Person
