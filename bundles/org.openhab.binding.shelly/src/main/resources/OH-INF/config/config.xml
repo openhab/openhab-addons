@@ -41,6 +41,7 @@
 			<label>@text/thing-type.config.shelly.eventsCoIoT.label</label>
 			<description>@text/thing-type.config.shelly.eventsCoIoT.description</description>
 			<default>true</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
 			<label>@text/thing-type.config.shelly.updateInterval.label</label>
@@ -86,6 +87,7 @@
 			<label>@text/thing-type.config.shelly.eventsCoIoT.label</label>
 			<description>@text/thing-type.config.shelly.eventsCoIoT.description</description>
 			<default>true</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
 			<label>@text/thing-type.config.shelly.updateInterval.label</label>
@@ -129,8 +131,8 @@
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsPush" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsSwitch.label</label>
-			<description>@text/thing-type.config.shelly.eventsSwitch.description</description>
+			<label>@text/thing-type.config.shelly.eventsPush.label</label>
+			<description>@text/thing-type.config.shelly.eventsPush.description</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
@@ -179,6 +181,7 @@
 			<label>@text/thing-type.config.shelly.eventsCoIoT.label</label>
 			<description>@text/thing-type.config.shelly.eventsCoIoT.description</description>
 			<default>true</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
 			<label>@text/thing-type.config.shelly.updateInterval.label</label>
@@ -247,8 +250,8 @@
 			<unitLabel>%</unitLabel>
 		</parameter>
 		<parameter name="eventsSensorReport" type="boolean" required="false">
-			<label>thing-type.config.shelly.eventsSensorReport.label</label>
-			<description>thing-type.config.shelly.eventsSensorReport.description</description>
+			<label>@text/thing-type.config.shelly.eventsSensorReport.label</label>
+			<description>@text/thing-type.config.shelly.eventsSensorReport.description</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
@@ -283,8 +286,8 @@
 			<context>password</context>
 		</parameter>
 		<parameter name="eventsSensorReport" type="boolean" required="false">
-			<label>thing-type.config.shelly.eventsSensorReport.label</label>
-			<description>thing-type.config.shelly.eventsSensorReport.description</description>
+			<label>@text/thing-type.config.shelly.eventsSensorReport.label</label>
+			<description>@text/thing-type.config.shelly.eventsSensorReport.description</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
