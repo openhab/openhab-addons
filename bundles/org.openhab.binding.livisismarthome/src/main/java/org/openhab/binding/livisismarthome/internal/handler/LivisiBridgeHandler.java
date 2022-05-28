@@ -263,8 +263,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         return webSocket;
     }
 
-    private static Optional<String> getAccessToken(@Nullable LivisiClient client)
-            throws AuthenticationException, IOException {
+    private static Optional<String> getAccessToken(@Nullable LivisiClient client) throws IOException {
         if (client != null) {
             return Optional.of(client.getAccessTokenResponse().getAccessToken());
         }
@@ -603,7 +602,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @param event event
      */
     private void handleStateChangedEvent(final EventDTO event, @Nullable final DeviceStructureManager deviceStructMan)
-            throws ApiException, IOException, AuthenticationException {
+            throws IOException {
 
         if (deviceStructMan != null) {
             // CAPABILITY
@@ -638,8 +637,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @param event event
      */
     private void handleControllerConnectivityChangedEvent(final EventDTO event,
-            @Nullable final DeviceStructureManager deviceStructMan)
-            throws ApiException, IOException, AuthenticationException {
+            @Nullable final DeviceStructureManager deviceStructMan) throws IOException {
 
         if (deviceStructMan != null) {
             final Boolean connected = event.getIsConnected();
@@ -662,8 +660,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @param event event
      */
     private void handleNewMessageReceivedEvent(final MessageEventDTO event,
-            @Nullable final DeviceStructureManager deviceStructMan)
-            throws ApiException, IOException, AuthenticationException {
+            @Nullable final DeviceStructureManager deviceStructMan) throws IOException {
 
         if (deviceStructMan != null) {
             final MessageDTO message = event.getMessage();
@@ -949,7 +946,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     private void requestAccessToken(@Nullable OAuthClientService oAuthService)
-            throws OAuthException, IOException, AuthenticationException, ApiException, OAuthResponseException {
+            throws OAuthException, IOException, OAuthResponseException {
         if (oAuthService != null) {
             oAuthService.getAccessTokenByResourceOwnerPasswordCredentials(LivisiBindingConstants.USERNAME,
                     bridgeConfiguration.password, null);
@@ -989,7 +986,6 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     @FunctionalInterface
     private interface CommandExecutor {
 
-        void executeCommand(String capabilityId, LivisiClient client)
-                throws IOException, ApiException, AuthenticationException;
+        void executeCommand(String capabilityId, LivisiClient client) throws IOException;
     }
 }
