@@ -167,7 +167,6 @@ public class Shelly1CoapJSonDTO {
                 in.endArray();
                 name = in.nextName();
             }
-
             if (name.equalsIgnoreCase(COIOT_TAG_SEN)) {
                 /*
                  * parse sensor list, e.g.
@@ -221,7 +220,6 @@ public class Shelly1CoapJSonDTO {
                     in.endObject();
                     descr.sen.add(sen);
                 }
-
                 in.endArray();
                 if (in.hasNext()) {
                     name = in.nextName();

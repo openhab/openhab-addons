@@ -250,13 +250,8 @@
 			<unitLabel>%</unitLabel>
 		</parameter>
 		<parameter name="eventsSensorReport" type="boolean" required="false">
-			<<<<<<< HEAD
 			<label>@text/thing-type.config.shelly.eventsSensorReport.label</label>
 			<description>@text/thing-type.config.shelly.eventsSensorReport.description</description>
-			=======
-			<label>thing-type.config.shelly.eventsSensorReport.label</label>
-			<description>thing-type.config.shelly.eventsSensorReport.description</description>
-			>>>>>>> various changes adapted
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
@@ -291,13 +286,8 @@
 			<context>password</context>
 		</parameter>
 		<parameter name="eventsSensorReport" type="boolean" required="false">
-			<<<<<<< HEAD
 			<label>@text/thing-type.config.shelly.eventsSensorReport.label</label>
 			<description>@text/thing-type.config.shelly.eventsSensorReport.description</description>
-			=======
-			<label>thing-type.config.shelly.eventsSensorReport.label</label>
-			<description>thing-type.config.shelly.eventsSensorReport.description</description>
-			>>>>>>> various changes adapted
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
