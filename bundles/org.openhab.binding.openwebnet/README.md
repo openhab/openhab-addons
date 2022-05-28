@@ -44,8 +44,8 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Lighting                      |     `1`     |             `bus_on_off_switch`, `bus_dimmer`              | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)                                                                                           |
 | Automation                    |     `2`     |                      `bus_automation`                      | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2                                                                                                                                                                              |
 | Temperature Control           |     `4`     |  `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`   | Thermo zones management and temperature sensors (probes).        | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455; Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details |
-| Auxiliary (AUX)               |     `9`     |                         `bus_aux`                          | AUX commands                                                     | Successfully tested: AUX configured for bulgrar-alarm unit 3486. Only sending AUX commands is supported                                                                                                    |
-| CEN & CEN+ Scenarios          | `15` & `25` | `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | CEN/CEN+ scenarios events and virtual activation                 | Successfully tested: scenario buttons: HC/HD/HS/L/N/NT4680                                                                                                                                                 |
+| Auxiliary (AUX)               |     `9`     |                         `bus_aux`                          | AUX commands                                                     | Successfully tested: AUX configured for bulgrar-alarm unit 3486. **Only sending AUX commands is supported**                                                                                                    |
+| Basic, CEN & CEN+ Scenarios          | `0`, `15`, `25` | `bus_scenario_panel`, `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | Basic and CEN/CEN+ scenarios events and virtual activation                 | Successfully tested: CEN/CEN+ scenario buttons: HC/HD/HS/L/N/NT4680. Currently testing WHO=0 scenarios F420/IR 3456                                                                                                                                                                 |
 | Dry Contact and IR Interfaces |    `25`     |                    `bus_dry_contact_ir`                    | Dry Contacts and IR Interfaces                                   | Successfully tested: contact interfaces F428 and 3477; IR sensors: HC/HD/HS/L/N/NT4610                                                                                                                     |
 | Energy Management             |    `18`     |                     `bus_energy_meter`                     | Energy Management                                                | Successfully tested: F520, F521                                                                                                                                                                            |
 
@@ -69,7 +69,7 @@ For other gateways you can add them manually, see [Thing Configuration](#thing-c
 - Once the gateway is online, a second Inbox Scan will discover BUS devices
 - BUS/SCS Dimmers must be ON and dimmed (30%-100%) during a Scan, otherwise they will be discovered as simple On/Off switches
     - *KNOWN ISSUE*: In some cases dimmers connected to a F429 Dali-interface are not automatically discovered
-- CEN/CEN+ Scenario Control devices will be discovered by activation only. See [discovery by activation](#discovery-by-activation) for details. After confirming a discovered CEN/CEN+ device from Inbox, activate again its scenario buttons to add button channels automatically
+- Basic Scenario Panels and CEN/CEN+ Scenario Control devices will be discovered by activation only. See [discovery by activation](#discovery-by-activation) for details. After confirming a discovered CEN/CEN+ scenario device from Inbox, activate again its buttons to add button channels automatically
 
 #### Discovery by Activation
 
@@ -129,6 +129,7 @@ For any manually added device, you must configure:
     - example for BUS/SCS system, address Point-to-point with Area (A) and Light-point (PL):
         - light device A=`2` (Area 2), PL=`4` (Light-point 4) --> `where="24"`
         - light device A=`03`, PL=`11` on local bus --> `where="0311#4#01"`
+        - scenario Control Panel `02` --> `where="02"`    
         - CEN scenario A=`05`, PL=`12` --> `where="0512"`
         - CEN+ scenario `5`: add a `2` before --> `where="25"`
         - Dry Contact or IR Interface `99`: add a `3` before --> `where="399"`
@@ -161,14 +162,13 @@ To control a BTicino alarm system the alarm unit should be configured for exampl
 
 Antitheft -> Automations -> then toggle the Event option -> then select OPEN code
 
-- Type in the AUX command you want to set, e.g.\*9\*1\*4\## (where=4)
-- Type in the associated Open Web Net code you want to execute, e.g.\*5\*8*#1234## (engage alarm on zones 1,2,3,4).
+- Type in the AUX command you want to set, e.g `*9*1*4##` (where=4)
+- Type in the associated Open Web Net code you want to execute, e.g. `*5*8*#1234##` (engage alarm on zones 1, 2, 3, 4).
 
-Please note that receiving AUX messages originating from the bus is not supported yet, only sending messages to the bus is supported.
+**NOTE** receiving AUX messages originating from the BUS is not supported yet, only sending messages to the BUS is supported.
 
 
-
-### Central Unit integration missing points 
+### Thermo Central Unit integration missing points 
 
 - Read setPoint temperature and current mode
 - Holiday activation command (all zones)
@@ -176,17 +176,18 @@ Please note that receiving AUX messages originating from the bus is not supporte
 
 ## Channels 
 
-### Lighting, Automation, Power meter, CEN/CEN+ Scenario Events and Dry Contact / IR Interfaces channels
+### Lighting, Automation, Power meter, Basic/CEN/CEN+ Scenario Events and Dry Contact / IR Interfaces channels
 
 | Channel Type ID (channel ID)            | Applies to Thing Type IDs                                     | Item Type     | Description                                                                                                                                     | Read/Write  |
 |-----------------------------------------|---------------------------------------------------------------|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------|:-----------:|
 | `switch` or `switch_01`/`02` for ZigBee | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                                                                                                             |     R/W     |
 | `brightness`                            | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                                                                                           |     R/W     |
 | `shutter`                               | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position))                                         |     R/W     |
-| `button#X`                              | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`    | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#cen-cen-channels)                                                           | R (TRIGGER) |
+| `scenario`                              | `bus_scenario_panel`    | String        | Trigger channel for basic scenario events [see possible values](#scenario-channels)                                                           | R (TRIGGER) |
+| `button#X`                              | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`    | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#scenario-channels)                                                           | R (TRIGGER) |
 | `sensor`                                | `bus_dry_contact_ir`                                          | Switch        | Indicates if a Dry Contact Interface is `ON`/`OFF`, or if a IR Sensor is detecting movement (`ON`), or not  (`OFF`)                             |      R      |
 | `power`                                 | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter                                                                                                |      R      |
-| `aux`                                   | `bus_aux`                                                     | String        | Possible commands: ON,OFF,TOGGLE, STOP, UP,DOWN,ENABLED, DISABLED, RESET_GEN, RESET_BI, RESET_TRI. Only   'ON' and `OFF'  are supported for now |     R/W     |
+| `aux`                                   | `bus_aux`                                                     | String        | To send commands to auxiliary devices. Possible commands: `ON`, `OFF`, `TOGGLE`, `STOP`, `UP`, `DOWN`, `ENABLED`, `DISABLED`, `RESET_GEN`, `RESET_BI`, `RESET_TRI`. Only `ON` and `OFF`  are supported for now |     R/W     |
 
 ### Thermo channels
 
@@ -223,40 +224,41 @@ It's possible to enter a value manually or set `shutterRun=AUTO` (default) to ca
 - if OH is restarted the binding does not know if a shutter position has changed in the meantime, so its position will be `UNDEF`. Move the shutter all `UP`/`DOWN` to synchronize again its position with the binding
 - the shutter position is estimated based on UP/DOWN timing: an error of ±2% is normal
 
-#### CEN/CEN+ channels
+#### Scenario channels
 
-CEN/CEN+ are [TRIGGER channels](https://www.openhab.org/docs/configuration/rules-dsl.html#channel-based-triggers]): they handle events and do not have a state.
+Basic Scenarios and CEN/CEN+ channels are [TRIGGER channels](https://www.openhab.org/docs/configuration/rules-dsl.html#channel-based-triggers]): they handle events and do not have a state.
 
-A powerful feature is to be able to assign CEN or CEN+ commands to your physical wall switches and use the events they generate to trigger rules in openHAB: this way openHAB becomes a very powerful scenario manager activated by physical BTicino switches.
-See [openwebnet.rules](#openwebnet-rules) for an example on how to define rules that trigger on CEN/CEN+ buttons events.
+A powerful feature is to detect scenario activations and CEN/CEN+ buttons pressure events to trigger rules in openHAB: this way openHAB becomes a very powerful scenario manager activated by BTicino scenario panels or by CEN/CEN+ physical buttons.
+See [openwebnet.rules](#openwebnet-rules) for examples on how to define rules that trigger on scenarios and on CEN/CEN+ buttons events.
 
-It's also possible to send *virtual press* events on the BUS, for example to enable the activation of MH202 scenarios from openHAB.
-See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-rules) sections for an example on how to use the `virtualPress` action connected to a pushbutton on a sitemap.
+It's also possible to send *virtual scenario activation* and *virtual press* events on the BUS, for example to enable the activation of MH202 scenarios from openHAB.
+See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-rules) sections for examples on how to use the `activateScenario` and `virtualPress` actions connected to a pushbutton on a sitemap.
 
-- channels are named `button#X` where `X` is the button number on the Scenario Control device
-- in the .thing file configuration you can specify the `buttons` parameter to define a comma-separated list of buttons numbers [0-31] configured for the scenario device, example: `buttons=1,2,4`
-- possible events are:
-    - for CEN:
-        - `START_PRESS` - sent when you start pressing the button
-        - `SHORT_PRESS` - sent if you pressed the button shorter than 0,5sec (sent at the moment when you release it)
-        - `EXTENDED_PRESS` - sent if you keep the button pressed longer than 0,5sec; will be sent again every 0,5sec as long as you hold pressed (good for dimming rules)
-        - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0,5sec
-    - for CEN+:
-        - `SHORT_PRESS` - sent if you pressed the button shorter than 0,5sec (sent at the moment when you release it)
-        - `START_EXTENDED_PRESS` - sent once as soon as you keep the button pressed longer than 0,5sec
-        - `EXTENDED_PRESS` - sent after `START_EXTENDED_PRESS` if you keep the button pressed longer; will be sent again every 0,5sec as long as you hold pressed (good for dimming rules)
-        - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0,5sec
+- basic scenario channels are named `scenario` and possible events are: `SCENARIO_01` ... `SCENARIO_20` when a new scenario is activated
+- CEN/CEN+ channels are named `button#X` where `X` is the button number on the CEN/CEN+ Scenario Control device
+    - in the .thing file configuration you can specify the `buttons` parameter to define a comma-separated list of buttons numbers [0-31] configured for the scenario device, example: `buttons=1,2,4`
+    - possible events are:
+        - for CEN:
+            - `START_PRESS` - sent when you start pressing the button
+            - `SHORT_PRESS` - sent if you pressed the button shorter than 0,5sec (sent at the moment when you release it)
+            - `EXTENDED_PRESS` - sent if you keep the button pressed longer than 0,5sec; will be sent again every 0,5sec as long as you hold pressed (good for dimming rules)
+            - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0,5sec
+        - for CEN+:
+            - `SHORT_PRESS` - sent if you pressed the button shorter than 0,5sec (sent at the moment when you release it)
+            - `START_EXTENDED_PRESS` - sent once as soon as you keep the button pressed longer than 0,5sec
+            - `EXTENDED_PRESS` - sent after `START_EXTENDED_PRESS` if you keep the button pressed longer; will be sent again every 0,5sec as long as you hold pressed (good for dimming rules)
+            - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0,5sec
 
-####  `mode` for values WEEKLY and SCENARIO (Central Unit)
+####  `mode` for values WEEKLY and SCENARIO (thermo Central Unit)
 
-There are three WEEKLY and sixteen SCENARIO programs defined for the Central Unit.
+There are three WEEKLY and sixteen SCENARIO programs defined for the thermo Central Unit.
 
 In order to activate one of them you have to use two different channels:
 
 - with `mode` you can set the mode (`WEEKLY` or `SCENARIO`)
-- with `weeklyProgram` (if `WEEKLY` was setted) or with `scenarioProgram` (if `SCENARIO` was setted) you can set the program number
+- with `weeklyProgram` (if `WEEKLY` was set) or with `scenarioProgram` (if `SCENARIO` was set) you can set the program number
 
-Example: if you want to activate SCENARIO #9 you have to set `mode` = `SCENARIO` and `scenarioProgram` = `9`.
+Example: if you want to activate SCENARIO #9 on the thermo Central Unit you have to set `mode` = `SCENARIO` and `scenarioProgram` = `9`.
 
 ## Full Example
 
@@ -277,9 +279,12 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_thermo_zone               LR_zone              "Living Room Zone"         [ where="2"]
       bus_thermo_sensor             EXT_tempsensor       "External Temperature"     [ where="500"]
 
+      bus_scenario_panel            BR_scenario_panel    "Bedroom Scenario Panel"   [ where="95" ]
+            
       bus_cen_scenario_control      LR_CEN_scenario      "Living Room CEN"          [ where="51", buttons="4,3,8"]
       bus_cenplus_scenario_control  LR_CENplus_scenario  "Living Room CEN+"         [ where="212", buttons="1,5,18" ]
       bus_dry_contact_ir            LR_IR_sensor         "Living Room IR Sensor"    [ where="399" ]
+      
       bus_aux		                Alarm_activation	 "Alarm activation"         [ where="4"   ]
 }
 ```
@@ -401,6 +406,15 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
 ### openwebnet.rules
 
 ```xtend
+rule "Basic scenario who=0"
+// A "SCENARIO_02" event started from Scenario Panel where=95 will switch ON iLR_switch %
+when
+    Channel "openwebnet:bus_scenario_panel:mybridge:BR_scenario_panel:scenario" triggered SCENARIO_02
+then
+    sendCommand(iLR_switch, ON)  
+end
+
+
 rule "CEN+ virtual press from OH button"
 /* This rule triggers when the proxy item iCENPlusProxyItem is activated, for example from a button on WebUI/sitemap.
 When activated it sends a "virtual short press" event (where=212, button=5) on the BUS 
