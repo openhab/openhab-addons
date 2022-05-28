@@ -657,7 +657,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 }
                 updateStatus(thingStatus);
             } else {
-                logger.warn("isConnected property missing in event! (returned null)");
+                logger.debug("isConnected property missing in event! (returned null)");
             }
         }
     }
@@ -835,7 +835,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @param deviceId device id
      * @param dimLevel dim level
      */
-    public void commandSetDimmLevel(final String deviceId, final int dimLevel) {
+    public void commandSetDimLevel(final String deviceId, final int dimLevel) {
         executeCommand(deviceId, CapabilityDTO.TYPE_DIMMERACTUATOR,
                 (capabilityId, client) -> client.setDimmerActuatorState(capabilityId, dimLevel));
     }
@@ -865,9 +865,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
     private void executeCommand(final String deviceId, final String capabilityType,
             final CommandExecutor commandExecutor) {
-        @Nullable
         DeviceStructureManager deviceStructMan = this.deviceStructMan;
-        @Nullable
         LivisiClient client = this.client;
         if (deviceStructMan != null && client != null) {
             try {
@@ -944,9 +942,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         }
         if (isReinitialize) {
             scheduleRestartClient(true);
-            return true;
         }
-        return false;
+        return isReinitialize;
     }
 
     private void refreshAccessToken() {

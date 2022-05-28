@@ -31,7 +31,7 @@ The channels are described in detail in the next chapter.
 | PSS    | Pluggable Smart Switch, indoor                                           | switch                                                                                                                       |
 | PSSO   | Pluggable Smart Switch, outdoor                                          | switch                                                                                                                       |
 | BT-PSS | Bluetooth Pluggable Smart Switch, indoor                                 | switch                                                                                                                       |
-| RST    | Radiator Mounted Smart Thermostat                                        | targetTemperature, currentTemperature, frostWarnung, humidity, moldWarning, operationMode, windowReductionActive, batteryLow |
+| RST    | Radiator Mounted Smart Thermostat                                        | targetTemperature, currentTemperature, frostWarning, humidity, moldWarning, operationMode, windowReductionActive, batteryLow |
 | RST2   | Radiator Mounted Smart Thermostat (newer two battery version since 2018) | targetTemperature, currentTemperature, frostWarning, humidity, moldWarning, operationMode, windowReductionActive, batteryLow |
 |        | VariableActuator                                                         | switch                                                                                                                       |
 | WDS    | Window Door Sensor                                                       | contact, batteryLow                                                                                                          |
@@ -206,7 +206,7 @@ Here is an example rule:
 ```
 rule "Button triggered rule"
 when
-	Channel 'livisismarthome:WSC2:mybridge:myPushButton:button1' triggered PRESSED
+    Channel 'livisismarthome:WSC2:mybridge:myPushButton:button1' triggered PRESSED
 then
     // do something...
     logInfo("testlogger", "Button 1 pressed")

@@ -65,8 +65,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatusListener {
 
-    private static final int MIN_TEMPERATURE = 6;
-    private static final int MAX_TEMPERATURE = 30;
+    private static final int MIN_TEMPERATURE_CELSIUS = 6;
+    private static final int MAX_TEMPERATURE_CELSIUS = 30;
     private static final String LONG_PRESS = "LongPress";
     private static final String SHORT_PRESS = "ShortPress";
 
@@ -137,12 +137,12 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     private void commandSetDimLevel(Command command, LivisiBridgeHandler bridgeHandler) {
         if (command instanceof DecimalType) {
             final DecimalType dimLevel = (DecimalType) command;
-            bridgeHandler.commandSetDimmLevel(deviceId, dimLevel.intValue());
+            bridgeHandler.commandSetDimLevel(deviceId, dimLevel.intValue());
         } else if (command instanceof OnOffType) {
             if (OnOffType.ON.equals(command)) {
-                bridgeHandler.commandSetDimmLevel(deviceId, 100);
+                bridgeHandler.commandSetDimLevel(deviceId, 100);
             } else {
-                bridgeHandler.commandSetDimmLevel(deviceId, 0);
+                bridgeHandler.commandSetDimLevel(deviceId, 0);
             }
         }
     }
@@ -175,16 +175,16 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (command instanceof QuantityType) {
             final QuantityType<?> pointTemperatureCommand = (QuantityType<?>) command;
             double pointTemperature = pointTemperatureCommand.doubleValue();
-            if (pointTemperatureCommand.doubleValue() < MIN_TEMPERATURE) {
-                pointTemperature = MIN_TEMPERATURE;
+            if (pointTemperatureCommand.doubleValue() < MIN_TEMPERATURE_CELSIUS) {
+                pointTemperature = MIN_TEMPERATURE_CELSIUS;
                 logger.debug(
                         "pointTemperature set to value {} (instead of value '{}'), because it is the minimal possible value!",
-                        MIN_TEMPERATURE, pointTemperatureCommand.doubleValue());
-            } else if (pointTemperatureCommand.doubleValue() > MAX_TEMPERATURE) {
-                pointTemperature = MAX_TEMPERATURE;
+                        MIN_TEMPERATURE_CELSIUS, pointTemperatureCommand.doubleValue());
+            } else if (pointTemperatureCommand.doubleValue() > MAX_TEMPERATURE_CELSIUS) {
+                pointTemperature = MAX_TEMPERATURE_CELSIUS;
                 logger.debug(
                         "pointTemperature set to value {} (instead of value '{}'), because it is the maximal possible value!",
-                        MAX_TEMPERATURE, pointTemperatureCommand.doubleValue());
+                        MAX_TEMPERATURE_CELSIUS, pointTemperatureCommand.doubleValue());
             }
             bridgeHandler.commandUpdatePointTemperature(deviceId, pointTemperature);
         }

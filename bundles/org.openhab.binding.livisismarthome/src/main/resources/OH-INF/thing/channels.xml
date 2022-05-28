@@ -16,7 +16,7 @@
 	<channel-type id="DimmerActuator">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
-		<description>Dimms the connected light</description>
+		<description>Dims the connected light</description>
 		<category>Lightbulb</category>
 	</channel-type>
 
@@ -61,8 +61,8 @@
 		<category>Settings</category>
 		<state>
 			<options>
-				<option value="Auto">auto</option>
-				<option value="Manu">manual</option>
+				<option value="Auto">Auto</option>
+				<option value="Manu">Manual</option>
 			</options>
 		</state>
 	</channel-type>
@@ -81,7 +81,7 @@
 		<description>Actual measured room temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
+			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>

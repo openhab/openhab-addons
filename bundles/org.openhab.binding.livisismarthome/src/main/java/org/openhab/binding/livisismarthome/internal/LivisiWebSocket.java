@@ -80,9 +80,8 @@ public class LivisiWebSocket {
     }
 
     private Session connectWebSocket(@Nullable Session session) throws Exception {
-        if (session != null) {
-            session.close();
-        }
+        closeSession(session);
+        this.session = null;
 
         logger.debug("Connecting to LIVISI SmartHome webSocket...");
         return client.connect(this, webSocketURI).get();
@@ -160,7 +159,7 @@ public class LivisiWebSocket {
 
     WebSocketClient createWebSocketClient() {
         WebSocketClient client = new WebSocketClient(httpClient);
-        client.setMaxIdleTimeout(this.maxIdleTimeout);
+        client.setMaxIdleTimeout(maxIdleTimeout);
         return client;
     }
 
