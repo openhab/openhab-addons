@@ -77,7 +77,8 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
 
         NikoHomeControlCommunication nhcComm = getCommunication();
         if (nhcComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.bridge-unitialized");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.invalid-bridge-handler");
             return;
         }
 
@@ -227,8 +228,8 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
         if (nhcBridgeHandler != null) {
             nhcBridgeHandler.bridgeOnline();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "@text/offline.bridge-unitialized");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.invalid-bridge-handler");
         }
     }
 
