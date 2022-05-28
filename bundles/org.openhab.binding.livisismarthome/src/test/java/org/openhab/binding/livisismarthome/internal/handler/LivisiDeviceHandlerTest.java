@@ -43,7 +43,6 @@ import org.openhab.binding.livisismarthome.internal.client.api.entity.device.Dev
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceStateDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.event.EventDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.event.EventPropertiesDTO;
-import org.openhab.binding.livisismarthome.internal.util.Translator;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -1416,7 +1415,7 @@ public class LivisiDeviceHandlerTest {
         when(thingMock.getStatusInfo()).thenAnswer(invocation -> thingStatusInfo);
         when(thingMock.getStatus()).thenAnswer(invocation -> thingStatusInfo.getStatus());
 
-        LivisiDeviceHandler deviceHandler = new LivisiDeviceHandler(thingMock, mock(Translator.class));
+        LivisiDeviceHandler deviceHandler = new LivisiDeviceHandler(thingMock);
         ThingHandlerCallback callbackMock = createCallbackMock(bridgeMock);
         deviceHandler.setCallback(callbackMock);
 

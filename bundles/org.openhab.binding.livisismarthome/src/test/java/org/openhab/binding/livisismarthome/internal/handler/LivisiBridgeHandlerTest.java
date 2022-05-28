@@ -42,7 +42,6 @@ import org.openhab.binding.livisismarthome.internal.client.api.entity.event.Even
 import org.openhab.binding.livisismarthome.internal.client.api.entity.state.DoubleStateDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.state.StringStateDTO;
 import org.openhab.binding.livisismarthome.internal.manager.FullDeviceManager;
-import org.openhab.binding.livisismarthome.internal.util.Translator;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
@@ -335,7 +334,7 @@ public class LivisiBridgeHandlerTest {
 
         private LivisiBridgeHandlerAccessible(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient)
                 throws Exception {
-            super(bridge, oAuthFactory, httpClient, mock(Translator.class));
+            super(bridge, oAuthFactory, httpClient);
 
             DeviceDTO bridgeDevice = new DeviceDTO();
             bridgeDevice.setId("bridgeId");

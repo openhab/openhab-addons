@@ -19,11 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.livisismarthome.internal.handler.LivisiBridgeHandler;
 import org.openhab.binding.livisismarthome.internal.handler.LivisiDeviceHandler;
-import org.openhab.binding.livisismarthome.internal.util.Translator;
-import org.openhab.binding.livisismarthome.internal.util.TranslatorImpl;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -53,15 +49,10 @@ public class LivisiHandlerFactory extends BaseThingHandlerFactory implements Thi
 
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
-    private final TranslationProvider translationProvider;
-    private final LocaleProvider localeProvider;
 
     @Activate
-    public LivisiHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory httpClientFactory,
-            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
+    public LivisiHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory httpClientFactory) {
         this.oAuthFactory = oAuthFactory;
-        this.translationProvider = translationProvider;
-        this.localeProvider = localeProvider;
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
@@ -74,11 +65,10 @@ public class LivisiHandlerFactory extends BaseThingHandlerFactory implements Thi
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_BRIDGE.equals(thingTypeUID) || SUPPORTED_DEVICE_THING_TYPES.contains(thingTypeUID)) {
-            Translator translator = new TranslatorImpl(translationProvider, localeProvider, getBundleContext());
             if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-                return new LivisiBridgeHandler((Bridge) thing, oAuthFactory, httpClient, translator);
+                return new LivisiBridgeHandler((Bridge) thing, oAuthFactory, httpClient);
             } else if (SUPPORTED_DEVICE_THING_TYPES.contains(thingTypeUID)) {
-                return new LivisiDeviceHandler(thing, translator);
+                return new LivisiDeviceHandler(thing);
             }
         }
         logger.debug("Unsupported thing {}.", thingTypeUID);
