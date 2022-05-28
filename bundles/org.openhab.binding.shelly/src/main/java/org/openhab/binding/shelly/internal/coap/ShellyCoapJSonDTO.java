@@ -224,8 +224,13 @@ public class ShellyCoapJSonDTO {
 
                 in.endArray();
             }
-            in.endObject();
 
+            if (name.equalsIgnoreCase(COIOT_TAG_ACT)) {
+                // skip record
+                in.skipValue();
+            }
+
+            in.endObject();
             return descr;
         }
 
