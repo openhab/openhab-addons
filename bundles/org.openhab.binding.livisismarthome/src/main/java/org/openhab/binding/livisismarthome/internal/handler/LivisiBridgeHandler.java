@@ -167,7 +167,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 requestAccessToken(oAuthServiceNonNull);
 
                 scheduleRestartClient(false);
-            } catch (AuthenticationException | ApiException | IOException | OAuthException | OAuthResponseException e) {
+            } catch (IOException | OAuthException | OAuthResponseException e) {
                 logger.debug("Error fetching access tokens. Please check your credentials. Detail: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.connect");
             }
@@ -210,7 +210,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 deviceStructureManager.refreshDevices();
                 return true;
             }
-        } catch (AuthenticationException | ApiException | IOException e) {
+        } catch (IOException e) {
             if (handleClientException(e)) {
                 // If exception could not be handled properly it's no use to continue so we won't continue start
                 logger.debug("Error initializing LIVISI SmartHome client.", e);
@@ -468,7 +468,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 deviceState.setId(bridgeDevice.getId());
                 deviceState.setState(client.getDeviceStateByDeviceId(bridgeDevice.getId(), isSHCClassic()));
                 bridgeDevice.setDeviceState(deviceState);
-            } catch (IOException | ApiException | AuthenticationException e) {
+            } catch (IOException e) {
                 logger.debug("Exception occurred on reloading bridge", e);
             }
         }
@@ -489,7 +489,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         if (deviceStructMan != null) {
             try {
                 return deviceStructMan.refreshDevice(deviceId, isSHCClassic());
-            } catch (IOException | ApiException | AuthenticationException e) {
+            } catch (IOException e) {
                 handleClientException(e);
             }
         }
@@ -583,7 +583,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                         break;
                 }
             }
-        } catch (IOException | ApiException | AuthenticationException | RuntimeException e) {
+        } catch (IOException | RuntimeException e) {
             logger.debug("Error with Event: {}", e.getMessage(), e);
             handleClientException(e);
         }
@@ -867,7 +867,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 if (capabilityId.isPresent()) {
                     commandExecutor.executeCommand(capabilityId.get(), client);
                 }
-            } catch (IOException | ApiException | AuthenticationException e) {
+            } catch (IOException e) {
                 handleClientException(e);
             }
         }
@@ -943,7 +943,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private void refreshAccessToken() {
         try {
             requestAccessToken(oAuthService);
-        } catch (AuthenticationException | ApiException | IOException | OAuthException | OAuthResponseException e) {
+        } catch (IOException | OAuthException | OAuthResponseException e) {
             logger.debug("Could not refresh tokens", e);
         }
     }

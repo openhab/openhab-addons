@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.livisismarthome.internal.client.exception;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -20,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Oliver Kuhl - Initial contribution
  */
 @NonNullByDefault
-public class ApiException extends Exception {
+public class ApiException extends IOException {
 
     private static final long serialVersionUID = -3581569381976159265L;
 
