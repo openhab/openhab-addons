@@ -14,10 +14,11 @@ package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.EventType;
-import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.Event;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
@@ -30,16 +31,16 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class EventPersonChannelHelper extends EventChannelHelper {
+
     public EventPersonChannelHelper() {
-        super(GROUP_PERSON_EVENT);
+        super(GROUP_PERSON_LAST_EVENT);
     }
 
     @Override
     protected @Nullable State internalGetEvent(String channelId, Event event) {
         EventType eventType = event.getEventType();
-        if (eventType.appliesOn(ModuleType.PERSON) && CHANNEL_PERSON_AT_HOME.equals(channelId)) {
-            return OnOffType.from(EventType.PERSON.equals(eventType) || EventType.PERSON_HOME.equals(eventType));
-        }
-        return super.internalGetEvent(channelId, event);
+        return eventType.validFor(moduleType) && CHANNEL_PERSON_AT_HOME.equals(channelId)
+                ? OnOffType.from(Set.of(EventType.PERSON, EventType.PERSON_HOME).contains(eventType))
+                : super.internalGetEvent(channelId, event);
     }
 }

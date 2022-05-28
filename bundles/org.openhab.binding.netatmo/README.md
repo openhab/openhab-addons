@@ -5,7 +5,9 @@ The Netatmo binding integrates the following Netatmo products:
 - *Personal Weather Station*. Reports temperature, humidity, air pressure, carbon dioxide concentration in the air, as well as the ambient noise level.
 - *Thermostat*. Reports ambient temperature, allow to check target temperature, consult and change furnace heating status.
 - *Indoor Camera / Welcome*. Reports last event and persons at home, consult picture and video from event/camera.
+- *Siren*
 - *Outdoor Camera / Presence*. Reports last event, consult picture and video from event/camera.
+- *Doorbell* 
 
 See https://www.netatmo.com/ for details on their product.
 
@@ -30,7 +32,6 @@ The binding has the following configuration options:
 
 | Parameter    | Type          | Description                                                                                |
 |--------------|---------------|--------------------------------------------------------------------------------------------|
-| features     | String        | The perimeter of functionalities given to the binding WEATHER, AIR_CARE, ENERGY, SECURITY  |
 | readFriends  | Boolean       | Enables or disables the discovery of guest weather stations.                               |
 
 
@@ -131,6 +132,8 @@ You have to calculate the ID for the outside module as follows: (it cannot be re
 
 - if the first serial character is "h": start with "02"
 - if the first serial character is "i": start with "03"
+- if the first serial character is "j": start with "04"
+- if the first serial character is "k": start with "05"
 
 append ":00:00:",
 
@@ -351,16 +354,16 @@ All these channels are read only.
 
 **Supported channels for the Room thing:**
 
-| Channel Group    | Channel Id            | Item Type            | Description                                             |
-|------------------|-----------------------|----------------------|---------------------------------------------------------|
-| room-temperature | value                 | Number:Temperature   | Current temperature in the room                         |
-| room-properties  | window-open           | Contact              | Windows of the room are opened                          |
-| room-properties  | anticipating          | Switch               | Anticipates next scheduled setpoint                     |
-| room-properties  | heating-power-request | Number:Dimensionless | Percentage of heating power                             |
-| setpoint         | value                 | Number:Temperature   | Thermostat temperature setpoint                         |
-| setpoint         | mode                  | String               | Chosen thermostat mode (home, frost guard, manual, max) |
-| setpoint         | start                 | DateTime             | Start time of the currently applied setpoint            |
-| setpoint         | end                   | DateTime             | End time of the currently applied setpoint              |
+| Channel Group | Channel Id            | Item Type            | Description                                             |
+|---------------|-----------------------|----------------------|---------------------------------------------------------|
+| temperature   | value                 | Number:Temperature   | Current temperature in the room                         |
+| properties    | window-open           | Contact              | Windows of the room are opened                          |
+| properties    | anticipating          | Switch               | Anticipates next scheduled setpoint                     |
+| properties    | heating-power-request | Number:Dimensionless | Percentage of heating power                             |
+| setpoint      | value                 | Number:Temperature   | Thermostat temperature setpoint                         |
+| setpoint      | mode                  | String               | Chosen thermostat mode (home, frost guard, manual, max) |
+| setpoint      | start                 | DateTime             | Start time of the currently applied setpoint            |
+| setpoint      | end                   | DateTime             | End time of the currently applied setpoint              |
 
 All these channels except setpoint and setpoint-mode are read only.
 
@@ -369,14 +372,14 @@ All these channels except setpoint and setpoint-mode are read only.
 
 **Supported channels for the thermostat module:**
 
-| Channel Group       | Channel Id         | Item Type            | Description                                      |
-|---------------------|--------------------|----------------------|--------------------------------------------------|
-| th-properties       | relay-status       | Contact              | Indicates if the boiler is currently heating     |
-| signal              | strength           | Number               | Signal strength (0 for no signal, 1 for weak...) |
-| signal              | value              | Number:Power         | Signal strength in dBm                           |
-| battery             | value              | Number               | Battery level                                    |
-| battery             | low-battery        | Switch               | Low battery                                      |
-| battery             | status             | String               | Description of the battery status (*)            |
+| Channel Group | Channel Id  | Item Type    | Description                                      |
+|---------------|-------------|--------------|--------------------------------------------------|
+| properties    | relay       | Contact      | Indicates if the boiler is currently heating     |
+| signal        | strength    | Number       | Signal strength (0 for no signal, 1 for weak...) |
+| signal        | value       | Number:Power | Signal strength in dBm                           |
+| battery       | value       | Number       | Battery level                                    |
+| battery       | low-battery | Switch       | Low battery                                      |
+| battery       | status      | String       | Description of the battery status (*)            |
 
 (*) Can be UNDEF on some modules
 
@@ -439,7 +442,7 @@ All these channels are read only.
 |                  | TAG_UNINSTALLED        | Triggered when a tag gets uninstalled                                                                                                                                            |  
 |                  | TAG_OPEN               | Triggered when an open event of a tag was detected                                                                                                                               |
 
-### Welcome and Presence Camera
+### Welcome, Presence and Doorbell Cameras
 
 Warnings:
 
@@ -504,6 +507,45 @@ Warnings:
 
 (*) This channel is configurable : low, poor, high.
 
+**Supported channels for the Doorbell thing:**
+
+| Channel Group | Channel ID        | Item Type    | Read/Write | Description                                                                                                                                 |
+|---------------|-------------------|--------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| status        | sd-card           | String       | Read-only  | State of the SD card                                                                                                                        |
+| status        | alim              | String       | Read-only  | State of the power connector                                                                                                                |
+| live          | picture           | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
+| live          | local-picture-url | String       | Read-only  | Local Url of the live snapshot for this camera                                                                                              |
+| live          | vpn-picture-url   | String       | Read-only  | Url of the live snapshot for this camera through Netatmo VPN.                                                                               |
+| signal        | strength          | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
+| signal        | value             | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
+| last-event    | type              | String       | Read-only  | Type of event                                                                                                                               |
+| last-event    | video-status      | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                       |
+| last-event    | time              | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
+| last-event    | local-video-url   | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding local video URL will be available here |
+| last-event    | vpn-video-url     | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding VPN video URL will be available here   |
+| sub-event     | type              | String       | Read-only  | Type of sub-event                                                                                                                           |
+| sub-event     | time              | DateTime     | Read-only  | Time of occurrence of sub-event                                                                                                             |
+| sub-event     | message           | String       | Read-only  | Message sent by Netatmo corresponding to given sub-event                                                                                    |
+| sub-event     | snapshot-url      | String       | Read-only  | Depending upon event type in the home, a snapshot picture of the corresponding local video URL will be available here                       |
+| sub-event     | vignette-url      | String       | Read-only  | A vignette representing the snapshot                                                                                                        |
+| sub-event     | snapshot          | Image        | Read-only  | picture of the snapshot                                                                                                                     |
+| sub-event     | vignet            | Image        | Read-only  | picture of the vignette                                                                                                                     |
+
+
+Note: live feeds either locally or via VPN are not available in Netatmo API.
+
+**Supported channels for the Siren thing:**
+
+| Channel Group | Channel ID        | Item Type    | Read/Write | Description                                          |
+|---------------|-------------------|--------------|------------|------------------------------------------------------|
+| siren         | status            | String       | Read-only  | Status of the siren, if silent or emitting an alarm  |
+| siren         | monitoring        | Switch       | Read-only  | State of the siren device                            |
+| signal        | strength          | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)     |
+| signal        | value             | Number:Power | Read-only  | Signal strength in dBm                               |
+| timestamp     | last-seen         | DateTime     | Read-only  | Last time the module reported its presence           |
+| battery       | value             | Number       | Read-only  | Battery level                                        |
+| battery       | low-battery       | Switch       | Read-only  | Low battery                                          |
+
 
 ### Welcome Person
 
@@ -516,18 +558,18 @@ Person things are automatically created in discovery process for all known perso
 
 **Supported channels for the Person thing:**
 
-| Channel Group  | Channel ID     | Item Type    | Description                                            |
-|----------------|----------------|--------------|--------------------------------------------------------|
-| person         | avatar-url     | String       | URL for the avatar of this person                      |
-| person         | avatar         | Image        | Avatar of this person                                  |
-| person         | at-home        | Switch       | Indicates if this person is known to be at home or not |
-| person         | last-seen      | DateTime     | Moment when this person was last seen                  |
-| person-event   | subtype        | String       | Sub-type of event                                      |
-| person-event   | message        | String       | Last event message from this person                    |
-| person-event   | time           | DateTime     | Moment of the last event for this person               |
-| person-event   | snapshot       | Image        | Picture of the last event for this person              |
-| person-event   | snapshot-url   | String       | URL for the picture of the last event for this person  |
-| person-event   | camera-id      | String       | ID of the camera that triggered the event              |
+| Channel Group | Channel ID   | Item Type | Description                                            |
+|---------------|--------------|-----------|--------------------------------------------------------|
+| person        | avatar-url   | String    | URL for the avatar of this person                      |
+| person        | avatar       | Image     | Avatar of this person                                  |
+| person        | at-home      | Switch    | Indicates if this person is known to be at home or not |
+| person        | last-seen    | DateTime  | Moment when this person was last seen                  |
+| last-event    | subtype      | String    | Sub-type of event                                      |
+| last-event    | message      | String    | Last event message from this person                    |
+| last-event    | time         | DateTime  | Moment of the last event for this person               |
+| last-event    | snapshot     | Image     | Picture of the last event for this person              |
+| last-event    | snapshot-url | String    | URL for the picture of the last event for this person  |
+| last-event    | camera-id    | String    | ID of the camera that triggered the event              |
 
 All these channels except at-home are read only.
 

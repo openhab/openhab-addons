@@ -44,7 +44,7 @@ public class HomeApi extends RestManager {
     }
 
     public @Nullable HomeStatus getHomeStatus(String homeId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_HOMESTATUS, PARAM_HOMEID, homeId);
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_HOMESTATUS, PARAM_HOME_ID, homeId);
 
         NAHomeStatusResponse response = get(uriBuilder, NAHomeStatusResponse.class);
         NAHomeStatus body = response.getBody();
@@ -58,10 +58,10 @@ public class HomeApi extends RestManager {
 
     public Collection<HomeData> getHomesData(@Nullable String homeId, @Nullable ModuleType type)
             throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_HOMES_DATA, PARAM_HOMEID, homeId);
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_HOMES_DATA, PARAM_HOME_ID, homeId);
 
         if (type != null) {
-            uriBuilder.queryParam(PARAM_GATEWAYTYPE, type.name());
+            uriBuilder.queryParam(PARAM_GATEWAY_TYPE, type.name());
         }
 
         HomeData.HomesDataResponse response = get(uriBuilder, HomeData.HomesDataResponse.class);

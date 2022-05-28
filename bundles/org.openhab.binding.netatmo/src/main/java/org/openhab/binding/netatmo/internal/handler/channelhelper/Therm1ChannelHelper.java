@@ -31,7 +31,7 @@ import org.openhab.core.types.State;
 public class Therm1ChannelHelper extends ChannelHelper {
 
     public Therm1ChannelHelper() {
-        super(GROUP_TH_PROPERTIES);
+        super(GROUP_TYPE_TH_PROPERTIES);
     }
 
     @Override

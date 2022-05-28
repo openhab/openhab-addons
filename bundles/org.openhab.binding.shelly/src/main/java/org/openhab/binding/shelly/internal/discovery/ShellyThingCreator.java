@@ -106,6 +106,9 @@ public class ShellyThingCreator {
     }
 
     public static String getThingType(String hostname, String deviceType, String mode) {
+        if (THING_TYPE_SHELLYPROTECTED_STR.equals(hostname)) {
+            return THING_TYPE_SHELLYPROTECTED_STR;
+        }
         String name = hostname.toLowerCase();
         String type = substringBefore(name, "-").toLowerCase();
         String devid = substringAfterLast(name, "-");

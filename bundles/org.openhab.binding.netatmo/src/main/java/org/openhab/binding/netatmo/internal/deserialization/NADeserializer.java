@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
+import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -47,6 +48,7 @@ public class NADeserializer {
                 .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory())
                 .registerTypeAdapter(NAObjectMap.class, new NAObjectMapDeserializer())
                 .registerTypeAdapter(NAPushType.class, new NAPushTypeDeserializer())
+                .registerTypeAdapter(ModuleType.class, new ModuleTypeDeserializer())
                 .registerTypeAdapter(ZonedDateTime.class,
                         (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> {
                             long netatmoTS = json.getAsJsonPrimitive().getAsLong();

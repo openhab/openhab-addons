@@ -77,15 +77,26 @@ public class WatsonSTTService implements STTService {
     private final Set<Locale> supportedLocales = models.stream().map(name -> name.split("_")[0])
             .map(Locale::forLanguageTag).collect(Collectors.toSet());
     private WatsonSTTConfiguration config = new WatsonSTTConfiguration();
+    private @Nullable SpeechToText speechToText = null;
 
     @Activate
     protected void activate(Map<String, Object> config) {
-        this.config = new Configuration(config).as(WatsonSTTConfiguration.class);
+        modified(config);
     }
 
     @Modified
     protected void modified(Map<String, Object> config) {
         this.config = new Configuration(config).as(WatsonSTTConfiguration.class);
+        if (this.config.apiKey.isBlank() || this.config.instanceUrl.isBlank()) {
+            this.speechToText = null;
+        } else {
+            var speechToText = new SpeechToText(new IamAuthenticator.Builder().apikey(this.config.apiKey).build());
+            speechToText.setServiceUrl(this.config.instanceUrl);
+            if (this.config.optOutLogging) {
+                speechToText.setDefaultHeaders(Map.of("X-Watson-Learning-Opt-Out", "1"));
+            }
+            this.speechToText = speechToText;
+        }
     }
 
     @Override
@@ -112,7 +123,8 @@ public class WatsonSTTService implements STTService {
     @Override
     public STTServiceHandle recognize(STTListener sttListener, AudioStream audioStream, Locale locale, Set<String> set)
             throws STTException {
-        if (config.apiKey.isBlank() || config.instanceUrl.isBlank()) {
+        var stt = this.speechToText;
+        if (stt == null) {
             throw new STTException("service is not correctly configured");
         }
         String contentType = getContentType(audioStream);
@@ -120,11 +132,6 @@ public class WatsonSTTService implements STTService {
             throw new STTException("Unsupported format, unable to resolve audio content type");
         }
         logger.debug("Content-Type: {}", contentType);
-        var speechToText = new SpeechToText(new IamAuthenticator.Builder().apikey(config.apiKey).build());
-        speechToText.setServiceUrl(config.instanceUrl);
-        if (config.optOutLogging) {
-            speechToText.setDefaultHeaders(Map.of("X-Watson-Learning-Opt-Out", "1"));
-        }
         RecognizeWithWebsocketsOptions wsOptions = new RecognizeWithWebsocketsOptions.Builder().audio(audioStream)
                 .contentType(contentType).redaction(config.redaction).smartFormatting(config.smartFormatting)
                 .model(locale.toLanguageTag() + "_BroadbandModel").interimResults(true)
@@ -134,7 +141,7 @@ public class WatsonSTTService implements STTService {
         final AtomicReference<@Nullable WebSocket> socketRef = new AtomicReference<>();
         final AtomicBoolean aborted = new AtomicBoolean(false);
         executor.submit(() -> {
-            socketRef.set(speechToText.recognizeUsingWebSocket(wsOptions,
+            socketRef.set(stt.recognizeUsingWebSocket(wsOptions,
                     new TranscriptionListener(socketRef, sttListener, config, aborted)));
         });
         return new STTServiceHandle() {

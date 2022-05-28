@@ -52,14 +52,18 @@ class SecurityCapability extends RestCapability<SecurityApi> {
         NAObjectMap<HomeDataModule> modules = homeData.getModules();
         handler.getActiveChildren().forEach(childHandler -> {
             String childId = childHandler.getId();
-            persons.getOpt(childId).ifPresentOrElse(person -> {
-                person.setIgnoredForThingUpdate(true);
-                childHandler.setNewData(person);
+            persons.getOpt(childId).ifPresentOrElse(personData -> {
+                personData.setIgnoredForThingUpdate(true);
+                childHandler.setNewData(personData);
             }, () -> {
-                modules.getOpt(childId).ifPresent(module -> {
-                    module.setIgnoredForThingUpdate(true);
-                    childHandler.setNewData(module);
+                modules.getOpt(childId).ifPresent(childData -> {
+                    childData.setIgnoredForThingUpdate(true);
+                    childHandler.setNewData(childData);
                 });
+                modules.values().stream().filter(module -> childId.equals(module.getBridge()))
+                        .forEach(bridgedModule -> {
+                            childHandler.setNewData(bridgedModule);
+                        });
             });
         });
     }
@@ -70,8 +74,15 @@ class SecurityCapability extends RestCapability<SecurityApi> {
         NAObjectMap<HomeStatusModule> modules = homeStatus.getModules();
         handler.getActiveChildren().forEach(childHandler -> {
             String childId = childHandler.getId();
-            persons.getOpt(childId).ifPresentOrElse(person -> childHandler.setNewData(person), () -> {
-                modules.getOpt(childId).ifPresentOrElse(module -> childHandler.setNewData(module), () -> {
+            persons.getOpt(childId).ifPresentOrElse(personData -> childHandler.setNewData(personData), () -> {
+                modules.getOpt(childId).ifPresentOrElse(childData -> {
+                    childHandler.setNewData(childData);
+                    modules.values().stream().filter(module -> childId.equals(module.getBridge()))
+                            .forEach(bridgedModule -> {
+                                childHandler.setNewData(bridgedModule);
+                            });
+
+                }, () -> {
                     // This module is not present in the homestatus data, so it is considered as unreachable
                     HomeStatusModule module = new HomeStatusModule();
                     module.setReachable(false);
@@ -99,10 +110,10 @@ class SecurityCapability extends RestCapability<SecurityApi> {
                 });
     }
 
-    public Collection<HomeEvent> getCameraEvents(String cameraId) {
+    public Collection<HomeEvent> getCameraEvents(String cameraId, String deviceType) {
         return getApi().map(api -> {
             try {
-                return api.getCameraEvents(handler.getId(), cameraId);
+                return api.getCameraEvents(handler.getId(), cameraId, deviceType);
             } catch (NetatmoException e) {
                 logger.warn("Error retrieving last events of camera '{}' : {}", cameraId, e.getMessage());
                 return null;

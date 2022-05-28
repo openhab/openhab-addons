@@ -14,6 +14,7 @@ package org.openhab.binding.wled.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.wled.internal.handlers.WLedBridgeHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
@@ -32,11 +33,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WLedActions implements ThingActions {
     public final Logger logger = LoggerFactory.getLogger(getClass());
-    private @Nullable WLedHandler handler;
+    private @Nullable WLedBridgeHandler handler;
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (WLedHandler) handler;
+        this.handler = (WLedBridgeHandler) handler;
     }
 
     @Override
@@ -62,7 +63,7 @@ public class WLedActions implements ThingActions {
     public void savePreset(
             @ActionInput(name = "presetNumber", label = "Preset Slot", description = "Number for the preset slot you wish to use") int presetNumber,
             @ActionInput(name = "presetName", label = "Preset Name", description = "Name for the preset that you wish to use") String presetName) {
-        WLedHandler localHandler = handler;
+        WLedBridgeHandler localHandler = handler;
         if (localHandler != null) {
             localHandler.savePreset(presetNumber, presetName);
         }

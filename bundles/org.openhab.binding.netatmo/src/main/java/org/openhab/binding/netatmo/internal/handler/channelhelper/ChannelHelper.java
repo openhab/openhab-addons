@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.Dashboard;
 import org.openhab.binding.netatmo.internal.api.dto.Event;
+import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.providers.NetatmoThingTypeProvider;
@@ -57,6 +58,12 @@ public abstract class ChannelHelper {
         State result = null;
         if (channelGroups.isEmpty() || (groupId != null && channelGroups.contains(groupId))) {
             NAObject localData = data;
+            if (localData instanceof HomeEvent) {
+                result = internalGetHomeEvent(channelId, groupId, (HomeEvent) localData);
+                if (result != null) {
+                    return result;
+                }
+            }
             if (localData instanceof Event) {
                 result = internalGetEvent(channelId, (Event) localData);
                 if (result != null) {
@@ -105,6 +112,10 @@ public abstract class ChannelHelper {
     }
 
     protected @Nullable State internalGetEvent(String channelId, Event event) {
+        return null;
+    }
+
+    protected @Nullable State internalGetHomeEvent(String channelId, @Nullable String groupId, HomeEvent event) {
         return null;
     }
 

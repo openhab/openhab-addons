@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -35,6 +37,7 @@ public class NetatmoBindingConstants {
 
     // Channel group ids
     public static final String GROUP_LAST_EVENT = "last-event";
+    public static final String GROUP_SUB_EVENT = "sub-event";
     public static final String GROUP_TEMPERATURE = "temperature";
     public static final String GROUP_HUMIDITY = "humidity";
     public static final String GROUP_AIR_QUALITY = "airquality";
@@ -50,23 +53,35 @@ public class NetatmoBindingConstants {
     public static final String GROUP_CAM_STATUS = "status";
     public static final String GROUP_CAM_LIVE = "live";
     public static final String GROUP_PRESENCE = "presence";
+    public static final String GROUP_SIREN = "siren";
     public static final String GROUP_PERSON = "person";
-    public static final String GROUP_PERSON_EVENT = "person-event";
-    public static final String GROUP_ROOM_TEMPERATURE = "room-temperature";
-    public static final String GROUP_ROOM_PROPERTIES = "room-properties";
-    public static final String GROUP_TH_PROPERTIES = "th-properties";
-    public static final String GROUP_TH_SETPOINT = "setpoint";
+    public static final String GROUP_PROPERTIES = "properties";
+    public static final String GROUP_SETPOINT = "setpoint";
     public static final String GROUP_LOCATION = "location";
 
     // Alternative extended groups
     public static final String OPTION_EXTENDED = "-extended";
     public static final String OPTION_OUTSIDE = "-outside";
+    public static final String OPTION_DOORBELL = "-doorbell";
+    public static final String OPTION_PERSON = "-person";
+    public static final String OPTION_ROOM = "-room";
+    public static final String OPTION_THERMOSTAT = "-thermostat";
+    public static final Set<String> GROUP_VARIATIONS = Set.of(OPTION_EXTENDED, OPTION_OUTSIDE, OPTION_DOORBELL,
+            OPTION_PERSON, OPTION_ROOM, OPTION_THERMOSTAT);
     public static final String GROUP_TYPE_TIMESTAMP_EXTENDED = GROUP_TIMESTAMP + OPTION_EXTENDED;
     public static final String GROUP_TYPE_BATTERY_EXTENDED = GROUP_BATTERY + OPTION_EXTENDED;
     public static final String GROUP_TYPE_PRESSURE_EXTENDED = GROUP_PRESSURE + OPTION_EXTENDED;
     public static final String GROUP_TYPE_TEMPERATURE_EXTENDED = GROUP_TEMPERATURE + OPTION_EXTENDED;
     public static final String GROUP_TYPE_AIR_QUALITY_EXTENDED = GROUP_AIR_QUALITY + OPTION_EXTENDED;
     public static final String GROUP_TYPE_TEMPERATURE_OUTSIDE = GROUP_TEMPERATURE + OPTION_OUTSIDE;
+    public static final String GROUP_DOORBELL_STATUS = GROUP_CAM_STATUS + OPTION_DOORBELL;
+    public static final String GROUP_DOORBELL_LIVE = GROUP_CAM_LIVE + OPTION_DOORBELL;
+    public static final String GROUP_DOORBELL_LAST_EVENT = GROUP_LAST_EVENT + OPTION_DOORBELL;
+    public static final String GROUP_DOORBELL_SUB_EVENT = GROUP_SUB_EVENT + OPTION_DOORBELL;
+    public static final String GROUP_PERSON_LAST_EVENT = GROUP_LAST_EVENT + OPTION_PERSON;
+    public static final String GROUP_TYPE_ROOM_TEMPERATURE = GROUP_TEMPERATURE + OPTION_ROOM;
+    public static final String GROUP_TYPE_ROOM_PROPERTIES = GROUP_PROPERTIES + OPTION_ROOM;
+    public static final String GROUP_TYPE_TH_PROPERTIES = GROUP_PROPERTIES + OPTION_THERMOSTAT;
 
     // Channel ids
     public static final String CHANNEL_VALUE = "value";
@@ -91,6 +106,7 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_SUM_RAIN1 = "sum-1";
     public static final String CHANNEL_SUM_RAIN24 = "sum-24";
     public static final String CHANNEL_WIND_ANGLE = "angle";
+    public static final String CHANNEL_STATUS = GROUP_CAM_STATUS;
     public static final String CHANNEL_WIND_STRENGTH = "strength";
     public static final String CHANNEL_MAX_WIND_STRENGTH = "max-strength";
     public static final String CHANNEL_DATE_MAX_WIND_STRENGTH = "max-strength-date";
@@ -99,7 +115,7 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_SETPOINT_MODE = "mode";
     public static final String CHANNEL_SETPOINT_START_TIME = "start";
     public static final String CHANNEL_SETPOINT_END_TIME = "end";
-    public static final String CHANNEL_THERM_RELAY = "relay-status";
+    public static final String CHANNEL_THERM_RELAY = "relay";
     public static final String CHANNEL_ANTICIPATING = "anticipating";
     public static final String CHANNEL_ROOM_WINDOW_OPEN = "window-open";
     public static final String CHANNEL_ROOM_HEATING_POWER = "heating-power-request";
@@ -122,6 +138,8 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_EVENT_TIME = "time";
     public static final String CHANNEL_EVENT_SNAPSHOT = "snapshot";
     public static final String CHANNEL_EVENT_SNAPSHOT_URL = "snapshot-url";
+    public static final String CHANNEL_EVENT_VIGNETTE = "vignette";
+    public static final String CHANNEL_EVENT_VIGNETTE_URL = "vignette-url";
     public static final String CHANNEL_EVENT_VIDEO_VPN_URL = "vpn-video-url";
     public static final String CHANNEL_EVENT_VIDEO_LOCAL_URL = "local-video-url";
     public static final String CHANNEL_EVENT_PERSON_ID = "person-id";

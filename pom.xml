@@ -76,7 +76,7 @@
     <karaf.version>4.3.7</karaf.version>
     <netty.version>4.1.72.Final</netty.version>
     <okhttp.version>3.14.9</okhttp.version>
-    <sat.version>0.12.0</sat.version>
+    <sat.version>0.13.0</sat.version>
     <spotless.version>2.0.3</spotless.version>
 
     <bnd.importpackage/>
@@ -496,7 +496,7 @@ Import-Package: \\
                   <pluginExecutionFilter>
                     <groupId>org.commonjava.maven.plugins</groupId>
                     <artifactId>directory-maven-plugin</artifactId>
-                    <versionRange>[0.3.1,)</versionRange>
+                    <versionRange>[1.0,)</versionRange>
                     <goals>
                       <goal>directory-of</goal>
                     </goals>
@@ -649,7 +649,7 @@ Import-Package: \\
       <plugin>
         <groupId>org.commonjava.maven.plugins</groupId>
         <artifactId>directory-maven-plugin</artifactId>
-        <version>0.3.1</version>
+        <version>1.0</version>
         <executions>
           <execution>
             <id>directories</id>
