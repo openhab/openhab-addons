@@ -22,6 +22,7 @@ import org.openhab.binding.openwebnet.internal.handler.OpenWebNetBridgeHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetEnergyHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetGenericHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetLightingHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetScenarioBasicHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetScenarioHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetThermoregulationHandler;
 import org.openhab.core.thing.Bridge;
@@ -79,6 +80,9 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
         } else if (OpenWebNetAuxiliaryHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("Creating NEW AUXILIARY Handler");
             return new OpenWebNetAuxiliaryHandler(thing);
+        } else if (OpenWebNetScenarioBasicHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            logger.debug("Creating NEW SCENARIO BASIC Handler");
+            return new OpenWebNetScenarioBasicHandler(thing);
         }
         logger.warn("ThingType {} is not supported by this binding", thing.getThingTypeUID());
         return null;
