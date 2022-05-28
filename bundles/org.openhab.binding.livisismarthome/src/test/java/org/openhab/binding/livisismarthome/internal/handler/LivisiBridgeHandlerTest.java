@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.livisismarthome.internal.LivisiBindingConstants.*;
 import static org.openhab.binding.livisismarthome.internal.client.api.entity.link.LinkDTO.LINK_TYPE_DEVICE;
 
-import java.net.ConnectException;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -41,6 +41,7 @@ import org.openhab.binding.livisismarthome.internal.client.api.entity.event.Even
 import org.openhab.binding.livisismarthome.internal.client.api.entity.event.EventPropertiesDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.state.DoubleStateDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.state.StringStateDTO;
+import org.openhab.binding.livisismarthome.internal.client.exception.WebSocketConnectException;
 import org.openhab.binding.livisismarthome.internal.manager.FullDeviceManager;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -103,7 +104,7 @@ public class LivisiBridgeHandlerTest {
 
         when(bridgeMock.getConfiguration()).thenReturn(bridgeConfig);
 
-        doThrow(new RuntimeException("Test-Exception")).when(webSocketMock).start();
+        doThrow(new WebSocketConnectException("Test-Exception", new IOException())).when(webSocketMock).start();
 
         bridgeHandler.initialize();
 
@@ -144,7 +145,7 @@ public class LivisiBridgeHandlerTest {
         verify(webSocketMock).start();
         assertEquals(2, bridgeHandler.getDirectExecutionCount());
 
-        doThrow(new ConnectException("Connection refused")).when(webSocketMock).start();
+        doThrow(new WebSocketConnectException("Connection refused", new IOException())).when(webSocketMock).start();
 
         bridgeHandler.connectionClosed();
 
@@ -377,7 +378,7 @@ public class LivisiBridgeHandlerTest {
 
         @Override
         @Nullable
-        LivisiWebSocket createAndStartWebSocket(DeviceDTO bridgeDevice) throws Exception {
+        LivisiWebSocket createAndStartWebSocket(DeviceDTO bridgeDevice) throws WebSocketConnectException {
             webSocketMock.start();
             return webSocketMock;
         }

@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.livisismarthome.internal;
 
+import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,6 +27,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.openhab.binding.livisismarthome.internal.client.exception.WebSocketConnectException;
 import org.openhab.binding.livisismarthome.internal.listener.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +73,7 @@ public class LivisiWebSocket {
     /**
      * Starts the {@link LivisiWebSocket}.
      */
-    public synchronized void start() throws Exception {
+    public synchronized void start() throws WebSocketConnectException {
         if (client.isStopped()) {
             client = createWebSocketClient();
             startWebSocketClient(client);
@@ -79,12 +82,16 @@ public class LivisiWebSocket {
         session = connectWebSocket(session);
     }
 
-    private Session connectWebSocket(@Nullable Session session) throws Exception {
+    private Session connectWebSocket(@Nullable Session session) throws WebSocketConnectException {
         closeSession(session);
         this.session = null;
 
-        logger.debug("Connecting to LIVISI SmartHome webSocket...");
-        return client.connect(this, webSocketURI).get();
+        logger.debug("Connecting to LIVISI SmartHome WebSocket...");
+        try {
+            return client.connect(this, webSocketURI).get();
+        } catch (IOException | InterruptedException | ExecutionException e) {
+            throw new WebSocketConnectException("The WebSocket couldn't get connected!", e);
+        }
     }
 
     /**
@@ -163,8 +170,12 @@ public class LivisiWebSocket {
         return client;
     }
 
-    void startWebSocketClient(WebSocketClient client) throws Exception {
-        client.start();
+    void startWebSocketClient(WebSocketClient client) throws WebSocketConnectException {
+        try {
+            client.start();
+        } catch (Exception e) {
+            throw new WebSocketConnectException("Starting WebSocket failed!", e);
+        }
     }
 
     void stopWebSocketClient(WebSocketClient client) {
@@ -172,7 +183,7 @@ public class LivisiWebSocket {
             client.stop();
             client.destroy();
         } catch (Exception e) {
-            logger.debug("Stopping websocket failed", e);
+            logger.debug("Stopping WebSocket failed", e);
         }
     }
 }

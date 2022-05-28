@@ -229,7 +229,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             logger.debug("Starting LIVISI SmartHome websocket.");
             webSocket = createAndStartWebSocket(bridgeDevice);
             updateStatus(ThingStatus.ONLINE);
-        } catch (final Exception e) { // Catch Exception because websocket start throws Exception
+        } catch (final IOException e) {
             logger.warn("Error starting websocket.", e);
             handleClientException(e);
         }
@@ -245,7 +245,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     @Nullable
-    LivisiWebSocket createAndStartWebSocket(DeviceDTO bridgeDevice) throws Exception {
+    LivisiWebSocket createAndStartWebSocket(DeviceDTO bridgeDevice) throws IOException {
         final Optional<String> accessToken = getAccessToken(client);
         if (accessToken.isEmpty()) {
             return null;
