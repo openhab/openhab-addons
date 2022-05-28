@@ -15,8 +15,8 @@
 		<channels>
 			<channel id="button1" typeId="system.button"/>
 			<channel id="button2" typeId="system.button"/>
-			<channel id="button1Count" typeId="PushButtonCounter"/>
-			<channel id="button2Count" typeId="PushButtonCounter"/>
+			<channel id="button1Count" typeId="pushButtonCounter"/>
+			<channel id="button2Count" typeId="pushButtonCounter"/>
 			<channel id="batteryLow" typeId="system.low-battery"/>
 		</channels>
 

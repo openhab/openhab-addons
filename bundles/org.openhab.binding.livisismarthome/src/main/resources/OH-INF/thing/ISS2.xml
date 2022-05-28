@@ -13,11 +13,11 @@
 		<description>An in wall switch with push buttons that can be switched on and off.</description>
 
 		<channels>
-			<channel id="switch" typeId="SwitchActuator"/>
+			<channel id="switch" typeId="switchActuator"/>
 			<channel id="button1" typeId="system.button"/>
 			<channel id="button2" typeId="system.button"/>
-			<channel id="button1Count" typeId="PushButtonCounter"/>
-			<channel id="button2Count" typeId="PushButtonCounter"/>
+			<channel id="button1Count" typeId="pushButtonCounter"/>
+			<channel id="button2Count" typeId="pushButtonCounter"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:livisismarthome:config"/>

@@ -13,12 +13,12 @@
 		<description>The Smart Meter from the LIVISI PowerControl product.</description>
 
 		<channels>
-			<channel id="powerConsumptionWatt" typeId="PowerConsumptionWatt"/>
-			<channel id="absoluteEnergyConsumption" typeId="AbsoluteEnergyConsumption"/>
-			<channel id="energyConsumptionDayKwh" typeId="EnergyConsumptionDayKWh"/>
-			<channel id="energyConsumptionDayEuro" typeId="EnergyConsumptionDayEuro"/>
-			<channel id="energyConsumptionMonthKwh" typeId="EnergyConsumptionMonthKWh"/>
-			<channel id="energyConsumptionMonthEuro" typeId="EnergyConsumptionMonthEuro"/>
+			<channel id="powerConsumptionWatt" typeId="powerConsumptionWatt"/>
+			<channel id="absoluteEnergyConsumption" typeId="absoluteEnergyConsumption"/>
+			<channel id="energyConsumptionDayKwh" typeId="energyConsumptionDayKwh"/>
+			<channel id="energyConsumptionDayEuro" typeId="energyConsumptionDayEuro"/>
+			<channel id="energyConsumptionMonthKwh" typeId="energyConsumptionMonthKwh"/>
+			<channel id="energyConsumptionMonthEuro" typeId="energyConsumptionMonthEuro"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:livisismarthome:config"/>

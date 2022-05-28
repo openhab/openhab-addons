@@ -13,8 +13,8 @@
 		<description>A battery powered motion detector for outdoors, that also measures luminance.</description>
 
 		<channels>
-			<channel id="motionCount" typeId="MotionDetectionSensor"/>
-			<channel id="luminance" typeId="LuminanceSensor"/>
+			<channel id="motionCount" typeId="motionDetectionSensor"/>
+			<channel id="luminance" typeId="luminanceSensor"/>
 			<channel id="batteryLow" typeId="system.low-battery"/>
 		</channels>
 

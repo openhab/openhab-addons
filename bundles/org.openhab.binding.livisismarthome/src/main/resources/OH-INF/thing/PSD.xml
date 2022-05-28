@@ -13,7 +13,7 @@
 		<description>A pluggable dimmer.</description>
 
 		<channels>
-			<channel id="dimmer" typeId="DimmerActuator"/>
+			<channel id="dimmer" typeId="dimmerActuator"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:livisismarthome:config"/>

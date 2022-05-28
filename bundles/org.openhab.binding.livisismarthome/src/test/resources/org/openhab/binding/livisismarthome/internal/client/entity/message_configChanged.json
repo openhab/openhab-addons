@@ -29,7 +29,7 @@
 		"capabilities": [
 			{
 				"id": "692d923c583346e2a358db8e32b3c505",
-				"type": "BooleanStateActuator",
+				"type": "booleanStateActuator",
 				"device": "/device/0ba965875d37416a935b6552cd6929d9",
 				"config": {
 					"name": "Boolean State Actuator",

@@ -13,17 +13,17 @@
 		<description>The Two-Way-Meter from the LIVISI PowerControlSolar product.</description>
 
 		<channels>
-			<channel id="powerWatt" typeId="PowerConsumptionWatt"/>
-			<channel id="totalEnergy" typeId="TotalEnergyConsumption"/>
-			<channel id="energyDayKwh" typeId="EnergyConsumptionDayKWh"/>
-			<channel id="energyDayEuro" typeId="EnergyConsumptionDayEuro"/>
-			<channel id="energyMonthKwh" typeId="EnergyConsumptionMonthKWh"/>
-			<channel id="energyMonthEuro" typeId="EnergyConsumptionMonthEuro"/>
-			<channel id="totalEnergyFed" typeId="TotalEnergyFed"/>
-			<channel id="energyFeedDayKwh" typeId="EnergyFeedDayKWh"/>
-			<channel id="energyFeedDayEuro" typeId="EnergyFeedDayEuro"/>
-			<channel id="energyFeedMonthKwh" typeId="EnergyFeedMonthKWh"/>
-			<channel id="energyFeedMonthEuro" typeId="EnergyFeedMonthEuro"/>
+			<channel id="powerWatt" typeId="powerConsumptionWatt"/>
+			<channel id="totalEnergy" typeId="totalEnergyConsumption"/>
+			<channel id="energyDayKwh" typeId="energyConsumptionDayKwh"/>
+			<channel id="energyDayEuro" typeId="energyConsumptionDayEuro"/>
+			<channel id="energyMonthKwh" typeId="energyConsumptionMonthKwh"/>
+			<channel id="energyMonthEuro" typeId="energyConsumptionMonthEuro"/>
+			<channel id="totalEnergyFed" typeId="totalEnergyFed"/>
+			<channel id="energyFeedDayKwh" typeId="energyFeedDayKwh"/>
+			<channel id="energyFeedDayEuro" typeId="energyFeedDayEuro"/>
+			<channel id="energyFeedMonthKwh" typeId="energyFeedMonthKwh"/>
+			<channel id="energyFeedMonthEuro" typeId="energyFeedMonthEuro"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:livisismarthome:config"/>

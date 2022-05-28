@@ -13,7 +13,7 @@
 		<description>A pluggable outdoor switch that can be switched on and off.</description>
 
 		<channels>
-			<channel id="switch" typeId="SwitchActuator"/>
+			<channel id="switch" typeId="switchActuator"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:livisismarthome:config"/>

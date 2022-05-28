@@ -13,7 +13,7 @@
 		<description>A variable from the LIVISI SmartHome system that can be switched on and off.</description>
 
 		<channels>
-			<channel id="switch" typeId="BooleanStateActuator"/>
+			<channel id="switch" typeId="booleanStateActuator"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:livisismarthome:config"/>
