@@ -688,7 +688,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @param event event
      */
     private void handleMessageDeletedEvent(final EventDTO event, @Nullable final DeviceStructureManager deviceStructMan)
-            throws ApiException, IOException, AuthenticationException {
+            throws IOException {
 
         if (deviceStructMan != null) {
             final String messageId = event.getData().getId();

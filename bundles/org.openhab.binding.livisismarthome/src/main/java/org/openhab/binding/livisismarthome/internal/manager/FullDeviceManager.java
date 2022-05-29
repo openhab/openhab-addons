@@ -33,8 +33,6 @@ import org.openhab.binding.livisismarthome.internal.client.api.entity.device.Dev
 import org.openhab.binding.livisismarthome.internal.client.api.entity.link.LinkDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.location.LocationDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.message.MessageDTO;
-import org.openhab.binding.livisismarthome.internal.client.exception.ApiException;
-import org.openhab.binding.livisismarthome.internal.client.exception.AuthenticationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +56,7 @@ public class FullDeviceManager {
      * Returns a {@link List} of all {@link DeviceDTO}s with the full configuration details, {@link CapabilityDTO}s and
      * states. Calling this may take a while...
      */
-    public List<DeviceDTO> getFullDevices() throws IOException, ApiException, AuthenticationException {
+    public List<DeviceDTO> getFullDevices() throws IOException {
 
         final Map<String, LocationDTO> locationMap = createLocationMap(client);
         final Map<String, CapabilityDTO> capabilityMap = createCapabilityMap(client);
@@ -78,8 +76,7 @@ public class FullDeviceManager {
      * Returns the {@link DeviceDTO} with the given deviceId with full configuration details, {@link CapabilityDTO}s and
      * states. Calling this may take a little bit longer...
      */
-    public Optional<DeviceDTO> getFullDeviceById(final String deviceId, final boolean isSHCClassic)
-            throws IOException, ApiException, AuthenticationException {
+    public Optional<DeviceDTO> getFullDeviceById(final String deviceId, final boolean isSHCClassic) throws IOException {
         final Map<String, LocationDTO> locationMap = createLocationMap(client);
         final Map<String, CapabilityDTO> capabilityMap = createCapabilityMap(deviceId, client);
         final List<MessageDTO> messageMap = createMessageMap(deviceId, client);
@@ -120,8 +117,7 @@ public class FullDeviceManager {
         return Objects.requireNonNullElse(messageMap.get(device.getId()), Collections.emptyList());
     }
 
-    private static Map<String, LocationDTO> createLocationMap(LivisiClient client)
-            throws IOException, ApiException, AuthenticationException {
+    private static Map<String, LocationDTO> createLocationMap(LivisiClient client) throws IOException {
         final List<LocationDTO> locationList = client.getLocations();
         final Map<String, LocationDTO> locationMap = new HashMap<>(locationList.size());
         for (final LocationDTO location : locationList) {
@@ -130,8 +126,7 @@ public class FullDeviceManager {
         return locationMap;
     }
 
-    private static Map<String, CapabilityStateDTO> createCapabilityStateMap(LivisiClient client)
-            throws IOException, ApiException, AuthenticationException {
+    private static Map<String, CapabilityStateDTO> createCapabilityStateMap(LivisiClient client) throws IOException {
         final List<CapabilityStateDTO> capabilityStateList = client.getCapabilityStates();
         final Map<String, CapabilityStateDTO> capabilityStateMap = new HashMap<>(capabilityStateList.size());
         for (final CapabilityStateDTO capabilityState : capabilityStateList) {
@@ -140,8 +135,7 @@ public class FullDeviceManager {
         return capabilityStateMap;
     }
 
-    private static Map<String, CapabilityDTO> createCapabilityMap(LivisiClient client)
-            throws IOException, ApiException, AuthenticationException {
+    private static Map<String, CapabilityDTO> createCapabilityMap(LivisiClient client) throws IOException {
 
         final Map<String, CapabilityStateDTO> capabilityStateMap = createCapabilityStateMap(client);
         final List<CapabilityDTO> capabilityList = client.getCapabilities();
@@ -150,7 +144,7 @@ public class FullDeviceManager {
     }
 
     private static Map<String, CapabilityDTO> createCapabilityMap(String deviceId, LivisiClient client)
-            throws IOException, ApiException, AuthenticationException {
+            throws IOException {
 
         final Map<String, CapabilityStateDTO> capabilityStateMap = createCapabilityStateMap(client);
         final List<CapabilityDTO> capabilityList = client.getCapabilitiesForDevice(deviceId);
@@ -186,8 +180,7 @@ public class FullDeviceManager {
         return deviceCapabilityMap;
     }
 
-    private static Map<String, DeviceStateDTO> createDeviceStateMap(LivisiClient client)
-            throws IOException, ApiException, AuthenticationException {
+    private static Map<String, DeviceStateDTO> createDeviceStateMap(LivisiClient client) throws IOException {
         final List<DeviceStateDTO> deviceStateList = client.getDeviceStates();
         final Map<String, DeviceStateDTO> deviceStateMap = new HashMap<>(deviceStateList.size());
         for (final DeviceStateDTO deviceState : deviceStateList) {
@@ -196,8 +189,7 @@ public class FullDeviceManager {
         return deviceStateMap;
     }
 
-    private List<MessageDTO> createMessageMap(String deviceId, LivisiClient client)
-            throws IOException, ApiException, AuthenticationException {
+    private List<MessageDTO> createMessageMap(String deviceId, LivisiClient client) throws IOException {
         final List<MessageDTO> messages = client.getMessages();
         final List<MessageDTO> messageList = new ArrayList<>();
         final String deviceIdPath = "/device/" + deviceId;
@@ -215,8 +207,7 @@ public class FullDeviceManager {
         return messageList;
     }
 
-    private static Map<String, List<MessageDTO>> createMessageMap(LivisiClient client)
-            throws IOException, ApiException, AuthenticationException {
+    private static Map<String, List<MessageDTO>> createMessageMap(LivisiClient client) throws IOException {
         final List<MessageDTO> messageList = client.getMessages();
         final Map<String, List<MessageDTO>> deviceMessageMap = new HashMap<>();
         for (final MessageDTO message : messageList) {

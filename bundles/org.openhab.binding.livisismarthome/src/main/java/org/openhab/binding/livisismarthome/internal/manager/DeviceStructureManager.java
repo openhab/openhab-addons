@@ -27,8 +27,6 @@ import org.openhab.binding.livisismarthome.internal.client.api.entity.capability
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.link.LinkDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.message.MessageDTO;
-import org.openhab.binding.livisismarthome.internal.client.exception.ApiException;
-import org.openhab.binding.livisismarthome.internal.client.exception.AuthenticationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +72,7 @@ public class DeviceStructureManager {
      * Loads all device data from the bridge and stores the {@link DeviceDTO}s and their states in the
      * {@link DeviceStructureManager}.
      */
-    public void refreshDevices() throws IOException, ApiException, AuthenticationException {
+    public void refreshDevices() throws IOException {
         deviceMap.clear();
         capabilityIdToDeviceMap.clear();
         List<DeviceDTO> devices = deviceManager.getFullDevices();
@@ -88,8 +86,7 @@ public class DeviceStructureManager {
      *
      * @param deviceId device id
      */
-    public Optional<DeviceDTO> refreshDevice(final String deviceId, final boolean isSHCClassic)
-            throws IOException, ApiException, AuthenticationException {
+    public Optional<DeviceDTO> refreshDevice(final String deviceId, final boolean isSHCClassic) throws IOException {
         logger.trace("Refreshing Device with id '{}'", deviceId);
         Optional<DeviceDTO> device = deviceManager.getFullDeviceById(deviceId, isSHCClassic);
         device.ifPresent(this::handleRefreshedDevice);
