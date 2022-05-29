@@ -14,10 +14,7 @@ package org.openhab.binding.helios.internal;
 
 import static org.openhab.binding.helios.internal.HeliosBindingConstants.HELIOS_VARIO_IP_2_21_TYPE;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.openhab.binding.helios.internal.handler.HeliosHandler221;
 import org.openhab.core.thing.Thing;
