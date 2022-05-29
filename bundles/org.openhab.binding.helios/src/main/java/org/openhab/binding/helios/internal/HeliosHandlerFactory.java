@@ -36,8 +36,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.helios")
 public class HeliosHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(HELIOS_VARIO_IP_2_21_TYPE).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(HELIOS_VARIO_IP_2_21_TYPE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
