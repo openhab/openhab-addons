@@ -2,11 +2,11 @@ package org.openhab.binding.netatmo.internal.api.data;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AirQualityChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.BatteryChannelHelper;
@@ -34,10 +34,12 @@ public class ChannelGroup {
             GROUP_TYPE_BATTERY_EXTENDED);
     public static final ChannelGroup TSTAMP_EXT = new ChannelGroup(TimestampChannelHelper.class,
             GROUP_TYPE_TIMESTAMP_EXTENDED);
-    public static final ChannelGroup TEMP_OUTSIDE = new ChannelGroup(TemperatureChannelHelper.class,
+    public static final ChannelGroup TEMP_OUTSIDE_EXT = new ChannelGroup(TemperatureChannelHelper.class,
             MeasureClass.OUTSIDE_TEMPERATURE, GROUP_TYPE_TEMPERATURE_EXTENDED);
-    public static final ChannelGroup TEMP_INSIDE = new ChannelGroup(TemperatureChannelHelper.class,
+    public static final ChannelGroup TEMP_INSIDE_EXT = new ChannelGroup(TemperatureChannelHelper.class,
             MeasureClass.INSIDE_TEMPERATURE, GROUP_TYPE_TEMPERATURE_EXTENDED);
+    public static final ChannelGroup TEMP_INSIDE = new ChannelGroup(TemperatureChannelHelper.class,
+            MeasureClass.INSIDE_TEMPERATURE, GROUP_TEMPERATURE);
     public static final ChannelGroup AIR_QUALITY = new ChannelGroup(AirQualityChannelHelper.class, MeasureClass.CO2,
             GROUP_AIR_QUALITY);
     public static final ChannelGroup NOISE = new ChannelGroup(NoiseChannelHelper.class, MeasureClass.NOISE,
@@ -64,14 +66,13 @@ public class ChannelGroup {
         this.extensions = extensions;
     }
 
-    public @Nullable ChannelHelper getHelperInstance() {
-        ChannelHelper result = null;
+    public Optional<ChannelHelper> getHelperInstance() {
         try {
-            result = helper.getConstructor(Set.class).newInstance(
-                    groupTypes.stream().map(NetatmoThingTypeProvider::toGroupName).collect(Collectors.toSet()));
+            return Optional.of(helper.getConstructor(Set.class).newInstance(
+                    groupTypes.stream().map(NetatmoThingTypeProvider::toGroupName).collect(Collectors.toSet())));
         } catch (ReflectiveOperationException e) {
             logger.warn("Error creating or initializing helper class : {}", e.getMessage());
         }
-        return result;
+        return Optional.empty();
     }
 }

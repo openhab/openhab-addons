@@ -97,12 +97,12 @@ public enum ModuleType {
             Set.of(DeviceCapability.class, WeatherCapability.class, MeasureCapability.class,
                     ChannelHelperCapability.class),
             ChannelGroup.SIGNAL, ChannelGroup.HUMIDITY, ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE,
-            ChannelGroup.AIR_QUALITY, ChannelGroup.LOCATION, ChannelGroup.NOISE, ChannelGroup.TEMP_INSIDE,
+            ChannelGroup.AIR_QUALITY, ChannelGroup.LOCATION, ChannelGroup.NOISE, ChannelGroup.TEMP_INSIDE_EXT,
             new ChannelGroup(PressureChannelHelper.class, MeasureClass.PRESSURE, GROUP_TYPE_PRESSURE_EXTENDED)),
 
     OUTDOOR(FeatureArea.WEATHER, "NAModule1", WEATHER_STATION,
             Set.of(MeasureCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL, ChannelGroup.HUMIDITY,
-            ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE, ChannelGroup.BATTERY, ChannelGroup.TEMP_OUTSIDE),
+            ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE, ChannelGroup.BATTERY, ChannelGroup.TEMP_OUTSIDE_EXT),
 
     WIND(FeatureArea.WEATHER, "NAModule2", WEATHER_STATION, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
             ChannelGroup.TSTAMP_EXT, ChannelGroup.BATTERY, new ChannelGroup(WindChannelHelper.class, GROUP_WIND)),
@@ -115,7 +115,7 @@ public enum ModuleType {
     INDOOR(FeatureArea.WEATHER, "NAModule4", WEATHER_STATION,
             Set.of(MeasureCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
             ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE, ChannelGroup.BATTERY, ChannelGroup.HUMIDITY,
-            ChannelGroup.TEMP_OUTSIDE, ChannelGroup.AIR_QUALITY),
+            ChannelGroup.TEMP_OUTSIDE_EXT, ChannelGroup.AIR_QUALITY),
 
     HOME_COACH(FeatureArea.AIR_CARE, "NHC", ACCOUNT,
             Set.of(DeviceCapability.class, AirCareCapability.class, MeasureCapability.class,

@@ -112,12 +112,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing) : new ModuleHandler(thing);
 
         List<ChannelHelper> helpers = new ArrayList<>();
-        moduleType.channelGroups.forEach(channelGroup -> {
-            ChannelHelper helper = channelGroup.getHelperInstance();
-            if (helper != null) {
-                helpers.add(helper);
-            }
-        });
+        moduleType.channelGroups
+                .forEach(channelGroup -> channelGroup.getHelperInstance().ifPresent(helper -> helpers.add(helper)));
 
         moduleType.capabilities.forEach(capability -> {
             Capability newCap = null;
