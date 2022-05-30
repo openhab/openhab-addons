@@ -16,8 +16,6 @@ import static org.openhab.voice.rustpotterks.internal.RustpotterKSConstants.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
@@ -104,14 +102,19 @@ public class RustpotterKSService implements KSService {
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return Set.of(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, null));
+        return Set
+                .of(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, null, null, null));
     }
 
     @Override
     public KSServiceHandle spot(KSListener ksListener, AudioStream audioStream, Locale locale, String keyword)
             throws KSException {
         logger.debug("Loading library");
-        RustpotterJava.loadLibrary();
+        try {
+            RustpotterJava.loadLibrary();
+        } catch (IOException e) {
+            throw new KSException("Unable to load rustpotter lib: " + e.getMessage());
+        }
         var audioFormat = audioStream.getFormat();
         var frequency = Objects.requireNonNull(audioFormat.getFrequency());
         var bitDepth = Objects.requireNonNull(audioFormat.getBitDepth());
@@ -138,6 +141,11 @@ public class RustpotterKSService implements KSService {
 
     private RustpotterJava initRustpotter(long frequency, int bitDepth, int channels) {
         var rustpotterBuilder = new RustpotterJavaBuilder();
+        // audio configs
+        rustpotterBuilder.setBitsPerSample(bitDepth);
+        rustpotterBuilder.setSampleRate(frequency);
+        rustpotterBuilder.setChannels(channels);
+        // detector configs
         rustpotterBuilder.setThreshold(config.threshold);
         rustpotterBuilder.setAveragedThreshold(config.averagedThreshold);
         rustpotterBuilder.setComparatorRef(config.comparatorRef);
@@ -150,9 +158,7 @@ public class RustpotterKSService implements KSService {
             rustpotterBuilder.setVADMode(vadMode);
         }
         rustpotterBuilder.setEagerMode(config.eagerMode);
-        rustpotterBuilder.setBitsPerSample(bitDepth);
-        rustpotterBuilder.setSampleRate(frequency);
-        rustpotterBuilder.setChannels(channels);
+        // init the detector
         var rustpotter = rustpotterBuilder.build();
         rustpotterBuilder.delete();
         return rustpotter;
@@ -161,24 +167,31 @@ public class RustpotterKSService implements KSService {
     private void processAudioStream(RustpotterJava rustpotter, KSListener ksListener, AudioStream audioStream,
             AtomicBoolean aborted) {
         int numBytesRead;
-        var frameSize = (int) rustpotter.getFrameSize();
-        var bufferSize = frameSize * 2;
-        ByteBuffer captureBuffer = ByteBuffer.allocate(bufferSize);
-        captureBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        short[] audioBuffer = new short[frameSize];
+        var bufferSize = (int) rustpotter.getBytesPerFrame();
+        byte[] audioBuffer = new byte[bufferSize];
+        int remaining = 0;
         while (!aborted.get()) {
             try {
-                // read a buffer of audio
-                numBytesRead = audioStream.read(captureBuffer.array(), 0, captureBuffer.capacity());
+                numBytesRead = audioStream.read(audioBuffer, remaining == 0 ? 0 : (bufferSize - remaining),
+                        remaining == 0 ? bufferSize : remaining);
                 if (aborted.get()) {
                     break;
                 }
-                if (numBytesRead != bufferSize) {
-                    Thread.sleep(100);
-                    continue;
+                if (remaining == 0) {
+                    if (numBytesRead != bufferSize) {
+                        remaining = bufferSize - numBytesRead;
+                        Thread.sleep(100);
+                        continue;
+                    }
+                } else {
+                    if (numBytesRead != remaining) {
+                        remaining = remaining - numBytesRead;
+                        Thread.sleep(100);
+                        continue;
+                    }
                 }
-                captureBuffer.asShortBuffer().get(audioBuffer);
-                var result = rustpotter.processSort(audioBuffer);
+                remaining = 0;
+                var result = rustpotter.processBuffer(audioBuffer);
                 if (result.isPresent()) {
                     var detection = result.get();
                     logger.debug("keyword '{}' detected with score {}!", detection.getName(), detection.getScore());
