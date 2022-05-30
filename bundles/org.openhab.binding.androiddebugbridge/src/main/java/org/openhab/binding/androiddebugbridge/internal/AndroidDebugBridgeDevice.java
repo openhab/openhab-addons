@@ -201,7 +201,14 @@ public class AndroidDebugBridgeDevice {
 
     public String getCurrentPackage() throws AndroidDebugBridgeDeviceException, InterruptedException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
-        var out = runAdbShell("dumpsys", "window", "windows", "|", "grep", "mFocusedApp");
+        int version = Integer.parseInt(getAndroidVersion());
+        String out;
+        if (version >= 11) {
+            out = runAdbShell("dumpsys", "window", "displays", "|", "grep", "mFocusedApp");
+            logger.debug("detected android version: {} ", getAndroidVersion());
+        } else {
+            out = runAdbShell("dumpsys", "window", "windows", "|", "grep", "mFocusedApp");
+        }
         var targetLine = Arrays.stream(out.split("\n")).findFirst().orElse("");
         var lineParts = targetLine.split(" ");
         if (lineParts.length >= 2) {
