@@ -16,6 +16,8 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
 import static org.openhab.binding.netatmo.internal.utils.WeatherUtils.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
@@ -32,8 +34,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class HumidityChannelHelper extends ChannelHelper {
 
-    public HumidityChannelHelper() {
-        super(GROUP_HUMIDITY, MeasureClass.HUMIDITY);
+    public HumidityChannelHelper(Set<String> providedGroups) {
+        super(providedGroups);
     }
 
     @Override

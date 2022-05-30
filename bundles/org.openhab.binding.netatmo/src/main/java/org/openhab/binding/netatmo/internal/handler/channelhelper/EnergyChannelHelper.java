@@ -19,6 +19,7 @@ import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,16 +36,16 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link HomeEnergyChannelHelper} handles specific channels of thermostat settings at home level.
+ * The {@link EnergyChannelHelper} handles specific channels of thermostat settings at home level.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class HomeEnergyChannelHelper extends ChannelHelper {
+public class EnergyChannelHelper extends ChannelHelper {
 
-    public HomeEnergyChannelHelper() {
-        super(GROUP_ENERGY);
+    public EnergyChannelHelper(Set<String> providedGroups) {
+        super(providedGroups);
     }
 
     @Override

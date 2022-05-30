@@ -15,6 +15,8 @@ package org.openhab.binding.netatmo.internal.handler.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
@@ -38,11 +40,7 @@ public class EventChannelHelper extends ChannelHelper {
     private @Nullable String vpnUrl, localUrl;
     protected ModuleType moduleType = ModuleType.UNKNOWN;
 
-    public EventChannelHelper() {
-        this(GROUP_LAST_EVENT);
-    }
-
-    protected EventChannelHelper(String... providedGroups) {
+    public EventChannelHelper(Set<String> providedGroups) {
         super(providedGroups);
     }
 

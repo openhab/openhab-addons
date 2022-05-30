@@ -112,11 +112,10 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing) : new ModuleHandler(thing);
 
         List<ChannelHelper> helpers = new ArrayList<>();
-        moduleType.channelHelpers.forEach(helperClass -> {
-            try {
-                helpers.add(helperClass.getConstructor().newInstance());
-            } catch (ReflectiveOperationException e) {
-                logger.warn("Error creating or initializing helper class : {}", e.getMessage());
+        moduleType.channelGroups.forEach(channelGroup -> {
+            ChannelHelper helper = channelGroup.getHelperInstance();
+            if (helper != null) {
+                helpers.add(helper);
             }
         });
 

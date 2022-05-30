@@ -71,9 +71,9 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                         body.getElements().stream().forEach(homeCoach -> createThing(homeCoach, accountUID));
                     }
                 }
-                if (localHandler.getReadFriends()) {
-                    WeatherApi weatherApi = localHandler.getRestManager(WeatherApi.class);
-                    if (weatherApi != null) { // Search favorite stations
+                WeatherApi weatherApi = localHandler.getRestManager(WeatherApi.class);
+                if (weatherApi != null) { // Search favorite stations
+                    if (localHandler.getReadFriends()) {
                         weatherApi.getFavoriteAndGuestStationsData().stream().filter(NAMain::isReadOnly)
                                 .forEach(station -> {
                                     ThingUID bridgeUID = createThing(station, accountUID);
@@ -81,30 +81,41 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                                             .forEach(module -> createThing(module, bridgeUID));
                                 });
                     }
+                    // Search my own stations
+                    weatherApi.getOwnStationsData().stream().filter(s -> !s.isReadOnly()).forEach(station -> {
+                        ThingUID bridgeUID = createThing(station, accountUID);
+                        station.getModules().values().stream().forEach(module -> createThing(module, bridgeUID));
+                    });
                 }
                 HomeApi homeApi = localHandler.getRestManager(HomeApi.class);
-                if (homeApi != null) { // Search those who depend from a home
-                    homeApi.getHomesData(null, null).stream().filter(h -> !h.getFeatures().isEmpty()).forEach(home -> {
-                        ThingUID homeUID = createThing(home, accountUID);
+                if (homeApi != null) { // Search those depending from a home that has modules + not only weather modules
+                    homeApi.getHomesData(null, null).stream()
+                            .filter(h -> !(h.getFeatures().isEmpty()
+                                    || h.getFeatures().contains(FeatureArea.WEATHER) && h.getFeatures().size() == 1))
+                            .forEach(home -> {
+                                ThingUID homeUID = createThing(home, accountUID);
 
-                        home.getKnownPersons().forEach(person -> createThing(person, homeUID));
+                                home.getKnownPersons().forEach(person -> createThing(person, homeUID));
 
-                        Map<String, ThingUID> bridgesUids = new HashMap<>();
+                                Map<String, ThingUID> bridgesUids = new HashMap<>();
 
-                        home.getRooms().values().stream().forEach(room -> {
-                            room.getModuleIds().stream().map(id -> home.getModules().get(id))
-                                    .map(m -> m != null ? m.getType().feature : FeatureArea.NONE)
-                                    .filter(f -> FeatureArea.ENERGY.equals(f)).findAny()
-                                    .ifPresent(f -> bridgesUids.put(room.getId(), createThing(room, homeUID)));
-                        });
+                                home.getRooms().values().stream().forEach(room -> {
+                                    room.getModuleIds().stream().map(id -> home.getModules().get(id))
+                                            .map(m -> m != null ? m.getType().feature : FeatureArea.NONE)
+                                            .filter(f -> FeatureArea.ENERGY.equals(f)).findAny()
+                                            .ifPresent(f -> bridgesUids.put(room.getId(), createThing(room, homeUID)));
+                                });
 
-                        // Creating modules that have no bridge first
-                        home.getModules().values().stream().filter(module -> module.getBridge() == null)
-                                .forEach(device -> bridgesUids.put(device.getId(), createThing(device, homeUID)));
-                        // Then the others
-                        home.getModules().values().stream().filter(module -> module.getBridge() != null).forEach(
-                                device -> createThing(device, bridgesUids.getOrDefault(device.getBridge(), homeUID)));
-                    });
+                                // Creating modules that have no bridge first
+                                home.getModules().values().stream().filter(module -> module.getBridge() == null)
+                                        .forEach(device -> bridgesUids.put(device.getId(),
+                                                createThing(device, homeUID)));
+
+                                // Then the others
+                                home.getModules().values().stream().filter(module -> module.getBridge() != null)
+                                        .forEach(device -> createThing(device,
+                                                bridgesUids.getOrDefault(device.getBridge(), homeUID)));
+                            });
                 }
             } catch (NetatmoException e) {
                 logger.warn("Error during discovery process : {}", e.getMessage());
