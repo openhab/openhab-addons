@@ -107,11 +107,6 @@ public class WeatherApi extends RestManager {
         return answer != null ? answer.getElements() : List.of();
     }
 
-    public Collection<NAMain> getOwnStationsData() throws NetatmoException {
-        ListBodyResponse<NAMain> answer = getStationsData(null, false).getBody();
-        return answer != null ? answer.getElements() : List.of();
-    }
-
     public @Nullable Object getMeasures(String deviceId, @Nullable String moduleId, @Nullable String scale,
             String apiDescriptor) throws NetatmoException {
         MeasureBodyElem<?> result = getMeasure(deviceId, moduleId, scale, apiDescriptor);
