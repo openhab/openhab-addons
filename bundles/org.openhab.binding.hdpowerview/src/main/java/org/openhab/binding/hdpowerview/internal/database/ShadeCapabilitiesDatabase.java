@@ -48,8 +48,8 @@ public class ShadeCapabilitiesDatabase {
             new Capabilities(5)                  .tiltAnywhere().tilt180()                      .text("Tilt Only 180°"),
             new Capabilities(6).primaryInverted()                                               .text("Top Down"),
             new Capabilities(7).primary()                                 .secondary()          .text("Top Down Bottom Up"),
-            new Capabilities(8).primary()                                 .secondaryOverlapped().text("Duolite Lift"),
-            new Capabilities(9).primary()        .tiltAnywhere()          .secondaryOverlapped().text("Duolite Lift and Tilt 90°"),
+            new Capabilities(8).primary()                                 .secondaryOverlapped().text("Dual Overlapped"),
+            new Capabilities(9).primary()        .tiltAnywhere()          .secondaryOverlapped().text("Dual Overlapped Tilt 90°"),
     // @formatter:on
             new Capabilities()).stream().collect(Collectors.toMap(Capabilities::getValue, Function.identity()));
 
@@ -78,6 +78,7 @@ public class ShadeCapabilitiesDatabase {
             new Type(56).capabilities(3).text("Vertical Slats Split Stack"),
             new Type(62).capabilities(2).text("Venetian"),
             new Type(65).capabilities(8).text("Vignette Duolite"),
+            new Type(66).capabilities(5).text("Shutter"),
             new Type(69).capabilities(3).text("Curtain Left Stack"),
             new Type(70).capabilities(3).text("Curtain Right Stack"),
             new Type(71).capabilities(3).text("Curtain Split Stack"),
