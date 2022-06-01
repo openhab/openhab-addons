@@ -70,13 +70,18 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
             }
             logger.debug("discovery broadcast on {}", broadcastAddr);
             NikoHomeControlDiscover nhcDiscover = new NikoHomeControlDiscover(broadcastAddr);
-            if (nhcDiscover.isNhcII()) {
-                addNhcIIBridge(nhcDiscover.getAddr(), nhcDiscover.getNhcBridgeId());
-            } else {
-                addNhcIBridge(nhcDiscover.getAddr(), nhcDiscover.getNhcBridgeId());
+            for (String nhcController : nhcDiscover.getNhcBridgeIds()) {
+                InetAddress addr = nhcDiscover.getAddr(nhcController);
+                if (addr != null) {
+                    if (nhcDiscover.isNhcII(nhcController)) {
+                        addNhcIIBridge(addr, nhcController);
+                    } else {
+                        addNhcIBridge(addr, nhcController);
+                    }
+                }
             }
         } catch (IOException e) {
-            logger.debug("no bridge found.");
+            logger.debug("bridge discovery IO exception");
         }
     }
 
