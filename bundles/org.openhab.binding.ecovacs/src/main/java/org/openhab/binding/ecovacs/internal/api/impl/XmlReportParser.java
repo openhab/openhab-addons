@@ -22,6 +22,7 @@ import org.openhab.binding.ecovacs.internal.api.model.ChargeMode;
 import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
 import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.binding.ecovacs.internal.api.util.XPathUtils;
+import org.slf4j.Logger;
 import org.w3c.dom.Node;
 
 import com.google.gson.Gson;
@@ -34,11 +35,13 @@ class XmlReportParser implements ReportParser {
     private final EcovacsDevice device;
     private final EventListener listener;
     private final Gson gson;
+    private final Logger logger;
 
-    XmlReportParser(EcovacsDevice device, EventListener listener, Gson gson) {
+    XmlReportParser(EcovacsDevice device, EventListener listener, Gson gson, Logger logger) {
         this.device = device;
         this.listener = listener;
         this.gson = gson;
+        this.logger = logger;
     }
 
     @Override
@@ -56,8 +59,12 @@ class XmlReportParser implements ReportParser {
                 break;
             }
             case "cleanreport": {
-                CleanMode mode = CleaningInfo.parseCleanStateInfo(payload, gson);
-                listener.onCleaningModeUpdated(device, mode);
+                CleaningInfo.CleanStateInfo info = CleaningInfo.parseCleanStateInfo(payload, gson);
+                if (info.mode == CleanMode.CUSTOM_AREA) {
+                    logger.debug("{}: Custom area cleaning stated with area definition {}", device.getSerialNumber(),
+                            info.areaDefinition);
+                }
+                listener.onCleaningModeUpdated(device, info.mode);
                 // TODO: speed <ctl td='CleanReport'><clean type='auto' speed='standard' st='s' rsn='a'/></ctl>
                 break;
             }

@@ -327,7 +327,7 @@ public class EcovacsXmppDevice implements EcovacsDevice {
         IncomingMessageHandler(EventListener listener) {
             super("query", "com:ctl", Type.set, Mode.async);
             this.listener = listener;
-            this.parser = new XmlReportParser(EcovacsXmppDevice.this, listener, gson);
+            this.parser = new XmlReportParser(EcovacsXmppDevice.this, listener, gson, logger);
         }
 
         void registerPendingCommand(String id, CommandResponseHolder responseHolder) {

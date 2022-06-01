@@ -40,6 +40,8 @@ public class CleanReportV2 {
     public static class CleanStateReportV2Content {
         @SerializedName("type")
         public String type;
+        @SerializedName("value")
+        public String areaDefinition;
     }
 
     public CleanMode determineCleanMode(Gson gson) {

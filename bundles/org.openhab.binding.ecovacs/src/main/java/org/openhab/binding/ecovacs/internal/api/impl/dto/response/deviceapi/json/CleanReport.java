@@ -35,6 +35,8 @@ public class CleanReport {
         public String type;
         @SerializedName("motionState")
         public String motionState;
+        @SerializedName("content")
+        public String areaDefinition;
     }
 
     public CleanMode determineCleanMode(Gson gson) {

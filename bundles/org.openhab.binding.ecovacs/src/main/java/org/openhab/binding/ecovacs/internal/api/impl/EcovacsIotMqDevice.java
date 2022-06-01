@@ -154,8 +154,8 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
             client.connect().get();
 
             final ReportParser parser = desc.protoVersion == ProtocolVersion.XML
-                    ? new XmlReportParser(this, listener, gson)
-                    : new JsonReportParser(this, listener, desc.protoVersion, gson);
+                    ? new XmlReportParser(this, listener, gson, logger)
+                    : new JsonReportParser(this, listener, desc.protoVersion, gson, logger);
             final Consumer<@Nullable Mqtt3Publish> eventCallback = publish -> {
                 if (publish == null) {
                     return;

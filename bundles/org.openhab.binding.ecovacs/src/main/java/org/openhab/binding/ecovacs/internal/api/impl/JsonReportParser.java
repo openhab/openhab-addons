@@ -24,7 +24,9 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json.StatsReport;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json.WaterInfoReport;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandJsonResponse.JsonResponsePayloadWrapper;
+import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
 import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
+import org.slf4j.Logger;
 
 import com.google.gson.Gson;
 
@@ -36,12 +38,14 @@ class JsonReportParser implements ReportParser {
     private final EcovacsDevice device;
     private final EventListener listener;
     private final Gson gson;
+    private final Logger logger;
     private String lastFirmwareVersion = "";
 
-    JsonReportParser(EcovacsDevice device, EventListener listener, ProtocolVersion version, Gson gson) {
+    JsonReportParser(EcovacsDevice device, EventListener listener, ProtocolVersion version, Gson gson, Logger logger) {
         this.device = device;
         this.listener = listener;
         this.gson = gson;
+        this.logger = logger;
     }
 
     @Override
@@ -72,12 +76,16 @@ class JsonReportParser implements ReportParser {
             }
             case "cleaninfo": {
                 CleanReport report = payloadAs(response, CleanReport.class);
-                listener.onCleaningModeUpdated(device, report.determineCleanMode(gson));
+                handleCleanModeChange(report.determineCleanMode(gson),
+                        report.cleanState != null ? report.cleanState.areaDefinition : null);
                 break;
             }
             case "cleaninfo_v2": {
                 CleanReportV2 report = payloadAs(response, CleanReportV2.class);
-                listener.onCleaningModeUpdated(device, report.determineCleanMode(gson));
+                handleCleanModeChange(report.determineCleanMode(gson),
+                        report.cleanState != null && report.cleanState.content != null
+                                ? report.cleanState.content.areaDefinition
+                                : null);
                 break;
             }
             case "error": {
@@ -111,6 +119,14 @@ class JsonReportParser implements ReportParser {
                 break;
             }
         }
+    }
+
+    private void handleCleanModeChange(CleanMode mode, @Nullable String areaDefinition) {
+        if (mode == CleanMode.CUSTOM_AREA) {
+            logger.debug("{}: Custom area cleaning stated with area definition {}", device.getSerialNumber(),
+                    areaDefinition);
+        }
+        listener.onCleaningModeUpdated(device, mode);
     }
 
     private <T> T payloadAs(JsonResponsePayloadWrapper response, Class<T> clazz) {

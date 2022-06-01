@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.xml;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
 import org.openhab.binding.ecovacs.internal.api.model.SuctionPower;
 import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.binding.ecovacs.internal.api.util.XPathUtils;
+import org.w3c.dom.Node;
 
 import com.google.gson.Gson;
 
@@ -25,20 +28,41 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class CleaningInfo {
-    public static CleanMode parseCleanStateInfo(String xml, Gson gson) throws DataParsingException {
+    public static class CleanStateInfo {
+        public final CleanMode mode;
+        public final Optional<String> areaDefinition;
+
+        CleanStateInfo(CleanMode mode) {
+            this(mode, Optional.empty());
+        }
+
+        CleanStateInfo(CleanMode mode, Optional<String> areaDefinition) {
+            this.mode = mode;
+            this.areaDefinition = areaDefinition;
+        }
+    }
+
+    public static CleanStateInfo parseCleanStateInfo(String xml, Gson gson) throws DataParsingException {
         String stateString = XPathUtils.getFirstXPathMatchOpt(xml, "//clean/@st").map(n -> n.getNodeValue()).orElse("");
-        final CleanMode mode;
 
         if ("h".equals(stateString)) {
-            mode = CleanMode.STOP;
+            return new CleanStateInfo(CleanMode.STOP);
         } else if ("p".equals(stateString)) {
-            mode = CleanMode.PAUSE;
+            return new CleanStateInfo(CleanMode.PAUSE);
         } else {
             String modeString = XPathUtils.getFirstXPathMatch(xml, "//clean/@type").getNodeValue();
-            mode = gson.fromJson(modeString, CleanMode.class);
-        }
-        if (mode != null) {
-            return mode;
+            CleanMode parsedMode = gson.fromJson(modeString, CleanMode.class);
+            if (parsedMode == CleanMode.SPOT_AREA) {
+                Optional<Node> pointOpt = XPathUtils.getFirstXPathMatchOpt(xml, "//clean/@p");
+                if (pointOpt.isPresent()) {
+                    return new CleanStateInfo(CleanMode.CUSTOM_AREA, pointOpt.map(n -> n.getNodeValue()));
+                }
+                Optional<Node> midOpt = XPathUtils.getFirstXPathMatchOpt(xml, "//clean/@mid");
+                return new CleanStateInfo(CleanMode.SPOT_AREA, midOpt.map(n -> n.getNodeValue()));
+            }
+            if (parsedMode != null) {
+                return new CleanStateInfo(parsedMode);
+            }
         }
         throw new DataParsingException("Unexpected clean state report: " + xml);
     }

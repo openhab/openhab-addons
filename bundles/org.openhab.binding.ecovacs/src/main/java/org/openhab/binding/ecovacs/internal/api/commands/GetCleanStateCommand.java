@@ -62,7 +62,7 @@ public class GetCleanStateCommand extends IotDeviceCommand<CleanMode> {
             }
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();
-            return CleaningInfo.parseCleanStateInfo(payload, gson);
+            return CleaningInfo.parseCleanStateInfo(payload, gson).mode;
         }
     }
 }
