@@ -16,7 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.lgservices.model.Capability;
+import org.openhab.binding.lgthinq.lgservices.model.AbstractCapability;
 
 /**
  * The {@link WasherCapability}
@@ -24,7 +24,7 @@ import org.openhab.binding.lgthinq.lgservices.model.Capability;
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class WasherCapability extends Capability {
+public class WasherCapability extends AbstractCapability {
     public enum MonitoringCap {
         STATE_V2("state"),
         SOIL_WASH_V2("soilWash"),
