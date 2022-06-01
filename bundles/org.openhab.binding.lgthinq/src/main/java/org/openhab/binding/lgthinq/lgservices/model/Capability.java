@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,25 +19,12 @@ import java.util.List;
  *
  * @author Nemer Daud - Initial contribution
  */
-public abstract class Capability {
-    // default result format
-    private MonitoringResultFormat monitoringDataFormat = MonitoringResultFormat.JSON_FORMAT;
+public interface Capability {
+    MonitoringResultFormat getMonitoringDataFormat();
 
-    private List<MonitoringBinaryProtocol> monitoringBinaryProtocol = new ArrayList<>();
+    void setMonitoringDataFormat(MonitoringResultFormat monitoringDataFormat);
 
-    public MonitoringResultFormat getMonitoringDataFormat() {
-        return monitoringDataFormat;
-    }
+    List<MonitoringBinaryProtocol> getMonitoringBinaryProtocol();
 
-    public void setMonitoringDataFormat(MonitoringResultFormat monitoringDataFormat) {
-        this.monitoringDataFormat = monitoringDataFormat;
-    }
-
-    public List<MonitoringBinaryProtocol> getMonitoringBinaryProtocol() {
-        return monitoringBinaryProtocol;
-    }
-
-    public void setMonitoringBinaryProtocol(List<MonitoringBinaryProtocol> monitoringBinaryProtocol) {
-        this.monitoringBinaryProtocol = monitoringBinaryProtocol;
-    }
+    void setMonitoringBinaryProtocol(List<MonitoringBinaryProtocol> monitoringBinaryProtocol);
 }

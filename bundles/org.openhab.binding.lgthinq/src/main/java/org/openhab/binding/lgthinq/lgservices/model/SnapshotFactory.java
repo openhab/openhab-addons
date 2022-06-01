@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WM_SNAPSHOT_WASHER_DRYER_NODE_V2;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -27,6 +27,7 @@ import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqUnmarshallException;
 import org.openhab.binding.lgthinq.lgservices.model.ac.ACSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.dryer.DryerSnapshot;
+import org.openhab.binding.lgthinq.lgservices.model.fridge.v2.FridgeSnapshotV2;
 import org.openhab.binding.lgthinq.lgservices.model.washer.WasherSnapshot;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -166,6 +167,18 @@ public class SnapshotFactory {
                         return clazz.cast(objectMapper.convertValue(washerDryerMap, DryerSnapshot.class));
                     }
                 }
+            case REFRIGERATOR:
+                switch (version) {
+                    case V1_0: {
+                        throw new IllegalArgumentException("Version 1.0 for Washer is not supported yet.");
+                    }
+                    case V2_0: {
+                        Map<String, String> refMap = Objects.requireNonNull(
+                                (Map<String, String>) snapMap.get(REFRIGERATOR_SNAPSHOT_NODE_V2),
+                                "washerDryer node must be present in the snapshot");
+                        return clazz.cast(objectMapper.convertValue(refMap, FridgeSnapshotV2.class));
+                    }
+                }
             default:
                 throw new IllegalStateException("Unexpected capability. The type " + type + " was not implemented yet");
         }
@@ -195,6 +208,13 @@ public class SnapshotFactory {
                     return LGAPIVerion.V2_0;
                 } else if (snapMap.containsKey("State")) {
                     return LGAPIVerion.V1_0;
+                } else {
+                    throw new IllegalStateException(
+                            "Unexpected error. Can't find key node attributes to determine AC API version.");
+                }
+            case REFRIGERATOR:
+                if (snapMap.containsKey(REFRIGERATOR_SNAPSHOT_NODE_V2)) {
+                    return LGAPIVerion.V2_0;
                 } else {
                     throw new IllegalStateException(
                             "Unexpected error. Can't find key node attributes to determine AC API version.");

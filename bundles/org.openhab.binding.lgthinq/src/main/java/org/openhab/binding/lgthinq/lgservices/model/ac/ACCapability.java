@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.lgservices.model.Capability;
+import org.openhab.binding.lgthinq.lgservices.model.AbstractCapability;
 
 /**
  * The {@link ACCapability}
@@ -25,7 +25,7 @@ import org.openhab.binding.lgthinq.lgservices.model.Capability;
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class ACCapability extends Capability {
+public class ACCapability extends AbstractCapability {
 
     private Map<String, String> opMod = Collections.emptyMap();
     private Map<String, String> fanSpeed = Collections.emptyMap();
