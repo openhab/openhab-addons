@@ -35,6 +35,7 @@ import org.openhab.binding.ecovacs.internal.api.EcovacsApi;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
 import org.openhab.binding.ecovacs.internal.api.EcovacsDevice;
 import org.openhab.binding.ecovacs.internal.api.commands.AbstractNoResponseCommand;
+import org.openhab.binding.ecovacs.internal.api.commands.CustomAreaCleaningCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetBatteryInfoCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetChargeStateCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetCleanStateCommand;
@@ -688,6 +689,18 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             } else {
                 logger.info("{}: spotArea command needs to have the form spotArea:<rooms>[:x2]", getDeviceSerial());
             }
+        }
+        if (command.startsWith(CMD_CUSTOM_AREA) && device.hasCapability(DeviceCapability.CUSTOM_AREA_CLEANING)) {
+            String[] splitted = command.split(":");
+            if (splitted.length == 2 || splitted.length == 3) {
+                String coords = splitted[1];
+                int passes = splitted.length == 3 && "x2".equals(splitted[2]) ? 2 : 1;
+                if (coords.split(",").length == 4) {
+                    return new CustomAreaCleaningCommand(coords, passes);
+                }
+            }
+            logger.info("{}: customArea command needs to have the form customArea:<x1>,<y1>,<x2>,<y2>[:x2]",
+                    getDeviceSerial());
         }
 
         return null;

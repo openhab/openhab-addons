@@ -12,16 +12,14 @@
  */
 package org.openhab.binding.ecovacs.internal.api.commands;
 
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * @author Danny Baumann - Initial contribution
  */
 @NonNullByDefault
-public class SpotAreaCleaningCommand extends AbstractAreaCleaningCommand {
-    public SpotAreaCleaningCommand(List<String> roomIds, int cleanPasses) {
-        super("spotArea", String.join(",", roomIds), cleanPasses);
+public class CustomAreaCleaningCommand extends AbstractAreaCleaningCommand {
+    public CustomAreaCleaningCommand(String areaDefinition, int cleanPasses) {
+        super("customArea", areaDefinition, cleanPasses);
     }
 }
