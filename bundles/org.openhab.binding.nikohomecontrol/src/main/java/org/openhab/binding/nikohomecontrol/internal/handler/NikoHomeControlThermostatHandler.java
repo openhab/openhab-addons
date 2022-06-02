@@ -209,9 +209,9 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
         if (nhcThermostat instanceof NhcThermostat2) {
             NhcThermostat2 thermostat = (NhcThermostat2) nhcThermostat;
-            properties.put("deviceType", thermostat.getDeviceType());
-            properties.put("deviceTechnology", thermostat.getDeviceTechnology());
-            properties.put("deviceModel", thermostat.getDeviceModel());
+            properties.put(PROPERTY_DEVICE_TYPE, thermostat.getDeviceType());
+            properties.put(PROPERTY_DEVICE_TECHNOLOGY, thermostat.getDeviceTechnology());
+            properties.put(PROPERTY_DEVICE_MODEL, thermostat.getDeviceModel());
         }
 
         thing.setProperties(properties);

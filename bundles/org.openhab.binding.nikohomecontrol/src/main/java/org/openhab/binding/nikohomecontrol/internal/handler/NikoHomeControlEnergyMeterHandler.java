@@ -142,9 +142,9 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
 
         if (nhcEnergyMeter instanceof NhcEnergyMeter2) {
             NhcEnergyMeter2 energyMeter = (NhcEnergyMeter2) nhcEnergyMeter;
-            properties.put("deviceType", energyMeter.getDeviceType());
-            properties.put("deviceTechnology", energyMeter.getDeviceTechnology());
-            properties.put("deviceModel", energyMeter.getDeviceModel());
+            properties.put(PROPERTY_DEVICE_TYPE, energyMeter.getDeviceType());
+            properties.put(PROPERTY_DEVICE_TECHNOLOGY, energyMeter.getDeviceTechnology());
+            properties.put(PROPERTY_DEVICE_MODEL, energyMeter.getDeviceModel());
         }
 
         thing.setProperties(properties);

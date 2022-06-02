@@ -271,9 +271,9 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
         if (nhcAction instanceof NhcAction2) {
             NhcAction2 action = (NhcAction2) nhcAction;
-            properties.put("deviceType", action.getDeviceType());
-            properties.put("deviceTechnology", action.getDeviceTechnology());
-            properties.put("deviceModel", action.getDeviceModel());
+            properties.put(PROPERTY_DEVICE_TYPE, action.getDeviceType());
+            properties.put(PROPERTY_DEVICE_TECHNOLOGY, action.getDeviceTechnology());
+            properties.put(PROPERTY_DEVICE_MODEL, action.getDeviceModel());
         }
 
         thing.setProperties(properties);
