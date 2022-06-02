@@ -580,6 +580,7 @@
             <configuration>
               <includeScope>runtime</includeScope>
               <includeTypes>jar</includeTypes>
+              <excludes>module-info.class</excludes>
               <excludeGroupIds>javax.activation,org.apache.karaf.features,org.lastnpe.eea</excludeGroupIds>
               <excludeArtifactIds>${dep.noembedding}</excludeArtifactIds>
               <outputDirectory>${project.build.directory}/classes</outputDirectory>
