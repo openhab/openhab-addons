@@ -11,7 +11,8 @@ This binding supports two thing types based on the connection used: `projector-s
 
 ## Discovery
 
-The projector thing cannot be auto-discovered, it has to be configured manually.
+If the projector has a built-in ethernet port connected to the same network as the openHAB server and supports AMX Device Discovery, the thing will be discovered automatically.
+Serial port or serial over IP connections must be configured manually.
 
 ## Binding Configuration
 
