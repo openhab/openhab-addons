@@ -39,6 +39,7 @@ import org.openhab.binding.nikohomecontrol.internal.protocol.NhcEnergyMeter;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.ActionType;
+import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcDevice2.NhcParameter;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcDevice2.NhcProperty;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcMessage2.NhcMessageParam;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
@@ -357,9 +358,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     private void addDevice(NhcDevice2 device) {
         String location = null;
-        if (device.parameters != null) {
-            location = device.parameters.stream().map(p -> p.locationName).filter(Objects::nonNull).findFirst()
-                    .orElse(null);
+        List<NhcParameter> parameters = device.parameters;
+        if (parameters != null) {
+            location = parameters.stream().map(p -> p.locationName).filter(Objects::nonNull).findFirst().orElse(null);
         }
 
         if ("action".equals(device.type) || "virtual".equals(device.type)) {
@@ -620,10 +621,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         switch (action.getType()) {
             case GENERIC:
             case TRIGGER:
-                if (!NHCON.equals(value)) {
-                    // Only trigger for ON
-                    return;
-                }
                 property.basicState = NHCTRIGGERED;
                 break;
             case RELAY:

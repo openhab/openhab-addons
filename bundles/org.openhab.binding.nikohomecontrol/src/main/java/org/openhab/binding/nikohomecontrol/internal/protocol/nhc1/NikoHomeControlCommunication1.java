@@ -169,8 +169,11 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
         nhcEventsRunning = true;
 
         try {
-            while (!listenerStopped & (nhcIn != null) & ((nhcMessage = nhcIn.readLine()) != null)) {
-                readMessage(nhcMessage);
+            BufferedReader in = nhcIn;
+            if (in != null) {
+                while (!listenerStopped && ((nhcMessage = in.readLine()) != null)) {
+                    readMessage(nhcMessage);
+                }
             }
         } catch (IOException e) {
             if (!listenerStopped) {
