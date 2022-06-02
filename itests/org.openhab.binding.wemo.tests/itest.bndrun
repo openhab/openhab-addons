@@ -46,7 +46,6 @@ Fragment-Host: org.openhab.binding.wemo
 	net.bytebuddy.byte-buddy-agent;version='[1.12.1,1.12.2)',\
 	org.mockito.mockito-core;version='[4.1.0,4.1.1)',\
 	org.objenesis;version='[3.2.0,3.2.1)',\
-	biz.aQute.tester.junit-platform;version='[6.2.0,6.2.1)',\
 	org.apache.felix.scr;version='[2.1.30,2.1.31)',\
 	org.osgi.util.function;version='[1.2.0,1.2.1)',\
 	org.osgi.util.promise;version='[1.2.0,1.2.1)',\
@@ -85,4 +84,5 @@ Fragment-Host: org.openhab.binding.wemo
 	org.ops4j.pax.web.pax-web-api;version='[7.3.25,7.3.26)',\
 	org.jupnp;version='[2.6.1,2.6.2)',\
 	ch.qos.logback.classic;version='[1.2.11,1.2.12)',\
-	ch.qos.logback.core;version='[1.2.11,1.2.12)'
+	ch.qos.logback.core;version='[1.2.11,1.2.12)',\
+	biz.aQute.tester.junit-platform;version='[6.3.0,6.3.1)'
