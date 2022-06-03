@@ -16,8 +16,10 @@ import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindin
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -32,6 +34,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link NikoHomeControlBridgeHandler} is an abstract class representing a handler to all different interfaces to the
  * Niko Home Control System. {@link NikoHomeControlBridgeHandler1} or {@link NikoHomeControlBridgeHandler2} should be
- * used for the respective
- * version of Niko Home Control.
+ * used for the respective version of Niko Home Control.
  *
  * @author Mark Herwege - Initial Contribution
  */
@@ -49,13 +51,9 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeHandler.class);
 
-    protected @NonNullByDefault({}) NikoHomeControlBridgeConfig config;
-
     protected @Nullable NikoHomeControlCommunication nhcComm;
 
     private volatile @Nullable ScheduledFuture<?> refreshTimer;
-
-    protected volatile @Nullable NikoHomeControlDiscoveryService nhcDiscovery;
 
     public NikoHomeControlBridgeHandler(Bridge nikoHomeControlBridge) {
         super(nikoHomeControlBridge);
@@ -90,22 +88,15 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
             updateStatus(ThingStatus.ONLINE);
 
-            int refreshInterval = config.refresh;
+            int refreshInterval = getConfig().as(NikoHomeControlBridgeConfig.class).refresh;
             setupRefreshTimer(refreshInterval);
-
-            NikoHomeControlDiscoveryService discovery = nhcDiscovery;
-            if (discovery != null) {
-                discovery.discoverDevices();
-            } else {
-                logger.debug("cannot discover devices, discovery service not started");
-            }
         });
     }
 
     /**
      * Schedule future communication refresh.
      *
-     * @param interval_config Time before refresh in minutes.
+     * @param refreshInterval Time before refresh in minutes.
      */
     private void setupRefreshTimer(int refreshInterval) {
         ScheduledFuture<?> timer = refreshTimer;
@@ -163,7 +154,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     public void controllerOnline() {
         bridgeOnline();
 
-        int refreshInterval = config.refresh;
+        int refreshInterval = getConfig().as(NikoHomeControlBridgeConfig.class).refresh;
         if (refreshTimer == null) {
             setupRefreshTimer(refreshInterval);
         }
@@ -199,12 +190,10 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
         }
 
         Configuration configuration = editConfiguration();
-        for (Entry<String, Object> configurationParmeter : configurationParameters.entrySet()) {
-            configuration.put(configurationParmeter.getKey(), configurationParmeter.getValue());
+        for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
+            configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
         }
         updateConfiguration(configuration);
-
-        setConfig();
 
         scheduler.submit(() -> {
             comm.restartCommunication();
@@ -217,18 +206,9 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
             updateStatus(ThingStatus.ONLINE);
 
-            int refreshInterval = config.refresh;
+            int refreshInterval = getConfig().as(NikoHomeControlBridgeConfig.class).refresh;
             setupRefreshTimer(refreshInterval);
         });
-    }
-
-    /**
-     * Set discovery service handler to be able to start discovery after bridge initialization.
-     *
-     * @param nhcDiscovery
-     */
-    public void setNhcDiscovery(@Nullable NikoHomeControlDiscoveryService nhcDiscovery) {
-        this.nhcDiscovery = nhcDiscovery;
     }
 
     @Override
@@ -262,6 +242,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     @Override
     public @Nullable InetAddress getAddr() {
         InetAddress addr = null;
+        NikoHomeControlBridgeConfig config = getConfig().as(NikoHomeControlBridgeConfig.class);
         try {
             addr = InetAddress.getByName(config.addr);
         } catch (UnknownHostException e) {
@@ -272,10 +253,11 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
     @Override
     public int getPort() {
-        return config.port;
+        return getConfig().as(NikoHomeControlBridgeConfig.class).port;
     }
 
-    protected synchronized void setConfig() {
-        config = getConfig().as(NikoHomeControlBridgeConfig.class);
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(NikoHomeControlDiscoveryService.class);
     }
 }

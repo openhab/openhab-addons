@@ -181,7 +181,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
             nhcThermostat.setEventHandler(this);
 
-            updateProperties();
+            updateProperties(nhcThermostat);
 
             String thermostatLocation = nhcThermostat.getLocation();
             if (thing.getLocation() == null) {
@@ -204,13 +204,14 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         });
     }
 
-    private void updateProperties() {
+    private void updateProperties(NhcThermostat nhcThermostat) {
         Map<String, String> properties = new HashMap<>();
 
         if (nhcThermostat instanceof NhcThermostat2) {
             NhcThermostat2 thermostat = (NhcThermostat2) nhcThermostat;
-            properties.put("model", thermostat.getModel());
-            properties.put("technology", thermostat.getTechnology());
+            properties.put(PROPERTY_DEVICE_TYPE, thermostat.getDeviceType());
+            properties.put(PROPERTY_DEVICE_TECHNOLOGY, thermostat.getDeviceTechnology());
+            properties.put(PROPERTY_DEVICE_MODEL, thermostat.getDeviceModel());
         }
 
         thing.setProperties(properties);
