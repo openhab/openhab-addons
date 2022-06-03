@@ -19,9 +19,9 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
-import org.openhab.binding.easee.internal.handler.ChannelUtil;
-import org.openhab.binding.easee.internal.handler.EaseeHandler;
-import org.openhab.binding.easee.internal.model.account.exception.ValidationException;
+import org.openhab.binding.easee.internal.UtilsTrait;
+import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
+import org.openhab.binding.easee.internal.model.ValidationException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Channel;
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public abstract class AbstractWriteCommand extends AbstractCommand implements EaseeCommand {
+public abstract class AbstractWriteCommand extends AbstractCommand implements EaseeCommand, UtilsTrait {
     private final Logger logger = LoggerFactory.getLogger(AbstractWriteCommand.class);
 
     protected final Channel channel;
@@ -46,9 +46,9 @@ public abstract class AbstractWriteCommand extends AbstractCommand implements Ea
      *
      * @param config
      */
-    public AbstractWriteCommand(EaseeHandler handler, Channel channel, Command command, boolean retryOnFailure,
-            boolean updateHandlerOnFailure) {
-        super(handler, retryOnFailure, updateHandlerOnFailure);
+    public AbstractWriteCommand(EaseeThingHandler handler, Channel channel, Command command,
+            RetryOnFailure retryOnFailure, ProcessFailureResponse processFailureResponse) {
+        super(handler, retryOnFailure, processFailureResponse);
         this.channel = channel;
         this.command = command;
     }
@@ -85,7 +85,7 @@ public abstract class AbstractWriteCommand extends AbstractCommand implements Ea
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
         String channelId = channel.getUID().getIdWithoutGroup();
-        String expr = ChannelUtil.getValidationExpression(channel);
+        String expr = getValidationExpression(channel);
         String value = getCommandValue();
 
         // quantity types are transformed to double and thus we might have decimals which could cause validation error.

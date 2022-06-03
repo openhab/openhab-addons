@@ -10,20 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.easee.internal.handler;
+package org.openhab.binding.easee.internal.command;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.Channel;
+import org.openhab.binding.easee.internal.connector.CommunicationStatus;
+
+import com.google.gson.JsonObject;
 
 /**
- * this interface provides all methods which deal with channels
+ * functional interface that is intended to provide a function for surther result processing of json data retrieved by a
+ * command.
  *
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public interface ChannelProvider {
+@FunctionalInterface
+public interface JsonResultProcessor {
 
-    @Nullable
-    Channel getChannel(String groupId, String channelId);
+    void processResult(CommunicationStatus status, JsonObject jsonObject);
 }

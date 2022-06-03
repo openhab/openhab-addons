@@ -20,7 +20,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractCommand;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
-import org.openhab.binding.easee.internal.handler.EaseeHandler;
+import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 
 /**
  * implements the get configuration api call of the charger.
@@ -30,10 +30,10 @@ import org.openhab.binding.easee.internal.handler.EaseeHandler;
 @NonNullByDefault
 public class GetConfiguration extends AbstractCommand implements EaseeCommand {
 
-    public GetConfiguration(EaseeHandler handler) {
+    public GetConfiguration(EaseeThingHandler handler) {
         // retry does not make much sense as it is a polling command, command should always succeed therefore update
         // handler on failure.
-        super(handler, false, true);
+        super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class GetConfiguration extends AbstractCommand implements EaseeCommand {
     @Override
     protected String getURL() {
         String url = GET_CONFIGURATION_URL;
-        url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
+        // TODO: url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
         return url;
     }
 

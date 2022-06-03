@@ -12,15 +12,15 @@
  */
 package org.openhab.binding.easee.internal;
 
-import static org.openhab.binding.easee.internal.EaseeBindingConstants.THING_TYPE_WALLBOX;
-
-import java.util.Set;
+import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.easee.internal.handler.EaseeWallboxHandler;
+import org.openhab.binding.easee.internal.handler.EaseeChargerHandler;
+import org.openhab.binding.easee.internal.handler.EaseeSiteHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 public class EaseeHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(EaseeHandlerFactory.class);
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_WALLBOX);
 
     /**
      * the shared http client
@@ -64,8 +63,14 @@ public class EaseeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_WALLBOX.equals(thingTypeUID)) {
-            return new EaseeWallboxHandler(thing, httpClient);
+        if (THING_TYPE_SITE.equals(thingTypeUID)) {
+            return new EaseeSiteHandler((Bridge) thing, httpClient);
+        } else if (THING_TYPE_CIRCUIT.equals(thingTypeUID)) {
+            // TODO:
+            return null;
+        } else if (THING_TYPE_CHARGER.equals(thingTypeUID)) {
+            // TODO:
+            return new EaseeChargerHandler(thing);
         } else {
             logger.warn("Unsupported Thing-Type: {}", thingTypeUID.getAsString());
         }

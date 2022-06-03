@@ -24,12 +24,11 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractCommand;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
-import org.openhab.binding.easee.internal.handler.EaseeHandler;
-import org.openhab.binding.easee.internal.model.GenericErrorResponse;
-import org.openhab.binding.easee.internal.model.account.AuthenticationDataResponse;
-import org.openhab.binding.easee.internal.model.account.ResultData;
+import org.openhab.binding.easee.internal.handler.EaseeBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 /**
  * implements the login to the webinterface
@@ -52,10 +51,11 @@ public class Login extends AbstractCommand implements EaseeCommand {
 
     private final LoginData loginData;
 
-    public Login(EaseeHandler handler) {
-        // boolean flags do not matter as "onComplete" is overwritten in this class.
-        super(handler, false, false);
-        loginData = new LoginData(handler.getConfiguration().getUsername(), handler.getConfiguration().getPassword());
+    public Login(EaseeBridgeHandler handler) {
+        // flags do not matter as "onComplete" is overwritten in this class.
+        super(handler, RetryOnFailure.NO, ProcessFailureResponse.NO);
+        loginData = new LoginData(handler.getBridgeConfiguration().getUsername(),
+                handler.getBridgeConfiguration().getPassword());
     }
 
     @Override
@@ -77,24 +77,11 @@ public class Login extends AbstractCommand implements EaseeCommand {
         logger.debug("onComplete()");
 
         String json = getContentAsString(StandardCharsets.UTF_8);
-        ResultData data = new ResultData();
+        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
-        switch (getCommunicationStatus().getHttpCode()) {
-            case OK:
-                AuthenticationDataResponse successResponse = gson.fromJson(json, AuthenticationDataResponse.class);
-                data.setSuccessResponse(successResponse);
-                break;
-            case BAD_REQUEST:
-            case UNAUTHORIZED:
-            case FORBIDDEN:
-                GenericErrorResponse errorResponse = gson.fromJson(json, GenericErrorResponse.class);
-                data.setErrorResponse(errorResponse);
-                break;
-            default:
-                break;
+        if (jsonObject != null) {
+            processResult(jsonObject);
         }
-
-        updateListenerStatus(data);
     }
 
     @Override

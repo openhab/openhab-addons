@@ -20,12 +20,13 @@ import java.util.Map;
 import javax.measure.MetricPrefix;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.easee.internal.UtilsTrait;
 import org.openhab.binding.easee.internal.handler.ChannelProvider;
-import org.openhab.binding.easee.internal.handler.ChannelUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.types.State;
@@ -33,13 +34,15 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
+
 /**
  * transforms the http response into the openhab datamodel (instances of State)
  *
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class GenericResponseTransformer {
+public class GenericResponseTransformer implements UtilsTrait {
     private final Logger logger = LoggerFactory.getLogger(GenericResponseTransformer.class);
     private final ChannelProvider channelProvider;
 
@@ -47,7 +50,7 @@ public class GenericResponseTransformer {
         this.channelProvider = channelProvider;
     }
 
-    public Map<Channel, State> transform(Map<String, Object> jsonData, String group) {
+    public Map<Channel, State> transform(JsonObject jsonData, String group) {
         Map<Channel, State> result = new HashMap<>(20);
 
         for (String channelId : jsonData.keySet()) {
@@ -88,8 +91,11 @@ public class GenericResponseTransformer {
                             case CHANNEL_TYPE_DATE:
                                 result.put(channel, new DateTimeType(value));
                                 break;
+                            case CHANNEL_TYPE_STRING:
+                                result.put(channel, new StringType(value));
+                                break;
                             case CHANNEL_TYPE_NUMBER:
-                                if (ChannelUtil.getChannelTypeId(channel).contains(CHANNEL_TYPENAME_INTEGER)) {
+                                if (getChannelTypeId(channel).contains(CHANNEL_TYPENAME_INTEGER)) {
                                     // explicit type long is needed in case of integer/long values otherwise automatic
                                     // transformation to a decimal type is applied.
                                     result.put(channel, new DecimalType(Long.parseLong(value)));

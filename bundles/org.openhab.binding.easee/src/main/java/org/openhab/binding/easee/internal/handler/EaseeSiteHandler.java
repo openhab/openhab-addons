@@ -1,0 +1,159 @@
+/**
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.easee.internal.handler;
+
+import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.easee.internal.UtilsTrait;
+import org.openhab.binding.easee.internal.command.EaseeCommand;
+import org.openhab.binding.easee.internal.command.site.GetSite;
+import org.openhab.binding.easee.internal.config.EaseeConfiguration;
+import org.openhab.binding.easee.internal.connector.CommunicationStatus;
+import org.openhab.binding.easee.internal.connector.WebInterface;
+import org.openhab.binding.easee.internal.discovery.EaseeSiteDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
+
+/**
+ * The {@link EaseeSiteHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
+ * @author Alexander Friese - initial contribution
+ */
+@NonNullByDefault
+public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHandler, UtilsTrait {
+    private final Logger logger = LoggerFactory.getLogger(EaseeSiteHandler.class);
+
+    private @Nullable DiscoveryService discoveryService;
+
+    /**
+     * Interface object for querying the Easee web interface
+     */
+    private WebInterface webInterface;
+
+    public EaseeSiteHandler(Bridge bridge, HttpClient httpClient) {
+        super(bridge);
+        this.webInterface = new WebInterface(scheduler, this, httpClient, super::updateStatus);
+    }
+
+    @Override
+    public void initialize() {
+        logger.debug("About to initialize Easee Site");
+        EaseeConfiguration config = getBridgeConfiguration();
+        logger.debug("Easee Site initialized with configuration: {}", config);
+
+        webInterface.start();
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting for web api login");
+
+        enqueueCommand(new GetSite(this, this::updateProperties));
+    }
+
+    private void updateProperties(CommunicationStatus status, JsonObject jsonObject) {
+        Map<String, String> properties = editProperties();
+        String name = getAsString(jsonObject, JSON_KEY_GENERIC_NAME);
+        if (name != null) {
+            properties.put(JSON_KEY_GENERIC_NAME, name);
+        }
+        String siteKey = getAsString(jsonObject, JSON_KEY_SITE_KEY);
+        if (siteKey != null) {
+            properties.put(JSON_KEY_SITE_KEY, siteKey);
+        }
+        updateProperties(properties);
+    }
+
+    /**
+     * Disposes the bridge.
+     */
+    @Override
+    public void dispose() {
+        logger.debug("Handler disposed.");
+        webInterface.dispose();
+    }
+
+    /**
+     * will update all channels provided in the map
+     */
+    @Override
+    public void updateChannelStatus(Map<Channel, State> values) {
+        logger.debug("Handling channel update.");
+
+        for (Channel channel : values.keySet()) {
+            if (getThing().getChannels().contains(channel)) {
+                State value = values.get(channel);
+                if (value != null) {
+                    logger.debug("Channel is to be updated: {}: {}", channel.getUID().getAsString(), value);
+                    updateState(channel.getUID(), value);
+                } else {
+                    logger.debug("Value is null or not provided by Easee Cloud (channel: {})",
+                            channel.getUID().getAsString());
+                    updateState(channel.getUID(), UnDefType.UNDEF);
+                }
+            } else {
+                logger.debug("Could not identify channel: {} for model {}", channel.getUID().getAsString(),
+                        getThing().getThingTypeUID().getAsString());
+            }
+        }
+    }
+
+    @Override
+    public EaseeConfiguration getBridgeConfiguration() {
+        return this.getConfigAs(EaseeConfiguration.class);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(EaseeSiteDiscoveryService.class);
+    }
+
+    public void setDiscoveryService(EaseeSiteDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
+    }
+
+    @Override
+    public void startDiscovery() {
+        DiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService != null) {
+            discoveryService.startScan(null);
+        }
+    }
+
+    @Override
+    public void enqueueCommand(EaseeCommand command) {
+        webInterface.enqueueCommand(command);
+    }
+
+    @Override
+    public EaseeCommand buildEaseeCommand(Command command, Channel channel) {
+        // this should not happen
+        throw new UnsupportedOperationException("write operations not supported for bridge");
+    }
+}

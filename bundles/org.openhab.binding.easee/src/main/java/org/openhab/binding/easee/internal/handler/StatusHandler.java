@@ -12,24 +12,19 @@
  */
 package org.openhab.binding.easee.internal.handler;
 
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.easee.internal.config.EaseeConfiguration;
 import org.openhab.binding.easee.internal.connector.WebInterface;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.types.State;
 
 /**
- * public interface of the {@link EaseeHandler}
+ * functional interface to provide an function to update status of a thing or bridge.
  *
  * @author Alexander Friese - initial contribution
  */
+@FunctionalInterface
 @NonNullByDefault
-public interface EaseeHandler extends ThingHandler, ChannelProvider {
+public interface StatusHandler {
     /**
      * Called from {@link WebInterface#authenticate()} to update
      * the thing status because updateStatus is protected.
@@ -38,26 +33,5 @@ public interface EaseeHandler extends ThingHandler, ChannelProvider {
      * @param statusDetail Thing status detail
      * @param description Thing status description
      */
-    void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description);
-
-    /**
-     * Provides the web interface object.
-     *
-     * @return The web interface object
-     */
-    WebInterface getWebInterface();
-
-    /**
-     * method which updates the channels.
-     *
-     * @param values key-value list where key is the channel
-     */
-    void updateChannelStatus(Map<Channel, State> values);
-
-    /**
-     * return the binding's configuration
-     *
-     * @return
-     */
-    EaseeConfiguration getConfiguration();
+    void updateStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description);
 }

@@ -20,7 +20,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractCommand;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
-import org.openhab.binding.easee.internal.handler.EaseeHandler;
+import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 
 /**
  * implements the state api call of the charger.
@@ -28,12 +28,14 @@ import org.openhab.binding.easee.internal.handler.EaseeHandler;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class State extends AbstractCommand implements EaseeCommand {
+public class ChargerState extends AbstractCommand implements EaseeCommand {
+    private final String url;
 
-    public State(EaseeHandler handler) {
+    public ChargerState(EaseeThingHandler handler, String chargerId) {
         // retry does not make much sense as it is a polling command, command should always succeed therefore update
         // handler on failure.
-        super(handler, false, true);
+        super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES);
+        this.url = STATE_URL.replaceAll("\\{id\\}", chargerId);
     }
 
     @Override
@@ -44,8 +46,6 @@ public class State extends AbstractCommand implements EaseeCommand {
 
     @Override
     protected String getURL() {
-        String url = STATE_URL;
-        url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
         return url;
     }
 

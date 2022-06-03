@@ -10,18 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.easee.internal.connector;
+package org.openhab.binding.easee.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.easee.internal.model.account.ResultData;
+import org.openhab.core.thing.binding.BridgeHandler;
 
 /**
- * callback interface to update the status of the {@link WebInterface}
+ * public interface of the {@link EaseeBridgeHandler}
  *
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public interface StatusUpdateListener {
-    void update(CommunicationStatus status, @Nullable ResultData data);
+public interface EaseeBridgeHandler extends BridgeHandler, EaseeThingHandler {
+
+    /**
+     * starts discovery of wallboxes and circuits
+     */
+    void startDiscovery();
+
 }

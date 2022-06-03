@@ -13,14 +13,11 @@
 package org.openhab.binding.easee.internal.command;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response.CompleteListener;
 import org.eclipse.jetty.client.api.Response.ContentListener;
 import org.eclipse.jetty.client.api.Response.FailureListener;
 import org.eclipse.jetty.client.api.Response.SuccessListener;
-import org.openhab.binding.easee.internal.connector.StatusUpdateListener;
-import org.openhab.binding.easee.internal.model.account.ResultData;
 
 /**
  * public interface for all commands
@@ -37,24 +34,13 @@ public interface EaseeCommand extends SuccessListener, FailureListener, ContentL
      *
      * @param asyncclient
      */
-    void performAction(HttpClient asyncclient);
+    void performAction(HttpClient asyncclient, String token);
 
     /**
-     * updates the listener's status
+     * sets a result processor for json result data
      *
+     * @param resultProcessor
      */
-    void updateListenerStatus();
+    public void registerResultProcessor(JsonResultProcessor resultProcessor);
 
-    /**
-     * updates the listener's status, provides additional login data
-     *
-     */
-    void updateListenerStatus(@Nullable ResultData data);
-
-    /**
-     * register a listener
-     *
-     * @param listener
-     */
-    void setListener(StatusUpdateListener listener);
 }

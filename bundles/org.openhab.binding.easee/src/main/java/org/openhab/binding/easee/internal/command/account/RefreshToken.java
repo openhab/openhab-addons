@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.easee.internal.handler.EaseeHandler;
+import org.openhab.binding.easee.internal.handler.EaseeBridgeHandler;
 
 /**
  * implements the refresh of the access token.
@@ -40,7 +40,7 @@ public class RefreshToken extends Login {
 
     private final RefreshData refreshData;
 
-    public RefreshToken(EaseeHandler handler, String accessToken, String refreshToken) {
+    public RefreshToken(EaseeBridgeHandler handler, String accessToken, String refreshToken) {
         super(handler);
         refreshData = new RefreshData(accessToken, refreshToken);
     }

@@ -30,14 +30,14 @@ import org.openhab.binding.easee.internal.UtilsTrait;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.command.account.Login;
 import org.openhab.binding.easee.internal.command.account.RefreshToken;
-import org.openhab.binding.easee.internal.handler.EaseeHandler;
-import org.openhab.binding.easee.internal.model.GenericErrorResponse;
-import org.openhab.binding.easee.internal.model.account.AuthenticationDataResponse;
-import org.openhab.binding.easee.internal.model.account.ResultData;
+import org.openhab.binding.easee.internal.handler.EaseeBridgeHandler;
+import org.openhab.binding.easee.internal.handler.StatusHandler;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 /**
  * The connector is responsible for communication with the Easee Cloud API
@@ -50,9 +50,14 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
     private final Logger logger = LoggerFactory.getLogger(WebInterface.class);
 
     /**
-     * handler for updating thing status
+     * bridge handler
      */
-    private final EaseeHandler handler;
+    private final EaseeBridgeHandler handler;
+
+    /**
+     * handler for updating bridge status
+     */
+    private final StatusHandler statusHandler;
 
     /**
      * holds authentication status
@@ -120,43 +125,41 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
             this.commandQueue = new BlockingArrayQueue<>(WEB_REQUEST_QUEUE_MAX_SIZE);
         }
 
-        private final StatusUpdateListener authenticationListener = new StatusUpdateListener() {
-            @Override
-            public void update(CommunicationStatus status, @Nullable ResultData data) {
-                GenericErrorResponse response = data != null ? data.getErrorResponse() : null;
-                String msg = response != null ? response.getTitle() : "";
-                if (msg.isBlank()) {
-                    msg = status.getMessage();
-                }
-
-                switch (status.getHttpCode()) {
-                    case BAD_REQUEST:
-                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
-                        setAuthenticated(false);
-                        break;
-                    case SERVICE_UNAVAILABLE:
-                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, msg);
-                        setAuthenticated(false);
-                        break;
-                    case OK:
-                        AuthenticationDataResponse resp = data != null ? data.getSuccessResponse() : null;
-                        if (resp != null && resp.isValidLogin()) {
-                            accessToken = resp.accessToken;
-                            refreshToken = resp.refreshToken;
-                            tokenRefreshDate = new Date();
-                            tokenExpiry = new Date(
-                                    System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(resp.expiresIn));
-                            handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                                    "Access Token Refreshed/Validated");
-                            setAuthenticated(true);
-                            break;
-                        }
-                    default:
-                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
-                        setAuthenticated(false);
-                }
+        private void processAuthenticationResult(CommunicationStatus status, JsonObject jsonObject) {
+            String msg = getAsString(jsonObject, JSON_KEY_ERROR_TITLE);
+            if (msg == null || msg.isBlank()) {
+                msg = status.getMessage();
             }
-        };
+
+            switch (status.getHttpCode()) {
+                case BAD_REQUEST:
+                    statusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                    setAuthenticated(false);
+                    break;
+                case SERVICE_UNAVAILABLE:
+                    statusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, msg);
+                    setAuthenticated(false);
+                    break;
+                case OK:
+                    String accessToken = getAsString(jsonObject, JSON_KEY_AUTH_ACCESS_TOKEN);
+                    String refreshToken = getAsString(jsonObject, JSON_KEY_AUTH_REFRESH_TOKEN);
+                    int expiresIn = getAsInt(jsonObject, JSON_KEY_AUTH_EXPIRES_IN);
+                    if (accessToken != null && refreshToken != null && expiresIn != 0) {
+                        WebInterface.this.accessToken = accessToken;
+                        WebInterface.this.refreshToken = refreshToken;
+                        tokenRefreshDate = new Date();
+                        tokenExpiry = new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(expiresIn));
+                        statusHandler.updateStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                                "Access Token Refreshed/Validated");
+                        setAuthenticated(true);
+                        handler.startDiscovery();
+                        break;
+                    }
+                default:
+                    statusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+                    setAuthenticated(false);
+            }
+        }
 
         /**
          * puts a command into the queue
@@ -203,8 +206,8 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
         private synchronized void authenticate() {
             setAuthenticated(false);
             EaseeCommand loginCommand = new Login(handler);
-            loginCommand.setListener(authenticationListener);
-            loginCommand.performAction(httpClient);
+            loginCommand.registerResultProcessor(this::processAuthenticationResult);
+            loginCommand.performAction(httpClient, accessToken);
         }
 
         /**
@@ -221,8 +224,8 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
                         formatDate(tokenRefreshDate), formatDate(tokenRefreshDate));
 
                 EaseeCommand refreshCommand = new RefreshToken(handler, accessToken, refreshToken);
-                refreshCommand.setListener(authenticationListener);
-                refreshCommand.performAction(httpClient);
+                refreshCommand.registerResultProcessor(this::processAuthenticationResult);
+                refreshCommand.performAction(httpClient, accessToken);
             }
         }
 
@@ -232,33 +235,29 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
         private void executeCommand() {
             EaseeCommand command = commandQueue.poll();
             if (command != null) {
+                command.registerResultProcessor(this::processExecutionResult);
+                command.performAction(httpClient, accessToken);
+            }
+        }
 
-                StatusUpdateListener statusUpdater = new StatusUpdateListener() {
-                    @Override
-                    public void update(CommunicationStatus status, @Nullable ResultData data) {
-                        GenericErrorResponse response = data != null ? data.getErrorResponse() : null;
-                        String msg = response != null ? response.getTitle() : "";
-                        if (msg.isBlank()) {
-                            msg = status.getMessage();
-                        }
+        private void processExecutionResult(CommunicationStatus status, JsonObject jsonObject) {
+            String msg = getAsString(jsonObject, JSON_KEY_ERROR_TITLE);
+            if (msg == null || msg.isBlank()) {
+                msg = status.getMessage();
+            }
 
-                        switch (status.getHttpCode()) {
-                            case SERVICE_UNAVAILABLE:
-                                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, msg);
-                                setAuthenticated(false);
-                                break;
-                            case OK:
-                                // no action needed as the thing is already online.
-                                break;
-                            default:
-                                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
-                                setAuthenticated(false);
+            switch (status.getHttpCode()) {
+                case SERVICE_UNAVAILABLE:
+                    statusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, msg);
+                    setAuthenticated(false);
+                    break;
+                case OK:
+                    // no action needed as the thing is already online.
+                    break;
+                default:
+                    statusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+                    setAuthenticated(false);
 
-                        }
-                    }
-                };
-                command.setListener(statusUpdater);
-                command.performAction(httpClient);
             }
         }
     }
@@ -268,8 +267,10 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
      *
      * @param config Bridge configuration
      */
-    public WebInterface(ScheduledExecutorService scheduler, EaseeHandler handler, HttpClient httpClient) {
+    public WebInterface(ScheduledExecutorService scheduler, EaseeBridgeHandler handler, HttpClient httpClient,
+            StatusHandler statusHandler) {
         this.handler = handler;
+        this.statusHandler = statusHandler;
         this.scheduler = scheduler;
         this.httpClient = httpClient;
         this.tokenExpiry = INVALID_DATE;

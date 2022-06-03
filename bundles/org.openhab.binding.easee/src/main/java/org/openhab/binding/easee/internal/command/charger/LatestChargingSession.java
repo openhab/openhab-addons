@@ -20,7 +20,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractCommand;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
-import org.openhab.binding.easee.internal.handler.EaseeHandler;
+import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 
 /**
  * implements the latest charging session api call of the charger.
@@ -30,10 +30,10 @@ import org.openhab.binding.easee.internal.handler.EaseeHandler;
 @NonNullByDefault
 public class LatestChargingSession extends AbstractCommand implements EaseeCommand {
 
-    public LatestChargingSession(EaseeHandler handler) {
+    public LatestChargingSession(EaseeThingHandler handler) {
         // retry does not make much sense as it is a polling command, command might fail if no charging sessions are
         // available, therefore just ignore failure.
-        super(handler, false, false);
+        super(handler, RetryOnFailure.NO, ProcessFailureResponse.NO);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class LatestChargingSession extends AbstractCommand implements EaseeComma
     @Override
     protected String getURL() {
         String url = LATEST_CHARGING_SESSION_URL;
-        url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
+        // TODO: url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
         return url;
     }
 

@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-group-type id="wallbox-charger_state">
+	<channel-group-type id="charger-state">
 		<label>Charger Status</label>
 		<channels>
 			<channel id="smartCharging" typeId="type-switch">
@@ -88,7 +88,7 @@
 			</channel>
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="wallbox-charger_config">
+	<channel-group-type id="charger-config">
 		<label>Charger Configuration</label>
 		<channels>
 			<channel id="lockCablePermanently" typeId="rwtype-switch">
@@ -129,7 +129,7 @@
 			</channel>
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="wallbox-charger_commands">
+	<channel-group-type id="charger-commands">
 		<label>Charger Commands</label>
 		<channels>
 			<channel id="genericCommand" typeId="rwtype-command">
@@ -143,5 +143,5 @@
 		</channels>
 
 	</channel-group-type>
-	<!-- <channel-group-type id="wallbox-charger_latest_session"> <label>Charger Status</label> <channels> </channels> </channel-group-type> -->
+	<!-- <channel-group-type id="charger-latest_session"> <label>Charger Status</label> <channels> </channels> </channel-group-type> -->
 </thing:thing-descriptions>

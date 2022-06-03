@@ -19,7 +19,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractWriteCommand;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
-import org.openhab.binding.easee.internal.handler.EaseeHandler;
+import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.types.Command;
 
@@ -31,8 +31,8 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class SendCommand extends AbstractWriteCommand implements EaseeCommand {
 
-    public SendCommand(EaseeHandler handler, Channel channel, Command command) {
-        super(handler, channel, command, true, true);
+    public SendCommand(EaseeThingHandler handler, Channel channel, Command command) {
+        super(handler, channel, command, RetryOnFailure.YES, ProcessFailureResponse.YES);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class SendCommand extends AbstractWriteCommand implements EaseeCommand {
     @Override
     protected String getURL() {
         String url = COMMANDS_URL;
-        url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
+        // TODO: url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
         url = url.replaceAll("\\{command\\}", getCommandValue());
         return url;
     }

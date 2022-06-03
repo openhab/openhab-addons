@@ -25,7 +25,7 @@ public class EaseeConfiguration {
 
     private String username = "";
     private String password = "";
-    private String wallboxId = "";
+    private String siteId = "";
 
     private Integer asyncTimeout = 120;
     private Integer syncTimeout = 120;
@@ -47,12 +47,12 @@ public class EaseeConfiguration {
         this.password = password;
     }
 
-    public String getWallboxId() {
-        return wallboxId;
+    public String getSiteId() {
+        return siteId;
     }
 
-    public void setWallboxId(String wallboxId) {
-        this.wallboxId = wallboxId;
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
     }
 
     public Integer getAsyncTimeout() {
@@ -82,7 +82,7 @@ public class EaseeConfiguration {
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("username", getUsername()).append("password", getPassword())
-                .append("wallboxId", getWallboxId()).append("asyncTimeout", getAsyncTimeout())
+                .append("siteId", getSiteId()).append("asyncTimeout", getAsyncTimeout())
                 .append("syncTimeout", getSyncTimeout()).append("dataPollingInterval", getDataPollingInterval())
                 .toString();
     }

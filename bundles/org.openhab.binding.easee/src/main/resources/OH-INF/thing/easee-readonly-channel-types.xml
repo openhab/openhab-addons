@@ -34,7 +34,7 @@
 	</channel-type>
 	<channel-type id="type-integer">
 		<item-type>Number</item-type>
-		<label>generic integer</label>
+		<label>Generic Integer</label>
 		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
@@ -54,4 +54,10 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
+    <channel-type id="type-text">
+        <item-type>String</item-type>
+        <label>Generic Text</label>
+        <state pattern="%s" readOnly="true">
+        </state>
+    </channel-type>	
 </thing:thing-descriptions>

@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
-	<config-description uri="thing-type:easee:cloud">
+	<config-description uri="thing-type:easee:site">
 		<parameter-group name="authentication">
 			<label>Authentication</label>
 			<description>Authentication settings.</description>
@@ -26,18 +26,21 @@
 			<description>Your password to login at Easee Cloud service.</description>
 			<context>password</context>
 		</parameter>
-
-		<parameter name="wallboxId" type="text" required="true" groupName="general">
-			<label>Wallbox ID</label>
-			<description>The ID (serial) of the wallbox used to identify the wall box at Easee cloud. This typically starts with
-				"EH"</description>
+		<parameter name="siteId" type="text" required="true" groupName="general">
+			<label>Site ID</label>
+			<description>The ID of the site containing the charger(s) and circuit(s) that should be integrated into Openhab.</description>
 		</parameter>
-
 		<parameter name="dataPollingInterval" type="integer" required="false" min="1" max="60" unit="m"
 			groupName="connection">
 			<label>Polling Interval</label>
 			<description>Interval in which data is polled from EaseeCloud (in minutes).</description>
 			<default>5</default>
+		</parameter>
+	</config-description>
+	<config-description uri="thing-type:easee:charger">
+		<parameter name="id" type="text" required="true">
+			<label>ID</label>
+			<description>The ID of the charger that should be integrated into Openhab.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

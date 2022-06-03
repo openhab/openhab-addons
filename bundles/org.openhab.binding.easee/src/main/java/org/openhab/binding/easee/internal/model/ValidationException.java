@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.easee.internal.model.account.exception;
+package org.openhab.binding.easee.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
