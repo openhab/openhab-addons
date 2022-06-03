@@ -96,10 +96,18 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                     return getQuantityOrZero(inverterData.getIac(), Units.AMPERE);
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_IDC:
                     return getQuantityOrZero(inverterData.getIdc(), Units.AMPERE);
+                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_IDC2:
+                    return getQuantityOrZero(inverterData.getIdc2(), Units.AMPERE);
+                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_IDC3:
+                    return getQuantityOrZero(inverterData.getIdc3(), Units.AMPERE);
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_UAC:
                     return getQuantityOrZero(inverterData.getUac(), Units.VOLT);
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_UDC:
                     return getQuantityOrZero(inverterData.getUdc(), Units.VOLT);
+                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_UDC2:
+                    return getQuantityOrZero(inverterData.getUdc2(), Units.VOLT);
+                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_UDC3:
+                    return getQuantityOrZero(inverterData.getUdc3(), Units.VOLT);
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_DAY_ENERGY:
                     // Convert the unit to kWh for backwards compatibility with non-quantity type
                     return getQuantityOrZero(inverterData.getDayEnergy(), Units.KILOWATT_HOUR).toUnit("kWh");
