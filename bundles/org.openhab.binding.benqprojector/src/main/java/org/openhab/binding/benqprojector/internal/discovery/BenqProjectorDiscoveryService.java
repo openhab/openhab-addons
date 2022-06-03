@@ -141,11 +141,12 @@ public class BenqProjectorDiscoveryService extends AbstractDiscoveryService {
 
                         ThingUID thingUid = new ThingUID(THING_TYPE_PROJECTOR_TCP, uid);
                         logger.trace("Creating BenQ projector discovery result for: {}, IP={}", uid, ipAddress);
-                        thingDiscovered(DiscoveryResultBuilder.create(thingUid).withProperties(thingProperties)
-                                .withLabel(translationProvider.getText(bundle,
-                                        "thing-type.benqprojector.discovery.label", "BenQ Projector",
-                                        localeProvider.getLocale()) + " " + uid)
-                                .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build());
+                        thingDiscovered(
+                                DiscoveryResultBuilder.create(thingUid).withProperties(thingProperties)
+                                        .withLabel(translationProvider.getText(bundle,
+                                                "thing-type.benqprojector.discovery.label", "BenQ Projector",
+                                                localeProvider.getLocale()) + " " + uid)
+                                        .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build());
                     }
                 }
             } catch (IOException ioe) {
