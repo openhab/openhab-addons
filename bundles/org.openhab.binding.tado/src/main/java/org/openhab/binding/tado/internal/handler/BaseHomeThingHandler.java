@@ -18,6 +18,7 @@ import org.openhab.binding.tado.internal.api.client.HomeApi;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 
@@ -28,6 +29,8 @@ import org.openhab.core.thing.binding.BridgeHandler;
  */
 @NonNullByDefault
 public abstract class BaseHomeThingHandler extends BaseThingHandler {
+
+    private int failedReconnectAttempts;
 
     public BaseHomeThingHandler(Thing thing) {
         super(thing);
@@ -60,5 +63,46 @@ public abstract class BaseHomeThingHandler extends BaseThingHandler {
         if (getThing().getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
+    }
+
+    /**
+     * Method overridden to set the failedReconnectAttempts field.
+     */
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        switch (status) {
+            case ONLINE: {
+                failedReconnectAttempts = 0;
+                break;
+            }
+            case OFFLINE: {
+                if (statusDetail == ThingStatusDetail.COMMUNICATION_ERROR) {
+                    if (failedReconnectAttempts < Integer.MAX_VALUE) {
+                        failedReconnectAttempts++;
+                        break;
+                    }
+                }
+            }
+            default: {
+                failedReconnectAttempts = Integer.MAX_VALUE;
+            }
+        }
+        super.updateStatus(status, statusDetail, description);
+    }
+
+    /**
+     * Check if the thing shall try to go online again. Prerequisite is that the bridge exists and is online, yet the
+     * thing is offline as a result of a communication error, and the maximum number of reconnection attempts has not
+     * been exceeded.
+     *
+     * @param maxReconnectAttempts the maximum allowed number of reconnection attempts.
+     * @return true if the thing shall try to go online again.
+     */
+    public boolean shallTryReconnecting(int maxReconnectAttempts) {
+        Bridge bridge = getBridge();
+        return (bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)
+                && (thing.getStatus() == ThingStatus.OFFLINE)
+                && (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR)
+                && (failedReconnectAttempts < maxReconnectAttempts);
     }
 }

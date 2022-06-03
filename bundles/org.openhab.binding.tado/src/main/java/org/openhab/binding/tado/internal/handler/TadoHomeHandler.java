@@ -34,9 +34,11 @@ import org.openhab.binding.tado.internal.config.TadoHomeConfig;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -85,8 +87,14 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     }
 
     private void initializeBridgeStatusAndPropertiesIfOffline() {
-        Bridge bridge = getBridge();
-        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
+            for (Thing thing : getThing().getThings()) {
+                ThingHandler handler = thing.getHandler();
+                if ((handler instanceof BaseHomeThingHandler)
+                        && ((BaseHomeThingHandler) handler).shallTryReconnecting(configuration.maxReconnectAttempts)) {
+                    scheduler.submit(() -> handler.bridgeStatusChanged(getThing().getStatusInfo()));
+                }
+            }
             return;
         }
 
