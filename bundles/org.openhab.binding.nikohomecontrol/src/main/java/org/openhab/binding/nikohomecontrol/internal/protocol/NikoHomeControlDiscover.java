@@ -54,7 +54,7 @@ public final class NikoHomeControlDiscover {
     private Map<String, Boolean> isNhcII = new HashMap<>();
 
     /**
-     * Discover the list of Niko Home Control IP interfacse by broadcasting UDP packet 0x44 to port 10000. The IP
+     * Discover the list of Niko Home Control IP interfaces by broadcasting UDP packet 0x44 to port 10000. The IP
      * interface will reply. The address of the IP interface is than derived from that response.
      *
      * @param broadcast Broadcast address of the network
@@ -100,7 +100,7 @@ public final class NikoHomeControlDiscover {
     }
 
     /**
-     * @param discovered bridgeId
+     * @param bridgeId discovered bridgeId
      * @return the addr, null if not in the list of discovered bridgeId's
      */
     public @Nullable InetAddress getAddr(String bridgeId) {

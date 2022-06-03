@@ -142,9 +142,9 @@ public abstract class NhcThermostat {
     }
 
     /**
-     * Get the id of the thermostat.
+     * Get id of the thermostat.
      *
-     * @return the id
+     * @return id
      */
     public String getId() {
         return id;
@@ -162,7 +162,7 @@ public abstract class NhcThermostat {
     /**
      * Set name of thermostat.
      *
-     * @param thermostat name
+     * @param name thermostat name
      */
     public void setName(String name) {
         this.name = name;
@@ -178,9 +178,9 @@ public abstract class NhcThermostat {
     }
 
     /**
-     * Set location of thermostat.
+     * Set location name of thermostat.
      *
-     * @param thermostat location
+     * @param location thermostat location name
      */
     public void setLocation(@Nullable String location) {
         this.location = location;

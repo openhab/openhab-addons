@@ -86,45 +86,45 @@ public abstract class NhcEnergyMeter {
     }
 
     /**
-     * Get the id of the energyMeters meter.
+     * Get id of meter.
      *
-     * @return the id
+     * @return id
      */
     public String getId() {
         return id;
     }
 
     /**
-     * Get name of the energyMeters meter.
+     * Get name of meter.
      *
-     * @return energyMeters meter name
+     * @return energyMeter name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Set name of energyMeters meter.
+     * Set name of meter.
      *
-     * @param energyMeters meter name
+     * @param name meter name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * Get location name of energyMeters meter.
+     * Get location name of meter.
      *
-     * @return location name
+     * @return location energyMeter location
      */
     public @Nullable String getLocation() {
         return location;
     }
 
     /**
-     * Set location of energyMeters meter.
+     * Set location name of meter.
      *
-     * @param energyMeters meter location
+     * @param location meter location name
      */
     public void setLocation(@Nullable String location) {
         this.location = location;
