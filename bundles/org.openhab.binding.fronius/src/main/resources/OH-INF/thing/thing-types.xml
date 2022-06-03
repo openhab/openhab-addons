@@ -197,13 +197,13 @@
 	<channel-type id="idc2">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>DC Current 2</label>
-		<description>DC current</description>
+		<description>DC current 2</description>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="idc3">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>DC Current 3</label>
-		<description>DC current</description>
+		<description>DC current 3</description>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="uac">
@@ -221,12 +221,12 @@
 	<channel-type id="udc2">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>DC Voltage 2</label>
-		<description>DC voltage</description>
+		<description>DC voltage 2</description>
 		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="udc3">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>DC Voltage</label>
+		<label>DC Voltage 3</label>
 		<description>DC voltage 3</description>
 		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>
