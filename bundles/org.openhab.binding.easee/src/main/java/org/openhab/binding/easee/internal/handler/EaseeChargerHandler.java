@@ -19,7 +19,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.easee.internal.AtomicReferenceTrait;
@@ -47,6 +46,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
+/**
+ * The {@link EaseeChargerHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
+ * @author Alexander Friese - initial contribution
+ */
 @NonNullByDefault
 public class EaseeChargerHandler extends BaseThingHandler
         implements EaseeThingHandler, AtomicReferenceTrait, UtilsTrait {
@@ -166,7 +171,7 @@ public class EaseeChargerHandler extends BaseThingHandler
     }
 
     @Override
-    public void enqueueCommand(@NonNull EaseeCommand command) {
+    public void enqueueCommand(EaseeCommand command) {
         EaseeBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             bridgeHandler.enqueueCommand(command);
@@ -182,13 +187,13 @@ public class EaseeChargerHandler extends BaseThingHandler
     }
 
     @Override
-    public @NonNull EaseeConfiguration getBridgeConfiguration() {
+    public EaseeConfiguration getBridgeConfiguration() {
         EaseeBridgeHandler bridgeHandler = getBridgeHandler();
         return bridgeHandler == null ? new EaseeConfiguration() : bridgeHandler.getBridgeConfiguration();
     }
 
     @Override
-    public @NonNull EaseeCommand buildEaseeCommand(@NonNull Command command, @NonNull Channel channel) {
+    public EaseeCommand buildEaseeCommand(Command command, Channel channel) {
         switch (getWriteCommand(channel)) {
             case COMMAND_CHANGE_CONFIGURATION:
                 return new ChangeConfiguration(this, channel, command);
