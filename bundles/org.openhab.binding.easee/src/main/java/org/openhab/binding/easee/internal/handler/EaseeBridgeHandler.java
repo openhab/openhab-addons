@@ -27,5 +27,4 @@ public interface EaseeBridgeHandler extends BridgeHandler, EaseeThingHandler {
      * starts discovery of wallboxes and circuits
      */
     void startDiscovery();
-
 }

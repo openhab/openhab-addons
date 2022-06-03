@@ -120,7 +120,6 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         this.handler = handler;
         this.processFailureResponse = processFailureResponse;
         this.retryOnFailure = retryOnFailure;
-
     }
 
     /**

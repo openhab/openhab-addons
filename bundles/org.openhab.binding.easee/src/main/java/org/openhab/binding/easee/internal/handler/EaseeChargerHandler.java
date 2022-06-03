@@ -174,7 +174,6 @@ public class EaseeChargerHandler extends BaseThingHandler
             // this should not happen
             logger.warn("no bridge handler found");
         }
-
     }
 
     private @Nullable EaseeBridgeHandler getBridgeHandler() {
@@ -202,5 +201,4 @@ public class EaseeChargerHandler extends BaseThingHandler
                 throw new UnsupportedOperationException("write command not found: " + command.toString());
         }
     }
-
 }

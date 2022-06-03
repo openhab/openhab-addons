@@ -54,10 +54,10 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
-    <channel-type id="type-text">
-        <item-type>String</item-type>
-        <label>Generic Text</label>
-        <state pattern="%s" readOnly="true">
-        </state>
-    </channel-type>	
+	<channel-type id="type-text">
+		<item-type>String</item-type>
+		<label>Generic Text</label>
+		<state pattern="%s" readOnly="true">
+		</state>
+	</channel-type>
 </thing:thing-descriptions>
