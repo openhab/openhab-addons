@@ -14,7 +14,6 @@ package org.openhab.binding.benqprojector.internal.discovery;
 
 import static org.openhab.binding.benqprojector.internal.BenqProjectorBindingConstants.DEFAULT_PORT;
 import static org.openhab.binding.benqprojector.internal.BenqProjectorBindingConstants.THING_PROPERTY_HOST;
-import static org.openhab.binding.benqprojector.internal.BenqProjectorBindingConstants.THING_PROPERTY_MAC;
 import static org.openhab.binding.benqprojector.internal.BenqProjectorBindingConstants.THING_PROPERTY_PORT;
 
 import java.io.IOException;
@@ -31,6 +30,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,7 +120,7 @@ public class MulticastListener {
 
                 if (keyValue.length == 2 && keyValue[0].contains("UUID") && !keyValue[1].isEmpty()) {
                     Map<String, Object> properties = new HashMap<>();
-                    properties.put(THING_PROPERTY_MAC, keyValue[1]);
+                    properties.put(Thing.PROPERTY_MAC_ADDRESS, keyValue[1]);
                     properties.put(THING_PROPERTY_HOST, packet.getAddress().getHostAddress());
                     properties.put(THING_PROPERTY_PORT, DEFAULT_PORT);
                     return properties;

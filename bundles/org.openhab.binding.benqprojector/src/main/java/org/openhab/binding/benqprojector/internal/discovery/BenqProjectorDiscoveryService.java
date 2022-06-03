@@ -26,9 +26,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.net.NetworkAddressService;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -53,13 +58,21 @@ public class BenqProjectorDiscoveryService extends AbstractDiscoveryService {
     public static final int BACKGROUND_DISCOVERY_DELAY_TIMEOUT_SEC = 10;
 
     private NetworkAddressService networkAddressService;
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
+    private final @Nullable Bundle bundle;
 
     private boolean terminate = false;
 
     @Activate
-    public BenqProjectorDiscoveryService(@Reference NetworkAddressService networkAddressService) {
+    public BenqProjectorDiscoveryService(@Reference NetworkAddressService networkAddressService,
+            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
         super(SUPPORTED_THING_TYPES_UIDS, 0, BACKGROUND_DISCOVERY_ENABLED);
         this.networkAddressService = networkAddressService;
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
+        this.bundle = FrameworkUtil.getBundle(BenqProjectorDiscoveryService.class);
+
         benqDiscoveryJob = null;
         terminate = false;
     }
@@ -120,7 +133,7 @@ public class BenqProjectorDiscoveryService extends AbstractDiscoveryService {
 
                 if (thingProperties != null) {
                     // The MulticastListener found a projector, add it as new thing
-                    String uid = (String) thingProperties.get(THING_PROPERTY_MAC);
+                    String uid = (String) thingProperties.get(Thing.PROPERTY_MAC_ADDRESS);
                     String ipAddress = (String) thingProperties.get(THING_PROPERTY_HOST);
 
                     if (uid != null) {
@@ -129,8 +142,10 @@ public class BenqProjectorDiscoveryService extends AbstractDiscoveryService {
                         ThingUID thingUid = new ThingUID(THING_TYPE_PROJECTOR_TCP, uid);
                         logger.trace("Creating BenQ projector discovery result for: {}, IP={}", uid, ipAddress);
                         thingDiscovered(DiscoveryResultBuilder.create(thingUid).withProperties(thingProperties)
-                                .withLabel("BenQ Projector " + uid).withRepresentationProperty(THING_PROPERTY_MAC)
-                                .build());
+                                .withLabel(translationProvider.getText(bundle,
+                                        "thing-type.benqprojector.discovery.label", "BenQ Projector",
+                                        localeProvider.getLocale()) + " " + uid)
+                                .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build());
                     }
                 }
             } catch (IOException ioe) {

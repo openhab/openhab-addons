@@ -42,5 +42,4 @@ public class BenqProjectorBindingConstants {
     // Config properties
     public static final String THING_PROPERTY_HOST = "host";
     public static final String THING_PROPERTY_PORT = "port";
-    public static final String THING_PROPERTY_MAC = "macAddress";
 }
