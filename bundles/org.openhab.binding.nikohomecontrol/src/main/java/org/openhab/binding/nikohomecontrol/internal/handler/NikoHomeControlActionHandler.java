@@ -238,7 +238,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
             nhcAction.setEventHandler(this);
 
-            updateProperties();
+            updateProperties(nhcAction);
 
             String actionLocation = nhcAction.getLocation();
             if (thing.getLocation() == null) {
@@ -260,14 +260,9 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         });
     }
 
-    private void updateProperties() {
-        NhcAction nhcAction = this.nhcAction;
-        if (nhcAction == null) {
-            logger.debug("action with ID {} not initialized", actionId);
-            return;
-        }
-
+    private void updateProperties(NhcAction nhcAction) {
         Map<String, String> properties = new HashMap<>();
+
         properties.put("type", String.valueOf(nhcAction.getType()));
         if (getThing().getThingTypeUID() == THING_TYPE_BLIND) {
             properties.put("timeToOpen", String.valueOf(nhcAction.getOpenTime()));
@@ -276,8 +271,9 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
         if (nhcAction instanceof NhcAction2) {
             NhcAction2 action = (NhcAction2) nhcAction;
-            properties.put("model", action.getModel());
-            properties.put("technology", action.getTechnology());
+            properties.put(PROPERTY_DEVICE_TYPE, action.getDeviceType());
+            properties.put(PROPERTY_DEVICE_TECHNOLOGY, action.getDeviceTechnology());
+            properties.put(PROPERTY_DEVICE_MODEL, action.getDeviceModel());
         }
 
         thing.setProperties(properties);

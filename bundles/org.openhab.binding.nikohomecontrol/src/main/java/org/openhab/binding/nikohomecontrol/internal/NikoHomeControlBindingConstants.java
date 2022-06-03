@@ -90,4 +90,9 @@ public class NikoHomeControlBindingConstants {
     public static final String CONFIG_OVERRULETIME = "overruleTime";
 
     public static final String CONFIG_ENERGYMETER_ID = "energyMeterId";
+
+    // Thing properties
+    public static final String PROPERTY_DEVICE_TYPE = "deviceType";
+    public static final String PROPERTY_DEVICE_TECHNOLOGY = "deviceTechnology";
+    public static final String PROPERTY_DEVICE_MODEL = "deviceModel";
 }

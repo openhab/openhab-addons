@@ -364,38 +364,38 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             String value3 = action.get("value3");
             int openTime = ((value3 == null) || value3.isEmpty() ? 0 : Integer.parseInt(value3));
 
+            String name = action.get("name");
+            if (name == null) {
+                logger.debug("name not found in action {}", action);
+                continue;
+            }
+            String type = Optional.ofNullable(action.get("type")).orElse("");
+            ActionType actionType = ActionType.GENERIC;
+            switch (type) {
+                case "0":
+                    actionType = ActionType.TRIGGER;
+                    break;
+                case "1":
+                    actionType = ActionType.RELAY;
+                    break;
+                case "2":
+                    actionType = ActionType.DIMMER;
+                    break;
+                case "4":
+                case "5":
+                    actionType = ActionType.ROLLERSHUTTER;
+                    break;
+                default:
+                    logger.debug("unknown action type {} for action {}", type, id);
+                    continue;
+            }
+            String locationId = action.get("location");
+            String location = "";
+            if (locationId != null && !locationId.isEmpty()) {
+                location = locations.getOrDefault(locationId, new NhcLocation1("")).getName();
+            }
             if (!actions.containsKey(id)) {
                 // Initial instantiation of NhcAction class for action object
-                String name = action.get("name");
-                if (name == null) {
-                    logger.debug("name not found in action {}", action);
-                    continue;
-                }
-                String type = Optional.ofNullable(action.get("type")).orElse("");
-                ActionType actionType = ActionType.GENERIC;
-                switch (type) {
-                    case "0":
-                        actionType = ActionType.TRIGGER;
-                        break;
-                    case "1":
-                        actionType = ActionType.RELAY;
-                        break;
-                    case "2":
-                        actionType = ActionType.DIMMER;
-                        break;
-                    case "4":
-                    case "5":
-                        actionType = ActionType.ROLLERSHUTTER;
-                        break;
-                    default:
-                        logger.debug("unknown action type {} for action {}", type, id);
-                        continue;
-                }
-                String locationId = action.get("location");
-                String location = "";
-                if (locationId != null && !locationId.isEmpty()) {
-                    location = locations.getOrDefault(locationId, new NhcLocation1("")).getName();
-                }
                 NhcAction nhcAction = new NhcAction1(id, name, actionType, location, this, scheduler);
                 if (actionType == ActionType.ROLLERSHUTTER) {
                     nhcAction.setShutterTimes(openTime, closeTime);
@@ -403,11 +403,13 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 nhcAction.setState(state);
                 actions.put(id, nhcAction);
             } else {
-                // Action object already exists, so only update state.
+                // Action object already exists, so only update state, name and location.
                 // If we would re-instantiate action, we would lose pointer back from action to thing handler that was
                 // set in thing handler initialize().
                 NhcAction nhcAction = actions.get(id);
                 if (nhcAction != null) {
+                    nhcAction.setName(name);
+                    nhcAction.setLocation(location);
                     nhcAction.setState(state);
                 }
             }
@@ -452,23 +454,25 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 // measured
                 int demand = (mode != 3) ? (setpoint > measured ? 1 : (setpoint < measured ? -1 : 0)) : 0;
 
+                String name = thermostat.get("name");
+                String locationId = thermostat.get("location");
+                NhcLocation1 nhcLocation = null;
+                if (!((locationId == null) || locationId.isEmpty())) {
+                    nhcLocation = locations.get(locationId);
+                }
+                String location = (nhcLocation != null) ? nhcLocation.getName() : null;
                 NhcThermostat t = thermostats.computeIfAbsent(id, i -> {
                     // Initial instantiation of NhcThermostat class for thermostat object
-                    String name = thermostat.get("name");
-                    String locationId = thermostat.get("location");
-                    String location = "";
-                    if (!((locationId == null) || locationId.isEmpty())) {
-                        NhcLocation1 nhcLocation = locations.get(locationId);
-                        if (nhcLocation != null) {
-                            location = nhcLocation.getName();
-                        }
-                    }
                     if (name != null) {
                         return new NhcThermostat1(i, name, location, this);
                     }
                     throw new IllegalArgumentException();
                 });
                 if (t != null) {
+                    if (name != null) {
+                        t.setName(name);
+                    }
+                    t.setLocation(location);
                     t.updateState(measured, setpoint, mode, overrule, overruletime, ecosave, demand);
                 }
             } catch (IllegalArgumentException e) {

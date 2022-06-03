@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.handler;
 
-import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.CHANNEL_POWER;
+import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.util.HashMap;
@@ -102,7 +102,12 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
 
             nhcEnergyMeter.setEventHandler(this);
 
-            updateProperties();
+            updateProperties(nhcEnergyMeter);
+
+            String location = nhcEnergyMeter.getLocation();
+            if (thing.getLocation() == null) {
+                thing.setLocation(location);
+            }
 
             // Subscribing to power readings starts an intensive data flow, therefore only do it when there is an item
             // linked to the channel
@@ -132,13 +137,14 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
         }
     }
 
-    private void updateProperties() {
+    private void updateProperties(NhcEnergyMeter nhcEnergyMeter) {
         Map<String, String> properties = new HashMap<>();
 
         if (nhcEnergyMeter instanceof NhcEnergyMeter2) {
             NhcEnergyMeter2 energyMeter = (NhcEnergyMeter2) nhcEnergyMeter;
-            properties.put("model", energyMeter.getModel());
-            properties.put("technology", energyMeter.getTechnology());
+            properties.put(PROPERTY_DEVICE_TYPE, energyMeter.getDeviceType());
+            properties.put(PROPERTY_DEVICE_TECHNOLOGY, energyMeter.getDeviceTechnology());
+            properties.put(PROPERTY_DEVICE_MODEL, energyMeter.getDeviceModel());
         }
 
         thing.setProperties(properties);
