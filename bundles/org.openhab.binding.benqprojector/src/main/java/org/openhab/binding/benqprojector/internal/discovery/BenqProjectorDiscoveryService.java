@@ -15,7 +15,6 @@ package org.openhab.binding.benqprojector.internal.discovery;
 import static org.openhab.binding.benqprojector.internal.BenqProjectorBindingConstants.*;
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
