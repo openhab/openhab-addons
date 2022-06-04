@@ -118,9 +118,6 @@ public class BenqProjectorDiscoveryService extends AbstractDiscoveryService {
         try {
             String ip = networkAddressService.getPrimaryIpv4HostAddress();
             benqMulticastListener = new MulticastListener((ip != null ? ip : local));
-        } catch (SocketException se) {
-            logger.debug("Discovery job got Socket exception creating multicast socket: {}", se.getMessage());
-            return;
         } catch (IOException ioe) {
             logger.debug("Discovery job got IO exception creating multicast socket: {}", ioe.getMessage());
             return;
