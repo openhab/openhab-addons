@@ -161,8 +161,8 @@
 			<bridge-type-ref id="bridge"/>
 			<bridge-type-ref id="bridge2"/>
 		</supported-bridge-type-refs>
-		<label>@textThermostatLabel</label>
-		<description>@textThermostatDescription</description>
+		<label>@text/ThermostatLabel</label>
+		<description>@text/ThermostatDescription</description>
 		<channels>
 			<channel id="measured" typeId="measured"/>
 			<channel id="mode" typeId="mode"/>
