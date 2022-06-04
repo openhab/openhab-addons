@@ -75,6 +75,8 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
             return;
         }
 
+        updateStatus(ThingStatus.UNKNOWN);
+
         scheduler.submit(() -> {
             comm.startCommunication();
             if (!comm.communicationActive()) {
