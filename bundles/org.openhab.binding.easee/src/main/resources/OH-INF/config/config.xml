@@ -37,10 +37,20 @@
 			<default>5</default>
 		</parameter>
 	</config-description>
-	<config-description uri="thing-type:easee:charger">
-		<parameter name="id" type="text" required="true">
-			<label>ID</label>
-			<description>The ID of the charger that should be integrated into Openhab.</description>
-		</parameter>
-	</config-description>
+    <config-description uri="thing-type:easee:charger">
+        <parameter name="id" type="text" required="true">
+            <label>ID</label>
+            <description>The ID of the charger that should be integrated into Openhab.</description>
+        </parameter>
+    </config-description>
+    <config-description uri="thing-type:easee:circuit">
+        <parameter name="id" type="text" required="true">
+            <label>ID</label>
+            <description>The ID of the circuit that should be integrated into Openhab.</description>
+        </parameter>
+        <parameter name="siteId" type="text" required="true">
+            <label>Site ID</label>
+            <description>The ID of the site which contains this circuit.</description>
+        </parameter>
+    </config-description>
 </config-description:config-descriptions>

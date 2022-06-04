@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.easee.internal.handler.EaseeChargerHandler;
+import org.openhab.binding.easee.internal.handler.EaseeCircuitHandler;
 import org.openhab.binding.easee.internal.handler.EaseeSiteHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -66,10 +67,8 @@ public class EaseeHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_SITE.equals(thingTypeUID)) {
             return new EaseeSiteHandler((Bridge) thing, httpClient);
         } else if (THING_TYPE_CIRCUIT.equals(thingTypeUID)) {
-            // TODO:
-            return null;
+            return new EaseeCircuitHandler(thing);
         } else if (THING_TYPE_CHARGER.equals(thingTypeUID)) {
-            // TODO:
             return new EaseeChargerHandler(thing);
         } else {
             logger.warn("Unsupported Thing-Type: {}", thingTypeUID.getAsString());

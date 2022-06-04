@@ -68,7 +68,8 @@ public class EaseeBindingConstants {
     public static final String JSON_KEY_CIRCUIT_NAME = "panelName";
     public static final String JSON_KEY_CIRCUITS = "circuits";
     public static final String JSON_KEY_CHARGERS = "chargers";
-    public static final String JSON_KEY_BACKPLATE = "backPlate";
+    public static final String JSON_KEY_BACK_PLATE = "backPlate";
+    public static final String JSON_KEY_MASTER_BACK_PLATE_ID = "masterBackPlateId";
     public static final String JSON_KEY_ONLINE = "isOnline";
     public static final String JSON_KEY_SITE_KEY = "siteKey";
     public static final String JSON_KEY_ERROR_TITLE = "title";
@@ -101,7 +102,8 @@ public class EaseeBindingConstants {
     // other
     public static final long POLLING_INITIAL_DELAY = 1;
 
-    public static final String THING_CONFIG_IDENTIFIER = "id";
+    public static final String THING_CONFIG_ID = "id";
+    public static final String THING_CONFIG_SITE_ID = "siteId";
 
     public static final Date INVALID_DATE = new GregorianCalendar(1900, 1, 1).getTime();
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";

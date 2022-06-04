@@ -104,7 +104,8 @@ public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implemen
         String circuitName = getAsString(circuit, JSON_KEY_CIRCUIT_NAME);
 
         if (circuitId != null) {
-            DiscoveryResultBuilder builder = initDiscoveryResultBuilder(DEVICE_CIRCUIT, circuitId, circuitName);
+            DiscoveryResultBuilder builder = initDiscoveryResultBuilder(DEVICE_CIRCUIT, circuitId, circuitName)
+                    .withProperty(THING_CONFIG_SITE_ID, bridgeHandler.getBridgeConfiguration().getSiteId());
             thingDiscovered(builder.build());
 
             // handle contained chargers
@@ -127,12 +128,16 @@ public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implemen
 
         JsonObject charger = json.getAsJsonObject();
         String chargerId = getAsString(charger, JSON_KEY_GENERIC_ID);
-        String backPlateId = getAsString(charger.getAsJsonObject(JSON_KEY_BACKPLATE), JSON_KEY_GENERIC_ID);
+        String backPlateId = getAsString(charger.getAsJsonObject(JSON_KEY_BACK_PLATE), JSON_KEY_GENERIC_ID);
+        String masterBackPlateId = getAsString(charger.getAsJsonObject(JSON_KEY_BACK_PLATE),
+                JSON_KEY_MASTER_BACK_PLATE_ID);
         String chargerName = getAsString(charger, JSON_KEY_GENERIC_NAME);
 
         if (chargerId != null && backPlateId != null) {
             DiscoveryResultBuilder builder = initDiscoveryResultBuilder(DEVICE_CHARGER, chargerId, chargerName)
                     .withProperty(Thing.PROPERTY_SERIAL_NUMBER, backPlateId);
+            // TODO: use constants
+            builder.withProperty("isMaster", backPlateId.equals(masterBackPlateId) ? "Yes" : "No");
             thingDiscovered(builder.build());
         }
     }
@@ -153,7 +158,6 @@ public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implemen
         String label = deviceName != null ? deviceName : deviceId;
 
         return DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
-                .withProperty(Thing.PROPERTY_SERIAL_NUMBER, deviceId).withProperty(THING_CONFIG_IDENTIFIER, deviceId)
-                .withRepresentationProperty(THING_CONFIG_IDENTIFIER);
+                .withProperty(THING_CONFIG_ID, deviceId).withRepresentationProperty(THING_CONFIG_ID);
     }
 }

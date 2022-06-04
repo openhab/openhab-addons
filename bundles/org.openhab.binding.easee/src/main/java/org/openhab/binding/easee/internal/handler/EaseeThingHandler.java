@@ -45,12 +45,12 @@ public interface EaseeThingHandler extends ThingHandler, ChannelProvider, UtilsT
     static final Logger LOGGER = LoggerFactory.getLogger(EaseeThingHandler.class);
 
     /**
-     * method which updates the channels.
+     * method which updates the channels. needs to be implemented by thing types which have channels.
      *
      * @param values key-value list where key is the channel
      */
     default void updateChannelStatus(Map<Channel, State> values) {
-        throw new NotImplementedException("buildEaseeCommand not implemented/supported by this thing type");
+        LOGGER.debug("updateChannelStatus not implemented/supported by this thing type");
     }
 
     /**

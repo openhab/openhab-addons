@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.easee.internal.handler;
 
-import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
+import static org.openhab.binding.easee.internal.EaseeBindingConstants.POLLING_INITIAL_DELAY;
 
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -25,11 +25,6 @@ import org.openhab.binding.easee.internal.AtomicReferenceTrait;
 import org.openhab.binding.easee.internal.EaseeBindingConstants;
 import org.openhab.binding.easee.internal.UtilsTrait;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
-import org.openhab.binding.easee.internal.command.charger.ChangeConfiguration;
-import org.openhab.binding.easee.internal.command.charger.ChargerState;
-import org.openhab.binding.easee.internal.command.charger.GetConfiguration;
-import org.openhab.binding.easee.internal.command.charger.LatestChargingSession;
-import org.openhab.binding.easee.internal.command.charger.SendCommand;
 import org.openhab.binding.easee.internal.config.EaseeConfiguration;
 import org.openhab.binding.easee.internal.connector.CommunicationStatus;
 import org.openhab.core.thing.Bridge;
@@ -47,30 +42,30 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link EaseeChargerHandler} is responsible for handling commands, which are
+ * The {@link EaseeCircuitHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class EaseeChargerHandler extends BaseThingHandler
+public class EaseeCircuitHandler extends BaseThingHandler
         implements EaseeThingHandler, AtomicReferenceTrait, UtilsTrait {
-    private final Logger logger = LoggerFactory.getLogger(EaseeChargerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(EaseeCircuitHandler.class);
 
     /**
      * Schedule for polling live data
      */
     private final AtomicReference<@Nullable Future<?>> dataPollingJobReference;
 
-    public EaseeChargerHandler(Thing thing) {
+    public EaseeCircuitHandler(Thing thing) {
         super(thing);
         this.dataPollingJobReference = new AtomicReference<>(null);
     }
 
     @Override
     public void initialize() {
-        logger.debug("About to initialize Charger");
-        logger.debug("Easee Charger initialized with id: {}",
+        logger.debug("About to initialize Circuit");
+        logger.debug("Easee Circuit initialized with id: {}",
                 getConfig().get(EaseeBindingConstants.THING_CONFIG_ID));
 
         startPolling();
@@ -89,9 +84,9 @@ public class EaseeChargerHandler extends BaseThingHandler
      * Poll the Easee Cloud API one time.
      */
     private void pollingRun() {
-        String chargerId = getConfig().get(EaseeBindingConstants.THING_CONFIG_ID).toString();
+        String circuitId = getConfig().get(EaseeBindingConstants.THING_CONFIG_ID).toString();
 
-        logger.debug("polling charger data for {}", chargerId);
+        logger.debug("polling circuit data for {}", circuitId);
 
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -105,15 +100,17 @@ public class EaseeChargerHandler extends BaseThingHandler
             }
         }
 
-        ChargerState state = new ChargerState(this, chargerId);
-        state.registerResultProcessor(this::updateStatusInfo);
-        enqueueCommand(state);
+        // TODO:
+        // ChargerState state = new ChargerState(this, circuitId);
+        // state.registerResultProcessor(this::updateStatusInfo);
+        // enqueueCommand(state);
 
-        // proceed if charger is online
-        if (getThing().getStatus() == ThingStatus.ONLINE) {
-            enqueueCommand(new GetConfiguration(this));
-            enqueueCommand(new LatestChargingSession(this));
-        }
+        // TODO:
+        // // proceed if charger is online
+        // if (getThing().getStatus() == ThingStatus.ONLINE) {
+        // enqueueCommand(new GetConfiguration(this));
+        // enqueueCommand(new LatestChargingSession(this));
+        // }
     }
 
     /**
@@ -123,17 +120,18 @@ public class EaseeChargerHandler extends BaseThingHandler
      * @param jsonObject
      */
     private void updateStatusInfo(CommunicationStatus status, JsonObject jsonObject) {
-        Boolean isOnline = getAsBool(jsonObject, JSON_KEY_ONLINE);
-
-        if (isOnline == null) {
-            super.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "no valid data received this is most likely a configuration error.");
-        } else if (isOnline) {
-            super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-        } else {
-            super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                    "Charger might have no internet connection or fuse tripped");
-        }
+        // TODO:
+        // Boolean isOnline = getAsBool(jsonObject, JSON_KEY_ONLINE);
+        //
+        // if (isOnline == null) {
+        // super.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+        // "no valid data received this is most likely a configuration error.");
+        // } else if (isOnline) {
+        // super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+        // } else {
+        // super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+        // "Charger might have no internet connection or fuse tripped");
+        // }
     }
 
     /**
@@ -150,7 +148,7 @@ public class EaseeChargerHandler extends BaseThingHandler
      */
     @Override
     public void updateChannelStatus(Map<Channel, State> values) {
-        logger.debug("Handling charger channel update.");
+        logger.debug("Handling circuit channel update.");
 
         for (Channel channel : values.keySet()) {
             if (getThing().getChannels().contains(channel)) {
@@ -195,10 +193,7 @@ public class EaseeChargerHandler extends BaseThingHandler
     @Override
     public EaseeCommand buildEaseeCommand(Command command, Channel channel) {
         switch (getWriteCommand(channel)) {
-            case COMMAND_CHANGE_CONFIGURATION:
-                return new ChangeConfiguration(this, channel, command);
-            case COMMAND_SEND_COMMAND:
-                return new SendCommand(this, channel, command);
+            // TODO: add write commands
             default:
                 // this should not happen
                 logger.warn("write command '{}' not found for channel '{}'", command.toString(),
