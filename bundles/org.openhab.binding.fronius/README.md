@@ -59,7 +59,10 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 | Channel ID                           | Item Type                | Description                                                                                                       |
 | ------------------------------------ | ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| `inverterdatachannelpac`             | Number:Power             | Power generated                                                                                                   |
+| `inverterdatachannelpac`             | Number:Power             | AC Power generated                                                                                                |
+| `inverterdatachannelpdc`             | Number:Power             | DC Power calculated from DC voltage * DC current                                                                  |
+| `inverterdatachannelpdc2`            | Number:Power             | DC Power 2 calculated from DC voltage 2 * DC current 2                                                            |
+| `inverterdatachannelpdc3`            | Number:Power             | DC Power 3 calculated from DC voltage 3 * DC current 3                                                            |
 | `inverterdatachannelfac`             | Number:Frequency         | AC frequency                                                                                                      |
 | `inverterdatachanneliac`             | Number:ElectricCurrent   | AC current                                                                                                        |
 | `inverterdatachannelidc`             | Number:ElectricCurrent   | DC current                                                                                                        |

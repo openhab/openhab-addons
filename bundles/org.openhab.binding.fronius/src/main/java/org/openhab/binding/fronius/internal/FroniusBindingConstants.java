@@ -50,6 +50,9 @@ public class FroniusBindingConstants {
     public static final String INVERTER_DATA_CHANNEL_UDC = "inverterdatachanneludc";
     public static final String INVERTER_DATA_CHANNEL_UDC2 = "inverterdatachanneludc2";
     public static final String INVERTER_DATA_CHANNEL_UDC3 = "inverterdatachanneludc3";
+    public static final String INVERTER_DATA_CHANNEL_PDC = "inverterdatachannelpdc";
+    public static final String INVERTER_DATA_CHANNEL_PDC2 = "inverterdatachannelpdc2";
+    public static final String INVERTER_DATA_CHANNEL_PDC3 = "inverterdatachannelpdc3";
     public static final String INVERTER_DATA_CHANNEL_DEVICE_STATUS_ERROR_CODE = "inverterdatadevicestatuserrorcode";
     public static final String INVERTER_DATA_CHANNEL_DEVICE_STATUS_STATUS_CODE = "inverterdatadevicestatusstatuscode";
 

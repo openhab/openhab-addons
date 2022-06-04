@@ -14,6 +14,9 @@
 
 		<channels>
 			<channel id="inverterdatachannelpac" typeId="pac"/>
+			<channel id="inverterdatachannelpdc" typeId="pdc"/>
+			<channel id="inverterdatachannelpdc2" typeId="pdc2"/>
+			<channel id="inverterdatachannelpdc3" typeId="pdc3"/>
 			<channel id="inverterdatachanneldayenergy" typeId="day_energy"/>
 			<channel id="inverterdatachanneltotal" typeId="total_energy"/>
 			<channel id="inverterdatachannelyear" typeId="year_energy"/>
@@ -159,6 +162,24 @@
 		<item-type>Number:Power</item-type>
 		<label>AC Power</label>
 		<description>AC power</description>
+		<state pattern="%f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pdc">
+		<item-type>Number:Power</item-type>
+		<label>DC Power</label>
+		<description>DC power</description>
+		<state pattern="%f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pdc2">
+		<item-type>Number:Power</item-type>
+		<label>DC Power 2</label>
+		<description>DC power 2</description>
+		<state pattern="%f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pdc3">
+		<item-type>Number:Power</item-type>
+		<label>DC Power 3</label>
+		<description>DC power 3</description>
 		<state pattern="%f W" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="total_energy">
