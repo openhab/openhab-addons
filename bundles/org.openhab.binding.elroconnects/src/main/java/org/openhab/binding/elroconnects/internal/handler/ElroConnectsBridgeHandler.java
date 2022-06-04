@@ -172,6 +172,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
 
         queryString = QUERY_BASE_STRING + connectorId;
 
+        updateStatus(ThingStatus.UNKNOWN);
+
         scheduler.submit(this::startCommunication);
     }
 

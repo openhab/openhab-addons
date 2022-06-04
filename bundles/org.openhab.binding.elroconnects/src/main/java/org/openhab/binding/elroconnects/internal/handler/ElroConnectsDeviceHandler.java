@@ -24,6 +24,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -48,13 +49,16 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
         ElroConnectsDeviceConfiguration config = getConfigAs(ElroConnectsDeviceConfiguration.class);
         deviceId = config.deviceId;
 
+        Bridge bridge = getBridge();
         ElroConnectsBridgeHandler bridgeHandler = getBridgeHandler();
 
-        if (bridgeHandler != null) {
+        if ((bridge != null) && (bridgeHandler != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
             bridgeHandler.setDeviceHandler(deviceId, this);
             updateProperties(bridgeHandler);
             updateDeviceName(bridgeHandler);
             refreshChannels(bridgeHandler);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -88,6 +92,15 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
         }
 
         return bridgeHandler;
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            initialize();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
     }
 
     @Override
