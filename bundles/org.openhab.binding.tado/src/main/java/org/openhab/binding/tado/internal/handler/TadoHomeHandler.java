@@ -34,9 +34,11 @@ import org.openhab.binding.tado.internal.config.TadoHomeConfig;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -85,35 +87,44 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     }
 
     private void initializeBridgeStatusAndPropertiesIfOffline() {
-        Bridge bridge = getBridge();
-        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
-            return;
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
+            for (Thing thing : getThing().getThings()) {
+                ThingHandler handler = thing.getHandler();
+                if ((handler instanceof BaseHomeThingHandler) && (thing.getStatus() == ThingStatus.OFFLINE)
+                        && (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR)) {
+                    scheduler.submit(() -> handler.bridgeStatusChanged(getThing().getStatusInfo()));
+                }
+            }
         }
 
         try {
-            // Get user info to verify successful authentication and connection to server
-            User user = api.showUser();
-            if (user == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Cannot connect to server. Username and/or password might be invalid");
-                return;
+            // if we are already online, don't make unnecessary calls on the server
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                // Get user info to verify successful authentication and connection to server
+                User user = api.showUser();
+                if (user == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Cannot connect to server. Username and/or password might be invalid");
+                    return;
+                }
+
+                List<UserHomes> homes = user.getHomes();
+                if (homes == null || homes.isEmpty()) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "User does not have access to any home");
+                    return;
+                }
+
+                Integer firstHomeId = homes.get(0).getId();
+                if (firstHomeId == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Missing Home Id");
+                    return;
+                }
+
+                homeId = firstHomeId.longValue();
             }
 
-            List<UserHomes> homes = user.getHomes();
-            if (homes == null || homes.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "User does not have access to any home");
-                return;
-            }
-
-            Integer firstHomeId = homes.get(0).getId();
-            if (firstHomeId == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Missing Home Id");
-                return;
-            }
-
-            homeId = firstHomeId.longValue();
-
+            // but always make one server call as a 'ping' to confirm we are really still online
             HomeInfo homeInfo = api.showHome(homeId);
             TemperatureUnit temperatureUnit = org.openhab.binding.tado.internal.api.model.TemperatureUnit.FAHRENHEIT == homeInfo
                     .getTemperatureUnit() ? TemperatureUnit.FAHRENHEIT : TemperatureUnit.CELSIUS;
