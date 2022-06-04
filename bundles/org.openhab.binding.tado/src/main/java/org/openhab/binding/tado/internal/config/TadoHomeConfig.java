@@ -23,5 +23,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class TadoHomeConfig {
     public String username = "";
     public String password = "";
-    public int maxReconnectAttempts;
 }

@@ -90,8 +90,8 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             for (Thing thing : getThing().getThings()) {
                 ThingHandler handler = thing.getHandler();
-                if ((handler instanceof BaseHomeThingHandler)
-                        && ((BaseHomeThingHandler) handler).shallTryReconnecting(configuration.maxReconnectAttempts)) {
+                if ((handler instanceof BaseHomeThingHandler) && (thing.getStatus() == ThingStatus.OFFLINE)
+                        && (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR)) {
                     scheduler.submit(() -> handler.bridgeStatusChanged(getThing().getStatusInfo()));
                 }
             }
