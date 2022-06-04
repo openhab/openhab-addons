@@ -36,6 +36,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -54,6 +55,8 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
     private volatile @Nullable NhcThermostat nhcThermostat;
 
+    private volatile boolean initialized = false;
+
     private String thermostatId = "";
     private int overruleTime;
 
@@ -66,10 +69,9 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        NikoHomeControlCommunication nhcComm = getCommunication();
+        NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
         if (nhcComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "@text/offline.bridge-unitialized");
+            logger.debug("communication not up yet, cannot handle command {} for {}", command, channelUID);
             return;
         }
 
@@ -149,59 +151,74 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
     @Override
     public void initialize() {
+        initialized = false;
+
         NikoHomeControlThermostatConfig config = getConfig().as(NikoHomeControlThermostatConfig.class);
 
         thermostatId = config.thermostatId;
         overruleTime = config.overruleTime;
 
-        NikoHomeControlCommunication nhcComm = getCommunication();
-        if (nhcComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "@text/offline.bridge-unitialized");
+        NikoHomeControlBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.invalid-bridge-handler");
             return;
-        } else {
-            updateStatus(ThingStatus.UNKNOWN);
         }
 
-        // We need to do this in a separate thread because we may have to wait for the
-        // communication to become active
-        scheduler.submit(() -> {
-            if (!nhcComm.communicationActive()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.communication-error");
-                return;
-            }
+        updateStatus(ThingStatus.UNKNOWN);
 
-            NhcThermostat nhcThermostat = nhcComm.getThermostats().get(thermostatId);
-            if (nhcThermostat == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.configuration-error.thermostatId");
-                return;
-            }
+        Bridge bridge = getBridge();
+        if ((bridge != null) && ThingStatus.ONLINE.equals(bridge.getStatus())) {
+            // We need to do this in a separate thread because we may have to wait for the
+            // communication to become active
+            scheduler.submit(this::startCommunication);
+        }
+    }
 
-            nhcThermostat.setEventHandler(this);
+    private synchronized void startCommunication() {
+        NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
 
-            updateProperties(nhcThermostat);
+        if (nhcComm == null) {
+            return;
+        }
 
-            String thermostatLocation = nhcThermostat.getLocation();
-            if (thing.getLocation() == null) {
-                thing.setLocation(thermostatLocation);
-            }
+        if (!nhcComm.communicationActive()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.communication-error");
+            return;
+        }
 
-            thermostatEvent(nhcThermostat.getMeasured(), nhcThermostat.getSetpoint(), nhcThermostat.getMode(),
-                    nhcThermostat.getOverrule(), nhcThermostat.getDemand());
+        NhcThermostat nhcThermostat = nhcComm.getThermostats().get(thermostatId);
+        if (nhcThermostat == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.thermostatId");
+            return;
+        }
 
-            this.nhcThermostat = nhcThermostat;
+        nhcThermostat.setEventHandler(this);
 
-            logger.debug("thermostat intialized {}", thermostatId);
+        updateProperties(nhcThermostat);
 
-            Bridge bridge = getBridge();
-            if ((bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            }
-        });
+        String thermostatLocation = nhcThermostat.getLocation();
+        if (thing.getLocation() == null) {
+            thing.setLocation(thermostatLocation);
+        }
+
+        this.nhcThermostat = nhcThermostat;
+
+        logger.debug("thermostat intialized {}", thermostatId);
+
+        Bridge bridge = getBridge();
+        if ((bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+
+        thermostatEvent(nhcThermostat.getMeasured(), nhcThermostat.getSetpoint(), nhcThermostat.getMode(),
+                nhcThermostat.getOverrule(), nhcThermostat.getDemand());
+
+        initialized = true;
     }
 
     private void updateProperties(NhcThermostat nhcThermostat) {
@@ -306,18 +323,32 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         if (nhcBridgeHandler != null) {
             nhcBridgeHandler.bridgeOnline();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "@text/offline.bridge-unitialized");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.invalid-bridge-handler");
         }
     }
 
-    private @Nullable NikoHomeControlCommunication getCommunication() {
-        NikoHomeControlBridgeHandler nhcBridgeHandler = getBridgeHandler();
+    private @Nullable NikoHomeControlCommunication getCommunication(
+            @Nullable NikoHomeControlBridgeHandler nhcBridgeHandler) {
         return nhcBridgeHandler != null ? nhcBridgeHandler.getCommunication() : null;
     }
 
     private @Nullable NikoHomeControlBridgeHandler getBridgeHandler() {
         Bridge nhcBridge = getBridge();
         return nhcBridge != null ? (NikoHomeControlBridgeHandler) nhcBridge.getHandler() : null;
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        ThingStatus bridgeStatus = bridgeStatusInfo.getStatus();
+        if (ThingStatus.ONLINE.equals(bridgeStatus)) {
+            if (!initialized) {
+                scheduler.submit(this::startCommunication);
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
     }
 }
