@@ -14,6 +14,7 @@ package org.openhab.binding.mynice.internal.handler;
 
 import static org.openhab.core.thing.Thing.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.openhab.binding.mynice.internal.xml.It4WifiSession;
 import org.openhab.binding.mynice.internal.xml.MyNiceXStream;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.binding.mynice.internal.xml.dto.Device;
+import org.openhab.binding.mynice.internal.xml.dto.Event;
 import org.openhab.binding.mynice.internal.xml.dto.Response;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
@@ -56,7 +58,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) It4WifiConnector connector;
     private final MyNiceXStream xstream = new MyNiceXStream();
     private final It4WifiSession session = new It4WifiSession();
-    private List<Device> devices = List.of();
+    private List<Device> devices = new ArrayList<>();
 
     public It4WifiHandler(Bridge thing) {
         super(thing);
@@ -103,12 +105,16 @@ public class It4WifiHandler extends BaseBridgeHandler {
 
     public void received(String command) {
         logger.debug("Received : {}", command);
-        Response response = xstream.deserialize(command);
+        Event event = xstream.deserialize(command);
+        Response response = null;
+        if (event instanceof Response) {
+            response = (Response) event;
+        }
         try {
-            if (response.error != null) {
-                logger.warn("Error code {} received : {}", response.error.code, response.error.info);
+            if (event.error != null) {
+                logger.warn("Error code {} received : {}", event.error.code, event.error.info);
             } else {
-                switch (response.type) {
+                switch (event.type) {
                     case PAIR:
                         Configuration thingConfig = editConfiguration();
                         thingConfig.put(It4WifiConfiguration.PASSWORD, response.authentication.pwd);
@@ -147,10 +153,11 @@ public class It4WifiHandler extends BaseBridgeHandler {
                                     PROPERTY_FIRMWARE_VERSION, response.intf.versionFW);
                             updateProperties(properties);
                         }
-                        notifiyListeners(response.getDevices());
+                        notifiyListeners(event.getDevices());
                         break;
+                    case CHANGE:
                     case STATUS:
-                        notifiyListeners(response.getDevices());
+                        notifiyListeners(event.getDevices());
                         break;
                 }
             }

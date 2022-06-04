@@ -31,9 +31,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class It4WifiSession {
+    private final static Bundle BUNDLE = FrameworkUtil.getBundle(It4WifiSession.class);
+    private final static String APP_ID = BUNDLE.getSymbolicName();
+
     private final Logger logger = LoggerFactory.getLogger(It4WifiSession.class);
-    private final Bundle BUNDLE = FrameworkUtil.getBundle(It4WifiSession.class);
-    private final String APP_ID = BUNDLE.getSymbolicName();
     private final String clientChallenge = UUID.randomUUID().toString().substring(0, 8);
     private final byte[] clientChallengeArr = Utils.invertArray(DatatypeConverter.parseHexBinary(clientChallenge));
 

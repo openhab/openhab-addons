@@ -25,7 +25,8 @@ public enum CommandType {
     VERIFY(false, "User username=\"%un%\""),
     CONNECT(false, "Authentication username=\"%un%\" cc=\"%cc%\""),
     INFO,
-    STATUS;
+    STATUS,
+    CHANGE;
 
     public final boolean signNeeded;
     private final String body;

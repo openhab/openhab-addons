@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mynice.internal.xml.dto.Authentication;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.binding.mynice.internal.xml.dto.Device;
+import org.openhab.binding.mynice.internal.xml.dto.Event;
 import org.openhab.binding.mynice.internal.xml.dto.Interface;
 import org.openhab.binding.mynice.internal.xml.dto.Properties;
 import org.openhab.binding.mynice.internal.xml.dto.Response;
@@ -25,10 +26,9 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 /**
- * The {@link MyNiceXStream} class is a utility class that wraps an XStream
- * object and provide additional functionality specific to the PlugwiseHA
- * binding. It automatically load the correct converter classes and processes
- * the XStream annotions used by the object classes.
+ * The {@link MyNiceXStream} class is a utility class that wraps an XStream object and provide additional
+ * functionality specific to the MyNice binding. It automatically load the correct converter classes and
+ * processes the XStream annotations used by the object classes.
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -44,6 +44,7 @@ public class MyNiceXStream extends XStream {
         autodetectAnnotations(true);
         ignoreUnknownElements();
         alias("Response", Response.class);
+        alias("Event", Event.class);
         alias("Authentication", Authentication.class);
         alias("CommandType", CommandType.class);
         alias("UserPerm", UserPerm.class);
@@ -53,7 +54,7 @@ public class MyNiceXStream extends XStream {
         alias("Properties", Properties.class);
     }
 
-    public Response deserialize(String response) {
-        return (Response) fromXML(XML_HEADER + response);
+    public Event deserialize(String response) {
+        return (Event) fromXML(XML_HEADER + response);
     }
 }

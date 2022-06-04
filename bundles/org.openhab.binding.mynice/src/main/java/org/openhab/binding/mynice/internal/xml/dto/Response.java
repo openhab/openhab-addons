@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.mynice.internal.xml.dto;
 
-import java.util.List;
-
-import org.eclipse.jdt.annotation.NonNull;
-
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
@@ -23,36 +19,11 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class Response {
+public class Response extends Event {
     @XStreamAsAttribute
     private String gw;
-    @XStreamAsAttribute
-    private String protocolVersion;
-    @XStreamAsAttribute
-    private String id;
-    @XStreamAsAttribute
-    private String source;
-    @XStreamAsAttribute
-    private String protocolType;
-    @XStreamAsAttribute
-    public CommandType type;
-    @XStreamAsAttribute
-    private String target;
-
-    @XStreamAlias("Error")
-    public Error error;
-
     @XStreamAlias("Authentication")
     public Authentication authentication;
-
     @XStreamAlias("Interface")
     public Interface intf;
-
-    @XStreamAlias("Devices")
-    private List<Device> devices;
-
-    public @NonNull List<Device> getDevices() {
-        List<Device> localDevices = devices;
-        return localDevices == null ? List.of() : localDevices;
-    }
 }
