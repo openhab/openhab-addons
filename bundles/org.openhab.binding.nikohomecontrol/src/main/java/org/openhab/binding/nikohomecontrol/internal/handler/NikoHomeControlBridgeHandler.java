@@ -80,7 +80,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
             int refreshInterval = getConfig().as(NikoHomeControlBridgeConfig.class).refresh;
             setupRefreshTimer(refreshInterval);
-            
+
             if (!comm.communicationActive()) {
                 bridgeOffline();
                 return;
