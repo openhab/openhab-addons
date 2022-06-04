@@ -189,10 +189,10 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      * To be called from implementing classes when initializing the device, to start initialization refresh
      */
     protected void initDevice() {
-        updateStatus(ThingStatus.UNKNOWN);
-
         String udn = getUDN();
         if ((udn != null) && !udn.isEmpty()) {
+            updateStatus(ThingStatus.UNKNOWN);
+
             if (config.refresh == 0) {
                 upnpScheduler.submit(this::initJob);
             } else {
