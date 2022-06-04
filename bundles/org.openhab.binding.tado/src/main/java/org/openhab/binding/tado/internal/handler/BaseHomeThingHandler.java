@@ -103,6 +103,6 @@ public abstract class BaseHomeThingHandler extends BaseThingHandler {
         return (bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)
                 && (thing.getStatus() == ThingStatus.OFFLINE)
                 && (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR)
-                && (failedReconnectAttempts < maxReconnectAttempts);
+                && ((maxReconnectAttempts < 0) || (maxReconnectAttempts > failedReconnectAttempts));
     }
 }

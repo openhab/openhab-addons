@@ -25,7 +25,7 @@
 				<context>password</context>
 			</parameter>
 
-			<parameter name="maxReconnectAttempts" type="integer" min="0" max="12" step="1" required="true">
+			<parameter name="maxReconnectAttempts" type="integer" min="-1" max="12" step="1" required="true">
 				<default>3</default>
 				<label>Max Reconnect Attempts</label>
 				<description>Maximum allowed number of attempts to reconnect things after going offline due to a communication error</description>
