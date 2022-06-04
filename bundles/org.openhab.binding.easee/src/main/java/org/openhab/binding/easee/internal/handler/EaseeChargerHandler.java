@@ -150,7 +150,7 @@ public class EaseeChargerHandler extends BaseThingHandler
      */
     @Override
     public void updateChannelStatus(Map<Channel, State> values) {
-        logger.debug("Handling channel update.");
+        logger.debug("Handling charger channel update.");
 
         for (Channel channel : values.keySet()) {
             if (getThing().getChannels().contains(channel)) {

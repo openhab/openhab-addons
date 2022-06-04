@@ -16,6 +16,7 @@ import static org.openhab.binding.easee.internal.EaseeBindingConstants.CHANNEL_T
 
 import java.util.Map;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.easee.internal.UtilsTrait;
@@ -48,7 +49,9 @@ public interface EaseeThingHandler extends ThingHandler, ChannelProvider, UtilsT
      *
      * @param values key-value list where key is the channel
      */
-    void updateChannelStatus(Map<Channel, State> values);
+    default void updateChannelStatus(Map<Channel, State> values) {
+        throw new NotImplementedException("buildEaseeCommand not implemented/supported by this thing type");
+    }
 
     /**
      * return the bridge's configuration
@@ -109,7 +112,9 @@ public interface EaseeThingHandler extends ThingHandler, ChannelProvider, UtilsT
      * @param channel the channel which belongs to the command.
      * @return
      */
-    EaseeCommand buildEaseeCommand(Command command, Channel channel);
+    default EaseeCommand buildEaseeCommand(Command command, Channel channel) {
+        throw new NotImplementedException("buildEaseeCommand not implemented/supported by this thing type");
+    }
 
     /**
      * determines the channel for a given groupId and channelId.

@@ -30,14 +30,10 @@ import org.openhab.binding.easee.internal.connector.WebInterface;
 import org.openhab.binding.easee.internal.discovery.EaseeSiteDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,31 +95,6 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
         webInterface.dispose();
     }
 
-    /**
-     * will update all channels provided in the map
-     */
-    @Override
-    public void updateChannelStatus(Map<Channel, State> values) {
-        logger.debug("Handling channel update.");
-
-        for (Channel channel : values.keySet()) {
-            if (getThing().getChannels().contains(channel)) {
-                State value = values.get(channel);
-                if (value != null) {
-                    logger.debug("Channel is to be updated: {}: {}", channel.getUID().getAsString(), value);
-                    updateState(channel.getUID(), value);
-                } else {
-                    logger.debug("Value is null or not provided by Easee Cloud (channel: {})",
-                            channel.getUID().getAsString());
-                    updateState(channel.getUID(), UnDefType.UNDEF);
-                }
-            } else {
-                logger.debug("Could not identify channel: {} for model {}", channel.getUID().getAsString(),
-                        getThing().getThingTypeUID().getAsString());
-            }
-        }
-    }
-
     @Override
     public EaseeConfiguration getBridgeConfiguration() {
         return this.getConfigAs(EaseeConfiguration.class);
@@ -149,11 +120,5 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
     @Override
     public void enqueueCommand(EaseeCommand command) {
         webInterface.enqueueCommand(command);
-    }
-
-    @Override
-    public EaseeCommand buildEaseeCommand(Command command, Channel channel) {
-        // this should not happen
-        throw new UnsupportedOperationException("write operations not supported for bridge");
     }
 }
