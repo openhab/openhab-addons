@@ -95,33 +95,36 @@ public class TadoHomeHandler extends BaseBridgeHandler {
                     scheduler.submit(() -> handler.bridgeStatusChanged(getThing().getStatusInfo()));
                 }
             }
-            return;
         }
 
         try {
-            // Get user info to verify successful authentication and connection to server
-            User user = api.showUser();
-            if (user == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Cannot connect to server. Username and/or password might be invalid");
-                return;
+            // if we are already online, don't make unnecessary calls on the server
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                // Get user info to verify successful authentication and connection to server
+                User user = api.showUser();
+                if (user == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Cannot connect to server. Username and/or password might be invalid");
+                    return;
+                }
+
+                List<UserHomes> homes = user.getHomes();
+                if (homes == null || homes.isEmpty()) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "User does not have access to any home");
+                    return;
+                }
+
+                Integer firstHomeId = homes.get(0).getId();
+                if (firstHomeId == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Missing Home Id");
+                    return;
+                }
+
+                homeId = firstHomeId.longValue();
             }
 
-            List<UserHomes> homes = user.getHomes();
-            if (homes == null || homes.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "User does not have access to any home");
-                return;
-            }
-
-            Integer firstHomeId = homes.get(0).getId();
-            if (firstHomeId == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Missing Home Id");
-                return;
-            }
-
-            homeId = firstHomeId.longValue();
-
+            // but always make one server call as a 'ping' to confirm we are really still online
             HomeInfo homeInfo = api.showHome(homeId);
             TemperatureUnit temperatureUnit = org.openhab.binding.tado.internal.api.model.TemperatureUnit.FAHRENHEIT == homeInfo
                     .getTemperatureUnit() ? TemperatureUnit.FAHRENHEIT : TemperatureUnit.CELSIUS;
