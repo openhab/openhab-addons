@@ -14,7 +14,7 @@ Parameter              | Required | Description
 -----------------------|----------|-
 `username`             | yes      | Username used to log in at [my.tado](https://my.tado.com)
 `password`             | yes      | Password of the username
-`maxReconnectAttempts` | yes      | Maximum number times that the Bridge will try to reconnect Things that went offline due to communication errors. Allowed values 0..10 (default=3)
+`maxReconnectAttempts` | yes      | Maximum number times that the Bridge will try to reconnect Things that went offline due to communication errors. Allowed values 0..12 (default=3)
 
 Example `tado.things`
 
