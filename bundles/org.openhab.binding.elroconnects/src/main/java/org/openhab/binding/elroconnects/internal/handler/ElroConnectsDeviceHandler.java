@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.elroconnects.internal.handler;
 
+import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.ElroDeviceType;
 import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDevice;
 import org.openhab.binding.elroconnects.internal.util.ElroConnectsUtil;
 import org.openhab.core.thing.Bridge;
@@ -24,6 +27,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -49,12 +53,30 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
         deviceId = config.deviceId;
 
         ElroConnectsBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler == null) {
+            // Thing status has already been updated in getBridgeHandler()
+            return;
+        }
 
-        if (bridgeHandler != null) {
-            bridgeHandler.setDeviceHandler(deviceId, this);
-            updateProperties(bridgeHandler);
-            updateDeviceName(bridgeHandler);
-            refreshChannels(bridgeHandler);
+        if (bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+            ElroConnectsDevice device = bridgeHandler.getDevice(deviceId);
+            if (device != null) {
+                ElroDeviceType deviceType = TYPE_MAP.get(device.getDeviceType());
+                if ((deviceType == null) || !thing.getThingTypeUID().equals(THING_TYPE_MAP.get(deviceType))) {
+                    String msg = String.format("@text/offline.invalid-device-type [ \"%s\" ]", deviceType);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                } else {
+                    bridgeHandler.setDeviceHandler(deviceId, this);
+                    updateProperties(bridgeHandler);
+                    updateDeviceName(bridgeHandler);
+                    refreshChannels(bridgeHandler);
+                }
+            } else {
+                String msg = String.format("@text/offline.invalid-device-id [ \"%d\" ]", deviceId);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -88,6 +110,15 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
         }
 
         return bridgeHandler;
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            initialize();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
     }
 
     @Override
