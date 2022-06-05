@@ -52,32 +52,32 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 @WebSocket
-public class ShellyWebSocket {
-    private final Logger logger = LoggerFactory.getLogger(ShellyWebSocket.class);
+public class Shelly2WebSocket {
+    private final Logger logger = LoggerFactory.getLogger(Shelly2WebSocket.class);
     private final Gson gson = new Gson();
 
     private String deviceIp = "";
     private boolean inbound = false;
 
     private @Nullable Session session;
-    private @Nullable ShellyWebSocketInterface websocketHandler;
+    private @Nullable Shelly2WebSocketInterface websocketHandler;
     private final WebSocketClient client = new WebSocketClient();
     private @Nullable ShellyThingTable thingTable;
 
-    public ShellyWebSocket() {
+    public Shelly2WebSocket() {
         int i = 1;
     }
 
-    public ShellyWebSocket(String deviceIp) {
+    public Shelly2WebSocket(String deviceIp) {
         this.deviceIp = deviceIp;
     }
 
-    public ShellyWebSocket(ShellyThingTable thingTable, boolean inbound) {
+    public Shelly2WebSocket(ShellyThingTable thingTable, boolean inbound) {
         this.thingTable = thingTable;
         this.inbound = inbound;
     }
 
-    public void addMessageHandler(ShellyWebSocketInterface interfacehandler) {
+    public void addMessageHandler(Shelly2WebSocketInterface interfacehandler) {
         this.websocketHandler = interfacehandler;
     }
 
@@ -142,7 +142,7 @@ public class ShellyWebSocket {
 
     @OnWebSocketMessage
     public void onText(Session session, String receivedMessage) {
-        ShellyWebSocketInterface handler = websocketHandler;
+        Shelly2WebSocketInterface handler = websocketHandler;
         if (handler != null) {
             try {
                 Shelly2RpcBaseMessage message = fromJson(gson, receivedMessage, Shelly2RpcBaseMessage.class);

@@ -22,7 +22,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNoti
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public interface ShellyWebSocketInterface {
+public interface Shelly2WebSocketInterface {
 
     public void onConnect(boolean connected);
 

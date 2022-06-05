@@ -39,6 +39,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_CHECKUPD = "Shelly.CheckForUpdate";
     public static final String SHELLYRPC_METHOD_UPDATE = "Shelly.Update";
     public static final String SHELLYRPC_METHOD_GETSWITCHSTATUS = "Switch.GetStatus";
+    public static final String SHELLYRPC_METHOD_COVER_SETPOS = "Cover.GoToPosition";
     public static final String SHELLYRPC_METHOD_WSGETCONFIG = "WS.GetConfig";
     public static final String SHELLYRPC_METHOD_WSSETCONFIG = "WS.SetConfig";
 
@@ -75,9 +76,11 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_RMODE_DUAL = "dual";
     public static final String SHELLY2_RMODE_DETACHED = "detached";
 
+    public static final String SHELLY2_RSTATE_OPENING = "opening";
     public static final String SHELLY2_RSTATE_OPEN = "open";
+    public static final String SHELLY2_RSTATE_CLOSING = "closing";
     public static final String SHELLY2_RSTATE_CLOSED = "closed";
-    public static final String SHELLY2_RSTATE_STOP = "stop";
+    public static final String SHELLY2_RSTATE_STOPPED = "stopped";
     public static final String SHELLY2_RSTATE_CALIB = "calibrating";
 
     // Event notifications
@@ -388,12 +391,12 @@ public class Shelly2ApiJsonDTO {
                 @SerializedName("target_pos")
                 public Integer targetPos;
                 @SerializedName("move_timeout")
-                public Integer moveTimeout;
+                public Double moveTimeout;
                 @SerializedName("move_started_at")
-                public Integer moveStartedAt;
+                public Double moveStartedAt;
                 @SerializedName("pos_control")
                 public Boolean posControl;
-                public Shelly2DeviceStatusSTemp temperature;
+                public Shelly2DeviceStatusTemp temperature;
                 public ArrayList<String> errors;
             }
 
@@ -402,7 +405,7 @@ public class Shelly2ApiJsonDTO {
                 public Double rh;
             }
 
-            public class Shelly2DeviceStatusTemp extends Shelly2DeviceStatusSTemp {
+            public class Shelly2DeviceStatusTempId extends Shelly2DeviceStatusTemp {
                 public Integer id;
             }
 
@@ -452,7 +455,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("humidity:0")
             public Shelly2DeviceStatusHumidity humidity0;
             @SerializedName("temperature:0")
-            public Shelly2DeviceStatusTemp temperature0;
+            public Shelly2DeviceStatusTempId temperature0;
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
         }
@@ -513,11 +516,11 @@ public class Shelly2ApiJsonDTO {
         public Double current;
         public Double pf;
         public Shelly2Energy aenergy;
-        public Shelly2DeviceStatusSTemp temperature;
+        public Shelly2DeviceStatusTemp temperature;
         public String[] errors;
     }
 
-    public static class Shelly2DeviceStatusSTemp {
+    public static class Shelly2DeviceStatusTemp {
         public Double tC;
         public Double tF;
     }
@@ -538,15 +541,35 @@ public class Shelly2ApiJsonDTO {
         public String sslCA;
     }
 
-    public static class Shelly2WsConfigRequest {
-        public Integer id;
+    public static class Shelly2RpcRequest {
+        public Integer id = 0;
         public String method;
 
-        class Shelly2WsConfigRequestPamars {
+        class Shelly2RpcRequestParams {
+            public Integer id;
+            public Integer pos;
             public Shelly2WsConfig config;
         }
 
-        public Shelly2WsConfigRequestPamars params = new Shelly2WsConfigRequestPamars();
+        public Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+
+        public Shelly2RpcRequest() {
+        }
+
+        public Shelly2RpcRequest withMethod(String method) {
+            this.method = method;
+            return this;
+        }
+
+        public Shelly2RpcRequest withId(int id) {
+            params.id = id;
+            return this;
+        }
+
+        public Shelly2RpcRequest withPos(int pos) {
+            params.pos = pos;
+            return this;
+        }
     }
 
     public static class Shelly2WsConfigResponse {

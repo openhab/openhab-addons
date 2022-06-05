@@ -70,7 +70,7 @@ public class Shelly2InboundWSServlet extends WebSocketServlet {
             factory.getPolicy().setIdleTimeout(15000);
             // factory.register(Shelly2InboundWS.class);
             factory.setCreator(new Shelly2WebSocketCreator(thingTable));
-            factory.register(ShellyWebSocket.class);
+            factory.register(Shelly2WebSocket.class);
         }
     }
 
@@ -83,7 +83,7 @@ public class Shelly2InboundWSServlet extends WebSocketServlet {
 
         @Override
         public Object createWebSocket(@Nullable ServletUpgradeRequest req, @Nullable ServletUpgradeResponse resp) {
-            return new ShellyWebSocket(thingTable, true);
+            return new Shelly2WebSocket(thingTable, true);
         }
     }
 }

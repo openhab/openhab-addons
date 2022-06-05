@@ -53,12 +53,6 @@
 			<description>@text/thing-type.config.shelly.roller.favoriteDOWN.description</description>
 			<default>0</default>
 		</parameter>
-		<parameter name="eventsRoller" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.roller.eventsRoller.label)</label>
-			<description>@text/thing-type.config.shelly.roller.eventsRoller.description</description>
-			<advanced>true</advanced>
-			<default>false</default>
-		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
 			<label>@text/thing-type.config.shelly.updateInterval.label</label>
 			<description>@text/thing-type.config.shelly.updateInterval.description</description>

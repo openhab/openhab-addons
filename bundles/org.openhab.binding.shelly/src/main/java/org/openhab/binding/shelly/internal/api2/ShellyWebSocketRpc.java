@@ -40,15 +40,15 @@ import com.google.gson.Gson;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class ShellyWebSocketRpc implements ShellyWebSocketInterface {
+public class ShellyWebSocketRpc implements Shelly2WebSocketInterface {
     private final Logger logger = LoggerFactory.getLogger(ShellyWebSocketRpc.class);
     private final Gson gson = new Gson();
     private final Random random = new Random();
 
     private @Nullable ShellyThingInterface thing;
     private final ShellyThingConfiguration config;
-    private final ShellyWebSocket rpcSocket;
-    private final ShellyWebSocketInterface wsCaller;
+    private final Shelly2WebSocket rpcSocket;
+    private final Shelly2WebSocketInterface wsCaller;
     private SocketStatus actualStatus = SocketStatus.UNINITIALIZED_STATE;
     private @Nullable Future<?> webSocketPollingJob;
     private @Nullable Future<?> webSocketReconnectionPollingJob;
@@ -66,18 +66,18 @@ public class ShellyWebSocketRpc implements ShellyWebSocketInterface {
         RECONNECTION_PROCESS;
     }
 
-    public ShellyWebSocketRpc(ShellyThingInterface thingInterface, ShellyWebSocketInterface wsCaller) {
+    public ShellyWebSocketRpc(ShellyThingInterface thingInterface, Shelly2WebSocketInterface wsCaller) {
         this.thing = thingInterface;
         this.config = thingInterface.getThingConfig();
         this.wsCaller = wsCaller;
-        this.rpcSocket = new ShellyWebSocket(config.deviceIp);
+        this.rpcSocket = new Shelly2WebSocket(config.deviceIp);
         rpcSocket.addMessageHandler(this);
     }
 
-    public ShellyWebSocketRpc(ShellyThingConfiguration config, ShellyWebSocketInterface wsCaller) {
+    public ShellyWebSocketRpc(ShellyThingConfiguration config, Shelly2WebSocketInterface wsCaller) {
         this.config = config;
         this.wsCaller = wsCaller;
-        this.rpcSocket = new ShellyWebSocket(config.deviceIp);
+        this.rpcSocket = new Shelly2WebSocket(config.deviceIp);
         rpcSocket.addMessageHandler(this);
     }
 

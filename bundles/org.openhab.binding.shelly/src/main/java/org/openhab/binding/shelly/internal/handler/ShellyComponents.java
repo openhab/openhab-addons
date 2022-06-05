@@ -282,6 +282,12 @@ public class ShellyComponents {
 
                 for (ShellySettingsMeter meter : status.meters) {
                     if (getBool(meter.isValid)) {
+                        // Create channels for 1 Meter
+                        if (!thingHandler.areChannelsCreated()) {
+                            thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
+                                    .createMeterChannels(thingHandler.getThing(), meter, groupName));
+                        }
+
                         currentWatts += getDouble(meter.power);
                         totalWatts += getDouble(meter.total);
                         if (meter.counters != null) {
