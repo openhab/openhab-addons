@@ -196,16 +196,9 @@ public class EventDTO extends BaseEventDTO {
      * Returns the isConnected {@link org.openhab.binding.livisismarthome.internal.client.api.entity.PropertyDTO} value.
      * Only available for event of type ControllerConnectivityChanged
      *
-     * @return {@link Boolean} or <code>null</code>, if
-     *         {@link org.openhab.binding.livisismarthome.internal.client.api.entity.PropertyDTO} is not available or
-     *         {@link EventDTO} is not
-     *         of
-     *         type ControllerConnectivityChanged.
+     * @return {@link Boolean} or <code>null</code>, if not available
      */
     public Boolean getIsConnected() {
-        if (!isControllerConnectivityChangedEvent()) {
-            return null;
-        }
         return getProperties().getIsConnected();
     }
 }

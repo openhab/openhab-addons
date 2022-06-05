@@ -105,15 +105,6 @@ public class BaseEventDTO {
     }
 
     /**
-     * Returns true, if the {@link EventDTO} is a ControllerConnectivityChanged event.
-     *
-     * @return
-     */
-    public boolean isControllerConnectivityChangedEvent() {
-        return TYPE_CONTROLLER_CONNECTIVITY_CHANGED.equals(getType());
-    }
-
-    /**
      * Returns true, if the {@link EventDTO} is a Disconnect event.
      *
      * @return true if it is a Disconnect event, otherwise false
