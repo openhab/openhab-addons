@@ -39,6 +39,7 @@
 		<channels>
             <channel id="doorstatus" typeId="doorstatus"/>
             <channel id="obstruct" typeId="obstruct"/>
+            <channel id="moving" typeId="moving"/>
         </channels>
         
         <representation-property>id</representation-property>
@@ -64,6 +65,13 @@
                 <option value="stopped">Stopped</option>
             </options>
         </state>
+    </channel-type>
+    
+    <channel-type id="moving">
+        <item-type>Switch</item-type>
+        <label>Moving</label>
+        <description>Indicates if the device is currently operating a command.</description>
+        <state readOnly="true"/>
     </channel-type>
     
     <channel-type id="obstruct">

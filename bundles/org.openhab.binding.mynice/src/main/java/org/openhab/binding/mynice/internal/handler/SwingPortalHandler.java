@@ -22,6 +22,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.binding.mynice.internal.xml.dto.Device;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -30,6 +31,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 
 /**
  *
@@ -56,7 +58,13 @@ public class SwingPortalHandler extends BaseThingHandler implements MyNiceDataLi
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // OpenClosedType.OPEN;
+        if (command instanceof RefreshType) {
+            return;
+        } else {
+            // if (DOOR_STATUS.equals(channelUID.getId()) && command instanceof OpenCloseCommand) {
+            // sendCommand(getGateCommand(command.toString().toLowerCase()));
+            // }
+        }
     }
 
     @Override
@@ -75,8 +83,10 @@ public class SwingPortalHandler extends BaseThingHandler implements MyNiceDataLi
         if (device.prod != null) {
             getBridgeHandler().ifPresent(h -> h.request(CommandType.STATUS));
         } else {
-            updateState(DOOR_STATUS, new StringType(device.properties.doorStatus));
+            String status = device.properties.doorStatus;
+            updateState(DOOR_STATUS, new StringType(status));
             updateState(DOOR_OBSTRUCTED, new StringType(device.properties.obstruct));
+            updateState(DOOR_MOVING, OnOffType.from(status.endsWith("ing")));
         }
         return true;
     }

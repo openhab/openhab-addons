@@ -27,6 +27,7 @@ public class MyNiceBindingConstants {
     // List of all Channel ids
     public static final String DOOR_STATUS = "doorstatus";
     public static final String DOOR_OBSTRUCTED = "obstruct";
+    public static final String DOOR_MOVING = "moving";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_TYPE_IT4WIFI = new ThingTypeUID(BINDING_ID, "it4wifi");
