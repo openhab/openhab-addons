@@ -121,6 +121,8 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
         login.put("password", password);
         loginJson = gson.toJson(login);
 
+        updateStatus(ThingStatus.UNKNOWN);
+
         // If background discovery is enabled, start polling (will do login first), else only login to take the thing
         // online if successful
         if (enableBackgroundDiscovery) {
