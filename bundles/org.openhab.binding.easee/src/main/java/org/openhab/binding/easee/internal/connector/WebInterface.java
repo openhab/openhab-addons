@@ -252,6 +252,7 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
                     setAuthenticated(false);
                     break;
                 case OK:
+                case ACCEPTED:
                     // no action needed as the thing is already online.
                     break;
                 default:
