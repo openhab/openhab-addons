@@ -66,6 +66,8 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
                     String msg = String.format("@text/offline.invalid-device-type [ \"%d\" ]", deviceType);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 } else {
+                    updateStatus(ThingStatus.UNKNOWN);
+
                     bridgeHandler.setDeviceHandler(deviceId, this);
                     updateProperties(bridgeHandler);
                     updateDeviceName(bridgeHandler);
