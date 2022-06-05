@@ -162,10 +162,10 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         legacyFirmware = config.legacyFirmware;
 
         if (connectorId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.no-device-id");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.no-connector-id");
             return;
         } else if (!CONNECTOR_ID_PATTERN.matcher(connectorId).matches()) {
-            String msg = String.format("@text/offline.invalid-device-id [ \"%s\" ]", connectorId);
+            String msg = String.format("@text/offline.invalid-connector-id [ \"%s\" ]", connectorId);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
             return;
         }

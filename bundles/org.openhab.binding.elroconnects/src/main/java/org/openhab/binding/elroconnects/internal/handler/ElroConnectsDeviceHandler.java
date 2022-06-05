@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.elroconnects.internal.handler;
 
+import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.ElroDeviceType;
 import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDevice;
 import org.openhab.binding.elroconnects.internal.util.ElroConnectsUtil;
 import org.openhab.core.thing.Bridge;
@@ -56,10 +59,22 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
         }
 
         if (bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
-            bridgeHandler.setDeviceHandler(deviceId, this);
-            updateProperties(bridgeHandler);
-            updateDeviceName(bridgeHandler);
-            refreshChannels(bridgeHandler);
+            ElroConnectsDevice device = bridgeHandler.getDevice(deviceId);
+            if (device != null) {
+                ElroDeviceType deviceType = TYPE_MAP.get(device.getDeviceType());
+                if ((deviceType == null) || !thing.getThingTypeUID().equals(THING_TYPE_MAP.get(deviceType))) {
+                    String msg = String.format("@text/offline.invalid-device-type [ \"%d\" ]", deviceType);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                } else {
+                    bridgeHandler.setDeviceHandler(deviceId, this);
+                    updateProperties(bridgeHandler);
+                    updateDeviceName(bridgeHandler);
+                    refreshChannels(bridgeHandler);
+                }
+            } else {
+                String msg = String.format("@text/offline.invalid-device-id [ \"%d\" ]", deviceId);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
