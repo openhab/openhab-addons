@@ -63,7 +63,7 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
             if (device != null) {
                 ElroDeviceType deviceType = TYPE_MAP.get(device.getDeviceType());
                 if ((deviceType == null) || !thing.getThingTypeUID().equals(THING_TYPE_MAP.get(deviceType))) {
-                    String msg = String.format("@text/offline.invalid-device-type [ \"%s\" ]", device.getDeviceType());
+                    String msg = String.format("@text/offline.invalid-device-type [ \"%s\" ]", deviceType);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 } else {
                     updateStatus(ThingStatus.UNKNOWN);
