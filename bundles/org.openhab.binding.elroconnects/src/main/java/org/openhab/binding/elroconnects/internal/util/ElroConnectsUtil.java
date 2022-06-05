@@ -48,7 +48,7 @@ public final class ElroConnectsUtil {
         byte[] bytes = input.getBytes(StandardCharsets.UTF_8);
         String content = "@".repeat((length > bytes.length) ? (length - bytes.length) : 0)
                 + new String(bytes, StandardCharsets.UTF_8);
-        bytes = Arrays.copyOf(content.getBytes(StandardCharsets.UTF_8), length);
+        bytes = Arrays.copyOf(content.getBytes(StandardCharsets.UTF_8), length + 1);
         bytes[length] = (byte) "$".charAt(0);
         return HexUtils.bytesToHex(bytes);
     }
