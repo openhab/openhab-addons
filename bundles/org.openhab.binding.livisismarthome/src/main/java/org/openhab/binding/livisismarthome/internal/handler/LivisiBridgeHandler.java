@@ -109,7 +109,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
     private @Nullable LivisiClient client;
     private @Nullable LivisiWebSocket webSocket;
-    private @Nullable DeviceStructureManager deviceStructMan;
+    private @NonNullByDefault({}) DeviceStructureManager deviceStructMan;
     private @Nullable String bridgeId;
     private @Nullable ScheduledFuture<?> reInitJob;
     private @Nullable ScheduledFuture<?> bridgeRefreshJob;
@@ -204,10 +204,9 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private boolean refreshDevices() {
         try {
             final LivisiClient client = this.client;
-            final DeviceStructureManager deviceStructureManager = this.deviceStructMan;
-            if (client != null && deviceStructureManager != null) {
+            if (client != null) {
                 configVersion = client.refreshStatus();
-                deviceStructureManager.refreshDevices();
+                deviceStructMan.refreshDevices();
                 return true;
             }
         } catch (IOException e) {
@@ -409,14 +408,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @return a Collection of {@link DeviceDTO}s
      */
     public Collection<DeviceDTO> loadDevices() {
-        return loadDevices(deviceStructMan);
-    }
-
-    private static Collection<DeviceDTO> loadDevices(@Nullable DeviceStructureManager deviceStructMan) {
-        if (deviceStructMan != null) {
-            return deviceStructMan.getDeviceList();
-        }
-        return Collections.emptyList();
+        return deviceStructMan.getDeviceList();
     }
 
     public boolean isSHCClassic() {
@@ -429,14 +421,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @return bridge {@link DeviceDTO}
      */
     private Optional<DeviceDTO> getBridgeDevice() {
-        return getBridgeDevice(deviceStructMan);
-    }
-
-    private static Optional<DeviceDTO> getBridgeDevice(@Nullable final DeviceStructureManager deviceStructureManager) {
-        if (deviceStructureManager != null) {
-            return deviceStructureManager.getBridgeDevice();
-        }
-        return Optional.empty();
+        return deviceStructMan.getBridgeDevice();
     }
 
     /**
@@ -446,15 +431,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @return {@link DeviceDTO} or null, if it does not exist or no {@link DeviceStructureManager} is available
      */
     public Optional<DeviceDTO> getDeviceById(final String deviceId) {
-        return getDeviceById(deviceId, deviceStructMan);
-    }
-
-    private static Optional<DeviceDTO> getDeviceById(final String deviceId,
-            @Nullable final DeviceStructureManager deviceStructMan) {
-        if (deviceStructMan != null) {
-            return deviceStructMan.getDeviceById(deviceId);
-        }
-        return Optional.empty();
+        return deviceStructMan.getDeviceById(deviceId);
     }
 
     private void refreshBridgeState(@Nullable LivisiClient client) {
@@ -480,17 +457,10 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @return the {@link DeviceDTO} or null, if it does not exist or no {@link DeviceStructureManager} is available
      */
     public Optional<DeviceDTO> refreshDevice(final String deviceId) {
-        return refreshDevice(deviceId, deviceStructMan);
-    }
-
-    private Optional<DeviceDTO> refreshDevice(final String deviceId,
-            @Nullable final DeviceStructureManager deviceStructMan) {
-        if (deviceStructMan != null) {
-            try {
-                return deviceStructMan.refreshDevice(deviceId, isSHCClassic());
-            } catch (IOException e) {
-                handleClientException(e);
-            }
+        try {
+            return deviceStructMan.refreshDevice(deviceId, isSHCClassic());
+        } catch (IOException e) {
+            handleClientException(e);
         }
         return Optional.empty();
     }
@@ -555,7 +525,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 switch (event.getType()) {
                     case BaseEventDTO.TYPE_STATE_CHANGED:
                     case BaseEventDTO.TYPE_BUTTON_PRESSED:
-                        handleStateChangedEvent(event, deviceStructMan);
+                        handleStateChangedEvent(event);
                         break;
                     case BaseEventDTO.TYPE_DISCONNECT:
                         logger.debug("Websocket disconnected.");
@@ -565,17 +535,17 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                         handleConfigurationChangedEvent(event);
                         break;
                     case BaseEventDTO.TYPE_CONTROLLER_CONNECTIVITY_CHANGED:
-                        handleControllerConnectivityChangedEvent(event, deviceStructMan);
+                        handleControllerConnectivityChangedEvent(event);
                         break;
                     case BaseEventDTO.TYPE_NEW_MESSAGE_RECEIVED:
                     case BaseEventDTO.TYPE_MESSAGE_CREATED:
                         final Optional<MessageEventDTO> messageEvent = gson.fromJson(msg, MessageEventDTO.class);
                         if (messageEvent.isPresent()) {
-                            handleNewMessageReceivedEvent(Objects.requireNonNull(messageEvent.get()), deviceStructMan);
+                            handleNewMessageReceivedEvent(Objects.requireNonNull(messageEvent.get()));
                         }
                         break;
                     case BaseEventDTO.TYPE_MESSAGE_DELETED:
-                        handleMessageDeletedEvent(event, deviceStructMan);
+                        handleMessageDeletedEvent(event);
                         break;
                     default:
                         logger.debug("Unsupported event type {}.", event.getType());
@@ -601,33 +571,30 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      *
      * @param event event
      */
-    private void handleStateChangedEvent(final EventDTO event, @Nullable final DeviceStructureManager deviceStructMan)
-            throws IOException {
+    private void handleStateChangedEvent(final EventDTO event) throws IOException {
 
-        if (deviceStructMan != null) {
-            // CAPABILITY
-            if (event.isLinkedtoCapability()) {
-                logger.trace("Event is linked to capability");
-                final Optional<DeviceDTO> device = deviceStructMan.getDeviceByCapabilityId(event.getSourceId());
-                notifyDeviceStatusListeners(device, event);
+        // CAPABILITY
+        if (event.isLinkedtoCapability()) {
+            logger.trace("Event is linked to capability");
+            final Optional<DeviceDTO> device = deviceStructMan.getDeviceByCapabilityId(event.getSourceId());
+            notifyDeviceStatusListeners(device, event);
 
-                // DEVICE
-            } else if (event.isLinkedtoDevice()) {
-                logger.trace("Event is linked to device");
-                final String sourceId = event.getSourceId();
+            // DEVICE
+        } else if (event.isLinkedtoDevice()) {
+            logger.trace("Event is linked to device");
+            final String sourceId = event.getSourceId();
 
-                final Optional<DeviceDTO> bridgeDevice = deviceStructMan.getBridgeDevice();
-                final Optional<DeviceDTO> device;
-                if (bridgeDevice.isPresent() && !sourceId.equals(bridgeDevice.get().getId())) {
-                    device = deviceStructMan.refreshDevice(sourceId, isSHCClassic());
-                } else {
-                    device = deviceStructMan.getDeviceById(sourceId);
-                }
-                notifyDeviceStatusListeners(device, event);
-
+            final Optional<DeviceDTO> bridgeDevice = deviceStructMan.getBridgeDevice();
+            final Optional<DeviceDTO> device;
+            if (bridgeDevice.isPresent() && !sourceId.equals(bridgeDevice.get().getId())) {
+                device = deviceStructMan.refreshDevice(sourceId, isSHCClassic());
             } else {
-                logger.debug("link type {} not supported (yet?)", event.getSourceLinkType());
+                device = deviceStructMan.getDeviceById(sourceId);
             }
+            notifyDeviceStatusListeners(device, event);
+
+        } else {
+            logger.debug("link type {} not supported (yet?)", event.getSourceLinkType());
         }
     }
 
@@ -636,21 +603,18 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      *
      * @param event event
      */
-    private void handleControllerConnectivityChangedEvent(final EventDTO event,
-            @Nullable final DeviceStructureManager deviceStructMan) throws IOException {
+    private void handleControllerConnectivityChangedEvent(final EventDTO event) throws IOException {
 
-        if (deviceStructMan != null) {
-            final Boolean connected = event.getIsConnected();
-            if (connected != null) {
-                final ThingStatus thingStatus = createThingStatus(connected);
-                logger.debug("SmartHome Controller connectivity changed to {}.", thingStatus);
-                if (connected) {
-                    deviceStructMan.refreshDevices();
-                }
-                updateStatus(thingStatus);
-            } else {
-                logger.debug("isConnected property missing in event! (returned null)");
+        final Boolean connected = event.getIsConnected();
+        if (connected != null) {
+            final ThingStatus thingStatus = createThingStatus(connected);
+            logger.debug("SmartHome Controller connectivity changed to {}.", thingStatus);
+            if (connected) {
+                deviceStructMan.refreshDevices();
             }
+            updateStatus(thingStatus);
+        } else {
+            logger.debug("isConnected property missing in event! (returned null)");
         }
     }
 
@@ -659,24 +623,20 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      *
      * @param event event
      */
-    private void handleNewMessageReceivedEvent(final MessageEventDTO event,
-            @Nullable final DeviceStructureManager deviceStructMan) throws IOException {
+    private void handleNewMessageReceivedEvent(final MessageEventDTO event) throws IOException {
 
-        if (deviceStructMan != null) {
-            final MessageDTO message = event.getMessage();
-            if (logger.isTraceEnabled()) {
-                logger.trace("Message: {}", gson.toJson(message));
-                logger.trace("Messagetype: {}", message.getType());
+        final MessageDTO message = event.getMessage();
+        if (logger.isTraceEnabled()) {
+            logger.trace("Message: {}", gson.toJson(message));
+            logger.trace("Messagetype: {}", message.getType());
+        }
+        if (MessageDTO.TYPE_DEVICE_LOW_BATTERY.equals(message.getType()) && message.getDevices() != null) {
+            for (final String link : message.getDevices()) {
+                final Optional<DeviceDTO> device = deviceStructMan.refreshDevice(LinkDTO.getId(link), isSHCClassic());
+                notifyDeviceStatusListener(event.getSourceId(), device);
             }
-            if (MessageDTO.TYPE_DEVICE_LOW_BATTERY.equals(message.getType()) && message.getDevices() != null) {
-                for (final String link : message.getDevices()) {
-                    final Optional<DeviceDTO> device = deviceStructMan.refreshDevice(LinkDTO.getId(link),
-                            isSHCClassic());
-                    notifyDeviceStatusListener(event.getSourceId(), device);
-                }
-            } else {
-                logger.debug("Message received event not yet implemented for Messagetype {}.", message.getType());
-            }
+        } else {
+            logger.debug("Message received event not yet implemented for Messagetype {}.", message.getType());
         }
     }
 
@@ -687,21 +647,18 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      *
      * @param event event
      */
-    private void handleMessageDeletedEvent(final EventDTO event, @Nullable final DeviceStructureManager deviceStructMan)
-            throws IOException {
+    private void handleMessageDeletedEvent(final EventDTO event) throws IOException {
 
-        if (deviceStructMan != null) {
-            final String messageId = event.getData().getId();
-            logger.debug("handleMessageDeletedEvent with messageId '{}'", messageId);
+        final String messageId = event.getData().getId();
+        logger.debug("handleMessageDeletedEvent with messageId '{}'", messageId);
 
-            Optional<DeviceDTO> device = deviceStructMan.getDeviceWithMessageId(messageId);
-            if (device.isPresent()) {
-                String id = device.get().getId();
-                Optional<DeviceDTO> deviceRefreshed = deviceStructMan.refreshDevice(id, isSHCClassic());
-                notifyDeviceStatusListener(event.getSourceId(), deviceRefreshed);
-            } else {
-                logger.debug("No device found with message id {}.", messageId);
-            }
+        Optional<DeviceDTO> device = deviceStructMan.getDeviceWithMessageId(messageId);
+        if (device.isPresent()) {
+            String id = device.get().getId();
+            Optional<DeviceDTO> deviceRefreshed = deviceStructMan.refreshDevice(id, isSHCClassic());
+            notifyDeviceStatusListener(event.getSourceId(), deviceRefreshed);
+        } else {
+            logger.debug("No device found with message id {}.", messageId);
         }
     }
 
@@ -756,28 +713,21 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @param state state (boolean)
      */
     public void commandSwitchDevice(final String deviceId, final boolean state) {
-        commandSwitchDevice(deviceId, state, deviceStructMan);
-    }
-
-    private void commandSwitchDevice(final String deviceId, final boolean state,
-            @Nullable final DeviceStructureManager deviceStructMan) {
-        if (deviceStructMan != null) {
-            // VariableActuator
-            Optional<DeviceDTO> device = deviceStructMan.getDeviceById(deviceId);
-            if (device.isPresent()) {
-                final String deviceType = device.get().getType();
-                if (DEVICE_VARIABLE_ACTUATOR.equals(deviceType)) {
-                    executeCommand(deviceId, CapabilityDTO.TYPE_VARIABLEACTUATOR,
-                            (capabilityId, client) -> client.setVariableActuatorState(capabilityId, state));
-                    // PSS / PSSO / ISS2 / BT-PSS
-                } else if (DEVICE_PSS.equals(deviceType) || DEVICE_PSSO.equals(deviceType)
-                        || DEVICE_ISS2.equals(deviceType) || DEVICE_BT_PSS.equals((deviceType))) {
-                    executeCommand(deviceId, CapabilityDTO.TYPE_SWITCHACTUATOR,
-                            (capabilityId, client) -> client.setSwitchActuatorState(capabilityId, state));
-                }
-            } else {
-                logger.debug("No device with id {} could get found!", deviceId);
+        // VariableActuator
+        Optional<DeviceDTO> device = deviceStructMan.getDeviceById(deviceId);
+        if (device.isPresent()) {
+            final String deviceType = device.get().getType();
+            if (DEVICE_VARIABLE_ACTUATOR.equals(deviceType)) {
+                executeCommand(deviceId, CapabilityDTO.TYPE_VARIABLEACTUATOR,
+                        (capabilityId, client) -> client.setVariableActuatorState(capabilityId, state));
+                // PSS / PSSO / ISS2 / BT-PSS
+            } else if (DEVICE_PSS.equals(deviceType) || DEVICE_PSSO.equals(deviceType) || DEVICE_ISS2.equals(deviceType)
+                    || DEVICE_BT_PSS.equals((deviceType))) {
+                executeCommand(deviceId, CapabilityDTO.TYPE_SWITCHACTUATOR,
+                        (capabilityId, client) -> client.setSwitchActuatorState(capabilityId, state));
             }
+        } else {
+            logger.debug("No device with id {} could get found!", deviceId);
         }
     }
 
@@ -856,9 +806,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
     private void executeCommand(final String deviceId, final String capabilityType,
             final CommandExecutor commandExecutor) {
-        DeviceStructureManager deviceStructMan = this.deviceStructMan;
         LivisiClient client = this.client;
-        if (deviceStructMan != null && client != null) {
+        if (client != null) {
             try {
                 final Optional<String> capabilityId = deviceStructMan.getCapabilityId(deviceId, capabilityType);
                 if (capabilityId.isPresent()) {
