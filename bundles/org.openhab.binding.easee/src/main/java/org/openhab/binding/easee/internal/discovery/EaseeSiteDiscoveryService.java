@@ -102,10 +102,15 @@ public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implemen
         JsonObject circuit = json.getAsJsonObject();
         String circuitId = getAsString(circuit, JSON_KEY_GENERIC_ID);
         String circuitName = getAsString(circuit, JSON_KEY_CIRCUIT_NAME);
+        String masterBackPlateId = getAsString(circuit.getAsJsonObject(JSON_KEY_MASTER_BACK_PLATE),
+                JSON_KEY_GENERIC_ID);
 
         if (circuitId != null) {
             DiscoveryResultBuilder builder = initDiscoveryResultBuilder(DEVICE_CIRCUIT, circuitId, circuitName)
                     .withProperty(THING_CONFIG_SITE_ID, bridgeHandler.getBridgeConfiguration().getSiteId());
+            if (masterBackPlateId != null) {
+                builder.withProperty(THING_CONFIG_MASTER_BACK_PLATE_ID, masterBackPlateId);
+            }
             thingDiscovered(builder.build());
 
             // handle contained chargers
@@ -133,11 +138,13 @@ public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implemen
                 JSON_KEY_MASTER_BACK_PLATE_ID);
         String chargerName = getAsString(charger, JSON_KEY_GENERIC_NAME);
 
-        if (chargerId != null && backPlateId != null) {
+        if (chargerId != null && backPlateId != null && masterBackPlateId != null) {
             DiscoveryResultBuilder builder = initDiscoveryResultBuilder(DEVICE_CHARGER, chargerId, chargerName)
                     .withProperty(Thing.PROPERTY_SERIAL_NUMBER, backPlateId);
-            // TODO: use constants
-            builder.withProperty("isMaster", backPlateId.equals(masterBackPlateId) ? "Yes" : "No");
+            builder.withProperty(THING_CONFIG_IS_MASTER,
+                    backPlateId.equals(masterBackPlateId) ? GENERIC_YES : GENERIC_NO);
+            builder.withProperty(THING_CONFIG_BACK_PLATE_ID, backPlateId);
+            builder.withProperty(THING_CONFIG_MASTER_BACK_PLATE_ID, masterBackPlateId);
             thingDiscovered(builder.build());
         }
     }
