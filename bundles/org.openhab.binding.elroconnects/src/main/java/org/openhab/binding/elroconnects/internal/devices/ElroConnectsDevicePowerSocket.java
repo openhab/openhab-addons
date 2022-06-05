@@ -69,6 +69,7 @@ public class ElroConnectsDevicePowerSocket extends ElroConnectsDevice {
         String deviceStatus = this.deviceStatus;
         if (deviceStatus.length() < 6) {
             logger.debug("Could not decode device status: {}", deviceStatus);
+            handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Device " + deviceId + " has a fault");
             return;
         }
 
