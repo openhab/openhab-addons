@@ -49,16 +49,19 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
         ElroConnectsDeviceConfiguration config = getConfigAs(ElroConnectsDeviceConfiguration.class);
         deviceId = config.deviceId;
 
-        Bridge bridge = getBridge();
         ElroConnectsBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler == null) {
+            // Thing status has already been updated in getBridgeHandler()
+            return;
+        }
 
-        if ((bridge != null) && (bridgeHandler != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
+        if (bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             bridgeHandler.setDeviceHandler(deviceId, this);
             updateProperties(bridgeHandler);
             updateDeviceName(bridgeHandler);
             refreshChannels(bridgeHandler);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
