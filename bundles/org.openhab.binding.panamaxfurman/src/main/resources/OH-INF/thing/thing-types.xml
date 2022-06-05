@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="panamaxfurman"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<thing-type id="telnet">
+		<label>Panamax/Furman Power Conditioner over Telnet</label>
+		<description>Binding for Panamax/Furman power conditioners which have the BlueBOLT-CV1 or BlueBOLT-CV2 interface card
+			installed.</description>
+
+		<channel-groups>
+			<channel-group typeId="powerConditionerInfoGroup" id="powerConditionerInfo"/>
+
+			<channel-group typeId="outletControlsTelnet" id="outlet1">
+				<label>Outlet 1</label>
+			</channel-group>
+			<channel-group typeId="outletControlsTelnet" id="outlet2">
+				<label>Outlet 2</label>
+			</channel-group>
+			<channel-group typeId="outletControlsTelnet" id="outlet3">
+				<label>Outlet 3</label>
+			</channel-group>
+			<channel-group typeId="outletControlsTelnet" id="outlet4">
+				<label>Outlet 4</label>
+			</channel-group>
+			<channel-group typeId="outletControlsTelnet" id="outlet5">
+				<label>Outlet 5</label>
+			</channel-group>
+			<channel-group typeId="outletControlsTelnet" id="outlet6">
+				<label>Outlet 6</label>
+			</channel-group>
+			<channel-group typeId="outletControlsTelnet" id="outlet7">
+				<label>Outlet 7</label>
+			</channel-group>
+			<channel-group typeId="outletControlsTelnet" id="outlet8">
+				<label>Outlet 8</label>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<context>network-address</context>
+				<label>Address</label>
+				<description>The address of the Panamax/Furman Power Conditioner to control.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="powerConditionerInfoGroup">
+		<label>Power Conditioner Info</label>
+		<channels>
+			<channel id="brandInfo" typeId="brandInfoChannel"/>
+			<channel id="modelInfo" typeId="modelInfoChannel"/>
+			<channel id="firmwareVersionInfo" typeId="firmwareVersionInfoChannel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="outletControlsTelnet">
+		<label>Outlet Controls Telenet</label>
+		<channels>
+			<channel id="power" typeId="powerChannel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="brandInfoChannel">
+		<item-type>String</item-type>
+		<label>Brand</label>
+		<description>Brand of the power conditioner</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="modelInfoChannel">
+		<item-type>String</item-type>
+		<label>Model</label>
+		<description>Model of the power conditioner</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="firmwareVersionInfoChannel">
+		<item-type>String</item-type>
+		<label>Firmware Version</label>
+		<description>Firmware version of the power conditioner</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="powerChannel">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power ON/OFF the Outlet</description>
+	</channel-type>
+
+</thing:thing-descriptions>
