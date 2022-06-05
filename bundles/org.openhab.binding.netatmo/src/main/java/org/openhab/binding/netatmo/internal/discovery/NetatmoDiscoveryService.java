@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.discovery;
 
+import static java.util.Comparator.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,6 +27,7 @@ import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
+import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAModule;
 import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
@@ -98,15 +101,18 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                                             .ifPresent(f -> bridgesUids.put(room.getId(), createThing(room, homeUID)));
                                 });
 
-                                // Creating modules that have no bridge first
-                                home.getModules().values().stream().filter(module -> module.getBridge() == null)
-                                        .forEach(device -> bridgesUids.put(device.getId(),
-                                                createThing(device, homeUID)));
-
-                                // Then the others
-                                home.getModules().values().stream().filter(module -> module.getBridge() != null)
-                                        .forEach(device -> createThing(device,
-                                                bridgesUids.getOrDefault(device.getBridge(), homeUID)));
+                                // Creating modules that have no bridge first, avoiding weather station itself
+                                home.getModules().values().stream()
+                                        .filter(module -> module.getType().feature != FeatureArea.WEATHER)
+                                        .sorted(comparing(HomeDataModule::getBridge, nullsFirst(naturalOrder())))
+                                        .forEach(module -> {
+                                            String bridgeId = module.getBridge();
+                                            if (bridgeId == null) {
+                                                bridgesUids.put(module.getId(), createThing(module, homeUID));
+                                            } else {
+                                                createThing(module, bridgesUids.getOrDefault(bridgeId, homeUID));
+                                            }
+                                        });
                             });
                 }
             } catch (NetatmoException e) {
