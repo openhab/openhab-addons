@@ -65,7 +65,6 @@ public class Shelly2WebSocket {
     private @Nullable ShellyThingTable thingTable;
 
     public Shelly2WebSocket() {
-        int i = 1;
     }
 
     public Shelly2WebSocket(String deviceIp) {
@@ -115,9 +114,7 @@ public class Shelly2WebSocket {
                 try {
                     ShellyThingInterface thing = thingTable.getThing(deviceIp);
                     Shelly2RpcApi api = (Shelly2RpcApi) thing.getApi();
-                    if (api != null) {
-                        websocketHandler = api.getRpc();
-                    }
+                    websocketHandler = api.getRpc();
                 } catch (IllegalArgumentException e) {
                     logger.debug("Event for unknown device ip ({})", deviceIp);
                 }
@@ -142,9 +139,9 @@ public class Shelly2WebSocket {
 
     @OnWebSocketMessage
     public void onText(Session session, String receivedMessage) {
-        Shelly2WebSocketInterface handler = websocketHandler;
-        if (handler != null) {
-            try {
+        try {
+            Shelly2WebSocketInterface handler = websocketHandler;
+            if (handler != null) {
                 Shelly2RpcBaseMessage message = fromJson(gson, receivedMessage, Shelly2RpcBaseMessage.class);
                 logger.trace("{}: Inbound WebSocket message: {}", message.src, receivedMessage);
                 if (message.method == null) {
@@ -166,8 +163,9 @@ public class Shelly2WebSocket {
                     default:
                         handler.onMessage(receivedMessage);
                 }
-            } catch (ShellyApiException e) {
             }
+        } catch (RuntimeException | ShellyApiException e) {
+            logger.debug("Unable to process WebSocket message: {}", receivedMessage, e);
         }
     }
 
@@ -191,10 +189,11 @@ public class Shelly2WebSocket {
     private void disconnect() {
         try {
             if (session != null) {
-                if (session.isOpen()) {
-                    session.disconnect();
+                Session s = session;
+                if (s.isOpen()) {
+                    s.disconnect();
                 }
-                session.close();
+                s.close();
             }
         } catch (IOException e) {
             logger.debug("Unable to close WebSocket", e);

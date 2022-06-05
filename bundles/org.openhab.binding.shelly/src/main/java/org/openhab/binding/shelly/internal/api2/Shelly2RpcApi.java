@@ -331,12 +331,14 @@ public class Shelly2RpcApi extends ShellyHttpClient implements ShellyApiInterfac
                 boolean updated = false;
                 ShellyDeviceProfile profile = getProfile();
                 ShellySettingsStatus status = profile.status;
-                if (!profile.hasBattery && message.params.sys != null) {
-                    status.uptime = getLong(message.params.sys.uptime);
-                }
+                if (message.params.sys != null) {
+                    if (getBool(message.params.sys.restartRequired)) {
+                        logger.warn("{}: Device requires restart to activate changes", thingName);
+                    }
 
-                if (message.params.sys.restartRequired) {
-                    logger.warn("{}: Device requires restart to activate changes", thingName);
+                    if (!profile.hasBattery) {
+                        status.uptime = getLong(message.params.sys.uptime);
+                    }
                 }
 
                 status.temperature = -999.0; // mark invalid
