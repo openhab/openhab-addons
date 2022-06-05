@@ -25,6 +25,7 @@ import org.openhab.binding.easee.internal.AtomicReferenceTrait;
 import org.openhab.binding.easee.internal.EaseeBindingConstants;
 import org.openhab.binding.easee.internal.UtilsTrait;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
+import org.openhab.binding.easee.internal.command.circuit.DynamicCircuitCurrent;
 import org.openhab.binding.easee.internal.config.EaseeConfiguration;
 import org.openhab.binding.easee.internal.connector.CommunicationStatus;
 import org.openhab.core.thing.Bridge;
@@ -87,10 +88,11 @@ public class EaseeCircuitHandler extends BaseThingHandler
 
         logger.debug("polling circuit data for {}", circuitId);
 
-        // TODO:
-        // ChargerState state = new ChargerState(this, circuitId);
-        // state.registerResultProcessor(this::updateStatusInfo);
-        // enqueueCommand(state);
+        // TODO: check online status of master charger
+
+        DynamicCircuitCurrent dynamicCircuitCurrent = new DynamicCircuitCurrent(this, circuitId);
+        // dynamicCircuitCurrent.registerResultProcessor(this::updateStatusInfo);
+        enqueueCommand(dynamicCircuitCurrent);
 
         // TODO:
         // // proceed if charger is online
@@ -107,7 +109,8 @@ public class EaseeCircuitHandler extends BaseThingHandler
      * @param jsonObject
      */
     private void updateStatusInfo(CommunicationStatus status, JsonObject jsonObject) {
-        // TODO:
+        // TODO: implement status update depending on master charger state
+
         // Boolean isOnline = getAsBool(jsonObject, JSON_KEY_ONLINE);
         //
         // if (isOnline == null) {

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="easee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="circuit-dynamic_current">
+		<label>Dynamic Current</label>
+		<channels>
+			<channel id="phase1" typeId="type-current">
+				<label>Dynamic Circuit Current Phase 1</label>
+				<description>Dynamic set circuit current for phase 1.</description>
+			</channel>
+			<channel id="phase2" typeId="type-current">
+				<label>Dynamic Circuit Current Phase 2</label>
+				<description>Dynamic set circuit current for phase 2.</description>
+			</channel>
+			<channel id="phase3" typeId="type-current">
+				<label>Dynamic Circuit Current Phase 3</label>
+				<description>Dynamic set circuit current for phase 3.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

@@ -36,7 +36,6 @@ public class ChangeConfiguration extends AbstractWriteCommand implements EaseeCo
     public ChangeConfiguration(EaseeThingHandler handler, String chargerId, Channel channel, Command command) {
         super(handler, channel, command, RetryOnFailure.YES, ProcessFailureResponse.YES);
         this.url = CHANGE_CONFIGURATION_URL.replaceAll("\\{id\\}", chargerId);
-
     }
 
     @Override

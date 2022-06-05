@@ -47,6 +47,7 @@ public class EaseeBindingConstants {
     public static final String CHANNEL_GROUP_CHARGER_STATE = "state";
     public static final String CHANNEL_GROUP_CHARGER_CONFIG = "config";
     public static final String CHANNEL_GROUP_CHARGER_LATEST_SESSION = "latest_session";
+    public static final String CHANNEL_GROUP_CIRCUIT_DYNAMIC_CURRENT = "dynamic_current";
 
     // Channel types
     public static final String CHANNEL_TYPE_SWITCH = "Switch";
@@ -98,6 +99,7 @@ public class EaseeBindingConstants {
     public static final String CHANGE_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/settings";
     public static final String COMMANDS_URL = "https://api.easee.cloud/api/chargers/{id}/commands/{command}";
     public static final String LATEST_CHARGING_SESSION_URL = "https://api.easee.cloud/api/chargers/{id}/sessions/latest";
+    public static final String DYNAMIC_CIRCUIT_CURRENT_URL = "https://api.easee.cloud/api/sites/{siteId}/circuits/{circuitId}/dynamicCurrent";
 
     // other
     public static final long POLLING_INITIAL_DELAY = 1;
