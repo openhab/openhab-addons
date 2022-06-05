@@ -30,9 +30,11 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class SendCommand extends AbstractWriteCommand implements EaseeCommand {
+    private final String url;
 
-    public SendCommand(EaseeThingHandler handler, Channel channel, Command command) {
+    public SendCommand(EaseeThingHandler handler, String chargerId, Channel channel, Command command) {
         super(handler, channel, command, RetryOnFailure.YES, ProcessFailureResponse.YES);
+        this.url = COMMANDS_URL.replaceAll("\\{id\\}", chargerId).replaceAll("\\{command\\}", getCommandValue());
     }
 
     @Override
@@ -44,9 +46,6 @@ public class SendCommand extends AbstractWriteCommand implements EaseeCommand {
 
     @Override
     protected String getURL() {
-        String url = COMMANDS_URL;
-        // TODO: url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
-        url = url.replaceAll("\\{command\\}", getCommandValue());
         return url;
     }
 }

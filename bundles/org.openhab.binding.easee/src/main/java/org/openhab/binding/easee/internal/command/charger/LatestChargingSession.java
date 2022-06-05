@@ -29,11 +29,13 @@ import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
  */
 @NonNullByDefault
 public class LatestChargingSession extends AbstractCommand implements EaseeCommand {
+    private final String url;
 
-    public LatestChargingSession(EaseeThingHandler handler) {
+    public LatestChargingSession(EaseeThingHandler handler, String chargerId) {
         // retry does not make much sense as it is a polling command, command might fail if no charging sessions are
         // available, therefore just ignore failure.
         super(handler, RetryOnFailure.NO, ProcessFailureResponse.NO);
+        this.url = LATEST_CHARGING_SESSION_URL.replaceAll("\\{id\\}", chargerId);
     }
 
     @Override
@@ -44,8 +46,6 @@ public class LatestChargingSession extends AbstractCommand implements EaseeComma
 
     @Override
     protected String getURL() {
-        String url = LATEST_CHARGING_SESSION_URL;
-        // TODO: url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
         return url;
     }
 

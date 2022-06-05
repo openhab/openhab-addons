@@ -65,8 +65,7 @@ public class EaseeCircuitHandler extends BaseThingHandler
     @Override
     public void initialize() {
         logger.debug("About to initialize Circuit");
-        logger.debug("Easee Circuit initialized with id: {}",
-                getConfig().get(EaseeBindingConstants.THING_CONFIG_ID));
+        logger.debug("Easee Circuit initialized with id: {}", getConfig().get(EaseeBindingConstants.THING_CONFIG_ID));
 
         startPolling();
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting for bridge to go online");
@@ -87,18 +86,6 @@ public class EaseeCircuitHandler extends BaseThingHandler
         String circuitId = getConfig().get(EaseeBindingConstants.THING_CONFIG_ID).toString();
 
         logger.debug("polling circuit data for {}", circuitId);
-
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            switch (bridge.getStatus()) {
-                case OFFLINE:
-                    updateStatus(bridge.getStatus(), ThingStatusDetail.BRIDGE_OFFLINE);
-                    // if bridge is offline we do not need further command processing
-                    return;
-                default:
-                    break;
-            }
-        }
 
         // TODO:
         // ChargerState state = new ChargerState(this, circuitId);

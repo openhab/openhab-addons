@@ -70,8 +70,7 @@ public class EaseeChargerHandler extends BaseThingHandler
     @Override
     public void initialize() {
         logger.debug("About to initialize Charger");
-        logger.debug("Easee Charger initialized with id: {}",
-                getConfig().get(EaseeBindingConstants.THING_CONFIG_ID));
+        logger.debug("Easee Charger initialized with id: {}", getConfig().get(EaseeBindingConstants.THING_CONFIG_ID));
 
         startPolling();
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting for bridge to go online");
@@ -93,26 +92,14 @@ public class EaseeChargerHandler extends BaseThingHandler
 
         logger.debug("polling charger data for {}", chargerId);
 
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            switch (bridge.getStatus()) {
-                case OFFLINE:
-                    updateStatus(bridge.getStatus(), ThingStatusDetail.BRIDGE_OFFLINE);
-                    // if bridge is offline we do not need further command processing
-                    return;
-                default:
-                    break;
-            }
-        }
-
         ChargerState state = new ChargerState(this, chargerId);
         state.registerResultProcessor(this::updateStatusInfo);
         enqueueCommand(state);
 
         // proceed if charger is online
         if (getThing().getStatus() == ThingStatus.ONLINE) {
-            enqueueCommand(new GetConfiguration(this));
-            enqueueCommand(new LatestChargingSession(this));
+            enqueueCommand(new GetConfiguration(this, chargerId));
+            enqueueCommand(new LatestChargingSession(this, chargerId));
         }
     }
 
@@ -194,11 +181,13 @@ public class EaseeChargerHandler extends BaseThingHandler
 
     @Override
     public EaseeCommand buildEaseeCommand(Command command, Channel channel) {
+        String chargerId = getConfig().get(EaseeBindingConstants.THING_CONFIG_ID).toString();
+
         switch (getWriteCommand(channel)) {
             case COMMAND_CHANGE_CONFIGURATION:
-                return new ChangeConfiguration(this, channel, command);
+                return new ChangeConfiguration(this, chargerId, channel, command);
             case COMMAND_SEND_COMMAND:
-                return new SendCommand(this, channel, command);
+                return new SendCommand(this, chargerId, channel, command);
             default:
                 // this should not happen
                 logger.warn("write command '{}' not found for channel '{}'", command.toString(),

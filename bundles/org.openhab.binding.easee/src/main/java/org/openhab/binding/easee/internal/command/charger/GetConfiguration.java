@@ -29,11 +29,13 @@ import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
  */
 @NonNullByDefault
 public class GetConfiguration extends AbstractCommand implements EaseeCommand {
+    private final String url;
 
-    public GetConfiguration(EaseeThingHandler handler) {
+    public GetConfiguration(EaseeThingHandler handler, String chargerId) {
         // retry does not make much sense as it is a polling command, command should always succeed therefore update
         // handler on failure.
         super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES);
+        this.url = GET_CONFIGURATION_URL.replaceAll("\\{id\\}", chargerId);
     }
 
     @Override
@@ -44,8 +46,6 @@ public class GetConfiguration extends AbstractCommand implements EaseeCommand {
 
     @Override
     protected String getURL() {
-        String url = GET_CONFIGURATION_URL;
-        // TODO: url = url.replaceAll("\\{id\\}", handler.getConfiguration().getWallboxId());
         return url;
     }
 
