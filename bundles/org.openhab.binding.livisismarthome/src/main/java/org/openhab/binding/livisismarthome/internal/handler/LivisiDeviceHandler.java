@@ -89,10 +89,10 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         logger.debug("handleCommand called for channel '{}' of type '{}' with command '{}'", channelUID,
                 getThing().getThingTypeUID().getId(), command);
 
-        final Optional<LivisiBridgeHandler> bridgeHandlerOptional = getBridgeHandler();
-        if (bridgeHandlerOptional.isPresent()) {
-            LivisiBridgeHandler bridgeHandler = bridgeHandlerOptional.get();
-            if (ThingStatus.ONLINE.equals(bridgeHandler.getThing().getStatus())) {
+        if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+            final Optional<LivisiBridgeHandler> bridgeHandlerOptional = getBridgeHandler();
+            if (bridgeHandlerOptional.isPresent()) {
+                LivisiBridgeHandler bridgeHandler = bridgeHandlerOptional.get();
                 if (command instanceof RefreshType) {
                     final Optional<DeviceDTO> device = bridgeHandler.getDeviceById(deviceId);
                     device.ifPresent(this::onDeviceStateChanged);
@@ -100,10 +100,10 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                     executeCommand(channelUID, command, bridgeHandler);
                 }
             } else {
-                logger.debug("Cannot handle command - bridge is not online. Command ignored.");
+                logger.warn("BridgeHandler not found. Cannot handle command without bridge.");
             }
         } else {
-            logger.warn("BridgeHandler not found. Cannot handle command without bridge.");
+            logger.debug("Cannot handle command - thing is not online. Command ignored.");
         }
     }
 
