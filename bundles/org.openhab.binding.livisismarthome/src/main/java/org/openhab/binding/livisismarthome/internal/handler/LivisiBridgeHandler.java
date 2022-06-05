@@ -114,7 +114,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private @Nullable ScheduledFuture<?> reInitJob;
     private @Nullable ScheduledFuture<?> bridgeRefreshJob;
     private @NonNullByDefault({}) LivisiBridgeConfiguration bridgeConfiguration;
-    private @Nullable OAuthClientService oAuthService;
+    private @NonNullByDefault({}) OAuthClientService oAuthService;
     private String configVersion = "";
 
     /**
@@ -144,7 +144,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     @Override
     public void initialize() {
         logger.debug("Initializing LIVISI SmartHome BridgeHandler...");
-        this.bridgeConfiguration = getConfigAs(LivisiBridgeConfiguration.class);
+        bridgeConfiguration = getConfigAs(LivisiBridgeConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
         initializeClient();
     }
@@ -154,16 +154,15 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      */
     private void initializeClient() {
         String tokenURL = URLCreator.createTokenURL(bridgeConfiguration.host);
-        final OAuthClientService oAuthServiceNonNull = oAuthFactory.createOAuthClientService(
-                thing.getUID().getAsString(), tokenURL, tokenURL, "clientId", "clientPass", null, true);
-        this.client = createClient(oAuthServiceNonNull);
-        this.deviceStructMan = new DeviceStructureManager(createFullDeviceManager(client));
-        oAuthServiceNonNull.addAccessTokenRefreshListener(this);
-        this.oAuthService = oAuthServiceNonNull;
+        oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), tokenURL, tokenURL,
+                "clientId", "clientPass", null, true);
+        client = createClient(oAuthService);
+        deviceStructMan = new DeviceStructureManager(createFullDeviceManager(client));
+        oAuthService.addAccessTokenRefreshListener(this);
 
         getScheduler().schedule(() -> {
             try {
-                requestAccessToken(oAuthServiceNonNull);
+                requestAccessToken();
 
                 scheduleRestartClient(false);
             } catch (IOException | OAuthException | OAuthResponseException e) {
@@ -878,18 +877,15 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
     private void refreshAccessToken() {
         try {
-            requestAccessToken(oAuthService);
+            requestAccessToken();
         } catch (IOException | OAuthException | OAuthResponseException e) {
             logger.debug("Could not refresh tokens", e);
         }
     }
 
-    private void requestAccessToken(@Nullable OAuthClientService oAuthService)
-            throws OAuthException, IOException, OAuthResponseException {
-        if (oAuthService != null) {
-            oAuthService.getAccessTokenByResourceOwnerPasswordCredentials(LivisiBindingConstants.USERNAME,
-                    bridgeConfiguration.password, null);
-        }
+    private void requestAccessToken() throws OAuthException, IOException, OAuthResponseException {
+        oAuthService.getAccessTokenByResourceOwnerPasswordCredentials(LivisiBindingConstants.USERNAME,
+                bridgeConfiguration.password, null);
     }
 
     private Optional<EventDTO> parseEvent(final String msg) {
