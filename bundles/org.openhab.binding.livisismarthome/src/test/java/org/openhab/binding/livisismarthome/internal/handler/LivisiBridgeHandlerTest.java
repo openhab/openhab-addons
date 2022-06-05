@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.livisismarthome.internal.LivisiWebSocket;
@@ -52,6 +53,10 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 
 /**
  * @author Sven Strohschein - Initial contribution
@@ -66,8 +71,14 @@ public class LivisiBridgeHandlerTest {
     private @NonNullByDefault({}) LivisiWebSocket webSocketMock;
     private @NonNullByDefault({}) Map<String, State> updatedChannels;
 
+    private @NonNullByDefault({}) Level previousLoggingLevel;
+
     @BeforeEach
     public void before() throws Exception {
+        Logger logger = (Logger) LoggerFactory.getLogger(LivisiBridgeHandler.class);
+        previousLoggingLevel = logger.getLevel();
+        logger.setLevel(Level.OFF); // avoid (test) exception logs which occur within these reconnect tests
+
         updatedChannels = new LinkedHashMap<>();
 
         bridgeMock = mock(Bridge.class);
@@ -84,6 +95,12 @@ public class LivisiBridgeHandlerTest {
         HttpClient httpClientMock = mock(HttpClient.class);
 
         bridgeHandler = new LivisiBridgeHandlerAccessible(bridgeMock, oAuthFactoryMock, httpClientMock);
+    }
+
+    @AfterEach
+    public void after() {
+        Logger logger = (Logger) LoggerFactory.getLogger(LivisiBridgeHandler.class);
+        logger.setLevel(previousLoggingLevel);
     }
 
     @Test
