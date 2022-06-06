@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.easee.internal.AtomicReferenceTrait;
 import org.openhab.binding.easee.internal.EaseeBindingConstants;
-import org.openhab.binding.easee.internal.UtilsTrait;
+import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.command.circuit.DynamicCircuitCurrent;
 import org.openhab.binding.easee.internal.config.EaseeConfiguration;
@@ -49,8 +49,7 @@ import com.google.gson.JsonObject;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class EaseeCircuitHandler extends BaseThingHandler
-        implements EaseeThingHandler, AtomicReferenceTrait, UtilsTrait {
+public class EaseeCircuitHandler extends BaseThingHandler implements EaseeThingHandler, AtomicReferenceTrait {
     private final Logger logger = LoggerFactory.getLogger(EaseeCircuitHandler.class);
 
     /**
@@ -182,7 +181,7 @@ public class EaseeCircuitHandler extends BaseThingHandler
 
     @Override
     public EaseeCommand buildEaseeCommand(Command command, Channel channel) {
-        switch (getWriteCommand(channel)) {
+        switch (Utils.getWriteCommand(channel)) {
             // TODO: add write commands
             default:
                 // this should not happen

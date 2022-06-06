@@ -21,7 +21,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.easee.internal.UtilsTrait;
+import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.command.site.GetSite;
 import org.openhab.binding.easee.internal.config.EaseeConfiguration;
@@ -46,7 +46,7 @@ import com.google.gson.JsonObject;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHandler, UtilsTrait {
+public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(EaseeSiteHandler.class);
 
     private @Nullable DiscoveryService discoveryService;
@@ -75,11 +75,11 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
 
     private void updateProperties(CommunicationStatus status, JsonObject jsonObject) {
         Map<String, String> properties = editProperties();
-        String name = getAsString(jsonObject, JSON_KEY_GENERIC_NAME);
+        String name = Utils.getAsString(jsonObject, JSON_KEY_GENERIC_NAME);
         if (name != null) {
             properties.put(JSON_KEY_GENERIC_NAME, name);
         }
-        String siteKey = getAsString(jsonObject, JSON_KEY_SITE_KEY);
+        String siteKey = Utils.getAsString(jsonObject, JSON_KEY_SITE_KEY);
         if (siteKey != null) {
             properties.put(JSON_KEY_SITE_KEY, siteKey);
         }

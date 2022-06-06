@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.easee.internal.AtomicReferenceTrait;
 import org.openhab.binding.easee.internal.EaseeBindingConstants;
-import org.openhab.binding.easee.internal.UtilsTrait;
+import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.command.charger.ChangeConfiguration;
 import org.openhab.binding.easee.internal.command.charger.ChargerState;
@@ -53,8 +53,7 @@ import com.google.gson.JsonObject;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class EaseeChargerHandler extends BaseThingHandler
-        implements EaseeThingHandler, AtomicReferenceTrait, UtilsTrait {
+public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingHandler, AtomicReferenceTrait {
     private final Logger logger = LoggerFactory.getLogger(EaseeChargerHandler.class);
 
     /**
@@ -110,7 +109,7 @@ public class EaseeChargerHandler extends BaseThingHandler
      * @param jsonObject
      */
     private void updateStatusInfo(CommunicationStatus status, JsonObject jsonObject) {
-        Boolean isOnline = getAsBool(jsonObject, JSON_KEY_ONLINE);
+        Boolean isOnline = Utils.getAsBool(jsonObject, JSON_KEY_ONLINE);
 
         if (isOnline == null) {
             super.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -183,7 +182,7 @@ public class EaseeChargerHandler extends BaseThingHandler
     public EaseeCommand buildEaseeCommand(Command command, Channel channel) {
         String chargerId = getConfig().get(EaseeBindingConstants.THING_CONFIG_ID).toString();
 
-        switch (getWriteCommand(channel)) {
+        switch (Utils.getWriteCommand(channel)) {
             case COMMAND_CHANGE_CONFIGURATION:
                 return new ChangeConfiguration(this, chargerId, channel, command);
             case COMMAND_SEND_COMMAND:

@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.openhab.binding.easee.internal.AtomicReferenceTrait;
-import org.openhab.binding.easee.internal.UtilsTrait;
+import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.command.account.Login;
 import org.openhab.binding.easee.internal.command.account.RefreshToken;
@@ -45,7 +45,7 @@ import com.google.gson.JsonObject;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
+public class WebInterface implements AtomicReferenceTrait {
 
     private final Logger logger = LoggerFactory.getLogger(WebInterface.class);
 
@@ -126,7 +126,7 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
         }
 
         private void processAuthenticationResult(CommunicationStatus status, JsonObject jsonObject) {
-            String msg = getAsString(jsonObject, JSON_KEY_ERROR_TITLE);
+            String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR_TITLE);
             if (msg == null || msg.isBlank()) {
                 msg = status.getMessage();
             }
@@ -141,9 +141,9 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
                     setAuthenticated(false);
                     break;
                 case OK:
-                    String accessToken = getAsString(jsonObject, JSON_KEY_AUTH_ACCESS_TOKEN);
-                    String refreshToken = getAsString(jsonObject, JSON_KEY_AUTH_REFRESH_TOKEN);
-                    int expiresIn = getAsInt(jsonObject, JSON_KEY_AUTH_EXPIRES_IN);
+                    String accessToken = Utils.getAsString(jsonObject, JSON_KEY_AUTH_ACCESS_TOKEN);
+                    String refreshToken = Utils.getAsString(jsonObject, JSON_KEY_AUTH_REFRESH_TOKEN);
+                    int expiresIn = Utils.getAsInt(jsonObject, JSON_KEY_AUTH_EXPIRES_IN);
                     if (accessToken != null && refreshToken != null && expiresIn != 0) {
                         WebInterface.this.accessToken = accessToken;
                         WebInterface.this.refreshToken = refreshToken;
@@ -221,7 +221,7 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
             if (tokenExpiry.getTime() - now.getTime() - expiryBuffer < 0
                     || tokenRefreshDate.getTime() + maxAge < now.getTime()) {
                 logger.debug("access token needs to be refreshed, last refresh: {}, expiry: {}",
-                        formatDate(tokenRefreshDate), formatDate(tokenRefreshDate));
+                        Utils.formatDate(tokenRefreshDate), Utils.formatDate(tokenRefreshDate));
 
                 EaseeCommand refreshCommand = new RefreshToken(handler, accessToken, refreshToken);
                 refreshCommand.registerResultProcessor(this::processAuthenticationResult);
@@ -241,7 +241,7 @@ public class WebInterface implements AtomicReferenceTrait, UtilsTrait {
         }
 
         private void processExecutionResult(CommunicationStatus status, JsonObject jsonObject) {
-            String msg = getAsString(jsonObject, JSON_KEY_ERROR_TITLE);
+            String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR_TITLE);
             if (msg == null || msg.isBlank()) {
                 msg = status.getMessage();
             }

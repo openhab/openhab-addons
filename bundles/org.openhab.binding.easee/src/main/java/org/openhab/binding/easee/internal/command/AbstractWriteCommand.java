@@ -19,7 +19,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
-import org.openhab.binding.easee.internal.UtilsTrait;
+import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 import org.openhab.binding.easee.internal.model.ValidationException;
 import org.openhab.core.library.types.OnOffType;
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public abstract class AbstractWriteCommand extends AbstractCommand implements EaseeCommand, UtilsTrait {
+public abstract class AbstractWriteCommand extends AbstractCommand implements EaseeCommand {
     private final Logger logger = LoggerFactory.getLogger(AbstractWriteCommand.class);
 
     protected final Channel channel;
@@ -85,7 +85,7 @@ public abstract class AbstractWriteCommand extends AbstractCommand implements Ea
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
         String channelId = channel.getUID().getIdWithoutGroup();
-        String expr = getValidationExpression(channel);
+        String expr = Utils.getValidationExpression(channel);
         String value = getCommandValue();
 
         // quantity types are transformed to double and thus we might have decimals which could cause validation error.

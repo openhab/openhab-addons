@@ -17,7 +17,7 @@ import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.easee.internal.EaseeBindingConstants;
-import org.openhab.binding.easee.internal.UtilsTrait;
+import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.command.site.GetSite;
 import org.openhab.binding.easee.internal.connector.CommunicationStatus;
 import org.openhab.binding.easee.internal.handler.EaseeSiteHandler;
@@ -42,7 +42,7 @@ import com.google.gson.JsonObject;
  *
  */
 @NonNullByDefault
-public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService, UtilsTrait {
+public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(EaseeSiteDiscoveryService.class);
     private @NonNullByDefault({}) EaseeSiteHandler bridgeHandler;
@@ -100,9 +100,9 @@ public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implemen
         logger.debug("handleCircuitDiscovery {}", json);
 
         JsonObject circuit = json.getAsJsonObject();
-        String circuitId = getAsString(circuit, JSON_KEY_GENERIC_ID);
-        String circuitName = getAsString(circuit, JSON_KEY_CIRCUIT_NAME);
-        String masterBackPlateId = getAsString(circuit.getAsJsonObject(JSON_KEY_MASTER_BACK_PLATE),
+        String circuitId = Utils.getAsString(circuit, JSON_KEY_GENERIC_ID);
+        String circuitName = Utils.getAsString(circuit, JSON_KEY_CIRCUIT_NAME);
+        String masterBackPlateId = Utils.getAsString(circuit.getAsJsonObject(JSON_KEY_MASTER_BACK_PLATE),
                 JSON_KEY_GENERIC_ID);
 
         if (circuitId != null) {
@@ -132,11 +132,11 @@ public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implemen
         logger.debug("handleChargerDiscovery {}", json);
 
         JsonObject charger = json.getAsJsonObject();
-        String chargerId = getAsString(charger, JSON_KEY_GENERIC_ID);
-        String backPlateId = getAsString(charger.getAsJsonObject(JSON_KEY_BACK_PLATE), JSON_KEY_GENERIC_ID);
-        String masterBackPlateId = getAsString(charger.getAsJsonObject(JSON_KEY_BACK_PLATE),
+        String chargerId = Utils.getAsString(charger, JSON_KEY_GENERIC_ID);
+        String backPlateId = Utils.getAsString(charger.getAsJsonObject(JSON_KEY_BACK_PLATE), JSON_KEY_GENERIC_ID);
+        String masterBackPlateId = Utils.getAsString(charger.getAsJsonObject(JSON_KEY_BACK_PLATE),
                 JSON_KEY_MASTER_BACK_PLATE_ID);
-        String chargerName = getAsString(charger, JSON_KEY_GENERIC_NAME);
+        String chargerName = Utils.getAsString(charger, JSON_KEY_GENERIC_NAME);
 
         if (chargerId != null && backPlateId != null && masterBackPlateId != null) {
             DiscoveryResultBuilder builder = initDiscoveryResultBuilder(DEVICE_CHARGER, chargerId, chargerName)

@@ -20,7 +20,7 @@ import java.util.Map;
 import javax.measure.MetricPrefix;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.easee.internal.UtilsTrait;
+import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.handler.ChannelProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -42,7 +42,7 @@ import com.google.gson.JsonObject;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class GenericResponseTransformer implements UtilsTrait {
+public class GenericResponseTransformer {
     private final Logger logger = LoggerFactory.getLogger(GenericResponseTransformer.class);
     private final ChannelProvider channelProvider;
 
@@ -89,13 +89,13 @@ public class GenericResponseTransformer implements UtilsTrait {
                                         new QuantityType<>(Double.parseDouble(value), MetricPrefix.KILO(Units.WATT)));
                                 break;
                             case CHANNEL_TYPE_DATE:
-                                result.put(channel, new DateTimeType(value));
+                                result.put(channel, new DateTimeType(Utils.parseDate(value)));
                                 break;
                             case CHANNEL_TYPE_STRING:
                                 result.put(channel, new StringType(value));
                                 break;
                             case CHANNEL_TYPE_NUMBER:
-                                if (getChannelTypeId(channel).contains(CHANNEL_TYPENAME_INTEGER)) {
+                                if (Utils.getChannelTypeId(channel).contains(CHANNEL_TYPENAME_INTEGER)) {
                                     // explicit type long is needed in case of integer/long values otherwise automatic
                                     // transformation to a decimal type is applied.
                                     result.put(channel, new DecimalType(Long.parseLong(value)));

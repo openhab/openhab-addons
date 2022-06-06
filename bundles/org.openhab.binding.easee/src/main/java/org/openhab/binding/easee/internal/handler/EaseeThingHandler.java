@@ -19,7 +19,7 @@ import java.util.Map;
 import org.apache.commons.lang3.NotImplementedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.easee.internal.UtilsTrait;
+import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.config.EaseeConfiguration;
 import org.openhab.core.thing.Channel;
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public interface EaseeThingHandler extends ThingHandler, ChannelProvider, UtilsTrait {
+public interface EaseeThingHandler extends ThingHandler, ChannelProvider {
     static final Logger LOGGER = LoggerFactory.getLogger(EaseeThingHandler.class);
 
     /**
@@ -90,7 +90,7 @@ public interface EaseeThingHandler extends ThingHandler, ChannelProvider, UtilsT
             return;
         }
 
-        String channelType = getChannelTypeId(channel);
+        String channelType = Utils.getChannelTypeId(channel);
         if (!channelType.startsWith(CHANNEL_TYPEPREFIX_RW)) {
             LOGGER.info("channel '{}' does not support write access - value to set '{}'",
                     channelUID.getIdWithoutGroup(), command);
