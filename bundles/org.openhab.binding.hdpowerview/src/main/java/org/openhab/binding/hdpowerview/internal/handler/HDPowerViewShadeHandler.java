@@ -260,14 +260,19 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             // Already cached.
             return;
         }
-        Integer value = shade.capabilities;
-        if (value != null) {
-            int valueAsInt = value.intValue();
-            logger.debug("Caching capabilities {} for shade {}", valueAsInt, shade.id);
-            capabilities = db.getCapabilities(valueAsInt);
-        } else {
-            logger.debug("Capabilities not included in shade response");
+        // check for capabilities for the shade.type parameter
+        Capabilities capabilities = db.getCapabilitiesForType(shade.type);
+        if (capabilities.getValue() < 0) {
+            // check for capabilities for the shade.capabilities parameter
+            Integer shadeCapsInt = shade.capabilities;
+            capabilities = db.getCapabilities(shadeCapsInt != null ? shadeCapsInt.intValue() : -1);
+            if (capabilities.getValue() < 0) {
+                logger.debug("Unable to set capabilities for shade {}", shade.id);
+                return;
+            }
         }
+        logger.debug("Caching capabilities {} for shade {}", capabilities.getValue(), shade.id);
+        this.capabilities = capabilities;
     }
 
     private Capabilities getCapabilitiesOrDefault() {

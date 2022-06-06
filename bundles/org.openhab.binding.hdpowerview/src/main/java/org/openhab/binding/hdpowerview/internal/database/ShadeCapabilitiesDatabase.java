@@ -35,16 +35,18 @@ public class ShadeCapabilitiesDatabase {
 
     private final Logger logger = LoggerFactory.getLogger(ShadeCapabilitiesDatabase.class);
 
+    // Capability 9 is not tiltAnywhere - it requires the rear shade to be open and the front to be closed
+
     /*
      * Database of known shade capabilities.
      */
     private static final Map<Integer, Capabilities> CAPABILITIES_DATABASE = Arrays.asList(
     // @formatter:off
-            new Capabilities(0).primary()        .tiltOnClosed()                                .text("Bottom Up"),
+            new Capabilities(0).primary()                                                       .text("Bottom Up"),
             new Capabilities(1).primary()        .tiltOnClosed()                                .text("Bottom Up Tilt 90°"),
             new Capabilities(2).primary()        .tiltAnywhere().tilt180()                      .text("Bottom Up Tilt 180°"),
             new Capabilities(3).primary()        .tiltAnywhere().tilt180()                      .text("Vertical Tilt 180°"),
-            new Capabilities(4).primary()        .tiltOnClosed()                                .text("Vertical Tilt 90°"),
+            new Capabilities(4).primary()                                                       .text("Vertical"),
             new Capabilities(5)                  .tiltAnywhere().tilt180()                      .text("Tilt Only 180°"),
             new Capabilities(6).primaryInverted()                                               .text("Top Down"),
             new Capabilities(7).primary()                                 .secondary()          .text("Top Down Bottom Up"),
@@ -65,12 +67,12 @@ public class ShadeCapabilitiesDatabase {
             new Type( 7).capabilities(6).text("Top Down"),
             new Type( 8).capabilities(7).text("Duette Top Down Bottom Up"),
             new Type( 9).capabilities(7).text("Duette DuoLite Top Down Bottom Up"),
-            new Type(18).capabilities(1).text("Silhouette"),
+            new Type(18).capabilities(1).text("Pirouette"),
             new Type(23).capabilities(1).text("Silhouette"),
             new Type(38).capabilities(9).text("Silhouette Duolite"),
             new Type(42).capabilities(0).text("M25T Roller Blind"),
             new Type(43).capabilities(1).text("Facette"),
-            new Type(44).capabilities(0).text("Twist"),
+            new Type(44).capabilities(0).text("Twist").typeCapabilities(1), // behaves as a capabilities 1 shade
             new Type(47).capabilities(7).text("Pleated Top Down Bottom Up"),
             new Type(49).capabilities(0).text("AC Roller"),
             new Type(51).capabilities(2).text("Venetian"),
@@ -80,9 +82,9 @@ public class ShadeCapabilitiesDatabase {
             new Type(62).capabilities(2).text("Venetian"),
             new Type(65).capabilities(8).text("Vignette Duolite"),
             new Type(66).capabilities(5).text("Shutter"),
-            new Type(69).capabilities(3).text("Curtain Left Stack"),
-            new Type(70).capabilities(3).text("Curtain Right Stack"),
-            new Type(71).capabilities(3).text("Curtain Split Stack"),
+            new Type(69).capabilities(4).text("Curtain Left Stack"),
+            new Type(70).capabilities(4).text("Curtain Right Stack"),
+            new Type(71).capabilities(4).text("Curtain Split Stack"),
             new Type(79).capabilities(8).text("Duolite Lift"),
     // @formatter:on
             new Type()).stream().collect(Collectors.toMap(Type::getValue, Function.identity()));
@@ -113,6 +115,7 @@ public class ShadeCapabilitiesDatabase {
      */
     public static class Type extends Base {
         private int capabilities = -1;
+        private int typeCapabilities = -1;
 
         protected Type() {
         }
@@ -131,6 +134,11 @@ public class ShadeCapabilitiesDatabase {
             return this;
         }
 
+        protected Type typeCapabilities(int capabilities) {
+            this.typeCapabilities = capabilities;
+            return this;
+        }
+
         /**
          * Get shade types's 'capabilities'.
          *
@@ -138,6 +146,15 @@ public class ShadeCapabilitiesDatabase {
          */
         public int getCapabilities() {
             return capabilities;
+        }
+
+        /**
+         * Get shade's type specific 'capabilities'.
+         *
+         * @return 'typeCapabilities'.
+         */
+        public int getTypeCapabilities() {
+            return typeCapabilities;
         }
     }
 
@@ -309,6 +326,16 @@ public class ShadeCapabilitiesDatabase {
      */
     public Capabilities getCapabilities(int capabilities) {
         return CAPABILITIES_DATABASE.getOrDefault(capabilities, new Capabilities());
+    }
+
+    /**
+     * Return a Capabilities class instance that corresponds to the given 'type' parameter.
+     *
+     * @param capabilities the shade 'type' parameter.
+     * @return corresponding instance of Capabilities class.
+     */
+    public Capabilities getCapabilitiesForType(int type) {
+        return getCapabilities(TYPE_DATABASE.getOrDefault(type, new Type()).getTypeCapabilities());
     }
 
     private static final String REQUEST_DEVELOPERS_TO_UPDATE = " => Please request developers to update the database!";
