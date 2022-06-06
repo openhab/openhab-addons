@@ -297,7 +297,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             if (bridgeRefreshJobLocal == null || !isAlreadyScheduled(bridgeRefreshJobLocal)) {
                 logger.debug("Scheduling bridge refresh job with an interval of {} seconds.", BRIDGE_REFRESH_SECONDS);
 
-                this.bridgeRefreshJob = getScheduler().scheduleAtFixedRate(() -> {
+                this.bridgeRefreshJob = getScheduler().scheduleWithFixedDelay(() -> {
                     logger.debug("Refreshing bridge");
 
                     refreshBridgeState();
@@ -915,6 +915,13 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      */
     private static boolean isAlreadyScheduled(ScheduledFuture<?> job) {
         return job.getDelay(TimeUnit.SECONDS) > 0;
+    }
+
+    private static ThingStatus createThingStatus(boolean connected) {
+        if (connected) {
+            return ThingStatus.ONLINE;
+        }
+        return ThingStatus.OFFLINE;
     }
 
     @FunctionalInterface
