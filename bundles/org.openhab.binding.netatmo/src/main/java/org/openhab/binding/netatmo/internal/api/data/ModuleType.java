@@ -115,7 +115,7 @@ public enum ModuleType {
     INDOOR(FeatureArea.WEATHER, "NAModule4", WEATHER_STATION,
             Set.of(MeasureCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
             ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE, ChannelGroup.BATTERY, ChannelGroup.HUMIDITY,
-            ChannelGroup.TEMP_OUTSIDE_EXT, ChannelGroup.AIR_QUALITY),
+            ChannelGroup.TEMP_INSIDE_EXT, ChannelGroup.AIR_QUALITY),
 
     HOME_COACH(FeatureArea.AIR_CARE, "NHC", ACCOUNT,
             Set.of(DeviceCapability.class, AirCareCapability.class, MeasureCapability.class,
