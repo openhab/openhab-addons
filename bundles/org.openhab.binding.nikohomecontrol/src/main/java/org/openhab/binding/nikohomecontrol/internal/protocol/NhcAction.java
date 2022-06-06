@@ -66,9 +66,9 @@ public abstract class NhcAction {
     }
 
     /**
-     * Get the id of the action.
+     * Get id of action.
      *
-     * @return the id
+     * @return id
      */
     public String getId() {
         return id;
@@ -81,6 +81,15 @@ public abstract class NhcAction {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Set name of action.
+     *
+     * @param name action name
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -101,6 +110,15 @@ public abstract class NhcAction {
      */
     public @Nullable String getLocation() {
         return location;
+    }
+
+    /**
+     * Set location name of action.
+     *
+     * @param location action location name
+     */
+    public void setLocation(@Nullable String location) {
+        this.location = location;
     }
 
     /**
