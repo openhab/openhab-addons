@@ -43,8 +43,8 @@ public class ShadeCapabilitiesDatabase {
             new Capabilities(0).primary()        .tiltOnClosed()                                .text("Bottom Up"),
             new Capabilities(1).primary()        .tiltOnClosed()                                .text("Bottom Up Tilt 90°"),
             new Capabilities(2).primary()        .tiltAnywhere().tilt180()                      .text("Bottom Up Tilt 180°"),
-            new Capabilities(3).primary()        .tiltOnClosed()                                .text("Vertical"),
-            new Capabilities(4).primary()        .tiltAnywhere().tilt180()                      .text("Vertical Tilt 180°"),
+            new Capabilities(3).primary()        .tiltAnywhere().tilt180()                      .text("Vertical Tilt 180°"),
+            new Capabilities(4).primary()        .tiltOnClosed()                                .text("Vertical Tilt 90°"),
             new Capabilities(5)                  .tiltAnywhere().tilt180()                      .text("Tilt Only 180°"),
             new Capabilities(6).primaryInverted()                                               .text("Top Down"),
             new Capabilities(7).primary()                                 .secondary()          .text("Top Down Bottom Up"),
@@ -58,6 +58,7 @@ public class ShadeCapabilitiesDatabase {
      */
     private static final Map<Integer, Type> TYPE_DATABASE = Arrays.asList(
     // @formatter:off
+            new Type( 1).capabilities(0).text("TBD"),
             new Type( 4).capabilities(0).text("Roman"),
             new Type( 5).capabilities(0).text("Bottom Up"),
             new Type( 6).capabilities(0).text("Duette"),
