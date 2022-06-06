@@ -599,14 +599,20 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
         final Boolean connected = event.getIsConnected();
         if (connected != null) {
-            final ThingStatus thingStatus = createThingStatus(connected);
-            logger.debug("SmartHome Controller connectivity changed to {}.", thingStatus);
+            final ThingStatus thingStatus;
             if (connected) {
                 deviceStructMan.refreshDevices();
+                thingStatus = ThingStatus.ONLINE;
+                updateStatus(thingStatus);
+            } else {
+                thingStatus = ThingStatus.OFFLINE;
+                updateStatus(thingStatus, ThingStatusDetail.COMMUNICATION_ERROR);
             }
-            updateStatus(thingStatus);
+            logger.debug("SmartHome Controller connectivity changed to {} by {} event.", thingStatus,
+                    BaseEventDTO.TYPE_CONTROLLER_CONNECTIVITY_CHANGED);
         } else {
-            logger.debug("isConnected property missing in event! (returned null)");
+            logger.debug("isConnected property missing in {} event (returned null)!",
+                    BaseEventDTO.TYPE_CONTROLLER_CONNECTIVITY_CHANGED);
         }
     }
 
@@ -909,13 +915,6 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      */
     private static boolean isAlreadyScheduled(ScheduledFuture<?> job) {
         return job.getDelay(TimeUnit.SECONDS) > 0;
-    }
-
-    private static ThingStatus createThingStatus(boolean connected) {
-        if (connected) {
-            return ThingStatus.ONLINE;
-        }
-        return ThingStatus.OFFLINE;
     }
 
     @FunctionalInterface
