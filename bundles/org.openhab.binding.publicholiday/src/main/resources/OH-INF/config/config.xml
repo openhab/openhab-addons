@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+	https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="thing-type:publicholiday:publicHolidayConfig">
+		<parameter name="updateValueCron" type="text" required="true">
+			<label>Update value time</label>
+			<description>Cron expression, when the values should be updated</description>
+			<default>05 0 * * * *</default>
+		</parameter>
+		<!-- Fixed dates -->
+		<parameter name="newYear" type="boolean" required="false">
+			<label>New Year</label>
+			<description>1st January</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="threeKingsDay" type="boolean" required="false">
+			<label>Three Kings Day</label>
+			<description>6th January</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="reformationDay" type="boolean" required="false">
+			<label>Reformation day</label>
+			<description>31th October</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="allSaintsDay" type="boolean" required="false">
+			<label>All Saints Day</label>
+			<description>1st November</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="christmasEve" type="boolean" required="false">
+			<label>Christmas Eve</label>
+			<description>24th December</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="christmasDay" type="boolean" required="false">
+			<label>Christmas Day</label>
+			<description>25th December</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="secondChristmasDay" type="boolean" required="false">
+			<label>Second Christmas Day</label>
+			<description>26th December</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="newYearsEve" type="boolean" required="false">
+			<label>New Year's Eve</label>
+			<description>31th December</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+
+		<!-- Eastern related -->
+		<parameter name="goodFriday" type="boolean" required="false">
+			<label>Good Friday</label>
+			<description>Friday before eastern</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="easterSunday" type="boolean" required="false">
+			<label>Easter Sunday</label>
+			<description>Easter Sunday</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="easterMonday" type="boolean" required="false">
+			<label>Easter Monday</label>
+			<description>Easter Monday</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="ascensionDay" type="boolean" required="false">
+			<label>Ascension Day</label>
+			<description>Ascension Day is 39 days after eastern; aka Father's Day</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="whitSunday" type="boolean" required="false">
+			<label>Whit Sunday</label>
+			<description>Whit Sunday is 49 days after eastern</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="whitMonday" type="boolean" required="false">
+			<label>Whit Monday</label>
+			<description>Whit Monday is 50 days after eastern</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="corpusChristi" type="boolean" required="false">
+			<label>Corpus Christi</label>
+			<description>Corpus Christi is 60 days after eastern</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+
+		<!-- Country specific -->
+		<!-- Germany specific -->
+		<parameter name="tagDerArbeit" type="boolean" required="false">
+			<label>Tag der Arbeit</label>
+			<description>German public holiday on 1st May</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="tagDerDeutschenEinheit" type="boolean" required="false">
+			<label>Tag der deutschen Einheit</label>
+			<description>German public holiday on 3rd October</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

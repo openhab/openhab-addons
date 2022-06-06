@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="publicholiday"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="publicHoliday">
+		<label>PublicHoliday Binding Thing</label>
+		<description>The public holiday thing</description>
+
+		<channels>
+			<channel id="isPublicHoliday" typeId="publicHolidayChannel"/>
+			<channel id="isDayBeforePublicHoliday" typeId="dayBeforePublicHolidayChannel"/>
+			<channel id="holidayName" typeId="holidayNameChannel"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:publicholiday:publicHolidayConfig"/>
+	</thing-type>
+
+	<channel-type id="publicHolidayChannel">
+		<item-type>Switch</item-type>
+		<label>isPublicHoliday</label>
+		<description>Is the current day a public holiday</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="dayBeforePublicHolidayChannel">
+		<item-type>Switch</item-type>
+		<label>isDayBeforePublicHoliday</label>
+		<description>Is the next day a public holiday</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="holidayNameChannel">
+		<item-type>Text</item-type>
+		<label>holiday name</label>
+		<description>The name of the current public holiday or none</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+
+</thing:thing-descriptions>
