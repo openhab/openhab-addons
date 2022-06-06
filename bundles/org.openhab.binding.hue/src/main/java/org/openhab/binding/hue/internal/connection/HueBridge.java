@@ -155,7 +155,8 @@ public class HueBridge {
      * @param scheduler the ExecutorService to schedule commands
      */
     public HueBridge(HttpClient httpClient, String ip, int port, String protocol, String username,
-            ScheduledExecutorService scheduler) throws IOException, ApiException {
+            ScheduledExecutorService scheduler)
+            throws IOException, ApiException, ConfigurationException, UnauthorizedException {
         this(httpClient, ip, port, protocol, scheduler);
         authenticate(username);
     }
@@ -243,7 +244,8 @@ public class HueBridge {
         return getTypedLights(gsonType);
     }
 
-    private <T extends HueObject> List<T> getTypedLights(Type gsonType) throws IOException, ApiException {
+    private <T extends HueObject> List<T> getTypedLights(Type gsonType)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = get(getRelativeURL("lights"));
@@ -265,7 +267,8 @@ public class HueBridge {
      * @return list of sensors
      * @throws UnauthorizedException thrown if the user no longer exists
      */
-    public List<FullSensor> getSensors() throws IOException, ApiException {
+    public List<FullSensor> getSensors()
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = get(getRelativeURL("sensors"));
@@ -289,7 +292,8 @@ public class HueBridge {
      * @return last search time
      * @throws UnauthorizedException thrown if the user no longer exists
      */
-    public @Nullable Date getLastSearch() throws IOException, ApiException {
+    public @Nullable Date getLastSearch()
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = get(getRelativeURL("lights/new"));
@@ -318,7 +322,7 @@ public class HueBridge {
      *
      * @throws UnauthorizedException thrown if the user no longer exists
      */
-    public void startSearch() throws IOException, ApiException {
+    public void startSearch() throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = post(getRelativeURL("lights"), "");
@@ -333,7 +337,8 @@ public class HueBridge {
      * @param serialNumbers list of serial numbers
      * @throws UnauthorizedException thrown if the user no longer exists
      */
-    public void startSearch(List<String> serialNumbers) throws IOException, ApiException {
+    public void startSearch(List<String> serialNumbers)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = post(getRelativeURL("lights"), gson.toJson(new SearchForLightsRequest(serialNumbers)));
@@ -349,7 +354,8 @@ public class HueBridge {
      * @throws UnauthorizedException thrown if the user no longer exists
      * @throws EntityNotAvailableException thrown if a light with the given id doesn't exist
      */
-    public FullHueObject getLight(HueObject light) throws IOException, ApiException {
+    public FullHueObject getLight(HueObject light)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = get(getRelativeURL("lights/" + enc(light.getId())));
@@ -371,7 +377,8 @@ public class HueBridge {
      * @throws UnauthorizedException thrown if the user no longer exists
      * @throws EntityNotAvailableException thrown if the specified light no longer exists
      */
-    public String setLightName(HueObject light, String name) throws IOException, ApiException {
+    public String setLightName(HueObject light, String name)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = put(getRelativeURL("lights/" + enc(light.getId())),
@@ -494,7 +501,8 @@ public class HueBridge {
      * @throws UnauthorizedException thrown if the user no longer exists
      * @throws GroupTableFullException thrown if the group limit has been reached
      */
-    public Group createGroup(List<HueObject> lights) throws IOException, ApiException {
+    public Group createGroup(List<HueObject> lights)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = post(getRelativeURL("groups"), gson.toJson(new SetAttributesRequest(lights)));
@@ -523,7 +531,8 @@ public class HueBridge {
      * @throws UnauthorizedException thrown if the user no longer exists
      * @throws GroupTableFullException thrown if the group limit has been reached
      */
-    public Group createGroup(String name, List<HueObject> lights) throws IOException, ApiException {
+    public Group createGroup(String name, List<HueObject> lights)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = post(getRelativeURL("groups"), gson.toJson(new SetAttributesRequest(name, lights)));
@@ -547,7 +556,8 @@ public class HueBridge {
      * @throws UnauthorizedException thrown if the user no longer exists
      * @throws EntityNotAvailableException thrown if a group with the given id doesn't exist
      */
-    public FullGroup getGroup(Group group) throws IOException, ApiException {
+    public FullGroup getGroup(Group group)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = get(getRelativeURL("groups/" + enc(group.getId())));
@@ -569,7 +579,8 @@ public class HueBridge {
      * @throws UnauthorizedException thrown if the user no longer exists
      * @throws EntityNotAvailableException thrown if the specified group no longer exists
      */
-    public String setGroupName(Group group, String name) throws IOException, ApiException {
+    public String setGroupName(Group group, String name)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         if (!group.isModifiable()) {
@@ -599,7 +610,8 @@ public class HueBridge {
      * @throws UnauthorizedException thrown if the user no longer exists
      * @throws EntityNotAvailableException thrown if the specified group no longer exists
      */
-    public void setGroupLights(Group group, List<HueObject> lights) throws IOException, ApiException {
+    public void setGroupLights(Group group, List<HueObject> lights)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         if (!group.isModifiable()) {
@@ -623,7 +635,7 @@ public class HueBridge {
      * @throws EntityNotAvailableException thrown if the specified group no longer exists
      */
     public String setGroupAttributes(Group group, String name, List<HueObject> lights)
-            throws IOException, ApiException {
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         if (!group.isModifiable()) {
@@ -667,7 +679,8 @@ public class HueBridge {
      * @throws UnauthorizedException thrown if the user no longer exists
      * @throws EntityNotAvailableException thrown if the specified group no longer exists
      */
-    public void deleteGroup(Group group) throws IOException, ApiException {
+    public void deleteGroup(Group group)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         if (!group.isModifiable()) {
@@ -685,7 +698,8 @@ public class HueBridge {
      * @return schedules
      * @throws UnauthorizedException thrown if the user no longer exists
      */
-    public List<Schedule> getSchedules() throws IOException, ApiException {
+    public List<Schedule> getSchedules()
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = get(getRelativeURL("schedules"));
@@ -709,7 +723,8 @@ public class HueBridge {
      * @throws UnauthorizedException thrown if the user no longer exists
      * @throws EntityNotAvailableException thrown if the specified schedule no longer exists
      */
-    public void setSchedule(Schedule schedule, ScheduleUpdate update) throws IOException, ApiException {
+    public void setSchedule(Schedule schedule, ScheduleUpdate update)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = put(getRelativeURL("schedules/" + enc(schedule.getId())), update.toJson());
@@ -724,7 +739,8 @@ public class HueBridge {
      * @throws UnauthorizedException thrown if the user no longer exists
      * @throws EntityNotAvailableException thrown if the schedule no longer exists
      */
-    public void deleteSchedule(Schedule schedule) throws IOException, ApiException {
+    public void deleteSchedule(Schedule schedule)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = delete(getRelativeURL("schedules/" + enc(schedule.getId())));
@@ -737,7 +753,7 @@ public class HueBridge {
      *
      * @return all scenes that can be activated
      */
-    public List<Scene> getScenes() throws IOException, ApiException {
+    public List<Scene> getScenes() throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = get(getRelativeURL("scenes"));
@@ -796,7 +812,8 @@ public class HueBridge {
      * @param devicetype identifier of application [0..40]
      * @throws LinkButtonException thrown if the bridge button has not been pressed
      */
-    public void link(String username, String devicetype) throws IOException, ApiException {
+    public void link(String username, String devicetype)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         this.username = link(new CreateUserRequest(username, devicetype));
     }
 
@@ -808,11 +825,13 @@ public class HueBridge {
      * @param devicetype identifier of application [0..40]
      * @throws LinkButtonException thrown if the bridge button has not been pressed
      */
-    public String link(String devicetype) throws IOException, ApiException {
+    public String link(String devicetype)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         return (this.username = link(new CreateUserRequest(devicetype)));
     }
 
-    private String link(CreateUserRequest request) throws IOException, ApiException {
+    private String link(CreateUserRequest request)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         if (this.username != null) {
             throw new IllegalStateException("already linked");
         }
@@ -838,7 +857,7 @@ public class HueBridge {
      * @return bridge configuration
      * @throws UnauthorizedException thrown if the user no longer exists
      */
-    public Config getConfig() throws IOException, ApiException {
+    public Config getConfig() throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = get(getRelativeURL("config"));
@@ -854,7 +873,8 @@ public class HueBridge {
      * @param update changes to the configuration
      * @throws UnauthorizedException thrown if the user no longer exists
      */
-    public void setConfig(ConfigUpdate update) throws IOException, ApiException {
+    public void setConfig(ConfigUpdate update)
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = put(getRelativeURL("config"), update.toJson());
@@ -867,7 +887,7 @@ public class HueBridge {
      *
      * @throws UnauthorizedException thrown if the user no longer exists
      */
-    public void unlink() throws IOException, ApiException {
+    public void unlink() throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = delete(getRelativeURL("config/whitelist/" + enc(username)));
@@ -884,7 +904,7 @@ public class HueBridge {
      * @return full bridge configuration
      * @throws UnauthorizedException thrown if the user no longer exists
      */
-    public FullConfig getFullConfig() throws IOException, ApiException {
+    public FullConfig getFullConfig() throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = get(getRelativeURL(""));
@@ -1062,7 +1082,7 @@ public class HueBridge {
                             HueResult result = doNetwork(payloadCallbackPair.address, HttpMethod.PUT,
                                     payloadCallbackPair.body);
                             payloadCallbackPair.future.complete(result);
-                        } catch (CommunicationException e) {
+                        } catch (ConfigurationException | CommunicationException e) {
                             payloadCallbackPair.future.completeExceptionally(e);
                         }
                         delayTime = payloadCallbackPair.delay;
