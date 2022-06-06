@@ -59,8 +59,6 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
     public void initialize() {
         logger.debug("initializing NHC II bridge handler");
 
-        setConfig();
-
         Date expiryDate = getTokenExpiryDate();
         if (expiryDate == null) {
             if (getToken().isEmpty()) {
@@ -161,12 +159,12 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
 
     @Override
     public String getProfile() {
-        return ((NikoHomeControlBridgeConfig2) config).profile;
+        return getConfig().as(NikoHomeControlBridgeConfig2.class).profile;
     }
 
     @Override
     public String getToken() {
-        String token = ((NikoHomeControlBridgeConfig2) config).password;
+        String token = getConfig().as(NikoHomeControlBridgeConfig2.class).password;
         if (token.isEmpty()) {
             logger.debug("no JWT token set.");
         }
@@ -226,10 +224,5 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
         }
 
         return null;
-    }
-
-    @Override
-    protected synchronized void setConfig() {
-        config = getConfig().as(NikoHomeControlBridgeConfig2.class);
     }
 }

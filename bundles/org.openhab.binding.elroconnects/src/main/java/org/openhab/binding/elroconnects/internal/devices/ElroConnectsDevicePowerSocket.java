@@ -69,6 +69,8 @@ public class ElroConnectsDevicePowerSocket extends ElroConnectsDevice {
         String deviceStatus = this.deviceStatus;
         if (deviceStatus.length() < 6) {
             logger.debug("Could not decode device status: {}", deviceStatus);
+            String msg = String.format("@text/offline.device-fault [ \"%d\" ]", deviceId);
+            handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, msg);
             return;
         }
 
@@ -81,8 +83,8 @@ public class ElroConnectsDevicePowerSocket extends ElroConnectsDevice {
                 : (STAT_OFF.equals(status) ? OnOffType.OFF : UnDefType.UNDEF);
         handler.updateState(POWER_STATE, state);
         if (UnDefType.UNDEF.equals(state)) {
-            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Device " + deviceId + " is not syncing with K1 hub");
+            String msg = String.format("@text/offline.device-not-syncing [ \"%d\" ]", deviceId);
+            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
         } else {
             handler.updateStatus(ThingStatus.ONLINE);
         }

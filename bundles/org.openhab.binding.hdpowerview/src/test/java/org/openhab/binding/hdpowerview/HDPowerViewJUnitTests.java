@@ -121,23 +121,21 @@ public class HDPowerViewJUnitTests {
                 List<ShadeData> shadesData = shadesX.shadeData;
                 assertNotNull(shadesData);
 
-                if (shadesData != null) {
-                    assertTrue(!shadesData.isEmpty());
-                    ShadeData shadeData;
-                    shadeData = shadesData.get(0);
-                    assertNotNull(shadeData);
-                    assertTrue(shadeData.getName().length() > 0);
-                    shadePos = shadeData.positions;
-                    assertNotNull(shadePos);
-                    ShadeData shadeZero = shadesData.get(0);
-                    assertNotNull(shadeZero);
-                    shadeId = shadeZero.id;
-                    assertNotEquals(0, shadeId);
+                assertTrue(!shadesData.isEmpty());
+                ShadeData shadeData;
+                shadeData = shadesData.get(0);
+                assertNotNull(shadeData);
+                assertTrue(shadeData.getName().length() > 0);
+                shadePos = shadeData.positions;
+                assertNotNull(shadePos);
+                ShadeData shadeZero = shadesData.get(0);
+                assertNotNull(shadeZero);
+                shadeId = shadeZero.id;
+                assertNotEquals(0, shadeId);
 
-                    for (ShadeData shadexData : shadesData) {
-                        String shadeName = shadexData.getName();
-                        assertNotNull(shadeName);
-                    }
+                for (ShadeData shadexData : shadesData) {
+                    String shadeName = shadexData.getName();
+                    assertNotNull(shadeName);
                 }
             } catch (HubException e) {
                 fail(e.getMessage());
@@ -152,17 +150,15 @@ public class HDPowerViewJUnitTests {
                 List<Scene> scenesData = scenes.sceneData;
                 assertNotNull(scenesData);
 
-                if (scenesData != null) {
-                    assertTrue(!scenesData.isEmpty());
-                    Scene sceneZero = scenesData.get(0);
-                    assertNotNull(sceneZero);
-                    sceneId = sceneZero.id;
-                    assertTrue(sceneId > 0);
+                assertTrue(!scenesData.isEmpty());
+                Scene sceneZero = scenesData.get(0);
+                assertNotNull(sceneZero);
+                sceneId = sceneZero.id;
+                assertTrue(sceneId > 0);
 
-                    for (Scene scene : scenesData) {
-                        String sceneName = scene.getName();
-                        assertNotNull(sceneName);
-                    }
+                for (Scene scene : scenesData) {
+                    String sceneName = scene.getName();
+                    assertNotNull(sceneName);
                 }
             } catch (HubException e) {
                 fail(e.getMessage());
@@ -187,31 +183,27 @@ public class HDPowerViewJUnitTests {
                     Integer capabilitiesValue = shadeData.capabilities;
                     assertNotNull(capabilitiesValue);
 
-                    if (positions != null && capabilitiesValue != null) {
-                        Capabilities capabilities = new ShadeCapabilitiesDatabase()
-                                .getCapabilities(capabilitiesValue.intValue());
+                    Capabilities capabilities = new ShadeCapabilitiesDatabase()
+                            .getCapabilities(capabilitiesValue.intValue());
 
-                        State pos = positions.getState(capabilities, PRIMARY_POSITION);
-                        assertEquals(PercentType.class, pos.getClass());
+                    State pos = positions.getState(capabilities, PRIMARY_POSITION);
+                    assertEquals(PercentType.class, pos.getClass());
 
-                        int position = ((PercentType) pos).intValue();
-                        position = position + ((position <= 10) ? 5 : -5);
+                    int position = ((PercentType) pos).intValue();
+                    position = position + ((position <= 10) ? 5 : -5);
 
-                        ShadePosition targetPosition = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION,
-                                position);
-                        assertNotNull(targetPosition);
+                    ShadePosition targetPosition = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION,
+                            position);
+                    assertNotNull(targetPosition);
 
-                        if (allowShadeMovementCommands) {
-                            webTargets.moveShade(shadeId, targetPosition);
+                    if (allowShadeMovementCommands) {
+                        webTargets.moveShade(shadeId, targetPosition);
 
-                            ShadeData newData = webTargets.getShade(shadeId);
-                            ShadePosition actualPosition = newData.positions;
-                            assertNotNull(actualPosition);
-                            if (actualPosition != null) {
-                                assertEquals(targetPosition.getState(capabilities, PRIMARY_POSITION),
-                                        actualPosition.getState(capabilities, PRIMARY_POSITION));
-                            }
-                        }
+                        ShadeData newData = webTargets.getShade(shadeId);
+                        ShadePosition actualPosition = newData.positions;
+                        assertNotNull(actualPosition);
+                        assertEquals(targetPosition.getState(capabilities, PRIMARY_POSITION),
+                                actualPosition.getState(capabilities, PRIMARY_POSITION));
                     }
                 }
             } catch (HubException e) {
@@ -273,16 +265,12 @@ public class HDPowerViewJUnitTests {
 
         Scenes scenes = gson.fromJson(json, Scenes.class);
         assertNotNull(scenes);
-        if (scenes != null) {
-            List<Scene> sceneData = scenes.sceneData;
-            assertNotNull(sceneData);
-            if (sceneData != null) {
-                assertEquals(4, sceneData.size());
-                Scene scene = sceneData.get(0);
-                assertEquals("Door Open", scene.getName());
-                assertEquals(18097, scene.id);
-            }
-        }
+        List<Scene> sceneData = scenes.sceneData;
+        assertNotNull(sceneData);
+        assertEquals(4, sceneData.size());
+        Scene scene = sceneData.get(0);
+        assertEquals("Door Open", scene.getName());
+        assertEquals(18097, scene.id);
     }
 
     /**
@@ -297,17 +285,13 @@ public class HDPowerViewJUnitTests {
         SceneCollections sceneCollections = gson.fromJson(json, SceneCollections.class);
         assertNotNull(sceneCollections);
 
-        if (sceneCollections != null) {
-            List<SceneCollection> sceneCollectionData = sceneCollections.sceneCollectionData;
-            assertNotNull(sceneCollectionData);
-            if (sceneCollectionData != null) {
-                assertEquals(1, sceneCollectionData.size());
+        List<SceneCollection> sceneCollectionData = sceneCollections.sceneCollectionData;
+        assertNotNull(sceneCollectionData);
+        assertEquals(1, sceneCollectionData.size());
 
-                SceneCollection sceneCollection = sceneCollectionData.get(0);
-                assertEquals("Børn op", sceneCollection.getName());
-                assertEquals(27119, sceneCollection.id);
-            }
-        }
+        SceneCollection sceneCollection = sceneCollectionData.get(0);
+        assertEquals("Børn op", sceneCollection.getName());
+        assertEquals(27119, sceneCollection.id);
     }
 
     /**
@@ -321,79 +305,67 @@ public class HDPowerViewJUnitTests {
 
         Shades shades = gson.fromJson(json, Shades.class);
         assertNotNull(shades);
-        if (shades != null) {
-            List<ShadeData> shadesData = shades.shadeData;
-            assertNotNull(shadesData);
+        List<ShadeData> shadesData = shades.shadeData;
+        assertNotNull(shadesData);
 
-            if (shadesData != null) {
-                assertEquals(1, shadesData.size());
-                ShadeData shadeData = shadesData.get(0);
-                assertNotNull(shadeData);
+        assertEquals(1, shadesData.size());
+        ShadeData shadeData = shadesData.get(0);
+        assertNotNull(shadeData);
 
-                assertEquals("Gardin 1", shadeData.getName());
-                assertEquals(63778, shadeData.id);
+        assertEquals("Gardin 1", shadeData.getName());
+        assertEquals(63778, shadeData.id);
 
-                ShadePosition shadePos = shadeData.positions;
-                assertNotNull(shadePos);
+        ShadePosition shadePos = shadeData.positions;
+        assertNotNull(shadePos);
 
-                if (shadePos != null) {
-                    Integer capabilitiesValue = shadeData.capabilities;
-                    assertNotNull(capabilitiesValue);
-                    if (capabilitiesValue != null) {
-                        assertEquals(7, capabilitiesValue.intValue());
-                        ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
-                        Capabilities capabilities = db.getCapabilities(capabilitiesValue);
+        Integer capabilitiesValue = shadeData.capabilities;
+        assertNotNull(capabilitiesValue);
+        assertEquals(7, capabilitiesValue.intValue());
+        ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
+        Capabilities capabilities = db.getCapabilities(capabilitiesValue);
 
-                        State pos = shadePos.getState(capabilities, PRIMARY_POSITION);
-                        assertEquals(PercentType.class, pos.getClass());
-                        assertEquals(59, ((PercentType) pos).intValue());
+        State pos = shadePos.getState(capabilities, PRIMARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(59, ((PercentType) pos).intValue());
 
-                        pos = shadePos.getState(capabilities, SECONDARY_POSITION);
-                        assertEquals(PercentType.class, pos.getClass());
-                        assertEquals(35, ((PercentType) pos).intValue());
+        pos = shadePos.getState(capabilities, SECONDARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(35, ((PercentType) pos).intValue());
 
-                        pos = shadePos.getState(capabilities, VANE_TILT_POSITION);
-                        assertEquals(UnDefType.class, pos.getClass());
+        pos = shadePos.getState(capabilities, VANE_TILT_POSITION);
+        assertEquals(UnDefType.class, pos.getClass());
 
-                        assertEquals(3, shadeData.batteryStatus);
+        assertEquals(3, shadeData.batteryStatus);
 
-                        assertEquals(4, shadeData.signalStrength);
+        assertEquals(4, shadeData.signalStrength);
 
-                        assertEquals(8, shadeData.type);
+        assertEquals(8, shadeData.type);
 
-                        assertTrue(db.isTypeInDatabase(shadeData.type));
-                        assertTrue(db.isCapabilitiesInDatabase(capabilitiesValue.intValue()));
+        assertTrue(db.isTypeInDatabase(shadeData.type));
+        assertTrue(db.isCapabilitiesInDatabase(capabilitiesValue.intValue()));
 
-                        assertEquals(db.getType(shadeData.type).getCapabilities(), capabilitiesValue.intValue());
+        assertEquals(db.getType(shadeData.type).getCapabilities(), capabilitiesValue.intValue());
 
-                        assertTrue(db.getCapabilities(capabilitiesValue.intValue()).supportsSecondary());
-                        assertNotEquals(db.getType(shadeData.type).getCapabilities(), capabilitiesValue.intValue() + 1);
+        assertTrue(db.getCapabilities(capabilitiesValue.intValue()).supportsSecondary());
+        assertNotEquals(db.getType(shadeData.type).getCapabilities(), capabilitiesValue.intValue() + 1);
 
-                        // ==== when changing position1, position2 value is not changed (vice-versa) ====
-                        ShadePosition shadePosition = shadeData.positions;
-                        assertNotNull(shadePosition);
-                        if (shadePosition != null) {
-                            // ==== position2 ====
-                            State position2Old = shadePosition.getState(capabilities, SECONDARY_POSITION);
-                            shadePosition.setPosition(capabilities, PRIMARY_POSITION, 99);
-                            State position2New = shadePosition.getState(capabilities, SECONDARY_POSITION);
-                            assertEquals(PercentType.class, position2Old.getClass());
-                            assertEquals(PercentType.class, position2New.getClass());
-                            assertEquals(((PercentType) position2Old).intValue(),
-                                    ((PercentType) position2New).intValue());
+        // ==== when changing position1, position2 value is not changed (vice-versa) ====
+        ShadePosition shadePosition = shadeData.positions;
+        assertNotNull(shadePosition);
+        // ==== position2 ====
+        State position2Old = shadePosition.getState(capabilities, SECONDARY_POSITION);
+        shadePosition.setPosition(capabilities, PRIMARY_POSITION, 99);
+        State position2New = shadePosition.getState(capabilities, SECONDARY_POSITION);
+        assertEquals(PercentType.class, position2Old.getClass());
+        assertEquals(PercentType.class, position2New.getClass());
+        assertEquals(((PercentType) position2Old).intValue(), ((PercentType) position2New).intValue());
 
-                            // ==== position2 ====
-                            State position1Old = shadePosition.getState(capabilities, PRIMARY_POSITION);
-                            shadePosition.setPosition(capabilities, SECONDARY_POSITION, 99);
-                            State position1New = shadePosition.getState(capabilities, PRIMARY_POSITION);
-                            assertEquals(PercentType.class, position1Old.getClass());
-                            assertEquals(PercentType.class, position1New.getClass());
-                            assertEquals(((PercentType) position1Old).intValue(),
-                                    ((PercentType) position1New).intValue());
-                        }
-                    }
-                }
-            }
-        }
+        // ==== position2 ====
+        State position1Old = shadePosition.getState(capabilities, PRIMARY_POSITION);
+        shadePosition.setPosition(capabilities, SECONDARY_POSITION, 99);
+        State position1New = shadePosition.getState(capabilities, PRIMARY_POSITION);
+        assertEquals(PercentType.class, position1Old.getClass());
+        assertEquals(PercentType.class, position1New.getClass());
+        assertEquals(((PercentType) position1Old).intValue(), ((PercentType) position1New).intValue());
     }
 }
