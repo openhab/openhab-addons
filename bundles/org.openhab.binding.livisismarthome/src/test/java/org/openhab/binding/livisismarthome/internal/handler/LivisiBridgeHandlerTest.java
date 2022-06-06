@@ -52,6 +52,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.State;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +96,7 @@ public class LivisiBridgeHandlerTest {
         HttpClient httpClientMock = mock(HttpClient.class);
 
         bridgeHandler = new LivisiBridgeHandlerAccessible(bridgeMock, oAuthFactoryMock, httpClientMock);
+        bridgeHandler.setCallback(mock(ThingHandlerCallback.class));
     }
 
     @AfterEach
