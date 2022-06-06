@@ -15,11 +15,11 @@
 		<channel-groups>
 			<channel-group id="arrivals" typeId="passage">
 				<label>Next Arrival</label>
-				<description>Informations regarding next arrival at the station.</description>
+				<description>Information regarding the next arrival at the station.</description>
 			</channel-group>
 			<channel-group id="departures" typeId="passage">
 				<label>Next Departure</label>
-				<description>Informations regarding next departure from the station.</description>
+				<description>Information regarding the next departure from the station.</description>
 			</channel-group>
 		</channel-groups>
 
