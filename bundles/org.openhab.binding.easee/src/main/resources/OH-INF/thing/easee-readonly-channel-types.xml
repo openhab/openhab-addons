@@ -43,8 +43,13 @@
 		<label>Charger Operation Mode</label>
 		<state readOnly="false">
 			<options>
-				<option value="1">Offline</option>
+				<option value="0">Offline</option>
+				<option value="1">Disconnected</option>
 				<option value="2">Standby</option>
+				<option value="3">Charging</option>
+				<option value="4">Completed</option>
+				<option value="5">Error</option>
+				<option value="6">ReadyToCharge</option>
 			</options>
 		</state>
 	</channel-type>

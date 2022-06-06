@@ -186,6 +186,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         logger.debug("JSON String: {}", json);
         switch (getCommunicationStatus().getHttpCode()) {
             case OK:
+            case ACCEPTED:
                 onCompleteCodeOk(json);
                 break;
             default:
