@@ -54,8 +54,7 @@ public class GenericResponseTransformer {
         Map<Channel, State> result = new HashMap<>(20);
 
         for (String channelId : jsonData.keySet()) {
-            Object val = jsonData.get(channelId);
-            String value = val == null ? null : val.toString();
+            String value = Utils.getAsString(jsonData, channelId);
 
             Channel channel = channelProvider.getChannel(group, channelId);
             if (channel == null) {

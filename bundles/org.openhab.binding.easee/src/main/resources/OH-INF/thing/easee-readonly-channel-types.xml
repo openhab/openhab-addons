@@ -41,7 +41,7 @@
 	<channel-type id="type-integer-charger-op-mode">
 		<item-type>Number</item-type>
 		<label>Charger Operation Mode</label>
-		<state readOnly="false">
+		<state readOnly="true">
 			<options>
 				<option value="0">Offline</option>
 				<option value="1">Disconnected</option>

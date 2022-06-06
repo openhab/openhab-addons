@@ -27,8 +27,11 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * some helper methods.
@@ -52,7 +55,7 @@ public final class Utils {
      * @return
      */
     public static ZonedDateTime parseDate(String date) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
         logger.debug("parsing: {}", date);
         ZonedDateTime zdt = ZonedDateTime.parse(date, formatter);
         logger.debug("parsing completed: {}", date);
@@ -71,15 +74,15 @@ public final class Utils {
     }
 
     /**
-     * get element as String.
+     * get element as JsonObject.
      *
      * @param jsonObject
      * @param key
      * @return
      */
     public static @Nullable JsonObject getAsJsonObject(@Nullable JsonObject jsonObject, String key) {
-        JsonElement json = jsonObject == null ? null : jsonObject.get(key);
-        return json == null ? null : json.getAsJsonObject();
+        JsonElement element = jsonObject == null ? null : jsonObject.get(key);
+        return (element instanceof JsonObject) ? element.getAsJsonObject() : null;
     }
 
     /**
@@ -90,8 +93,16 @@ public final class Utils {
      * @return
      */
     public static @Nullable String getAsString(@Nullable JsonObject jsonObject, String key) {
-        JsonElement json = jsonObject == null ? null : jsonObject.get(key);
-        return json == null ? null : json.getAsString();
+        JsonElement element = jsonObject == null ? null : jsonObject.get(key);
+        String text = null;
+        if (element != null) {
+            if (element instanceof JsonPrimitive) {
+                text = element.getAsString();
+            } else if (element instanceof JsonObject || element instanceof JsonArray) {
+                text = element.toString();
+            }
+        }
+        return text;
     }
 
     /**
@@ -102,8 +113,8 @@ public final class Utils {
      * @return
      */
     public static int getAsInt(@Nullable JsonObject jsonObject, String key) {
-        JsonElement json = jsonObject == null ? null : jsonObject.get(key);
-        return json == null ? 0 : json.getAsInt();
+        JsonElement element = jsonObject == null ? null : jsonObject.get(key);
+        return (element instanceof JsonPrimitive) ? element.getAsInt() : 0;
     }
 
     /**
@@ -115,7 +126,7 @@ public final class Utils {
      */
     public static @Nullable Boolean getAsBool(@Nullable JsonObject jsonObject, String key) {
         JsonElement json = jsonObject == null ? null : jsonObject.get(key);
-        return json == null ? null : json.getAsBoolean();
+        return (json == null || json instanceof JsonNull) ? null : json.getAsBoolean();
     }
 
     /**
