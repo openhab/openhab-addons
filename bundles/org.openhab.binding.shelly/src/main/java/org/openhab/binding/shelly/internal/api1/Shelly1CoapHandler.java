@@ -500,6 +500,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 // Aggregate Meter Data from different Coap updates
                 int i = 1;
                 double totalCurrent = 0.0;
+                @SuppressWarnings("unused")
                 double totalKWH = 0.0;
                 boolean updateMeter = false;
                 while (i <= thingHandler.getProfile().numMeters) {

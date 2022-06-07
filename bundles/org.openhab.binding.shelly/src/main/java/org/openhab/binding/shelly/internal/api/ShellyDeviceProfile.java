@@ -282,6 +282,7 @@ public class ShellyDeviceProfile {
         return "";
     }
 
+    @SuppressWarnings("null")
     public boolean inButtonMode(int idx) {
         if (idx < 0) {
             logger.debug("{}: Invalid index {} for inButtonMode()", thingName, idx);

@@ -40,6 +40,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_UPDATE = "Shelly.Update";
     public static final String SHELLYRPC_METHOD_GETSWITCHSTATUS = "Switch.GetStatus";
     public static final String SHELLYRPC_METHOD_COVER_SETPOS = "Cover.GoToPosition";
+    public static final String SHELLY2_COVER_CMD_OPEN = "Open";
+    public static final String SHELLY2_COVER_CMD_CLOSE = "Close";
+    public static final String SHELLY2_COVER_CMD_STOP = "Stop";
     public static final String SHELLYRPC_METHOD_WSGETCONFIG = "WS.GetConfig";
     public static final String SHELLYRPC_METHOD_WSSETCONFIG = "WS.SetConfig";
 
@@ -387,7 +390,7 @@ public class Shelly2ApiJsonDTO {
                 public Double pf;
                 public Shelly2Energy aenergy;
                 @SerializedName("current_pos")
-                public Integer current_pos;
+                public Integer currentPos;
                 @SerializedName("target_pos")
                 public Integer targetPos;
                 @SerializedName("move_timeout")

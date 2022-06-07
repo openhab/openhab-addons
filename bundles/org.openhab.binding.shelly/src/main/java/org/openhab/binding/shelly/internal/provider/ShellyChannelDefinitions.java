@@ -335,17 +335,15 @@ public class ShellyChannelDefinitions {
     public static Map<String, Channel> createDimmerChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellySettingsStatus dstatus, int idx) {
         Map<String, Channel> add = new LinkedHashMap<>();
+        String group = profile.getControlGroup(idx);
+
+        // Shelly Dimmer has an additional brightness channel
+        addChannel(thing, add, profile.isDimmer, group, CHANNEL_BRIGHTNESS);
 
         if (profile.settings.dimmers != null) {
-            String group = profile.getControlGroup(idx);
-
-            // Shelly Dimmer has an additional brightness channel
-            addChannel(thing, add, profile.isDimmer, group, CHANNEL_BRIGHTNESS);
-
             ShellySettingsDimmer ds = profile.settings.dimmers.get(idx);
             addChannel(thing, add, ds.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, ds.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
-
             ShellyShortLightStatus dss = dstatus.dimmers.get(idx);
             addChannel(thing, add, dss != null && dss.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
         }

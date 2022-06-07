@@ -302,6 +302,7 @@ public class ShellyBaseHandler extends BaseThingHandler
             return false; // force re-initialization
         }
         // Validate device mode
+        tmpPrf.isGen2 = gen2;
         String reqMode = thingType.contains("-") ? substringAfter(thingType, "-") : "";
         if (!reqMode.isEmpty() && !tmpPrf.mode.equals(reqMode)) {
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-wrong-mode");
@@ -714,6 +715,8 @@ public class ShellyBaseHandler extends BaseThingHandler
         }
         if (coap != null) {
             stats.coiotMessages = coap.getMessageCount();
+        }
+        if (coap != null) {
             stats.coiotErrors = coap.getErrorCount();
         }
         if (!alarm.isEmpty()) {
@@ -994,6 +997,15 @@ public class ShellyBaseHandler extends BaseThingHandler
         }
     }
 
+    public String checkForUpdate() {
+        try {
+            ShellyOtaCheckResult result = api.checkForUpdate();
+            return result.status;
+        } catch (ShellyApiException e) {
+            return "";
+        }
+    }
+
     public void startCoap(ShellyThingConfiguration config, ShellyDeviceProfile profile) throws ShellyApiException {
         if (coap == null || !config.eventsCoIoT) {
             return;
@@ -1024,7 +1036,9 @@ public class ShellyBaseHandler extends BaseThingHandler
         }
 
         logger.debug("{}: Starting CoIoT (autoCoIoT={}/{})", thingName, bindingConfig.autoCoIoT, autoCoIoT);
-        coap.start(thingName, config);
+        if (coap != null) {
+            coap.start(thingName, config);
+        }
     }
 
     /**
@@ -1277,6 +1291,7 @@ public class ShellyBaseHandler extends BaseThingHandler
         if (!deviceName.isEmpty()) {
             properties.put(PROPERTY_DEV_NAME, deviceName);
         }
+        properties.put(PROPERTY_DEV_GEN, !profile.isGen2 ? "1" : "2");
 
         // add status properties
         if (status.wifiSta != null) {
@@ -1512,15 +1527,6 @@ public class ShellyBaseHandler extends BaseThingHandler
 
     public Map<String, String> getStatsProp() {
         return stats.asProperties();
-    }
-
-    public String checkForUpdate() {
-        try {
-            ShellyOtaCheckResult result = api.checkForUpdate();
-            return result.status;
-        } catch (ShellyApiException e) {
-            return "";
-        }
     }
 
     @Override

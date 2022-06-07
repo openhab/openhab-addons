@@ -121,7 +121,7 @@
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:rolle-gen2"/>
+		<config-description-ref uri="thing-type:shelly:roller-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellypro2pm-relay">

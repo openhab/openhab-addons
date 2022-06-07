@@ -34,7 +34,6 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
@@ -112,7 +111,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                         channelUID.getIdWithoutGroup().equals(CHANNEL_ROL_CONTROL_CONTROL));
 
                 // request updates the next 45sec to update roller position after it stopped
-                requestUpdates(autoCoIoT ? 1 : 45 / UPDATE_STATUS_INTERVAL_SECONDS, false);
+                requestUpdates(autoCoIoT || profile.isGen2 ? 1 : 45 / UPDATE_STATUS_INTERVAL_SECONDS, false);
                 break;
 
             case CHANNEL_ROL_CONTROL_FAV:
@@ -330,7 +329,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      */
     public boolean updateRelays(ShellySettingsStatus status) throws ShellyApiException {
         boolean updated = false;
-
         if (profile.hasRelays && !profile.isDimmer) {
             double voltage = -1;
             if (status.voltage == null && profile.settings.supplyVoltage != null) {
@@ -344,52 +342,23 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 updated |= updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_VOLTAGE,
                         toQuantityType(voltage, DIGITS_VOLT, Units.VOLT));
             }
-        }
 
-        if (profile.hasRelays && !profile.isRoller) {
-            logger.trace("{}: Updating {} relay(s)", thingName, profile.numRelays);
-            for (int i = 0; i < status.relays.size(); i++) {
-                createRelayChannels(status.relays.get(i), i);
-                updated |= ShellyComponents.updateRelay(this, status, i);
-                i++;
-            }
-        } else if (profile.isRoller && status.rollers != null) {
-            // Check for Relay in Roller Mode
-            logger.trace("{}: Updating {} rollers", thingName, profile.numRollers);
-            int i = 0;
-            ShellyRollerStatus control = api.getRollerStatus(i);
-            if (control.isValid) {
-                Integer relayIndex = i + 1;
-                String groupName = profile.numRollers > 1 ? CHANNEL_GROUP_ROL_CONTROL + relayIndex.toString()
-                        : CHANNEL_GROUP_ROL_CONTROL;
-
-                createRollerChannels(control);
-
-                if (control.name != null) {
-                    updated |= updateChannel(groupName, CHANNEL_OUTPUT_NAME, getStringType(control.name));
+            if (!profile.isRoller) {
+                logger.trace("{}: Updating {} relay(s)", thingName, profile.numRelays);
+                for (int i = 0; i < status.relays.size(); i++) {
+                    createRelayChannels(status.relays.get(i), i);
+                    updated |= ShellyComponents.updateRelay(this, status, i);
                 }
-
-                String state = getString(control.state);
-                if (state.equals(SHELLY_ALWD_ROLLER_TURN_STOP)) {
-                    // only valid in stop state
-                    int pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
-                    logger.debug("{}: Update roller position: control={}, position={}", thingName,
-                            SHELLY_MAX_ROLLER_POS - pos, pos);
-                    updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL,
-                            toQuantityType((double) (SHELLY_MAX_ROLLER_POS - pos), Units.PERCENT));
-                    updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_POS,
-                            toQuantityType((double) pos, Units.PERCENT));
-                    if (scheduledUpdates > 1) {
-                        scheduledUpdates = 1; // one more poll and then stop
-                    }
+            } else {
+                // Check for Relay in Roller Mode
+                logger.trace("{}: Updating {} rollers", thingName, profile.numRollers);
+                for (int i = 0; i < profile.numRollers; i++) {
+                    ShellyRollerStatus roller = status.rollers.get(i);
+                    createRollerChannels(roller);
+                    updated |= ShellyComponents.updateRoller(this, roller, i);
                 }
-
-                updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STATE, new StringType(state));
-                updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STOPR, getStringType(control.stopReason));
-                updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_SAFETY, getOnOff(control.safetySwitch));
             }
         }
-
         return updated;
     }
 
