@@ -28,6 +28,7 @@ import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.binding.lgthinq.lgservices.model.dryer.DryerCapability;
 import org.openhab.binding.lgthinq.lgservices.model.dryer.DryerSnapshot;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.*;
@@ -86,7 +87,7 @@ public class LGThinQDryerHandler extends LGThinQAbstractDeviceHandler<DryerCapab
         updateState(DR_CHANNEL_SMART_COURSE_ID, new StringType(shot.getSmartCourse()));
         updateState(DR_CHANNEL_PROCESS_STATE_ID, new StringType(shot.getProcessState()));
         updateState(DR_CHANNEL_CHILD_LOCK_ID, new StringType(shot.getChildLock()));
-        updateState(DR_CHANNEL_REMAIN_TIME_ID, new StringType(shot.getRemainingTime()));
+        updateState(DR_CHANNEL_REMAIN_TIME_ID, new DateTimeType(shot.getRemainingTime()));
         updateState(DR_CHANNEL_DRY_LEVEL_ID, new StringType(shot.getDryLevel()));
         updateState(DR_CHANNEL_ERROR_ID, new StringType(shot.getError()));
     }

@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.fridge.v2;
 
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.TEMP_UNIT_CELSIUS_SYMBOL;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.TEMP_UNIT_FAHRENHEIT_SYMBOL;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -82,16 +85,16 @@ public class FridgeCapabilityV2 extends AbstractCapability
         JsonNode fridgeTempFNode = node.path("MonitoringValue").path("fridgeTemp_F").path("valueMapping");
         JsonNode freezerTempCNode = node.path("MonitoringValue").path("freezerTemp_C").path("valueMapping");
         JsonNode freezerTempFNode = node.path("MonitoringValue").path("freezerTemp_F").path("valueMapping");
-        loadTempNode(fridgeTempCNode, fridgeTempCMap);
-        loadTempNode(fridgeTempFNode, fridgeTempFMap);
-        loadTempNode(freezerTempCNode, freezerTempCMap);
-        loadTempNode(freezerTempFNode, freezerTempFMap);
+        loadTempNode(fridgeTempCNode, fridgeTempCMap, TEMP_UNIT_CELSIUS_SYMBOL);
+        loadTempNode(fridgeTempFNode, fridgeTempFMap, TEMP_UNIT_FAHRENHEIT_SYMBOL);
+        loadTempNode(freezerTempCNode, freezerTempCMap, TEMP_UNIT_CELSIUS_SYMBOL);
+        loadTempNode(freezerTempFNode, freezerTempFMap, TEMP_UNIT_FAHRENHEIT_SYMBOL);
     }
 
-    private void loadTempNode(JsonNode tempNode, Map<String, String> capMap) {
+    private void loadTempNode(JsonNode tempNode, Map<String, String> capMap, String unit) {
         tempNode.forEach(v -> {
             // for each node like ' "1": {"index" : 1, "label" : "7", "_comment" : ""} '
-            capMap.put(v.path("index").asText(), v.path("label").textValue());
+            capMap.put(v.path("index").asText() + " " + unit, v.path("label").textValue() + " " + unit);
         });
     }
 }

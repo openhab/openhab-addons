@@ -24,9 +24,9 @@ import org.openhab.binding.lgthinq.lgservices.model.Snapshot;
 public interface FridgeSnapshot extends Snapshot {
     public String getTempUnit();
 
-    public String getFridgeTemp();
+    public String getFridgeStrTemp();
 
-    public String getFreezerTemp();
+    public String getFreezerStrTemp();
 
     public void loadSnapshot(Object veryRootNode);
 }

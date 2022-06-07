@@ -19,6 +19,7 @@ import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.Snapshot;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -35,8 +36,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class FridgeSnapshotV2 implements Snapshot, org.openhab.binding.lgthinq.lgservices.model.fridge.FridgeSnapshot {
 
     private boolean online;
-    private String fridgeTemp = FRIDGE_TEMPERATURE_IGNORE_VALUE;
-    private String freezerTemp = FREEZER_TEMPERATURE_IGNORE_VALUE;
+    private Double fridgeTemp = FRIDGE_TEMPERATURE_IGNORE_VALUE;
+    private Double freezerTemp = FREEZER_TEMPERATURE_IGNORE_VALUE;
     private String tempUnit = TEMP_UNIT_CELSIUS; // celsius as default
 
     @Override
@@ -46,29 +47,44 @@ public class FridgeSnapshotV2 implements Snapshot, org.openhab.binding.lgthinq.l
         return tempUnit;
     }
 
+    private String getStrTempWithUnit(Double temp) {
+        return temp.intValue() + (TEMP_UNIT_CELSIUS.equals(tempUnit) ? " " + TEMP_UNIT_CELSIUS_SYMBOL
+                : (TEMP_UNIT_FAHRENHEIT).equals(tempUnit) ? " " + TEMP_UNIT_FAHRENHEIT_SYMBOL : "");
+    }
+
+    @Override
+    @JsonIgnore
+    public String getFridgeStrTemp() {
+        return getStrTempWithUnit(getFridgeTemp());
+    }
+
+    @Override
+    @JsonIgnore
+    public String getFreezerStrTemp() {
+        return getStrTempWithUnit(getFreezerTemp());
+    }
+
     public void setTempUnit(String tempUnit) {
         this.tempUnit = tempUnit;
     }
 
-    @Override
     @JsonAlias({ "TempRefrigerator" })
     @JsonProperty("fridgeTemp")
-    public String getFridgeTemp() {
+    public Double getFridgeTemp() {
         return fridgeTemp;
     }
 
-    public void setFridgeTemp(String fridgeTemp) {
+    public void setFridgeTemp(Double fridgeTemp) {
         this.fridgeTemp = fridgeTemp;
     }
 
-    @Override
     @JsonAlias({ "TempFreezer" })
     @JsonProperty("freezerTemp")
-    public String getFreezerTemp() {
+    public Double getFreezerTemp() {
         return freezerTemp;
     }
 
-    public void setFreezerTemp(String freezerTemp) {
+    public void setFreezerTemp(Double freezerTemp) {
         this.freezerTemp = freezerTemp;
     }
 

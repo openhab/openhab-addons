@@ -44,6 +44,8 @@ public class WasherSnapshot implements Snapshot {
     private String doorLock = "";
     private Double remainingHour = 0.00;
     private Double remainingMinute = 0.00;
+    private Double reserveHour = 0.00;
+    private Double reserveMinute = 0.00;
 
     @JsonAlias({ "Course", "courseFL24inchBaseTitan" })
     @JsonProperty("courseFL24inchBaseTitan")
@@ -102,6 +104,11 @@ public class WasherSnapshot implements Snapshot {
         return String.format("%02.0f:%02.0f", getRemainingHour(), getRemainingMinute());
     }
 
+    @JsonIgnore
+    public String getReserveTime() {
+        return String.format("%02.0f:%02.0f", getReserveHour(), getReserveMinute());
+    }
+
     @JsonProperty("remainTimeHour")
     @JsonAlias({ "remainTimeHour", "Remain_Time_H" })
     public Double getRemainingHour() {
@@ -120,6 +127,26 @@ public class WasherSnapshot implements Snapshot {
 
     public void setRemainingMinute(Double remainingMinute) {
         this.remainingMinute = remainingMinute;
+    }
+
+    @JsonProperty("reserveTimeHour")
+    @JsonAlias({ "reserveTimeHour", "Reserve_Time_H" })
+    public Double getReserveHour() {
+        return reserveHour;
+    }
+
+    public void setReserveHour(Double reserveHour) {
+        this.reserveHour = reserveHour;
+    }
+
+    @JsonProperty("reserveTimeMinute")
+    @JsonAlias({ "reserveTimeMinute", "Reserve_Time_M" })
+    public Double getReserveMinute() {
+        return reserveMinute;
+    }
+
+    public void setReserveMinute(Double reserveMinute) {
+        this.reserveMinute = reserveMinute;
     }
 
     public void setSmartCourse(String smartCourse) {

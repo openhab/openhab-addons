@@ -22,6 +22,7 @@
 			<channel id="temperature-level" typeId="washer-temp-level"/>
 			<channel id="door-lock" typeId="washer-door-lock"/>
 			<channel id="remain-time" typeId="washerdryer-remain-time"/>
+			<channel id="delay-time" typeId="washerdryer-delay-time"/>
 		</channels>
 
 	</thing-type>
