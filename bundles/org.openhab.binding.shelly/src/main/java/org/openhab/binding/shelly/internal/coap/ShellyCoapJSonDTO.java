@@ -223,6 +223,9 @@ public class ShellyCoapJSonDTO {
                 }
 
                 in.endArray();
+                if (in.hasNext()) {
+                    name = in.nextName();
+                }
             }
 
             if (name.equalsIgnoreCase(COIOT_TAG_ACT)) {

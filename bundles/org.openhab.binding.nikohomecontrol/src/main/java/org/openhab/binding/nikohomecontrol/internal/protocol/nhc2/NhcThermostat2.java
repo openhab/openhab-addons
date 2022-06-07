@@ -33,14 +33,16 @@ public class NhcThermostat2 extends NhcThermostat {
 
     private final Logger logger = LoggerFactory.getLogger(NhcThermostat2.class);
 
-    private String model;
-    private String technology;
+    private String deviceType;
+    private String deviceTechnology;
+    private String deviceModel;
 
-    protected NhcThermostat2(String id, String name, String model, String technology, @Nullable String location,
-            NikoHomeControlCommunication nhcComm) {
+    protected NhcThermostat2(String id, String name, String deviceType, String deviceTechnology, String deviceModel,
+            @Nullable String location, NikoHomeControlCommunication nhcComm) {
         super(id, name, location, nhcComm);
-        this.model = model;
-        this.technology = technology;
+        this.deviceType = deviceType;
+        this.deviceTechnology = deviceTechnology;
+        this.deviceModel = deviceModel;
     }
 
     @Override
@@ -59,16 +61,23 @@ public class NhcThermostat2 extends NhcThermostat {
     }
 
     /**
-     * @return model as returned from Niko Home Control
+     * @return type as returned from Niko Home Control
      */
-    public String getModel() {
-        return model;
+    public String getDeviceType() {
+        return deviceType;
     }
 
     /**
      * @return technology as returned from Niko Home Control
      */
-    public String getTechnology() {
-        return technology;
+    public String getDeviceTechnology() {
+        return deviceTechnology;
+    }
+
+    /**
+     * @return model as returned from Niko Home Control
+     */
+    public String getDeviceModel() {
+        return deviceModel;
     }
 }

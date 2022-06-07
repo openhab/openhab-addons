@@ -1,6 +1,6 @@
 # BenQ Projector Binding
 
-This binding is compatible with BenQ projectors that support the control protocol via the built-in ethernet port, serial port or USB to serial adapter.
+This binding is compatible with BenQ projectors that support the control protocol via the built-in Ethernet port, serial port or USB to serial adapter.
 If your projector does not have built-in networking, you can connect to your projector's serial port via a TCP connection using a serial over IP device or by using`ser2net`.  
 
 The manufacturer's guide for connecting to the projector and the control protocol can be found in this document: [LX9215_RS232 Control Guide_0_Windows7_Windows8_WinXP.pdf](https://esupportdownload.benq.com/esupport/Projector/Control%20Protocols/LX9215/LX9215_RS232%20Control%20Guide_0_Windows7_Windows8_WinXP.pdf)
@@ -11,7 +11,8 @@ This binding supports two thing types based on the connection used: `projector-s
 
 ## Discovery
 
-The projector thing cannot be auto-discovered, it has to be configured manually.
+If the projector has a built-in Ethernet port connected to the same network as the openHAB server and supports AMX Device Discovery, the thing will be discovered automatically.
+Serial port or serial over IP connections must be configured manually.
 
 ## Binding Configuration
 
