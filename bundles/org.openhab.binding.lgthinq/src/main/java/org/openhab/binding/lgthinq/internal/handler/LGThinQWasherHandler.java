@@ -28,6 +28,7 @@ import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.binding.lgthinq.lgservices.model.washer.WasherCapability;
 import org.openhab.binding.lgthinq.lgservices.model.washer.WasherSnapshot;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.*;
@@ -149,7 +150,8 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
         updateState(WM_CHANNEL_SMART_COURSE_ID, new StringType(shot.getSmartCourse()));
         updateState(WM_CHANNEL_TEMP_LEVEL_ID, new StringType(shot.getTemperatureLevel()));
         updateState(WM_CHANNEL_DOOR_LOCK_ID, new StringType(shot.getDoorLock()));
-        updateState(WM_CHANNEL_REMAIN_TIME_ID, new StringType(shot.getRemainingTime()));
+        updateState(WM_CHANNEL_REMAIN_TIME_ID, new DateTimeType(shot.getRemainingTime()));
+        updateState(WM_CHANNEL_DELAY_TIME_ID, new DateTimeType(shot.getReserveTime()));
         updateState(WM_CHANNEL_DOWNLOADED_COURSE_ID, new StringType(shot.getDownloadedCourse()));
     }
 
