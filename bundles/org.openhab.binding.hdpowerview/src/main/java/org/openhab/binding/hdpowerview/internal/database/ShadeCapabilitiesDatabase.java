@@ -59,7 +59,7 @@ public class ShadeCapabilitiesDatabase {
      */
     private static final Map<Integer, Type> TYPE_DATABASE = Arrays.asList(
     // @formatter:off
-            new Type( 1).capabilities(0).text("Generic"),
+            new Type( 1).capabilities(0).text("Roller / Solar"),
             new Type( 4).capabilities(0).text("Roman"),
             new Type( 5).capabilities(0).text("Bottom Up"),
             new Type( 6).capabilities(0).text("Duette"),
