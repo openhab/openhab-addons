@@ -373,7 +373,9 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 });
 
                 if (ThingStatus.ONLINE == bridge.getStatus()) {
-                    updateStatus(ThingStatus.ONLINE);
+                    if (ThingStatus.OFFLINE != getThing().getStatus()) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 }
@@ -531,6 +533,21 @@ public class InsteonDeviceHandler extends BaseThingHandler {
         getInsteonNetworkHandler().unlinked(channelUID);
 
         logger.debug("channel {} unlinked ", channelUID.getAsString());
+    }
+
+    public InsteonAddress getInsteonAddress() {
+        if (config != null) {
+            return new InsteonAddress(config.getAddress());
+        } else {
+            throw new IllegalArgumentException("config is null");
+        }
+    }
+
+    public void deviceNotLinked() {
+        String address = config != null ? config.getAddress() : "unknown";
+        String msg = "device with the address '" + address
+                + "' was not found in the modem database. Did you forget to link?";
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
     }
 
     private InsteonNetworkHandler getInsteonNetworkHandler() {
