@@ -35,8 +35,6 @@ public class ShadeCapabilitiesDatabase {
 
     private final Logger logger = LoggerFactory.getLogger(ShadeCapabilitiesDatabase.class);
 
-    // Capability 9 is not tiltAnywhere - it requires the rear shade to be open and the front to be closed
-
     /*
      * Database of known shade capabilities.
      */
