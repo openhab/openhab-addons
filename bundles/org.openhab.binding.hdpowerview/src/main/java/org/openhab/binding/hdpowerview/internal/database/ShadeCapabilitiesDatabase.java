@@ -185,7 +185,7 @@ public class ShadeCapabilitiesDatabase {
         private boolean primaryInverted;
         private boolean tilt180Degrees;
 
-        protected Capabilities() {
+        public Capabilities() {
         }
 
         protected Capabilities secondaryOverlapped() {
