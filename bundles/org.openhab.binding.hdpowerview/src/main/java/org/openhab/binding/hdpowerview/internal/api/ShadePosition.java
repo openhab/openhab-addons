@@ -158,7 +158,7 @@ public class ShadePosition {
                     }
                     return new PercentType((int) Math.round((double) position1 / MAX_SHADE * 100));
                 }
-                if (PRIMARY_POSITION.equals(posKind1) && shadeCapabilities.supportsSecondaryOverlapped()) {
+                if (!SECONDARY_POSITION.equals(posKind1) && shadeCapabilities.supportsSecondaryOverlapped()) {
                     return PercentType.ZERO;
                 }
                 break;
@@ -181,6 +181,10 @@ public class ShadePosition {
                 }
                 if (PRIMARY_POSITION.equals(posKind1) && shadeCapabilities.supportsTiltOnClosed()) {
                     return position1 != 0 ? UnDefType.UNDEF : PercentType.ZERO;
+                }
+                if (SECONDARY_POSITION.equals(posKind1) && shadeCapabilities.supportsSecondaryOverlapped()
+                        && shadeCapabilities.supportsTiltOnClosed()) {
+                    return PercentType.HUNDRED;
                 }
                 break;
 
