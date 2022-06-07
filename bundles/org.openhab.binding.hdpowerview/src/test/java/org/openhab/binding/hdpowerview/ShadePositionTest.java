@@ -132,11 +132,11 @@ public class ShadePositionTest {
     @Test
     public void testCaps1ShadePositionParsingShadeFullyDownVaneOpen() {
         Capabilities capabilities = db.getCapabilities(1);
-        ShadePosition test = new ShadePosition().setPosition(capabilities, VANE_TILT_POSITION, 100);
+        ShadePosition test = new ShadePosition().setPosition(capabilities, VANE_TILT_POSITION, 88);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), UnDefType.UNDEF);
-        assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), 100);
+        assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), 88);
     }
 
     /**
@@ -392,5 +392,33 @@ public class ShadePositionTest {
      */
     private void assertShadePosition(State actual, State target) {
         assertTrue(target.equals(actual));
+    }
+
+    /**
+     * Test parsing of Type 44 ShadePosition (shade fully up).
+     *
+     */
+    @Test
+    public void testType44ShadePositionParsingFullyUp() {
+        Capabilities capabilities = db.getCapabilitiesForType(44);
+        ShadePosition test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 0);
+        assertNotNull(test);
+        assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 0);
+        assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), UnDefType.UNDEF);
+        assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), UnDefType.UNDEF);
+    }
+
+    /**
+     * Test parsing of Type 44 ShadePosition (shade fully down (method 2) and vane fully open).
+     *
+     */
+    @Test
+    public void testType44ShadePositionParsingShadeFullyDownVaneOpen() {
+        Capabilities capabilities = db.getCapabilitiesForType(44);
+        ShadePosition test = new ShadePosition().setPosition(capabilities, VANE_TILT_POSITION, 88);
+        assertNotNull(test);
+        assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
+        assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), UnDefType.UNDEF);
+        assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), 88);
     }
 }
