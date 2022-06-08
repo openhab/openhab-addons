@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.easee.internal.command.circuit;
 
-import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
+import static org.openhab.binding.easee.internal.EaseeBindingConstants.DYNAMIC_CIRCUIT_CURRENT_URL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.easee.internal.command.AbstractCommand;
+import org.openhab.binding.easee.internal.command.AbstractWriteCommand;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.types.Command;
 
 /**
  * implements the command api call of the circuit.
@@ -27,29 +30,27 @@ import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class DynamicCircuitCurrent extends AbstractCommand implements EaseeCommand {
+public class SetDynamicCircuitCurrent extends AbstractWriteCommand implements EaseeCommand {
     private final String url;
 
-    public DynamicCircuitCurrent(EaseeThingHandler handler, String circuitId) {
-        super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES);
+    public SetDynamicCircuitCurrent(EaseeThingHandler handler, Channel channel, Command command, String circuitId) {
+        super(handler, channel, command, RetryOnFailure.YES, ProcessFailureResponse.YES);
         String siteId = handler.getBridgeConfiguration().getSiteId();
         this.url = DYNAMIC_CIRCUIT_CURRENT_URL.replaceAll("\\{siteId\\}", siteId).replaceAll("\\{circuitId\\}",
                 circuitId);
     }
 
     @Override
-    protected Request prepareRequest(Request requestToPrepare) {
-        requestToPrepare.method(HttpMethod.GET);
+    protected Request prepareWriteRequest(Request requestToPrepare) {
+        requestToPrepare.method(HttpMethod.POST);
+        StringContentProvider cp = new StringContentProvider(getJsonContent());
+        requestToPrepare.content(cp);
+
         return requestToPrepare;
     }
 
     @Override
     protected String getURL() {
         return url;
-    }
-
-    @Override
-    protected String getChannelGroup() {
-        return CHANNEL_GROUP_CIRCUIT_DYNAMIC_CURRENT;
     }
 }

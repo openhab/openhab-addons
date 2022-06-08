@@ -10,13 +10,13 @@
 	</channel-type>
 	<channel-type id="rwtype-integer">
 		<item-type>Number</item-type>
-		<label>generic integer</label>
+		<label>Generic Integer</label>
 		<state pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="rwtype-current">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>ElectricCurrent</label>
+		<label>Electric Current</label>
 		<state pattern="%.1f %unit%" readOnly="false">
 		</state>
 	</channel-type>
@@ -33,9 +33,8 @@
 	</channel-type>
 	<channel-type id="rwtype-command">
 		<item-type>String</item-type>
-		<label>Charger Command</label>
+		<label>Generic Command</label>
 		<state pattern="%s" readOnly="false">
 		</state>
 	</channel-type>
-
 </thing:thing-descriptions>

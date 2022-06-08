@@ -82,6 +82,8 @@ public class EaseeBindingConstants {
     // Write Commands
     public static final String COMMAND_CHANGE_CONFIGURATION = "ChangeConfiguration";
     public static final String COMMAND_SEND_COMMAND = "SendCommand";
+    public static final String COMMAND_SET_DYNAMIC_CIRCUIT_CURRENT = "SetDynamicCircuitCurrent";
+    public static final String COMMAND_SET_DYNAMIC_CIRCUIT_CURRENTS = "SetDynamicCircuitCurrents";
 
     // web request constants
     public static final long WEB_REQUEST_INITIAL_DELAY = TimeUnit.SECONDS.toMillis(30);

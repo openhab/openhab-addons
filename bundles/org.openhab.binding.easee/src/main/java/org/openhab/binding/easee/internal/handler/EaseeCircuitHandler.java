@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.easee.internal.handler;
 
-import static org.openhab.binding.easee.internal.EaseeBindingConstants.POLLING_INITIAL_DELAY;
+import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -26,6 +26,8 @@ import org.openhab.binding.easee.internal.EaseeBindingConstants;
 import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.command.circuit.DynamicCircuitCurrent;
+import org.openhab.binding.easee.internal.command.circuit.SetDynamicCircuitCurrent;
+import org.openhab.binding.easee.internal.command.circuit.SetDynamicCircuitCurrents;
 import org.openhab.binding.easee.internal.config.EaseeConfiguration;
 import org.openhab.binding.easee.internal.connector.CommunicationStatus;
 import org.openhab.core.thing.Bridge;
@@ -181,13 +183,19 @@ public class EaseeCircuitHandler extends BaseThingHandler implements EaseeThingH
 
     @Override
     public EaseeCommand buildEaseeCommand(Command command, Channel channel) {
+        String circuitId = getConfig().get(EaseeBindingConstants.THING_CONFIG_ID).toString();
+
         switch (Utils.getWriteCommand(channel)) {
-            // TODO: add write commands
+            case COMMAND_SET_DYNAMIC_CIRCUIT_CURRENT:
+                return new SetDynamicCircuitCurrent(this, channel, command, circuitId);
+            case COMMAND_SET_DYNAMIC_CIRCUIT_CURRENTS:
+                return new SetDynamicCircuitCurrents(this, channel, command, circuitId);
             default:
                 // this should not happen
                 logger.warn("write command '{}' not found for channel '{}'", command.toString(),
                         channel.getUID().getIdWithoutGroup());
-                throw new UnsupportedOperationException("write command not found: " + command.toString());
+                throw new UnsupportedOperationException(
+                        "write command not found: " + channel.getUID().getIdWithoutGroup());
         }
     }
 }
