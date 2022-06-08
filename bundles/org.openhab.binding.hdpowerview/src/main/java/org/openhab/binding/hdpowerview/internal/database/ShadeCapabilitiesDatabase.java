@@ -49,8 +49,8 @@ public class ShadeCapabilitiesDatabase {
             new Capabilities(6).primaryInverted()                                               .text("Top Down"),
             new Capabilities(7).primary()                                 .secondary()          .text("Top Down Bottom Up"),
             new Capabilities(8).primary()                                 .secondaryOverlapped().text("Dual Overlapped"),
-            new Capabilities(9).primary()        .tiltOnClosed()          .secondaryOverlapped().text("Dual Overlapped Tilt 90°")
-                               .comment("The 'tiltOnClosed()' applies to the primary shade"),
+            // note: for the following capabilities entry the 'tiltOnClosed()' applies to the primary shade
+            new Capabilities(9).primary()        .tiltOnClosed()          .secondaryOverlapped().text("Dual Overlapped Tilt 90°"),
     // @formatter:on
             new Capabilities()).stream().collect(Collectors.toMap(Capabilities::getValue, Function.identity()));
 
@@ -71,8 +71,8 @@ public class ShadeCapabilitiesDatabase {
             new Type(38).capabilities(9).text("Silhouette Duolite"),
             new Type(42).capabilities(0).text("M25T Roller Blind"),
             new Type(43).capabilities(1).text("Facette"),
-            new Type(44).capabilities(0).text("Twist")
-                        .comment("Shade has functionality of a capabilities 1 shade").typeCapabilities(1),
+            // note: the following shade type has the functionality of a capabilities 1 shade
+            new Type(44).capabilities(0).text("Twist").typeCapabilities(1),
             new Type(47).capabilities(7).text("Pleated Top Down Bottom Up"),
             new Type(49).capabilities(0).text("AC Roller"),
             new Type(51).capabilities(2).text("Venetian"),
@@ -94,23 +94,12 @@ public class ShadeCapabilitiesDatabase {
      *
      * @author Andrew Fiddian-Green - Initial Contribution
      */
-    private static class Base<T extends Base<T>> {
+    private static class Base {
         protected int intValue = -1;
         protected String text = "-- not in database --";
-        protected String comment = "";
-
-        @SuppressWarnings("unchecked")
-        protected T comment(String comment) {
-            this.comment = comment;
-            return (T) this;
-        }
 
         public Integer getValue() {
             return intValue;
-        }
-
-        public String getComment() {
-            return comment;
         }
 
         @Override
@@ -124,7 +113,7 @@ public class ShadeCapabilitiesDatabase {
      *
      * @author Andrew Fiddian-Green - Initial Contribution
      */
-    public static class Type extends Base<Type> {
+    public static class Type extends Base {
         private int capabilities = -1;
         private int typeCapabilities = -1;
 
@@ -174,7 +163,7 @@ public class ShadeCapabilitiesDatabase {
      *
      * @author Andrew Fiddian-Green - Initial Contribution
      */
-    public static class Capabilities extends Base<Capabilities> {
+    public static class Capabilities extends Base {
         private boolean supportsPrimary;
         private boolean supportsSecondary;
         private boolean supportsTiltOnClosed;

@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
-import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Type;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -365,23 +364,6 @@ public class ShadePositionTest {
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), UnDefType.UNDEF);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), UnDefType.UNDEF);
-    }
-
-    /**
-     * Test the comment attribute
-     *
-     */
-    @Test
-    public void testComments() {
-        Type type = db.getType(1);
-        assertTrue(type.getComment().length() == 0);
-        type = db.getType(44);
-        assertTrue(type.getComment().length() > 0);
-
-        Capabilities caps = db.getCapabilities(0);
-        assertTrue(caps.getComment().length() == 0);
-        caps = db.getCapabilities(9);
-        assertTrue(caps.getComment().length() > 0);
     }
 
     /**
