@@ -47,7 +47,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapHandler;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
-import org.openhab.binding.shelly.internal.api2.Shelly2RpcApi;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
@@ -105,7 +105,6 @@ public class ShellyBaseHandler extends BaseThingHandler
 
     public String thingName = "";
     public String thingType = "";
-    public String serviceName = "";
 
     protected final ShellyApiInterface api;
     private final HttpClient httpClient;
@@ -168,7 +167,7 @@ public class ShellyBaseHandler extends BaseThingHandler
             gen = "2";
         }
         gen2 = "2".equals(gen);
-        this.api = !gen2 ? new Shelly1HttpApi(thingType, this) : new Shelly2RpcApi(thingType, this);
+        this.api = !gen2 ? new Shelly1HttpApi(thingType, this) : new Shelly2ApiRpc(thingType, this);
         if (gen2) {
             config.eventsCoIoT = false;
         } else {
@@ -179,7 +178,7 @@ public class ShellyBaseHandler extends BaseThingHandler
     @Override
     public boolean checkRepresentation(String key) {
         return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(config.deviceIp)
-                || key.equalsIgnoreCase(serviceName) || key.equalsIgnoreCase(thing.getUID().getAsString());
+                || key.equalsIgnoreCase(config.serviceName) || key.equalsIgnoreCase(thing.getUID().getAsString());
     }
 
     @Override
@@ -267,6 +266,9 @@ public class ShellyBaseHandler extends BaseThingHandler
         stopping = false;
         refreshSettings = false;
         lastWakeupReason = "";
+        profile.isGen2 = gen2;
+        profile.initFromThingType(thingType);
+        api.setConfig(thingName, config);
         cache.setThingName(thingName);
         cache.clear();
 
@@ -302,7 +304,6 @@ public class ShellyBaseHandler extends BaseThingHandler
             return false; // force re-initialization
         }
         // Validate device mode
-        tmpPrf.isGen2 = gen2;
         String reqMode = thingType.contains("-") ? substringAfter(thingType, "-") : "";
         if (!reqMode.isEmpty() && !tmpPrf.mode.equals(reqMode)) {
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-wrong-mode");
@@ -326,6 +327,7 @@ public class ShellyBaseHandler extends BaseThingHandler
             tmpPrf.updatePeriod = UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
         }
 
+        tmpPrf.isGen2 = gen2;
         tmpPrf.auth = devInfo.auth; // missing in /settings
         tmpPrf.status = api.getStatus(); // update thing properties
         tmpPrf.updateFromStatus(tmpPrf.status);
@@ -940,8 +942,13 @@ public class ShellyBaseHandler extends BaseThingHandler
         }
 
         config.serviceName = getString(properties.get(PROPERTY_SERVICE_NAME));
+        if (config.serviceName.isEmpty()) {
+            String hostname = getString(profile.settings.device.hostname).toLowerCase();
+            config.serviceName = hostname;
+        }
         config.localIp = bindingConfig.localIP;
         config.localPort = String.valueOf(bindingConfig.httpPort);
+
         if (config.userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
             config.userId = bindingConfig.defaultUserId;
             config.password = bindingConfig.defaultPassword;
@@ -1285,6 +1292,7 @@ public class ShellyBaseHandler extends BaseThingHandler
      */
     public void updateProperties(ShellyDeviceProfile profile, ShellySettingsStatus status) {
         Map<String, Object> properties = fillDeviceProperties(profile);
+        properties.put(PROPERTY_SERVICE_NAME, config.serviceName);
         String deviceName = getString(profile.settings.name);
         properties.put(PROPERTY_SERVICE_NAME, config.serviceName);
         properties.put(PROPERTY_DEV_GEN, "1");

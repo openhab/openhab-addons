@@ -32,6 +32,7 @@ import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.slf4j.Logger;
@@ -155,6 +156,17 @@ public class ShellyHttpClient {
             apiResult.httpCode = contentResponse.getStatus();
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
             logger.trace("{}: HTTP Response {}: {}", thingName, contentResponse.getStatus(), response);
+
+            if (response.contains("\"error\":{")) { // Gen2
+                Shelly2RpcBaseMessage message = gson.fromJson(response, Shelly2RpcBaseMessage.class);
+                if (message != null && message.error != null) {
+                    apiResult.httpCode = message.error.code;
+                    apiResult.response = message.error.message;
+                    if (getInteger(message.error.code) == HttpStatus.UNAUTHORIZED_401) {
+                        apiResult.authResponse = getString(message.error.message).replaceAll("\\\"", "\"");
+                    }
+                }
+            }
 
             HttpFields headers = contentResponse.getHeaders();
             String auth = headers.get(HttpHeader.WWW_AUTHENTICATE);

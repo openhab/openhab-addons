@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api2;
 import java.util.ArrayList;
 
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage.Shelly2RpcMessageError;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -591,7 +592,7 @@ public class Shelly2ApiJsonDTO {
         // Basic message format, e.g.
         // {"id":1,"src":"localweb528","method":"Shelly.GetConfig"}
         public class Shelly2RpcMessageError {
-            public String code;
+            public Integer code;
             public String message;
         }
 
@@ -599,17 +600,48 @@ public class Shelly2ApiJsonDTO {
         public String src;
         public String dst;
         public String method;
-
+        public Object params;
+        public Object result;
+        public Shelly2AuthRequest auth;
         public Shelly2RpcMessageError error;
     }
 
-    public static class Shelly2RpcNotifyStatus extends Shelly2RpcBaseMessage {
+    public static class Shelly2RpcNotifyStatus {
         public static class Shelly2NotifyStatus extends Shelly2DeviceStatusResult {
             public Double ts;
         }
 
+        public Integer id;
+        public String src;
+        public String dst;
+        public String method;
         public Shelly2NotifyStatus params;
         public Shelly2NotifyStatus result;
+        public Shelly2RpcMessageError error;
+    }
+
+    public static String SHELLY2_AUTHTTYPE_DIGEST = "digest";
+    public static String SHELLY2_AUTHTTYPE_STRING = "string";
+    public static String SHELLY2_AUTHALG_SHA256 = "SHA-256";
+    public static String SHELLY2_AUTH_NOISE = ":auth:6370ec69915103833b5222b368555393393f098bfbfbb59f47e0590af135f062"; // =
+                                                                                                                        // ':auth:'+HexHash("dummy_method:dummy_uri");
+
+    public static class Shelly2AuthRequest {
+        public String username;
+        public Long nonce;
+        public Long cnonce;
+        public String realm;
+        public String algorithm;
+        public String response;
+    }
+
+    public static class Shelly2AuthResponse { // on 401 message contains the auth info
+        @SerializedName("auth_type")
+        public String authType;
+        public Long nonce;
+        public Integer nc;
+        public String realm;
+        public String algorithm;
     }
 
     public class Shelly2NotifyEvent {

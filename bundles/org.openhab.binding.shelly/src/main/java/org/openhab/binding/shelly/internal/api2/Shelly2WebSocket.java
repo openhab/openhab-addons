@@ -109,7 +109,7 @@ public class Shelly2WebSocket {
             if (thingTable != null) {
                 try {
                     ShellyThingInterface thing = thingTable.getThing(deviceIp);
-                    Shelly2RpcApi api = (Shelly2RpcApi) thing.getApi();
+                    Shelly2ApiRpc api = (Shelly2ApiRpc) thing.getApi();
                     websocketHandler = api.getRpcHandler();
                 } catch (IllegalArgumentException e) {
                     logger.debug("Event for unknown device ip ({})", deviceIp);
@@ -137,13 +137,12 @@ public class Shelly2WebSocket {
     public void onText(Session session, String receivedMessage) {
         try {
             Shelly2WebSocketInterface handler = websocketHandler;
+            Shelly2RpcBaseMessage message = fromJson(gson, receivedMessage, Shelly2RpcBaseMessage.class);
+            logger.trace("{}: Inbound WebSocket message: {}", message.src, receivedMessage);
             if (handler != null) {
-                Shelly2RpcBaseMessage message = fromJson(gson, receivedMessage, Shelly2RpcBaseMessage.class);
-                logger.trace("{}: Inbound WebSocket message: {}", message.src, receivedMessage);
                 if (message.method == null) {
                     message.method = SHELLYRPC_METHOD_NOTIFYFULLSTATUS;
                 }
-
                 switch (getString(message.method)) {
                     case SHELLYRPC_METHOD_NOTIFYSTATUS:
                     case SHELLYRPC_METHOD_NOTIFYFULLSTATUS:
@@ -159,9 +158,12 @@ public class Shelly2WebSocket {
                     default:
                         handler.onMessage(receivedMessage);
                 }
+            } else {
+                logger.debug("{}: No WebSocket listener registered, skip message: {}", getString(message.src),
+                        receivedMessage);
             }
         } catch (ShellyApiException | NullPointerException e) {
-            logger.debug("Unable to process WebSocket message: {}", receivedMessage, e);
+            logger.warn("Unable to process WebSocket message: {}", receivedMessage, e);
         }
     }
 
