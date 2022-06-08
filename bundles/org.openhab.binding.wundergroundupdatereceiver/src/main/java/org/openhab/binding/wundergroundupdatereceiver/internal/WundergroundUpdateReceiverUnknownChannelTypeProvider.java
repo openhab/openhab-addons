@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WundergroundUpdateReceiverUnknownChannelTypeProvider implements ChannelTypeProvider {
 
-    private static final List<String> booleanStrings = List.of("1", "0", "true", "false");
+    private static final List<String> BOOLEAN_STRINGS = List.of("1", "0", "true", "false");
     private final Map<ChannelTypeUID, ChannelType> channelTypes = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(WundergroundUpdateReceiverUnknownChannelTypeProvider.class);
 
@@ -64,7 +64,7 @@ public class WundergroundUpdateReceiverUnknownChannelTypeProvider implements Cha
     }
 
     private static String guessItemType(String value) {
-        if (booleanStrings.contains(value.toLowerCase())) {
+        if (BOOLEAN_STRINGS.contains(value.toLowerCase())) {
             return "Switch";
         }
         try {

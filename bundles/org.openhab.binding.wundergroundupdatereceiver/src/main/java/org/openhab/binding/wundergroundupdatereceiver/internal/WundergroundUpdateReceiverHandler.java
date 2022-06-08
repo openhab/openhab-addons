@@ -39,6 +39,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -152,11 +153,13 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         if (channelTypeMapping == null) {
             return;
         }
+        ChannelType channelType = channelTypeRegistry.getChannelType(channelTypeMapping.channelTypeId);
+        if (channelType == null) {
+            return;
+        }
         ChannelBuilder channelBuilder = ChannelBuilder
                 .create(new ChannelUID(thing.getUID(), channelTypeMapping.channelGroup, parameter))
-                .withType(channelTypeMapping.channelTypeId)
-                .withAcceptedItemType(
-                        channelTypeRegistry.getChannelType(channelTypeMapping.channelTypeId).getItemType())
+                .withType(channelTypeMapping.channelTypeId).withAcceptedItemType(channelType.getItemType())
                 .withConfiguration(thing.getConfiguration());
         thingBuilder.withChannel(channelBuilder.build());
     }

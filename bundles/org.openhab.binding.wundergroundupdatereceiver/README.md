@@ -1,16 +1,16 @@
 # Wunderground Update Receiver Binding
 
-Many personal weather stations are only capable of submitting measurements to the wunderground.com update site.
+Many personal weather stations or similar devices are only capable of submitting measurements to the wunderground.com update site.
 
-This binding enables acting as a receiver of updates from weather stations that post measurements
+This binding enables acting as a receiver of updates from devices that post measurements
 to https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php. If the hostname is configurable - as on
 weather stations based on the Fine Offset Electronics WH2600-IP - this is simple, otherwise you have to set up dns
 such that it resolves the above hostname to your server, without preventing the server from resolving the proper ip if
 you want to forward the request.
 
-The server thus listens at http(s)://<your-openHAB-server>:<openHAB-port>/weatherstation/updateweatherstation.php and the weather station
-needs to be pointed at this address. If you can't configure the weather station itself to submit to an alternate hostname you would need
-to set up a dns server that resolves rtupdate.wunderground.com to the IP-address of your server and provide as dns to the weather station
+The server thus listens at http(s)://<your-openHAB-server>:<openHAB-port>/weatherstation/updateweatherstation.php and the device
+needs to be pointed at this address. If you can't configure the device itself to submit to an alternate hostname you would need
+to set up a dns server that resolves rtupdate.wunderground.com to the IP-address of your server and provide as dns to the device
 does DHCP. Make sure not to use this dns server instance for any other DHCP clients. 
 
 The request is in itself simple to parse, so by redirecting it to your openHAB server you can intercept the values and use them to
@@ -23,9 +23,9 @@ submit the same measurements to multiple weather services via multiple rules.
 
 ## Supported Things
 
-Any weather station that sends weather measurement updates to the wunderground.com update URLs is supported.
-It is easiest to use with stations that have a configurable target address, but can be made to
-work with any internet-connected weather station, that gets its dns server via DHCP or where the DNS server can be
+Any device that sends weather measurement updates to the wunderground.com update URLs is supported.
+It is easiest to use with devices that have a configurable target address, but can be made to
+work with any internet-connected device, that gets its dns server via DHCP or where the DNS server can be
 set. 
 
 ## Discovery
@@ -34,18 +34,18 @@ The binding starts listening at the above-mentioned URI as soon as it is initial
 stationId is recorded and if auto-discovery is enabled appers in the inbox, otherwise can be registered when a manual
 scan is initiated. For each request parameter a channel is generated, based on a list of known parameters from
 https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US and other observed parameters from various
-weather stations. If you have a weather station that submits a parameter that is unknown in the current version of the
+devices. If you have a device that submits a parameter that is unknown in the current version of the
 binding please feel free to submit an issue to have it added.
 
 Configuration using thing and item files is a laborious and error-prone method, as you have to manually replicate the
 configuration discovery produces. Items must be named as the request parameters in the channel type table and must have
 the same types. Items matching the request parameters submitted by your particular device must needs be discovered
-before being able to write appropriate item files. Both thing and item files must be created manually to achive the
-same result as automatic discovery. 
+before being able to write appropriate item files. Both thing and item files must be created manually to achieve the
+same result as automatic discovery.
 
 ## Thing Configuration
 
-The only configurable value is the station id, which should match the one configured on the weather station. If you don't plan on submitting
+The only configurable value is the station id, which should match the one configured on the device. If you don't plan on submitting
 measurements to wunderground.com, it can be any unique non-empty string value, otherwise it must be the actual station ID.
 
 ## Channels
@@ -54,7 +54,9 @@ Each measurement type the wunderground.com update service accepts has a channel.
 Additionally there is a receipt timestamp and a trigger channel.
 
 ### Request parameters are mapped to one of the following channel-types:
+
 #### Normal channel-types:
+
 | Request parameter |  Channel type id             | Type                 | Label                          | Description                                                                                         | Group       |
 |-------------------|------------------------------|----------------------|--------------------------------|-----------------------------------------------------------------------------------------------------|-------------|
 | winddir           | wind-direction               | Number:Angle         | Current Wind Direction         | Current wind direction                                                                              | Wind        |
@@ -72,6 +74,7 @@ Additionally there is a receipt timestamp and a trigger channel.
 | baromin           |
 
 #### Advanced channel-types:
+
 | Request parameter |  Channel type id             | Type                 | Label                          | Description                                                                                         | Group       |
 |-------------------|------------------------------|----------------------|--------------------------------|-----------------------------------------------------------------------------------------------------|-------------|
 | windspdmph_avg2m  | wind-speed-avg-2min          | Number:Speed         | Wind Speed 2min Average        | 2 minute average wind speed.                                                                        | Wind        | 
@@ -110,6 +113,7 @@ Additionally there is a receipt timestamp and a trigger channel.
 | AqOZONE           | ozone                        | Number:Dimensionless | Ozone                          | Ozone, ppb.                                                                                         | Pollution   | 
 
 #### Metadata channel-types:
+
 | Request parameter |  Channel type id             | Type                 | Label                             | Description                                                                                         | Group       |
 |-------------------|------------------------------|----------------------|-----------------------------------|-----------------------------------------------------------------------------------------------------|-------------|
 | dateutc           | dateutc                      | String               | Last Updated                      | The date and time of the last update in UTC as submitted by the weather station. This can be 'now'. | Metadata    | 
@@ -118,6 +122,7 @@ Additionally there is a receipt timestamp and a trigger channel.
 | lowbatt           |
 
 #### Synthetic channel-types. These are programatically added:
+
 |  Channel type id       | Type                 | Channel type | Label                    | Description                                                                                                                                                | Group    |
 |------------------------|----------------------|--------------|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
 | dateutc-datetime       | dateutc-datetime     | state        | Last Updated as DateTime | The date and time of the last update in UTC as submitted by the weather station converted to a DateTime value. In case of 'now', the current time is used. | Metadata | 
@@ -133,7 +138,13 @@ val requestQuery = receivedEvent
 sendHttpGetRequest("https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php?" + requestQuery)
 ```
 
+As described by the wunderground specification a device can submit mulitple values
+for the outdoor temperature, soil temperature, soil moisture and leaf wetness channels
+by insergin an index number in to the name of the request parameter, fx. tempf can be
+temp1f, temp2f, etc. This is supported by the discovery mechanism, creating a channel for each of the values.
+
 ### Rule examples
+
 You can use the trigger channel to create a rule to calculate additional values.
 Create an new manual Item with a meaningful id, fx. WundergroundUpdateReceiverBinging_HeatIndex with a Number type.
 Create a rule that triggers when the trigger channel is updated and the following DSL:
@@ -165,6 +176,7 @@ Create a rule that triggers when the trigger channel is updated and the followin
 You would then have to trigger another rule to submit the original request with any calculated values appended.
 
 You can also define a transformation to fx. get a cardinal direction (N, S, W, E):
+
 ```
 (function(s){ 
   if ( (s == "NULL") || (s == "UNDEF") )
@@ -182,4 +194,5 @@ You can also define a transformation to fx. get a cardinal direction (N, S, W, E
   }
 })(input)
 ```
+
 The examples were kindly provided by MikeTheTux.
