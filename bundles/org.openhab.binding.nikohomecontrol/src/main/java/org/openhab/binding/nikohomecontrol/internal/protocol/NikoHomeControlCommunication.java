@@ -80,10 +80,10 @@ public abstract class NikoHomeControlCommunication {
      */
     public abstract void resetCommunication();
 
-    protected void stopScheduledRestart() {
+    protected synchronized void stopScheduledRestart() {
         ScheduledFuture<?> future = scheduledRestart;
         if (future != null) {
-            future.cancel(false);
+            future.cancel(true);
         }
         scheduledRestart = null;
         delay = 0;
@@ -101,7 +101,7 @@ public abstract class NikoHomeControlCommunication {
         startCommunication();
     }
 
-    private void checkAndRestartCommunication() {
+    private synchronized void checkAndRestartCommunication() {
         restartCommunication();
 
         // Try again if it didn't succeed
