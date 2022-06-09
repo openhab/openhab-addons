@@ -917,13 +917,6 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         return job.getDelay(TimeUnit.SECONDS) > 0;
     }
 
-    private static ThingStatus createThingStatus(boolean connected) {
-        if (connected) {
-            return ThingStatus.ONLINE;
-        }
-        return ThingStatus.OFFLINE;
-    }
-
     @FunctionalInterface
     private interface CommandExecutor {
 
