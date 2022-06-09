@@ -168,16 +168,19 @@ public class GardenaSmartWebSocket {
      * Sends a ping to tell the Gardena smart system that the client is alive.
      */
     private void sendKeepAlivePing() {
-        try {
-            logger.trace("Sending ping ({})", socketId);
-            session.getRemote().sendPing(pingPayload);
-            final PostOAuth2Response accessToken = token;
-            if ((Instant.now().getEpochSecond() - lastPong.getEpochSecond() > WEBSOCKET_IDLE_TIMEOUT)
-                    || accessToken == null || accessToken.isAccessTokenExpired()) {
-                session.close(1000, "Timeout manually closing dead connection (" + socketId + ")");
+        final PostOAuth2Response accessToken = token;
+        if ((Instant.now().getEpochSecond() - lastPong.getEpochSecond() > WEBSOCKET_IDLE_TIMEOUT) || accessToken == null
+                || accessToken.isAccessTokenExpired()) {
+            session.close(1000, "Timeout manually closing dead connection (" + socketId + ")");
+        } else {
+            if (session.isOpen()) {
+                try {
+                    logger.trace("Sending ping ({})", socketId);
+                    session.getRemote().sendPing(pingPayload);
+                } catch (IOException ex) {
+                    logger.debug("Error while sending ping: {}", ex.getMessage());
+                }
             }
-        } catch (IOException ex) {
-            logger.debug("Error while sending ping: {}", ex.getMessage());
         }
     }
 }
