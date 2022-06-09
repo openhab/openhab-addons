@@ -60,7 +60,6 @@ public class GardenaSmartWebSocket {
     private ByteBuffer pingPayload = ByteBuffer.wrap("ping".getBytes(StandardCharsets.UTF_8));
     private @Nullable PostOAuth2Response token;
     private String socketId;
-    private String url;
     private String locationID;
 
     /**
@@ -74,7 +73,6 @@ public class GardenaSmartWebSocket {
         this.scheduler = scheduler;
         this.token = token;
         this.socketId = socketId;
-        this.url = url;
         this.locationID = locationID;
 
         session = (WebSocketSession) webSocketClient.connect(this, new URI(url)).get();

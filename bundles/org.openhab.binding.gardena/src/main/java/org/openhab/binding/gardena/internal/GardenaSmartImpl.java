@@ -89,7 +89,6 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     private Map<String, GardenaSmartWebSocket> webSockets = new HashMap<>();
     private @Nullable PostOAuth2Response token;
     private boolean initialized = false;
-    private WebSocketFactory webSocketFactory;
     private WebSocketClient webSocketClient;
 
     private Set<Device> devicesToNotify = ConcurrentHashMap.newKeySet();
@@ -103,7 +102,6 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         this.config = config;
         this.eventListener = eventListener;
         this.scheduler = scheduler;
-        this.webSocketFactory = webSocketFactory;
 
         logger.debug("Starting GardenaSmart");
         try {
