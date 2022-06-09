@@ -54,11 +54,11 @@
 				<default>s16le</default>
 				<advanced>true</advanced>
 				<options>
-					<option value="u8">PCM signed 8-bit</option>
+					<option value="u8">PCM unsigned 8-bit</option>
 					<option value="s16le">PCM signed 16-bit little-endian</option>
 					<option value="s16be">PCM signed 16-bit big-endian</option>
-					<option value="s24le">PCM unsigned 24-bit little-endian</option>
-					<option value="s24be">PCM unsigned 24-bit big-endian</option>
+					<option value="s24le">PCM signed 24-bit little-endian</option>
+					<option value="s24be">PCM signed 24-bit big-endian</option>
 					<option value="s32le">PCM signed 32-bit little-endian</option>
 					<option value="s32be">PCM signed 32-bit big-endian</option>
 				</options>
