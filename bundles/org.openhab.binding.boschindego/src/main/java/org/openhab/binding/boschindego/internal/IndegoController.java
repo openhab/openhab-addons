@@ -14,6 +14,7 @@ package org.openhab.binding.boschindego.internal;
 
 import java.time.Instant;
 import java.util.Base64;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -23,6 +24,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpCookie;
+import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -70,8 +73,7 @@ public class IndegoController {
     private final Gson gson = new Gson();
     private final HttpClient httpClient;
 
-    private String contextId = "";
-    private String serialNumber = "";
+    private IndegoSession session = new IndegoSession();
 
     /**
      * Initialize the controller instance.
@@ -91,7 +93,7 @@ public class IndegoController {
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
-    public void authenticate() throws IndegoAuthenticationException, IndegoException {
+    private void authenticate() throws IndegoAuthenticationException, IndegoException {
         try {
             Request request = httpClient.newRequest(BASE_URL + "authenticate").method(HttpMethod.POST)
                     .header(HttpHeader.AUTHORIZATION, basicAuthenticationHeader);
@@ -105,6 +107,10 @@ public class IndegoController {
             String json = gson.toJson(authRequest);
             request.content(new StringContentProvider(json));
             request.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_HEADER);
+
+            if (logger.isTraceEnabled()) {
+                logger.trace("POST request for {}", BASE_URL + "authenticate");
+            }
 
             ContentResponse response = sendRequest(request);
             int status = response.getStatus();
@@ -125,9 +131,9 @@ public class IndegoController {
             if (authenticationResponse == null) {
                 throw new IndegoInvalidResponseException("Response could not be parsed as AuthenticationResponse");
             }
-
-            contextId = authenticationResponse.contextId;
-            serialNumber = authenticationResponse.serialNumber;
+            session = new IndegoSession(authenticationResponse.contextId, authenticationResponse.serialNumber,
+                    extractContextExpirationTime(response));
+            logger.debug("Initialized session {}", session);
         } catch (JsonParseException e) {
             throw new IndegoInvalidResponseException("Error parsing AuthenticationResponse", e);
         } catch (InterruptedException e) {
@@ -139,22 +145,80 @@ public class IndegoController {
     }
 
     /**
+     * Extracts expiration time from response "Set-Cookie" header.
+     * 
+     * @param response
+     * @return expiration time as {@link Instant}
+     */
+    private Instant extractContextExpirationTime(ContentResponse response) {
+        List<HttpField> setCookieHeaders = response.getHeaders().getFields(HttpHeader.SET_COOKIE);
+        for (HttpField setCookieHeader : setCookieHeaders) {
+            try {
+                var setCookie = new HttpCookie(setCookieHeader.toString());
+                long maxAge = setCookie.getMaxAge();
+                if (maxAge > 0) {
+                    logger.trace("Accepted {}", setCookieHeader);
+                    return Instant.now().plusSeconds(maxAge);
+                } else {
+                    logger.trace("Skipped {}", setCookieHeader);
+                }
+            } catch (Exception e) {
+                logger.debug("Error parsing {}", setCookieHeader);
+                return Instant.MIN;
+            }
+        }
+        logger.trace("{} not found", HttpHeader.SET_COOKIE.asString());
+
+        return Instant.MIN;
+    }
+
+    /**
+     * Wraps {@link #getRequest(String, Class)} into an authenticated session.
+     *
+     * @param path the relative path to which the request should be sent
+     * @param dtoClass the DTO class to which the JSON result should be deserialized
+     * @return the deserialized DTO from the JSON response
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    private <T> T getRequestWithAuthentication(String path, Class<? extends T> dtoClass)
+            throws IndegoAuthenticationException, IndegoException {
+        if (!session.isValid()) {
+            authenticate();
+        }
+        try {
+            logger.debug("Session {} valid, skipping authentication", session);
+            return getRequest(path, dtoClass);
+        } catch (IndegoAuthenticationException e) {
+            logger.debug("Authentication failed, session {} rejected", session);
+            session.invalidate();
+            authenticate();
+            return getRequest(path, dtoClass);
+        }
+    }
+
+    /**
      * Sends a GET request to the server and returns the deserialized JSON response.
      * 
      * @param path the relative path to which the request should be sent
      * @param dtoClass the DTO class to which the JSON result should be deserialized
      * @return the deserialized DTO from the JSON response
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
-    private <T> T getRequest(String path, Class<? extends T> dtoClass) throws IndegoException {
+    private <T> T getRequest(String path, Class<? extends T> dtoClass)
+            throws IndegoAuthenticationException, IndegoException {
         try {
             Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.GET).header(CONTEXT_HEADER_NAME,
-                    contextId);
+                    session.getContextId());
             if (logger.isTraceEnabled()) {
                 logger.trace("GET request for {}", BASE_URL + path);
             }
             ContentResponse response = sendRequest(request);
             int status = response.getStatus();
+            if (status == HttpStatus.UNAUTHORIZED_401) {
+                throw new IndegoAuthenticationException("Authentication was rejected");
+            }
             if (!HttpStatus.isSuccess(status)) {
                 throw new IndegoAuthenticationException("The request failed with HTTP error: " + status);
             }
@@ -181,16 +245,42 @@ public class IndegoController {
     }
 
     /**
+     * Wraps {@link #putRequest(String, Object)} into an authenticated session.
+     * 
+     * @param path the relative path to which the request should be sent
+     * @param requestDto the DTO which should be sent to the server as JSON
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    private void putRequestWithAuthentication(String path, Object requestDto)
+            throws IndegoAuthenticationException, IndegoException {
+        if (!session.isValid()) {
+            authenticate();
+        }
+        try {
+            logger.debug("Session {} valid, skipping authentication", session);
+            putRequest(path, requestDto);
+        } catch (IndegoAuthenticationException e) {
+            logger.debug("Authentication failed, session {} rejected", session);
+            session.invalidate();
+            authenticate();
+            putRequest(path, requestDto);
+        }
+    }
+
+    /**
      * Sends a PUT request to the server.
      * 
      * @param path the relative path to which the request should be sent
      * @param requestDto the DTO which should be sent to the server as JSON
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
-    private void putRequest(String path, Object requestDto) throws IndegoException {
+    private void putRequest(String path, Object requestDto) throws IndegoAuthenticationException, IndegoException {
         try {
             Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.PUT)
-                    .header(CONTEXT_HEADER_NAME, contextId).header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_HEADER);
+                    .header(CONTEXT_HEADER_NAME, session.getContextId())
+                    .header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_HEADER);
             String payload = gson.toJson(requestDto);
             request.content(new StringContentProvider(payload));
             if (logger.isTraceEnabled()) {
@@ -198,15 +288,14 @@ public class IndegoController {
             }
             ContentResponse response = sendRequest(request);
             int status = response.getStatus();
+            if (status == HttpStatus.UNAUTHORIZED_401) {
+                throw new IndegoAuthenticationException("Authentication was rejected");
+            }
             if (status == HttpStatus.INTERNAL_SERVER_ERROR_500) {
                 throw new IndegoInvalidCommandException("The request failed with HTTP error: " + status);
             }
             if (!HttpStatus.isSuccess(status)) {
                 throw new IndegoException("The request failed with error: " + status);
-            }
-
-            if (logger.isTraceEnabled()) {
-                logger.trace("JSON response: '{}'", response.getContentAsString());
             }
         } catch (JsonParseException e) {
             throw new IndegoInvalidResponseException("Error parsing response", e);
@@ -227,86 +316,151 @@ public class IndegoController {
      * Gets serial number of the associated Indego device
      *
      * @return the serial number of the device
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
      */
-    public String getDeviceSerialNumber() {
-        return serialNumber;
+    public String getSerialNumber() throws IndegoAuthenticationException, IndegoException {
+        if (!session.isInitialized()) {
+            logger.debug("Session not yet initialized when serial number was requested; authenticating...");
+            authenticate();
+        }
+        return session.getSerialNumber();
     }
 
     /**
      * Queries the device state from the server.
      * 
      * @return the device state
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
-    public DeviceStateResponse getState() throws IndegoException {
-        return getRequest(SERIAL_NUMBER_SUBPATH + serialNumber + "/state", DeviceStateResponse.class);
+    public DeviceStateResponse getState() throws IndegoAuthenticationException, IndegoException {
+        return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/state",
+                DeviceStateResponse.class);
     }
 
     public DeviceCalendarResponse getCalendar() throws IndegoException {
-        DeviceCalendarResponse calendar = getRequest(SERIAL_NUMBER_SUBPATH + serialNumber + "/calendar",
-                DeviceCalendarResponse.class);
+        DeviceCalendarResponse calendar = getRequestWithAuthentication(
+                SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/calendar", DeviceCalendarResponse.class);
         return calendar;
     }
 
     /**
      * Sends a command to the Indego device.
      * 
-     * @param command the control command to send to the device.
+     * @param command the control command to send to the device
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoInvalidCommandException if the command was not processed correctly
      * @throws IndegoException if any communication or parsing error occurred
      */
-    public void sendCommand(DeviceCommand command) throws IndegoInvalidCommandException, IndegoException {
+    public void sendCommand(DeviceCommand command)
+            throws IndegoAuthenticationException, IndegoInvalidCommandException, IndegoException {
         SetStateRequest request = new SetStateRequest();
         request.state = command.getActionCode();
-        putRequest(SERIAL_NUMBER_SUBPATH + serialNumber + "/state", request);
+        putRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/state", request);
     }
 
     /**
      * Queries the predictive weather forecast.
      * 
      * @return the weather forecast DTO
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
-    public LocationWeatherResponse getWeather() throws IndegoException {
-        return getRequest(SERIAL_NUMBER_SUBPATH + serialNumber + "/predictive/weather", LocationWeatherResponse.class);
+    public LocationWeatherResponse getWeather() throws IndegoAuthenticationException, IndegoException {
+        return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/weather",
+                LocationWeatherResponse.class);
     }
 
-    public int getPredictiveAdjustment() throws IndegoException {
-        return getRequest(SERIAL_NUMBER_SUBPATH + serialNumber + "/predictive/useradjustment",
+    /**
+     * Queries the predictive adjustment.
+     * 
+     * @return the predictive adjustment
+     * @throws IndegoAuthenticationException
+     * @throws IndegoException
+     */
+    public int getPredictiveAdjustment() throws IndegoAuthenticationException, IndegoException {
+        return getRequestWithAuthentication(
+                SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/useradjustment",
                 PredictiveAdjustment.class).adjustment;
     }
 
-    public void setPredictiveAdjustment(final int adjust) throws IndegoException {
+    /**
+     * Sets the predictive adjustment.
+     * 
+     * @param adjust the predictive adjustment
+     * @throws IndegoAuthenticationException
+     * @throws IndegoException
+     */
+    public void setPredictiveAdjustment(final int adjust) throws IndegoAuthenticationException, IndegoException {
         final PredictiveAdjustment adjustment = new PredictiveAdjustment();
         adjustment.adjustment = adjust;
-        putRequest(SERIAL_NUMBER_SUBPATH + serialNumber + "/predictive/useradjustment", adjustment);
+        putRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/useradjustment",
+                adjustment);
     }
 
-    public boolean getPredictiveMoving() throws IndegoException {
-        final PredictiveStatus status = getRequest(SERIAL_NUMBER_SUBPATH + serialNumber + "/predictive",
-                PredictiveStatus.class);
+    /**
+     * Queries predictive moving.
+     * 
+     * @return predictive moving
+     * @throws IndegoAuthenticationException
+     * @throws IndegoException
+     */
+    public boolean getPredictiveMoving() throws IndegoAuthenticationException, IndegoException {
+        final PredictiveStatus status = getRequestWithAuthentication(
+                SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive", PredictiveStatus.class);
         return status.enabled;
     }
 
-    public void setPredictiveMoving(final boolean enable) throws IndegoException {
+    /**
+     * Sets predictive moving.
+     * 
+     * @param enable
+     * @throws IndegoAuthenticationException
+     * @throws IndegoException
+     */
+    public void setPredictiveMoving(final boolean enable) throws IndegoAuthenticationException, IndegoException {
         final PredictiveStatus status = new PredictiveStatus();
         status.enabled = enable;
-        putRequest(SERIAL_NUMBER_SUBPATH + serialNumber + "/predictive", status);
+        putRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive", status);
     }
 
-    public Instant getPredictiveNextCutting() throws IndegoException {
-        final PredictiveCuttingTimeResponse nextCutting = getRequest(
-                SERIAL_NUMBER_SUBPATH + serialNumber + "/predictive/nextcutting", PredictiveCuttingTimeResponse.class);
+    /**
+     * Queries predictive next cutting as {@link Instant}.
+     * 
+     * @return predictive next cutting
+     * @throws IndegoAuthenticationException
+     * @throws IndegoException
+     */
+    public Instant getPredictiveNextCutting() throws IndegoAuthenticationException, IndegoException {
+        final PredictiveCuttingTimeResponse nextCutting = getRequestWithAuthentication(
+                SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/nextcutting",
+                PredictiveCuttingTimeResponse.class);
         return nextCutting.getNextCutting();
     }
 
-    public DeviceCalendarResponse getPredictiveExclusionTime() throws IndegoException {
-        final DeviceCalendarResponse calendar = getRequest(
-                SERIAL_NUMBER_SUBPATH + serialNumber + "/predictive/calendar", DeviceCalendarResponse.class);
+    /**
+     * Queries predictive exclusion time.
+     * 
+     * @return predictive exclusion time DTO
+     * @throws IndegoAuthenticationException
+     * @throws IndegoException
+     */
+    public DeviceCalendarResponse getPredictiveExclusionTime() throws IndegoAuthenticationException, IndegoException {
+        final DeviceCalendarResponse calendar = getRequestWithAuthentication(
+                SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/calendar", DeviceCalendarResponse.class);
         return calendar;
     }
 
-    public void setPredictiveExclusionTime(final DeviceCalendarResponse calendar) throws IndegoException {
-        putRequest(SERIAL_NUMBER_SUBPATH + serialNumber + "/predictive/calendar", calendar);
+    /**
+     * Sets predictive exclusion time.
+     * 
+     * @param calendar calendar DTO
+     * @throws IndegoAuthenticationException
+     * @throws IndegoException
+     */
+    public void setPredictiveExclusionTime(final DeviceCalendarResponse calendar)
+            throws IndegoAuthenticationException, IndegoException {
+        putRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/calendar", calendar);
     }
 }

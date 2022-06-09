@@ -150,7 +150,6 @@ public class BoschIndegoHandler extends BaseThingHandler {
                 return;
         }
 
-        controller.authenticate();
         DeviceStateResponse state = controller.getState();
         DeviceStatus deviceStatus = DeviceStatus.fromCode(state.state);
         if (!verifyCommand(command, deviceStatus, state.error)) {
@@ -166,10 +165,8 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
     private void refreshState() {
         try {
-            controller.authenticate();
-
             if (!propertiesInitialized) {
-                getThing().setProperty(Thing.PROPERTY_SERIAL_NUMBER, controller.getDeviceSerialNumber());
+                getThing().setProperty(Thing.PROPERTY_SERIAL_NUMBER, controller.getSerialNumber());
                 propertiesInitialized = true;
             }
 
