@@ -126,6 +126,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(InsteonDeviceHandler.class);
 
     private @Nullable InsteonDeviceConfiguration config;
+    private boolean deviceLinked = true;
 
     public InsteonDeviceHandler(Thing thing) {
         super(thing);
@@ -134,6 +135,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(InsteonDeviceConfiguration.class);
+        deviceLinked = true;
 
         scheduler.execute(() -> {
             final Bridge bridge = getBridge();
@@ -373,7 +375,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 });
 
                 if (ThingStatus.ONLINE == bridge.getStatus()) {
-                    if (ThingStatus.OFFLINE != getThing().getStatus()) {
+                    if (deviceLinked) {
                         updateStatus(ThingStatus.ONLINE);
                     }
                 } else {
@@ -548,6 +550,8 @@ public class InsteonDeviceHandler extends BaseThingHandler {
         String msg = "device with the address '" + address
                 + "' was not found in the modem database. Did you forget to link?";
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+
+        deviceLinked = false;
     }
 
     private InsteonNetworkHandler getInsteonNetworkHandler() {
