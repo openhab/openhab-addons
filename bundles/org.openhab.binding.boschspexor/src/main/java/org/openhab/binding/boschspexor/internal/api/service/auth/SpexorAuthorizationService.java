@@ -137,7 +137,7 @@ public class SpexorAuthorizationService {
             }
         } catch (Exception e) {
             logger.error("failed to load access token", e);
-            processingStatus.error("Authorization information could not be loaded. Pleaes check logs.", authListener);
+            processingStatus.error("Authorization information could not be loaded. Please check logs.", authListener);
         }
 
         return Optional.empty();

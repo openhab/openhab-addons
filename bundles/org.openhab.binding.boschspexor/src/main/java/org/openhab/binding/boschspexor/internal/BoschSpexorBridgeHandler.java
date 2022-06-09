@@ -18,6 +18,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,7 +40,6 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,24 +52,34 @@ import org.slf4j.LoggerFactory;
 public class BoschSpexorBridgeHandler extends BaseBridgeHandler implements SpexorAuthorizationProcessListener {
     private final Logger logger = LoggerFactory.getLogger(BoschSpexorBridgeHandler.class);
 
-    private BoschSpexorBridgeConfig bridgeConfig;
+    private Optional<BoschSpexorBridgeConfig> bridgeConfig;
     private SpexorAuthorizationService authService;
     private SpexorAPIService apiService;
 
     private Optional<BoschSpexorDiscoveryService> discoveryService = Optional.empty();
+    private Optional<ScheduledFuture<?>> pollEvent;
 
     public BoschSpexorBridgeHandler(Bridge bridge, HttpClient httpClient, StorageService storageService) {
         super(bridge);
-        bridgeConfig = getConfigAs(BoschSpexorBridgeConfig.class);
+        pollEvent = Optional.empty();
+        bridgeConfig = Optional.empty();
         this.authService = new SpexorAuthorizationService(httpClient, storageService, this);
         this.apiService = new SpexorAPIService(authService);
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Bosch spexor BridgeHandler... using {}", bridgeConfig.getHost());
-        authService.setConfig(bridgeConfig);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.INITIALIZING.NONE);
+        bridgeConfig = Optional.ofNullable(getConfigAs(BoschSpexorBridgeConfig.class));
+        bridgeConfig.ifPresent(config -> {
+            logger.debug("Initializing Bosch spexor BridgeHandler... using {}", config.getHost());
+            authService.setConfig(config);
+        });
+        pollEvent.ifPresent((event) -> event.cancel(false));
+        updateStatus(ThingStatus.UNKNOWN);
+        pollEvent = Optional.of(scheduler.schedule(this::checkState, 0, TimeUnit.SECONDS));
+    }
+
+    private void checkState() {
         if (authService.isRegistered()) {
             authService.authorize();
             updateStatus();
@@ -88,7 +99,7 @@ public class BoschSpexorBridgeHandler extends BaseBridgeHandler implements Spexo
         if (isAuthorized()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Authorization is not given");
         }
     }
 
@@ -102,15 +113,7 @@ public class BoschSpexorBridgeHandler extends BaseBridgeHandler implements Spexo
         }
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Command '{}' received for channel '{}'", command, channelUID);
-        if (command instanceof RefreshType) {
-            discoveryService.ifPresent(service -> service.startScan(null));
-        }
-    }
-
-    public BoschSpexorBridgeConfig getBridgeConfig() {
+    public Optional<BoschSpexorBridgeConfig> getBridgeConfig() {
         return bridgeConfig;
     }
 
@@ -153,5 +156,10 @@ public class BoschSpexorBridgeHandler extends BaseBridgeHandler implements Spexo
     @Override
     public void changedState(SpexorAuthGrantState oldState, SpexorAuthGrantState newState) {
         updateStatus();
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Command '{}' received for channel '{}'", command, channelUID);
     }
 }

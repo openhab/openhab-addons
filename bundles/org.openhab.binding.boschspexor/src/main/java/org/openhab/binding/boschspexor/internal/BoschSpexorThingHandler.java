@@ -49,7 +49,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
-import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -315,15 +314,15 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
             case TYPE_LIGHT:
             case TYPE_GAS:
             case TYPE_PASSIVE_INFRARED:
-                channel = ChannelBuilder.create(getChannelID(GROUP_ID_SENSORS, sensorType), "Number")
-                        .withType(new ChannelTypeUID("boschspexor", "sampleNumberChannel")).withKind(ChannelKind.STATE)
+                channel = ChannelBuilder.create(getChannelID(GROUP_ID_SENSORS, sensorType))
+                        .withType(new ChannelTypeUID("boschspexor", "sampleNumberChannel"))
                         .withDescription("Sensor Value \"" + sensorType + "\"").withLabel("Sensor Type " + sensorType)
                         .build();
                 break;
             case TYPE_AIR_QUALITY_LEVEL:
             default:
-                channel = ChannelBuilder.create(getChannelID(GROUP_ID_SENSORS, sensorType), "String")
-                        .withType(new ChannelTypeUID("boschspexor", "sampleStringChannel")).withKind(ChannelKind.STATE)
+                channel = ChannelBuilder.create(getChannelID(GROUP_ID_SENSORS, sensorType))
+                        .withType(new ChannelTypeUID("boschspexor", "sampleStringChannel"))
                         .withDescription("Sensor Value \"" + sensorType + "\"").withLabel("Sensor Type " + sensorType)
                         .build();
                 break;
