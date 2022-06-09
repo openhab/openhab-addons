@@ -46,6 +46,7 @@ import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.github.givimad.rustpotter_java.Endianness;
 import io.github.givimad.rustpotter_java.RustpotterJava;
 import io.github.givimad.rustpotter_java.RustpotterJavaBuilder;
 import io.github.givimad.rustpotter_java.VadMode;
@@ -103,7 +104,7 @@ public class RustpotterKSService implements KSService {
     @Override
     public Set<AudioFormat> getSupportedFormats() {
         return Set
-                .of(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, null, null, null));
+                .of(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, null, null, null, null));
     }
 
     @Override
@@ -119,8 +120,10 @@ public class RustpotterKSService implements KSService {
         var frequency = Objects.requireNonNull(audioFormat.getFrequency());
         var bitDepth = Objects.requireNonNull(audioFormat.getBitDepth());
         var channels = Objects.requireNonNull(audioFormat.getChannels());
-        logger.debug("Input frequency '{}', bit depth '{}', channels '{}'", frequency, bitDepth, channels);
-        RustpotterJava rustpotter = initRustpotter(frequency, bitDepth, channels);
+        var endianness = Objects.requireNonNull(audioFormat.isBigEndian()) ? Endianness.BIG : Endianness.LITTLE;
+        logger.debug("Input frequency '{}', bit depth '{}', channels '{}', '{}'", frequency, bitDepth, channels,
+                audioFormat.isBigEndian() ? "big-endian" : "little-endian");
+        RustpotterJava rustpotter = initRustpotter(frequency, bitDepth, channels, endianness);
         var modelName = keyword.replaceAll("\\s", "_") + ".rpw";
         var modelPath = Path.of(RUSTPOTTER_FOLDER, modelName);
         if (!modelPath.toFile().exists()) {
@@ -139,12 +142,13 @@ public class RustpotterKSService implements KSService {
         };
     }
 
-    private RustpotterJava initRustpotter(long frequency, int bitDepth, int channels) {
+    private RustpotterJava initRustpotter(long frequency, int bitDepth, int channels, Endianness endianness) {
         var rustpotterBuilder = new RustpotterJavaBuilder();
         // audio configs
         rustpotterBuilder.setBitsPerSample(bitDepth);
         rustpotterBuilder.setSampleRate(frequency);
         rustpotterBuilder.setChannels(channels);
+        rustpotterBuilder.setEndianness(endianness);
         // detector configs
         rustpotterBuilder.setThreshold(config.threshold);
         rustpotterBuilder.setAveragedThreshold(config.averagedThreshold);
