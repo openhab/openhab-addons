@@ -139,9 +139,6 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
                 } else {
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "setting observation state not allowed. Only 'ACTIVATED' and 'DEACTIVATED' are valid options ");
-                    logger.warn(
-                            "setting observation state for {} to {} not allowed. Only 'Activated' and 'Deactivated' are valid options ",
-                            channelUID, mode);
                 }
             }
         }
