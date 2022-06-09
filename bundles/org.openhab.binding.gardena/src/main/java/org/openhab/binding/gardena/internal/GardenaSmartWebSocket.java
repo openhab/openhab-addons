@@ -119,6 +119,11 @@ public class GardenaSmartWebSocket {
         closing = false;
         logger.debug("Connected to Gardena Webservice ({})", socketId);
 
+        ScheduledFuture<?> connectionTracker = this.connectionTracker;
+        if (connectionTracker != null && !connectionTracker.isCancelled()) {
+            connectionTracker.cancel(false);
+        }
+
         // start sending PING every two minutes
         connectionTracker = scheduler.scheduleWithFixedDelay(this::sendKeepAlivePing, 2, 2, TimeUnit.MINUTES);
     }
