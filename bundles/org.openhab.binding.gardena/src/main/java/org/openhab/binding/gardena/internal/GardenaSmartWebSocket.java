@@ -133,16 +133,8 @@ public class GardenaSmartWebSocket {
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        if (statusCode == 1001) {
-            // "Going Away", probably because of an expired token
-            // use log level: DEBUG
-            logger.debug("Connection to Gardena Webservice was closed ({}): code: {}, reason: {}", socketId, statusCode,
-                    reason);
-        } else {
-            // otherwise use log level: INFO
-            logger.info("Connection to Gardena Webservice was closed ({}): code: {}, reason: {}", socketId, statusCode,
-                    reason);
-        }
+        logger.debug("Connection to Gardena Webservice was closed ({}): code: {}, reason: {}", socketId, statusCode,
+                reason);
 
         if (!closing) {
             // let listener handle restart of socket
@@ -156,7 +148,6 @@ public class GardenaSmartWebSocket {
         if (message == null) {
             message = cause.getClass().getName();
         }
-        logger.info("Gardena Webservice error ({}), cause: {}", socketId, message);
         logger.debug("Gardena Webservice error ({})", socketId, cause); // log whole stack trace
 
         if (!closing) {
