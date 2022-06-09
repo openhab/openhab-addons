@@ -16,6 +16,8 @@
 			<channel id="dimmer" typeId="dimmerActuator"/>
 		</channels>
 
+		<representation-property>id</representation-property>
+
 		<config-description-ref uri="thing-type:livisismarthome:config"/>
 	</thing-type>
 </thing:thing-descriptions>

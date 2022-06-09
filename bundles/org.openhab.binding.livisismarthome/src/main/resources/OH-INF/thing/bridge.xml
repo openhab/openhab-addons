@@ -15,6 +15,8 @@
 			<channel id="memory" typeId="memoryUsage"/>
 		</channels>
 
+		<representation-property>id</representation-property>
+
 		<config-description>
 			<parameter-group name="connection">
 				<label>Connection</label>

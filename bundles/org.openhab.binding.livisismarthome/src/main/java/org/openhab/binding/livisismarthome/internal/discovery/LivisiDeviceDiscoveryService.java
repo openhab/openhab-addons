@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.livisismarthome.internal.discovery;
 
+import static org.openhab.binding.livisismarthome.internal.LivisiBindingConstants.PROPERTY_ID;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -105,7 +107,7 @@ public class LivisiDeviceDiscoveryService extends AbstractDiscoveryService
                 }
 
                 final Map<String, Object> properties = new HashMap<>();
-                properties.put(LivisiBindingConstants.PROPERTY_ID, device.getId());
+                properties.put(PROPERTY_ID, device.getId());
 
                 final String label;
                 if (device.hasLocation()) {
@@ -116,7 +118,7 @@ public class LivisiDeviceDiscoveryService extends AbstractDiscoveryService
 
                 final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID.get())
                         .withThingType(thingTypeUID.get()).withProperties(properties).withBridge(bridgeUID)
-                        .withLabel(label).build();
+                        .withRepresentationProperty(PROPERTY_ID).withLabel(label).build();
 
                 thingDiscovered(discoveryResult);
             } else {

@@ -16,6 +16,8 @@
 			<channel id="switch" typeId="booleanStateActuator"/>
 		</channels>
 
+		<representation-property>id</representation-property>
+
 		<config-description-ref uri="thing-type:livisismarthome:config"/>
 	</thing-type>
 </thing:thing-descriptions>
