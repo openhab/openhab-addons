@@ -382,7 +382,7 @@ public class ShadePositionTest {
      */
     @Test
     public void testType44ShadePositionParsingFullyUp() {
-        Capabilities capabilities = db.getCapabilitiesForType(44);
+        Capabilities capabilities = db.getCapabilities(44, null);
         ShadePosition test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 0);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 0);
@@ -396,7 +396,7 @@ public class ShadePositionTest {
      */
     @Test
     public void testType44ShadePositionParsingShadeFullyDownVaneOpen() {
-        Capabilities capabilities = db.getCapabilitiesForType(44);
+        Capabilities capabilities = db.getCapabilities(44, null);
         ShadePosition test = new ShadePosition().setPosition(capabilities, VANE_TILT_POSITION, 88);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);

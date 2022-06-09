@@ -18,6 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +73,7 @@ public class ShadeCapabilitiesDatabase {
             new Type(42).capabilities(0).text("M25T Roller Blind"),
             new Type(43).capabilities(1).text("Facette"),
             // note: the following shade type has the functionality of a capabilities 1 shade
-            new Type(44).capabilities(0).text("Twist").typeCapabilities(1),
+            new Type(44).capabilities(0).text("Twist").capabilitiesOverride(1),
             new Type(47).capabilities(7).text("Pleated Top Down Bottom Up"),
             new Type(49).capabilities(0).text("AC Roller"),
             new Type(51).capabilities(2).text("Venetian"),
@@ -115,7 +116,7 @@ public class ShadeCapabilitiesDatabase {
      */
     public static class Type extends Base {
         private int capabilities = -1;
-        private int typeCapabilities = -1;
+        private int capabilitiesOverride = -1;
 
         protected Type() {
         }
@@ -134,8 +135,8 @@ public class ShadeCapabilitiesDatabase {
             return this;
         }
 
-        protected Type typeCapabilities(int capabilities) {
-            this.typeCapabilities = capabilities;
+        protected Type capabilitiesOverride(int capabilitiesOverride) {
+            this.capabilitiesOverride = capabilitiesOverride;
             return this;
         }
 
@@ -153,8 +154,8 @@ public class ShadeCapabilitiesDatabase {
          *
          * @return 'typeCapabilities'.
          */
-        public int getTypeCapabilities() {
-            return typeCapabilities;
+        public int getCapabilitiesOverride() {
+            return capabilitiesOverride;
         }
     }
 
@@ -319,23 +320,35 @@ public class ShadeCapabilitiesDatabase {
     }
 
     /**
-     * Return a Capabilities class instance that corresponds to the given 'capabilities' parameter.
+     * Return a Capabilities class instance that corresponds to the given 'capabilitiesId' parameter. If the
+     * 'capabilitiesId' parameter is for a valid capabilities entry in the database, then that respective Capabilities
+     * class instance is returned. Otherwise a blank Capabilities class instance is returned.
      *
-     * @param capabilities the shade 'capabilities' parameter.
-     * @return corresponding instance of Capabilities class.
+     * @param capabilitiesId the target capabilities Id.
+     * @return corresponding Capabilities class instance.
      */
-    public Capabilities getCapabilities(int capabilities) {
-        return CAPABILITIES_DATABASE.getOrDefault(capabilities, new Capabilities());
+    public Capabilities getCapabilities(@Nullable Integer capabilitiesId) {
+        return CAPABILITIES_DATABASE.getOrDefault(capabilitiesId != null ? capabilitiesId.intValue() : -1,
+                new Capabilities());
     }
 
     /**
-     * Return a Capabilities class instance that corresponds to the given 'type' parameter.
+     * Return a Capabilities class instance that corresponds to the given 'typeId' parameter. If the 'typeId' parameter
+     * is a valid type in the database, and it has a 'capabilitiesOverride' value, then an instance of the respective
+     * overridden Capabilities class is returned. Otherwise if the 'capabilitiesId' parameter is for a valid
+     * capabilities entry in the database, then that respective Capabilities class instance is returned. Otherwise a
+     * blank Capabilities class instance is returned.
      *
-     * @param type the shade type.
-     * @return corresponding instance of Capabilities class.
+     * @param typeId the target shade type Id (to check if it has a 'capabilitiesOverride' value).
+     * @param capabilitiesId the target capabilities value (when type Id does not have a 'capabilitiesOverride').
+     * @return corresponding Capabilities class instance.
      */
-    public Capabilities getCapabilitiesForType(int type) {
-        return getCapabilities(TYPE_DATABASE.getOrDefault(type, new Type()).getTypeCapabilities());
+    public Capabilities getCapabilities(int typeId, @Nullable Integer capabilitiesId) {
+        int targetCapabilities = TYPE_DATABASE.getOrDefault(typeId, new Type()).getCapabilitiesOverride();
+        if (targetCapabilities < 0) {
+            targetCapabilities = capabilitiesId != null ? capabilitiesId.intValue() : -1;
+        }
+        return getCapabilities(targetCapabilities);
     }
 
     private static final String REQUEST_DEVELOPERS_TO_UPDATE = " => Please request developers to update the database!";

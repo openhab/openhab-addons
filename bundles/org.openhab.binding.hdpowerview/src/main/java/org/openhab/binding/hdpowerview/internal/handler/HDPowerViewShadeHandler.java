@@ -260,16 +260,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             // Already cached.
             return;
         }
-        // check for capabilities for the shade.type parameter
-        Capabilities capabilities = db.getCapabilitiesForType(shade.type);
+        Capabilities capabilities = db.getCapabilities(shade.type, shade.capabilities);
         if (capabilities.getValue() < 0) {
-            // check for capabilities for the shade.capabilities parameter
-            Integer shadeCapsInt = shade.capabilities;
-            capabilities = db.getCapabilities(shadeCapsInt != null ? shadeCapsInt.intValue() : -1);
-            if (capabilities.getValue() < 0) {
-                logger.debug("Unable to set capabilities for shade {}", shade.id);
-                return;
-            }
+            logger.debug("Unable to set capabilities for shade {}", shade.id);
+            return;
         }
         logger.debug("Caching capabilities {} for shade {}", capabilities.getValue(), shade.id);
         this.capabilities = capabilities;
@@ -309,9 +303,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
 
         // update 'capabilities' property
-        final Integer temp = shadeData.capabilities;
-        final int capabilitiesVal = temp != null ? temp.intValue() : -1;
-        Capabilities capabilities = db.getCapabilities(capabilitiesVal);
+        Capabilities capabilities = db.getCapabilities(shadeData.capabilities);
+        final int capabilitiesVal = capabilities.getValue();
         propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES;
         propOldVal = properties.getOrDefault(propKey, "");
         propNewVal = capabilities.toString();
