@@ -364,7 +364,7 @@ public class SpexorAuthorizationService {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (ParseException | URISyntaxException | RuntimeException e) {
             String message = MessageFormat.format("invalid message {0}", e.getLocalizedMessage());
             logger.error(message, e);
             processingStatus.error(message, authListener);

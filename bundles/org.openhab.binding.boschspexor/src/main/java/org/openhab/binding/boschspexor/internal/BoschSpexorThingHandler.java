@@ -85,6 +85,7 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
 
     private Optional<ScheduledFuture<?>> pollEvent;
     private ExpiringCache<SpexorInfo> cache;
+    private Optional<String> spexorID = Optional.empty();
 
     public BoschSpexorThingHandler(Thing thing) {
         super(thing);
@@ -95,17 +96,13 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
         }
     }
 
-    private Optional<String> getSpexorID() {
-        return Optional.ofNullable((String) thing.getConfiguration().get(PROPERTY_SPEXOR_ID));
-    }
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (logger.isDebugEnabled()) {
             logger.debug("received ChannelUID {} with command {}", channelUID, command);
         }
 
-        if (getSpexorID().isEmpty()) {
+        if (spexorID.isEmpty()) {
             logger.warn("thing is not well created and can't be used");
             return;
         }
@@ -129,7 +126,7 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
                 }
                 String type = channelUID.getIdWithoutGroup();
                 if (SensorMode.ACTIVATED.equals(mode) || SensorMode.DEACTIVATED.equals(mode)) {
-                    ObservationChangeStatus newObservationState = apiService.setObservation(getSpexorID().get(), type,
+                    ObservationChangeStatus newObservationState = apiService.setObservation(spexorID.get(), type,
                             SensorMode.ACTIVATED.equals(mode));
                     if (logger.isDebugEnabled()) {
                         logger.debug("setting new observation state for {} to {} was {}", type, mode,
@@ -237,11 +234,13 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
         SpexorInfo result = null;
         SpexorAPIService apiService = getSpexorAPIService();
         if (apiService == null) {
-            logger.warn("spexor API service is not available and device won't be updated");
-        } else if (getSpexorID().isEmpty()) {
-            logger.warn("thing is not available and device can't be updated");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "spexor API service is not available and device won't be updated");
+        } else if (spexorID.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "thing is not available and device can't be updated");
         } else {
-            SpexorInfo spexor = apiService.getSpexor(getSpexorID().get());
+            SpexorInfo spexor = apiService.getSpexor(spexorID.get());
             if (spexor == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not determine further information.");
@@ -345,9 +344,10 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         if (logger.isDebugEnabled()) {
-            logger.debug("Bosch Spexor ID is {}", getSpexorID());
+            logger.debug("Bosch Spexor ID is {}", spexorID);
         }
         int refreshRate = ((BigDecimal) getConfig().get("refreshInterval")).intValue();
+        spexorID = Optional.ofNullable((String) thing.getConfiguration().get(PROPERTY_SPEXOR_ID));
         cache = new ExpiringCache<>(Duration.ofSeconds(refreshRate), this::getSpexorInfo);
         if (pollEvent.isPresent()) {
             pollEvent.get().cancel(false);
