@@ -111,7 +111,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void initialize() throws ShellyApiException {
-        if (!rpcSocket.isConnected()) {
+        if (thing != null && !rpcSocket.isConnected()) {
             rpcSocket.connect();
         }
         initialized = true;
@@ -254,7 +254,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         logger.debug("{}: NotifyStatus update received: {}", thingName, gson.toJson(message));
         try {
             if (thing == null) {
-                // return;
+                logger.trace("{}: No matching thing, ignore", thingName);
+                return;
             }
             if (message.error != null) {
                 logger.debug("{}: Error status received - {} {}", thingName, message.error.code, message.error.message);
@@ -718,5 +719,4 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public String getCoIoTDescription() {
         return "";
     }
-
 }

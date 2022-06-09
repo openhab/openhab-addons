@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
@@ -51,8 +63,13 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * {@link Shelly2ApiClient} Low level part of the RPC API
+ *
+ * @author Markus Michels - Initial contribution
+ */
 public class Shelly2ApiClient extends ShellyHttpClient {
-    private final Logger logger = LoggerFactory.getLogger(Shelly2ApiRpc.class);
+    private final Logger logger = LoggerFactory.getLogger(Shelly2ApiClient.class);
     protected final Random random = new Random();
     protected final ShellyStatusRelay relayStatus = new ShellyStatusRelay();
     protected final ShellyStatusSensor sensorData = new ShellyStatusSensor();
@@ -528,5 +545,4 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
         throw new ShellyApiException("Thing/profile not initialized!");
     }
-
 }

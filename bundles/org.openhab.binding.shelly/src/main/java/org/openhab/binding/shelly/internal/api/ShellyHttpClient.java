@@ -145,10 +145,8 @@ public class ShellyHttpClient {
                 request.header(HTTP_HEADER_AUTH,
                         HTTP_AUTH_TYPE_BASIC + " " + Base64.getEncoder().encodeToString(value.getBytes()));
             }
-
             fillPostData(request, data);
             logger.trace("{}: HTTP {} for {} {}", thingName, method, url, data);
-            request.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON);
 
             // Do request and get response
             ContentResponse contentResponse = request.send();
@@ -167,7 +165,6 @@ public class ShellyHttpClient {
                     }
                 }
             }
-
             HttpFields headers = contentResponse.getHeaders();
             String auth = headers.get(HttpHeader.WWW_AUTHENTICATE);
             if (!getString(auth).isEmpty()) {
