@@ -33,13 +33,19 @@ It signs on to the hub using the supplied connection parameters, and it polls th
 The NeoHub supports two Application Programming Interfaces "API" (an older "legacy" one, and a modern one), and this binding can use either of them to communicate with it.
 Before the binding can communicate with the hub, the following Configuration Parameters must be entered.
 
-| Configuration Parameter | Description                                                                                 |
-|-------------------------|---------------------------------------------------------------------------------------------|
-| hostName                | Host name (IP address) of the NeoHub (example 192.168.1.123)                                |
-| portNumber              | Port number of the NeoHub (Default=4242)                                                    |
-| pollingInterval         | Time (seconds) between polling requests to the NeoHub (Min=4, Max=60, Default=60)           |
-| socketTimeout           | Time (seconds) to allow for TCP socket connections to the hub to succeed (Min=4, Max=20, Default=5) |
-| preferLegacyApi         | ADVANCED: Prefer the binding to use older API calls; if these are not supported, it switches to the new calls (Default=false) |
+| Configuration Parameter | Description                                                                                              |
+|-------------------------|----------------------------------------------------------------------------------------------------------|
+| hostName                | Host name (IP address) of the NeoHub (example 192.168.1.123)                                             |
+| portNumber<sup>1)</sup> | Port number of the NeoHub (4242 for TCP connection, 4243 for secure web socket connection, default=4242) |
+| apiToken<sup>1)</sup>   | API Access Token for secure connection to hub. Create the token in the Heatmiser mobile App              |
+| pollingInterval         | Time (seconds) between polling requests to the NeoHub (Min=4, Max=60, Default=60)                        |
+| socketTimeout           | Time (seconds) to allow for TCP socket connections to the hub to succeed (Min=4, Max=20, Default=5)      |
+| preferLegacyApi         | ADVANCED: Prefer to use older API calls; but if not supported, it switches to new calls (Default=false)  |
+
+<sup>1)</sup> If you want to connect via the older and less secure TCP connection on port 4242 then `apiToken` is not required.
+However see the chapter "Connection Refused Errors" below.
+Whereas if you prefer to connect via the more secure web socket connection on port 4243 then an API access token `apiToken` is required.
+You can create an API access token in the Heatmiser mobile App (Settings | System | API Access).
 
 ## Connection Refused Errors
 

@@ -53,6 +53,11 @@
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
+
+			<parameter name="apiToken" type="text" required="false">
+				<label>API Access Token</label>
+				<description>API access token for the hub (created on the Heatmiser mobile App)</description>
+			</parameter>
 		</config-description>
 
 	</bridge-type>
