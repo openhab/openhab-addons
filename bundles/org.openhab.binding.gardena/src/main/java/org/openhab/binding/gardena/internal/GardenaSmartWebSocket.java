@@ -125,7 +125,7 @@ public class GardenaSmartWebSocket {
         }
 
         // start sending PING every two minutes
-        connectionTracker = scheduler.scheduleWithFixedDelay(this::sendKeepAlivePing, 2, 2, TimeUnit.MINUTES);
+        this.connectionTracker = scheduler.scheduleWithFixedDelay(this::sendKeepAlivePing, 2, 2, TimeUnit.MINUTES);
     }
 
     @OnWebSocketFrame
