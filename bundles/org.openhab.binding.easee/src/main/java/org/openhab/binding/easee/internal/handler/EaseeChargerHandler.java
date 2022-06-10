@@ -73,6 +73,8 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
 
         startPolling();
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting for bridge to go online");
+
+        // TODO: one time command call to update properties (backplate masterBackPlate, etc)
     }
 
     /**
