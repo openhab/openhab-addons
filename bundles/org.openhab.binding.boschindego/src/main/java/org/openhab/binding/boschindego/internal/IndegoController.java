@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.boschindego.internal;
 
+import java.net.URI;
 import java.time.Instant;
 import java.util.Base64;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -26,8 +26,6 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpCookie;
-import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -66,7 +64,9 @@ import com.google.gson.JsonParseException;
 public class IndegoController {
 
     private static final String BASE_URL = "https://api.indego.iot.bosch-si.com/api/v1/";
+    private static final URI BASE_URI = URI.create(BASE_URL);
     private static final String SERIAL_NUMBER_SUBPATH = "alms/";
+    private static final String SSO_COOKIE_NAME = "BOSCH_INDEGO_SSO";
     private static final String CONTEXT_HEADER_NAME = "x-im-context-id";
     private static final String CONTENT_TYPE_HEADER = "application/json";
 
@@ -134,7 +134,7 @@ public class IndegoController {
                 throw new IndegoInvalidResponseException("Response could not be parsed as AuthenticationResponse");
             }
             session = new IndegoSession(authenticationResponse.contextId, authenticationResponse.serialNumber,
-                    extractContextExpirationTime(response));
+                    getContextExpirationTimeFromCookie());
             logger.debug("Initialized session {}", session);
         } catch (JsonParseException e) {
             throw new IndegoInvalidResponseException("Error parsing AuthenticationResponse", e);
@@ -147,31 +147,20 @@ public class IndegoController {
     }
 
     /**
-     * Extracts expiration time from response "Set-Cookie" header.
+     * Get context expiration time as a calculated {@link Instant} relative to now.
+     * The information is obtained from max age in the Bosch Indego SSO cookie.
+     * Please note that this cookie is only sent initially when authenticating, so
+     * the value will not be subject to any updates.
      * 
-     * @param response
-     * @return expiration time as {@link Instant}
+     * @return expiration time as {@link Instant} or {@link Instant#MIN} if not present
      */
-    private Instant extractContextExpirationTime(ContentResponse response) {
-        List<HttpField> setCookieHeaders = response.getHeaders().getFields(HttpHeader.SET_COOKIE);
-        for (HttpField setCookieHeader : setCookieHeaders) {
-            try {
-                var setCookie = new HttpCookie(setCookieHeader.toString());
-                long maxAge = setCookie.getMaxAge();
-                if (maxAge > 0) {
-                    logger.trace("Accepted {}", setCookieHeader);
-                    return Instant.now().plusSeconds(maxAge);
-                } else {
-                    logger.trace("Skipped {}", setCookieHeader);
-                }
-            } catch (Exception e) {
-                logger.debug("Error parsing {}", setCookieHeader);
-                return Instant.MIN;
-            }
-        }
-        logger.trace("{} not found", HttpHeader.SET_COOKIE.asString());
-
-        return Instant.MIN;
+    private Instant getContextExpirationTimeFromCookie() {
+        return httpClient.getCookieStore().get(BASE_URI).stream().filter(c -> SSO_COOKIE_NAME.equals(c.getName()))
+                .findFirst().map(c -> {
+                    return Instant.now().plusSeconds(c.getMaxAge());
+                }).orElseGet(() -> {
+                    return Instant.MIN;
+                });
     }
 
     /**
