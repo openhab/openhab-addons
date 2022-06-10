@@ -76,8 +76,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private static final String COMMAND_CALIBRATE = "CALIBRATE";
     private static final String COMMAND_IDENTIFY = "IDENTIFY";
 
-    private static final String PROPERTY_SECONDARY_RAIL_DETECTED = "secondaryRailDetected"; // hidden
-    private static final String PROPERTY_TILT_ANYWHERE_DETECTED = "tiltAnywhereDetected"; // hidden
+    private static final String DETECTED_SECONDARY_RAIL = "secondaryRailDetected";
+    private static final String DETECTED_TILT_ANYWHERE = "tiltAnywhereDetected";
     private final Map<String, String> detectedCapabilities = new HashMap<>();
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
@@ -357,7 +357,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         Capabilities capabilities = getCapabilitiesOrDefault();
 
         // update 'secondary rail' detected capability
-        String capsKey = PROPERTY_SECONDARY_RAIL_DETECTED;
+        String capsKey = DETECTED_SECONDARY_RAIL;
         String capsOldVal = detectedCapabilities.getOrDefault(capsKey, "");
         boolean capsNewBool = positions.secondaryRailDetected();
         String capsNewVal = String.valueOf(capsNewBool);
@@ -369,7 +369,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
 
         // update 'tilt anywhere' detected capability
-        capsKey = PROPERTY_TILT_ANYWHERE_DETECTED;
+        capsKey = DETECTED_TILT_ANYWHERE;
         capsOldVal = detectedCapabilities.getOrDefault(capsKey, "");
         capsNewBool = positions.tiltAnywhereDetected();
         capsNewVal = String.valueOf(capsNewBool);
