@@ -213,7 +213,6 @@ If the new string is invalid, the old configuration will be used.
 This binding includes a rule action, which allows to immediately change DMX channels from within rules.
 There is a separate instance for each bridge, which can be retrieved e.g. through
 
-
 :::: tabs
 
 ::: tab DSL
@@ -238,7 +237,7 @@ Defining more than one step in `fadeString` is supported, too.
 
 The first parameter always has to be `dmx` and the second is the full Thing UID of the bridge that should be used.
 
-```
+```javascript
 actions.get("dmx","dmx:sacn-bridge:mydmxbridge").sendFade("1:41/3","10000:255,255,255:-1", false);
 ```
 
@@ -248,10 +247,6 @@ Defining more than one step in `fadeString` is supported, too.
 :::
 
 ::::
-
-
-
-
 
 ## Full Example
 
