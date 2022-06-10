@@ -149,10 +149,6 @@ public class GardenaSmartWebSocket {
 
     @OnWebSocketError
     public void onError(Throwable cause) {
-        String message = cause.getMessage();
-        if (message == null) {
-            message = cause.getClass().getName();
-        }
         logger.debug("Gardena Webservice error ({})", socketId, cause); // log whole stack trace
 
         if (!closing) {
