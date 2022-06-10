@@ -17,7 +17,7 @@ If you need to add for multiple brands or multiple different users, add multiple
 ## Bridge Configuration
 
 You need to select a brand and enter the user name and password.
-The Polling Interval (in minutes) determines how often the API will polled for new cars.
+The Polling Interval (in minutes) determines how often the API will be polled for new cars.
 The Client ID and Client Secret should not need to be updated.
 (However you can register your own app via https://developer.groupe-psa.com/inc/ and use this client information if you wish.)
 
