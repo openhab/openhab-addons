@@ -227,6 +227,11 @@ dmxActions.sendFade("1:41/3","10000:255,255,255:-1", false)
 The parameters are the same as in a chaser thing configuration.
 Defining more than one step in `fadeString` is supported, too.
 
+Example for ECMAScript
+```
+actions.get("dmx","dmx:sacn-bridge:mydmxbridge").sendFade("1:41/3","10000:255,255,255:-1", false);
+```
+
 ## Full Example
 
 This example defines a sACN/E1.31 bridge in unicast mode which transmits universe 2 and three things: a three channel dimmer used to control a RGB light, which takes 1s to fade from one color to another and 10s from 0-100% on incremental dim commands, a single channel dimmer which will turn on only to 90% if it receives an ON command and does not fully switch off (to 10%) if it receives an OFF command and chaser which changes the colors like a traffic light.
