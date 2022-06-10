@@ -29,7 +29,7 @@ import org.openhab.binding.boschindego.internal.dto.DeviceCommand;
 @NonNullByDefault
 public class DeviceStatus {
 
-    private static final Map<Integer, DeviceStatus> statusMap = Map.ofEntries(
+    private static final Map<Integer, DeviceStatus> STATUS_MAP = Map.ofEntries(
             entry(0, new DeviceStatus("Reading status", false, DeviceCommand.RETURN)),
             entry(257, new DeviceStatus("Charging", false, DeviceCommand.RETURN)),
             entry(258, new DeviceStatus("Docked", true, DeviceCommand.RETURN)),
@@ -77,7 +77,7 @@ public class DeviceStatus {
      * @return the {@link DeviceStatus} providing additional context for the code
      */
     public static DeviceStatus fromCode(int code) {
-        DeviceStatus status = statusMap.get(code);
+        DeviceStatus status = STATUS_MAP.get(code);
         if (status != null) {
             return status;
         }

@@ -19,11 +19,11 @@ package org.openhab.binding.boschindego.internal.dto.request;
  */
 public class SetStateRequest {
 
-    public final static String STATE_MOW = "mow";
+    public static final String STATE_MOW = "mow";
 
-    public final static String STATE_PAUSE = "pause";
+    public static final String STATE_PAUSE = "pause";
 
-    public final static String STATE_RETURN = "returnToDock";
+    public static final String STATE_RETURN = "returnToDock";
 
     public String state;
 }

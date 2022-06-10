@@ -24,8 +24,8 @@ import com.google.gson.annotations.SerializedName;
 public class DeviceCalendarResponse {
 
     @SerializedName("sel_cal")
-    private int selectedEntryNumber;
+    public int selectedEntryNumber;
 
     @SerializedName("cals")
-    private DeviceCalendarEntry[] entries;
+    public DeviceCalendarEntry[] entries;
 }
