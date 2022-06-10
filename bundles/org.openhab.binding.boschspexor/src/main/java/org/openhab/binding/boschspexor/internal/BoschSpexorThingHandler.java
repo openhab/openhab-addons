@@ -52,6 +52,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,7 +135,8 @@ public class BoschSpexorThingHandler extends BaseThingHandler {
                     }
                     updateState(channelUID, new StringType(newObservationState.getSensorMode().name()));
                 } else {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateState(channelUID, UnDefType.UNDEF);
+                    logger.error(
                             "setting observation state not allowed. Only 'ACTIVATED' and 'DEACTIVATED' are valid options ");
                 }
             }
