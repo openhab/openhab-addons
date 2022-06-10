@@ -126,10 +126,6 @@ public class BoschIndegoHandler extends BaseThingHandler {
                     "@text/offline.comm-error.authentication-failure");
         } catch (IndegoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            Throwable cause = e.getCause();
-            if (cause != null) {
-                logger.debug("Exception: {}", cause.getMessage());
-            }
         }
     }
 
@@ -170,17 +166,14 @@ public class BoschIndegoHandler extends BaseThingHandler {
                 propertiesInitialized = true;
             }
 
+            DeviceStateResponse state = controller.getState();
             updateStatus(ThingStatus.ONLINE);
-            updateState(controller.getState());
+            updateState(state);
         } catch (IndegoAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.authentication-failure");
         } catch (IndegoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            Throwable cause = e.getCause();
-            if (cause != null) {
-                logger.debug("Exception: {}", cause.getMessage());
-            }
         }
     }
 

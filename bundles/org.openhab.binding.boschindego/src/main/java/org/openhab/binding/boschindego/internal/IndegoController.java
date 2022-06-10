@@ -21,8 +21,10 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpCookie;
 import org.eclipse.jetty.http.HttpField;
@@ -190,7 +192,11 @@ public class IndegoController {
             logger.debug("Session {} valid, skipping authentication", session);
             return getRequest(path, dtoClass);
         } catch (IndegoAuthenticationException e) {
-            logger.debug("Authentication failed, session {} rejected", session);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Context rejected", e);
+            } else {
+                logger.debug("Context rejected: {}", e.getMessage());
+            }
             session.invalidate();
             authenticate();
             return getRequest(path, dtoClass);
@@ -217,7 +223,8 @@ public class IndegoController {
             ContentResponse response = sendRequest(request);
             int status = response.getStatus();
             if (status == HttpStatus.UNAUTHORIZED_401) {
-                throw new IndegoAuthenticationException("Authentication was rejected");
+                // This will currently not happen because "WWW-Authenticate" header is missing; see below.
+                throw new IndegoAuthenticationException("Context rejected");
             }
             if (!HttpStatus.isSuccess(status)) {
                 throw new IndegoAuthenticationException("The request failed with HTTP error: " + status);
@@ -239,7 +246,22 @@ public class IndegoController {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IndegoException(e);
-        } catch (TimeoutException | ExecutionException e) {
+        } catch (TimeoutException e) {
+            throw new IndegoException(e);
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause != null && cause instanceof HttpResponseException) {
+                Response response = ((HttpResponseException) cause).getResponse();
+                if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                    /*
+                     * When contextId is not valid, the service will respond with HTTP code 401 without
+                     * any "WWW-Authenticate" header, violating RFC 7235. Jetty will then throw
+                     * HttpResponseException. We need to handle this in order to attempt
+                     * reauthentication.
+                     */
+                    throw new IndegoAuthenticationException("Context rejected", e);
+                }
+            }
             throw new IndegoException(e);
         }
     }
@@ -261,7 +283,11 @@ public class IndegoController {
             logger.debug("Session {} valid, skipping authentication", session);
             putRequest(path, requestDto);
         } catch (IndegoAuthenticationException e) {
-            logger.debug("Authentication failed, session {} rejected", session);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Context rejected", e);
+            } else {
+                logger.debug("Context rejected: {}", e.getMessage());
+            }
             session.invalidate();
             authenticate();
             putRequest(path, requestDto);
@@ -289,7 +315,8 @@ public class IndegoController {
             ContentResponse response = sendRequest(request);
             int status = response.getStatus();
             if (status == HttpStatus.UNAUTHORIZED_401) {
-                throw new IndegoAuthenticationException("Authentication was rejected");
+                // This will currently not happen because "WWW-Authenticate" header is missing; see below.
+                throw new IndegoAuthenticationException("Context rejected");
             }
             if (status == HttpStatus.INTERNAL_SERVER_ERROR_500) {
                 throw new IndegoInvalidCommandException("The request failed with HTTP error: " + status);
@@ -302,7 +329,22 @@ public class IndegoController {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IndegoException(e);
-        } catch (TimeoutException | ExecutionException e) {
+        } catch (TimeoutException e) {
+            throw new IndegoException(e);
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause != null && cause instanceof HttpResponseException) {
+                Response response = ((HttpResponseException) cause).getResponse();
+                if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                    /*
+                     * When contextId is not valid, the service will respond with HTTP code 401 without
+                     * any "WWW-Authenticate" header, violating RFC 7235. Jetty will then throw
+                     * HttpResponseException. We need to handle this in order to attempt
+                     * reauthentication.
+                     */
+                    throw new IndegoAuthenticationException("Context rejected", e);
+                }
+            }
             throw new IndegoException(e);
         }
     }

@@ -28,4 +28,8 @@ public class IndegoAuthenticationException extends IndegoException {
     public IndegoAuthenticationException(String message) {
         super(message);
     }
+
+    public IndegoAuthenticationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
