@@ -15,6 +15,7 @@ package org.openhab.binding.hdpowerview.internal.handler;
 import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
 import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -77,6 +78,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
     private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
+    private final Map<String, String> hiddenProperties = new HashMap<>();
 
     private @Nullable ScheduledFuture<?> refreshPositionFuture = null;
     private @Nullable ScheduledFuture<?> refreshSignalFuture = null;
@@ -336,7 +338,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     /**
-     * After a hard refresh, update the Thing's properties based on the contents of the provided ShadeData.
+     * After a hard refresh, update the Thing's (hidden) properties based on the contents of the provided ShadeData.
      *
      * Checks if the secondary support capabilities in the database of known Shade 'types' and 'capabilities' matches
      * that implied by the ShadeData and logs any incompatible values, so that developers can be kept updated about the
@@ -350,27 +352,26 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             return;
         }
         Capabilities capabilities = getCapabilitiesOrDefault();
-        final Map<String, String> properties = getThing().getProperties();
 
-        // update 'secondary rail detected' property
+        // update 'secondary rail detected' hidden property
         String propKey = HDPowerViewBindingConstants.PROPERTY_SECONDARY_RAIL_DETECTED;
-        String propOldVal = properties.getOrDefault(propKey, "");
+        String propOldVal = hiddenProperties.getOrDefault(propKey, "");
         boolean propNewBool = positions.secondaryRailDetected();
         String propNewVal = String.valueOf(propNewBool);
         if (!propNewVal.equals(propOldVal)) {
-            getThing().setProperty(propKey, propNewVal);
+            hiddenProperties.put(propKey, propNewVal);
             if (propNewBool != capabilities.supportsSecondary()) {
                 db.logPropertyMismatch(propKey, shadeData.type, capabilities.getValue(), propNewBool);
             }
         }
 
-        // update 'tilt anywhere detected' property
+        // update 'tilt anywhere detected' hidden property
         propKey = HDPowerViewBindingConstants.PROPERTY_TILT_ANYWHERE_DETECTED;
-        propOldVal = properties.getOrDefault(propKey, "");
+        propOldVal = hiddenProperties.getOrDefault(propKey, "");
         propNewBool = positions.tiltAnywhereDetected();
         propNewVal = String.valueOf(propNewBool);
         if (!propNewVal.equals(propOldVal)) {
-            getThing().setProperty(propKey, propNewVal);
+            hiddenProperties.put(propKey, propNewVal);
             if (propNewBool != capabilities.supportsTiltAnywhere()) {
                 db.logPropertyMismatch(propKey, shadeData.type, capabilities.getValue(), propNewBool);
             }
