@@ -16,6 +16,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toRawType;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,20 +31,20 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link HomeSecurityChannelHelper} handles specific information for security purpose.
+ * The {@link SecurityChannelHelper} handles specific information for security purpose.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class HomeSecurityChannelHelper extends ChannelHelper {
+public class SecurityChannelHelper extends ChannelHelper {
     private long persons = -1;
     private long unknowns = -1;
     private @Nullable String unknownSnapshot;
     private List<String> knownIds = List.of();
 
-    public HomeSecurityChannelHelper() {
-        super(GROUP_SECURITY);
+    public SecurityChannelHelper(Set<String> providedGroups) {
+        super(providedGroups);
     }
 
     @Override

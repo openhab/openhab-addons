@@ -15,6 +15,8 @@ package org.openhab.binding.netatmo.internal.handler.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
@@ -32,8 +34,8 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class SirenChannelHelper extends ChannelHelper {
 
-    public SirenChannelHelper() {
-        super(GROUP_SIREN);
+    public SirenChannelHelper(Set<String> providedGroups) {
+        super(providedGroups);
     }
 
     @Override

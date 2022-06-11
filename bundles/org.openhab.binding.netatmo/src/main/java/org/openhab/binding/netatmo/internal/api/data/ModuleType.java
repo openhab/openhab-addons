@@ -12,17 +12,19 @@
  */
 package org.openhab.binding.netatmo.internal.api.data;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.BINDING_ID;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 
 import java.net.URI;
 import java.util.EnumSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.handler.capability.AirCareCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.CameraCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
@@ -36,36 +38,20 @@ import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapabilit
 import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AirQualityChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.AirQualityExtChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.BatteryChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.BatteryExtChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.DoorbellChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.EventChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.channelhelper.EnergyChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventDoorbellChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventPersonChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.HomeEnergyChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.HomeSecurityChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.HumidityChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.LocationChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.MeasuresChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.NoiseChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.PersonChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.PresenceChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.PressureChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.PressureExtChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.RainChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.RoomChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.channelhelper.SecurityChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.SetpointChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.SignalChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.SirenChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.TemperatureChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.TemperatureExtChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.TemperatureOutChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.Therm1ChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.TimestampChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.TimestampExtChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.WindChannelHelper;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -76,111 +62,102 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public enum ModuleType {
-    UNKNOWN(FeatureArea.NONE, "", null, List.of(), List.of()),
-    ACCOUNT(FeatureArea.NONE, "", null, List.of(), List.of()),
+    UNKNOWN(FeatureArea.NONE, "", null, Set.of()),
+    ACCOUNT(FeatureArea.NONE, "", null, Set.of()),
 
     HOME(FeatureArea.NONE, "NAHome", ACCOUNT,
-            List.of(DeviceCapability.class, EventCapability.class, HomeCapability.class, ChannelHelperCapability.class),
-            List.of(HomeSecurityChannelHelper.class, HomeEnergyChannelHelper.class)),
+            Set.of(DeviceCapability.class, EventCapability.class, HomeCapability.class, ChannelHelperCapability.class),
+            new ChannelGroup(SecurityChannelHelper.class, GROUP_SECURITY),
+            new ChannelGroup(EnergyChannelHelper.class, GROUP_ENERGY)),
 
     PERSON(FeatureArea.SECURITY, "NAPerson", HOME,
-            List.of(EventCapability.class, PersonCapability.class, ChannelHelperCapability.class),
-            List.of(PersonChannelHelper.class, EventPersonChannelHelper.class)),
+            Set.of(EventCapability.class, PersonCapability.class, ChannelHelperCapability.class),
+            new ChannelGroup(PersonChannelHelper.class, GROUP_PERSON),
+            new ChannelGroup(EventPersonChannelHelper.class, GROUP_PERSON_LAST_EVENT)),
 
     WELCOME(FeatureArea.SECURITY, "NACamera", HOME,
-            List.of(EventCapability.class, CameraCapability.class, ChannelHelperCapability.class),
-            List.of(CameraChannelHelper.class, SignalChannelHelper.class, EventChannelHelper.class)),
+            Set.of(EventCapability.class, CameraCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.EVENT, new ChannelGroup(CameraChannelHelper.class, GROUP_CAM_STATUS, GROUP_CAM_LIVE)),
 
-    SIREN(FeatureArea.SECURITY, "NIS", WELCOME, List.of(ChannelHelperCapability.class),
-            List.of(SirenChannelHelper.class, BatteryChannelHelper.class, TimestampChannelHelper.class,
-                    SignalChannelHelper.class)),
+    SIREN(FeatureArea.SECURITY, "NIS", WELCOME, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.BATTERY, new ChannelGroup(TimestampChannelHelper.class, GROUP_TIMESTAMP),
+            new ChannelGroup(SirenChannelHelper.class, GROUP_SIREN)),
 
     PRESENCE(FeatureArea.SECURITY, "NOC", HOME,
-            List.of(EventCapability.class, PresenceCapability.class, ChannelHelperCapability.class),
-            List.of(PresenceChannelHelper.class, SignalChannelHelper.class, EventChannelHelper.class)),
+            Set.of(EventCapability.class, PresenceCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.EVENT,
+            new ChannelGroup(PresenceChannelHelper.class, GROUP_CAM_STATUS, GROUP_CAM_LIVE, GROUP_PRESENCE)),
 
     DOORBELL(FeatureArea.SECURITY, "NDB", HOME,
-            List.of(EventCapability.class, CameraCapability.class, ChannelHelperCapability.class),
-            List.of(DoorbellChannelHelper.class, SignalChannelHelper.class, EventDoorbellChannelHelper.class)),
+            Set.of(EventCapability.class, CameraCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+            new ChannelGroup(CameraChannelHelper.class, GROUP_DOORBELL_STATUS, GROUP_DOORBELL_LIVE),
+            new ChannelGroup(EventDoorbellChannelHelper.class, GROUP_DOORBELL_LAST_EVENT, GROUP_DOORBELL_SUB_EVENT)),
 
     WEATHER_STATION(FeatureArea.WEATHER, "NAMain", ACCOUNT,
-            List.of(DeviceCapability.class, WeatherCapability.class, MeasureCapability.class,
+            Set.of(DeviceCapability.class, WeatherCapability.class, MeasureCapability.class,
                     ChannelHelperCapability.class),
-            List.of(PressureExtChannelHelper.class, NoiseChannelHelper.class, HumidityChannelHelper.class,
-                    TemperatureExtChannelHelper.class, AirQualityChannelHelper.class, LocationChannelHelper.class,
-                    TimestampExtChannelHelper.class, MeasuresChannelHelper.class, SignalChannelHelper.class)),
+            ChannelGroup.SIGNAL, ChannelGroup.HUMIDITY, ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE,
+            ChannelGroup.AIR_QUALITY, ChannelGroup.LOCATION, ChannelGroup.NOISE, ChannelGroup.TEMP_INSIDE_EXT,
+            new ChannelGroup(PressureChannelHelper.class, MeasureClass.PRESSURE, GROUP_TYPE_PRESSURE_EXTENDED)),
 
     OUTDOOR(FeatureArea.WEATHER, "NAModule1", WEATHER_STATION,
-            List.of(MeasureCapability.class, ChannelHelperCapability.class),
-            List.of(HumidityChannelHelper.class, TemperatureOutChannelHelper.class, BatteryChannelHelper.class,
-                    MeasuresChannelHelper.class, TimestampExtChannelHelper.class, SignalChannelHelper.class)),
+            Set.of(MeasureCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL, ChannelGroup.HUMIDITY,
+            ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE, ChannelGroup.BATTERY, ChannelGroup.TEMP_OUTSIDE_EXT),
 
-    WIND(FeatureArea.WEATHER, "NAModule2", WEATHER_STATION, List.of(ChannelHelperCapability.class),
-            List.of(WindChannelHelper.class, BatteryChannelHelper.class, TimestampExtChannelHelper.class,
-                    SignalChannelHelper.class)),
+    WIND(FeatureArea.WEATHER, "NAModule2", WEATHER_STATION, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.TSTAMP_EXT, ChannelGroup.BATTERY, new ChannelGroup(WindChannelHelper.class, GROUP_WIND)),
 
     RAIN(FeatureArea.WEATHER, "NAModule3", WEATHER_STATION,
-            List.of(MeasureCapability.class, ChannelHelperCapability.class),
-            List.of(RainChannelHelper.class, BatteryChannelHelper.class, MeasuresChannelHelper.class,
-                    TimestampExtChannelHelper.class, SignalChannelHelper.class)),
+            Set.of(MeasureCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE, ChannelGroup.BATTERY,
+            new ChannelGroup(RainChannelHelper.class, MeasureClass.RAIN_QUANTITY, GROUP_RAIN)),
 
     INDOOR(FeatureArea.WEATHER, "NAModule4", WEATHER_STATION,
-            List.of(MeasureCapability.class, ChannelHelperCapability.class),
-            List.of(HumidityChannelHelper.class, TemperatureExtChannelHelper.class, AirQualityChannelHelper.class,
-                    BatteryChannelHelper.class, MeasuresChannelHelper.class, TimestampExtChannelHelper.class,
-                    SignalChannelHelper.class)),
+            Set.of(MeasureCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE, ChannelGroup.BATTERY, ChannelGroup.HUMIDITY,
+            ChannelGroup.TEMP_INSIDE_EXT, ChannelGroup.AIR_QUALITY),
 
     HOME_COACH(FeatureArea.AIR_CARE, "NHC", ACCOUNT,
-            List.of(DeviceCapability.class, AirCareCapability.class, MeasureCapability.class,
+            Set.of(DeviceCapability.class, AirCareCapability.class, MeasureCapability.class,
                     ChannelHelperCapability.class),
-            List.of(NoiseChannelHelper.class, HumidityChannelHelper.class, AirQualityExtChannelHelper.class,
-                    TemperatureChannelHelper.class, PressureChannelHelper.class, TimestampExtChannelHelper.class,
-                    SignalChannelHelper.class, MeasuresChannelHelper.class, LocationChannelHelper.class)),
+            ChannelGroup.LOCATION, ChannelGroup.SIGNAL, ChannelGroup.NOISE, ChannelGroup.HUMIDITY,
+            ChannelGroup.TEMP_INSIDE, ChannelGroup.MEASURE, ChannelGroup.TSTAMP_EXT,
+            new ChannelGroup(AirQualityChannelHelper.class, GROUP_TYPE_AIR_QUALITY_EXTENDED),
+            new ChannelGroup(PressureChannelHelper.class, MeasureClass.PRESSURE, GROUP_PRESSURE)),
 
-    PLUG(FeatureArea.ENERGY, "NAPlug", HOME, List.of(ChannelHelperCapability.class),
-            List.of(SignalChannelHelper.class)),
+    PLUG(FeatureArea.ENERGY, "NAPlug", HOME, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL),
 
-    VALVE(FeatureArea.ENERGY, "NRV", PLUG, List.of(ChannelHelperCapability.class),
-            List.of(BatteryExtChannelHelper.class, SignalChannelHelper.class)),
+    VALVE(FeatureArea.ENERGY, "NRV", PLUG, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.BATTERY_EXT),
 
-    THERMOSTAT(FeatureArea.ENERGY, "NATherm1", PLUG, List.of(ChannelHelperCapability.class),
-            List.of(Therm1ChannelHelper.class, BatteryExtChannelHelper.class, SignalChannelHelper.class)),
+    THERMOSTAT(FeatureArea.ENERGY, "NATherm1", PLUG, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.BATTERY_EXT, new ChannelGroup(Therm1ChannelHelper.class, GROUP_TYPE_TH_PROPERTIES)),
 
-    ROOM(FeatureArea.ENERGY, "NARoom", HOME, List.of(RoomCapability.class, ChannelHelperCapability.class),
-            List.of(RoomChannelHelper.class, SetpointChannelHelper.class));
+    ROOM(FeatureArea.ENERGY, "NARoom", HOME, Set.of(RoomCapability.class, ChannelHelperCapability.class),
+            new ChannelGroup(RoomChannelHelper.class, GROUP_TYPE_ROOM_PROPERTIES, GROUP_TYPE_ROOM_TEMPERATURE),
+            new ChannelGroup(SetpointChannelHelper.class, GROUP_SETPOINT));
 
     public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);
 
     private final @Nullable ModuleType bridgeType;
-    public final List<String> groupTypes = new LinkedList<>();
-    public final List<String> extensions = new LinkedList<>();
-    public final List<Class<? extends ChannelHelper>> channelHelpers;
-    public final List<Class<? extends Capability>> capabilities;
+    public final Set<ChannelGroup> channelGroups;
+    public final Set<Class<? extends Capability>> capabilities;
     public final ThingTypeUID thingTypeUID;
     public final FeatureArea feature;
     public final String apiName;
 
     ModuleType(FeatureArea feature, String apiName, @Nullable ModuleType bridge,
-            List<Class<? extends Capability>> capabilities, List<Class<? extends ChannelHelper>> helpers) {
-        this.channelHelpers = helpers;
+            Set<Class<? extends Capability>> capabilities, ChannelGroup... channelGroups) {
         this.bridgeType = bridge;
         this.feature = feature;
         this.capabilities = capabilities;
         this.apiName = apiName;
-        thingTypeUID = new ThingTypeUID(BINDING_ID, name().toLowerCase().replace("_", "-"));
-        try {
-            for (Class<? extends ChannelHelper> helperClass : helpers) {
-                ChannelHelper helper = helperClass.getConstructor().newInstance();
-                groupTypes.addAll(helper.getChannelGroupTypes());
-                extensions.addAll(helper.getExtensibleChannels());
-            }
-        } catch (RuntimeException | ReflectiveOperationException e) {
-            throw new IllegalArgumentException(e);
-        }
+        this.channelGroups = Set.of(channelGroups);
+        this.thingTypeUID = new ThingTypeUID(BINDING_ID, name().toLowerCase().replace("_", "-"));
     }
 
     public boolean isLogical() {
-        return !channelHelpers.contains(SignalChannelHelper.class);
+        return !channelGroups.contains(ChannelGroup.SIGNAL);
     }
 
     public boolean isABridge() {
@@ -192,11 +169,19 @@ public enum ModuleType {
         return false;
     }
 
+    public List<String> getExtensions() {
+        return channelGroups.stream().map(cg -> cg.extensions).flatMap(Set::stream).collect(Collectors.toList());
+    }
+
+    public Set<String> getGroupTypes() {
+        return channelGroups.stream().map(cg -> cg.groupTypes).flatMap(Set::stream).collect(Collectors.toSet());
+    }
+
     public int[] getSignalLevels() {
         if (!isLogical()) {
-            return (channelHelpers.contains(BatteryChannelHelper.class)
-                    || channelHelpers.contains(BatteryExtChannelHelper.class)) ? RADIO_SIGNAL_LEVELS
-                            : WIFI_SIGNAL_LEVELS;
+            return (channelGroups.contains(ChannelGroup.BATTERY) || channelGroups.contains(ChannelGroup.BATTERY_EXT))
+                    ? RADIO_SIGNAL_LEVELS
+                    : WIFI_SIGNAL_LEVELS;
         }
         throw new IllegalArgumentException(
                 "This should not be called for module type : " + name() + ", please file a bug report.");
