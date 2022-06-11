@@ -29,7 +29,7 @@
 					To be
 					selected, the device should have at least a property value matching this regular expression. You can use
 					multiple
-					regular expressions (separator ###).</description>
+					regular expressions (separator is ###).</description>
 			</parameter>
 		</config-description>
 	</thing-type>
