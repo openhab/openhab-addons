@@ -14,6 +14,7 @@ package org.openhab.binding.netatmo.internal.action;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -76,16 +77,7 @@ public class RoomActions implements ThingActions {
             logger.info("Temperature provided but no endtime given, action ignored");
             return;
         }
-
-        try {
-            String roomId = roomHandler.getId();
-            double setpointTemp = temp;
-            long setpointEnd = endTime;
-            SetpointMode setpointMode = SetpointMode.MANUAL;
-            energy.ifPresent(cap -> cap.setRoomThermTemp(roomId, setpointTemp, setpointEnd, setpointMode));
-        } catch (IllegalArgumentException e) {
-            logger.debug("Ignoring setRoomThermpoint command due to illegal argument exception: {}", e.getMessage());
-        }
+        energy.ifPresent(cap -> cap.setRoomThermTemp(roomHandler.getId(), temp, endTime, SetpointMode.MANUAL));
     }
 
     @RuleAction(label = "@text/actionSetThermRoomModeSetpointLabel", description = "@text/actionSetThermRoomModeSetpointDesc")
@@ -105,7 +97,8 @@ public class RoomActions implements ThingActions {
         try {
             targetMode = SetpointMode.valueOf(mode);
             if (!ALLOWED_MODES.contains(targetMode)) {
-                logger.info("Mode can only be MAX, HOME or MANUAL for a room");
+                logger.info("Mode can only be {} for a room",
+                        ALLOWED_MODES.stream().map(s -> s.name()).collect(Collectors.joining(" or ")));
                 return;
             }
         } catch (IllegalArgumentException e) {
@@ -121,15 +114,9 @@ public class RoomActions implements ThingActions {
             return;
         }
 
-        try {
-            String roomId = roomHandler.getId();
-            double setpointTemp = 0;
-            long setpointEnd = targetEndTime;
-            SetpointMode setpointMode = targetMode;
-            energy.ifPresent(cap -> cap.setRoomThermTemp(roomId, setpointTemp, setpointEnd, setpointMode));
-        } catch (IllegalArgumentException e) {
-            logger.debug("Ignoring setRoomThermpoint command due to illegal argument exception: {}", e.getMessage());
-        }
+        long setpointEnd = targetEndTime;
+        SetpointMode setpointMode = targetMode;
+        energy.ifPresent(cap -> cap.setRoomThermTemp(roomHandler.getId(), 0, setpointEnd, setpointMode));
     }
 
     public static void setThermRoomTempSetpoint(ThingActions actions, @Nullable Double temp, @Nullable Long endTime) {
