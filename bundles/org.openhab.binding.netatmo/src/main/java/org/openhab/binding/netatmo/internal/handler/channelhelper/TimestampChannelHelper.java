@@ -17,9 +17,11 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toDate
 
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.dto.Dashboard;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.types.State;
@@ -34,17 +36,18 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class TimestampChannelHelper extends ChannelHelper {
 
-    public TimestampChannelHelper() {
-        this(GROUP_TIMESTAMP);
-    }
-
-    protected TimestampChannelHelper(String groupName) {
-        super(groupName);
+    public TimestampChannelHelper(Set<String> providedGroups) {
+        super(providedGroups);
     }
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
         Optional<ZonedDateTime> lastSeen = naThing.getLastSeen();
         return CHANNEL_LAST_SEEN.equals(channelId) && lastSeen.isPresent() ? toDateTimeType(lastSeen) : null;
+    }
+
+    @Override
+    protected @Nullable State internalGetDashboard(String channelId, Dashboard dashboard) {
+        return CHANNEL_MEASURES_TIMESTAMP.equals(channelId) ? toDateTimeType(dashboard.getTimeUtc()) : null;
     }
 }
