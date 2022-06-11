@@ -735,13 +735,14 @@ Parameters:
 
 | Name    | Description                                                          |
 |---------|----------------------------------------------------------------------|
-| mode    | The mode to set.                                                     |
+| mode    | The mode to set: MANUAL, MAX or HOME.                                |
 | endtime | Time the setpoint should end (Local Unix time in seconds).           |
 
 Example:
 
 ```
 actions.setThermRoomModeSetpoint("MANUAL", 1654387205)
+actions.setThermRoomModeSetpoint("HOME", null)
 ```
 
 ## Sample data
