@@ -3,7 +3,7 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
-	<name>Amazon Dash Button Binding</name>
+	<name>@text/bindingName</name>
 	<description>@text/bindingDescription</description>
 
 </binding:binding>
