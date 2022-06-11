@@ -18,9 +18,13 @@ import static org.openhab.binding.echonetlite.internal.HexUtil.hex;
 import java.net.InetSocketAddress;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public class InstanceKey {
     final InetSocketAddress address;
     final EchonetClass klass;
@@ -41,7 +45,7 @@ public class InstanceKey {
                 + hex(instance);
     }
 
-    public boolean equals(final Object o) {
+    public boolean equals(@Nullable final Object o) {
         if (this == o) {
             return true;
         }

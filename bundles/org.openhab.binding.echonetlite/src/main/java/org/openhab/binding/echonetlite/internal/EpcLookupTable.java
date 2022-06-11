@@ -14,9 +14,12 @@ package org.openhab.binding.echonetlite.internal;
 
 import static org.openhab.binding.echonetlite.internal.HexUtil.hex;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 enum EpcLookupTable {
     INSTANCE;
 

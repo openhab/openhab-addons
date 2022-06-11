@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public class LangUtil {
     public static byte b(int i) {
         return (byte) (i & 0xFF);

@@ -19,9 +19,13 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public class EchonetMessageBuilder {
     private static final byte EHD_1 = 0x10;
     private static final byte EHD_2 = (byte) (0x81 & 0xFF);
@@ -29,6 +33,7 @@ public class EchonetMessageBuilder {
     private final ByteBuffer buffer;
     private final ByteBuffer edtBuffer = ByteBuffer.allocate(4096);
     private int opcPosition = 0;
+    @Nullable
     private InetSocketAddress destAddress;
 
     public EchonetMessageBuilder() {
@@ -77,6 +82,7 @@ public class EchonetMessageBuilder {
         return buffer;
     }
 
+    @Nullable
     public SocketAddress address() {
         return destAddress;
     }

@@ -45,6 +45,7 @@ public class EchonetDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected void startScan() {
+        final EchonetLiteBridgeHandler bridgeHandler = this.bridgeHandler;
         logger.debug("startScan: {}", bridgeHandler);
         if (null != bridgeHandler) {
             bridgeHandler.startDiscovery(this);
@@ -55,6 +56,7 @@ public class EchonetDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected synchronized void stopScan() {
+        final EchonetLiteBridgeHandler bridgeHandler = this.bridgeHandler;
         if (null != bridgeHandler) {
             bridgeHandler.stopDiscovery();
         }
@@ -62,6 +64,7 @@ public class EchonetDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void onDeviceFound(String identifier, InstanceKey instanceKey) {
+        final EchonetLiteBridgeHandler bridgeHandler = this.bridgeHandler;
 
         if (null == bridgeHandler) {
             return;

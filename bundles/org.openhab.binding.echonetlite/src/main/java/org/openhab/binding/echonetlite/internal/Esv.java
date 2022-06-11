@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public enum Esv {
     SetI(0x60),
     SetC(0x61),

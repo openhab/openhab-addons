@@ -65,8 +65,7 @@ public class EchonetDevice extends EchonetObject {
                     epcByChannelId.put(epc.channelId(), epc);
                 }
 
-                @Nullable
-                State pendingState = pendingSets.get(epc);
+                final State pendingState = pendingSets.get(epc);
                 if (null != pendingState && pendingState.equals(state)) {
                     logger.debug("pendingSet - removing: {} {}", epc, state);
                     pendingSets.remove(epc);
@@ -84,10 +83,11 @@ public class EchonetDevice extends EchonetObject {
 
             } else {
                 if (Epc.Device.GET_PROPERTY_MAP == epc && null == getPropertyMap) {
-                    getPropertyMap = new EchonetPropertyMap(epc);
+                    final EchonetPropertyMap getPropertyMap = new EchonetPropertyMap(epc);
                     getPropertyMap.update(edt);
                     getPropertyMap.getProperties(instanceKey().klass.groupCode(), instanceKey().klass.classCode(),
                             Set.of(Epc.Device.GET_PROPERTY_MAP), pendingGets);
+                    this.getPropertyMap = getPropertyMap;
                 }
             }
 
@@ -102,7 +102,12 @@ public class EchonetDevice extends EchonetObject {
     }
 
     public String identifier() {
-        return stateFields.get(Epc.Device.IDENTIFICATION_NUMBER).toString();
+        final State identificationNumber = stateFields.get(Epc.Device.IDENTIFICATION_NUMBER);
+        if (null == identificationNumber) {
+            throw new IllegalStateException("Echonet devices must support identification number property");
+        }
+
+        return identificationNumber.toString();
     }
 
     public boolean buildUpdateMessage(final EchonetMessageBuilder messageBuilder, final ShortSupplier tidSupplier,
@@ -110,6 +115,8 @@ public class EchonetDevice extends EchonetObject {
         if (pendingSets.isEmpty()) {
             return false;
         }
+
+        final InflightRequest inflightSetRequest = this.inflightSetRequest;
 
         if (hasInflight(nowMs, inflightSetRequest)) {
             return false;
@@ -119,9 +126,10 @@ public class EchonetDevice extends EchonetObject {
         messageBuilder.start(tid, managementControllerKey, instanceKey, Esv.SetC);
 
         pendingSets.forEach((k, v) -> {
-            if (null != k.encoder()) {
+            final StateEncode encoder = k.encoder();
+            if (null != encoder) {
                 final ByteBuffer buffer = messageBuilder.edtBuffer();
-                k.encoder().encodeState(v, buffer);
+                encoder.encodeState(v, buffer);
                 messageBuilder.appendEpcUpdate(k.code(), buffer.flip());
             }
         });
@@ -147,6 +155,7 @@ public class EchonetDevice extends EchonetObject {
     }
 
     public void refreshAll(long nowMs) {
+        final EchonetPropertyMap getPropertyMap = this.getPropertyMap;
         if (lastPollMs + pollIntervalMs <= nowMs && null != getPropertyMap) {
             getPropertyMap.getProperties(instanceKey().klass.groupCode(), instanceKey().klass.classCode(),
                     Set.of(Epc.Device.GET_PROPERTY_MAP), pendingGets);
@@ -179,8 +188,12 @@ public class EchonetDevice extends EchonetObject {
 
     private Map<String, String> channelIds() {
         final HashMap<String, String> channelIdAndType = new HashMap<>();
-        stateFields.keySet().stream().filter(e -> null != e.decoder())
-                .forEach(e -> channelIdAndType.put(e.channelId(), e.decoder().itemType()));
+        for (Epc e : stateFields.keySet()) {
+            final StateDecode decoder = e.decoder();
+            if (null != decoder) {
+                channelIdAndType.put(e.channelId(), decoder.itemType());
+            }
+        }
         return channelIdAndType;
     }
 }

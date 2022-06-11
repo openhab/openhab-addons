@@ -16,6 +16,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.time.Clock;
 import java.util.Collection;
@@ -228,12 +229,19 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
 
     private void onMessage(final EchonetMessage echonetMessage) {
         final EchonetClass echonetClass = echonetMessage.sourceClass();
+        final SocketAddress sourceAddress = echonetMessage.sourceAddress();
         if (null == echonetClass) {
+            logger.warn("Unable to find echonetClass for message: {}", echonetMessage.toDebug());
             return;
         }
 
-        final InstanceKey instanceKey = new InstanceKey((InetSocketAddress) echonetMessage.sourceAddress(),
-                echonetClass, echonetMessage.instance());
+        if (null == sourceAddress) {
+            logger.warn("Unable to find sourceAddress for message: {}", echonetMessage.toDebug());
+            return;
+        }
+
+        final InstanceKey instanceKey = new InstanceKey((InetSocketAddress) sourceAddress, echonetClass,
+                echonetMessage.instance());
         final Esv esv = echonetMessage.esv();
 
         EchonetObject echonetObject = devicesByKey.get(instanceKey);
@@ -284,7 +292,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
         try {
             start();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException("Unable to start networking thread", e);
         }
     }
 
@@ -298,6 +306,9 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
                 logger.warn("Interrupted while closing", e);
             }
         }
+
+        @Nullable
+        final EchonetChannel echonetChannel = this.echonetChannel;
         if (null != echonetChannel) {
             echonetChannel.close();
         }

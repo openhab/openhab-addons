@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
+import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.DEFAULT_RETRY_TIMEOUT_MS;
+
 import java.nio.ByteBuffer;
 import java.time.Clock;
 import java.util.HashMap;
@@ -19,7 +21,6 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +36,8 @@ public abstract class EchonetObject {
     protected final InstanceKey instanceKey;
     protected final HashSet<Epc> pendingGets = new HashSet<>();
 
-    @Nullable
-    protected InflightRequest inflightGetRequest;
-    @Nullable
-    protected InflightRequest inflightSetRequest;
+    protected InflightRequest inflightGetRequest = new InflightRequest(DEFAULT_RETRY_TIMEOUT_MS, "GET");
+    protected InflightRequest inflightSetRequest = new InflightRequest(DEFAULT_RETRY_TIMEOUT_MS, "SET");
 
     protected long pollIntervalMs;
 
@@ -61,13 +60,7 @@ public abstract class EchonetObject {
             return false;
         }
 
-        final InflightRequest inflightGetRequest = this.inflightGetRequest;
-        if (null == inflightGetRequest) {
-            logger.warn("{} has null inflight", instanceKey());
-            return false;
-        }
-
-        if (hasInflight(nowMs, inflightGetRequest)) {
+        if (hasInflight(nowMs, this.inflightGetRequest)) {
             return false;
         }
 
@@ -78,22 +71,22 @@ public abstract class EchonetObject {
             messageBuilder.appendEpcRequest(pendingProperty.code());
         }
 
-        inflightGetRequest.requestSent(tid, nowMs);
+        this.inflightGetRequest.requestSent(tid, nowMs);
 
         return true;
     }
 
-    protected boolean hasInflight(long nowMs, @Nullable InflightRequest inflightGetRequest) {
-        if (null != inflightGetRequest && inflightGetRequest.isInflight()) {
-            return !inflightGetRequest.hasTimedOut(nowMs);
+    protected boolean hasInflight(long nowMs, InflightRequest inflightRequest) {
+        if (inflightRequest.isInflight()) {
+            return !inflightRequest.hasTimedOut(nowMs);
         }
         return false;
     }
 
     protected void setTimeouts(long pollIntervalMs, long retryTimeoutMs) {
         this.pollIntervalMs = pollIntervalMs;
-        this.inflightGetRequest = new InflightRequest(retryTimeoutMs, inflightGetRequest, "GET");
-        this.inflightSetRequest = new InflightRequest(retryTimeoutMs, inflightSetRequest, "SET");
+        this.inflightGetRequest = new InflightRequest(retryTimeoutMs, inflightGetRequest);
+        this.inflightSetRequest = new InflightRequest(retryTimeoutMs, inflightSetRequest);
     }
 
     public boolean buildUpdateMessage(final EchonetMessageBuilder messageBuilder, final ShortSupplier tid,
@@ -118,21 +111,22 @@ public abstract class EchonetObject {
     }
 
     public void applyHeader(Esv esv, short tid) {
-        if ((esv == Esv.Get_Res || esv == Esv.Get_SNA) && null != inflightGetRequest) {
-            final long sentTimestampMs = inflightGetRequest.timestampMs;
-            if (inflightGetRequest.responseReceived(tid)) {
+
+        if ((esv == Esv.Get_Res || esv == Esv.Get_SNA)) {
+            final long sentTimestampMs = this.inflightGetRequest.timestampMs;
+            if (this.inflightGetRequest.responseReceived(tid)) {
                 logger.debug("{} response time: {}ms", esv, Clock.systemUTC().millis() - sentTimestampMs);
             } else {
                 logger.warn("Unexpected {} response: {}", esv, tid);
-                inflightGetRequest.checkOldResponse(tid);
+                this.inflightGetRequest.checkOldResponse(tid);
             }
-        } else if ((esv == Esv.Set_Res || esv == Esv.SetC_SNA) && null != inflightSetRequest) {
-            final long sentTimestampMs = inflightSetRequest.timestampMs;
-            if (inflightSetRequest.responseReceived(tid)) {
+        } else if ((esv == Esv.Set_Res || esv == Esv.SetC_SNA)) {
+            final long sentTimestampMs = this.inflightSetRequest.timestampMs;
+            if (this.inflightSetRequest.responseReceived(tid)) {
                 logger.debug("{} response time: {}ms", esv, Clock.systemUTC().millis() - sentTimestampMs);
             } else {
                 logger.warn("Unexpected {} response: {}", esv, tid);
-                inflightSetRequest.checkOldResponse(tid);
+                this.inflightSetRequest.checkOldResponse(tid);
             }
         }
     }
@@ -150,13 +144,15 @@ public abstract class EchonetObject {
         @SuppressWarnings("unused")
         private int timeoutCount = 0;
 
-        InflightRequest(long timeoutMs, @Nullable InflightRequest existing, String name) {
+        InflightRequest(long timeoutMs, InflightRequest existing) {
+            this(timeoutMs, existing.name);
+            this.tid = existing.tid;
+            this.timestampMs = existing.timestampMs;
+        }
+
+        InflightRequest(long timeoutMs, String name) {
             this.timeoutMs = timeoutMs;
             this.name = name;
-            if (null != existing) {
-                this.tid = existing.tid;
-                this.timestampMs = existing.timestampMs;
-            }
         }
 
         void requestSent(short tid, long timestampMs) {

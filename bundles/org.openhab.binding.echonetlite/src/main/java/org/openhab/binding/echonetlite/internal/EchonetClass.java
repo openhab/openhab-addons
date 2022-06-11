@@ -46,7 +46,7 @@ public enum EchonetClass {
             }
         }
 
-        throw new RuntimeException("Unable to find class: " + groupCode + "/" + classCode);
+        throw new IllegalArgumentException("Unable to find class: " + groupCode + "/" + classCode);
     }
 
     public int groupCode() {

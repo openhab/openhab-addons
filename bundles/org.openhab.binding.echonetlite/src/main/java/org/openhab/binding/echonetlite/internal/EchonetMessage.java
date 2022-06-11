@@ -16,9 +16,13 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public class EchonetMessage {
     public static final int TID_OFFSET = 2;
     public static final int GROUP_OFFSET = 4;
@@ -33,6 +37,7 @@ public class EchonetMessage {
     private int propertyCursor = 0;
     private int currentProperty = -1;
 
+    @Nullable
     private SocketAddress address;
 
     public ByteBuffer bufferForRead() {
@@ -51,11 +56,11 @@ public class EchonetMessage {
         this.address = address;
     }
 
-    public SocketAddress sourceAddress() {
+    public @Nullable SocketAddress sourceAddress() {
         return address;
     }
 
-    public EchonetClass sourceClass() {
+    public @Nullable EchonetClass sourceClass() {
         return EchonetClassIndex.INSTANCE.lookup(messageData.get(GROUP_OFFSET), messageData.get(CLASS_OFFSET));
     }
 
