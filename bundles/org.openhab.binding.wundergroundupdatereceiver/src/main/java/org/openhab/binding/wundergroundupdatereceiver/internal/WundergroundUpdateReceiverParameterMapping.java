@@ -17,6 +17,7 @@ import static org.openhab.core.library.unit.ImperialUnits.*;
 import static org.openhab.core.library.unit.Units.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -51,6 +52,9 @@ public class WundergroundUpdateReceiverParameterMapping {
         this.isIndexable = isIndexable;
         this.pattern = pattern;
     }
+
+    private static final List<String> UNMAPPED_PARAMETERS = List.of(STATION_ID_PARAMETER, PASSWORD, ACTION,
+            REALTIME_MARKER);
 
     private static final WundergroundUpdateReceiverParameterMapping[] KNOWN_MAPPINGS = {
             new WundergroundUpdateReceiverParameterMapping(LAST_RECEIVED, LAST_RECEIVED_DATETIME_CHANNELTYPEUID,
@@ -164,14 +168,17 @@ public class WundergroundUpdateReceiverParameterMapping {
 
     public static @Nullable WundergroundUpdateReceiverParameterMapping getOrCreateMapping(String parameterName,
             String value, WundergroundUpdateReceiverUnknownChannelTypeProvider channelTypeProvider) {
-        if (STATION_ID_PARAMETER.equals(parameterName) || PASSWORD.equals(parameterName) || ACTION.equals(parameterName)
-                || REALTIME_MARKER.equals(parameterName)) {
+        if (isExcluded(parameterName)) {
             return null;
         }
         Optional<WundergroundUpdateReceiverParameterMapping> knownMapping = lookupMapping(parameterName);
         return knownMapping.orElseGet(() -> new WundergroundUpdateReceiverParameterMapping(parameterName,
                 channelTypeProvider.getOrCreateChannelType(parameterName, value).getUID(), "Uncategorized", null, false,
                 null));
+    }
+
+    public static boolean isExcluded(String parameter) {
+        return UNMAPPED_PARAMETERS.contains(parameter);
     }
 
     public static @Nullable Unit<? extends Quantity<?>> getUnit(String parameterName) {

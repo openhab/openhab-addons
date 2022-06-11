@@ -31,17 +31,16 @@ set.
 ## Discovery
 
 The binding starts listening at the above-mentioned URI as soon as it is initialized. Any request with an unregistered
-stationId is recorded and if auto-discovery is enabled appers in the inbox, otherwise can be registered when a manual
+stationId is recorded and if auto-discovery is enabled appears in the inbox, otherwise can be registered when a manual
 scan is initiated. For each request parameter a channel is generated, based on a list of known parameters from
 https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US and other observed parameters from various
 devices. If you have a device that submits a parameter that is unknown in the current version of the
 binding please feel free to submit an issue to have it added.
 
-Configuration using thing and item files is a laborious and error-prone method, as you have to manually replicate the
-configuration discovery produces. Items must be named as the request parameters in the channel type table and must have
-the same types. Items matching the request parameters submitted by your particular device must needs be discovered
-before being able to write appropriate item files. Both thing and item files must be created manually to achieve the
-same result as automatic discovery.
+While discovery is active, either in the background or during a manual scan, any request parameters that don't have a
+channel associated with them are added to the thing's channels. This supports using multiple devices that submit
+measurements to the same station ID. The thing is the wunderground account, not the individual devices submitting
+measurements.
 
 ## Thing Configuration
 
@@ -119,7 +118,7 @@ Additionally there is a receipt timestamp and a trigger channel.
 | dateutc           | dateutc                      | String               | Last Updated                      | The date and time of the last update in UTC as submitted by the weather station. This can be 'now'. | Metadata    | 
 | softwaretype      | softwaretype                 | String               | Software Type                     | A software type string from the weather station                                                     | Metadata    | 
 | rtfreq            | realtime-frequency           | Number               | Realtime Frequency                | How often does the weather station submit measurements                                              | Metadata    | 
-| lowbatt           |
+| lowbatt           | system:low-battery           | Switch               | Low Battery                       | Low battery warning with possible values on (low battery) and off (battery ok)                      | Metadata    |
 
 #### Synthetic channel-types. These are programatically added:
 
@@ -137,11 +136,46 @@ would send the measurements on to wunderground.com:
 val requestQuery = receivedEvent
 sendHttpGetRequest("https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php?" + requestQuery)
 ```
+The PASSWORD, action and realtime parameters are ignored, as they are wunderground
+technical constants, that devices must send. The ID parameter is used to identify the
+correct thing the request pertains to, ie. the stationId configuration value.
 
 As described by the wunderground specification a device can submit mulitple values
 for the outdoor temperature, soil temperature, soil moisture and leaf wetness channels
-by insergin an index number in to the name of the request parameter, fx. tempf can be
-temp1f, temp2f, etc. This is supported by the discovery mechanism, creating a channel for each of the values.
+by inserting an index number into the name of the request parameter, fx. tempf can be
+temp1f, temp2f, etc. This is supported by the discovery mechanism, creating a channel
+for each of the values.
+
+# Examples
+
+### Thing file
+
+Configuration using thing and item files is not the recommended method, as you have to manually replicate the
+configuration, discovery produces. Items must be named as the request parameters in the channel type table and must have
+the same types. Items matching the request parameters submitted by your particular device must needs be discovered
+before being able to write appropriate item files. Both thing and item files must be created manually to achieve the
+same result as automatic discovery.
+
+Assuming you have intercepted a request such as
+`https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php?ID=MYSTATIONID&PASSWORD=XXXXXX&windspeedmph=3.11&dateutc=2021-02-07%2014:04:03&softwaretype=WH2600%20V2.2.8&action=updateraw&realtime=1&rtfreq=5`
+
+You can configure a thing to intercept the request thus:
+
+```
+Thing wundergroundupdatereceiver:wundergroundUpdateReceiver:MYSTATIONID "Foo" [stationId="MYSTATIONID"] {
+    Channels:
+        Type wind-speed : windspeedmph
+        Type dateutc : dateutc
+        Type softwaretype : softwaretype
+        Type realtime-frequency : rtfreq
+        Type dateutc-datetime : dateutc-datetime
+        Type last-received-datetime : last-received-datetime
+        Type last-query-state : last-query-state
+        Type last-query-trigger : last-query-trigger
+}
+```
+
+###### This hasn't been tested.
 
 ### Rule examples
 

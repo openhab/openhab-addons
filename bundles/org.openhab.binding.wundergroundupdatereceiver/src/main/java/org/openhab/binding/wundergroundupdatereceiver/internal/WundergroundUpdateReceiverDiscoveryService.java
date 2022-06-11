@@ -41,6 +41,8 @@ public class WundergroundUpdateReceiverDiscoveryService extends AbstractDiscover
     private final HashMap<String, Map<String, String[]>> thinglessStationIds = new HashMap<>();
     private boolean servletWasInactive = false;
 
+    private boolean scanning = false;
+
     @Activate
     public WundergroundUpdateReceiverDiscoveryService() throws IllegalArgumentException {
         this(true);
@@ -65,6 +67,10 @@ public class WundergroundUpdateReceiverDiscoveryService extends AbstractDiscover
                 createDiscoveryResult(stationId);
             }
         }
+    }
+
+    public boolean isDiscovering() {
+        return isBackgroundDiscoveryEnabled() || isScanning();
     }
 
     public @Nullable Map<String, String[]> getUnhandledStationRequest(@Nullable String stationId) {
@@ -95,6 +101,7 @@ public class WundergroundUpdateReceiverDiscoveryService extends AbstractDiscover
 
     @Override
     protected void startScan() {
+        setScanning(true);
         if (servletControls != null && !servletControls.isActive()) {
             servletWasInactive = true;
             servletControls.activate();
@@ -109,5 +116,14 @@ public class WundergroundUpdateReceiverDiscoveryService extends AbstractDiscover
         if (!isBackgroundDiscoveryEnabled() && servletControls != null && servletWasInactive) {
             servletControls.deactivate();
         }
+        setScanning(false);
+    }
+
+    protected synchronized boolean isScanning() {
+        return this.scanning;
+    }
+
+    protected synchronized void setScanning(boolean value) {
+        this.scanning = value;
     }
 }

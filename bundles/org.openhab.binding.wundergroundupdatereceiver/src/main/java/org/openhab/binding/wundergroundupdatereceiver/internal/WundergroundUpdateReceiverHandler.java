@@ -146,7 +146,7 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         triggerChannel(queryTriggerChannel, lastQuery);
     }
 
-    private void buildChannel(ThingBuilder thingBuilder, String parameter, String[] query) {
+    private void buildChannel(ThingBuilder thingBuilder, String parameter, String... query) {
         @Nullable
         WundergroundUpdateReceiverParameterMapping channelTypeMapping = WundergroundUpdateReceiverParameterMapping
                 .getOrCreateMapping(parameter, String.join("", query), channelTypeProvider);
@@ -205,6 +205,11 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
             } else {
                 updateState(channelUID, new DecimalType(numberValue));
             }
+        } else if (this.discoveryService.isDiscovering()
+                && !WundergroundUpdateReceiverParameterMapping.isExcluded(parameterName)) {
+            ThingBuilder thingBuilder = editThing();
+            buildChannel(thingBuilder, parameterName, state);
+            updateThing(thingBuilder.build());
         }
     }
 }
