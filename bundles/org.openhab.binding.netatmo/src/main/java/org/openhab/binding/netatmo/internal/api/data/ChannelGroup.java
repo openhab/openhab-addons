@@ -54,7 +54,7 @@ public class ChannelGroup {
     public static final ChannelGroup TSTAMP_EXT = new ChannelGroup(TimestampChannelHelper.class,
             GROUP_TYPE_TIMESTAMP_EXTENDED);
     public static final ChannelGroup TEMP_OUTSIDE_EXT = new ChannelGroup(TemperatureChannelHelper.class,
-            MeasureClass.OUTSIDE_TEMPERATURE, GROUP_TYPE_TEMPERATURE_EXTENDED);
+            MeasureClass.OUTSIDE_TEMPERATURE, GROUP_TYPE_TEMPERATURE_OUTSIDE);
     public static final ChannelGroup TEMP_INSIDE_EXT = new ChannelGroup(TemperatureChannelHelper.class,
             MeasureClass.INSIDE_TEMPERATURE, GROUP_TYPE_TEMPERATURE_EXTENDED);
     public static final ChannelGroup TEMP_INSIDE = new ChannelGroup(TemperatureChannelHelper.class,
