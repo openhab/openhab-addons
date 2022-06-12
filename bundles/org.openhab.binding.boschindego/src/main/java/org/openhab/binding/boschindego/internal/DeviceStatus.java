@@ -83,14 +83,16 @@ public class DeviceStatus {
         }
 
         DeviceCommand command = null;
-        if ((code & 0xff00) == 0x100) {
-            command = DeviceCommand.RETURN;
-        }
-        if ((code & 0xff00) == 0x200) {
-            command = DeviceCommand.MOW;
-        }
-        if ((code & 0xff00) == 0x300) {
-            command = DeviceCommand.RETURN;
+        switch (code & 0xff00) {
+            case 0x100:
+                command = DeviceCommand.RETURN;
+                break;
+            case 0x200:
+                command = DeviceCommand.MOW;
+                break;
+            case 0x300:
+                command = DeviceCommand.RETURN;
+                break;
         }
 
         return new DeviceStatus(String.format("Unknown status code %d", code), false, command);
