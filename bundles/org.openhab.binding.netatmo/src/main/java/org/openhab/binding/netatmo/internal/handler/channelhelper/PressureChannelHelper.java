@@ -13,7 +13,9 @@
 package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
+
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,12 +32,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class PressureChannelHelper extends ChannelHelper {
 
-    public PressureChannelHelper() {
-        this(GROUP_PRESSURE);
-    }
-
-    protected PressureChannelHelper(String groupName) {
-        super(groupName, MeasureClass.PRESSURE);
+    public PressureChannelHelper(Set<String> providedGroups) {
+        super(providedGroups);
     }
 
     @Override
@@ -45,6 +43,8 @@ public class PressureChannelHelper extends ChannelHelper {
                 return toQuantityType(dashboard.getPressure(), MeasureClass.PRESSURE);
             case CHANNEL_ABSOLUTE_PRESSURE:
                 return toQuantityType(dashboard.getAbsolutePressure(), MeasureClass.PRESSURE);
+            case CHANNEL_TREND:
+                return toStringType(dashboard.getPressureTrend());
         }
         return null;
     }

@@ -58,6 +58,8 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class NeoHubHandler extends BaseBridgeHandler {
 
+    private static final String SEE_README = "See documentation chapter \"Connection Refused Errors\"";
+
     private final Logger logger = LoggerFactory.getLogger(NeoHubHandler.class);
 
     private final Map<String, Boolean> connectionStates = new HashMap<>();
@@ -140,8 +142,25 @@ public class NeoHubHandler extends BaseBridgeHandler {
             logger.debug("hub '{}' preferLegacyApi={}", getThing().getUID(), config.preferLegacyApi);
         }
 
-        socket = new NeoHubSocket(config.hostName, config.portNumber, config.socketTimeout);
+        NeoHubSocket socket = this.socket = new NeoHubSocket(config.hostName, config.portNumber, config.socketTimeout);
         this.config = config;
+
+        /*
+         * Try to 'ping' the hub, and if there is a 'connection refused', it is probably due to the mobile App |
+         * Settings | Legacy API Enable switch not being On, so go offline and log a warning message.
+         */
+        try {
+            socket.sendMessage(CMD_CODE_FIRMWARE);
+        } catch (IOException e) {
+            String error = e.getMessage();
+            if (error != null && error.toLowerCase().startsWith("connection refused")) {
+                logger.warn("CONNECTION REFUSED!! (hub '{}') => {}", getThing().getUID(), SEE_README);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, SEE_README);
+                return;
+            }
+        } catch (NeoHubException e) {
+            // NeoHubException won't actually occur here
+        }
 
         if (logger.isDebugEnabled()) {
             logger.debug("hub '{}' start background polling..", getThing().getUID());

@@ -100,7 +100,6 @@ Import-Package: \
 	io.dropwizard.metrics.core;version='[3.2.2,3.2.3)',\
 	io.netty.codec-mqtt;version='[4.1.72,4.1.73)',\
 	org.apache.commons.codec;version='[1.10.0,1.10.1)',\
-	biz.aQute.tester.junit-platform;version='[6.2.0,6.2.1)',\
 	org.apache.felix.configadmin;version='[1.9.24,1.9.25)',\
 	org.eclipse.jetty.http;version='[9.4.46,9.4.47)',\
 	org.eclipse.jetty.io;version='[9.4.46,9.4.47)',\
@@ -112,4 +111,4 @@ Import-Package: \
 	org.ops4j.pax.logging.pax-logging-api;version='[2.0.16,2.0.17)',\
 	ch.qos.logback.classic;version='[1.2.11,1.2.12)',\
 	ch.qos.logback.core;version='[1.2.11,1.2.12)',\
-	jakarta.ws.rs-api;version='[2.1.6,2.1.7)'
+	biz.aQute.tester.junit-platform;version='[6.3.0,6.3.1)'

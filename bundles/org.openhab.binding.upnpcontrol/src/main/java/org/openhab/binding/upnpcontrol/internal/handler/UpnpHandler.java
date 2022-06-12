@@ -191,6 +191,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected void initDevice() {
         String udn = getUDN();
         if ((udn != null) && !udn.isEmpty()) {
+            updateStatus(ThingStatus.UNKNOWN);
+
             if (config.refresh == 0) {
                 upnpScheduler.submit(this::initJob);
             } else {
