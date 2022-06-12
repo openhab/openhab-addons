@@ -120,7 +120,7 @@ public abstract class NikoHomeControlCommunication {
      * attempts, starting immediately, then 5 times with 30 second intervals and every minute thereafter until the
      * connection is re-established.
      */
-    public void scheduleRestartCommunication() {
+    public synchronized void scheduleRestartCommunication() {
         // Don't do this if we already scheduled to restart
         if (scheduledRestart == null) {
             delay = 0;
