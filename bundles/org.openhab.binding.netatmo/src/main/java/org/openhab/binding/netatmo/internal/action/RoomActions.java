@@ -98,7 +98,7 @@ public class RoomActions implements ThingActions {
             targetMode = SetpointMode.valueOf(mode);
             if (!ALLOWED_MODES.contains(targetMode)) {
                 logger.info("Mode can only be {} for a room",
-                        ALLOWED_MODES.stream().map(s -> s.name()).collect(Collectors.joining(" or ")));
+                        ALLOWED_MODES.stream().map(s -> s.name()).collect(Collectors.joining(", ")));
                 return;
             }
         } catch (IllegalArgumentException e) {
