@@ -33,12 +33,12 @@ public class EaseeBindingConstants {
 
     // List of main device types
     public static final String DEVICE_SITE = "site";
-    public static final String DEVICE_CIRCUIT = "circuit";
+    public static final String DEVICE_MASTER_CHARGER = "mastercharger";
     public static final String DEVICE_CHARGER = "charger";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SITE = new ThingTypeUID(BINDING_ID, DEVICE_SITE);
-    public static final ThingTypeUID THING_TYPE_CIRCUIT = new ThingTypeUID(BINDING_ID, DEVICE_CIRCUIT);
+    public static final ThingTypeUID THING_TYPE_MASTER_CHARGER = new ThingTypeUID(BINDING_ID, DEVICE_MASTER_CHARGER);
     public static final ThingTypeUID THING_TYPE_CHARGER = new ThingTypeUID(BINDING_ID, DEVICE_CHARGER);
 
     // List of all channel groups
@@ -48,6 +48,7 @@ public class EaseeBindingConstants {
     public static final String CHANNEL_GROUP_CHARGER_CONFIG = "config";
     public static final String CHANNEL_GROUP_CHARGER_LATEST_SESSION = "latest_session";
     public static final String CHANNEL_GROUP_CIRCUIT_DYNAMIC_CURRENT = "dynamic_current";
+    public static final String CHANNEL_GROUP_CIRCUIT_SETTINGS = "settings";
 
     // Channel types
     public static final String CHANNEL_TYPE_SWITCH = "Switch";
@@ -82,6 +83,7 @@ public class EaseeBindingConstants {
     // Write Commands
     public static final String COMMAND_CHANGE_CONFIGURATION = "ChangeConfiguration";
     public static final String COMMAND_SEND_COMMAND = "SendCommand";
+    public static final String COMMAND_SET_CIRCUIT_SETTINGS = "SetCircuitSettings";
     public static final String COMMAND_SET_DYNAMIC_CIRCUIT_CURRENT = "SetDynamicCircuitCurrent";
     public static final String COMMAND_SET_DYNAMIC_CIRCUIT_CURRENTS = "SetDynamicCircuitCurrents";
 
@@ -103,6 +105,7 @@ public class EaseeBindingConstants {
     public static final String COMMANDS_URL = "https://api.easee.cloud/api/chargers/{id}/commands/{command}";
     public static final String LATEST_CHARGING_SESSION_URL = "https://api.easee.cloud/api/chargers/{id}/sessions/latest";
     public static final String DYNAMIC_CIRCUIT_CURRENT_URL = "https://api.easee.cloud/api/sites/{siteId}/circuits/{circuitId}/dynamicCurrent";
+    public static final String CIRCUIT_SETTINGS_URL = "https://api.easee.cloud/api/sites/{siteId}/circuits/{circuitId}/settings";
 
     // other
     public static final long POLLING_INITIAL_DELAY = 1;
@@ -112,6 +115,8 @@ public class EaseeBindingConstants {
 
     public static final String THING_CONFIG_ID = "id";
     public static final String THING_CONFIG_SITE_ID = "siteId";
+    public static final String THING_CONFIG_CIRCUIT_ID = "circuitId";
+    public static final String THING_CONFIG_CIRCUIT_NAME = "circuitName";
     public static final String THING_CONFIG_IS_MASTER = "isMaster";
     public static final String THING_CONFIG_BACK_PLATE_ID = "backPlateId";
     public static final String THING_CONFIG_MASTER_BACK_PLATE_ID = "masterBackPlateId";
@@ -122,6 +127,6 @@ public class EaseeBindingConstants {
     public static final String PARAMETER_NAME_WRITE_COMMAND = "writeCommand";
     public static final String PARAMETER_NAME_VALIDATION_REGEXP = "validationExpression";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SITE, THING_TYPE_CIRCUIT,
-            THING_TYPE_CHARGER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SITE,
+            THING_TYPE_MASTER_CHARGER, THING_TYPE_CHARGER);
 }

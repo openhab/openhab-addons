@@ -88,9 +88,8 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
     /**
      * Poll the Easee Cloud API one time.
      */
-    private void pollingRun() {
+    void pollingRun() {
         String chargerId = getConfig().get(EaseeBindingConstants.THING_CONFIG_ID).toString();
-
         logger.debug("polling charger data for {}", chargerId);
 
         ChargerState state = new ChargerState(this, chargerId);

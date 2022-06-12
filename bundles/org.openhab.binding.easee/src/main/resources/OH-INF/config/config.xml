@@ -43,10 +43,14 @@
 			<description>The ID of the charger that should be integrated into Openhab.</description>
 		</parameter>
 	</config-description>
-	<config-description uri="thing-type:easee:circuit">
+	<config-description uri="thing-type:easee:mastercharger">
 		<parameter name="id" type="text" required="true">
 			<label>ID</label>
-			<description>The ID of the circuit that should be integrated into Openhab.</description>
+			<description>The ID of the charger that should be integrated into Openhab.</description>
+		</parameter>
+		<parameter name="circuitId" type="text" required="true">
+			<label>Circuit ID</label>
+			<description>The ID of the circuit which is controlled by this charger.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

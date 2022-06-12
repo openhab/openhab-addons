@@ -23,7 +23,6 @@ import org.openhab.binding.easee.internal.connector.CommunicationStatus;
 import org.openhab.binding.easee.internal.handler.EaseeSiteHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -100,25 +99,18 @@ public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implemen
         logger.debug("handleCircuitDiscovery {}", json);
 
         JsonObject circuit = json.getAsJsonObject();
-        String circuitId = Utils.getAsString(circuit, JSON_KEY_GENERIC_ID);
-        String circuitName = Utils.getAsString(circuit, JSON_KEY_CIRCUIT_NAME);
-        String masterBackPlateId = Utils.getAsString(circuit.getAsJsonObject(JSON_KEY_MASTER_BACK_PLATE),
-                JSON_KEY_GENERIC_ID);
+        final String circuitId = Utils.getAsString(circuit, JSON_KEY_GENERIC_ID);
+        final String circuitName = Utils.getAsString(circuit, JSON_KEY_CIRCUIT_NAME);
 
         if (circuitId != null) {
-            DiscoveryResultBuilder builder = initDiscoveryResultBuilder(DEVICE_CIRCUIT, circuitId, circuitName)
-                    .withProperty(THING_CONFIG_SITE_ID, bridgeHandler.getBridgeConfiguration().getSiteId());
-            if (masterBackPlateId != null) {
-                builder.withProperty(THING_CONFIG_MASTER_BACK_PLATE_ID, masterBackPlateId);
-            }
-            thingDiscovered(builder.build());
+            final String circuitLabel = circuitName != null ? circuitName : circuitId;
 
             // handle contained chargers
             JsonArray chargers = circuit.getAsJsonArray(JSON_KEY_CHARGERS);
             if (chargers == null) {
                 logger.info("Site discovery failed, no chargers found.");
             } else {
-                chargers.forEach(this::handleChargerDiscovery);
+                chargers.forEach(charger -> handleChargerDiscovery(charger, circuitId, circuitLabel));
             }
         }
     }
@@ -128,7 +120,7 @@ public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implemen
      *
      * @param charger
      */
-    private void handleChargerDiscovery(JsonElement json) {
+    private void handleChargerDiscovery(JsonElement json, String circuitId, String circuitLabel) {
         logger.debug("handleChargerDiscovery {}", json);
 
         JsonObject charger = json.getAsJsonObject();
@@ -139,10 +131,17 @@ public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implemen
         String chargerName = Utils.getAsString(charger, JSON_KEY_GENERIC_NAME);
 
         if (chargerId != null && backPlateId != null && masterBackPlateId != null) {
-            DiscoveryResultBuilder builder = initDiscoveryResultBuilder(DEVICE_CHARGER, chargerId, chargerName)
-                    .withProperty(Thing.PROPERTY_SERIAL_NUMBER, backPlateId);
-            builder.withProperty(THING_CONFIG_IS_MASTER,
-                    backPlateId.equals(masterBackPlateId) ? GENERIC_YES : GENERIC_NO);
+            DiscoveryResultBuilder builder;
+
+            if (backPlateId.equals(masterBackPlateId)) {
+                builder = initDiscoveryResultBuilder(DEVICE_MASTER_CHARGER, chargerId, chargerName)
+                        .withProperty(THING_CONFIG_IS_MASTER, GENERIC_YES);
+            } else {
+                builder = initDiscoveryResultBuilder(DEVICE_CHARGER, chargerId, chargerName)
+                        .withProperty(THING_CONFIG_IS_MASTER, GENERIC_YES);
+            }
+            builder.withProperty(THING_CONFIG_CIRCUIT_ID, circuitId);
+            builder.withProperty(THING_CONFIG_CIRCUIT_NAME, circuitLabel);
             builder.withProperty(THING_CONFIG_BACK_PLATE_ID, backPlateId);
             builder.withProperty(THING_CONFIG_MASTER_BACK_PLATE_ID, masterBackPlateId);
             thingDiscovered(builder.build());

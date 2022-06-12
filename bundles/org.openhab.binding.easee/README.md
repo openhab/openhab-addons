@@ -10,8 +10,8 @@ This binding provides three thing types:
 | Thing/Bridge        | Thing Type          | Description                                                                                   |
 |---------------------|---------------------|-----------------------------------------------------------------------------------------------|
 | bridge              | site                | cloud connection to a site within an Easee account                                            |
-| thing               | circuit             | a circuit which may contain one or more chargers                                              |
 | thing               | charger             | the physical charger which is connected to a circuit within the given site                    |
+| thing               | mastercharger       | like the "normal" charger but with additional capability to control the circuit               |
 
 
 Basically any Easee wallbox that supports the Cloud API should automatically be supported by this binding.
@@ -45,8 +45,19 @@ interval (minutes) in which live data values are retrieved from the Easee Cloud 
 It is recommended to use auto discovery which does not require further configuration.
 If manual configuration is preferred you need to specify configuration as below.
 
+### Charger
+
 - **id** (required)
-The id of the circuit or charger that will be represented by this thing.
+The id of the charger that will be represented by this thing.
+
+### Mastercharger
+
+- **id** (required)
+The id of the charger that will be represented by this thing.
+
+- **circuitId** (required)
+The id of the circuit that is controlled by this charger.
+
 
 ## Channels
 
@@ -84,14 +95,26 @@ The setting that start with "dynamic" can be changed frequently, the other are w
 | config#maxChargerCurrent                    | Number:ElectricCurrent   | no       | write access not yet implemented                     |                                                                                                                                                              |
 | commands#genericCommand                     | String                   | yes      | Generic Endpoint to send commands                    | reboot, update_firmware, poll_all, smart_charging, start_charging, stop_charging, pause_charging, resume_charging, toggle_charging, override_schedule        |
 
-### Circuit Channels Channels
+### Master Charger Channels
+
+The Master Charger is like the "normal" charger but has some extra channel to control the circuit. These additional channels are listed in the table below.
 
 | Channel Type ID                             | Item Type                | Writable | Description                                          | Allowed Values (write access)                                                                                                                                |
 |---------------------------------------------|--------------------------|----------|------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| dynamic_current#phase1                      | Number:ElectricCurrent   | yes      | will set phase1. other phases will be reset to 0.    | 0, 6-32                                                                                                                                                      |
-| dynamic_current#phase2                      | Number:ElectricCurrent   | yes      | will set phase2. other phases will be reset to 0.    | 0, 6-32                                                                                                                                                      |
-| dynamic_current#phase3                      | Number:ElectricCurrent   | yes      | will set phase3. other phases will be reset to 0.    | 0, 6-32                                                                                                                                                      |
+| dynamic_current#phase1                      | Number:ElectricCurrent   | no       |                                                      |                                                                                                                                                              |
+| dynamic_current#phase2                      | Number:ElectricCurrent   | no       |                                                      |                                                                                                                                                              |
+| dynamic_current#phase3                      | Number:ElectricCurrent   | no       |                                                      |                                                                                                                                                              |
 | dynamic_current#setDynamicCurrents          | String                   | yes      | write only for all phases.                           | <value phase1>;<value phase2>;<value phase3>  valid values for each phase are 0, 6-32                                                                        |
+| settings#maxCircuitCurrentP1                | Number:ElectricCurrent   | no       |                                                      |                                                                                                                                                              |
+| settings#maxCircuitCurrentP2                | Number:ElectricCurrent   | no       |                                                      |                                                                                                                                                              |
+| settings#maxCircuitCurrentP3                | Number:ElectricCurrent   | no       |                                                      |                                                                                                                                                              |
+| settings#setMaxCurrents                     | String                   | yes      | write only for all phases.                           | <value phase1>;<value phase2>;<value phase3>  valid values for each phase are 0, 6-32                                                                        |
+| settings#offlineMaxCircuitCurrentP1         | Number:ElectricCurrent   | no       |                                                      |                                                                                                                                                              |
+| settings#offlineMaxCircuitCurrentP2         | Number:ElectricCurrent   | no       |                                                      |                                                                                                                                                              |
+| settings#offlineMaxCircuitCurrentP3         | Number:ElectricCurrent   | no       |                                                      |                                                                                                                                                              |
+| settings#setOfflineMaxCurrents              | String                   | yes      | write only for all phases.                           | <value phase1>;<value phase2>;<value phase3>  valid values for each phase are 0, 6-32                                                                        |
+| settings#enableIdleCurrent                  | Switch                   | yes      |                                                      | true/false                                                                                                                                                   |
+| settings#allowOfflineMaxCircuitCurrent      | Switch                   | no       |                                                      |                                                                                                                                                              |
 |
 
 ## Full Example
@@ -104,11 +127,11 @@ The setting that start with "dynamic" can be changed frequently, the other are w
 easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="123456" ]
 ```
 
-- manual configuration with two wallboxes, pollingInterval set to 1 minute.
+- manual configuration with two chargers, pollingInterval set to 1 minute.
 
 ```
 easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="471111", dataPollingInterval=1 ] {
-        Thing charger myCharger1 [ id="EHXXXXX1" ]
+        Thing mastercharger myCharger1 [ id="EHXXXXX1", circuitId="1234567" ]
         Thing charger myCharger2 [ id="EHXXXXX2" ]
 }
 ```
