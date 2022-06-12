@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.wundergroundupdatereceiver</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: WundergroundUpdateReceiver Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Wunderground Update Receiver Binding</name>
 
 </project>

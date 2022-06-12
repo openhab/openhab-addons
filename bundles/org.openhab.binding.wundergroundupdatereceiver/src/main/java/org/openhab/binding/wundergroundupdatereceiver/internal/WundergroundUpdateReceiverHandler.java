@@ -159,8 +159,7 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         }
         ChannelBuilder channelBuilder = ChannelBuilder
                 .create(new ChannelUID(thing.getUID(), channelTypeMapping.channelGroup, parameter))
-                .withType(channelTypeMapping.channelTypeId).withAcceptedItemType(channelType.getItemType())
-                .withConfiguration(thing.getConfiguration());
+                .withType(channelTypeMapping.channelTypeId).withAcceptedItemType(channelType.getItemType());
         thingBuilder.withChannel(channelBuilder.build());
     }
 
