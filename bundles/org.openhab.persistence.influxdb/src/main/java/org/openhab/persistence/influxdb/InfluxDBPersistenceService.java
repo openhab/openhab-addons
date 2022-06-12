@@ -29,9 +29,9 @@ import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.persistence.ModifiablePersistenceService;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.persistence.PersistenceService;
-import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
@@ -74,10 +74,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
-        QueryablePersistenceService.class }, configurationPid = "org.openhab.influxdb", //
+        ModifiablePersistenceService.class }, configurationPid = "org.openhab.influxdb", //
         property = Constants.SERVICE_PID + "=org.openhab.influxdb")
 @ConfigurableService(category = "persistence", label = "InfluxDB Persistence Service", description_uri = InfluxDBPersistenceService.CONFIG_URI)
-public class InfluxDBPersistenceService implements QueryablePersistenceService {
+public class InfluxDBPersistenceService implements ModifiablePersistenceService {
     public static final String SERVICE_NAME = "influxdb";
 
     private final Logger logger = LoggerFactory.getLogger(InfluxDBPersistenceService.class);
@@ -245,5 +245,26 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     @Override
     public List<PersistenceStrategy> getDefaultStrategies() {
         return List.of(PersistenceStrategy.Globals.RESTORE, PersistenceStrategy.Globals.CHANGE);
+    }
+
+    @Override
+    public void store(Item item, ZonedDateTime date, State state) {
+        if (influxDBRepository != null && influxDBRepository.isConnected()) {
+            InfluxPoint point = itemToStorePointCreator.convert(item, date, state);
+            if (point != null) {
+                logger.trace("Storing item {} in InfluxDB point {}", item, point);
+                influxDBRepository.write(point);
+            } else {
+                logger.trace("Ignoring item {} as is cannot be converted to a InfluxDB point", item);
+            }
+        } else {
+            logger.debug("store ignored, InfluxDB is not yet connected");
+        }
+    }
+
+    @Override
+    public boolean remove(FilterCriteria filter) throws IllegalArgumentException {
+        // TODO not implemented
+        return false;
     }
 }

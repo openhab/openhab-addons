@@ -12,10 +12,16 @@
  */
 package org.openhab.persistence.influxdb.internal;
 
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_CATEGORY_NAME;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_ITEM_NAME;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_LABEL_NAME;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_TYPE_NAME;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Optional;
+
+import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,11 +56,35 @@ public class ItemToStorePointCreator {
         String measurementName = calculateMeasurementName(item, storeAlias);
         String itemName = item.getName();
         State state = getItemState(item);
-
         Object value = InfluxDBStateConvertUtils.stateToObject(state);
 
         InfluxPoint.Builder point = InfluxPoint.newBuilder(measurementName).withTime(Instant.now()).withValue(value)
                 .withTag(TAG_ITEM_NAME, itemName);
+
+        addPointTags(item, point);
+
+        return point.build();
+    }
+
+    /**
+     * Converts given data to an influx ready datapoint
+     *
+     * @param item name will be used
+     * @param timestamp of recording
+     * @param state to store, not Undef nor null
+     * @return data point ready for writing to InfluxDB
+     */
+    public @Nullable InfluxPoint convert(Item item, @NotNull ZonedDateTime timestamp, @NotNull State state) {
+        if (state instanceof UnDefType) {
+            return null;
+        }
+
+        String measurementName = calculateMeasurementName(item, null);
+        String itemName = item.getName();
+        Object value = InfluxDBStateConvertUtils.stateToObject(state);
+
+        InfluxPoint.Builder point = InfluxPoint.newBuilder(measurementName).withTime(timestamp.toInstant())
+                .withValue(value).withTag(TAG_ITEM_NAME, itemName);
 
         addPointTags(item, point);
 

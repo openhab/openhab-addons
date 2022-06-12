@@ -4,8 +4,9 @@
 
 	<feature name="openhab-persistence-influxdb" description="InfluxDB Persistence" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.persistence.influxdb/${project.version}</bundle>
-		<configfile finalname="${openhab.conf}/services/influxdb.cfg" override="false">mvn:org.openhab.addons.features.karaf/org.openhab.addons.features.karaf.openhab-addons-external/${project.version}/cfg/influxdb</configfile>
+		<bundle start-level="79">mvn:org.openhab.addons.bundles/org.openhab.persistence.influxdb/${project.version}</bundle>
+		<configfile finalname="${openhab.conf}/services/influxdb.cfg" override="false">mvn:org.openhab.addons.features.karaf/org.openhab.addons.features.karaf.openhab-addons-external/${project.version}/cfg/influxdb
+		</configfile>
 	</feature>
 
 </features>
