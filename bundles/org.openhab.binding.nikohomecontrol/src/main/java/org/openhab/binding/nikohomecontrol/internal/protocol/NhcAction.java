@@ -66,6 +66,15 @@ public abstract class NhcAction {
     }
 
     /**
+     * This method should be called when an object implementing the {@NhcActionEvent} interface is disposed.
+     * It resets the reference, so no updates go to the handler anymore.
+     *
+     */
+    public void unsetEventHandler() {
+        this.eventHandler = null;
+    }
+
+    /**
      * Get id of action.
      *
      * @return id
@@ -189,6 +198,7 @@ public abstract class NhcAction {
         NhcActionEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.actionRemoved();
+            unsetEventHandler();
         }
     }
 

@@ -79,6 +79,10 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
         scheduler.submit(() -> {
             comm.startCommunication();
+
+            int refreshInterval = getConfig().as(NikoHomeControlBridgeConfig.class).refresh;
+            setupRefreshTimer(refreshInterval);
+
             if (!comm.communicationActive()) {
                 bridgeOffline();
                 return;
@@ -87,9 +91,6 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
             updateProperties();
 
             updateStatus(ThingStatus.ONLINE);
-
-            int refreshInterval = getConfig().as(NikoHomeControlBridgeConfig.class).refresh;
-            setupRefreshTimer(refreshInterval);
         });
     }
 
@@ -153,11 +154,6 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     @Override
     public void controllerOnline() {
         bridgeOnline();
-
-        int refreshInterval = getConfig().as(NikoHomeControlBridgeConfig.class).refresh;
-        if (refreshTimer == null) {
-            setupRefreshTimer(refreshInterval);
-        }
     }
 
     /**
@@ -178,6 +174,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
             comm.stopCommunication();
         }
         nhcComm = null;
+        super.dispose();
     }
 
     @Override

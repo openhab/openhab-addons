@@ -71,6 +71,7 @@ public abstract class NhcEnergyMeter {
         NhcEnergyMeterEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.energyMeterRemoved();
+            unsetEventHandler();
         }
     }
 
@@ -83,6 +84,15 @@ public abstract class NhcEnergyMeter {
      */
     public void setEventHandler(NhcEnergyMeterEvent eventHandler) {
         this.eventHandler = eventHandler;
+    }
+
+    /**
+     * This method should be called when an object implementing the {@NhcEnergyMeterEvent} interface is disposed.
+     * It resets the reference, so no updates go to the handler anymore.
+     *
+     */
+    public void unsetEventHandler() {
+        this.eventHandler = null;
     }
 
     /**

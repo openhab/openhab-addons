@@ -278,6 +278,19 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         initialized = true;
     }
 
+    @Override
+    public void dispose() {
+        NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
+        if (nhcComm != null) {
+            NhcAction action = nhcComm.getActions().get(actionId);
+            if (action != null) {
+                action.unsetEventHandler();
+            }
+        }
+        nhcAction = null;
+        super.dispose();
+    }
+
     private void updateProperties(NhcAction nhcAction) {
         Map<String, String> properties = new HashMap<>();
 
@@ -347,7 +360,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     private void restartCommunication(NikoHomeControlCommunication nhcComm) {
         // We lost connection but the connection object is there, so was correctly started.
         // Try to restart communication.
-        nhcComm.restartCommunication();
+        nhcComm.scheduleRestartCommunication();
         // If still not active, take thing offline and return.
         if (!nhcComm.communicationActive()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
