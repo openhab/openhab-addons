@@ -119,6 +119,7 @@ public abstract class NhcThermostat {
         NhcThermostatEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.thermostatRemoved();
+            unsetEventHandler();
         }
     }
 
@@ -139,6 +140,15 @@ public abstract class NhcThermostat {
      */
     public void setEventHandler(NhcThermostatEvent eventHandler) {
         this.eventHandler = eventHandler;
+    }
+
+    /**
+     * This method should be called when an object implementing the {@NhcThermostatEvent} interface is disposed.
+     * It resets the reference, so no updates go to the handler anymore.
+     *
+     */
+    public void unsetEventHandler() {
+        this.eventHandler = null;
     }
 
     /**
