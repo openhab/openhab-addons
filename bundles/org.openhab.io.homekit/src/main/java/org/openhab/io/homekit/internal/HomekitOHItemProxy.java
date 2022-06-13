@@ -128,12 +128,12 @@ public class HomekitOHItemProxy {
             @Nullable PercentType brightness) {
         final HSBType currentState = item.getState() instanceof UnDefType ? HSBType.BLACK : (HSBType) item.getState();
         // logic for ColorItem = combine hue, saturation and brightness update to one command
-        final DecimalType target_hue = hue != null ? hue : currentState.getHue();
-        final PercentType target_saturation = saturation != null ? saturation : currentState.getSaturation();
-        final PercentType target_brightness = brightness != null ? brightness : currentState.getBrightness();
-        item.send(new HSBType(target_hue, target_saturation, target_brightness));
+        final DecimalType targetHue = hue != null ? hue : currentState.getHue();
+        final PercentType targetSaturation = saturation != null ? saturation : currentState.getSaturation();
+        final PercentType targetBrightness = brightness != null ? brightness : currentState.getBrightness();
+        item.send(new HSBType(targetHue, targetSaturation, targetBrightness));
         logger.trace("send HSB command for item {} with following values hue={} saturation={} brightness={}", item,
-                target_hue, target_saturation, target_brightness);
+                targetHue, targetSaturation, targetBrightness);
     }
 
     public synchronized void sendCommandProxy(HomekitCommandType commandType, State state) {
