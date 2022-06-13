@@ -160,7 +160,7 @@ Bridge livisismarthome:bridge:mybride "LIVISI SmartHome Controller" {
     Thing PSS myTVSwitch "TV" @ "Livingroom" [ id="<device-id>" ]
     Thing RST myHeating "Thermostat Livingroom" @ "Livingroom" [ id="<device-id>" ]
     Thing ISR2 myRollerShutter1 "RollerShutter" @ "Livingroom" [ id="<device-id>" ]
-    Thing ISR2 myRollerShutter2 "RollerShutter (inverted)" @ "Livingroom" [ id="<device-id>" ] {Type RollerShutterActuator : rollershutter  [invert=true]}
+    Thing ISR2 myRollerShutter2 "RollerShutter (inverted)" @ "Livingroom" [ id="<device-id>" ] {Type rollershutterActuator : rollershutter  [invert=true]}
     Thing VariableActuator myLivisiVariable "My Variable" [ id="<device-id>" ]
     Thing WDS myWindowContact "Window Kitchen" @ "Kitchen" [ id="<device-id>" ]
     Thing WMD myMotionSensor "Motion entry" @ "Entry" [ id="<device-id>" ]
