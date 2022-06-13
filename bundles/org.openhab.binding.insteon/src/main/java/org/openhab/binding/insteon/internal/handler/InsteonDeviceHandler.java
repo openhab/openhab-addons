@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.InsteonBinding;
 import org.openhab.binding.insteon.internal.InsteonBindingConstants;
 import org.openhab.binding.insteon.internal.config.InsteonChannelConfiguration;
@@ -125,7 +124,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(InsteonDeviceHandler.class);
 
-    private @Nullable InsteonDeviceConfiguration config;
+    private @NonNullByDefault({}) InsteonDeviceConfiguration config;
     private boolean deviceLinked = true;
 
     public InsteonDeviceHandler(Thing thing) {
@@ -538,16 +537,11 @@ public class InsteonDeviceHandler extends BaseThingHandler {
     }
 
     public InsteonAddress getInsteonAddress() {
-        if (config != null) {
-            return new InsteonAddress(config.getAddress());
-        } else {
-            throw new IllegalArgumentException("config is null");
-        }
+        return new InsteonAddress(config.getAddress());
     }
 
     public void deviceNotLinked() {
-        String address = config != null ? config.getAddress() : "unknown";
-        String msg = "device with the address '" + address
+        String msg = "device with the address '" + config.getAddress()
                 + "' was not found in the modem database. Did you forget to link?";
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
 
