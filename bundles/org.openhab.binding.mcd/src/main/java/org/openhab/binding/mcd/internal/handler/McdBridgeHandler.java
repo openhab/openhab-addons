@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.mcd.internal.handler;
 
-import static org.openhab.binding.mcd.internal.McdBindingConstants.*;
-
+import java.util.HashSet;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -27,7 +26,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.openhab.core.library.types.OnOffType;
+import org.openhab.binding.mcd.internal.util.Listener;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
@@ -57,6 +56,8 @@ public class McdBridgeHandler extends BaseBridgeHandler {
     private int expiresIn;
     private final Timer timer = new Timer();
 
+    private HashSet<Listener> listeners = new HashSet<>();
+
     public McdBridgeHandler(Bridge bridge) {
         super(bridge);
         SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
@@ -68,49 +69,27 @@ public class McdBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         config = getConfigAs(McdBridgeConfiguration.class);
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED, "initializing...");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "initializing...");
         scheduler.execute(this::logMeIn);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("handling command");
-        if (LOGIN_STATUS.equals(channelUID.getId())) {
-            try {
-                httpClient.start();
-                Request request = httpClient.newRequest("https://cunds-syncapi.azurewebsites.net/api/Account")
-                        .method(HttpMethod.POST).header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded")
-                        .header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
-                        .header(HttpHeader.ACCEPT, "application/json");
-                request.send(new BufferingResponseListener() {
-                    @NonNullByDefault({})
-                    @Override
-                    public void onComplete(Result result) {
-                        if (result.getResponse().getStatus() == 200) {
-                            updateStatus(ThingStatus.ONLINE);
-                            updateState(LOGIN_STATUS, OnOffType.ON);
-                        } else {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                    "you are not logged in");
-                            updateState(LOGIN_STATUS, OnOffType.OFF);
-                            logMeIn();
-                        }
-                    }
-                });
-            } catch (Exception e) {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, "an error occurred");
-                updateState(LOGIN_STATUS, OnOffType.OFF);
-                logger.warn("{}", e.getMessage());
-                logMeIn();
-            }
-        } else {
-            logger.warn("handleCommand: received unexpected command");
-        }
     }
 
     @Override
     public void dispose() {
         timer.cancel();
+    }
+
+    public void register(Listener listener) {
+        listeners.add(listener);
+    }
+
+    private void triggerEvent() {
+        for (Listener l : listeners) {
+            l.onEvent();
+        }
     }
 
     /**
@@ -138,8 +117,6 @@ public class McdBridgeHandler extends BaseBridgeHandler {
                             case 200:
                                 if (content != null && content.has("access_token")) {
                                     updateStatus(ThingStatus.ONLINE);
-                                    updateState(LOGIN_STATUS, OnOffType.ON);
-
                                     accessToken = content.get("access_token").getAsString();
                                     expiresIn = content.get("expires_in").getAsInt();
                                     long delay = ((long) expiresIn) * 1000L - 60000L;
@@ -149,29 +126,26 @@ public class McdBridgeHandler extends BaseBridgeHandler {
                                             logMeIn();
                                         }
                                     }, delay);
-                                    notifyAccessToken();
                                     break;
                                 } // else go to default
                             case 400:
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                         "wrong credentials");
-                                updateState(LOGIN_STATUS, OnOffType.OFF);
                                 break;
                             case 0:
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                         "please check your internet connection");
-                                updateState(LOGIN_STATUS, OnOffType.OFF);
                                 break;
                             default:
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                         "Login was not successful");
-                                updateState(LOGIN_STATUS, OnOffType.OFF);
                         }
+                        triggerEvent();
                     }
                 });
             } catch (Exception e) {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, "an error occurred");
-                logger.warn("{}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "an error occurred");
+                logger.debug("{}", e.getMessage());
             }
         }
     }
@@ -183,26 +157,5 @@ public class McdBridgeHandler extends BaseBridgeHandler {
      */
     protected String getAccessToken() {
         return accessToken;
-    }
-
-    /**
-     * This method is called in order to wait until the Bridge is initialized and the access token is obtained.
-     */
-    protected synchronized void waitForAccessToken() {
-        while (accessToken.equals("")) {
-            try {
-                wait();
-            } catch (Exception e) {
-                logger.warn("Thread interrupted: {}", e.getMessage());
-            }
-        }
-    }
-
-    /**
-     * This method calls {@link #notifyAll()} and is called when the access token is obtained in order to notify
-     * {@link #waitForAccessToken()}.
-     */
-    protected synchronized void notifyAccessToken() {
-        notifyAll();
     }
 }

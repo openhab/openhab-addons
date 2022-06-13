@@ -12,43 +12,34 @@
  */
 package org.openhab.binding.mcd.internal.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
- * enum that lists SensorEventDefinitions
+ * class that contains MCD SensorEventDefinitions
  * 
  * @author Simon Dengler - Initial contribution
  */
-public enum SensorEventDef {
-    DO_NOT_USE,
-    UNDEFINED,
-    BED_EXIT,
-    BED_ENTRY,
-    FALL,
-    CHANGE_POSITION,
-    BATTERY_STATE,
-    INACTIVITY,
-    ALARM,
-    OPEN,
-    CLOSE,
-    ON,
-    OFF,
-    ACTIVITY,
-    URINE,
-    GAS,
-    VITAL_VALUE,
-    ROOM_EXIT,
-    ROOM_ENTRY,
-    REMOVE_SENSOR,
-    SIT_DOWN,
-    STAND_UP,
-    INACTIVITY_ROOM,
-    SMOKE_ALARM,
-    HEAT,
-    COLD,
-    QUALITY_AIR,
-    ALARM_AIR,
-    ROOM_TEMPERATURE,
-    HUMIDITY,
-    AIR_PRESSURE,
-    CO2,
-    INDEX_UV;
+public class SensorEventDef {
+
+    // Sensor Events in order of their ids as specified by C&S syncapi
+    private final static String[] sensorEventDefinitionArray = { "", "UNDEFINED", "BEDEXIT", "BEDENTRY", "FALL",
+            "CHANGEPOSITION", "BATTERYSTATE", "INACTIVITY", "ALARM", "OPEN", "CLOSE", "ON", "OFF", "ACTIVITY",
+            "CAPACITY", "GAS", "VITALVALUE", "ROOMEXIT", "ROOMENTRY", "REMOVESENSOR", "SITDOWN", "STANDUP",
+            "INACTIVITYROOM", "SMOKEALARM", "HEAT", "COLD", "QUALITYAIR", "ALARMAIR", "ROOMTEMPERATURE", "HUMIDITY",
+            "AIRPRESSURE", "CO2", "INDEXUV", "WEARTIME", "FIRSTURINE", "NEWDIAPER", "DIAPERREMOVED", "NOCONNECTION",
+            "LOWBATTERY", "CONTROLLSENSOR", "LYING", "SPILLED", "DAMAGED", "GEOEXIT", "GEOENTRY", "WALKING", "RESTING",
+            "TURNAROUND", "HOMEEMERGENCY", "TOILETFLUSH", "DORSALPOSITION", "ABDOMINALPOSITION", "LYINGLEFT",
+            "LYINGRIGHT", "LYINGHALFLEFT", "LYINGHALFRIGHT", "MOVEMENT", "PRESENCE", "NUMBERPERSONS",
+            "BRIGHTNESSZONE" };
+    private static ArrayList<String> sensorEventDefinition = new ArrayList<String>(
+            Arrays.asList(sensorEventDefinitionArray));
+
+    public static ArrayList<String> getSensorEventDefinition() {
+        return sensorEventDefinition;
+    }
+
+    public static int getSensorEventId(String eventName) {
+        return sensorEventDefinition.indexOf(eventName);
+    }
 }

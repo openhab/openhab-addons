@@ -14,6 +14,7 @@ package org.openhab.binding.mcd.internal.handler;
 
 import static org.openhab.binding.mcd.internal.McdBindingConstants.*;
 
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -28,21 +29,17 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.mcd.internal.util.Callback;
-import org.openhab.binding.mcd.internal.util.HelperMethods;
 import org.openhab.binding.mcd.internal.util.SensorEventDef;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -56,9 +53,10 @@ public class SensorThingHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private final Gson gson;
     private McdBridgeHandler mcdBridgeHandler;
-    private JsonObject eventDef = null;
     private String serialNumber = "";
     private @Nullable SensorThingConfiguration config;
+    private int maxSensorEventId = 0;
+    private boolean initIsDone = false;
 
     public SensorThingHandler(Thing thing) {
         super(thing);
@@ -84,200 +82,108 @@ public class SensorThingHandler extends BaseThingHandler {
     @Override
     @NonNullByDefault
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug(command.getClass().toGenericString());
         if (command instanceof RefreshType) {
             refreshChannelValue();
-        } else if (command instanceof OnOffType && mcdBridgeHandler != null) {
+        } else if (mcdBridgeHandler != null) {
             String channelId = channelUID.getId();
-            // send sensor event for the given channel id
-            switch (channelId) {
-                case SIT_STATUS:
-                    switch ((OnOffType) command) {
-                        case ON:
-                            sendSensorEvent(serialNumber, SensorEventDef.SIT_DOWN);
-                            break;
-                        case OFF:
-                            sendSensorEvent(serialNumber, SensorEventDef.STAND_UP);
-                            break;
+            // check for the right channel id
+            if (channelId.equals(SEND_EVENT)) {
+                String commandString = command.toString();
+                int sensorEventId = SensorEventDef.getSensorEventId(commandString);
+                if (sensorEventId < 1 || sensorEventId > maxSensorEventId) {
+                    // check, if an id is passed as number
+                    try {
+                        sensorEventId = Integer.parseInt(commandString);
+                        if (sensorEventId < 1 || sensorEventId > maxSensorEventId) {
+                            throw new Exception(); // go to catch block
+                        } else {
+                            sendSensorEvent(serialNumber, sensorEventId);
+                        }
+                    } catch (Exception e) {
+                        logger.info("Invalid Command!");
                     }
-                    break;
-                case BED_STATUS:
-                    switch ((OnOffType) command) {
-                        case ON:
-                            sendSensorEvent(serialNumber, SensorEventDef.BED_ENTRY);
-                            break;
-                        case OFF:
-                            sendSensorEvent(serialNumber, SensorEventDef.BED_EXIT);
-                            break;
-                    }
-                    break;
-                case LIGHT:
-                    switch ((OnOffType) command) {
-                        case ON:
-                            sendSensorEvent(serialNumber, SensorEventDef.ON);
-                            break;
-                        case OFF:
-                            sendSensorEvent(serialNumber, SensorEventDef.OFF);
-                            break;
-                    }
-                    break;
-                case PRESENCE:
-                    switch ((OnOffType) command) {
-                        case ON:
-                            sendSensorEvent(serialNumber, SensorEventDef.ROOM_ENTRY);
-                            break;
-                        case OFF:
-                            sendSensorEvent(serialNumber, SensorEventDef.ROOM_EXIT);
-                            break;
-                    }
-                    break;
-                case OPEN_SHUT:
-                    switch ((OnOffType) command) {
-                        case ON:
-                            sendSensorEvent(serialNumber, SensorEventDef.OPEN);
-                            break;
-                        case OFF:
-                            sendSensorEvent(serialNumber, SensorEventDef.CLOSE);
-                            break;
-                    }
-                    break;
-                case FALL:
-                    if (command == OnOffType.ON) {
-                        sendSensorEvent(serialNumber, SensorEventDef.FALL);
-                    }
-                    break;
-                case CHANGE_POSITION:
-                    if (command == OnOffType.ON) {
-                        sendSensorEvent(serialNumber, SensorEventDef.CHANGE_POSITION);
-                    }
-                    break;
-                case BATTERY_STATE:
-                    if (command == OnOffType.ON) {
-                        sendSensorEvent(serialNumber, SensorEventDef.BATTERY_STATE);
-                    }
-                    break;
-                case INACTIVITY:
-                    if (command == OnOffType.ON) {
-                        sendSensorEvent(serialNumber, SensorEventDef.INACTIVITY);
-                    }
-                    break;
-                case ALARM:
-                    if (command == OnOffType.ON) {
-                        sendSensorEvent(serialNumber, SensorEventDef.ALARM);
-                    }
-                    break;
-                case ACTIVITY:
-                    if (command == OnOffType.ON) {
-                        sendSensorEvent(serialNumber, SensorEventDef.ACTIVITY);
-                    }
-                    break;
-                case GAS:
-                    if (command == OnOffType.ON) {
-                        sendSensorEvent(serialNumber, SensorEventDef.GAS);
-                    }
-                    break;
-                case REMOVED_SENSOR:
-                    if (command == OnOffType.ON) {
-                        sendSensorEvent(serialNumber, SensorEventDef.REMOVE_SENSOR);
-                    }
-                    break;
-                case INACTIVITY_ROOM:
-                    if (command == OnOffType.ON) {
-                        sendSensorEvent(serialNumber, SensorEventDef.INACTIVITY_ROOM);
-                    }
-                    break;
-                case SMOKE_ALARM:
-                    if (command == OnOffType.ON) {
-                        sendSensorEvent(serialNumber, SensorEventDef.SMOKE_ALARM);
-                    }
-                    break;
-                case HEAT:
-                    if (command == OnOffType.ON) {
-                        sendSensorEvent(serialNumber, SensorEventDef.HEAT);
-                    }
-                    break;
-                case COLD:
-                    if (command == OnOffType.ON) {
-                        sendSensorEvent(serialNumber, SensorEventDef.COLD);
-                    }
-                    break;
-                case ALARM_AIR:
-                    if (command == OnOffType.ON) {
-                        sendSensorEvent(serialNumber, SensorEventDef.ALARM_AIR);
-                    }
-                    break;
-                case URINE:
-                    if (command == OnOffType.ON) {
-                        sendSensorEvent(serialNumber, SensorEventDef.URINE);
-                    }
-                    break;
-                default:
-                    logger.warn("no matching channel");
-                    break;
+                } else {
+                    // command was valid (and id is between 1 and max)
+                    sendSensorEvent(serialNumber, sensorEventId);
+                }
+            } else {
+                logger.info("Received command for unexpected channel!");
             }
             refreshChannelValue();
         } else {
-            logger.warn("handleCommand: received unexpected command");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is offline.");
         }
     }
 
     // this is called from initialize()
     private void init() {
+        if (config != null) {
+            serialNumber = config.getSerialNumber();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Cannot access config data.");
+        }
         if (mcdBridgeHandler != null) {
-            try {
-                // wait until login is finished
-                mcdBridgeHandler.waitForAccessToken();
-                if (config != null) {
-                    serialNumber = config.getSerialNumber();
-                }
-                // set status to offline
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "You are not authorized!");
-                // determine, if thing is specified correctly and if it is online
-                fetchDeviceInfo(res -> {
-                    JsonObject result = res.getAsJsonObject();
-                    if (result.has("SerialNumber")) {
-                        // check for serial number in MCD cloud
-                        if (result.get("SerialNumber").isJsonNull()) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "Serial number does not exist in MCD!");
-                        } else {
-                            try {
-                                // get event definitions from REST API and build JsonObject with that list
-                                fetchEventDef(jsonElement -> {
-                                    JsonArray eventDefArray = jsonElement.getAsJsonArray();
-                                    eventDef = new JsonObject();
-                                    for (JsonElement elem : eventDefArray) {
-                                        JsonObject obj = elem.getAsJsonObject();
-                                        // fill object with pairs of key (name of sensor event) and value (id of event)
-                                        eventDef.addProperty(obj.get("NameApiSensorEventDef").getAsString(),
-                                                obj.get("IdApiSensorEventDef").getAsInt());
-                                    }
-                                });
-                            } catch (Exception e) {
-                                logger.warn("{}", e.getMessage());
+            if (mcdBridgeHandler.getAccessToken() != null) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE);
+            }
+            if (!initIsDone) {
+                // build and register listener
+                mcdBridgeHandler.register(() -> {
+                    try {
+                        // determine, if thing is specified correctly and if it is online
+                        fetchDeviceInfo(res -> {
+                            JsonObject result = res.getAsJsonObject();
+                            if (result.has("SerialNumber")) {
+                                // check for serial number in MCD cloud
+                                if (result.get("SerialNumber").isJsonNull()) {
+                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                            "Serial number does not exist in MCD!");
+                                } else {
+                                    // refresh channel values and set thing status to ONLINE
+                                    refreshChannelValue();
+                                    updateStatus(ThingStatus.ONLINE);
+                                }
                             }
-                            // refresh channel values and set thing status to ONLINE
-                            refreshChannelValue();
-                            updateStatus(ThingStatus.ONLINE);
-                        }
+                        });
+                        fetchEventDef(jsonElement -> {
+                            JsonArray eventDefArray = jsonElement.getAsJsonArray();
+                            maxSensorEventId = eventDefArray.size();
+                            /*
+                             * eventDef = new JsonObject();
+                             * for (JsonElement elem : eventDefArray) {
+                             * JsonObject obj = elem.getAsJsonObject();
+                             * // fill object with pairs of key (name of sensor event) and value (id of
+                             * event)
+                             * eventDef.addProperty(obj.get("NameApiSensorEventDef").getAsString(),
+                             * obj.get("IdApiSensorEventDef").getAsInt());
+                             * }
+                             */
+                        });
+                    } catch (Exception e) {
+                        logger.debug("{}", e.getMessage());
+                        updateStatus(ThingStatus.OFFLINE);
                     }
                 });
-
-            } catch (Exception e) {
-                logger.warn("{}", e.getMessage());
+                initIsDone = true;
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "unable to access bridge");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "unable to access bridge");
         }
     }
 
     /**
-     * This method uses the things serial number in order to obtain the latest sensor event, that was registered in the
+     * This method uses the things serial number in order to obtain the latest
+     * sensor event, that was registered in the
      * C&S MCD cloud, and then updates the channels with this latest value.
      */
     private void refreshChannelValue() {
         try {
             /*
-             * First, the device info for the given serial number is requested from the cloud, which is then used fetch
+             * First, the device info for the given serial number is requested from the
+             * cloud, which is then used fetch
              * the latest sensor event and update the channels.
              */
             fetchDeviceInfo(deviceInfo -> {
@@ -296,19 +202,40 @@ public class SensorThingHandler extends BaseThingHandler {
                                 "Unable to synchronize! Please assign sensor to patient or organization unit in MCD!");
                     }
                 } catch (Exception e) {
-                    logger.warn("{}", e.getMessage());
+                    logger.debug("{}", e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE);
                 }
             });
         } catch (Exception e) {
-            logger.warn("{}", e.getMessage());
+            logger.debug("{}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE);
         }
+    }
+
+    /**
+     * Updates the channels of the sensor thing with the latest value.
+     * 
+     * @param latestValue the latest value as JsonObject as obtained from the REST
+     *            API
+     */
+    private void updateChannels(JsonObject latestValue) {
+        String event = latestValue.get("EventDef").getAsString();
+        String dateString = latestValue.get("DateEntry").getAsString();
+        try {
+            Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(dateString);
+            dateString = new SimpleDateFormat("dd.MM.yyyy', 'HH:mm:ss").format(date);
+        } catch (Exception e) {
+            logger.debug("{}", e.getMessage());
+        }
+        updateState(LAST_VALUE, new StringType(event + ", " + dateString));
     }
 
     /**
      * Make asynchronous HTTP request to fetch the sensors last value as JsonObject.
      * 
      * @param urlString Contains the request URI as String
-     * @param callback Implementation of interface Callback (org.openhab.binding.mcd.internal.util), that includes
+     * @param callback Implementation of interface Callback
+     *            (org.openhab.binding.mcd.internal.util), that includes
      *            the proceeding of the obtained JsonObject.
      * @throws Exception Throws HTTP related Exceptions.
      */
@@ -356,9 +283,11 @@ public class SensorThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Sends a GET request to the C&S REST API to receive the list of sensor event definitions.
+     * Sends a GET request to the C&S REST API to receive the list of sensor event
+     * definitions.
      * 
-     * @param callback Implementation of interface Callback (org.openhab.binding.mcd.internal.util), that includes
+     * @param callback Implementation of interface Callback
+     *            (org.openhab.binding.mcd.internal.util), that includes
      *            the proceeding of the obtained JsonObject.
      * @throws Exception Throws HTTP related Exceptions.
      */
@@ -381,11 +310,14 @@ public class SensorThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Builds the URI String for requesting the latest sensor event from the API. In order to do that, the parameter
+     * Builds the URI String for requesting the latest sensor event from the API. In
+     * order to do that, the parameter
      * deviceInfo is needed.
      * 
-     * @param deviceInfo JsonObject that contains the device info as received from the C&S API
-     * @return returns the URI as String or null, if no patient or organisation unit is assigned to the sensor in the
+     * @param deviceInfo JsonObject that contains the device info as received from
+     *            the C&S API
+     * @return returns the URI as String or null, if no patient or organisation unit
+     *         is assigned to the sensor in the
      *         MCD cloud
      */
     @Nullable
@@ -416,7 +348,8 @@ public class SensorThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Extracts the latest value from the JsonArray, that is obtained by the C&S SensorApi.
+     * Extracts the latest value from the JsonArray, that is obtained by the C&S
+     * SensorApi.
      * 
      * @param jsonArray the array that contains the latest value
      * @return the latest value as JsonObject or null.
@@ -439,43 +372,13 @@ public class SensorThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Updates the channels of the sensor thing with the latest value.
-     * 
-     * @param latestValue the latest value as JsonObject as obtained from the REST API
-     */
-    private void updateChannels(JsonObject latestValue) {
-        String event = latestValue.get("EventDef").getAsString();
-        String dateString = latestValue.get("DateEntry").getAsString();
-        int id = eventDef.get(event).getAsInt();
-        State state = HelperMethods.getSwitchStateByEventId(id);
-        String channelID = HelperMethods.getChannelByEventId(id);
-        // this will only happen for channels, that can send two different events
-        if (state != null && channelID != null) {
-            updateState(channelID, state);
-        }
-        try {
-            Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(dateString);
-            dateString = new SimpleDateFormat("yyyy-MM-dd', 'HH:mm:ss").format(date);
-        } catch (Exception e) {
-            logger.warn("{}", e.getMessage());
-        }
-        updateState(LAST_VALUE, new StringType(event + ", " + dateString));
-    }
-
-    /**
-     * Sets the serial number to "001". This method should only be called for unit tests.
-     */
-    void setSerialNumber() {
-        this.serialNumber = "001";
-    }
-
-    /**
-     * Sends data to the cloud via POST request and switches the channel states from ON to OFF for a number of channels.
+     * Sends data to the cloud via POST request and switches the channel states from
+     * ON to OFF for a number of channels.
      * 
      * @param serialNumber serial number of the sensor in the MCD cloud
      * @param sensorEventDef specifies the type of sensor event, that will be sent
      */
-    private void sendSensorEvent(@Nullable String serialNumber, SensorEventDef sensorEventDef) {
+    private void sendSensorEvent(@Nullable String serialNumber, int sensorEventDef) {
         try {
             httpClient.start();
             String accessToken = mcdBridgeHandler.getAccessToken();
@@ -483,53 +386,32 @@ public class SensorThingHandler extends BaseThingHandler {
             String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
             Request request = httpClient.newRequest("https://cunds-syncapi.azurewebsites.net/api/ApiSensor")
                     .method(HttpMethod.POST).header(HttpHeader.CONTENT_TYPE, "application/json")
-                    .header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
+                    // .header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
                     .header(HttpHeader.ACCEPT, "application/json")
                     .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("SerialNumber", serialNumber);
-            jsonObject.addProperty("IdApiSensorEventDef", sensorEventDef.ordinal());
+            jsonObject.addProperty("IdApiSensorEventDef", sensorEventDef);
             jsonObject.addProperty("DateEntry", dateString);
             jsonObject.addProperty("DateSend", dateString);
-            request.content(new StringContentProvider(jsonObject.toString()), "application/json");
-
+            request.content(
+                    new StringContentProvider("application/json", jsonObject.toString(), StandardCharsets.UTF_8));
             request.send(new BufferingResponseListener() {
                 @NonNullByDefault({})
                 @Override
                 public void onComplete(Result result) {
                     if (result.getResponse().getStatus() != 201) {
                         logger.warn("Unable to send sensor event!");
+                        logger.debug("{}", result.getResponse().toString());
                     } else {
                         logger.debug("Sensor event was stored successfully.");
-                        String channelID = HelperMethods.getChannelByEventId(sensorEventDef.ordinal());
-                        if (channelID != null) {
-                            // switch will be reset for channels, that can only send one event type
-                            switch (sensorEventDef) {
-                                case FALL:
-                                case CHANGE_POSITION:
-                                case BATTERY_STATE:
-                                case INACTIVITY:
-                                case ALARM:
-                                case ACTIVITY:
-                                case URINE:
-                                case GAS:
-                                case REMOVE_SENSOR:
-                                case INACTIVITY_ROOM:
-                                case SMOKE_ALARM:
-                                case HEAT:
-                                case COLD:
-                                case ALARM_AIR:
-                                    updateState(channelID, OnOffType.OFF);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
+                        refreshChannelValue();
                     }
                 }
             });
         } catch (Exception e) {
-            logger.warn("{}", e.getMessage());
+            logger.debug("{}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to send sensor event. An error has occured.");
         }
     }
 }

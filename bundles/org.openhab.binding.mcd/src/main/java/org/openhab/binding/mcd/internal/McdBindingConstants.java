@@ -31,25 +31,6 @@ public class McdBindingConstants {
     public static final ThingTypeUID THING_TYPE_SENSOR = new ThingTypeUID(BINDING_ID, "mcdSensor");
 
     // List of all Channel ids
-    public static final String LOGIN_STATUS = "login";
     public static final String LAST_VALUE = "lastValue";
-    public static final String BED_STATUS = "bedStatus";
-    public static final String FALL = "fall";
-    public static final String CHANGE_POSITION = "changePosition";
-    public static final String BATTERY_STATE = "batteryState";
-    public static final String INACTIVITY = "inactivity";
-    public static final String ALARM = "alarm";
-    public static final String OPEN_SHUT = "openShut";
-    public static final String LIGHT = "light";
-    public static final String ACTIVITY = "activity";
-    public static final String URINE = "urine";
-    public static final String GAS = "gas";
-    public static final String PRESENCE = "presence";
-    public static final String REMOVED_SENSOR = "removedSensor";
-    public static final String SIT_STATUS = "sitStatus";
-    public static final String INACTIVITY_ROOM = "inactivityRoom";
-    public static final String SMOKE_ALARM = "smokeAlarm";
-    public static final String HEAT = "heat";
-    public static final String COLD = "cold";
-    public static final String ALARM_AIR = "alarmAir";
+    public static final String SEND_EVENT = "sendEvent";
 }

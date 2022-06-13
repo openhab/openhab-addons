@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mcd.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -19,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Simon Dengler - Initial contribution
  */
+@NonNullByDefault
 public class McdBridgeConfiguration {
 
     private @Nullable String userEmail;
