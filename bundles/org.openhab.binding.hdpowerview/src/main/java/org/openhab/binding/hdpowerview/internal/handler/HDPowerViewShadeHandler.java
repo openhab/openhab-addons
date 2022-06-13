@@ -16,7 +16,9 @@ import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstan
 import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -29,8 +31,8 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.api.Firmware;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.api.SurveyData;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
-import org.openhab.binding.hdpowerview.internal.api.responses.Survey;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
@@ -257,7 +259,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             updatePositionStates(shadePosition);
         }
         updateBatteryStates(shadeData.batteryStatus, shadeData.batteryStrength);
-        updateState(CHANNEL_SHADE_SIGNAL_STRENGTH, new DecimalType(shadeData.signalStrength));
+        updateSignalStrengthState(shadeData.signalStrength);
     }
 
     private void updateCapabilities(ShadeData shade) {
@@ -423,6 +425,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         updateState(CHANNEL_SHADE_BATTERY_LEVEL, new DecimalType(mappedValue));
     }
 
+    private void updateSignalStrengthState(int signalStrength) {
+        updateState(CHANNEL_SHADE_SIGNAL_STRENGTH, new DecimalType(signalStrength));
+    }
+
     private void moveShade(CoordinateSystem coordSys, int newPercent, HDPowerViewWebTargets webTargets, int shadeId)
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException,
             HubShadeTimeoutException {
@@ -528,11 +534,22 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     updateDetectedCapabilities(shadeData);
                     break;
                 case SURVEY:
-                    Survey survey = webTargets.getShadeSurvey(shadeId);
-                    if (survey.surveyData != null) {
-                        logger.debug("Survey response for shade {}: {}", survey.shadeId, survey.toString());
+                    List<SurveyData> surveyData = webTargets.getShadeSurvey(shadeId);
+                    if (!surveyData.isEmpty()) {
+                        if (logger.isDebugEnabled()) {
+                            StringJoiner joiner = new StringJoiner(", ");
+                            surveyData.forEach(data -> joiner.add(data.toString()));
+                            logger.debug("Survey response for shade {}: {}", shadeId, joiner.toString());
+                        }
+                        shadeData = webTargets.getShade(shadeId);
+                        updateSignalStrengthState(shadeData.signalStrength);
                     } else {
-                        logger.warn("No response from shade {} survey", shadeId);
+                        logger.info("No data from shade {} survey", shadeId);
+                        /*
+                         * Setting channel to UNDEF here would be reverted on next poll, since
+                         * signal strength is part of shade response. So leaving current value,
+                         * even though refreshing the value failed.
+                         */
                     }
                     break;
                 case BATTERY_LEVEL:
