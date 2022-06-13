@@ -209,11 +209,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     public void deviceNotLinked(InsteonAddress addr) {
         getThing().getThings().stream().forEach((thing) -> {
             InsteonDeviceHandler handler = (InsteonDeviceHandler) thing.getHandler();
-            if (handler == null) {
-                throw new IllegalArgumentException("handler is null");
-            }
-
-            if (addr.equals(handler.getInsteonAddress())) {
+            if (handler != null && addr.equals(handler.getInsteonAddress())) {
                 handler.deviceNotLinked();
                 return;
             }
