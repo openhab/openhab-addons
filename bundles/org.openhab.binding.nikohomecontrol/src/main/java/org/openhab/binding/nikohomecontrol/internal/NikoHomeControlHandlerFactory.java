@@ -43,8 +43,15 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.nikohomecontrol")
 public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
 
-    private @NonNullByDefault({}) NetworkAddressService networkAddressService;
-    private @NonNullByDefault({}) TimeZoneProvider timeZoneProvider;
+    private final NetworkAddressService networkAddressService;
+    private final TimeZoneProvider timeZoneProvider;
+
+    public NikoHomeControlHandlerFactory(final @Reference NetworkAddressService networkAddressService,
+            final @Reference TimeZoneProvider timeZoneProvider) {
+        super();
+        this.networkAddressService = networkAddressService;
+        this.timeZoneProvider = timeZoneProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -68,23 +75,5 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
-    }
-
-    @Reference
-    protected void setTimeZoneProvider(TimeZoneProvider timeZoneProvider) {
-        this.timeZoneProvider = timeZoneProvider;
-    }
-
-    protected void unsetTimeZoneProvider(TimeZoneProvider timeZoneProvider) {
-        this.timeZoneProvider = null;
     }
 }

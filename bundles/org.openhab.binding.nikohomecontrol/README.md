@@ -253,7 +253,7 @@ When updating `setpoint`, it will overrule the temperature setpoint defined by t
 `overruletime` is used to set the total duration to apply the setpoint temperature set in the setpoint channel before the thermostat returns to the setting from its mode.
 `heatingdemand` is a string indicating if the system is actively heating/cooling.
 This channel will have value Heating, Cooling or None.
-As an alternative to `heatingdemand` and for backward compatibility, the advanced channel `demand` is provided.
+As an alternative to `heatingdemand`, the advanced channel `demand` is provided.
 The value will be 1 for heating, -1 for cooling and 0 if not heating or cooling.
 `heatingdemand` and `demand` are read only channels.
 Note that cooling in NHC I is set by the binding, and will incorrectly show cooling demand when the system does not have cooling capabilities.
@@ -317,10 +317,10 @@ Switch LivingRoom       {channel="nikohomecontrol:onOff:nhc1:2:switch"}         
 Dimmer TVRoom           {channel="nikohomecontrol:dimmer:nhc1:3:brightness"}      # Changing brightness dimmer type action
 Rollershutter Kitchen   {channel="nikohomecontrol:blind:nhc1:4:rollershutter"}    # Controlling rollershutter or blind type action
 Number:Temperature CurTemperature   "[%.1f °F]"  {channel="nikohomecontrol:thermostat:nhc1:5:measured"} # Getting measured temperature from thermostat in °F, read only
-Switch ThermostatMode   {channel="nikohomecontrol:thermostat:nhc1:5:heatingmode"}        # Get and set thermostat mode
+String ThermostatMode   {channel="nikohomecontrol:thermostat:nhc1:5:heatingmode"}        # Get and set thermostat mode
 Number:Temperature SetTemperature   "[%.1f °C]"  {channel="nikohomecontrol:thermostat:nhc1:5:setpoint"} # Get and set target temperature in °C
 Number OverruleDuration {channel="nikohomecontrol:thermostat:nhc1:5:overruletime"}       # Get and set the overrule time
-Text ThermostatDemand   {channel="nikohomecontrol:thermostat:nhc1:5:heatingdemand"}      # Get the current heating/cooling demand
+String ThermostatDemand   {channel="nikohomecontrol:thermostat:nhc1:5:heatingdemand"}      # Get the current heating/cooling demand
 Number:Power CurPower   "[%.0f W]"  {channel="nikohomecontrol:energyMeter:nhc2:6:power"} # Get current power consumption
 ```
 

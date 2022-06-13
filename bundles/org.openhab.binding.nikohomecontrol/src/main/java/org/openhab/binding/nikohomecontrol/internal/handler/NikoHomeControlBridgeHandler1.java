@@ -15,7 +15,6 @@ package org.openhab.binding.nikohomecontrol.internal.handler;
 import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.THREAD_NAME_PREFIX;
 
 import java.net.InetAddress;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +48,6 @@ public class NikoHomeControlBridgeHandler1 extends NikoHomeControlBridgeHandler 
 
         InetAddress addr = getAddr();
         int port = getPort();
-        ZoneId timeZoneId = timeZoneProvider.getTimeZone();
 
         logger.debug("bridge handler host {}, port {}", addr, port);
 

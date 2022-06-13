@@ -251,7 +251,6 @@
 		<item-type>String</item-type>
 		<label>@text/channelModeLabel</label>
 		<description>@text/channelModeDescription</description>
-		<category>Temperature</category>
 		<state>
 			<options>
 				<option value="Day">@text/channelModeOption0</option>
@@ -269,7 +268,6 @@
 		<item-type>Number</item-type>
 		<label>@text/channelModeLabel</label>
 		<description>@text/channelModeDescription</description>
-		<category>Number</category>
 		<state>
 			<options>
 				<option value="0">@text/channelModeOption0</option>
@@ -287,7 +285,6 @@
 		<item-type>String</item-type>
 		<label>@text/channelDemandLabel</label>
 		<description>@text/channelDemandDescription</description>
-		<category>Temperature</category>
 		<state readOnly="true">
 			<options>
 				<option value="Cooling">@text/channelDemand-1</option>
@@ -300,7 +297,6 @@
 		<item-type>Number</item-type>
 		<label>@text/channelDemandLabel</label>
 		<description>@text/channelDemandDescription</description>
-		<category>Number</category>
 		<state readOnly="true">
 			<options>
 				<option value="-1">@text/channelDemand-1</option>
