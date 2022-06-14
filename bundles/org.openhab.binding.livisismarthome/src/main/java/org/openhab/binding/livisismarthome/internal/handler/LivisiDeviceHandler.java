@@ -172,21 +172,26 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (command instanceof QuantityType) {
             final QuantityType<?> pointTemperatureCommand = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
             if (pointTemperatureCommand != null) {
-                double pointTemperature = pointTemperatureCommand.doubleValue();
-                if (pointTemperature < MIN_TEMPERATURE_CELSIUS) {
-                    pointTemperature = MIN_TEMPERATURE_CELSIUS;
-                    logger.debug(
-                            "pointTemperature set to value {} (instead of value '{}'), because it is the minimal possible value!",
-                            MIN_TEMPERATURE_CELSIUS, pointTemperatureCommand.doubleValue());
-                } else if (pointTemperature > MAX_TEMPERATURE_CELSIUS) {
-                    pointTemperature = MAX_TEMPERATURE_CELSIUS;
-                    logger.debug(
-                            "pointTemperature set to value {} (instead of value '{}'), because it is the maximal possible value!",
-                            MAX_TEMPERATURE_CELSIUS, pointTemperatureCommand.doubleValue());
-                }
-                bridgeHandler.commandUpdatePointTemperature(deviceId, pointTemperature);
+                commandUpdatePointTemperature(pointTemperatureCommand.doubleValue(), bridgeHandler);
             }
+        } else if (command instanceof DecimalType) {
+            commandUpdatePointTemperature(((DecimalType) command).doubleValue(), bridgeHandler);
         }
+    }
+
+    private void commandUpdatePointTemperature(double pointTemperature, LivisiBridgeHandler bridgeHandler) {
+        if (pointTemperature < MIN_TEMPERATURE_CELSIUS) {
+            pointTemperature = MIN_TEMPERATURE_CELSIUS;
+            logger.debug(
+                    "pointTemperature set to value {} (instead of value '{}'), because it is the minimal possible value!",
+                    MIN_TEMPERATURE_CELSIUS, pointTemperature);
+        } else if (pointTemperature > MAX_TEMPERATURE_CELSIUS) {
+            pointTemperature = MAX_TEMPERATURE_CELSIUS;
+            logger.debug(
+                    "pointTemperature set to value {} (instead of value '{}'), because it is the maximal possible value!",
+                    MAX_TEMPERATURE_CELSIUS, pointTemperature);
+        }
+        bridgeHandler.commandUpdatePointTemperature(deviceId, pointTemperature);
     }
 
     private void commandSetOperationMode(Command command, LivisiBridgeHandler bridgeHandler) {
