@@ -86,24 +86,12 @@ public class BoschIndegoHandler extends BaseThingHandler {
         refreshRate = config.refresh;
 
         updateStatus(ThingStatus.UNKNOWN);
-        scheduleJob();
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::refreshState, 0, refreshRate, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing Indego handler");
-        cancelJob();
-    }
-
-    private void scheduleJob() {
-        ScheduledFuture<?> pollFuture = this.pollFuture;
-        if (pollFuture != null) {
-            pollFuture.cancel(false);
-        }
-        this.pollFuture = scheduler.scheduleWithFixedDelay(this::refreshState, 0, refreshRate, TimeUnit.SECONDS);
-    }
-
-    private void cancelJob() {
         ScheduledFuture<?> pollFuture = this.pollFuture;
         if (pollFuture != null) {
             pollFuture.cancel(true);
