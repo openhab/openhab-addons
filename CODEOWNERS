@@ -168,6 +168,7 @@
 /bundles/org.openhab.binding.linky/ @clinique @lolodomo
 /bundles/org.openhab.binding.linuxinput/ @t-8ch
 /bundles/org.openhab.binding.lirc/ @kabili207
+/bundles/org.openhab.binding.livisismarthome/ @Novanic
 /bundles/org.openhab.binding.logreader/ @paulianttila
 /bundles/org.openhab.binding.loxone/ @ppieczul
 /bundles/org.openhab.binding.luftdateninfo/ @weymann

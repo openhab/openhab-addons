@@ -1,0 +1,632 @@
+[
+	{
+		"id": "b0f441a410f8465fbede93a7363a4339",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "914100007996",
+		"type": "SHC",
+		"config": {
+			"name": "Smart Home Controller",
+			"protocolId": "Virtual",
+			"timeOfAcceptance": "2016-07-11T10:55:52.3863424Z",
+			"timeOfDiscovery": "2016-07-11T10:55:52.3863424Z",
+			"hardwareVersion": "00.02",
+			"softwareVersion": "2.1.0.66",
+			"firmwareVersion": "1.913",
+			"hostName": "SMARTHOME06",
+			"activityLogEnabled": true,
+			"configurationState": "Complete",
+			"geoLocation": "50.8301066,6.901272800000015",
+			"timeZone": "W. Europe Standard Time",
+			"currentUTCOffset": 60.0,
+			"IPAddress": "192.168.0.125",
+			"MACAddress": "00-1a-22-00-46-ae",
+			"shcType": "0",
+			"backendConnectionMonitored": true,
+			"RFCommFailureNotification": false,
+			"postCode": "50321",
+			"city": "Brühl",
+			"street": "Hermannstraße",
+			"houseNumber": "13",
+			"country": "Deutschland",
+			"householdType": "House",
+			"numberOfPersons": 0.0,
+			"numberOfFloors": 0.0,
+			"livingArea": 0.0,
+			"registrationTime": "2016-07-11T10:55:52.3863424Z"
+		},
+		"capabilities": [
+			"/capability/d43d0a536110445fa040f06d25d25254",
+			"/capability/edfd5fa4d18e4c4994935bf5905a262e"
+		]
+	},
+	{
+		"id": "970da72e3d5847ac941b889e5e6e8b3a",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "",
+		"type": "NotificationSender",
+		"config": {
+			"name": "Notification Sender",
+			"protocolId": "Virtual",
+			"timeOfAcceptance": "2016-07-11T10:55:52.3863424Z",
+			"timeOfDiscovery": "2016-07-11T10:55:52.3863424Z"
+		},
+		"capabilities": [
+			"/capability/fab663ad6dba4e0b92888bfb17dc3c1e",
+			"/capability/84e766ad0f99445f99c810c47547cbb6",
+			"/capability/098c77c87e5c42db9d39b616dcf6203d"
+		]
+	},
+	{
+		"id": "155f38e4ee2047c0b2246133b1de96a0",
+		"manufacturer": "RWE",
+		"version": "2.0",
+		"product": "VariableActuator.RWE",
+		"serialNumber": "155f38e4ee2047c0b2246133b1de96a0",
+		"type": "VariableActuator",
+		"config": {
+			"name": "Zuhause",
+			"protocolId": "Virtual",
+			"timeOfAcceptance": "2016-07-11T10:59:57.844Z",
+			"timeOfDiscovery": "2016-07-11T10:56:19.262Z"
+		},
+		"tags": {
+			"internalStateId": "HomeAway"
+		},
+		"capabilities": [
+			"/capability/2d7e58bca7fc40148e77cb4df6daef90"
+		]
+	},
+	{
+		"id": "b19d0f5794ee4a2b8ecadbf2ea470c31",
+		"manufacturer": "RWE",
+		"version": "2.0",
+		"product": "VariableActuator.RWE",
+		"serialNumber": "b19d0f5794ee4a2b8ecadbf2ea470c31",
+		"type": "VariableActuator",
+		"config": {
+			"name": "Urlaub",
+			"protocolId": "Virtual",
+			"timeOfAcceptance": "2016-07-11T11:00:02.191Z",
+			"timeOfDiscovery": "2016-07-11T11:00:00.039Z"
+		},
+		"tags": {
+			"internalStateId": "Vacation"
+		},
+		"capabilities": [
+			"/capability/aeda6003eb124b19be5ff644ca59fe40"
+		]
+	},
+	{
+		"id": "32214feb11a74949b573346f1a380729",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "914130092370",
+		"type": "WSC2",
+		"config": {
+			"name": "Wandsender Test",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-07-11T11:22:18.087Z",
+			"timeOfDiscovery": "2016-07-11T11:20:49.192Z"
+		},
+		"tags": {
+			"typeCategory": "TCSwitchIdTag",
+			"type": "TTwoButtonSwitchIdTag"
+		},
+		"capabilities": [
+			"/capability/2dca5b6a3e5a419d8f6f4a8f05ed8310"
+		],
+		"location": "/location/bd67af2ca266487bb97b7d08b3468c2f"
+	},
+	{
+		"id": "d68abf56664c4607a2e01d66be1fb727",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "914120076611",
+		"type": "PSS",
+		"config": {
+			"name": "Fernseher",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-08-21T13:28:58.508Z",
+			"timeOfDiscovery": "2016-08-21T13:28:34.606Z"
+		},
+		"tags": {
+			"typeCategory": "TCEntertainmentId",
+			"type": "TTVId"
+		},
+		"capabilities": [
+			"/capability/3f268584b95c40df93b67d6c64957846"
+		],
+		"location": "/location/30858fcbea3f4833b4e7b3143ea872f7"
+	},
+	{
+		"id": "18b546218e90484796e3d8e0786d0256",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "914130043917",
+		"type": "WSC2",
+		"config": {
+			"name": "Wandsender Bett",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-09-04T11:32:50.85Z",
+			"timeOfDiscovery": "2016-09-04T11:32:26.982Z"
+		},
+		"tags": {
+			"typeCategory": "TCSwitchIdTag",
+			"type": "TTwoButtonSwitchIdTag"
+		},
+		"capabilities": [
+			"/capability/4110238f56cb4cb7ba211b0d8c9b6557"
+		],
+		"location": "/location/30858fcbea3f4833b4e7b3143ea872f7"
+	},
+	{
+		"id": "e9b272c83d9a488abccb0d404771b6c6",
+		"manufacturer": "RWE",
+		"version": "1.1",
+		"product": "core.RWE",
+		"serialNumber": "914110059496",
+		"type": "RST",
+		"config": {
+			"name": "Heizkörperthermostat",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-09-29T18:27:38.094Z",
+			"timeOfDiscovery": "2016-09-29T18:27:11.102Z",
+			"displayCurrentTemperature": "TargetTemperature"
+		},
+		"tags": {
+			"typeCategory": "TCHeatingId",
+			"type": "TRadiatorThermostateIdTag"
+		},
+		"capabilities": [
+			"/capability/4afde71507ba4144bb81fbdc82a5fe7e",
+			"/capability/a29a7a77fc05484780eae1f8b47e62b3",
+			"/capability/a4e1d52096c54a2ebd018e9a1338f392"
+		],
+		"location": "/location/b09e4978ce8c4be9ad4afcdf6cc09005"
+	},
+	{
+		"id": "07332bf0dd0e42508c66c846e1e1a8ad",
+		"manufacturer": "RWE",
+		"version": "2.0",
+		"product": "SunriseSunsetSensor.RWE",
+		"serialNumber": "07332bf0dd0e42508c66c846e1e1a8ad",
+		"type": "SunriseSunsetSensor",
+		"config": {
+			"name": "Sunrise Sunset Sensor",
+			"protocolId": "Virtual",
+			"timeOfAcceptance": "2016-09-29T21:51:39.553Z",
+			"timeOfDiscovery": "2016-09-29T21:51:33.965Z"
+		},
+		"capabilities": [
+			"/capability/64bf06b56b5e4fc49292985c6bb48bea"
+		]
+	},
+	{
+		"id": "6de7890d580649aeafd66043b2102a12",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "921430037295",
+		"type": "WDS",
+		"config": {
+			"name": "Balkon",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-11-20T21:19:41.098Z",
+			"timeOfDiscovery": "2016-11-20T21:19:25.775Z"
+		},
+		"tags": {
+			"typeCategory": "TCDoorId",
+			"type": "TBalconyDoorId"
+		},
+		"capabilities": [
+			"/capability/3655816c7413451db58b9c07e473540b"
+		],
+		"location": "/location/e397695c607846379c76068beac379af"
+	},
+	{
+		"id": "0f16337ac685415986a274376b601450",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "914150006603",
+		"type": "WMD",
+		"config": {
+			"name": "Bewegungsmelder",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-11-04T22:13:28.403Z",
+			"timeOfDiscovery": "2016-11-04T22:12:54.536Z"
+		},
+		"tags": {
+			"typeCategory": "TCMotionIdTag",
+			"type": "TMotionDetectorIdTag"
+		},
+		"capabilities": [
+			"/capability/5d41af178a664418ad8ee10b5d906d98",
+			"/capability/2684a9d13ac9410b94eae134ed39826f"
+		],
+		"location": "/location/26f2f33fbe7a4e6abddfc1512a65e4e0"
+	},
+	{
+		"id": "baed452016404d1f8c7d6bf5525fc224",
+		"manufacturer": "RWE",
+		"version": "1.1",
+		"product": "core.RWE",
+		"serialNumber": "914210002474",
+		"type": "ISS2",
+		"config": {
+			"name": "Deckenleuchte",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-11-04T23:33:57.461Z",
+			"timeOfDiscovery": "2016-11-04T23:33:25.954Z"
+		},
+		"tags": {
+			"typeCategory": "TCLightId",
+			"type": "TCeilingLightId"
+		},
+		"capabilities": [
+			"/capability/7efeaa246c704713beda52abdd741d45",
+			"/capability/fb8a5e34c3c54ef998579d44bb57b198"
+		],
+		"location": "/location/26f2f33fbe7a4e6abddfc1512a65e4e0"
+	},
+	{
+		"id": "76e68e066e874b9da3403223cbf4b048",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "IRW0020883",
+		"type": "WSD",
+		"config": {
+			"name": "Rauchmelder",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-11-20T21:34:39.905Z",
+			"timeOfDiscovery": "2016-11-20T21:34:34.388Z"
+		},
+		"tags": {
+			"typeCategory": "TSmokeDetectorIdTag",
+			"type": "TOpticalSmokeDetectorIdTag"
+		},
+		"capabilities": [
+			"/capability/aa25dfc37fee4b11978a7c6f76fd2c19",
+			"/capability/56ba36531e4a485ea68a12539fb4cf5e"
+		],
+		"location": "/location/e397695c607846379c76068beac379af"
+	},
+	{
+		"id": "fd6830f0066f4283b5fc7ba1c8f43071",
+		"manufacturer": "RWE",
+		"version": "1.1",
+		"product": "core.RWE",
+		"serialNumber": "914210010378",
+		"type": "ISS2",
+		"config": {
+			"name": "Balkon",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-12-07T07:37:21.649Z",
+			"timeOfDiscovery": "2016-12-07T07:36:46.033Z"
+		},
+		"tags": {
+			"typeCategory": "TCLightId",
+			"type": "TOutsideLightId"
+		},
+		"capabilities": [
+			"/capability/3f2bb031cc1c447aa849e930c7bd4c02",
+			"/capability/5af9f6896e114051b9e3423cf0aa7f20"
+		],
+		"location": "/location/e397695c607846379c76068beac379af"
+	},
+	{
+		"id": "a8282a7de8ff4b19958051814f8d8ad6",
+		"manufacturer": "RWE",
+		"version": "1.1",
+		"product": "core.RWE",
+		"serialNumber": "914110012419",
+		"type": "RST",
+		"config": {
+			"name": "Heizkörperthermostat",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-12-07T21:36:41.022Z",
+			"timeOfDiscovery": "2016-12-07T21:36:16.215Z",
+			"displayCurrentTemperature": "TargetTemperature"
+		},
+		"tags": {
+			"typeCategory": "TCHeatingId",
+			"type": "TRadiatorThermostateIdTag"
+		},
+		"capabilities": [
+			"/capability/00a711783dbc4ea0960f923af5c45ad5",
+			"/capability/c8baa78d382649b3995c1eb504469ff4",
+			"/capability/2594a0af3293424e82e19ca64bc84f01"
+		],
+		"location": "/location/fb7593aa398a47508f2072d593cd1bfa"
+	},
+	{
+		"id": "728baded2f4445a6926e7512cd03e6d3",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "fb7593aa398a47508f2072d593cd1bfa",
+		"type": "VRCC",
+		"config": {
+			"name": "Raumklima",
+			"protocolId": "Virtual",
+			"timeOfAcceptance": "2016-12-07T21:36:41.372Z",
+			"timeOfDiscovery": "2016-12-07T21:36:41.372Z",
+			"underlyingDeviceIds": "a8282a7de8ff4b19958051814f8d8ad6"
+		},
+		"capabilities": [
+			"/capability/37a02890ab9f44bb97b403fb01326a46",
+			"/capability/27afb854c4074ecbace3857380ef2a95",
+			"/capability/b636bed0634044428e29c4a768425798"
+		],
+		"location": "/location/fb7593aa398a47508f2072d593cd1bfa"
+	},
+	{
+		"id": "4337389c9c4a416dbeacd826f85edc2a",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "921430017792",
+		"type": "WDS",
+		"config": {
+			"name": "Dachfenster",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-12-07T21:41:08.229Z",
+			"timeOfDiscovery": "2016-12-07T21:40:44.48Z"
+		},
+		"tags": {
+			"typeCategory": "TCWindowId",
+			"type": "TRoofWindowId"
+		},
+		"capabilities": [
+			"/capability/e60a20b2287d4aa690aaffae6d08aa20"
+		],
+		"location": "/location/fb7593aa398a47508f2072d593cd1bfa"
+	},
+	{
+		"id": "452b3515364d45c49285b99484acde28",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "b09e4978ce8c4be9ad4afcdf6cc09005",
+		"type": "VRCC",
+		"config": {
+			"name": "Raumklima",
+			"protocolId": "Virtual",
+			"timeOfAcceptance": "2016-12-07T21:48:09.505Z",
+			"timeOfDiscovery": "2016-12-07T21:48:09.505Z",
+			"underlyingDeviceIds": "e9b272c83d9a488abccb0d404771b6c6"
+		},
+		"capabilities": [
+			"/capability/a50fba7718ef4fc4be89869e1ce129be",
+			"/capability/67b3bf1bf0da46ca8833debba71a375d",
+			"/capability/1f9a66910ee24b3085e53aeda7e5a4cd"
+		],
+		"location": "/location/b09e4978ce8c4be9ad4afcdf6cc09005"
+	},
+	{
+		"id": "72e753b09fd44a118997bc615351cabd",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "914120073945",
+		"type": "PSS",
+		"config": {
+			"name": "Fernseher",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-12-14T19:47:03.674Z",
+			"timeOfDiscovery": "2016-12-14T19:46:46.387Z"
+		},
+		"tags": {
+			"typeCategory": "TCEntertainmentId",
+			"type": "TTVId"
+		},
+		"capabilities": [
+			"/capability/43e345ee14e94996a04972267b5d0489"
+		],
+		"location": "/location/fb7593aa398a47508f2072d593cd1bfa"
+	},
+	{
+		"id": "cb8f20e7dfa34f76956e4c797dc4c96a",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "914130043726",
+		"type": "WSC2",
+		"config": {
+			"name": "Wandsender",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-12-14T20:06:16.502Z",
+			"timeOfDiscovery": "2016-12-14T20:06:03.372Z"
+		},
+		"tags": {
+			"typeCategory": "TCSwitchIdTag",
+			"type": "TTwoButtonSwitchIdTag"
+		},
+		"capabilities": [
+			"/capability/41468ab7824b443ea493f12bd87653e0"
+		],
+		"location": "/location/fb7593aa398a47508f2072d593cd1bfa"
+	},
+	{
+		"id": "4e79eb7a18cf4a3a94d6b26c6ebdb8cb",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "921430016160",
+		"type": "WDS",
+		"config": {
+			"name": "Dachfenster",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-12-14T20:14:56.433Z",
+			"timeOfDiscovery": "2016-12-14T20:14:34.906Z"
+		},
+		"tags": {
+			"typeCategory": "TCWindowId",
+			"type": "TRoofWindowId"
+		},
+		"capabilities": [
+			"/capability/3bb24f7906c043d2ae77bb2ec9f7d2fe"
+		],
+		"location": "/location/24442676b2ea406ea671df22068cc02c"
+	},
+	{
+		"id": "fe51785319854f36a621d0b4f8ea0e25",
+		"manufacturer": "RWE",
+		"version": "1.1",
+		"product": "core.RWE",
+		"serialNumber": "914110165056",
+		"type": "RST",
+		"config": {
+			"name": "Heizkörperthermostat",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-12-14T20:22:41.463Z",
+			"timeOfDiscovery": "2016-12-14T20:21:49.681Z",
+			"displayCurrentTemperature": "TargetTemperature"
+		},
+		"tags": {
+			"typeCategory": "TCHeatingId",
+			"type": "TRadiatorThermostateIdTag"
+		},
+		"capabilities": [
+			"/capability/5a0f2df3f7064cdbb71c2d6340c985ad",
+			"/capability/8ff9ea5c3233434ba87426e0a23b245e",
+			"/capability/7b98d33e5a15404686b2cbc99f725d01"
+		],
+		"location": "/location/24442676b2ea406ea671df22068cc02c"
+	},
+	{
+		"id": "9756c6b4dcb14fa391e1748d35e286fb",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "24442676b2ea406ea671df22068cc02c",
+		"type": "VRCC",
+		"config": {
+			"name": "Raumklima",
+			"protocolId": "Virtual",
+			"timeOfAcceptance": "2016-12-14T20:22:41.776Z",
+			"timeOfDiscovery": "2016-12-14T20:22:41.777Z",
+			"underlyingDeviceIds": "fe51785319854f36a621d0b4f8ea0e25"
+		},
+		"capabilities": [
+			"/capability/f8d4593186694df4a86c325fc914596b",
+			"/capability/0949f28423864bebb6f0ab64a99fa8a1",
+			"/capability/6db429654212467a8661c1dea714c942"
+		],
+		"location": "/location/24442676b2ea406ea671df22068cc02c"
+	},
+	{
+		"id": "9fdeb547d2ca4dd0b28631985d525131",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "921430019747",
+		"type": "WDS",
+		"config": {
+			"name": "Dachfenster",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-12-14T20:27:14.769Z",
+			"timeOfDiscovery": "2016-12-14T20:27:07.685Z"
+		},
+		"tags": {
+			"typeCategory": "TCWindowId",
+			"type": "TRoofWindowId"
+		},
+		"capabilities": [
+			"/capability/8f0e726da08e438fa2a7b8d479ffb37d"
+		],
+		"location": "/location/30858fcbea3f4833b4e7b3143ea872f7"
+	},
+	{
+		"id": "e28b3b1d02db474aaf1fd910ce67e67e",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "921430037338",
+		"type": "WDS",
+		"config": {
+			"name": "Dachfenster",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-12-14T20:29:34.071Z",
+			"timeOfDiscovery": "2016-12-14T20:29:08.665Z"
+		},
+		"tags": {
+			"typeCategory": "TCWindowId",
+			"type": "TRoofWindowId"
+		},
+		"capabilities": [
+			"/capability/a665756005e849c6abb8061d4a848eb8"
+		],
+		"location": "/location/b09e4978ce8c4be9ad4afcdf6cc09005"
+	},
+	{
+		"id": "5b1fe837a6fa4e6587fab1b260adc288",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "914220020108",
+		"type": "ISD2",
+		"config": {
+			"name": "Deckenleuchte",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2016-12-28T18:46:59.916Z",
+			"timeOfDiscovery": "2016-12-28T18:46:39.096Z"
+		},
+		"tags": {
+			"typeCategory": "TCLightId",
+			"type": "TCeilingLightId"
+		},
+		"capabilities": [
+			"/capability/0fbb96bde9e24517b5d37d9932b4e24e",
+			"/capability/9a97159073f94470bcb30e4706c0a441"
+		],
+		"location": "/location/26f2f33fbe7a4e6abddfc1512a65e4e0"
+	},
+	{
+		"id": "f78e30ef7098480cbfa096d363085825",
+		"manufacturer": "RWE",
+		"version": "1.0",
+		"product": "core.RWE",
+		"serialNumber": "921430037314",
+		"type": "WDS",
+		"config": {
+			"name": "Dachfenster",
+			"protocolId": "Cosip",
+			"timeOfAcceptance": "2017-05-13T10:16:54.232Z",
+			"timeOfDiscovery": "2017-05-13T10:16:35.025Z"
+		},
+		"tags": {
+			"typeCategory": "TCWindowId",
+			"type": "TRoofWindowId"
+		},
+		"capabilities": [
+			"/capability/7bc3e21536e64f2d847a09d00b1f28ce"
+		],
+		"location": "/location/d4a54173ba104bec9734e822e303f4a2"
+	},
+	{
+		"id": "949a1b6b254b49e0a1ba593ce7e88f36",
+		"manufacturer": "RWE",
+		"version": "2.0",
+		"product": "VariableActuator.RWE",
+		"serialNumber": "949a1b6b254b49e0a1ba593ce7e88f36",
+		"type": "VariableActuator",
+		"config": {
+			"name": "Sex",
+			"protocolId": "Virtual",
+			"timeOfAcceptance": "2017-08-28T20:01:49.095Z",
+			"timeOfDiscovery": "2017-08-20T13:39:53.963Z"
+		},
+		"capabilities": [
+			"/capability/a38daa9e72084ca9950c1f353aeb8ef3"
+		]
+	}
+]
