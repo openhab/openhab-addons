@@ -1822,7 +1822,7 @@ public class LivisiDeviceHandlerTest {
 
     private static Channel createRollerShutterChannelMock(boolean isInvert) {
         Map<String, Object> rollerShutterChannelProperties = new HashMap<>();
-        rollerShutterChannelProperties.put("invert", isInvert);
+        rollerShutterChannelProperties.put(INVERT_CHANNEL_PARAMETER, isInvert);
         Configuration rollerShutterChannelConfiguration = new Configuration(rollerShutterChannelProperties);
 
         Channel rollerShutterChannelMock = mock(Channel.class);

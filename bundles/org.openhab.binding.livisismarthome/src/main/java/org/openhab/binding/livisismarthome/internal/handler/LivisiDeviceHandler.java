@@ -956,7 +956,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
             logger.debug("Channel {} was null! Value not inverted.", CHANNEL_ROLLERSHUTTER);
             return value;
         }
-        final Boolean invert = (Boolean) channel.getConfiguration().get("invert");
+        final Boolean invert = (Boolean) channel.getConfiguration().get(INVERT_CHANNEL_PARAMETER);
         if (invert != null && invert) {
             return value;
         }
