@@ -606,7 +606,6 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 updateStatus(thingStatus);
             } else {
                 thingStatus = ThingStatus.OFFLINE;
-                updateStatus(thingStatus, ThingStatusDetail.NONE, "@text/error.shcNotReachable");
             }
             logger.debug("SmartHome Controller connectivity changed to {} by {} event.", thingStatus,
                     BaseEventDTO.TYPE_CONTROLLER_CONNECTIVITY_CHANGED);
