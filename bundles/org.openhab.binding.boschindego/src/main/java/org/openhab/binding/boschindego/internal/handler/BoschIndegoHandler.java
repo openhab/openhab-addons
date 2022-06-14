@@ -13,15 +13,20 @@
 package org.openhab.binding.boschindego.internal.handler;
 
 import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.*;
-import static org.openhab.binding.boschindego.internal.IndegoStateConstants.*;
 
-import java.math.BigDecimal;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.boschindego.internal.DeviceStatus;
+import org.openhab.binding.boschindego.internal.IndegoController;
+import org.openhab.binding.boschindego.internal.config.BoschIndegoConfiguration;
+import org.openhab.binding.boschindego.internal.dto.DeviceCommand;
+import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse;
+import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
+import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
@@ -36,46 +41,83 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.zazaz.iot.bosch.indego.DeviceCommand;
-import de.zazaz.iot.bosch.indego.DeviceStateInformation;
-import de.zazaz.iot.bosch.indego.DeviceStatus;
-import de.zazaz.iot.bosch.indego.IndegoAuthenticationException;
-import de.zazaz.iot.bosch.indego.IndegoController;
-import de.zazaz.iot.bosch.indego.IndegoException;
-
 /**
  * The {@link BoschIndegoHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Jonas Fleck - Initial contribution
+ * @author Jacob Laursen - Refactoring, bugfixing and removal of dependency towards abandoned library
  */
+@NonNullByDefault
 public class BoschIndegoHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BoschIndegoHandler.class);
-    private final Queue<DeviceCommand> commandQueue = new LinkedList<>();
+    private final HttpClient httpClient;
 
-    private ScheduledFuture<?> pollFuture;
+    private @NonNullByDefault({}) IndegoController controller;
+    private @Nullable ScheduledFuture<?> pollFuture;
+    private long refreshRate;
+    private boolean propertiesInitialized;
 
-    // If false the request is already scheduled.
-    private boolean shouldReschedule;
-
-    public BoschIndegoHandler(Thing thing) {
+    public BoschIndegoHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
+    }
+
+    @Override
+    public void initialize() {
+        logger.debug("Initializing Indego handler");
+        BoschIndegoConfiguration config = getConfigAs(BoschIndegoConfiguration.class);
+        String username = config.username;
+        String password = config.password;
+
+        if (username == null || username.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.missing-username");
+            return;
+        }
+        if (password == null || password.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.missing-password");
+            return;
+        }
+
+        controller = new IndegoController(httpClient, username, password);
+        refreshRate = config.refresh;
+
+        updateStatus(ThingStatus.UNKNOWN);
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::refreshState, 0, refreshRate, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Disposing Indego handler");
+        ScheduledFuture<?> pollFuture = this.pollFuture;
+        if (pollFuture != null) {
+            pollFuture.cancel(true);
+        }
+        this.pollFuture = null;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            // Currently manual refreshing is not possible in the moment
+        if (command == RefreshType.REFRESH) {
+            scheduler.submit(() -> this.refreshState());
             return;
-        } else if (channelUID.getId().equals(STATE) && command instanceof DecimalType) {
-            if (command instanceof DecimalType) {
+        }
+        try {
+            if (command instanceof DecimalType && channelUID.getId().equals(STATE)) {
                 sendCommand(((DecimalType) command).intValue());
             }
+        } catch (IndegoAuthenticationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.authentication-failure");
+        } catch (IndegoException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    private void sendCommand(int commandInt) {
+    private void sendCommand(int commandInt) throws IndegoException {
         DeviceCommand command;
         switch (commandInt) {
             case 1:
@@ -88,94 +130,62 @@ public class BoschIndegoHandler extends BaseThingHandler {
                 command = DeviceCommand.PAUSE;
                 break;
             default:
-                logger.error("Invalid command");
+                logger.warn("Invalid command {}", commandInt);
                 return;
         }
-        synchronized (commandQueue) {
-            // Add command to queue to avoid blocking
-            commandQueue.offer(command);
-            if (shouldReschedule) {
-                shouldReschedule = false;
-                reschedule();
-            }
+
+        DeviceStateResponse state = controller.getState();
+        DeviceStatus deviceStatus = DeviceStatus.fromCode(state.state);
+        if (!verifyCommand(command, deviceStatus, state.error)) {
+            return;
         }
+        logger.debug("Sending command {}", command);
+        updateState(TEXTUAL_STATE, UnDefType.UNDEF);
+        controller.sendCommand(command);
+        state = controller.getState();
+        updateStatus(ThingStatus.ONLINE);
+        updateState(state);
     }
 
-    private synchronized void poll() {
-        // Create controller instance
+    private void refreshState() {
         try {
-            IndegoController controller = new IndegoController(getConfig().get("username").toString(),
-                    getConfig().get("password").toString());
-            // Connect to server
-            controller.connect();
-            // Query the device state
-            DeviceStateInformation state = controller.getState();
-            DeviceStatus statusWithMessage = DeviceStatus.decodeStatusCode(state.getState());
-            int status = getStatusFromCommand(statusWithMessage.getAssociatedCommand());
-            int mowed = state.getMowed();
-            int error = state.getError();
-            int statecode = state.getState();
-            boolean ready = isReadyToMow(state.getState(), state.getError());
-            DeviceCommand commandToSend = null;
-            synchronized (commandQueue) {
-                // Discard older commands
-                while (!commandQueue.isEmpty()) {
-                    commandToSend = commandQueue.poll();
-                }
-                // For newer commands a new request is needed
-                shouldReschedule = true;
+            if (!propertiesInitialized) {
+                getThing().setProperty(Thing.PROPERTY_SERIAL_NUMBER, controller.getSerialNumber());
+                propertiesInitialized = true;
             }
-            if (commandToSend != null && verifyCommand(commandToSend, statusWithMessage.getAssociatedCommand(),
-                    state.getState(), error)) {
-                logger.debug("Sending command...");
-                updateState(TEXTUAL_STATE, UnDefType.UNDEF);
-                controller.sendCommand(commandToSend);
-                try {
-                    for (int i = 0; i < 30 && !Thread.interrupted(); i++) {
-                        DeviceStateInformation stateTmp = controller.getState();
-                        if (state.getState() != stateTmp.getState()) {
-                            state = stateTmp;
-                            statusWithMessage = DeviceStatus.decodeStatusCode(state.getState());
-                            status = getStatusFromCommand(statusWithMessage.getAssociatedCommand());
-                            mowed = state.getMowed();
-                            error = state.getError();
-                            statecode = state.getState();
-                            ready = isReadyToMow(state.getState(), state.getError());
-                            break;
-                        }
-                        Thread.sleep(1000);
-                    }
 
-                } catch (InterruptedException e) {
-                    // Nothing to do here
-                }
-            }
-            controller.disconnect();
+            DeviceStateResponse state = controller.getState();
             updateStatus(ThingStatus.ONLINE);
-            updateState(STATECODE, new DecimalType(statecode));
-            updateState(READY, new DecimalType(ready ? 1 : 0));
-            updateState(ERRORCODE, new DecimalType(error));
-            updateState(MOWED, new PercentType(mowed));
-            updateState(STATE, new DecimalType(status));
-            updateState(TEXTUAL_STATE, new StringType(statusWithMessage.getMessage()));
-
+            updateState(state);
         } catch (IndegoAuthenticationException e) {
-            String message = "The login credentials are wrong or another client connected to your Indego account";
-            logger.warn(message, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.authentication-failure");
         } catch (IndegoException e) {
-            logger.warn("An error occurred", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    private boolean isReadyToMow(int statusCode, int error) {
-        // I don´t know why bosch uses different state codes for the same state.
-        return (statusCode == STATE_DOCKED_1 || statusCode == STATE_DOCKED_2 || statusCode == STATE_DOCKED_3
-                || statusCode == STATE_PAUSED || statusCode == STATE_IDLE_IN_LAWN) && error == 0;
+    private void updateState(DeviceStateResponse state) {
+        DeviceStatus deviceStatus = DeviceStatus.fromCode(state.state);
+        int status = getStatusFromCommand(deviceStatus.getAssociatedCommand());
+        int mowed = state.mowed;
+        int error = state.error;
+        int statecode = state.state;
+        boolean ready = isReadyToMow(deviceStatus, state.error);
+
+        updateState(STATECODE, new DecimalType(statecode));
+        updateState(READY, new DecimalType(ready ? 1 : 0));
+        updateState(ERRORCODE, new DecimalType(error));
+        updateState(MOWED, new PercentType(mowed));
+        updateState(STATE, new DecimalType(status));
+        updateState(TEXTUAL_STATE, new StringType(deviceStatus.getMessage()));
     }
 
-    private boolean verifyCommand(DeviceCommand command, DeviceCommand state, int statusCode, int errorCode) {
+    private boolean isReadyToMow(DeviceStatus deviceStatus, int error) {
+        return deviceStatus.isReadyToMow() && error == 0;
+    }
+
+    private boolean verifyCommand(DeviceCommand command, DeviceStatus deviceStatus, int errorCode) {
         // Mower reported an error
         if (errorCode != 0) {
             logger.error("The mower reported an error.");
@@ -183,24 +193,27 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
 
         // Command is equal to current state
-        if (command == state) {
+        if (command == deviceStatus.getAssociatedCommand()) {
             logger.debug("Command is equal to state");
             return false;
         }
         // Cant pause while the mower is docked
-        if (command == DeviceCommand.PAUSE && state == DeviceCommand.RETURN) {
-            logger.debug("Can´t pause the mower while it´s docked or docking");
+        if (command == DeviceCommand.PAUSE && deviceStatus.getAssociatedCommand() == DeviceCommand.RETURN) {
+            logger.debug("Can't pause the mower while it's docked or docking");
             return false;
         }
         // Command means "MOW" but mower is not ready
-        if (command == DeviceCommand.MOW && !isReadyToMow(statusCode, errorCode)) {
-            logger.debug("The mower is not ready to mow in the moment");
+        if (command == DeviceCommand.MOW && !isReadyToMow(deviceStatus, errorCode)) {
+            logger.debug("The mower is not ready to mow at the moment");
             return false;
         }
         return true;
     }
 
-    private int getStatusFromCommand(DeviceCommand command) {
+    private int getStatusFromCommand(@Nullable DeviceCommand command) {
+        if (command == null) {
+            return 0;
+        }
         int status;
         switch (command) {
             case MOW:
@@ -216,37 +229,5 @@ public class BoschIndegoHandler extends BaseThingHandler {
                 status = 0;
         }
         return status;
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        logger.debug("removing thing..");
-        if (pollFuture != null) {
-            pollFuture.cancel(true);
-        }
-    }
-
-    private void reschedule() {
-        logger.debug("rescheduling");
-
-        if (pollFuture != null) {
-            pollFuture.cancel(false);
-        }
-
-        int refreshRate = ((BigDecimal) getConfig().get("refresh")).intValue();
-        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 0, refreshRate, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        super.handleConfigurationUpdate(configurationParameters);
-        reschedule();
-    }
-
-    @Override
-    public void initialize() {
-        updateStatus(ThingStatus.OFFLINE);
-        reschedule();
     }
 }
