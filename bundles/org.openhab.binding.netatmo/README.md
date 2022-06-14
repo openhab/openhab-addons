@@ -574,10 +574,10 @@ Person things are automatically created in discovery process for all known perso
 All these channels except at-home are read only.
 
 
-# Configuration Examples
+## Configuration Examples
 
 
-## things/netatmo.things
+### things/netatmo.things
 
 ```
 Bridge netatmo:account:home "Netatmo Account" [clientId="xxxxx", clientSecret="yyyy", refreshToken="zzzzz"] {
@@ -596,7 +596,7 @@ Bridge netatmo:account:home "Netatmo Account" [clientId="xxxxx", clientSecret="y
 ```
 
 
-## Sample configuration of live-stream-url channels:
+### Sample configuration of live-stream-url channels:
 
 ```
         ....
@@ -609,7 +609,7 @@ Bridge netatmo:account:home "Netatmo Account" [clientId="xxxxx", clientSecret="y
 ```
 
 
-## items/netatmo.items
+### items/netatmo.items
 
 ```
 # Indoor Module
@@ -648,7 +648,7 @@ Number:Length        Rain_Hour                         "Rain Last Hour [%.1f %un
 Number:Length        Rain_Today                        "Rain Today [%.1f %unit%]"                                   <rain>             { channel = "netatmo:rain:home:inside:rainModule:rain#sum-24"}
 ```
 
-## sitemaps/netatmo.sitemap
+### sitemaps/netatmo.sitemap
 
 ```
 sitemap netatmo label="Netatmo" {
@@ -696,26 +696,74 @@ sitemap netatmo label="Netatmo" {
 }
 ```
 
+## Rule Actions
 
-# Sample data
+Multiple actions are supported by this binding. In classic rules these are accessible as shown in this example (adjust getActions with your ThingId):
+
+Example
+
+```
+ val actions = getActions("netatmo","netatmo:room:home:home:livingroom")
+ if(null === actions) {
+        logInfo("actions", "Actions not found, check thing ID")
+        return
+ }
+```
+
+### setThermRoomTempSetpoint(temp,endtime)
+
+Sends a temperature setpoint (and switch to manual mode) to the thermostat for a room with an end time.
+
+Parameters:
+
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| temp    | The temperature setpoint.                                            |
+| endtime | Time the setpoint should end (Local Unix time in seconds).           |
+
+Example:
+
+```
+actions.setThermRoomTempSetpoint(19.0, 1654387205)
+```
+
+### setThermRoomModeSetpoint(mode,endtime)
+
+Sends a mode to the thermostat for a room with an optional end time.
+
+Parameters:
+
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| mode    | The mode to set: MANUAL, MAX or HOME.                                |
+| endtime | Time the setpoint should end (Local Unix time in seconds).           |
+
+Example:
+
+```
+actions.setThermRoomModeSetpoint("MANUAL", 1654387205)
+actions.setThermRoomModeSetpoint("HOME", null)
+```
+
+## Sample data
 
 If you want to evaluate this binding but have not got a Netatmo station yourself
 yet, you can search on the web for a publicly shared weather station.
 
 
-# Icons
+## Icons
 
 The following icons are used by original Netatmo web app:
 
 
-## Modules
+### Modules
 
 - https://my.netatmo.com/images/my/app/module_int.png
 - https://my.netatmo.com/images/my/app/module_ext.png
 - https://my.netatmo.com/images/my/app/module_rain.png
 
 
-## Battery status
+### Battery status
 
 - https://my.netatmo.com/images/my/app/battery_verylow.png
 - https://my.netatmo.com/images/my/app/battery_low.png
@@ -724,7 +772,7 @@ The following icons are used by original Netatmo web app:
 - https://my.netatmo.com/images/my/app/battery_full.png
 
 
-## Signal status
+### Signal status
 
 - https://my.netatmo.com/images/my/app/signal_verylow.png
 - https://my.netatmo.com/images/my/app/signal_low.png
@@ -733,7 +781,7 @@ The following icons are used by original Netatmo web app:
 - https://my.netatmo.com/images/my/app/signal_full.png
 
 
-## Wifi status
+### Wifi status
 
 - https://my.netatmo.com/images/my/app/wifi_low.png
 - https://my.netatmo.com/images/my/app/wifi_medium.png

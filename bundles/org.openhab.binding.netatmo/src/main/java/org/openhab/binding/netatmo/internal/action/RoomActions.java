@@ -14,6 +14,7 @@ package org.openhab.binding.netatmo.internal.action;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -61,90 +62,68 @@ public class RoomActions implements ThingActions {
         return (ThingHandler) handler;
     }
 
-    /**
-     * The setThermpoint room thing action
-     */
-    @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
-    public void setThermpoint(
-            @ActionInput(name = "setpoint", label = "@text/actionInputSetpointLabel", description = "@text/actionInputSetpointDesc") @Nullable Double temp,
+    @RuleAction(label = "@text/actionSetThermRoomTempSetpointLabel", description = "@text/actionSetThermRoomTempSetpointDesc")
+    public void setThermRoomTempSetpoint(
+            @ActionInput(name = "temp", label = "@text/actionInputSetpointLabel", description = "@text/actionInputSetpointDesc") @Nullable Double temp,
             @ActionInput(name = "endtime", label = "@text/actionInputEndtimeLabel", description = "@text/actionInputEndtimeDesc") @Nullable Long endTime) {
-        setThermpoint(temp, endTime, "MANUAL");
+        CommonInterface roomHandler = handler;
+        if (roomHandler == null) {
+            logger.info("Handler not set for room thing actions.");
+            return;
+        } else if (temp == null) {
+            logger.info("Temperature is required, action ignored");
+            return;
+        } else if (endTime == null) {
+            logger.info("Temperature provided but no endtime given, action ignored");
+            return;
+        }
+        energy.ifPresent(cap -> cap.setRoomThermTemp(roomHandler.getId(), temp, endTime, SetpointMode.MANUAL));
     }
 
-    @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
-    public void seThermpoint(
+    @RuleAction(label = "@text/actionSetThermRoomModeSetpointLabel", description = "@text/actionSetThermRoomModeSetpointDesc")
+    public void setThermRoomModeSetpoint(
             @ActionInput(name = "mode", label = "@text/actionInputModeLabel", description = "@text/actionInputModeDesc") @Nullable String mode,
             @ActionInput(name = "endtime", label = "@text/actionInputEndtimeLabel", description = "@text/actionInputEndtimeDesc") @Nullable Long endTime) {
-        setThermpoint(null, endTime, mode);
-    }
-
-    @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
-    public void setThermpoint(
-            @ActionInput(name = "setpoint", label = "@text/actionInputSetpointLabel", description = "@text/actionInputSetpointDesc") @Nullable Double temp,
-            @ActionInput(name = "endtime", label = "@text/actionInputEndtimeLabel", description = "@text/actionInputEndtimeDesc") @Nullable Long endTime,
-            @ActionInput(name = "mode", label = "@text/actionInputModeLabel", description = "@text/actionInputModeDesc") @Nullable String mode) {
         CommonInterface roomHandler = handler;
-        if (roomHandler != null) {
-            String roomId = roomHandler.getId();
-            SetpointMode targetMode = SetpointMode.UNKNOWN;
-            Long targetEndTime = endTime;
-            Double targetTemp = temp;
-            if (mode != null) {
-                try {
-                    targetMode = SetpointMode.valueOf(mode);
-                    if (!ALLOWED_MODES.contains(targetMode)) {
-                        logger.info("Mode can only be MAX, HOME or MANUAL for a room");
-                        return;
-                    }
-                } catch (IllegalArgumentException e) {
-                    logger.info("Invalid mode passed : {} - {}", mode, e.getMessage());
-                    return;
-                }
-            }
-            if (temp != null) {
-                logger.debug("Temperature provided, mode forced to MANUAL.");
-                targetMode = SetpointMode.MANUAL;
-                if (targetEndTime == null) {
-                    logger.info("Temperature provided but no endtime given, action ignored");
-                    return;
-                }
-            } else {
-                if (SetpointMode.HOME.equals(targetMode)) {
-                    targetEndTime = 0L;
-                    targetTemp = 0.0;
-                } else {
-                    logger.info("mode is required if no temperature setpoint provided");
-                    return;
-                }
-            }
-
-            try {
-                double setpointTemp = targetTemp != null ? targetTemp : 0;
-                long setpointEnd = targetEndTime;
-                SetpointMode setpointMode = targetMode;
-                energy.ifPresent(cap -> cap.setRoomThermTemp(roomId, setpointTemp, setpointEnd, setpointMode));
-            } catch (IllegalArgumentException e) {
-                logger.debug("Ignoring setRoomThermpoint command due to illegal argument exception: {}",
-                        e.getMessage());
-            }
-        } else {
+        if (roomHandler == null) {
             logger.info("Handler not set for room thing actions.");
+            return;
+        } else if (mode == null) {
+            logger.info("Mode is required, action ignored");
+            return;
         }
+
+        SetpointMode targetMode = SetpointMode.UNKNOWN;
+        try {
+            targetMode = SetpointMode.valueOf(mode);
+            if (!ALLOWED_MODES.contains(targetMode)) {
+                logger.info("Mode can only be {} for a room",
+                        ALLOWED_MODES.stream().map(s -> s.name()).collect(Collectors.joining(", ")));
+                return;
+            }
+        } catch (IllegalArgumentException e) {
+            logger.info("Invalid mode passed : {} - {}", mode, e.getMessage());
+            return;
+        }
+
+        Long targetEndTime = endTime;
+        if (SetpointMode.HOME.equals(targetMode)) {
+            targetEndTime = 0L;
+        } else if (targetEndTime == null) {
+            logger.info("No endtime given, action ignored");
+            return;
+        }
+
+        long setpointEnd = targetEndTime;
+        SetpointMode setpointMode = targetMode;
+        energy.ifPresent(cap -> cap.setRoomThermTemp(roomHandler.getId(), 0, setpointEnd, setpointMode));
     }
 
-    /**
-     * Static setThermpoint method for Rules DSL backward compatibility
-     */
-    public static void setThermpoint(ThingActions actions, @Nullable Double temp, @Nullable Long endTime,
-            @Nullable String mode) {
-        ((RoomActions) actions).setThermpoint(temp, endTime, mode);
+    public static void setThermRoomTempSetpoint(ThingActions actions, @Nullable Double temp, @Nullable Long endTime) {
+        ((RoomActions) actions).setThermRoomTempSetpoint(temp, endTime);
     }
 
-    public static void setThermpoint(ThingActions actions, @Nullable Double temp, @Nullable Long endTime) {
-        setThermpoint(actions, temp, endTime, null);
-    }
-
-    public static void setThermpoint(ThingActions actions, @Nullable String mode, @Nullable Long endTime) {
-        setThermpoint(actions, null, endTime, mode);
+    public static void setThermRoomModeSetpoint(ThingActions actions, @Nullable String mode, @Nullable Long endTime) {
+        ((RoomActions) actions).setThermRoomModeSetpoint(mode, endTime);
     }
 }
