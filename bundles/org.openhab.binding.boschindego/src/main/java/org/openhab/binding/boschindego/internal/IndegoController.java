@@ -338,6 +338,16 @@ public class IndegoController {
         }
     }
 
+    /**
+     * Send request. This method exists for the purpose of avoiding multiple calls to
+     * the server at the same time.
+     * 
+     * @param request the {@link Request} to send
+     * @return a {@link ContentResponse} for this request
+     * @throws InterruptedException if send thread is interrupted
+     * @throws TimeoutException if send times out
+     * @throws ExecutionException if execution fails
+     */
     private synchronized ContentResponse sendRequest(Request request)
             throws InterruptedException, TimeoutException, ExecutionException {
         return request.send();
@@ -370,7 +380,14 @@ public class IndegoController {
                 DeviceStateResponse.class);
     }
 
-    public DeviceCalendarResponse getCalendar() throws IndegoException {
+    /**
+     * Queries the calendar.
+     * 
+     * @return the calendar
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public DeviceCalendarResponse getCalendar() throws IndegoAuthenticationException, IndegoException {
         DeviceCalendarResponse calendar = getRequestWithAuthentication(
                 SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/calendar", DeviceCalendarResponse.class);
         return calendar;
@@ -407,8 +424,8 @@ public class IndegoController {
      * Queries the predictive adjustment.
      * 
      * @return the predictive adjustment
-     * @throws IndegoAuthenticationException
-     * @throws IndegoException
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
      */
     public int getPredictiveAdjustment() throws IndegoAuthenticationException, IndegoException {
         return getRequestWithAuthentication(
@@ -420,8 +437,8 @@ public class IndegoController {
      * Sets the predictive adjustment.
      * 
      * @param adjust the predictive adjustment
-     * @throws IndegoAuthenticationException
-     * @throws IndegoException
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
      */
     public void setPredictiveAdjustment(final int adjust) throws IndegoAuthenticationException, IndegoException {
         final PredictiveAdjustment adjustment = new PredictiveAdjustment();
@@ -434,8 +451,8 @@ public class IndegoController {
      * Queries predictive moving.
      * 
      * @return predictive moving
-     * @throws IndegoAuthenticationException
-     * @throws IndegoException
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
      */
     public boolean getPredictiveMoving() throws IndegoAuthenticationException, IndegoException {
         final PredictiveStatus status = getRequestWithAuthentication(
@@ -447,8 +464,8 @@ public class IndegoController {
      * Sets predictive moving.
      * 
      * @param enable
-     * @throws IndegoAuthenticationException
-     * @throws IndegoException
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
      */
     public void setPredictiveMoving(final boolean enable) throws IndegoAuthenticationException, IndegoException {
         final PredictiveStatus status = new PredictiveStatus();
@@ -460,8 +477,8 @@ public class IndegoController {
      * Queries predictive next cutting as {@link Instant}.
      * 
      * @return predictive next cutting
-     * @throws IndegoAuthenticationException
-     * @throws IndegoException
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
      */
     public Instant getPredictiveNextCutting() throws IndegoAuthenticationException, IndegoException {
         final PredictiveCuttingTimeResponse nextCutting = getRequestWithAuthentication(
@@ -474,8 +491,8 @@ public class IndegoController {
      * Queries predictive exclusion time.
      * 
      * @return predictive exclusion time DTO
-     * @throws IndegoAuthenticationException
-     * @throws IndegoException
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
      */
     public DeviceCalendarResponse getPredictiveExclusionTime() throws IndegoAuthenticationException, IndegoException {
         final DeviceCalendarResponse calendar = getRequestWithAuthentication(
@@ -487,8 +504,8 @@ public class IndegoController {
      * Sets predictive exclusion time.
      * 
      * @param calendar calendar DTO
-     * @throws IndegoAuthenticationException
-     * @throws IndegoException
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
      */
     public void setPredictiveExclusionTime(final DeviceCalendarResponse calendar)
             throws IndegoAuthenticationException, IndegoException {
