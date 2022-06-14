@@ -35,6 +35,7 @@ import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetBlindTargetCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetBlindTargetCallback.BlindCommand;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetColorCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetColorTemperatureCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingModeCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingTemperatureCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetLevelPercentageCallback;
@@ -332,6 +333,11 @@ public class FritzAhaWebInterface {
 
     public FritzAhaContentExchange setHueAndSaturation(String ain, int hue, int saturation, int duration) {
         FritzAhaSetColorCallback callback = new FritzAhaSetColorCallback(this, ain, hue, saturation, duration);
+        return asyncGet(callback);
+    }
+
+    public FritzAhaContentExchange setColorTemperature(String ain, int temperature, int duration) {
+        FritzAhaSetColorTemperatureCallback callback = new FritzAhaSetColorTemperatureCallback(this, ain, temperature, duration);
         return asyncGet(callback);
     }
 

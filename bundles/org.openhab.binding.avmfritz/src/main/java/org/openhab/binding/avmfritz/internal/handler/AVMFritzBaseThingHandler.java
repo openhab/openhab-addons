@@ -12,8 +12,47 @@
  */
 package org.openhab.binding.avmfritz.internal.handler;
 
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
-import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.*;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.BINDING_ID;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_ACTUALTEMP;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_BATTERY;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_BATTERY_LOW;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_BRIGHTNESS;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_COLOR;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_COLORTEMPERATURE;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_COMFORTTEMP;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_CONTACT_STATE;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_DEVICE_LOCKED;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_ECOTEMP;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_ENERGY;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_HUMIDITY;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_LAST_CHANGE;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_LOCKED;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_MODE;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_NEXTTEMP;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_NEXT_CHANGE;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_ON_OFF;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_OUTLET;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_POWER;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_RADIATOR_MODE;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_ROLLERSHUTTER;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_SETTEMP;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_TEMPERATURE;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_VOLTAGE;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CONFIG_CHANNEL_TEMP_OFFSET;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_BOOST;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_COMFORT;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_ECO;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_OFF;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_ON;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_UNKNOWN;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_WINDOW_OPEN;
+import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.TEMP_FRITZ_MAX;
+import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.TEMP_FRITZ_OFF;
+import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.TEMP_FRITZ_ON;
+import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.TEMP_FRITZ_UNDEFINED;
+import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.fromCelsius;
+import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.normalizeCelsius;
+import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.toCelsius;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -157,7 +196,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 if (deviceModel.isHANFUNBlinds()) {
                     updateLevelControl(deviceModel.getLevelControlModel());
                 } else if (deviceModel.isColorLight()) {
-                    updateColorLight(deviceModel.getColorControlModel(), deviceModel.getLevelControlModel());
+                    updateColorLight(deviceModel.getColorControlModel(), deviceModel.getLevelControlModel(), deviceModel.getSimpleOnOffUnit());
                 } else if (deviceModel.isDimmableLight() && !deviceModel.isHANFUNBlinds()) {
                     updateDimmableLight(deviceModel.getLevelControlModel());
                 } else if (deviceModel.isHANFUNUnit() && deviceModel.isHANFUNOnOff()) {
@@ -203,11 +242,23 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     }
 
     private void updateColorLight(@Nullable ColorControlModel colorControlModel,
-            @Nullable LevelControlModel levelControlModel) {
+            @Nullable LevelControlModel levelControlModel, @Nullable SimpleOnOffModel simpleOnOffUnit) {
         if (colorControlModel != null && levelControlModel != null) {
             DecimalType hue = new DecimalType(colorControlModel.hue);
             PercentType saturation = ColorControlModel.toPercent(colorControlModel.saturation);
             PercentType brightness = new PercentType(levelControlModel.getLevelPercentage());
+            if (simpleOnOffUnit.state == false) {
+                if (brightness.toBigDecimal().compareTo(BigDecimal.ZERO) > 0) {
+                    logger.debug("device is off, but brightness is nonzero - deliberately misreporting as zero");
+                    brightness = new PercentType(0);
+                }
+            } else {
+                if (brightness.toBigDecimal().compareTo(BigDecimal.ZERO) <= 0) {
+                    logger.debug("device is on, but brightness is zero - deliberately misreporting as nonzero");
+                    brightness = new PercentType(1);
+                }
+            }
+
             updateThingChannelState(CHANNEL_COLOR, new HSBType(hue, saturation, brightness));
         }
     }
@@ -411,8 +462,55 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 if (command instanceof HSBType) {
                     HSBType hsbType = (HSBType) command;
                     brightness = hsbType.getBrightness().toBigDecimal();
-                    fritzBox.setHueAndSaturation(ain, hsbType.getHue().intValue(),
-                            ColorControlModel.fromPercent(hsbType.getSaturation()), 0);
+                    
+                    int hue = hsbType.getHue().intValue();
+                    int sat = ColorControlModel.fromPercent(hsbType.getSaturation());
+
+                    if (sat >= 25) {
+                        if      ((hue >= 0    ) && (hue <=  16.5 ) && (sat >= 146  )) { hue = 358 ; sat= 180 ; }
+                        else if ((hue >= 0    ) && (hue <=  16.5 ) && (sat >= 83   )) { hue = 358 ; sat= 112 ; }
+                        else if ((hue >= 0    ) && (hue <=  16.5 ) && (sat >= 0    )) { hue = 358 ; sat= 54  ; }
+                        else if ((hue >= 16.5 ) && (hue <=  43.5 ) && (sat >= 177  )) { hue = 35  ; sat= 214 ; }
+                        else if ((hue >= 16.5 ) && (hue <=  43.5 ) && (sat >= 106  )) { hue = 35  ; sat= 140 ; }
+                        else if ((hue >= 16.5 ) && (hue <=  43.5 ) && (sat >= 0    )) { hue = 35  ; sat= 72  ; }
+                        else if ((hue >= 43.5 ) && (hue <=  72   ) && (sat >= 127.5)) { hue = 52  ; sat= 153 ; }
+                        else if ((hue >= 43.5 ) && (hue <=  72   ) && (sat >= 76.5 )) { hue = 52  ; sat= 102 ; }
+                        else if ((hue >= 43.5 ) && (hue <=  72   ) && (sat >= 0    )) { hue = 52  ; sat= 51  ; }
+                        else if ((hue >= 72   ) && (hue <=  106  ) && (sat >= 101  )) { hue = 92  ; sat= 123 ; }
+                        else if ((hue >= 72   ) && (hue <=  106  ) && (sat >= 58.5 )) { hue = 92  ; sat= 79  ; }
+                        else if ((hue >= 72   ) && (hue <=  106  ) && (sat >= 0    )) { hue = 92  ; sat= 38  ; }
+                        else if ((hue >= 106  ) && (hue <=  140  ) && (sat >= 121  )) { hue = 120 ; sat= 160 ; }
+                        else if ((hue >= 106  ) && (hue <=  140  ) && (sat >= 60   )) { hue = 120 ; sat= 82  ; }
+                        else if ((hue >= 106  ) && (hue <=  140  ) && (sat >= 0    )) { hue = 120 ; sat= 38  ; }
+                        else if ((hue >= 140  ) && (hue <=  177.5) && (sat >= 114.5)) { hue = 160 ; sat= 145 ; }
+                        else if ((hue >= 140  ) && (hue <=  177.5) && (sat >= 62.5 )) { hue = 160 ; sat= 84  ; }
+                        else if ((hue >= 140  ) && (hue <=  177.5) && (sat >= 0    )) { hue = 160 ; sat= 41  ; }
+                        else if ((hue >= 177.5) && (hue <=  203.5) && (sat >= 148.5)) { hue = 195 ; sat= 179 ; }
+                        else if ((hue >= 177.5) && (hue <=  203.5) && (sat >= 88.5 )) { hue = 195 ; sat= 118 ; }
+                        else if ((hue >= 177.5) && (hue <=  203.5) && (sat >= 0    )) { hue = 195 ; sat= 59  ; }
+                        else if ((hue >= 203.5) && (hue <=  218.5) && (sat >= 146  )) { hue = 212 ; sat= 169 ; }
+                        else if ((hue >= 203.5) && (hue <=  218.5) && (sat >= 83   )) { hue = 212 ; sat= 110 ; }
+                        else if ((hue >= 0    ) && (hue <=  218.5) && (sat >= 0    )) { hue = 212 ; sat= 56  ; }
+                        else if ((hue >= 0    ) && (hue <=  245.5) && (sat >= 146  )) { hue = 225 ; sat= 204 ; }
+                        else if ((hue >= 0    ) && (hue <=  245.5) && (sat >= 83   )) { hue = 225 ; sat= 135 ; }
+                        else if ((hue >= 218.5) && (hue <=  245.5) && (sat >= 0    )) { hue = 225 ; sat= 67  ; }
+                        else if ((hue >= 245.5) && (hue <=  281  ) && (sat >= 146  )) { hue = 266 ; sat= 169 ; }
+                        else if ((hue >= 245.5) && (hue <=  281  ) && (sat >= 83   )) { hue = 266 ; sat= 110 ; }
+                        else if ((hue >= 245.5) && (hue <=  281  ) && (sat >= 0    )) { hue = 266 ; sat= 54  ; }
+                        else if ((hue >= 281  ) && (hue <=  315.5) && (sat >= 146  )) { hue = 296 ; sat= 140 ; }
+                        else if ((hue >= 281  ) && (hue <=  315.5) && (sat >= 83   )) { hue = 296 ; sat= 92  ; }
+                        else if ((hue >= 281  ) && (hue <=  315.5) && (sat >= 0    )) { hue = 296 ; sat= 46  ; }
+                        else if ((hue >= 315.5) && (hue <=  346.5) && (sat >= 146  )) { hue = 335 ; sat= 180 ; }
+                        else if ((hue >= 315.5) && (hue <=  346.5) && (sat >= 83   )) { hue = 335 ; sat= 107 ; }
+                        else if ((hue >= 315.5) && (hue <=  346.5) && (sat >= 0    )) { hue = 335 ; sat= 51  ; }
+                        else if ((hue >= 346.5) && (hue <=  360  ) && (sat >= 146  )) { hue = 358 ; sat= 180 ; }
+                        else if ((hue >= 346.5) && (hue <=  360  ) && (sat >= 83   )) { hue = 358 ; sat= 112 ; }
+                        else if ((hue >= 346.5) && (hue <=  360  ) && (sat >= 0    )) { hue = 358 ; sat= 54  ; }
+                        fritzBox.setHueAndSaturation(ain, hue, sat, 0);
+                    } else {
+                        int temperature = 4700;
+                        fritzBox.setColorTemperature(ain, temperature, 0);
+                    }
                 } else if (command instanceof PercentType) {
                     brightness = ((PercentType) command).toBigDecimal();
                 } else if (command instanceof OnOffType) {
@@ -420,6 +518,33 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 }
                 if (brightness != null) {
                     fritzBox.setLevelPercentage(ain, brightness);
+                    if (brightness.compareTo(BigDecimal.ZERO) > 0) {
+                        logger.debug("brightness is nonzero - also setting on");
+                        fritzBox.setSwitch(ain, true);
+                    } else {
+                        logger.debug("brightness is zero - also setting off");
+                        fritzBox.setSwitch(ain, false);
+                    }
+                }
+                break;
+            case CHANNEL_COLORTEMPERATURE:
+                BigDecimal color_temperature = null;
+                if (command instanceof PercentType) {
+                    color_temperature = ((PercentType) command).toBigDecimal();
+                }
+                if (color_temperature != null) {
+                    int pct = color_temperature.intValue();
+                    int temperature = 2700;
+                    if ((pct >= 0 ) && (pct <= 11 )) { temperature = 2700; }
+                    if ((pct >= 11) && (pct <= 22 )) { temperature = 3000; }
+                    if ((pct >= 22) && (pct <= 33 )) { temperature = 3400; }
+                    if ((pct >= 33) && (pct <= 44 )) { temperature = 3800; }
+                    if ((pct >= 44) && (pct <= 55 )) { temperature = 4200; }
+                    if ((pct >= 55) && (pct <= 66 )) { temperature = 4700; }
+                    if ((pct >= 66) && (pct <= 77 )) { temperature = 5300; }
+                    if ((pct >= 77) && (pct <= 88 )) { temperature = 5900; }
+                    if ((pct >= 88) && (pct <= 100)) { temperature = 6500; }
+                    fritzBox.setColorTemperature(ain, temperature, 0);
                 }
                 break;
             case CHANNEL_SETTEMP:
