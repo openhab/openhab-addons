@@ -320,6 +320,7 @@ public class InsteonBinding {
             } else {
                 if (driver.isModemDBComplete() && !addr.isX10()) {
                     logger.warn("device {} not found in the modem database. Did you forget to link?", addr);
+                    handler.deviceNotLinked(addr);
                 }
             }
             return dbes.size();
@@ -488,6 +489,7 @@ public class InsteonBinding {
                     if (!dbes.containsKey(a)) {
                         if (!a.isX10()) {
                             logger.warn("device {} not found in the modem database. Did you forget to link?", a);
+                            handler.deviceNotLinked(a);
                         }
                     } else {
                         if (!dev.hasModemDBEntry()) {
