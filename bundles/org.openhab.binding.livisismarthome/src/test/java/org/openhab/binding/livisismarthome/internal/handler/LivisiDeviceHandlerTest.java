@@ -33,6 +33,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.action.ShutterActionType;
@@ -68,6 +69,10 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.types.State;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 
 /**
  * @author Sven Strohschein - Initial contribution
@@ -80,12 +85,24 @@ public class LivisiDeviceHandlerTest {
     private @NonNullByDefault({}) Map<String, State> updatedChannels;
     private @NonNullByDefault({}) Set<TriggeredEvent> triggeredChannels;
 
+    private @NonNullByDefault({}) Level previousLoggingLevel;
+
     @BeforeEach
     public void before() {
         bridgeHandlerMock = mock(LivisiBridgeHandler.class);
         thingStatusInfo = ThingStatusInfoBuilder.create(ThingStatus.UNINITIALIZED, ThingStatusDetail.NONE).build();
         updatedChannels = new LinkedHashMap<>();
         triggeredChannels = new LinkedHashSet<>();
+
+        Logger logger = (Logger) LoggerFactory.getLogger(LivisiDeviceHandler.class);
+        previousLoggingLevel = logger.getLevel();
+        logger.setLevel(Level.OFF); // avoid log messages (which would be logged to the console)
+    }
+
+    @AfterEach
+    public void after() {
+        Logger logger = (Logger) LoggerFactory.getLogger(LivisiDeviceHandler.class);
+        logger.setLevel(previousLoggingLevel);
     }
 
     @Test
