@@ -314,7 +314,7 @@ public class IndegoController {
                 throw new IndegoException("The request failed with error: " + status);
             }
         } catch (JsonParseException e) {
-            throw new IndegoInvalidResponseException("Error parsing response", e);
+            throw new IndegoInvalidResponseException("Error serializing request", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IndegoException(e);
