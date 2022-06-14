@@ -26,6 +26,7 @@ import org.openhab.binding.easee.internal.EaseeBindingConstants;
 import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.command.charger.ChangeConfiguration;
+import org.openhab.binding.easee.internal.command.charger.Charger;
 import org.openhab.binding.easee.internal.command.charger.ChargerState;
 import org.openhab.binding.easee.internal.command.charger.GetConfiguration;
 import org.openhab.binding.easee.internal.command.charger.LatestChargingSession;
@@ -69,12 +70,40 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
     @Override
     public void initialize() {
         logger.debug("About to initialize Charger");
-        logger.debug("Easee Charger initialized with id: {}", getConfig().get(EaseeBindingConstants.THING_CONFIG_ID));
+        String chargerId = getConfig().get(EaseeBindingConstants.THING_CONFIG_ID).toString();
+        logger.debug("Easee Charger initialized with id: {}", chargerId);
 
         startPolling();
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting for bridge to go online");
 
-        // TODO: one time command call to update properties (backplate masterBackPlate, etc)
+        enqueueCommand(new Charger(this, chargerId, this::updateProperties));
+    }
+
+    private void updateProperties(CommunicationStatus status, JsonObject charger) {
+        Map<String, String> properties = editProperties();
+
+        String backPlateId = Utils.getAsString(charger.getAsJsonObject(JSON_KEY_BACK_PLATE), JSON_KEY_GENERIC_ID);
+        String masterBackPlateId = Utils.getAsString(charger.getAsJsonObject(JSON_KEY_BACK_PLATE),
+                JSON_KEY_MASTER_BACK_PLATE_ID);
+        if (backPlateId != null && masterBackPlateId != null) {
+            if (backPlateId.equals(masterBackPlateId)) {
+                properties.put(THING_CONFIG_IS_MASTER, GENERIC_YES);
+            } else {
+                properties.put(THING_CONFIG_IS_MASTER, GENERIC_NO);
+            }
+            properties.put(THING_CONFIG_BACK_PLATE_ID, backPlateId);
+            properties.put(THING_CONFIG_MASTER_BACK_PLATE_ID, masterBackPlateId);
+        }
+        String chargerName = Utils.getAsString(charger, JSON_KEY_GENERIC_NAME);
+        if (chargerName != null) {
+            properties.put(JSON_KEY_GENERIC_NAME, chargerName);
+        }
+        String circuitId = Utils.getAsString(charger.getAsJsonObject(JSON_KEY_BACK_PLATE), JSON_KEY_CIRCUIT_ID);
+        if (circuitId != null) {
+            properties.put(JSON_KEY_CIRCUIT_ID, circuitId);
+        }
+
+        updateProperties(properties);
     }
 
     /**

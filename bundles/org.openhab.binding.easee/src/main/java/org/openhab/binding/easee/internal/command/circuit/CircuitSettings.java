@@ -22,7 +22,7 @@ import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 
 /**
- * implements the command api call of the circuit.
+ * implements the settings api call of the circuit.
  *
  * @author Alexander Friese - initial contribution
  */

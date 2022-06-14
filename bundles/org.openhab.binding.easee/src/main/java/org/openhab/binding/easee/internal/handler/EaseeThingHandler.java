@@ -98,9 +98,8 @@ public interface EaseeThingHandler extends ThingHandler, ChannelProvider {
                     "channel (" + channelUID.getIdWithoutGroup() + ") does not support write access");
         }
 
-        // TODO only handle command when online
-        if (getThing().getStatus() == ThingStatus.OFFLINE) {
-            LOGGER.debug("Thing is offline, thus no commands will be handled");
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            LOGGER.debug("Thing is not online, thus no commands will be handled");
             return;
         }
         enqueueCommand(buildEaseeCommand(command, channel));

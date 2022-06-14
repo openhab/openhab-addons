@@ -138,7 +138,7 @@ public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implemen
                         .withProperty(THING_CONFIG_IS_MASTER, GENERIC_YES);
             } else {
                 builder = initDiscoveryResultBuilder(DEVICE_CHARGER, chargerId, chargerName)
-                        .withProperty(THING_CONFIG_IS_MASTER, GENERIC_YES);
+                        .withProperty(THING_CONFIG_IS_MASTER, GENERIC_NO);
             }
             builder.withProperty(THING_CONFIG_CIRCUIT_ID, circuitId);
             builder.withProperty(THING_CONFIG_CIRCUIT_NAME, circuitLabel);

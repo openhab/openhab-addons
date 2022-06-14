@@ -10,35 +10,37 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.easee.internal.command.circuit;
+package org.openhab.binding.easee.internal.command.charger;
 
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractCommand;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
+import org.openhab.binding.easee.internal.command.JsonResultProcessor;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 
 /**
- * implements the dynamicCurrent api call of the circuit.
+ * implements the charger api call of the charger.
  *
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class DynamicCircuitCurrent extends AbstractCommand implements EaseeCommand {
+public class Charger extends AbstractCommand implements EaseeCommand {
     private final String url;
 
-    public DynamicCircuitCurrent(EaseeThingHandler handler, String circuitId) {
-        super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES);
-        String siteId = handler.getBridgeConfiguration().getSiteId();
-        this.url = DYNAMIC_CIRCUIT_CURRENT_URL.replaceAll("\\{siteId\\}", siteId).replaceAll("\\{circuitId\\}",
-                circuitId);
+    public Charger(EaseeThingHandler handler, String chargerId, JsonResultProcessor resultProcessor) {
+        // retry does not make much sense as it is a polling command, command should always succeed therefore update
+        // handler on failure.
+        super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES, resultProcessor);
+        this.url = CHARGER_URL.replaceAll("\\{id\\}", chargerId);
     }
 
     @Override
-    protected Request prepareRequest(Request requestToPrepare) {
+    protected Request prepareRequest(@NonNull Request requestToPrepare) {
         requestToPrepare.method(HttpMethod.GET);
         return requestToPrepare;
     }
@@ -50,6 +52,6 @@ public class DynamicCircuitCurrent extends AbstractCommand implements EaseeComma
 
     @Override
     protected String getChannelGroup() {
-        return CHANNEL_GROUP_CIRCUIT_DYNAMIC_CURRENT;
+        return CHANNEL_GROUP_CHARGER;
     }
 }

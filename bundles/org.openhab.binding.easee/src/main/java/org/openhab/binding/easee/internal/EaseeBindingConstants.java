@@ -44,6 +44,7 @@ public class EaseeBindingConstants {
     // List of all channel groups
     public static final String CHANNEL_GROUP_NONE = "";
     public static final String CHANNEL_GROUP_SITE_INFO = "info";
+    public static final String CHANNEL_GROUP_CHARGER = "charger";
     public static final String CHANNEL_GROUP_CHARGER_STATE = "state";
     public static final String CHANNEL_GROUP_CHARGER_CONFIG = "config";
     public static final String CHANNEL_GROUP_CHARGER_LATEST_SESSION = "latest_session";
@@ -68,6 +69,7 @@ public class EaseeBindingConstants {
     public static final String JSON_KEY_GENERIC_ID = "id";
     public static final String JSON_KEY_GENERIC_NAME = "name";
     public static final String JSON_KEY_CIRCUIT_NAME = "panelName";
+    public static final String JSON_KEY_CIRCUIT_ID = "circuitId";
     public static final String JSON_KEY_CIRCUITS = "circuits";
     public static final String JSON_KEY_CHARGERS = "chargers";
     public static final String JSON_KEY_BACK_PLATE = "backPlate";
@@ -99,6 +101,7 @@ public class EaseeBindingConstants {
     public static final String LOGIN_URL = "https://api.easee.cloud/api/accounts/login";
     public static final String REFRESH_TOKEN_URL = "https://api.easee.cloud/api/accounts/refresh_token";
     public static final String GET_SITE_URL = "https://api.easee.cloud/api/sites/{siteId}";
+    public static final String CHARGER_URL = "https://api.easee.cloud/api/chargers/{id}";
     public static final String STATE_URL = "https://api.easee.cloud/api/chargers/{id}/state";
     public static final String GET_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/config";
     public static final String CHANGE_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/settings";

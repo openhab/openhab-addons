@@ -25,7 +25,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.types.Command;
 
 /**
- * implements the command api call of the circuit.
+ * implements the dynamicCurrent api call of the circuit.
  *
  * @author Alexander Friese - initial contribution
  */
