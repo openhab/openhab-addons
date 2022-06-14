@@ -50,7 +50,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaSmartEventListener {
     private final Logger logger = LoggerFactory.getLogger(GardenaAccountHandler.class);
-    private final long REINITIALIZE_DELAY_SECONDS = 10;
+    private static final long REINITIALIZE_DELAY_SECONDS = 120;
+    private static final long REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED = 24;
 
     private @Nullable GardenaDeviceDiscoveryService discoveryService;
 
@@ -97,7 +98,13 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
             } catch (GardenaException ex) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                 disposeGardena();
-                scheduleReinitialize();
+                if (ex.getStatus() == 429) {
+                    // if there was an error 429 (Too Many Requests), wait for 24 hours before trying again
+                    scheduleReinitialize(REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED, TimeUnit.HOURS);
+                } else {
+                    // otherwise reinitialize after 120 seconds
+                    scheduleReinitialize(REINITIALIZE_DELAY_SECONDS, TimeUnit.SECONDS);
+                }
                 logger.warn("{}", ex.getMessage());
             }
         });
@@ -106,12 +113,12 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     /**
      * Schedules a reinitialization, if Gardena smart system account is not reachable.
      */
-    private void scheduleReinitialize() {
+    private void scheduleReinitialize(long delay, TimeUnit unit) {
         scheduler.schedule(() -> {
             if (getThing().getStatus() != ThingStatus.UNINITIALIZED) {
                 initializeGardena();
             }
-        }, REINITIALIZE_DELAY_SECONDS, TimeUnit.SECONDS);
+        }, delay, unit);
     }
 
     @Override
@@ -190,6 +197,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     public void onError() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
         disposeGardena();
-        scheduleReinitialize();
+        scheduleReinitialize(REINITIALIZE_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 }
