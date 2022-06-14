@@ -35,6 +35,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.action.ShutterActionType;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.capability.CapabilityConfigDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.capability.CapabilityDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.capability.CapabilityStateDTO;
@@ -48,7 +49,9 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -1387,6 +1390,304 @@ public class LivisiDeviceHandlerTest {
         assertTrue(isChannelUpdated(CHANNEL_POWER_WATT, QuantityType.valueOf(350.5, Units.WATT)));
     }
 
+    @Test
+    public void testHandleCommand_UnsupportedChannel() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_CONTACT);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+
+        deviceHandler.handleCommand(channelMock, OpenClosedType.OPEN);
+
+        verify(bridgeHandlerMock, never()).commandSetRollerShutterLevel(any(), anyInt());
+        verify(bridgeHandlerMock, never()).commandSwitchDevice(any(), anyBoolean());
+        verify(bridgeHandlerMock, never()).commandUpdatePointTemperature(any(), anyDouble());
+        verify(bridgeHandlerMock, never()).commandSwitchAlarm(any(), anyBoolean());
+        verify(bridgeHandlerMock, never()).commandSetOperationMode(any(), anyBoolean());
+        verify(bridgeHandlerMock, never()).commandSetDimLevel(any(), anyInt());
+        verify(bridgeHandlerMock, never()).commandSetRollerShutterLevel(any(), anyInt());
+        verify(bridgeHandlerMock, never()).commandSetRollerShutterStop(any(), any());
+    }
+
+    @Test
+    public void testHandleCommand_CommandSwitchDevice_On() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_SWITCH);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, OnOffType.ON);
+
+        verify(bridgeHandlerMock).commandSwitchDevice(device.getId(), true);
+    }
+
+    @Test
+    public void testHandleCommand_CommandSwitchDevice_Off() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_SWITCH);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, OnOffType.OFF);
+
+        verify(bridgeHandlerMock).commandSwitchDevice(device.getId(), false);
+    }
+
+    @Test
+    public void testHandleCommand_CommandSwitchAlarm_On() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_ALARM);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, OnOffType.ON);
+
+        verify(bridgeHandlerMock).commandSwitchAlarm(device.getId(), true);
+    }
+
+    @Test
+    public void testHandleCommand_CommandSwitchAlarm_Off() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_ALARM);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, OnOffType.OFF);
+
+        verify(bridgeHandlerMock).commandSwitchAlarm(device.getId(), false);
+    }
+
+    @Test
+    public void testHandleCommand_CommandSetDimLevel_On() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_DIMMER);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, OnOffType.ON);
+
+        verify(bridgeHandlerMock).commandSetDimLevel(device.getId(), 100);
+    }
+
+    @Test
+    public void testHandleCommand_CommandSetDimLevel_Off() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_DIMMER);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, OnOffType.OFF);
+
+        verify(bridgeHandlerMock).commandSetDimLevel(device.getId(), 0);
+    }
+
+    @Test
+    public void testHandleCommand_CommandSetDimLevel_DecimalType() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_DIMMER);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, DecimalType.valueOf("30"));
+
+        verify(bridgeHandlerMock).commandSetDimLevel(device.getId(), 30);
+    }
+
+    @Test
+    public void testHandleCommand_CommandSetOperationMode_Auto() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_OPERATION_MODE);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, StringType.valueOf(STATE_VALUE_OPERATION_MODE_AUTO));
+
+        verify(bridgeHandlerMock).commandSetOperationMode(device.getId(), true);
+    }
+
+    @Test
+    public void testHandleCommand_CommandSetOperationMode_Manual() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_OPERATION_MODE);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, StringType.valueOf(STATE_VALUE_OPERATION_MODE_MANUAL));
+
+        verify(bridgeHandlerMock).commandSetOperationMode(device.getId(), false);
+    }
+
+    @Test
+    public void testHandleCommand_CommandSetOperationMode_Unknown() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_OPERATION_MODE);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, StringType.valueOf("Unknown"));
+
+        verify(bridgeHandlerMock, never()).commandSetOperationMode(any(), anyBoolean());
+    }
+
+    @Test
+    public void testHandleCommand_CommandUpdatePointTemperature_QuantityType() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_TARGET_TEMPERATURE);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, QuantityType.valueOf(20.0, SIUnits.CELSIUS));
+
+        verify(bridgeHandlerMock).commandUpdatePointTemperature(device.getId(), 20.0);
+    }
+
+    @Test
+    public void testHandleCommand_CommandUpdatePointTemperature_DecimalType() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_TARGET_TEMPERATURE);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, DecimalType.valueOf("20"));
+
+        verify(bridgeHandlerMock).commandUpdatePointTemperature(device.getId(), 20.0);
+    }
+
+    @Test
+    public void testHandleCommand_CommandUpdatePointTemperature_MinTemperature() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_TARGET_TEMPERATURE);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, DecimalType.valueOf("0"));
+
+        // 0 (and everything below the min temperature 6.0 should be set to the min temperature 6.0)
+        verify(bridgeHandlerMock).commandUpdatePointTemperature(device.getId(), 6.0);
+    }
+
+    @Test
+    public void testHandleCommand_CommandUpdatePointTemperature_MaxTemperature() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_TARGET_TEMPERATURE);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, DecimalType.valueOf("40"));
+
+        // 0 (and everything below the min temperature 30.0 should be set to the min temperature 30.0)
+        verify(bridgeHandlerMock).commandUpdatePointTemperature(device.getId(), 30.0);
+    }
+
+    @Test
+    public void testHandleCommand_CommandRollerShutter_Up() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_ROLLERSHUTTER);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, UpDownType.UP);
+
+        verify(bridgeHandlerMock).commandSetRollerShutterStop(device.getId(), ShutterActionType.UP);
+    }
+
+    @Test
+    public void testHandleCommand_CommandRollerShutter_Down() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_ROLLERSHUTTER);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, UpDownType.DOWN);
+
+        verify(bridgeHandlerMock).commandSetRollerShutterStop(device.getId(), ShutterActionType.DOWN);
+    }
+
+    @Test
+    public void testHandleCommand_CommandRollerShutter_On() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_ROLLERSHUTTER);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, OnOffType.ON);
+
+        verify(bridgeHandlerMock).commandSetRollerShutterStop(device.getId(), ShutterActionType.DOWN);
+    }
+
+    @Test
+    public void testHandleCommand_CommandRollerShutter_Off() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_ROLLERSHUTTER);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, OnOffType.OFF);
+
+        verify(bridgeHandlerMock).commandSetRollerShutterStop(device.getId(), ShutterActionType.UP);
+    }
+
+    @Test
+    public void testHandleCommand_CommandRollerShutter_Stop() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_ROLLERSHUTTER);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, StopMoveType.STOP);
+
+        verify(bridgeHandlerMock).commandSetRollerShutterStop(device.getId(), ShutterActionType.STOP);
+    }
+
+    @Test
+    public void testHandleCommand_CommandRollerShutter_DecimalType() {
+        DeviceDTO device = createDevice();
+
+        ChannelUID channelMock = createChannel(CHANNEL_ROLLERSHUTTER);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+        deviceHandler.handleCommand(channelMock, DecimalType.valueOf("30"));
+
+        verify(bridgeHandlerMock).commandSetRollerShutterLevel(device.getId(), 30);
+    }
+
+    @Test
+    public void testHandleCommand_CommandRollerShutter_DecimalType_Inverted() {
+        DeviceDTO device = createDevice();
+
+        Channel rollerShutterChannelMock = createRollerShutterChannelMock(true);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+
+        Thing thingMock = deviceHandler.getThing();
+        when(thingMock.getChannel(CHANNEL_ROLLERSHUTTER)).thenReturn(rollerShutterChannelMock);
+
+        ChannelUID channelMock = createChannel(CHANNEL_ROLLERSHUTTER);
+
+        deviceHandler.handleCommand(channelMock, DecimalType.valueOf("30"));
+
+        verify(bridgeHandlerMock).commandSetRollerShutterLevel(device.getId(), 30);
+    }
+
+    @Test
+    public void testHandleCommand_CommandRollerShutter_DecimalType_NotInverted() {
+        DeviceDTO device = createDevice();
+
+        Channel rollerShutterChannelMock = createRollerShutterChannelMock(false);
+
+        LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
+
+        Thing thingMock = deviceHandler.getThing();
+        when(thingMock.getChannel(CHANNEL_ROLLERSHUTTER)).thenReturn(rollerShutterChannelMock);
+
+        ChannelUID channelMock = createChannel(CHANNEL_ROLLERSHUTTER);
+
+        deviceHandler.handleCommand(channelMock, DecimalType.valueOf("30"));
+
+        verify(bridgeHandlerMock).commandSetRollerShutterLevel(device.getId(), 70);
+    }
+
     private LivisiDeviceHandler createDeviceHandler(DeviceDTO device) {
         when(bridgeHandlerMock.getDeviceById(any())).thenReturn(Optional.of(device));
 
@@ -1430,6 +1731,12 @@ public class LivisiDeviceHandlerTest {
         device.setConfig(new DeviceConfigDTO());
         device.setCapabilityMap(new HashMap<>());
         return device;
+    }
+
+    private static ChannelUID createChannel(String channelId) {
+        ChannelUID channelMock = mock(ChannelUID.class);
+        when(channelMock.getId()).thenReturn(channelId);
+        return channelMock;
     }
 
     private static void addCapabilityToDevice(String capabilityType,
