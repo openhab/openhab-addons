@@ -10,20 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschindego.internal;
+package org.openhab.binding.boschindego.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- *
- * @author Jonas Fleck - Initial contribution
+ * {@link IndegoInvalidCommandException} is thrown when a command is rejected by the device.
+ * 
+ * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class IndegoStateConstants {
+public class IndegoInvalidCommandException extends IndegoException {
 
-    public static final int STATE_DOCKED_1 = 258;
-    public static final int STATE_DOCKED_2 = 260;
-    public static final int STATE_DOCKED_3 = 261;
-    public static final int STATE_PAUSED = 517;
-    public static final int STATE_IDLE_IN_LAWN = 519;
+    private static final long serialVersionUID = -2946398731437793113L;
+
+    public IndegoInvalidCommandException(String message) {
+        super(message);
+    }
 }
