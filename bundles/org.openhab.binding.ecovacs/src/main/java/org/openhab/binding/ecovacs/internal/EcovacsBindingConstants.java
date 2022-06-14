@@ -43,6 +43,7 @@ public class EcovacsBindingConstants {
     public static final String CHANNEL_ID_CLEANING_MODE = "status#current-cleaning-mode";
     public static final String CHANNEL_ID_CLEANING_TIME = "status#current-cleaning-time";
     public static final String CHANNEL_ID_CLEANED_AREA = "status#current-cleaned-area";
+    public static final String CHANNEL_ID_CLEANING_SPOT_DEFINITION = "status#current-cleaning-spot-definition";
     public static final String CHANNEL_ID_COMMAND = "actions#command";
     public static final String CHANNEL_ID_DUST_FILTER_LIFETIME = "consumables#dust-filter-lifetime";
     public static final String CHANNEL_ID_ERROR_CODE = "status#error-code";

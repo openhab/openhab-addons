@@ -43,6 +43,7 @@
 			<channel id="current-cleaning-mode" typeId="current-cleaning-mode"/>
 			<channel id="current-cleaning-time" typeId="current-cleaning-time"/>
 			<channel id="current-cleaned-area" typeId="current-cleaned-area"/>
+			<channel id="current-cleaning-spot-definition" typeId="current-cleaning-spot-definition"/>
 			<channel id="water-system-present" typeId="water-system-present"/>
 			<channel id="wifi-rssi" typeId="wifi-rssi"/>
 			<channel id="error-code" typeId="error-code"/>
@@ -154,6 +155,13 @@
 		<label>Current Cleaned Area</label>
 		<description>Cleaned area in current clean cycle</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="current-cleaning-spot-definition" advanced="true">
+		<item-type>String</item-type>
+		<label>Current Cleaning Spot</label>
+		<description>Custom or spot area used in current clean cycle</description>
+		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="total-cleaning-time">

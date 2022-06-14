@@ -13,6 +13,7 @@
 package org.openhab.binding.ecovacs.internal.api;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,7 +35,7 @@ public interface EcovacsDevice {
 
         void onChargingStateUpdated(EcovacsDevice device, boolean charging);
 
-        void onCleaningModeUpdated(EcovacsDevice device, CleanMode newMode);
+        void onCleaningModeUpdated(EcovacsDevice device, CleanMode newMode, Optional<String> areaDefinition);
 
         void onCleaningPowerUpdated(EcovacsDevice device, SuctionPower newPower);
 

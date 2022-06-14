@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ecovacs.internal.api.impl;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ecovacs.internal.api.EcovacsDevice;
 import org.openhab.binding.ecovacs.internal.api.EcovacsDevice.EventListener;
@@ -53,7 +55,7 @@ class XmlReportParser implements ReportParser {
             case "chargestate": {
                 ChargeMode mode = DeviceInfo.parseChargeInfo(payload, gson);
                 if (mode == ChargeMode.RETURNING) {
-                    listener.onCleaningModeUpdated(device, CleanMode.RETURNING);
+                    listener.onCleaningModeUpdated(device, CleanMode.RETURNING, Optional.empty());
                 }
                 listener.onChargingStateUpdated(device, mode == ChargeMode.CHARGING);
                 break;
@@ -64,7 +66,7 @@ class XmlReportParser implements ReportParser {
                     logger.debug("{}: Custom area cleaning stated with area definition {}", device.getSerialNumber(),
                             info.areaDefinition);
                 }
-                listener.onCleaningModeUpdated(device, info.mode);
+                listener.onCleaningModeUpdated(device, info.mode, info.areaDefinition);
                 // TODO: speed <ctl td='CleanReport'><clean type='auto' speed='standard' st='s' rsn='a'/></ctl>
                 break;
             }

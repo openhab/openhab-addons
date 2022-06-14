@@ -264,7 +264,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     }
 
     @Override
-    public void onCleaningModeUpdated(EcovacsDevice device, CleanMode newMode) {
+    public void onCleaningModeUpdated(EcovacsDevice device, CleanMode newMode, Optional<String> areaDefinition) {
         lastCleanMode = newMode;
         if (newMode.isActive()) {
             lastActiveCleanMode = newMode;
@@ -272,6 +272,21 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             lastActiveCleanMode = null;
         }
         updateStateAndCommandChannels();
+        Optional<State> areaDefState = areaDefinition.map(def -> {
+            if (newMode == CleanMode.SPOT_AREA) {
+                // Map indices back to letters as shown in the app
+                def = Arrays.stream(def.split(",")).map(item -> {
+                    try {
+                        int index = Integer.parseInt(item);
+                        return String.valueOf((char) ('A' + index));
+                    } catch (NumberFormatException e) {
+                        return item;
+                    }
+                }).collect(Collectors.joining(","));
+            }
+            return new StringType(def);
+        });
+        updateState(CHANNEL_ID_CLEANING_SPOT_DEFINITION, areaDefState.orElse(UnDefType.UNDEF));
         if (newMode == CleanMode.RETURNING) {
             scheduleNextPoll(30);
         } else if (newMode == CleanMode.IDLE) {

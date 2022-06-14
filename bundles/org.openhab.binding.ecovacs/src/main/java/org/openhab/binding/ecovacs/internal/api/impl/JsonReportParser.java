@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ecovacs.internal.api.impl;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecovacs.internal.api.EcovacsDevice;
@@ -76,16 +78,16 @@ class JsonReportParser implements ReportParser {
             }
             case "cleaninfo": {
                 CleanReport report = payloadAs(response, CleanReport.class);
-                handleCleanModeChange(report.determineCleanMode(gson),
-                        report.cleanState != null ? report.cleanState.areaDefinition : null);
+                String area = report.cleanState != null ? report.cleanState.areaDefinition : null;
+                handleCleanModeChange(report.determineCleanMode(gson), area);
                 break;
             }
             case "cleaninfo_v2": {
                 CleanReportV2 report = payloadAs(response, CleanReportV2.class);
-                handleCleanModeChange(report.determineCleanMode(gson),
-                        report.cleanState != null && report.cleanState.content != null
-                                ? report.cleanState.content.areaDefinition
-                                : null);
+                String area = report.cleanState != null && report.cleanState.content != null
+                        ? report.cleanState.content.areaDefinition
+                        : null;
+                handleCleanModeChange(report.determineCleanMode(gson), area);
                 break;
             }
             case "error": {
@@ -126,7 +128,7 @@ class JsonReportParser implements ReportParser {
             logger.debug("{}: Custom area cleaning stated with area definition {}", device.getSerialNumber(),
                     areaDefinition);
         }
-        listener.onCleaningModeUpdated(device, mode);
+        listener.onCleaningModeUpdated(device, mode, Optional.ofNullable(areaDefinition));
     }
 
     private <T> T payloadAs(JsonResponsePayloadWrapper response, Class<T> clazz) {
