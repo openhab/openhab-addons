@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<!-- by Spawny0815 / Christopher Pattison
+     https://github.com/SpawnY0815/mb-connect-openhab
+-->
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Mercedes-Benz to openHAB integration v1.1</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+        body {
+            background-color: #3d454d;
+            font-size: 16px;
+            line-height: 1.3em;
+            color: #3d454d;
+            font-weight: 500;
+        }
+
+        .widget {
+            width: 100% !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style="display:none">
+        <symbol id="icon-pencil">
+            <path
+                d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z">
+            </path>
+        </symbol>
+    </svg>
+
+    <div class="container p-2">
+        <div class="container bg-light border border-info rounded-bottom overflow-hidden p-2">
+            <h3 class="text-center">Mercedes-Benz API Auth v1.1</h3>
+            <div class="border p-3">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="row">openHAB auth items</th>
+                            <th class="text-center" scope="col">Value</th>
+                            <th class="text-center" scope="col">Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Client ID</th>
+                            <td class="text-center" id="item_client_id">not found</td>
+                            <td class="text-center">
+                                <button id="c-switch-auth-client_id" type="button" class="btn btn-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-pencil" viewBox="0 0 16 16">
+                                        <use xlink:href="#icon-pencil"></use>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr id="send_client_id">
+                        </tr>
+                        <tr>
+                            <th scope="row">Client Secret</th>
+                            <td class="text-center" id="item_client_secret">not found</td>
+                            <td class="text-center">
+                                <button id="c-switch-auth-client_secret" type="button" class="btn btn-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-pencil" viewBox="0 0 16 16">
+                                        <use xlink:href="#icon-pencil"></use>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr id="send_client_secret"></tr>
+                        <tr>
+                            <th scope="row">Vehicle ID (VIN)</th>
+                            <td class="text-center" id="item_vehicle_id">not found</td>
+                            <td class="text-center">
+                                <button id="c-switch-auth-vehicle_id" type="button" class="btn btn-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-pencil" viewBox="0 0 16 16">
+                                        <use xlink:href="#icon-pencil"></use>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr id="send_vehicle_id"></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="border p-3">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="row">API products</th>
+                            <th class="text-center" scope="col">Value</th>
+                            <th class="text-center" scope="col">Set</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Fuel Status</th>
+                            <td class="text-center" id="scope_fuelstatus">not found</td>
+                            <td class="text-center" id="c-switch-scope-fuelstatus"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Electric Vehicle Status</th>
+                            <td class="text-center" id="scope_evstatus">not found</td>
+                            <td class="text-center" id="c-switch-scope-evstatus"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Vehicle Lock Status</th>
+                            <td class="text-center" id="scope_vehiclelock">not found</td>
+                            <td class="text-center" id="c-switch-scope-vehiclelock"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Vehicle Status</th>
+                            <td class="text-center" id="scope_vehiclestatus">not found</td>
+                            <td id="c-switch-scope-vehiclestatus"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Pay As You Drive Insurance</th>
+                            <td class="text-center" id="scope_payasyoudrive">not found</td>
+                            <td class="text-center" id="c-switch-scope-payasyoudrive"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>Check the API products available for your vehicle and registered in the Mercedes-Benz dev project.
+                </p>
+            </div>
+            <div class="border p-3">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="row">Image settings (optional)</th>
+                            <th class="text-center" scope="col">Status</th>
+                            <th class="text-center" scope="col">Set</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">API Key</th>
+                            <td class="text-center" id="item_api_key">not found</td>
+                            <td class="text-center">
+                                <button id="c-switch-auth-api_key" type="button" class="btn btn-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-pencil" viewBox="0 0 16 16">
+                                        <use xlink:href="#icon-pencil"></use>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr id="send_api_key"></tr>
+                        <tr>
+                            <th scope="row">NIGHT</th>
+                            <td class="text-center" id="item_imageoption_night">not found</td>
+                            <td class="text-center" id="c-switch-img-night"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">ROOF OPEN</th>
+                            <td class="text-center" id="item_imageoption_roofOpen">not found</td>
+                            <td class="text-center" id="c-switch-img-roofOpen"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">BACKGROUND</th>
+                            <td class="text-center" id="item_imageoption_background">not found</td>
+                            <td class="text-center" id="c-switch-img-background"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">CROPPED</th>
+                            <td class="text-center" id="item_imageoption_cropped">not found</td>
+                            <td class="text-center" id="c-switch-img-cropped"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">JPEG (default: png)</th>
+                            <td class="text-center" id="item_imageoption_jpeg">not found</td>
+                            <td class="text-center" id="c-switch-img-jpeg"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>To get images run the scipt once with the "--get_image" argument in console.</p>
+            </div>
+            <div class="border p-3">
+                <div class="row gy-5 align-items-center">
+                    <div class="col-6">
+                        <button class="btn btn-primary" type="button" id="copybtn" data-toggle="tooltip"
+                            title="copied to clipboard!">
+                            Copy redirect url
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <p id="redirecturl"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="border p-3">
+                <div class="row gy-5 align-items-center">
+                    <div class="col-6">
+                        <div id="reload"></div>
+                        <div class="name">
+                            <h4>Status</h4>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="value"><a id="link" href=""><button id="auth_button" type="button"
+                                    class="btn btn-danger">Error</button></a>
+
+                        </div>
+                        <span id="status"></span>
+                    </div>
+                </div>
+            </div>
+            <div id="auth_area" class="border p-3">
+                <h4 class="text-center">Auth Code</h4>
+                <p id="auth_code" class="text-center">not yet received</p>
+            </div>
+            <div id="error_description"></div>
+            <div class="container p-3">
+                <div class="row text-center">
+                    <div class="col">
+                        <a href="https://github.com/SpawnY0815/mb-connect-openhab" class="link-info">GitHub</a>
+                    </div>
+                    <div class="col text-center">
+                        <a href="https://community.openhab.org/t/mercedes-benz-integration/117795"
+                            class="link-info">openHAB Community</a>
+                    </div>
+                    <div class="col text-center">
+                        <a href="https://openhab.org" class="link-info">openHAB</a>
+                    </div>
+
+                </div>
+                <div class="row p-2 text-end">
+                    <div class="col">
+                        <p><small></small></p>
+                        <figcaption class="blockquote-footer lh-lg"><cite title="Source Title">by Spawny0815 |
+                                Christopher Pattison</cite>
+                        </figcaption>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+        crossorigin="anonymous"></script>
+    <script src="mb-connect.min.js"></script>
+</body>
+
+</html>
