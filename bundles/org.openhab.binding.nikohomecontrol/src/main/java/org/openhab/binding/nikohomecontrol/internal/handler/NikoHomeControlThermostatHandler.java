@@ -17,12 +17,11 @@ import static org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeCont
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -89,7 +88,6 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         });
     }
 
-    @SuppressWarnings("unchecked")
     private void handleCommandSelection(ChannelUID channelUID, Command command) {
         NhcThermostat nhcThermostat = this.nhcThermostat;
         if (nhcThermostat == null) {
@@ -124,18 +122,20 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case CHANNEL_SETPOINT:
-                QuantityType<Temperature> setpoint = null;
-                if (command instanceof QuantityType) {
-                    setpoint = ((QuantityType<Temperature>) command).toUnit(CELSIUS);
-                    // Always set the new setpoint temperature as an overrule
-                    // If no overrule time is given yet, set the overrule time to the configuration parameter
-                    int time = nhcThermostat.getOverruletime();
-                    if (time <= 0) {
-                        time = overruleTime;
-                    }
+                // Always set the new setpoint temperature as an overrule
+                // If no overrule time is given yet, set the overrule time to the configuration parameter
+                int time = nhcThermostat.getOverruletime();
+                if (time <= 0) {
+                    time = overruleTime;
+                }
+                if (command instanceof QuantityType<?>) {
+                    QuantityType<?> setpoint = ((QuantityType<?>) command).toUnit(CELSIUS);
                     if (setpoint != null) {
                         nhcThermostat.executeOverrule(Math.round(setpoint.floatValue() * 10), time);
                     }
+                } else if (command instanceof DecimalType) {
+                    BigDecimal setpoint = ((DecimalType) command).toBigDecimal();
+                    nhcThermostat.executeOverrule(Math.round(setpoint.floatValue() * 10), time);
                 }
                 updateStatus(ThingStatus.ONLINE);
                 break;
