@@ -21,12 +21,41 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class RustpotterKSConfiguration {
+    /**
+     * Configures the detector threshold, is the min score (in range 0. to 1.) that some wake word template should
+     * obtain to trigger a detection. Defaults to 0.5.
+     */
     public float threshold = 0.5f;
+    /**
+     * Configures the detector averaged threshold, is the min score (in range 0. to 1.) that the averaged wake word
+     * template should obtain to allow to continue with the detection. This way it can prevent to run the comparison of
+     * the current frame against each of the wakeword templates. If set to 0. this functionality is disabled.
+     */
     public float averagedThreshold = 0.0f;
-    public float comparatorRef = 0.22f;
-    public int comparatorBandSize = 6;
-    public float vadSensitivity = 0.5f;
-    public int vadDelay = 3;
-    public String vadMode = "disabled";
+    /**
+     * Terminate the detection as son as one result is above the score,
+     * instead of wait to see if the next frame has a higher score.
+     */
     public boolean eagerMode = true;
+    /**
+     * Use build-in noise detection to reduce computation on absence of noise.
+     * Configures how difficult is to consider a frame as noise (the required noise level).
+     */
+    public String noiseDetectionMode = "disabled";
+    /**
+     * Noise/silence ratio in the last second to consider noise detected. Defaults to 0.5.
+     */
+    public float noiseSensitivity = 0.5f;
+    /**
+     * Seconds to disable the vad detector after voice is detected. Defaults to 3.
+     */
+    public int vadDelay = 3;
+    /**
+     * Voice/silence ratio in the last second to consider voice detected.
+     */
+    public float vadSensitivity = 0.5f;
+    /**
+     * Use a voice activity detector to reduce computation on absence of voice sound.
+     */
+    public String vadMode = "disabled";
 }

@@ -47,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.givimad.rustpotter_java.Endianness;
+import io.github.givimad.rustpotter_java.NoiseDetectionMode;
 import io.github.givimad.rustpotter_java.RustpotterJava;
 import io.github.givimad.rustpotter_java.RustpotterJavaBuilder;
 import io.github.givimad.rustpotter_java.VadMode;
@@ -121,15 +122,19 @@ public class RustpotterKSService implements KSService {
         var bitDepth = Objects.requireNonNull(audioFormat.getBitDepth());
         var channels = Objects.requireNonNull(audioFormat.getChannels());
         var endianness = Objects.requireNonNull(audioFormat.isBigEndian()) ? Endianness.BIG : Endianness.LITTLE;
-        logger.debug("Input frequency '{}', bit depth '{}', channels '{}', '{}'", frequency, bitDepth, channels,
-                audioFormat.isBigEndian() ? "big-endian" : "little-endian");
+        logger.debug("Audio wav spec: frequency '{}', bit depth '{}', channels '{}', '{}'", frequency, bitDepth,
+                channels, audioFormat.isBigEndian() ? "big-endian" : "little-endian");
         RustpotterJava rustpotter = initRustpotter(frequency, bitDepth, channels, endianness);
         var modelName = keyword.replaceAll("\\s", "_") + ".rpw";
         var modelPath = Path.of(RUSTPOTTER_FOLDER, modelName);
         if (!modelPath.toFile().exists()) {
             throw new KSException("Missing model " + modelName);
         }
-        rustpotter.addWakewordModelFile(modelPath.toString());
+        try {
+            rustpotter.addWakewordModelFile(modelPath.toString());
+        } catch (Exception e) {
+            throw new KSException("Unable to load wake word model: " + e.getMessage());
+        }
         logger.debug("Model '{}' loaded", modelPath);
         AtomicBoolean aborted = new AtomicBoolean(false);
         executor.submit(() -> processAudioStream(rustpotter, ksListener, audioStream, aborted));
@@ -152,14 +157,18 @@ public class RustpotterKSService implements KSService {
         // detector configs
         rustpotterBuilder.setThreshold(config.threshold);
         rustpotterBuilder.setAveragedThreshold(config.averagedThreshold);
-        rustpotterBuilder.setComparatorRef(config.comparatorRef);
-        rustpotterBuilder.setComparatorBandSize(config.comparatorBandSize);
-        rustpotterBuilder.setVADSensitivity(config.vadSensitivity);
-        rustpotterBuilder.setVADDelay(config.vadDelay);
         @Nullable
         VadMode vadMode = getVADMode(config.vadMode);
         if (vadMode != null) {
             rustpotterBuilder.setVADMode(vadMode);
+            rustpotterBuilder.setVADSensitivity(config.vadSensitivity);
+            rustpotterBuilder.setVADDelay(config.vadDelay);
+        }
+        @Nullable
+        NoiseDetectionMode noiseDetectionMode = getNoiseMode(config.noiseDetectionMode);
+        if (noiseDetectionMode != null) {
+            rustpotterBuilder.setNoiseMode(noiseDetectionMode);
+            rustpotterBuilder.setNoiseSensitivity(config.noiseSensitivity);
         }
         rustpotterBuilder.setEagerMode(config.eagerMode);
         // init the detector
@@ -173,28 +182,19 @@ public class RustpotterKSService implements KSService {
         int numBytesRead;
         var bufferSize = (int) rustpotter.getBytesPerFrame();
         byte[] audioBuffer = new byte[bufferSize];
-        int remaining = 0;
+        int remaining = bufferSize;
         while (!aborted.get()) {
             try {
-                numBytesRead = audioStream.read(audioBuffer, remaining == 0 ? 0 : (bufferSize - remaining),
-                        remaining == 0 ? bufferSize : remaining);
+                numBytesRead = audioStream.read(audioBuffer, bufferSize - remaining, remaining);
                 if (aborted.get()) {
                     break;
                 }
-                if (remaining == 0) {
-                    if (numBytesRead != bufferSize) {
-                        remaining = bufferSize - numBytesRead;
-                        Thread.sleep(100);
-                        continue;
-                    }
-                } else {
-                    if (numBytesRead != remaining) {
-                        remaining = remaining - numBytesRead;
-                        Thread.sleep(100);
-                        continue;
-                    }
+                if (numBytesRead != remaining) {
+                    remaining = remaining - numBytesRead;
+                    Thread.sleep(100);
+                    continue;
                 }
-                remaining = 0;
+                remaining = bufferSize;
                 var result = rustpotter.processBuffer(audioBuffer);
                 if (result.isPresent()) {
                     var detection = result.get();
@@ -221,6 +221,23 @@ public class RustpotterKSService implements KSService {
                 return VadMode.AGGRESSIVE;
             case "very-aggressive":
                 return VadMode.VERY_AGGRESSIVE;
+            default:
+                return null;
+        }
+    }
+
+    private @Nullable NoiseDetectionMode getNoiseMode(String mode) {
+        switch (mode) {
+            case "Easiest":
+                return NoiseDetectionMode.EASYEST;
+            case "Easy":
+                return NoiseDetectionMode.EASY;
+            case "Normal":
+                return NoiseDetectionMode.NORMAL;
+            case "Hard":
+                return NoiseDetectionMode.HIGH;
+            case "Hardest":
+                return NoiseDetectionMode.HIGHEST;
             default:
                 return null;
         }

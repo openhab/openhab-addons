@@ -12,7 +12,15 @@ The voice data is processed offline, locally on your openHAB server by Rustpotte
 
 After installing, you will be able to access the service options through the openHAB configuration page in UI (**Settings / Other Services - Rustpotter Keyword Spotter**) to edit them:
 
-* TODO
+* **Threshold** - Configures the detector threshold, is the min score (in range 0. to 1.) that some wake word template should obtain to trigger a detection. Defaults to 0.5.
+* **Averaged Threshold** - Configures the detector averaged threshold, is the min score (in range 0. to 1.) that the averaged wake word template should obtain to allow to continue with the detection. This way it can prevent to run the comparison of the current frame against each of the wakeword templates. If set to 0. this functionality is disabled.
+* **Eager mode** - Terminate the detection as son as one result is above the score, instead of wait to see if the next frame has a higher score.
+* **Noise Detection Mode** - Use build-in noise detection to reduce computation on absence of noise. Configures how difficult is to consider a frame as noise (the required noise level).
+* **Noise Detection Sensitivity** - Noise/silence ratio in the last second to consider noise detected. Defaults to 0.5.
+* **VAD Mode** - Use a voice activity detector to reduce computation on absence of voice sound.
+* **VAD Sensitivity** - Voice/silence ratio in the last second to consider voice detected.
+* **VAD Delay** - Seconds to disable the vad detector after voice is detected. Defaults to 3.
+
 
 In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `rustpotterks.cfg`
 
@@ -25,10 +33,12 @@ TODO
 ## Magic Word Configuration
 
 The magic word to spot is gathered from your 'Voice' configuration. 
-The default english keyword models are loaded in the addon (also the english language model) so you can use those without adding anything else.
 
-Note that you can use the pico voice platform to generate your own keyword models. 
-To use them, you should place the generated file under '\<openHAB userdata\>/rustpotter' and configure your magic word to match the file name replacing spaces with '_' and adding the extension '.rpw'.
+You can generate your own wake word model by using the [Rustpotter CLI](https://github.com/GiviMAD/rustpotter).
+
+You can also download the models used as examples on the [rustpotter web demo](https://givimad.github.io/rustpotter-worklet-demo/) on [this folder](https://github.com/GiviMAD/rustpotter-worklet-demo/tree/main/static).
+
+To use a wakeword model, you should place the file under '\<openHAB userdata\>/rustpotter' and configure your magic word to match the file name replacing spaces with '_' and adding the extension '.rpw'.
 As an example, the file generated for the keyword "ok openhab" will be named 'ok_openhab.rpw'.
 
 The service will only work if it's able to find the correct rpw for your magic word configuration.
