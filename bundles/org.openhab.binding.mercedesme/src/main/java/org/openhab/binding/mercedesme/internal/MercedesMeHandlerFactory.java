@@ -14,13 +14,14 @@ package org.openhab.binding.mercedesme.internal;
 
 import static org.openhab.binding.mercedesme.internal.MercedesMeBindingConstants.THING_TYPE_SAMPLE;
 
-import java.net.InetSocketAddress;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.mercedesme.internal.server.CallbackServer;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -84,16 +85,30 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         // // TODO Auto-generated catch block
         // logger.error("Exception {}", e.getMessage());
         // }
-        CallbackServer srv = new CallbackServer(new InetSocketAddress("majordomo", 8090));
-
-        try {
-            srv.start();
-        } catch (Exception e) {
-            logger.error("Jetty server cannot start: {}", e.getMessage());
-        }
+        // CallbackServer srv = new CallbackServer(new InetSocketAddress("majordomo", 8090));
+        //
+        // try {
+        // srv.start();
+        // } catch (Exception e) {
+        // logger.error("Jetty server cannot start: {}", e.getMessage());
+        // }
         // "https://id.mercedes-benz.com/as/authorization.oauth2?response_type=code&client_id="+auth_data.client_id+"&redirect_uri="+encodeURI(document.location.href).split(".html")[0]+".html&scope="+scopes+"offline_access&state="+e;$("#link").attr("href",n),l.textContent="Authenticate",$("#auth_area").html(""),$.ajax({url:"/rest/items/"+ITEM_PREFIX+"auth_state/state",method:"PUT",contentType:"text/plain",data:e})}}else
         // $("#status").html("Prerequisites missing!"),l.className+=" btn-danger",$("#link").attr("href",o),l.t
+        CallbackServer srv = new CallbackServer();
+        srv.start();
 
+        String clientId = "80d8afa3-a3b0-4eb2-82b9-25c239afdbd4";
+        String clientSecret = "nogTtqaIKqTpUHbeSCpDaZenGjnhmdbmMdNAuGuocgehJbSvCLnlLQogPCzMFvMa";
+        String scope = "mb:vehicle:status:general mb:user:pool:reader offline_access";
+
+        OAuthClientService oauthService = oAuthFactory.createOAuthClientService(Constants.OAUTH_CLIENT_NAME,
+                Constants.MB_TOKEN_URL, Constants.MB_AUTH_URL, clientId, clientSecret, scope, false);
+        try {
+            String authUrl = oauthService.getAuthorizationUrl("http://localhost:8090" + Constants.CALLBACK, null, null);
+            logger.error("{}", authUrl);
+        } catch (OAuthException e1) {
+            logger.error("Exception {}", e1.getMessage());
+        }
     }
 
     @Override

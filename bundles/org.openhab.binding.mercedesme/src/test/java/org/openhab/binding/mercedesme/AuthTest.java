@@ -16,6 +16,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.mercedesme.internal.Constants;
+import org.openhab.binding.mercedesme.internal.server.CallbackServer;
 
 /**
  * The {@link AuthTest} is responsible for handling commands, which are
@@ -52,6 +54,32 @@ class AuthTest {
 
             // https://id.mercedes-benz.com/as/authorization.oauth2?response_type=code&client_id=<insert_your_client_id_here>&redirect_uri=<insert_redirect_uri_here>&scope=<insert_scopes_of_API_here>&state=<insert_client_state_here>
         } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void test2() {
+        CallbackServer srv = new CallbackServer();
+        srv.start();
+        HttpClient client = new HttpClient();
+        try {
+            client.start();
+            System.out.println("Client started");
+            ContentResponse res = client.GET("http://localhost:8090" + Constants.CALLBACK);
+
+            // Request hr = client.newRequest(authorizationUrl);
+            // System.out.println(res.getContentAsString());
+
+            client.stop();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
