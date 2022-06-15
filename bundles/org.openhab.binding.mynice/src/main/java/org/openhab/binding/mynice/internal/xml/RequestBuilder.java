@@ -22,7 +22,6 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
-import org.osgi.framework.FrameworkUtil;
 
 /**
  * The {@link RequestBuilder} is responsible for building a string request from the CommandType
@@ -31,7 +30,6 @@ import org.osgi.framework.FrameworkUtil;
  */
 @NonNullByDefault
 public class RequestBuilder {
-    private static final String APP_ID = FrameworkUtil.getBundle(RequestBuilder.class).getSymbolicName();
     private static final Encoder BASE64_ENCODER = Base64.getEncoder();
 
     private static final String START_REQUEST = "<Request id=\"%s\" source=\"openhab\" target=\"%s\" gw=\"gwID\" protocolType=\"NHK\" protocolVersion=\"1.0\" type=\"%s\">\r\n";
@@ -80,7 +78,7 @@ public class RequestBuilder {
     public String getBody(CommandType command, Object... bodyParms) {
         String result = command.body;
         if (result.length() != 0) {
-            result = result.replace("%un%", APP_ID);
+            result = result.replace("%un%", mac);
             result = result.replace("%cc%", clientChallenge);
             result = String.format(result, bodyParms);
         }

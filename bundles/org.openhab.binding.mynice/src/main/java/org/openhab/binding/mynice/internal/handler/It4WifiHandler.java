@@ -124,7 +124,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
                     case wait:
                         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                                 "Please validate the user on the MyNice application");
-                        scheduler.schedule(() -> handShaked(), 5, TimeUnit.SECONDS);
+                        scheduler.schedule(() -> handShaked(), 15, TimeUnit.SECONDS);
                         return;
                     default:
                         return;
