@@ -30,42 +30,37 @@ import org.openhab.binding.boschindego.internal.dto.DeviceCommand;
 public class DeviceStatus {
 
     private static final Map<Integer, DeviceStatus> STATUS_MAP = Map.ofEntries(
-            entry(0, new DeviceStatus("Reading status", false, DeviceCommand.RETURN)),
-            entry(257, new DeviceStatus("Charging", false, DeviceCommand.RETURN)),
-            entry(258, new DeviceStatus("Docked", true, DeviceCommand.RETURN)),
-            entry(259, new DeviceStatus("Docked - Software update", false, DeviceCommand.RETURN)),
-            entry(260, new DeviceStatus("Docked", true, DeviceCommand.RETURN)),
-            entry(261, new DeviceStatus("Docked", true, DeviceCommand.RETURN)),
-            entry(262, new DeviceStatus("Docked - Loading map", false, DeviceCommand.MOW)),
-            entry(263, new DeviceStatus("Docked - Saving map", false, DeviceCommand.RETURN)),
-            entry(513, new DeviceStatus("Mowing", false, DeviceCommand.MOW)),
-            entry(514, new DeviceStatus("Relocalising", false, DeviceCommand.MOW)),
-            entry(515, new DeviceStatus("Loading map", false, DeviceCommand.MOW)),
-            entry(516, new DeviceStatus("Learning lawn", false, DeviceCommand.MOW)),
-            entry(517, new DeviceStatus("Paused", true, DeviceCommand.PAUSE)),
-            entry(518, new DeviceStatus("Border cut", false, DeviceCommand.MOW)),
-            entry(519, new DeviceStatus("Idle in lawn", true, DeviceCommand.MOW)),
-            entry(769, new DeviceStatus("Returning to dock", false, DeviceCommand.RETURN)),
-            entry(770, new DeviceStatus("Returning to dock", false, DeviceCommand.RETURN)),
-            entry(771, new DeviceStatus("Returning to dock - Battery low", false, DeviceCommand.RETURN)),
-            entry(772, new DeviceStatus("Returning to dock - Calendar timeslot ended", false, DeviceCommand.RETURN)),
-            entry(773, new DeviceStatus("Returning to dock - Battery temp range", false, DeviceCommand.RETURN)),
-            entry(774, new DeviceStatus("Returning to dock", false, DeviceCommand.RETURN)),
-            entry(775, new DeviceStatus("Returning to dock - Lawn complete", false, DeviceCommand.RETURN)),
-            entry(776, new DeviceStatus("Returning to dock - Relocalising", false, DeviceCommand.RETURN)),
-            entry(1025, new DeviceStatus("Diagnostic mode", false, null)),
-            entry(1026, new DeviceStatus("End of life", false, null)),
-            entry(1281, new DeviceStatus("Software update", false, null)),
-            entry(64513, new DeviceStatus("Docked", true, DeviceCommand.RETURN)));
-
-    private String message;
+            entry(0, new DeviceStatus(false, DeviceCommand.RETURN)),
+            entry(257, new DeviceStatus(false, DeviceCommand.RETURN)),
+            entry(258, new DeviceStatus(true, DeviceCommand.RETURN)),
+            entry(259, new DeviceStatus(false, DeviceCommand.RETURN)),
+            entry(260, new DeviceStatus(true, DeviceCommand.RETURN)),
+            entry(261, new DeviceStatus(true, DeviceCommand.RETURN)),
+            entry(262, new DeviceStatus(false, DeviceCommand.MOW)),
+            entry(263, new DeviceStatus(false, DeviceCommand.RETURN)),
+            entry(513, new DeviceStatus(false, DeviceCommand.MOW)),
+            entry(514, new DeviceStatus(false, DeviceCommand.MOW)),
+            entry(515, new DeviceStatus(false, DeviceCommand.MOW)),
+            entry(516, new DeviceStatus(false, DeviceCommand.MOW)),
+            entry(517, new DeviceStatus(true, DeviceCommand.PAUSE)),
+            entry(518, new DeviceStatus(false, DeviceCommand.MOW)),
+            entry(519, new DeviceStatus(true, DeviceCommand.MOW)),
+            entry(769, new DeviceStatus(false, DeviceCommand.RETURN)),
+            entry(770, new DeviceStatus(false, DeviceCommand.RETURN)),
+            entry(771, new DeviceStatus(false, DeviceCommand.RETURN)),
+            entry(772, new DeviceStatus(false, DeviceCommand.RETURN)),
+            entry(773, new DeviceStatus(false, DeviceCommand.RETURN)),
+            entry(774, new DeviceStatus(false, DeviceCommand.RETURN)),
+            entry(775, new DeviceStatus(false, DeviceCommand.RETURN)),
+            entry(776, new DeviceStatus(false, DeviceCommand.RETURN)), entry(1025, new DeviceStatus(false, null)),
+            entry(1026, new DeviceStatus(false, null)), entry(1281, new DeviceStatus(false, null)),
+            entry(64513, new DeviceStatus(true, DeviceCommand.RETURN)));
 
     private boolean isReadyToMow;
 
     private @Nullable DeviceCommand associatedCommand;
 
-    private DeviceStatus(String message, boolean isReadyToMow, @Nullable DeviceCommand associatedCommand) {
-        this.message = message;
+    private DeviceStatus(boolean isReadyToMow, @Nullable DeviceCommand associatedCommand) {
         this.isReadyToMow = isReadyToMow;
         this.associatedCommand = associatedCommand;
     }
@@ -95,11 +90,7 @@ public class DeviceStatus {
                 break;
         }
 
-        return new DeviceStatus(String.format("Unknown status code %d", code), false, command);
-    }
-
-    public String getMessage() {
-        return message;
+        return new DeviceStatus(false, command);
     }
 
     public boolean isReadyToMow() {

@@ -53,7 +53,7 @@
 	<channel-type id="statecode" advanced="true">
 		<item-type>Number</item-type>
 		<label>State Code</label>
-		<description>API-code of the Indego state</description>
+		<description>API code of the Indego state</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Reading status</option>
