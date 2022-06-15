@@ -16,6 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mynice.internal.xml.dto.Authentication;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.binding.mynice.internal.xml.dto.Device;
+import org.openhab.binding.mynice.internal.xml.dto.Device.DeviceType;
+import org.openhab.binding.mynice.internal.xml.dto.Error;
 import org.openhab.binding.mynice.internal.xml.dto.Event;
 import org.openhab.binding.mynice.internal.xml.dto.Interface;
 import org.openhab.binding.mynice.internal.xml.dto.Properties;
@@ -48,6 +50,7 @@ public class MyNiceXStream extends XStream {
         alias("Authentication", Authentication.class);
         alias("CommandType", CommandType.class);
         alias("UserPerm", UserPerm.class);
+        alias("DeviceType", DeviceType.class);
         alias("Error", Error.class);
         alias("Interface", Interface.class);
         alias("Device", Device.class);

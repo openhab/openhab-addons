@@ -7,8 +7,8 @@
 	<bridge-type id="it4wifi">
 		<label>IT4Wifi</label>
 		<description>This thing connects to your IT4Wifi module</description>
-		
-        <representation-property>macAddress</representation-property>
+
+		<representation-property>macAddress</representation-property>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -16,7 +16,8 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
-			<parameter name="macAddress" type="text" pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*" required="true">
+			<parameter name="macAddress" type="text" pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"
+				required="true">
 				<label>MAC Address</label>
 				<description>The full device MAC address</description>
 			</parameter>
@@ -35,14 +36,15 @@
 
 		<label>Swing Gate</label>
 		<description>A double wing gate</description>
-		
+
 		<channels>
-            <channel id="doorstatus" typeId="doorstatus"/>
-            <channel id="obstruct" typeId="obstruct"/>
-            <channel id="moving" typeId="moving"/>
-        </channels>
-        
-        <representation-property>id</representation-property>
+			<channel id="status" typeId="doorstatus"/>
+			<channel id="obstruct" typeId="obstruct"/>
+			<channel id="moving" typeId="moving"/>
+			<channel id="command" typeId="command"/>
+		</channels>
+
+		<representation-property>id</representation-property>
 
 		<config-description>
 			<parameter name="id" type="text" required="true">
@@ -51,33 +53,79 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
-	
-    <channel-type id="doorstatus">
-        <item-type>String</item-type>
-        <label>Gate Status</label>
-        <state readOnly="true">
-            <options>
-                <option value="open">Open</option>
-                <option value="closed">Closed</option>
-                <option value="opening">Opening</option>
-                <option value="closing">Closing</option>
-                <option value="stopped">Stopped</option>
-            </options>
-        </state>
-    </channel-type>
-    
-    <channel-type id="moving">
-        <item-type>Switch</item-type>
-        <label>Moving</label>
-        <description>Indicates if the device is currently operating a command.</description>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="obstruct">
-        <item-type>String</item-type>
-        <label>Obstruction</label>
-        <state readOnly="true"/>
-    </channel-type>
+
+
+	<channel-type id="doorstatus">
+		<item-type>String</item-type>
+		<label>Gate Status</label>
+		<state readOnly="true">
+			<options>
+				<option value="open">Open</option>
+				<option value="closed">Closed</option>
+				<option value="opening">Opening</option>
+				<option value="closing">Closing</option>
+				<option value="stopped">Stopped</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="moving">
+		<item-type>Switch</item-type>
+		<label>Moving</label>
+		<description>Indicates if the device is currently operating a command.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="obstruct">
+		<item-type>String</item-type>
+		<label>Obstruction</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Send a given command to the gate</description>
+		<state readOnly="false">
+			<options>
+				<option value="stop">Stop</option>
+				<option value="open">Open</option>
+				<option value="close">Close</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="t4command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Send a given command to the gate</description>
+		<state readOnly="false">
+			<options>
+				<option value="MDAx">Step by Step</option>
+				<option value="MDAy">Stop (as remote control)</option>
+				<option value="MDAz">Open (as remote control)</option>
+				<option value="MDA0">Close (as remote control)</option>
+				<option value="MDA1">Partial opening 1</option>
+				<option value="MDA2">Partial opening 2</option>
+				<option value="MDA3">Partial opening 3</option>
+				<option value="MDBi">Apartment Step by Step</option>
+				<option value="MDBj">Step by Step high priority</option>
+				<option value="MDBk">Open and block</option>
+				<option value="MDBl">Close and block</option>
+				<option value="MDBm">Block</option>
+				<option value="MDEw">Release</option>
+				<option value="MDEx">Courtesy ligh timer on</option>
+				<option value="MDEy">Courtesy light on-off</option>
+				<option value="MDEz">Step by Step master door</option>
+				<option value="MDE0">Open master door</option>
+				<option value="MDE1">Close master door</option>
+				<option value="MDE2">Step by Step slave door</option>
+				<option value="MDE3">Open slave door</option>
+				<option value="MDE4">Close slave door</option>
+				<option value="MDE5">Release and Open</option>
+				<option value="MDFh">Release and Close</option>
+			</options>
+		</state>
+	</channel-type>
 
 </thing:thing-descriptions>

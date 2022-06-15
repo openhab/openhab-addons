@@ -18,6 +18,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@XStreamAlias("Properties")
 public class Properties {
     @XStreamAlias("DoorStatus")
     public String doorStatus;

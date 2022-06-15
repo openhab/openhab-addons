@@ -18,7 +18,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@XStreamAlias("Error")
 public class Error {
     @XStreamAlias("Code")
     public int code;

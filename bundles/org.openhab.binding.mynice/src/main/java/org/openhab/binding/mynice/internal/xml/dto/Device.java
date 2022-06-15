@@ -20,11 +20,19 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
  * @author Gaël L'hopital - Initial contribution
  */
 public class Device {
+    public enum DeviceType {
+        SECTIONAL,
+        UP_AND_OVER,
+        SLIDING,
+        BARRIER,
+        SWING;
+    }
+
     @XStreamAsAttribute
     public String id;
 
     @XStreamAlias("Type")
-    public String type;
+    public DeviceType type;
 
     @XStreamAlias("Manuf")
     public String manuf;

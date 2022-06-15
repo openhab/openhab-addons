@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mynice.internal.discovery;
 
-import static org.openhab.binding.mynice.internal.MyNiceBindingConstants.THING_TYPE_SWING;
+import static org.openhab.binding.mynice.internal.MyNiceBindingConstants.*;
 
 import java.util.List;
 import java.util.Set;
@@ -41,9 +41,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MyNiceDiscoveryService extends AbstractDiscoveryService
         implements MyNiceDataListener, ThingHandlerService {
-    private static final int SEARCH_TIME = 5;
 
+    private static final int SEARCH_TIME = 5;
     private final Logger logger = LoggerFactory.getLogger(MyNiceDiscoveryService.class);
+
     private @Nullable It4WifiHandler bridgeHandler;
 
     /**
@@ -84,21 +85,35 @@ public class MyNiceDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void onDataFetched(ThingUID bridge, List<Device> devices) {
-        devices.forEach(device -> {
-            ThingUID thingUID = new ThingUID(THING_TYPE_SWING, bridge, device.id);
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridge)
-                    .withLabel(device.manuf + " " + device.prod).withRepresentationProperty("id")
-                    .withProperty("id", device.id).build();
-            thingDiscovered(discoveryResult);
-        });
+    public void onDataFetched(List<Device> devices) {
+        It4WifiHandler handler = bridgeHandler;
+        if (handler != null) {
+            ThingUID bridgeUID = handler.getThing().getUID();
+            devices.stream().filter(device -> device.type != null).forEach(device -> {
+                ThingUID thingUID = null;
+                switch (device.type) {
+                    case SWING:
+                        thingUID = new ThingUID(THING_TYPE_SWING, bridgeUID, device.id);
+                        break;
+                    default:
+                        logger.info("`{}` type of device is not yet supported", device.type);
+                        break;
+                }
+                if (thingUID != null) {
+                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+                            .withLabel(String.format("%s %s", device.manuf, device.prod))
+                            .withRepresentationProperty(DEVICE_ID).withProperty(DEVICE_ID, device.id).build();
+                    thingDiscovered(discoveryResult);
+                }
+            });
+        }
     }
 
     @Override
     protected void startScan() {
         It4WifiHandler handler = bridgeHandler;
         if (handler != null) {
-            handler.request(CommandType.INFO);
+            handler.sendCommand(CommandType.INFO);
         }
     }
 }

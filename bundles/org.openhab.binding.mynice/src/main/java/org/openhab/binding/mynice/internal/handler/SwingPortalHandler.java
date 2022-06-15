@@ -24,10 +24,10 @@ import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.binding.mynice.internal.xml.dto.Device;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
@@ -39,6 +39,7 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class SwingPortalHandler extends BaseThingHandler implements MyNiceDataListener {
+
     private String id = "";
 
     public SwingPortalHandler(Thing thing) {
@@ -47,13 +48,19 @@ public class SwingPortalHandler extends BaseThingHandler implements MyNiceDataLi
 
     @Override
     public void initialize() {
-        id = (String) getConfig().get("id");
+        id = (String) getConfig().get(DEVICE_ID);
         getBridgeHandler().ifPresent(h -> h.registerDataListener(this));
     }
 
     private Optional<It4WifiHandler> getBridgeHandler() {
-        BridgeHandler bridge = getBridge().getHandler();
-        return bridge instanceof It4WifiHandler ? Optional.of((It4WifiHandler) bridge) : Optional.empty();
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            BridgeHandler handler = bridge.getHandler();
+            if (handler instanceof It4WifiHandler) {
+                return Optional.of((It4WifiHandler) handler);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -61,33 +68,31 @@ public class SwingPortalHandler extends BaseThingHandler implements MyNiceDataLi
         if (command instanceof RefreshType) {
             return;
         } else {
-            // if (DOOR_STATUS.equals(channelUID.getId()) && command instanceof OpenCloseCommand) {
-            // sendCommand(getGateCommand(command.toString().toLowerCase()));
-            // }
+            if (DOOR_COMMAND.equals(channelUID.getId())) {
+                getBridgeHandler().ifPresent(handler -> handler.sendCommand(id, command.toString()));
+            }
         }
     }
 
     @Override
-    public void onDataFetched(ThingUID bridge, List<Device> devices) {
-        devices.stream().filter(d -> id.equals(d.id)).findFirst().map(d -> consumeData(d));
-    }
-
-    public boolean consumeData(Device device) {
-        updateStatus(ThingStatus.ONLINE);
-        if (thing.getProperties().isEmpty()) {
-            Map<String, String> properties = Map.of(PROPERTY_VENDOR, device.manuf, PROPERTY_MODEL_ID, device.prod,
-                    PROPERTY_SERIAL_NUMBER, device.serialNr, PROPERTY_HARDWARE_VERSION, device.versionHW,
-                    PROPERTY_FIRMWARE_VERSION, device.versionFW);
-            updateProperties(properties);
-        }
-        if (device.prod != null) {
-            getBridgeHandler().ifPresent(h -> h.request(CommandType.STATUS));
-        } else {
-            String status = device.properties.doorStatus;
-            updateState(DOOR_STATUS, new StringType(status));
-            updateState(DOOR_OBSTRUCTED, new StringType(device.properties.obstruct));
-            updateState(DOOR_MOVING, OnOffType.from(status.endsWith("ing")));
-        }
-        return true;
+    public void onDataFetched(List<Device> devices) {
+        devices.stream().filter(d -> id.equals(d.id)).findFirst().map(device -> {
+            updateStatus(ThingStatus.ONLINE);
+            if (thing.getProperties().isEmpty()) {
+                Map<String, String> properties = Map.of(PROPERTY_VENDOR, device.manuf, PROPERTY_MODEL_ID, device.prod,
+                        PROPERTY_SERIAL_NUMBER, device.serialNr, PROPERTY_HARDWARE_VERSION, device.versionHW,
+                        PROPERTY_FIRMWARE_VERSION, device.versionFW);
+                updateProperties(properties);
+            }
+            if (device.prod != null) {
+                getBridgeHandler().ifPresent(h -> h.sendCommand(CommandType.STATUS));
+            } else {
+                String status = device.properties.doorStatus;
+                updateState(DOOR_STATUS, new StringType(status));
+                updateState(DOOR_OBSTRUCTED, new StringType(device.properties.obstruct));
+                updateState(DOOR_MOVING, OnOffType.from(status.endsWith("ing")));
+            }
+            return true;
+        });
     }
 }

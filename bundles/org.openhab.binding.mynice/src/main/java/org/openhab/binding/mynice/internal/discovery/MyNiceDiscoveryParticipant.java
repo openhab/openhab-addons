@@ -18,7 +18,6 @@ import static org.openhab.core.thing.Thing.PROPERTY_MAC_ADDRESS;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.jmdns.ServiceInfo;
@@ -81,7 +80,6 @@ public class MyNiceDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     private boolean validate(String mac) {
-        Matcher m = MAC_PATTERN.matcher(mac);
-        return m.find();
+        return MAC_PATTERN.matcher(mac).find();
     }
 }

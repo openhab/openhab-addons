@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mynice.internal.xml.dto.Device;
-import org.openhab.core.thing.ThingUID;
 
 /**
  * The {@link MyNiceDataListener} is notified by the bridge thing handler with updated data from
@@ -27,5 +26,5 @@ import org.openhab.core.thing.ThingUID;
 @NonNullByDefault
 public interface MyNiceDataListener {
 
-    public void onDataFetched(ThingUID bridge, List<Device> devices);
+    public void onDataFetched(List<Device> devices);
 }

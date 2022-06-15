@@ -18,7 +18,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@XStreamAlias("Interface")
 public class Interface {
     @XStreamAlias("Zone")
     public String zone;

@@ -13,39 +13,26 @@
 package org.openhab.binding.mynice.internal.xml.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mynice.internal.xml.It4WifiSession;
 
 /**
+ * The CommandType enum lists all handled command with according syntax
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public enum CommandType {
-    PAIR(false, "Authentication username=\"%un%\" cc=\"null\" CType=\"phone\" OSType=\"Android\" OSVer=\"6.0.1\""),
-    VERIFY(false, "User username=\"%un%\""),
-    CONNECT(false, "Authentication username=\"%un%\" cc=\"%cc%\""),
-    INFO,
-    STATUS,
-    CHANGE;
+    PAIR(false, "<Authentication username=\"%un%\" cc=\"null\" CType=\"phone\" OSType=\"Android\" OSVer=\"6.0.1\"/>"),
+    VERIFY(false, "<User username=\"%un%\"/>"),
+    CONNECT(false, "<Authentication username=\"%un%\" cc=\"%cc%\"/>"),
+    INFO(true, ""),
+    STATUS(true, ""),
+    CHANGE(true, "<Devices><Device id=\"%s\"><Services>%s</Services></Device></Devices>");
 
     public final boolean signNeeded;
-    private final String body;
+    public final String body;
 
     CommandType(boolean signNeeded, String body) {
         this.signNeeded = signNeeded;
         this.body = body;
-    }
-
-    CommandType() {
-        this(true, "");
-    }
-
-    public String getBody(It4WifiSession session/* , Object... bodyParms */) {
-        if (body.length() == 0) {
-            return body;
-        }
-        String result = body.replace("%un%", session.getUserName());
-        result = result.replace("%cc%", session.getClientChallenge());
-        return String.format("<%s/>", result/* , bodyParms */);
     }
 }

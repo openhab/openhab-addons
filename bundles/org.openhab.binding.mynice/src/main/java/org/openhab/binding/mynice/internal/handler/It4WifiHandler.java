@@ -26,8 +26,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mynice.internal.config.It4WifiConfiguration;
 import org.openhab.binding.mynice.internal.discovery.MyNiceDiscoveryService;
 import org.openhab.binding.mynice.internal.xml.It4WifiConnector;
-import org.openhab.binding.mynice.internal.xml.It4WifiSession;
 import org.openhab.binding.mynice.internal.xml.MyNiceXStream;
+import org.openhab.binding.mynice.internal.xml.RequestBuilder;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.binding.mynice.internal.xml.dto.Device;
 import org.openhab.binding.mynice.internal.xml.dto.Event;
@@ -56,8 +56,8 @@ public class It4WifiHandler extends BaseBridgeHandler {
 
     private @NonNullByDefault({}) It4WifiConfiguration config;
     private @NonNullByDefault({}) It4WifiConnector connector;
+    private @NonNullByDefault({}) RequestBuilder reqBuilder;
     private final MyNiceXStream xstream = new MyNiceXStream();
-    private final It4WifiSession session = new It4WifiSession();
     private List<Device> devices = new ArrayList<>();
 
     public It4WifiHandler(Bridge thing) {
@@ -69,117 +69,106 @@ public class It4WifiHandler extends BaseBridgeHandler {
         return Set.of(MyNiceDiscoveryService.class);
     }
 
-    public boolean registerDataListener(MyNiceDataListener dataListener) {
-        boolean result = dataListeners.add(dataListener);
-        notifiyListeners(devices);
-        return result;
+    public void registerDataListener(MyNiceDataListener dataListener) {
+        dataListeners.add(dataListener);
+        notifyListeners(devices);
     }
 
-    public boolean unregisterDataListener(MyNiceDataListener dataListener) {
-        return dataListeners.remove(dataListener);
+    public void unregisterDataListener(MyNiceDataListener dataListener) {
+        dataListeners.remove(dataListener);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // if (CHANNEL_1.equals(channelUID.getId())) {
-        // if (command instanceof RefreshType) {
-        // TODO: handle data refresh
-        // }
-
-        // TODO: handle command
-
-        // Note: if communication with thing fails for some reason,
-        // indicate that by setting the status with detail information:
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // "Could not control device at IP address x.x.x.x");
-        // }
+        // we do not handle commands
     }
 
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(It4WifiConfiguration.class);
-        connector = new It4WifiConnector(config.hostname, config.macAddress, session, this);
+        connector = new It4WifiConnector(config.hostname, this);
+        reqBuilder = new RequestBuilder(config.macAddress);
         connector.start();
     }
 
     public void received(String command) {
         logger.debug("Received : {}", command);
         Event event = xstream.deserialize(command);
-        Response response = null;
-        if (event instanceof Response) {
-            response = (Response) event;
-        }
-        try {
-            if (event.error != null) {
-                logger.warn("Error code {} received : {}", event.error.code, event.error.info);
+        if (event.error != null) {
+            logger.warn("Error code {} received : {}", event.error.code, event.error.info);
+        } else {
+            if (event instanceof Response) {
+                handleResponse((Response) event);
             } else {
-                switch (event.type) {
-                    case PAIR:
-                        Configuration thingConfig = editConfiguration();
-                        thingConfig.put(It4WifiConfiguration.PASSWORD, response.authentication.pwd);
-                        updateConfiguration(thingConfig);
-                        logger.info("Pairing key updated in Configuration.");
-                        connector.buildMessage(CommandType.VERIFY);
-                        break;
-                    case VERIFY:
-                        switch (response.authentication.perm) {
-                            case admin:
-                            case user:
-                                connector.buildMessage(CommandType.CONNECT);
-                                break;
-                            case wait:
-                                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                                        "Please validate the user on the MyNice application");
-                                scheduler.schedule(() -> handShaked(), 5, TimeUnit.SECONDS);
-                                break;
-                            default:
-                                break;
-                        }
-                        boolean notify = response.authentication.notify;
-                    case CONNECT:
-                        String sc = response.authentication.sc;
-                        if (sc != null) {
-                            session.setChallenges(sc, response.authentication.id, config.password);
-                            connector.buildMessage(CommandType.INFO);
-                        }
-                        break;
-                    case INFO:
-                        updateStatus(ThingStatus.ONLINE);
-                        if (thing.getProperties().isEmpty()) {
-                            Map<String, String> properties = Map.of(PROPERTY_VENDOR, response.intf.manuf,
-                                    PROPERTY_MODEL_ID, response.intf.prod, PROPERTY_SERIAL_NUMBER,
-                                    response.intf.serialNr, PROPERTY_HARDWARE_VERSION, response.intf.versionHW,
-                                    PROPERTY_FIRMWARE_VERSION, response.intf.versionFW);
-                            updateProperties(properties);
-                        }
-                        notifiyListeners(event.getDevices());
-                        break;
-                    case CHANGE:
-                    case STATUS:
-                        notifiyListeners(event.getDevices());
-                        break;
-                }
+                notifyListeners(event.getDevices());
             }
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
         }
     }
 
-    private void notifiyListeners(List<Device> list) {
-        devices = list;
-        dataListeners.forEach(listener -> listener.onDataFetched(thing.getUID(), devices));
+    private void handleResponse(Response response) {
+        switch (response.type) {
+            case PAIR:
+                Configuration thingConfig = editConfiguration();
+                thingConfig.put(It4WifiConfiguration.PASSWORD, response.authentication.pwd);
+                updateConfiguration(thingConfig);
+                logger.info("Pairing key updated in Configuration.");
+                sendCommand(CommandType.VERIFY);
+                return;
+            case VERIFY:
+                switch (response.authentication.perm) {
+                    case admin:
+                    case user:
+                        sendCommand(CommandType.CONNECT);
+                        return;
+                    case wait:
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                                "Please validate the user on the MyNice application");
+                        scheduler.schedule(() -> handShaked(), 5, TimeUnit.SECONDS);
+                        return;
+                    default:
+                        return;
+                }
+            case CONNECT:
+                String sc = response.authentication.sc;
+                if (sc != null) {
+                    reqBuilder.setChallenges(sc, response.authentication.id, config.password);
+                    sendCommand(CommandType.INFO);
+                }
+                return;
+            case INFO:
+                updateStatus(ThingStatus.ONLINE);
+                if (thing.getProperties().isEmpty()) {
+                    Map<String, String> properties = Map.of(PROPERTY_VENDOR, response.intf.manuf, PROPERTY_MODEL_ID,
+                            response.intf.prod, PROPERTY_SERIAL_NUMBER, response.intf.serialNr,
+                            PROPERTY_HARDWARE_VERSION, response.intf.versionHW, PROPERTY_FIRMWARE_VERSION,
+                            response.intf.versionFW);
+                    updateProperties(properties);
+                }
+                notifyListeners(response.getDevices());
+                return;
+            case STATUS:
+                notifyListeners(response.getDevices());
+                break;
+            default:
+                logger.info("Unhandled response type : {}", response.type);
+        }
     }
 
     public void handShaked() {
-        request(config.password.isBlank() ? CommandType.PAIR : CommandType.VERIFY);
+        sendCommand(config.password.isBlank() ? CommandType.PAIR : CommandType.VERIFY);
     }
 
-    public void request(CommandType command) {
-        try {
-            connector.buildMessage(command);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-        }
+    private void notifyListeners(List<Device> list) {
+        devices = list;
+        dataListeners.forEach(listener -> listener.onDataFetched(devices));
+    }
+
+    public void sendCommand(CommandType command) {
+        connector.sendCommand(reqBuilder.buildMessage(command));
+    }
+
+    public void sendCommand(String id, String command) {
+        connector.sendCommand(reqBuilder.buildMessage(id, command.toLowerCase()));
     }
 }
