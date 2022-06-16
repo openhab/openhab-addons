@@ -126,8 +126,7 @@ public class Device {
             valveSet = (ValveSetServiceDataItem) dataItem;
         } else if (dataItem instanceof ValveServiceDataItem) {
             String valveNumber = StringUtils.substringAfterLast(dataItem.id, ":");
-            if (valveNumber != null
-                    && (valveNumber.equals("") || valveNumber.equals("wc") || valveNumber.equals("0"))) {
+            if ("".equals(valveNumber) || "wc".equals(valveNumber) || "0".equals(valveNumber)) {
                 valve = (ValveServiceDataItem) dataItem;
             } else if ("1".equals(valveNumber)) {
                 valveOne = (ValveServiceDataItem) dataItem;
