@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:mercedesme:bridge">
+		<parameter name="clientId" type="text" required="true">
+			<label>Mercedes Benz Developer Client ID</label>
+			<description>>Mercedes Benz Developer Client ID</description>
+		</parameter>
+		<parameter name="clientSecret" type="text" required="true">
+			<label>Mercedes Benz Developer Client ID</label>
+			<description>>Mercedes Benz Developer Client ID</description>
+		</parameter>
+		<parameter name="ip" type="text">
+			<label>Callback IP Address</label>
+			<description>IP address for openHAB callback URL</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="port" type="integer">
+			<label>Callback Port Number</label>
+			<description>Port Number for openHAB callback URL</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="callbackUrl" type="text">
+			<label>Callback URL</label>
+			<description>Callback URL to openHAB</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="authUrl" type="text">
+			<label>Authorization URL</label>
+			<description>URL to call for first time authorization</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="scope" type="text">
+			<label>Authorization Scope</label>
+			<description>Scope definition for authorization</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

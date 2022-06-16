@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.mercedesme.internal;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.core.thing.ThingTypeUID;
+
 /**
  * The {@link Constants} class defines common constants, which are
  * used across the whole binding.
@@ -19,9 +22,17 @@ package org.openhab.binding.mercedesme.internal;
  * @author Bernd Weymann - Initial contribution
  */
 public class Constants {
+    private static final String BINDING_ID = "mercedesme";
+
+    // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
+    public static final ThingTypeUID THING_TYPE_COMB = new ThingTypeUID(BINDING_ID, "combustion");
+    public static final ThingTypeUID THING_TYPE_HYBRID = new ThingTypeUID(BINDING_ID, "hybrid");
+    public static final ThingTypeUID THING_TYPE_BEV = new ThingTypeUID(BINDING_ID, "bev");
+
     public static String MB_AUTH_URL = "https://id.mercedes-benz.com/as/authorization.oauth2";
     public static String MB_TOKEN_URL = "https://id.mercedes-benz.com/as/token.oauth2";
-    public static String CALLBACK = "/mb-callback";
+    public static String CALLBACK_ENDPOINT = "/mb-callback";
     public static String OAUTH_CLIENT_NAME = "#byocar";
 
     // https://developer.mercedes-benz.com/products/electric_vehicle_status/docs
@@ -36,5 +47,11 @@ public class Constants {
     public static String SCOPE_STATUS = "mb:vehicle:mbdata:vehiclestatus";
     public static String SCOPE_OFFLINE = "offline_access";
 
-    public static String SPACE = "";
+    public static String SPACE = " ";
+    public static final String EMPTY = "";
+
+    public static String HTTP = "http://";
+    public static final String LOOPBACK_ADDRESS = "lo";
+    public static final String COLON = ":";
+    public static final @NonNull String NOT_SET = "not set";
 }

@@ -13,22 +13,22 @@
 package org.openhab.binding.mercedesme.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link MercedesMeBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link AccountConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class MercedesMeBindingConstants {
+public class AccountConfiguration {
 
-    private static final String BINDING_ID = "mercedesme";
+    public String clientID = Constants.NOT_SET;
+    public String clientSecret = Constants.NOT_SET;
 
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
-
-    // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    // Advanced Parameters
+    public String callbackIP = Constants.NOT_SET;
+    public int callbackPort = -1;
+    public String callbackUrl = Constants.NOT_SET;
+    public String authUrl = Constants.NOT_SET;
+    public String scope = Constants.NOT_SET;
 }

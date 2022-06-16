@@ -15,17 +15,13 @@ package org.openhab.binding.mercedesme.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link MercedesMeConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link VehicleConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class MercedesMeConfiguration {
+public class VehicleConfiguration {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
-    public String hostname = "";
-    public String password = "";
-    public int refreshInterval = 600;
+    public String vin = Constants.NOT_SET;
+    public int refreshInterval = 5;
 }

@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.mercedesme;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.jupiter.api.Test;
-import org.openhab.binding.mercedesme.internal.Constants;
-import org.openhab.binding.mercedesme.internal.server.CallbackServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AuthTest} is responsible for handling commands, which are
@@ -25,9 +25,10 @@ import org.openhab.binding.mercedesme.internal.server.CallbackServer;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 class AuthTest {
+    private final Logger logger = LoggerFactory.getLogger(AuthTest.class);
 
-    @Test
     void test() {
         // https://www.openhab.org/javadoc/latest/org/openhab/core/auth/client/oauth2/package-summary.html
         // https://developer.mercedes-benz.com/content-page/oauth-documentation
@@ -54,34 +55,7 @@ class AuthTest {
 
             // https://id.mercedes-benz.com/as/authorization.oauth2?response_type=code&client_id=<insert_your_client_id_here>&redirect_uri=<insert_redirect_uri_here>&scope=<insert_scopes_of_API_here>&state=<insert_client_state_here>
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void test2() {
-        CallbackServer srv = new CallbackServer();
-        srv.start();
-        HttpClient client = new HttpClient();
-        try {
-            client.start();
-            System.out.println("Client started");
-            ContentResponse res = client.GET("http://localhost:8090" + Constants.CALLBACK);
-
-            // Request hr = client.newRequest(authorizationUrl);
-            // System.out.println(res.getContentAsString());
-
-            client.stop();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("{}", e.getMessage());
         }
     }
 }
