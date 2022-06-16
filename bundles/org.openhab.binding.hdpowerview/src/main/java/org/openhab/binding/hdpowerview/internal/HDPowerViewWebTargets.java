@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hdpowerview.internal;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -81,8 +82,8 @@ public class HDPowerViewWebTargets {
      * exception handling during the five minute maintenance period after a 423
      * error is received
      */
-    private final int maintenancePeriod = 300;
-    private Instant maintenanceScheduledEnd = Instant.now().minusSeconds(2 * maintenancePeriod);
+    private final Duration maintenancePeriod = Duration.ofMinutes(5);
+    private Instant maintenanceScheduledEnd = Instant.MIN;
 
     private final String base;
     private final String firmwareVersion;
@@ -576,7 +577,7 @@ public class HDPowerViewWebTargets {
         int statusCode = response.getStatus();
         if (statusCode == HttpStatus.LOCKED_423) {
             // set end of maintenance window, and throw a "softer" exception
-            maintenanceScheduledEnd = Instant.now().plusSeconds(maintenancePeriod);
+            maintenanceScheduledEnd = Instant.now().plus(maintenancePeriod);
             logger.debug("Hub undergoing maintenance");
             throw new HubMaintenanceException("Hub undergoing maintenance");
         }
