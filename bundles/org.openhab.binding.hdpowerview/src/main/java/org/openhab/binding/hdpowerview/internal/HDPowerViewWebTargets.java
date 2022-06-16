@@ -586,12 +586,12 @@ public class HDPowerViewWebTargets {
             throw new HubProcessingException(String.format("HTTP %d error", statusCode));
         }
         String jsonResponse = response.getContentAsString();
-        if ("".equals(jsonResponse)) {
-            logger.warn("Hub returned no content");
-            throw new HubProcessingException("Missing response entity");
-        }
         if (logger.isTraceEnabled()) {
             logger.trace("JSON response = {}", jsonResponse);
+        }
+        if (jsonResponse == null || jsonResponse.isEmpty()) {
+            logger.warn("Hub returned no content");
+            throw new HubProcessingException("Missing response entity");
         }
         return jsonResponse;
     }
