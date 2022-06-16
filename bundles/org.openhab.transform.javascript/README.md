@@ -43,8 +43,8 @@ Following example will return value `23.54` when `input` data is `214`.
 
 ### Inline script example:
 
-Normally JavaScript transformation is given by filename, e.g. `JS(transform/getValue.js)`.
-Inline script can be given by `|` character following the JavaScript, e.g. `JS(| input / 10)`.
+Normally JavaScript transformation is given by filename, e.g. `JS:getValue.js`.
+Inline script can be given by `|` character following the JavaScript, e.g. `JS:| input / 10`.
    
 ## Test JavaScript
 
