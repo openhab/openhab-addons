@@ -50,6 +50,8 @@ Modify the policy accordingly if needed.
 
 **Note 2:** As a more simple alternative, one can use pre-existing policy `AmazonDynamoDBFullAccess`, although the policy grants the openHAB user wider-than-necessary permissions.
 
+**Note 3:** The Number in arn:aws:dynamodb:eu-west-1:084669220525:table/openhab must be replaced by the unique ID of your personal DB. So you must give your openhab DB User the existing Policy `AmazonDynamoDBFullAccess` that he could create the new Database. Once it is created you could click on the new openhab table and could see your uniquiqe Amazon Resource Name which you must insert in the JSON Script. After that you could revoke the `AmazonDynamoDBFullAccess` from the openhab User.
+
 ```json
 {
     "Version": "2012-10-17",
