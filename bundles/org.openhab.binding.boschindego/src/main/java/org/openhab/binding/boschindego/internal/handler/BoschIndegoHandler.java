@@ -52,9 +52,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BoschIndegoHandler extends BaseThingHandler {
 
-    private final static String STATE_PREFIX = "channel-type.boschindego.statecode.state.option.";
-    private final static String STATE_UNKNOWN = "indego.state.unknown";
-
     private final Logger logger = LoggerFactory.getLogger(BoschIndegoHandler.class);
     private final HttpClient httpClient;
     private final BoschIndegoTranslationProvider translationProvider;
@@ -178,18 +175,13 @@ public class BoschIndegoHandler extends BaseThingHandler {
         int error = state.error;
         int statecode = state.state;
         boolean ready = isReadyToMow(deviceStatus, state.error);
-        String textualState = translationProvider.getText(STATE_PREFIX + state.state);
-        if (textualState == null) {
-            textualState = String.format(translationProvider.getText(STATE_UNKNOWN, String.valueOf(state.state)),
-                    state.state);
-        }
 
         updateState(STATECODE, new DecimalType(statecode));
         updateState(READY, new DecimalType(ready ? 1 : 0));
         updateState(ERRORCODE, new DecimalType(error));
         updateState(MOWED, new PercentType(mowed));
         updateState(STATE, new DecimalType(status));
-        updateState(TEXTUAL_STATE, new StringType(textualState));
+        updateState(TEXTUAL_STATE, new StringType(deviceStatus.getMessage(translationProvider)));
     }
 
     private boolean isReadyToMow(DeviceStatus deviceStatus, int error) {
