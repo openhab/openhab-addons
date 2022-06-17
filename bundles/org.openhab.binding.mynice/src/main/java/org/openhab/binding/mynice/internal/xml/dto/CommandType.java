@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mynice.internal.xml.dto;
 
+import static org.openhab.binding.mynice.internal.xml.RequestBuilder.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -21,9 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum CommandType {
-    PAIR(false, "<Authentication username=\"%un%\" cc=\"null\" CType=\"phone\" OSType=\"Android\" OSVer=\"6.0.1\"/>"),
-    VERIFY(false, "<User username=\"%un%\"/>"),
-    CONNECT(false, "<Authentication username=\"%un%\" cc=\"%cc%\"/>"),
+    PAIR(false,
+            "<Authentication username=\"" + USERNAME
+                    + "\" cc=\"null\" CType=\"phone\" OSType=\"Android\" OSVer=\"6.0.1\"/>"),
+    VERIFY(false, "<User username=\"" + USERNAME + "\"/>"),
+    CONNECT(false, "<Authentication username=\"" + USERNAME + "\" cc=\"" + CLIENT_CHALLENGE + "\"/>"),
     INFO(true, ""),
     STATUS(true, ""),
     CHANGE(true, "<Devices><Device id=\"%s\"><Services>%s</Services></Device></Devices>");

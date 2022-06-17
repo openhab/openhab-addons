@@ -88,8 +88,13 @@ public class It4WifiHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(It4WifiConfiguration.class);
         connector = new It4WifiConnector(config.hostname, this);
-        reqBuilder = new RequestBuilder(config.macAddress);
-        connector.start();
+        if (config.username.isBlank()) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Please define a username for this thing");
+        } else {
+            reqBuilder = new RequestBuilder(config.macAddress, config.username);
+            connector.start();
+        }
     }
 
     public void received(String command) {
@@ -156,6 +161,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
     }
 
     public void handShaked() {
+        config = getConfigAs(It4WifiConfiguration.class);
         sendCommand(config.password.isBlank() ? CommandType.PAIR : CommandType.VERIFY);
     }
 

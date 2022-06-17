@@ -32,6 +32,8 @@ import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 public class RequestBuilder {
     private static final Encoder BASE64_ENCODER = Base64.getEncoder();
 
+    public static final String USERNAME = "%un%";
+    public static final String CLIENT_CHALLENGE = "%cc%";
     private static final String START_REQUEST = "<Request id=\"%s\" source=\"openhab\" target=\"%s\" gw=\"gwID\" protocolType=\"NHK\" protocolVersion=\"1.0\" type=\"%s\">\r\n";
     private static final String END_REQUEST = "%s%s</Request>";
     private static final String DOOR_ACTION = "<DoorAction>%s</DoorAction>";
@@ -40,16 +42,18 @@ public class RequestBuilder {
     private final String clientChallenge = UUID.randomUUID().toString().substring(0, 8);
     private final byte[] clientChallengeArr = invertArray(DatatypeConverter.parseHexBinary(clientChallenge));
     private final MessageDigest digest;
-    private final String mac;
+    private final String it4WifiMac;
+    private final String username;
 
     private int sessionID = 1;
     private int commandSequence = 0;
     private byte[] sessionPassword = {};
 
-    public RequestBuilder(String mac) {
+    public RequestBuilder(String it4WifiMac, String username) {
         try {
             this.digest = MessageDigest.getInstance("SHA-256");
-            this.mac = mac;
+            this.it4WifiMac = it4WifiMac;
+            this.username = username;
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalArgumentException(e);
         }
@@ -69,7 +73,7 @@ public class RequestBuilder {
     }
 
     public String buildMessage(CommandType command, Object... bodyParms) {
-        String startRequest = String.format(START_REQUEST, getCommandId(), mac, command);
+        String startRequest = String.format(START_REQUEST, getCommandId(), it4WifiMac, command);
         String body = startRequest + getBody(command, bodyParms);
         String sign = buildSign(command, body);
         return String.format(END_REQUEST, body, sign);
@@ -78,8 +82,8 @@ public class RequestBuilder {
     public String getBody(CommandType command, Object... bodyParms) {
         String result = command.body;
         if (result.length() != 0) {
-            result = result.replace("%un%", mac);
-            result = result.replace("%cc%", clientChallenge);
+            result = result.replace(USERNAME, username);
+            result = result.replace(CLIENT_CHALLENGE, clientChallenge);
             result = String.format(result, bodyParms);
         }
         return result;

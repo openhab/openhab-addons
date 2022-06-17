@@ -24,6 +24,7 @@ public class It4WifiConfiguration {
     public static final String PASSWORD = "password";
     public static final String HOSTNAME = "hostname";
 
+    public String username = "";
     public String hostname = "";
     public String macAddress = "";
     public String password = "";
