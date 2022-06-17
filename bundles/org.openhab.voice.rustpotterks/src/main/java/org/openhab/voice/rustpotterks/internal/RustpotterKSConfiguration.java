@@ -43,7 +43,7 @@ public class RustpotterKSConfiguration {
      */
     public String noiseDetectionMode = "disabled";
     /**
-     * Noise/silence ratio in the last second to consider noise detected. Defaults to 0.5.
+     * Noise/silence ratio in the last second to consider noise is detected. Defaults to 0.5.
      */
     public float noiseSensitivity = 0.5f;
     /**
@@ -51,7 +51,7 @@ public class RustpotterKSConfiguration {
      */
     public int vadDelay = 3;
     /**
-     * Voice/silence ratio in the last second to consider voice detected.
+     * Voice/silence ratio in the last second to consider voice is detected.
      */
     public float vadSensitivity = 0.5f;
     /**

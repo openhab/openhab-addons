@@ -65,7 +65,7 @@
 		</parameter>
 		<parameter name="noiseSensitivity" type="decimal" min="0" max="1" groupName="noiseDetector">
 			<label>Noise Sensitivity</label>
-			<description>Noise/silence ratio in the last second to consider voice detected.</description>
+			<description>Noise/silence ratio in the last second to consider voice is detected.</description>
 			<default>0.5</default>
 		</parameter>
 		<parameter name="vadMode" type="text" groupName="vadDetector">
@@ -82,7 +82,7 @@
 		</parameter>
 		<parameter name="vadSensitivity" type="decimal" min="0" max="1" groupName="vadDetector">
 			<label>VAD Sensitivity</label>
-			<description>Voice/silence ratio in the last second to consider voice detected.</description>
+			<description>Voice/silence ratio in the last second to consider voice is detected.</description>
 			<default>0.5</default>
 		</parameter>
 		<parameter name="vadDelay" type="integer" groupName="vadDetector">
