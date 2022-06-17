@@ -53,8 +53,7 @@ import io.github.givimad.rustpotter_java.RustpotterJavaBuilder;
 import io.github.givimad.rustpotter_java.VadMode;
 
 /**
- * The {@link RustpotterKSService} is responsible for creating things and thing
- * handlers.
+ * The {@link RustpotterKSService} is a keyword spotting implementation based on rustpotter.
  *
  * @author Miguel Álvarez - Initial contribution
  */
@@ -65,7 +64,7 @@ import io.github.givimad.rustpotter_java.VadMode;
 public class RustpotterKSService implements KSService {
     private static final String RUSTPOTTER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "rustpotter").toString();
     private final Logger logger = LoggerFactory.getLogger(RustpotterKSService.class);
-    private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("OH-voice-porcupineks");
+    private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("OH-voice-rustpotterks");
     private RustpotterKSConfiguration config = new RustpotterKSConfiguration();
     static {
         Logger logger = LoggerFactory.getLogger(RustpotterKSService.class);
@@ -99,7 +98,7 @@ public class RustpotterKSService implements KSService {
 
     @Override
     public Set<Locale> getSupportedLocales() {
-        return Set.of(Locale.ENGLISH, new Locale("es"), Locale.FRENCH, Locale.GERMAN);
+        return Set.of();
     }
 
     @Override
@@ -157,6 +156,8 @@ public class RustpotterKSService implements KSService {
         // detector configs
         rustpotterBuilder.setThreshold(config.threshold);
         rustpotterBuilder.setAveragedThreshold(config.averagedThreshold);
+        rustpotterBuilder.setComparatorRef(config.comparatorRef);
+        rustpotterBuilder.setComparatorBandSize(config.comparatorBandSize);
         @Nullable
         VadMode vadMode = getVADMode(config.vadMode);
         if (vadMode != null) {
@@ -229,7 +230,7 @@ public class RustpotterKSService implements KSService {
     private @Nullable NoiseDetectionMode getNoiseMode(String mode) {
         switch (mode) {
             case "Easiest":
-                return NoiseDetectionMode.EASYEST;
+                return NoiseDetectionMode.EASIEST;
             case "Easy":
                 return NoiseDetectionMode.EASY;
             case "Normal":

@@ -18,7 +18,7 @@ After installing, you will be able to access the service options through the ope
 * **Noise Detection Mode** - Use build-in noise detection to reduce computation on absence of noise. Configures how difficult is to consider a frame as noise (the required noise level).
 * **Noise Detection Sensitivity** - Noise/silence ratio in the last second to consider noise detected. Defaults to 0.5.
 * **VAD Mode** - Use a voice activity detector to reduce computation on absence of voice sound.
-* **VAD Sensitivity** - Voice/silence ratio in the last second to consider voice detected.
+* **VAD Sensitivity** - Voice/silence ratio in the last second to consider voice is detected.
 * **VAD Delay** - Seconds to disable the vad detector after voice is detected. Defaults to 3.
 
 
@@ -27,16 +27,22 @@ In case you would like to setup the service via a text file, create a new file i
 Its contents should look similar to:
 
 ```
-TODO
+org.openhab.voice.rustpotterks:threshold=0.5
+org.openhab.voice.rustpotterks:averagedthreshold=0.2
+org.openhab.voice.rustpotterks:noiseDetectionMode=hard
+org.openhab.voice.rustpotterks:noiseDetectionSensitivity=0.5
+org.openhab.voice.rustpotterks:vadMode=hard
+org.openhab.voice.rustpotterks:vadSensitivity=0.5
+org.openhab.voice.rustpotterks:vadDelay=3
 ```
 
 ## Magic Word Configuration
 
 The magic word to spot is gathered from your 'Voice' configuration. 
 
-You can generate your own wake word model by using the [Rustpotter CLI](https://github.com/GiviMAD/rustpotter).
+You can generate your own wake word model by using the [Rustpotter CLI](https://github.com/GiviMAD/rustpotter-cli).
 
-You can also download the models used as examples on the [rustpotter web demo](https://givimad.github.io/rustpotter-worklet-demo/) on [this folder](https://github.com/GiviMAD/rustpotter-worklet-demo/tree/main/static).
+You can also download the models used as examples on the [rustpotter web demo](https://givimad.github.io/rustpotter-worklet-demo/) from [this folder](https://github.com/GiviMAD/rustpotter-worklet-demo/tree/main/static).
 
 To use a wakeword model, you should place the file under '\<openHAB userdata\>/rustpotter' and configure your magic word to match the file name replacing spaces with '_' and adding the extension '.rpw'.
 As an example, the file generated for the keyword "ok openhab" will be named 'ok_openhab.rpw'.
