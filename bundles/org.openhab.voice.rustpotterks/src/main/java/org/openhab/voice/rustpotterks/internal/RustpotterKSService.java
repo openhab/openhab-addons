@@ -236,9 +236,9 @@ public class RustpotterKSService implements KSService {
             case "Normal":
                 return NoiseDetectionMode.NORMAL;
             case "Hard":
-                return NoiseDetectionMode.HIGH;
+                return NoiseDetectionMode.HARD;
             case "Hardest":
-                return NoiseDetectionMode.HIGHEST;
+                return NoiseDetectionMode.HARDEST;
             default:
                 return null;
         }
