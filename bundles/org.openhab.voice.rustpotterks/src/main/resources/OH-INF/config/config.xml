@@ -9,7 +9,7 @@
 			<label>Wakeword Detector</label>
 			<description>Wakeword detection options.</description>
 		</parameter-group>
-		<parameter-group name="vadDetector">
+		<parameter-group name="noiseDetector">
 			<label>Noise Detector</label>
 			<description>Optional noise detection options.</description>
 		</parameter-group>
