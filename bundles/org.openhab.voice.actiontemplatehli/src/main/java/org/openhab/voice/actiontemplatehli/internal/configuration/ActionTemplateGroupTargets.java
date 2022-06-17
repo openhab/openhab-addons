@@ -17,8 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The {@link org.openhab.voice.actiontemplatehli.internal.configuration.ActionTemplateGroupTargets} represents each
- * configured action
+ * The {@link ActionTemplateGroupTargets} class filters the item targets when targeting an item group.
  *
  * @author Miguel Álvarez - Initial contribution
  */

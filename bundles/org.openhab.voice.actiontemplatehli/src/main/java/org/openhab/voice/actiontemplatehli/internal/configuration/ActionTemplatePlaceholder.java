@@ -20,8 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The {@link org.openhab.voice.actiontemplatehli.internal.configuration.ActionTemplatePlaceholder} represents each
- * configured action
+ * The {@link ActionTemplatePlaceholder} class configures placeholders for the action template
  *
  * @author Miguel Álvarez - Initial contribution
  */

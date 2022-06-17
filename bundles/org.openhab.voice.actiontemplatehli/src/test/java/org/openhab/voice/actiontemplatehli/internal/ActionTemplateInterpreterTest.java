@@ -28,7 +28,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.core.events.EventPublisher;
-import org.openhab.core.io.rest.LocaleService;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.Metadata;
@@ -59,7 +58,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ActionTemplateInterpreterTest {
     private @Mock @NonNullByDefault({}) ItemRegistry itemRegistryMock;
     private @Mock @NonNullByDefault({}) MetadataRegistry metadataRegistryMock;
-    private @Mock @NonNullByDefault({}) LocaleService localeServiceMock;
     private @Mock @NonNullByDefault({}) EventPublisher eventPublisherMock;
     private @NonNullByDefault({}) ActionTemplateInterpreter interpreter;
 
@@ -166,8 +164,7 @@ public class ActionTemplateInterpreterTest {
         // Mock items
         Mockito.when(itemRegistryMock.getAll()).thenReturn(List.of(switchItem, stringItem, groupItem, numberItem));
 
-        interpreter = new ActionTemplateInterpreter(itemRegistryMock, localeServiceMock, metadataRegistryMock,
-                eventPublisherMock) {
+        interpreter = new ActionTemplateInterpreter(itemRegistryMock, metadataRegistryMock, eventPublisherMock) {
             @Override
             protected ActionTemplateConfiguration[] getTypeActionConfigs(String itemType) {
                 // mock type actions for testing

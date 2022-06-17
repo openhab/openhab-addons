@@ -55,7 +55,6 @@ import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.events.EventPublisher;
-import org.openhab.core.io.rest.LocaleService;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
@@ -123,7 +122,6 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     }
     private static final Pattern COLOR_HEX_PATTERN = Pattern.compile("^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$");
     private final Logger logger = LoggerFactory.getLogger(ActionTemplateInterpreter.class);
-    private final LocaleService localeService;
     private final ItemRegistry itemRegistry;
     private final MetadataRegistry metadataRegistry;
     private final EventPublisher eventPublisher;
@@ -151,9 +149,8 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     };
 
     @Activate
-    public ActionTemplateInterpreter(@Reference ItemRegistry itemRegistry, @Reference LocaleService localeService,
-            @Reference MetadataRegistry metadataRegistry, @Reference EventPublisher eventPublisher) {
-        this.localeService = localeService;
+    public ActionTemplateInterpreter(@Reference ItemRegistry itemRegistry, @Reference MetadataRegistry metadataRegistry,
+            @Reference EventPublisher eventPublisher) {
         this.itemRegistry = itemRegistry;
         this.metadataRegistry = metadataRegistry;
         this.eventPublisher = eventPublisher;
@@ -408,13 +405,13 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     private List<NLPPlaceholderData> updatePlaceholderValues(String text, String[] tokens,
             List<NLPPlaceholderData> placeholderValues, Span dynamicSpan) {
         // we should clean up placeholder values detected inside the dynamic template
-        placeholderValues = placeholderValues.stream().filter(i -> !dynamicSpan.contains(i.placeholderSpan))
+        var validPlaceholderValues = placeholderValues.stream().filter(i -> !dynamicSpan.contains(i.placeholderSpan))
                 .collect(Collectors.toList());
         // add dynamic content to values
-        placeholderValues.add(new NLPPlaceholderData(DYNAMIC_PLACEHOLDER,
+        validPlaceholderValues.add(new NLPPlaceholderData(DYNAMIC_PLACEHOLDER,
                 detokenize(Arrays.copyOfRange(tokens, dynamicSpan.getStart(), dynamicSpan.getEnd()), text),
                 dynamicSpan));
-        return placeholderValues;
+        return validPlaceholderValues;
     }
 
     private Set<Item> getMembersByTypeRecursive(GroupItem group, String itemType, String[] requiredMemberTags) {
@@ -432,6 +429,9 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         var targetMembers = recursive ? getMembersByTypeRecursive(group, "Switch", requiredMemberTags)
                 : getMembersByType(group, "Switch", requiredMemberTags);
         for (var member : targetMembers) {
+            if (UnDefType.UNDEF.equals(member.getState())) {
+                return UnDefType.UNDEF;
+            }
             if (UnDefType.NULL.equals(member.getState())) {
                 return UnDefType.NULL;
             }
@@ -447,6 +447,9 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         var targetMembers = recursive ? getMembersByTypeRecursive(group, "Contact", requiredMemberTags)
                 : getMembersByType(group, "Contact", requiredMemberTags);
         for (var member : targetMembers) {
+            if (UnDefType.UNDEF.equals(member.getState())) {
+                return UnDefType.UNDEF;
+            }
             if (UnDefType.NULL.equals(member.getState())) {
                 return UnDefType.NULL;
             }
@@ -562,7 +565,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             } else if (nerFile != null) {
                 nerSpans = nerWithFile(tokens, nerFile);
             } else {
-                logger.warn("Placeholder {} could not be applied missing ner config", placeholder.label);
+                logger.warn("Placeholder {} could not be applied due to missing ner config", placeholder.label);
                 continue;
             }
             for (var nerSpanIndex = 0; nerSpanIndex < nerSpans.length; nerSpanIndex++) {
@@ -741,8 +744,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         var itemType = memberTargets.itemType;
         var requiredItemTags = memberTargets.requiredItemTags;
         if (!itemType.isEmpty()) {
-            return memberTargets.recursive
-                    ? getMembersByTypeRecursive(groupItem, itemType, memberTargets.requiredItemTags)
+            return memberTargets.recursive ? getMembersByTypeRecursive(groupItem, itemType, requiredItemTags)
                     : getMembersByType(groupItem, itemType, requiredItemTags);
         }
         return Set.of();
@@ -763,20 +765,21 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 placeholdersCopy.add(itemOptionPlaceholder);
             }
         }
+        String finalText = text;
         // replace placeholder symbols
         for (var placeholder : placeholdersCopy) {
             var placeholderValue = placeholderValues.getOrDefault(placeholder.label, "");
             if (!placeholderValue.isBlank()) {
                 placeholderValue = applyPOSTransformation(placeholderValue, placeholder);
             }
-            text = text.replace(getPlaceholderSymbol(placeholder.label), placeholderValue);
+            finalText = finalText.replace(getPlaceholderSymbol(placeholder.label), placeholderValue);
         }
         // replace dynamic placeholder symbol
         var dynamicValue = placeholderValues.getOrDefault(DYNAMIC_PLACEHOLDER, "");
         if (!dynamicValue.isBlank()) {
-            text = text.replace(DYNAMIC_PLACEHOLDER_SYMBOL, dynamicValue);
+            finalText = finalText.replace(DYNAMIC_PLACEHOLDER_SYMBOL, dynamicValue);
         }
-        return text;
+        return finalText;
     }
 
     protected ActionTemplateConfiguration[] getTypeActionConfigs(String itemType) {
@@ -822,9 +825,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             } else {
                 value = getSpanTokens(tokens, span, text);
             }
-            if (value != null) {
-                replacements.add(new NLPPlaceholderData(placeholderName, value, span));
-            }
+            replacements.add(new NLPPlaceholderData(placeholderName, value, span));
         }
         var spanStart = span.getStart();
         var stream = spanStart != 0 ? Arrays.stream(Arrays.copyOfRange(tokens, 0, spanStart)) : Stream.of();
@@ -845,6 +846,8 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             return tokens[0];
         }
         if (config.detokenizeOptimization) {
+            // this is a dynamic regex to de-tokenize a part of the text based on the original text,
+            // this way we don't miss special characters between tokens.
             var detokenizeRegex = String.join("[^a-bA-B0-9]?", tokens);
             var match = Pattern.compile(detokenizeRegex).matcher(text);
             if (match.find()) {
@@ -1082,7 +1085,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         }
         int score = 0;
         int processedIndex = 0;
-        // avoid use tags is not available for all tokens
+        // avoid use tags if not available for all tokens
         var tagsEnabled = tokenTags.length == tokens.length;
         for (int i = 0; i < tokens.length; i++) {
             String token = tokens[i];

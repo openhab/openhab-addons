@@ -25,7 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * The {@link ActionTemplateConfiguration} represents each configured action
+ * The {@link ActionTemplateConfiguration} class represents each configured action
  *
  * @author Miguel Álvarez - Initial contribution
  */
