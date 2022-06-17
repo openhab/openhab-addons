@@ -16,7 +16,6 @@ import static org.openhab.binding.easee.internal.EaseeBindingConstants.CHANNEL_T
 
 import java.util.Map;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.easee.internal.Utils;
@@ -113,7 +112,7 @@ public interface EaseeThingHandler extends ThingHandler, ChannelProvider {
      * @return
      */
     default EaseeCommand buildEaseeCommand(Command command, Channel channel) {
-        throw new NotImplementedException("buildEaseeCommand not implemented/supported by this thing type");
+        throw new UnsupportedOperationException("buildEaseeCommand not implemented/supported by this thing type");
     }
 
     /**

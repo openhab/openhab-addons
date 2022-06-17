@@ -14,7 +14,6 @@ package org.openhab.binding.easee.internal.command.charger;
 
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
@@ -39,7 +38,7 @@ public class LatestChargingSession extends AbstractCommand implements EaseeComma
     }
 
     @Override
-    protected Request prepareRequest(@NonNull Request requestToPrepare) {
+    protected Request prepareRequest(Request requestToPrepare) {
         requestToPrepare.method(HttpMethod.GET);
         return requestToPrepare;
     }

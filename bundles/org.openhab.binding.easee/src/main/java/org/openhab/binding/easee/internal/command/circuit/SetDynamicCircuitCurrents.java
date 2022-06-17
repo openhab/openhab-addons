@@ -12,10 +12,16 @@
  */
 package org.openhab.binding.easee.internal.command.circuit;
 
+import static org.openhab.binding.easee.internal.EaseeBindingConstants.DYNAMIC_CIRCUIT_CURRENT_URL;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.easee.internal.command.AbstractWriteCommand;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 import org.openhab.core.thing.Channel;
@@ -27,13 +33,17 @@ import org.openhab.core.types.Command;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class SetDynamicCircuitCurrents extends SetDynamicCircuitCurrent implements EaseeCommand {
+public class SetDynamicCircuitCurrents extends AbstractWriteCommand implements EaseeCommand {
     private final String PHASE1 = "phase1";
     private final String PHASE2 = "phase2";
     private final String PHASE3 = "phase3";
+    private final String url;
 
     public SetDynamicCircuitCurrents(EaseeThingHandler handler, Channel channel, Command command, String circuitId) {
-        super(handler, channel, command, circuitId);
+        super(handler, channel, command, RetryOnFailure.YES, ProcessFailureResponse.YES);
+        String siteId = handler.getBridgeConfiguration().getSiteId();
+        this.url = DYNAMIC_CIRCUIT_CURRENT_URL.replaceAll("\\{siteId\\}", siteId).replaceAll("\\{circuitId\\}",
+                circuitId);
     }
 
     /**
@@ -54,5 +64,19 @@ public class SetDynamicCircuitCurrents extends SetDynamicCircuitCurrent implemen
             throw new IllegalArgumentException("malformed command string: " + rawCommand);
         }
         return gson.toJson(content);
+    }
+
+    @Override
+    protected Request prepareWriteRequest(Request requestToPrepare) {
+        requestToPrepare.method(HttpMethod.POST);
+        StringContentProvider cp = new StringContentProvider(getJsonContent());
+        requestToPrepare.content(cp);
+
+        return requestToPrepare;
+    }
+
+    @Override
+    protected String getURL() {
+        return url;
     }
 }

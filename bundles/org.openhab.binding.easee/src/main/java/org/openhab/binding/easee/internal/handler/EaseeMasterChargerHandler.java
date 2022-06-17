@@ -21,8 +21,9 @@ import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.command.circuit.CircuitSettings;
 import org.openhab.binding.easee.internal.command.circuit.DynamicCircuitCurrent;
 import org.openhab.binding.easee.internal.command.circuit.SetCircuitSettings;
-import org.openhab.binding.easee.internal.command.circuit.SetDynamicCircuitCurrent;
 import org.openhab.binding.easee.internal.command.circuit.SetDynamicCircuitCurrents;
+import org.openhab.binding.easee.internal.command.circuit.SetMaxCircuitCurrents;
+import org.openhab.binding.easee.internal.command.circuit.SetOfflineMaxCircuitCurrents;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -69,10 +70,12 @@ public class EaseeMasterChargerHandler extends EaseeChargerHandler implements Ea
         switch (Utils.getWriteCommand(channel)) {
             case COMMAND_SET_CIRCUIT_SETTINGS:
                 return new SetCircuitSettings(this, channel, command, circuitId);
-            case COMMAND_SET_DYNAMIC_CIRCUIT_CURRENT:
-                return new SetDynamicCircuitCurrent(this, channel, command, circuitId);
             case COMMAND_SET_DYNAMIC_CIRCUIT_CURRENTS:
                 return new SetDynamicCircuitCurrents(this, channel, command, circuitId);
+            case COMMAND_SET_MAX_CIRCUIT_CURRENTS:
+                return new SetMaxCircuitCurrents(this, channel, command, circuitId);
+            case COMMAND_SET_OFFLINE_MAX_CIRCUIT_CURRENTS:
+                return new SetOfflineMaxCircuitCurrents(this, channel, command, circuitId);
             default:
                 return super.buildEaseeCommand(command, channel);
         }

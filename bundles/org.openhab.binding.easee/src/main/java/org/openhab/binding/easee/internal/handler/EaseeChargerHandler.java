@@ -221,7 +221,8 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
                 // this should not happen
                 logger.warn("write command '{}' not found for channel '{}'", command.toString(),
                         channel.getUID().getIdWithoutGroup());
-                throw new UnsupportedOperationException("write command not found: " + command.toString());
+                throw new UnsupportedOperationException(
+                        "write command not found for channel: " + channel.getUID().getIdWithoutGroup());
         }
     }
 }
