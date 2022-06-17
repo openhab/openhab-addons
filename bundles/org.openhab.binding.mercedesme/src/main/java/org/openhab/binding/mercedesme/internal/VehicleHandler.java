@@ -12,16 +12,27 @@
  */
 package org.openhab.binding.mercedesme.internal;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mercedesme.internal.server.CallbackServer;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,17 +48,28 @@ public class VehicleHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
+    private List<String> functions;
+    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private Optional<AccountHandler> accountHandler = Optional.empty();;
     private Optional<VehicleConfiguration> config = Optional.empty();
-    private Optional<CallbackServer> srv = Optional.empty();
-    private OAuthFactory oAuthFactory;
-    private final HttpClientFactory httpClientFactory;
-    private final String uid;
+    private final HttpClient hc;
 
-    public VehicleHandler(Thing thing, OAuthFactory oAuthFactory, HttpClientFactory hcf, String uid) {
+    public VehicleHandler(Thing thing, HttpClientFactory hcf, String uid) {
         super(thing);
-        this.oAuthFactory = oAuthFactory;
-        this.httpClientFactory = hcf;
-        this.uid = uid;
+        hc = hcf.getCommonHttpClient();
+        functions = new ArrayList<>(List.of(Constants.ODO_URL, Constants.STATUS_URL, Constants.LOCK_URL));
+        switch (uid) {
+            case Constants.COMBUSTION:
+                functions.add(Constants.FUEL_URL);
+                break;
+            case Constants.HYBRID:
+                functions.add(Constants.FUEL_URL);
+                functions.add(Constants.EV_URL);
+                break;
+            case Constants.BEV:
+                functions.add(Constants.EV_URL);
+                break;
+        }
     }
 
     @Override
@@ -58,32 +80,55 @@ public class VehicleHandler extends BaseThingHandler {
     public void initialize() {
         config = Optional.of(getConfigAs(VehicleConfiguration.class));
         updateStatus(ThingStatus.UNKNOWN);
-        // scheduler.execute(() -> {
-        // boolean thingReachable = true; // <background task with long running initialization here>
-        // // when done do:
-        // if (thingReachable) {
-        // } else {
-        // updateStatus(ThingStatus.OFFLINE);
-        // }
-        // });
-
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            BridgeHandler handler = bridge.getHandler();
+            if (handler != null) {
+                accountHandler = Optional.of((AccountHandler) handler);
+            } else {
+                logger.debug("Bridge Handler null");
+            }
+        } else {
+            logger.debug("Bridge null");
+        }
+        startSchedule(config.get().refreshInterval);
         updateStatus(ThingStatus.ONLINE);
     }
 
-    @Override
-    public void handleRemoval() {
-        super.handleRemoval();
-        if (!srv.isEmpty()) {
-            srv.get().stop();
-        }
-        // start will be handled in next initialize
+    private void startSchedule(int interval) {
+        refreshJob.ifPresentOrElse(job -> {
+            if (job.isCancelled()) {
+                refreshJob = Optional
+                        .of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
+            } // else - scheduler is already running!
+        }, () -> {
+            refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
+        });
     }
 
     @Override
     public void dispose() {
-        super.dispose();
-        if (!srv.isEmpty()) {
-            srv.get().stop();
+        refreshJob.ifPresent(job -> job.cancel(true));
+    }
+
+    public void getData() {
+        if (!accountHandler.isEmpty()) {
+            Iterator<String> iter = functions.iterator();
+            while (iter.hasNext()) {
+                String url = iter.next();
+                Request req = hc.newRequest(String.format(url, config.get().vin));
+                req.header(HttpHeader.AUTHORIZATION, "Bearer " + accountHandler.get().getToken());
+                ContentResponse cr;
+                try {
+                    cr = req.send();
+                    logger.info("Response {} {}", cr.getStatus(), cr.getContentAsString());
+                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                    logger.warn("Error getting data {}", e.getMessage());
+                }
+            }
+
+        } else {
+            logger.warn("AccountHandler not set");
         }
     }
 }

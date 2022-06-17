@@ -1,0 +1,38 @@
+[
+	{
+		"doorstatusfrontright": {
+			"value": "false",
+			"timestamp": 1655399413000
+		}
+	},
+	{
+		"doorstatusfrontleft": {
+			"value": "false",
+			"timestamp": 1655399416000
+		}
+	},
+	{
+		"windowstatusfrontleft": {
+			"value": "2",
+			"timestamp": 1655296128000
+		}
+	},
+	{
+		"windowstatusrearleft": {
+			"value": "2",
+			"timestamp": 1655377073000
+		}
+	},
+	{
+		"windowstatusrearright": {
+			"value": "0",
+			"timestamp": 1655386800000
+		}
+	},
+	{
+		"doorstatusrearleft": {
+			"value": "false",
+			"timestamp": 1655399422000
+		}
+	}
+]

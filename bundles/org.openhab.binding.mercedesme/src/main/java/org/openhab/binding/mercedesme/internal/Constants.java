@@ -24,11 +24,14 @@ import org.openhab.core.thing.ThingTypeUID;
 public class Constants {
     private static final String BINDING_ID = "mercedesme";
 
+    public static final String COMBUSTION = "combustion";
+    public static final String HYBRID = "hybrid";
+    public static final String BEV = "bev";
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
-    public static final ThingTypeUID THING_TYPE_COMB = new ThingTypeUID(BINDING_ID, "combustion");
-    public static final ThingTypeUID THING_TYPE_HYBRID = new ThingTypeUID(BINDING_ID, "hybrid");
-    public static final ThingTypeUID THING_TYPE_BEV = new ThingTypeUID(BINDING_ID, "bev");
+    public static final ThingTypeUID THING_TYPE_COMB = new ThingTypeUID(BINDING_ID, COMBUSTION);
+    public static final ThingTypeUID THING_TYPE_HYBRID = new ThingTypeUID(BINDING_ID, HYBRID);
+    public static final ThingTypeUID THING_TYPE_BEV = new ThingTypeUID(BINDING_ID, BEV);
 
     public static String MB_AUTH_URL = "https://id.mercedes-benz.com/as/authorization.oauth2";
     public static String MB_TOKEN_URL = "https://id.mercedes-benz.com/as/token.oauth2";
@@ -47,6 +50,13 @@ public class Constants {
     public static String SCOPE_STATUS = "mb:vehicle:mbdata:vehiclestatus";
     public static String SCOPE_OFFLINE = "offline_access";
 
+    public static String BASE_URL = "https://api.mercedes-benz.com/vehicledata/v2";
+    public static String ODO_URL = BASE_URL + "/vehicles/%s/containers/payasyoudrive";
+    public static String STATUS_URL = BASE_URL + "/vehicles/%s/containers/vehiclestatus";
+    public static String LOCK_URL = BASE_URL + "/vehicles/%s/containers/vehiclelockstatus";
+    public static String FUEL_URL = BASE_URL + "/vehicles/%s/containers/fuelstatus";
+    public static String EV_URL = BASE_URL + "/vehicles/%s/containers/electricvehicle";
+
     public static String SPACE = " ";
     public static final String EMPTY = "";
 
@@ -54,4 +64,6 @@ public class Constants {
     public static final String LOOPBACK_ADDRESS = "lo";
     public static final String COLON = ":";
     public static final @NonNull String NOT_SET = "not set";
+
+    public static final String CODE = "code";
 }

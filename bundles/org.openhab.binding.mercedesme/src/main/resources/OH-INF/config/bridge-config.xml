@@ -13,12 +13,12 @@
 			<label>Mercedes Benz Developer Client ID</label>
 			<description>>Mercedes Benz Developer Client ID</description>
 		</parameter>
-		<parameter name="ip" type="text">
+		<parameter name="callbackIP" type="text">
 			<label>Callback IP Address</label>
 			<description>IP address for openHAB callback URL</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="port" type="integer">
+		<parameter name="callbackPort" type="integer">
 			<label>Callback Port Number</label>
 			<description>Port Number for openHAB callback URL</description>
 			<advanced>true</advanced>
@@ -36,6 +36,11 @@
 		<parameter name="scope" type="text">
 			<label>Authorization Scope</label>
 			<description>Scope definition for authorization</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="token" type="text">
+			<label>Current Token</label>
+			<description>Serialization of current valid token</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

@@ -70,6 +70,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             return new AccountHandler((Bridge) thing, httpClientFactory, oAuthFactory);
         }
-        return new VehicleHandler(thing, oAuthFactory, httpClientFactory, thingTypeUID.getId());
+        return new VehicleHandler(thing, httpClientFactory, thingTypeUID.getId());
     }
 }

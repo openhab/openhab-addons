@@ -12,15 +12,30 @@
  */
 package org.openhab.binding.mercedesme.internal.server;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
+import org.openhab.binding.mercedesme.internal.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.Constants;
+import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,13 +47,35 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class CallbackServer {
     private final static Logger logger = LoggerFactory.getLogger(CallbackServer.class);
-    private Optional<Server> server = Optional.empty();
-    private final int port;
-    private final OAuthFactory oAuthFactory;
 
-    public CallbackServer(OAuthFactory oAuthFactory, int port) {
-        this.oAuthFactory = oAuthFactory;
-        this.port = port;
+    private HttpClient httpClient;
+    private AccessTokenRefreshListener listener;
+    private Optional<Server> server = Optional.empty();
+    private OAuthClientService oacs;
+    private Optional<AccessTokenResponse> token = Optional.empty();
+    private final static Map<Integer, OAuthClientService> authMap = new HashMap<Integer, OAuthClientService>();
+    private final static Map<Integer, CallbackServer> serverMap = new HashMap<Integer, CallbackServer>();
+
+    AccountConfiguration config;
+
+    public CallbackServer(AccessTokenRefreshListener l, HttpClient hc, OAuthFactory oAuthFactory,
+            AccountConfiguration config) {
+        oacs = oAuthFactory.createOAuthClientService(Constants.OAUTH_CLIENT_NAME, Constants.MB_TOKEN_URL,
+                Constants.MB_AUTH_URL, config.clientId, config.clientSecret, config.scope, false);
+        authMap.put(Integer.valueOf(config.callbackPort), oacs);
+        serverMap.put(Integer.valueOf(config.callbackPort), this);
+        httpClient = hc;
+        listener = l;
+        this.config = config;
+    }
+
+    public String getAuthorizationUrl() {
+        try {
+            return oacs.getAuthorizationUrl(config.callbackUrl, null, null);
+        } catch (OAuthException e) {
+            logger.error("Error creating Authorization URL {}", e.getMessage());
+            return Constants.EMPTY;
+        }
     }
 
     public void start() {
@@ -49,7 +86,7 @@ public class CallbackServer {
         }
         server = Optional.of(new Server());
         ServerConnector connector = new ServerConnector(server.get());
-        connector.setPort(port);
+        connector.setPort(config.callbackPort);
         server.get().setConnectors(new Connector[] { connector });
         ServletHandler servletHandler = new ServletHandler();
         server.get().setHandler(servletHandler);
@@ -70,6 +107,77 @@ public class CallbackServer {
             }
         } catch (Exception e) {
             logger.error("Cannot stop Callback Server {}", e.getMessage());
+        }
+    }
+
+    public String getToken() {
+        if (token.isEmpty()) {
+            logger.info("Token empty - start full authorization");
+            try {
+                String url = oacs.getAuthorizationUrl(config.callbackUrl, null, null);
+                logger.info("Token auth url {}", url);
+
+                Request r = httpClient.newRequest(url);
+                r.followRedirects(true);
+                // ContentResponse cr = httpClient.GET(url);
+                ContentResponse cr = r.send();
+                logger.info("Auth Call Response {} {}", cr.getStatus(), cr.getContentAsString());
+
+                // StringBuilder result = new StringBuilder();
+                // URL curl = new URL(url);
+                // HttpURLConnection con = (HttpURLConnection) curl.openConnection();
+                // con.setRequestMethod("GET");
+                //
+                // try (BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                // for (String line; (line = reader.readLine()) != null;) {
+                // result.append(line);
+                // }
+                // }
+                // logger.info("Token auth response {}", result);
+            } catch (OAuthException | InterruptedException | TimeoutException | ExecutionException e) {
+                logger.error("Error during authorization {}", e.getMessage());
+            }
+            return Constants.EMPTY;
+        } else {
+            if (token.get().isExpired(LocalDateTime.now(), 10)) {
+                logger.info("Token expired - start refreshing");
+                try {
+                    AccessTokenResponse act = oacs.refreshToken();
+                    token = Optional.of(act);
+                    listener.onAccessTokenResponse(act);
+                } catch (OAuthException | IOException | OAuthResponseException e) {
+                    logger.error("Error refreshing token {}", e.getMessage());
+                }
+            } else {
+                logger.info("Token valid - do nothing");
+            }
+        }
+        return token.get().getAccessToken();
+    }
+
+    public void setToken(AccessTokenResponse atr) {
+        token = Optional.of(atr);
+    }
+
+    /**
+     * Static callback for Servlet calls
+     *
+     * @param port
+     * @param code
+     */
+    public static void callback(int port, String code) {
+        logger.info("Callback from Servlet {} {}", port, code);
+        OAuthClientService oacs = authMap.get(port);
+        try {
+            logger.info("Get token from code {}", code);
+            // get CallbackServer instance
+            CallbackServer srv = serverMap.get(port);
+            AccessTokenResponse atr = oacs.getAccessTokenResponseByAuthorizationCode(code, srv.config.callbackUrl);
+            logger.info("Upadte server token {}", atr.getAccessToken());
+            srv.token = Optional.of(atr);
+            srv.listener.onAccessTokenResponse(atr);
+        } catch (OAuthException | IOException | OAuthResponseException e) {
+            logger.error("Exception getting token from code {} {}", code, e.getMessage());
         }
     }
 }

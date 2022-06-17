@@ -1,0 +1,26 @@
+[
+	{
+		"doorlockstatusgas": {
+			"value": "false",
+			"timestamp": 1655399428000
+		}
+	},
+	{
+		"doorlockstatusdecklid": {
+			"value": "false",
+			"timestamp": 1655399428000
+		}
+	},
+	{
+		"doorlockstatusvehicle": {
+			"value": "2",
+			"timestamp": 1655399428000
+		}
+	},
+	{
+		"positionHeading": {
+			"value": "42.0",
+			"timestamp": 1655399388000
+		}
+	}
+]

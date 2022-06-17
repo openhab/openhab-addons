@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.mercedesme.internal.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,13 @@ public class CallbackServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        String code = request.getParameter(Constants.CODE);
+        if (code != null) {
+            CallbackServer.callback(request.getLocalPort(), code);
+        } else {
+            logger.error("Failed to extract code from {}", request.getParameterMap());
+        }
         logger.error("Request Url {}", request.getRequestURI());
         logger.error("Local Add {}", request.getLocalAddr());
         logger.error("Port{}", request.getLocalPort());

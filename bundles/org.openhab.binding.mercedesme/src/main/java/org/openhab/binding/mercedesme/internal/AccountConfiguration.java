@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class AccountConfiguration {
 
-    public String clientID = Constants.NOT_SET;
+    public String clientId = Constants.NOT_SET;
     public String clientSecret = Constants.NOT_SET;
 
     // Advanced Parameters
@@ -31,4 +31,11 @@ public class AccountConfiguration {
     public String callbackUrl = Constants.NOT_SET;
     public String authUrl = Constants.NOT_SET;
     public String scope = Constants.NOT_SET;
+    public String token = Constants.EMPTY;
+
+    @Override
+    public String toString() {
+        return "ID " + clientId + ", Secret " + clientSecret + ", IP " + callbackIP + ", Port " + callbackPort
+                + ", Callback URL " + callbackUrl + ", Auth URL " + authUrl + ", scope " + scope;
+    }
 }
