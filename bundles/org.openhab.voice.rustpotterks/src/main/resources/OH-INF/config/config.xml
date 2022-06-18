@@ -51,8 +51,9 @@
 		</parameter>
 		<parameter name="noiseDetectionMode" type="text" groupName="noiseDetector">
 			<label>Noise Detection Mode</label>
-			<description>Use a noise detector to reduce computation on absence of sound. Configures how difficult is to consider
-				a frame as noise (the required noise level).</description>
+			<description>Use a noise detector to reduce computation on absence of sound. Configures the difficulty to consider
+				a
+				frame as noise (the required noise level).</description>
 			<default>disabled</default>
 			<options>
 				<option value="disabled">Disabled</option>
@@ -70,7 +71,7 @@
 		</parameter>
 		<parameter name="vadMode" type="text" groupName="vadDetector">
 			<label>VAD Mode</label>
-			<description>Use a vad detector to reduce computation on absence of voice sound.</description>
+			<description>Use a vad detector to reduce computation in the absence of vocal sound.</description>
 			<default>disabled</default>
 			<options>
 				<option value="disabled">Disabled</option>

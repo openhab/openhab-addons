@@ -39,7 +39,7 @@ public class RustpotterKSConfiguration {
     public boolean eagerMode = true;
     /**
      * Use build-in noise detection to reduce computation on absence of noise.
-     * Configures how difficult is to consider a frame as noise (the required noise level).
+     * Configures the difficulty to consider a frame as noise (the required noise level).
      */
     public String noiseDetectionMode = "disabled";
     /**
@@ -55,7 +55,7 @@ public class RustpotterKSConfiguration {
      */
     public float vadSensitivity = 0.5f;
     /**
-     * Use a voice activity detector to reduce computation on absence of voice sound.
+     * Use a voice activity detector to reduce computation in the absence of vocal sound.
      */
     public String vadMode = "disabled";
     /**

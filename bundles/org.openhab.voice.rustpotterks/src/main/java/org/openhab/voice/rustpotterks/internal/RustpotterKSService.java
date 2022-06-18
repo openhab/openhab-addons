@@ -229,15 +229,15 @@ public class RustpotterKSService implements KSService {
 
     private @Nullable NoiseDetectionMode getNoiseMode(String mode) {
         switch (mode) {
-            case "Easiest":
+            case "easiest":
                 return NoiseDetectionMode.EASIEST;
-            case "Easy":
+            case "easy":
                 return NoiseDetectionMode.EASY;
-            case "Normal":
+            case "normal":
                 return NoiseDetectionMode.NORMAL;
-            case "Hard":
+            case "hard":
                 return NoiseDetectionMode.HARD;
-            case "Hardest":
+            case "hardest":
                 return NoiseDetectionMode.HARDEST;
             default:
                 return null;

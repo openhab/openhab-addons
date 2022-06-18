@@ -13,13 +13,15 @@ The voice data is processed offline, locally on your openHAB server by Rustpotte
 After installing, you will be able to access the service options through the openHAB configuration page in UI (**Settings / Other Services - Rustpotter Keyword Spotter**) to edit them:
 
 * **Threshold** - Configures the detector threshold, is the min score (in range 0. to 1.) that some wake word template should obtain to trigger a detection. Defaults to 0.5.
-* **Averaged Threshold** - Configures the detector averaged threshold, is the min score (in range 0. to 1.) that the averaged wake word template should obtain to allow to continue with the detection. This way it can prevent to run the comparison of the current frame against each of the wakeword templates. If set to 0. this functionality is disabled.
-* **Eager mode** - Terminate the detection as son as one result is above the score, instead of wait to see if the next frame has a higher score.
-* **Noise Detection Mode** - Use build-in noise detection to reduce computation on absence of noise. Configures how difficult is to consider a frame as noise (the required noise level).
+* **Averaged Threshold** - Configures the detector averaged threshold, is the min score (in range 0. to 1.) that the averaged wake word template should obtain to allow to continue with the detection. This way it can prevent to run the comparison of the current frame against each of the wake word templates. If set to 0. this functionality is disabled.
+* **Eager mode** - Enables eager mode. End detection as soon as a result is over the score, instead of waiting to see if the next frame has a higher score.
+* **Noise Detection Mode** - Use build-in noise detection to reduce computation on absence of noise. Configures the difficulty to consider a frame as noise (the required noise level).
 * **Noise Detection Sensitivity** - Noise/silence ratio in the last second to consider noise is detected. Defaults to 0.5.
-* **VAD Mode** - Use a voice activity detector to reduce computation on absence of voice sound.
+* **VAD Mode** - Use a voice activity detector to reduce computation in the absence of vocal sound.
 * **VAD Sensitivity** - Voice/silence ratio in the last second to consider voice is detected.
 * **VAD Delay** - Seconds to disable the vad detector after voice is detected. Defaults to 3.
+* **Comparator Ref** - Configures the reference for the comparator used to match the samples.
+* **Comparator Band Size** - Configures the band-size for the comparator used to match the samples.
 
 
 In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `rustpotterks.cfg`
@@ -29,9 +31,12 @@ Its contents should look similar to:
 ```
 org.openhab.voice.rustpotterks:threshold=0.5
 org.openhab.voice.rustpotterks:averagedthreshold=0.2
+org.openhab.voice.rustpotterks:comparatorRef=0.22
+org.openhab.voice.rustpotterks:comparatorBandSize=6
+org.openhab.voice.rustpotterks:eagerMode=true
 org.openhab.voice.rustpotterks:noiseDetectionMode=hard
 org.openhab.voice.rustpotterks:noiseDetectionSensitivity=0.5
-org.openhab.voice.rustpotterks:vadMode=hard
+org.openhab.voice.rustpotterks:vadMode=aggressive
 org.openhab.voice.rustpotterks:vadSensitivity=0.5
 org.openhab.voice.rustpotterks:vadDelay=3
 ```
@@ -44,7 +49,7 @@ You can generate your own wake word model by using the [Rustpotter CLI](https://
 
 You can also download the models used as examples on the [rustpotter web demo](https://givimad.github.io/rustpotter-worklet-demo/) from [this folder](https://github.com/GiviMAD/rustpotter-worklet-demo/tree/main/static).
 
-To use a wakeword model, you should place the file under '\<openHAB userdata\>/rustpotter' and configure your magic word to match the file name replacing spaces with '_' and adding the extension '.rpw'.
+To use a wake word model, you should place the file under '\<openHAB userdata\>/rustpotter' and configure your magic word to match the file name replacing spaces with '_' and adding the extension '.rpw'.
 As an example, the file generated for the keyword "ok openhab" will be named 'ok_openhab.rpw'.
 
 The service will only work if it's able to find the correct rpw for your magic word configuration.
