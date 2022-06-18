@@ -568,9 +568,9 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 logger.warn("Placeholder {} could not be applied due to missing ner config", placeholder.label);
                 continue;
             }
-            for (var nerSpanIndex = 0; nerSpanIndex < nerSpans.length; nerSpanIndex++) {
+            for (Span span : nerSpans) {
                 var placeholderName = placeholder.label;
-                var nerSpan = nerSpans[nerSpanIndex];
+                var nerSpan = span;
                 tokens = replacePlaceholder(text, tokens, nerSpan, placeholderName, placeholderValues,
                         possibleValuesByTokensMap);
                 if (lemmas.length > 0) {
@@ -612,9 +612,8 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         // Special type handling
         switch (item.getType()) {
             case "Color":
-                var colorValue = valueTemplate;
-                if (colorValue instanceof String) {
-                    replacedValue = templatePlaceholders((String) colorValue, item, placeholderValues,
+                if (valueTemplate instanceof String) {
+                    replacedValue = templatePlaceholders((String) valueTemplate, item, placeholderValues,
                             actionConfiguration.placeholders);
                     if (COLOR_HEX_PATTERN.matcher(replacedValue).matches()) {
                         Color rgb = Color.decode(replacedValue);
@@ -751,9 +750,8 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     }
 
     private Set<Item> getMembersByType(GroupItem groupItem, String itemType, String[] requiredItemTags) {
-        Set<Item> childrenItems = groupItem.getMembers(i -> i.getType().equals(itemType)
+        return groupItem.getMembers(i -> i.getType().equals(itemType)
                 && (requiredItemTags.length == 0 || Arrays.stream(requiredItemTags).allMatch(i.getTags()::contains)));
-        return childrenItems;
     }
 
     private String templatePlaceholders(String text, Item targetItem, Map<String, String> placeholderValues,
@@ -796,7 +794,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return new ActionTemplateConfiguration[] {};
     }
 
-    private @Nullable Item getTargetItemByLabelTokens(String[] tokens) throws IOException {
+    private @Nullable Item getTargetItemByLabelTokens(String[] tokens) {
         var label = getItemsByLabelTokensMap().entrySet().stream()
                 .filter(entry -> Arrays.equals(tokens, entry.getKey())).findFirst();
         if (label.isEmpty()) {
@@ -910,7 +908,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         }
     }
 
-    private Span[] nerItemLabels(String[] tokens) throws IOException {
+    private Span[] nerItemLabels(String[] tokens) {
         return nerValues(tokens, getItemsByLabelTokensMap().keySet().toArray(String[][]::new), ITEM_LABEL_PLACEHOLDER,
                 false);
     }
@@ -978,7 +976,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return lemmatizer.lemmatize(tokens, tags);
     }
 
-    private Map<String[], String> getStringsByTokensMap(String[] values) throws IOException {
+    private Map<String[], String> getStringsByTokensMap(String[] values) {
         var map = new HashMap<String[], String>();
         for (String value : values) {
             map.put(tokenizeText(value), value);
@@ -1026,15 +1024,15 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return tag.replaceAll("__", " ");
     }
 
-    private Map<String[], Item> getItemsByLabelTokensMap() throws IOException {
+    private Map<String[], Item> getItemsByLabelTokensMap() {
         return getItemsMaps().itemLabelByTokens;
     }
 
-    private Map<Item, ActionTemplateConfiguration[]> getItemsWithActionConfigs() throws IOException {
+    private Map<Item, ActionTemplateConfiguration[]> getItemsWithActionConfigs() {
         return getItemsMaps().itemsWithActionConfigs;
     }
 
-    private NLPItemMaps getItemsMaps() throws IOException {
+    private NLPItemMaps getItemsMaps() {
         var itemMaps = this.nlpItemMaps;
         if (itemMaps == null) {
             var itemByLabelTokens = new HashMap<String[], Item>();
