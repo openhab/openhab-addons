@@ -828,13 +828,16 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             replacements.add(new NLPPlaceholderData(placeholderName, value, span));
         }
         var spanStart = span.getStart();
-        var stream = spanStart != 0 ? Arrays.stream(Arrays.copyOfRange(tokens, 0, spanStart)) : Stream.of();
-        stream = Stream.concat(stream, Arrays.stream(new String[] { getPlaceholderSymbol(placeholderName) }));
-        var spanEnd = span.getEnd();
-        if (spanEnd != tokens.length) {
-            stream = Stream.concat(stream, Arrays.stream(Arrays.copyOfRange(tokens, spanEnd, tokens.length)));
+        try (Stream<String> dataStream = Stream.concat(
+                spanStart != 0 ? Arrays.stream(Arrays.copyOfRange(tokens, 0, spanStart)) : Stream.of(),
+                Arrays.stream(new String[] { getPlaceholderSymbol(placeholderName) }))) {
+            var spanEnd = span.getEnd();
+            if (spanEnd != tokens.length) {
+                return Stream.concat(dataStream, Arrays.stream(Arrays.copyOfRange(tokens, spanEnd, tokens.length)))
+                        .toArray(String[]::new);
+            }
+            return dataStream.toArray(String[]::new);
         }
-        return stream.toArray(String[]::new);
     }
 
     private String getSpanTokens(String[] tokens, Span span, String original) {
