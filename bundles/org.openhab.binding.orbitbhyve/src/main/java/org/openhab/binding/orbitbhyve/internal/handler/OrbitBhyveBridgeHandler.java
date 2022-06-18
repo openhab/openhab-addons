@@ -56,6 +56,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ConfigStatusBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -314,10 +315,12 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
         for (Thing th : getThing().getThings()) {
             if (th.isEnabled()) {
                 String deviceId = th.getUID().getId();
-                OrbitBhyveSprinklerHandler handler = (OrbitBhyveSprinklerHandler) th.getHandler();
-                for (OrbitBhyveDevice device : devices) {
-                    if (deviceId.equals(th.getUID().getId())) {
-                        updateDeviceStatus(device, handler);
+                ThingHandler handler = th.getHandler();
+                if (handler instanceof OrbitBhyveSprinklerHandler) {
+                    for (OrbitBhyveDevice device : devices) {
+                        if (deviceId.equals(th.getUID().getId())) {
+                            updateDeviceStatus(device, (OrbitBhyveSprinklerHandler) handler);
+                        }
                     }
                 }
             }
@@ -336,9 +339,11 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
     private void updateDeviceStatus(String deviceId) {
         for (Thing th : getThing().getThings()) {
             if (deviceId.equals(th.getUID().getId())) {
-                OrbitBhyveSprinklerHandler handler = (OrbitBhyveSprinklerHandler) th.getHandler();
-                OrbitBhyveDevice device = getDevice(deviceId);
-                updateDeviceStatus(device, handler);
+                ThingHandler handler = th.getHandler();
+                if (handler instanceof OrbitBhyveSprinklerHandler) {
+                    OrbitBhyveDevice device = getDevice(deviceId);
+                    updateDeviceStatus(device, (OrbitBhyveSprinklerHandler) handler);
+                }
             }
         }
     }
@@ -346,9 +351,9 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
     private void updateDeviceProgramStatus(OrbitBhyveProgram program) {
         for (Thing th : getThing().getThings()) {
             if (program.getDeviceId().equals(th.getUID().getId())) {
-                OrbitBhyveSprinklerHandler handler = (OrbitBhyveSprinklerHandler) th.getHandler();
-                if (handler != null) {
-                    handler.updateProgram(program);
+                ThingHandler handler = th.getHandler();
+                if (handler instanceof OrbitBhyveSprinklerHandler) {
+                    ((OrbitBhyveSprinklerHandler) handler).updateProgram(program);
                 }
             }
         }
