@@ -19,9 +19,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.gardena.internal.exception.GardenaException;
+import org.openhab.binding.gardena.internal.model.dto.api.CommonService;
 import org.openhab.binding.gardena.internal.model.dto.api.CommonServiceDataItem;
 import org.openhab.binding.gardena.internal.model.dto.api.DataItem;
 import org.openhab.binding.gardena.internal.model.dto.api.DeviceDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.Location;
 import org.openhab.binding.gardena.internal.model.dto.api.LocationDataItem;
 import org.openhab.binding.gardena.internal.model.dto.api.MowerServiceDataItem;
 import org.openhab.binding.gardena.internal.model.dto.api.PowerSocketServiceDataItem;
@@ -82,8 +84,9 @@ public class Device {
      */
     public void evaluateDeviceType() {
         if (deviceType == null) {
-            if (common.attributes.modelType.value.toLowerCase().startsWith(DEVICE_TYPE_PREFIX)) {
-                String modelType = common.attributes.modelType.value.toLowerCase();
+            CommonService attributes = common.attributes;
+            if (attributes != null && attributes.modelType.value.toLowerCase().startsWith(DEVICE_TYPE_PREFIX)) {
+                String modelType = attributes.modelType.value.toLowerCase();
                 modelType = modelType.substring(14);
                 deviceType = modelType.replace(" ", "_");
             } else {
@@ -111,8 +114,9 @@ public class Device {
             // ignore
         } else if (dataItem instanceof LocationDataItem) {
             LocationDataItem locationDataItem = (LocationDataItem) dataItem;
-            if (locationDataItem.attributes != null) {
-                location = locationDataItem.attributes.name;
+            Location attributes = locationDataItem.attributes;
+            if (attributes != null) {
+                location = attributes.name;
             }
         } else if (dataItem instanceof CommonServiceDataItem) {
             common = (CommonServiceDataItem) dataItem;
