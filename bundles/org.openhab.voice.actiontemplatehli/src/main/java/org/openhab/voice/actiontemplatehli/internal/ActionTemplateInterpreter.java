@@ -159,8 +159,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
 
     @Activate
     protected void activate(Map<String, Object> config) {
-        this.config = new Configuration(config).as(ActionTemplateInterpreterConfiguration.class);
-        reloadConfigs();
+        modified(config);
     }
 
     @Modified
@@ -206,15 +205,14 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             throw new InterpretationException(config.unhandledMessage);
         }
         try {
-            if (config.lowerText) {
-                words = words.toLowerCase(locale);
-            }
-            var info = getNLPInfo(words);
+            var finalWords = config.lowerText ? words.toLowerCase(locale) : words;
+            var info = getNLPInfo(finalWords);
             if (info.tokens.length == 0) {
                 logger.debug("no tokens produced; aborting");
                 throw new InterpretationException(config.failureMessage);
             }
-            String response = processAction(words, checkActionConfigs(words, info.tokens, info.tags, info.lemmas));
+            String response = processAction(finalWords,
+                    checkActionConfigs(finalWords, info.tokens, info.tags, info.lemmas));
             if (response == null) {
                 logger.debug("silent mode; no response");
                 return "";
@@ -466,16 +464,17 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         String state = null;
         String itemLabel = targetItem.getLabel();
         String groupLabel = null;
-        if (targetItem.getType().equals("Group") && memberTargets != null) {
+        Item finalTargetItem = targetItem;
+        if (finalTargetItem.getType().equals("Group") && memberTargets != null) {
             if (memberTargets.mergeState && memberTargets.itemName.isEmpty() && !memberTargets.itemType.isEmpty()) {
                 // handle states that can be merged
                 switch (memberTargets.itemType) {
                     case "Switch":
-                        state = mergeSwitchMembersState((GroupItem) targetItem, memberTargets.requiredItemTags,
+                        state = mergeSwitchMembersState((GroupItem) finalTargetItem, memberTargets.requiredItemTags,
                                 memberTargets.recursive).toFullString();
                         break;
                     case "Contact":
-                        state = mergeContactMembersState((GroupItem) targetItem, memberTargets.requiredItemTags,
+                        state = mergeContactMembersState((GroupItem) finalTargetItem, memberTargets.requiredItemTags,
                                 memberTargets.recursive).toFullString();
                         break;
                     default:
@@ -484,7 +483,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 }
             }
             if (state == null) {
-                Set<Item> targetMembers = getTargetMembers((GroupItem) targetItem, memberTargets);
+                Set<Item> targetMembers = getTargetMembers((GroupItem) finalTargetItem, memberTargets);
                 if (!targetMembers.isEmpty()) {
                     if (targetMembers.size() > 1) {
                         logger.warn("read action matches {} item members inside a group, using the first one",
@@ -495,15 +494,15 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                     groupLabel = itemLabel;
                     itemLabel = targetMember.getLabel();
                     state = targetMember.getState().toFullString();
-                    targetItem = targetMember;
+                    finalTargetItem = targetMember;
                 } else {
-                    logger.warn("configured targetMembers were not found in group '{}'", targetItem.getName());
+                    logger.warn("configured targetMembers were not found in group '{}'", finalTargetItem.getName());
                     throw new InterpretationException(config.failureMessage);
                 }
             }
         }
         if (state == null) {
-            state = targetItem.getState().toFullString();
+            state = finalTargetItem.getState().toFullString();
         }
         var statePlaceholder = actionConfigMatch.placeholders.stream().filter(p -> p.label.equals(STATE_PLACEHOLDER))
                 .findFirst();
@@ -520,7 +519,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         if (template instanceof String) {
             String templateText = (String) template;
             if (templateText.contains(ITEM_OPTION_PLACEHOLDER)) {
-                var itemOptionPlaceholder = getItemOptionPlaceholder(targetItem, true, null);
+                var itemOptionPlaceholder = getItemOptionPlaceholder(finalTargetItem, true, null);
                 if (itemOptionPlaceholder != null) {
                     itemState = applyPOSTransformation(itemState, itemOptionPlaceholder);
                 }
@@ -538,6 +537,9 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             String[] lemmas, ActionTemplateConfiguration actionConfiguration, String template,
             List<NLPPlaceholderData> placeholderValues) throws IOException {
         var placeholders = new ArrayList<>(actionConfiguration.placeholders);
+        var finalTokens = tokens;
+        var finalLemmas = lemmas;
+        var finalTags = tags;
         if (template.contains(ITEM_OPTION_PLACEHOLDER_SYMBOL)) {
             var itemOptionPlaceholder = getItemOptionPlaceholder(targetItem, isRead, targetMembers);
             if (itemOptionPlaceholder == null) {
@@ -560,28 +562,27 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             Map<String[], String> possibleValuesByTokensMap = null;
             if (nerStaticValues != null) {
                 possibleValuesByTokensMap = getStringsByTokensMap(nerStaticValues);
-                nerSpans = nerValues(tokens, possibleValuesByTokensMap.keySet().toArray(String[][]::new),
+                nerSpans = nerValues(finalTokens, possibleValuesByTokensMap.keySet().toArray(String[][]::new),
                         placeholder.label);
             } else if (nerFile != null) {
-                nerSpans = nerWithFile(tokens, nerFile);
+                nerSpans = nerWithFile(finalTokens, nerFile);
             } else {
                 logger.warn("Placeholder {} could not be applied due to missing ner config", placeholder.label);
                 continue;
             }
-            for (Span span : nerSpans) {
+            for (Span nerSpan : nerSpans) {
                 var placeholderName = placeholder.label;
-                var nerSpan = span;
-                tokens = replacePlaceholder(text, tokens, nerSpan, placeholderName, placeholderValues,
+                finalTokens = replacePlaceholder(text, finalTokens, nerSpan, placeholderName, placeholderValues,
                         possibleValuesByTokensMap);
-                if (lemmas.length > 0) {
-                    lemmas = replacePlaceholder(text, lemmas, nerSpan, placeholderName, null, null);
+                if (finalLemmas.length > 0) {
+                    finalLemmas = replacePlaceholder(text, finalLemmas, nerSpan, placeholderName, null, null);
                 }
-                if (tags.length > 0) {
-                    tags = replacePlaceholder(text, tags, nerSpan, placeholderName, null, null);
+                if (finalTags.length > 0) {
+                    finalTags = replacePlaceholder(text, finalTags, nerSpan, placeholderName, null, null);
                 }
             }
         }
-        return getScore(tokens, tags, lemmas, actionConfiguration, template);
+        return getScore(finalTokens, finalTags, finalLemmas, actionConfiguration, template);
     }
 
     private NLPTokenComparisonResult getScore(String[] tokens, String[] tags, String[] lemmas,
