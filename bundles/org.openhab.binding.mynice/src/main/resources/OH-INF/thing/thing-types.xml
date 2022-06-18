@@ -11,10 +11,10 @@
 		<representation-property>macAddress</representation-property>
 
 		<config-description>
-            <parameter name="username" type="text">
-                <label>Username</label>
-                <description>User defined on the IT4Wifi.</description>
-            </parameter>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>User defined on the IT4Wifi.</description>
+			</parameter>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
