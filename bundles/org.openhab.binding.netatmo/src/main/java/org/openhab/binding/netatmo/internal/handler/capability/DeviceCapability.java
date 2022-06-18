@@ -28,12 +28,21 @@ import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 public class DeviceCapability extends Capability {
     private static final int DATA_AGE_LIMIT_S = 3600;
 
+    /**
+     * Whether the device is owned or not by the user (a favorite station or a guest station is not owned by the user).
+     * It will be updated when handling the result of the getstationsdata API.
+     * It must be initialized to false to be sure that the first call to the API will not fail for a favorite/guest
+     * weather stations.
+     */
+    protected boolean owned;
+
     public DeviceCapability(CommonInterface handler) {
         super(handler);
     }
 
     @Override
     protected void updateNAMain(NAMain newData) {
+        owned = !newData.isReadOnly();
         if (firstLaunch) {
             newData.getPlace().ifPresent(place -> {
                 place.getCity().map(city -> properties.put(PROPERTY_CITY, city));

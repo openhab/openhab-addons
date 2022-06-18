@@ -23,6 +23,22 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="siren">
+		<label>Siren Status</label>
+		<channels>
+			<channel id="status" typeId="siren-status"/>
+			<channel id="monitoring" typeId="siren-monitoring"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="status-doorbell">
+		<label>Camera Status</label>
+		<channels>
+			<channel id="sd-card" typeId="sd-card-status"/>
+			<channel id="alim" typeId="alim-status"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="live">
 		<label>Live Monitoring</label>
 		<channels>
@@ -42,6 +58,17 @@
 			<channel id="vpn-stream-url" typeId="live-stream-url">
 				<label>Live Stream VPN URL</label>
 				<description>URL of the live stream for this camera through Netatmo VPN.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="live-doorbell">
+		<label>Live Monitoring</label>
+		<channels>
+			<channel id="picture" typeId="live-picture"/>
+			<channel id="local-picture-url" typeId="live-picture-url">
+				<label>Live Snapshot Local URL</label>
+				<description>Local URL of the live snapshot for this camera.</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -71,7 +98,49 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="person-event">
+	<channel-group-type id="sub-event-doorbell">
+		<label>Sub Event</label>
+		<channels>
+			<channel id="type" typeId="event-type"/>
+			<channel id="time" typeId="timestamp">
+				<label>Sub-Event Timestamp</label>
+				<description>Moment when then sub-event occurred.</description>
+			</channel>
+			<channel id="message" typeId="message"/>
+			<channel id="snapshot" typeId="event-picture"/>
+			<channel id="snapshot-url" typeId="event-picture-url"/>
+			<channel id="vignette" typeId="event-picture">
+				<label>Vignette</label>
+				<description>Vignette of the Snapshot.</description>
+			</channel>
+			<channel id="vignette-url" typeId="event-picture-url">
+				<label>Vignette URL</label>
+				<description>URL of the vignette.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="last-event-doorbell">
+		<label>Last Event</label>
+		<channels>
+			<channel id="type" typeId="event-type"/>
+			<channel id="video-status" typeId="video-status"/>
+			<channel id="time" typeId="timestamp">
+				<label>Event Timestamp</label>
+				<description>Moment when event occurred.</description>
+			</channel>
+			<channel id="local-video-url" typeId="video-url">
+				<label>Video Local URL</label>
+				<description>Local URL of the event recording.</description>
+			</channel>
+			<channel id="vpn-video-url" typeId="video-url">
+				<label>Video VPN URL</label>
+				<description>URL of the event recording through Netatmo VPN.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="last-event-person">
 		<label>Last Event</label>
 		<channels>
 			<channel id="subtype" typeId="event-subtype"/>

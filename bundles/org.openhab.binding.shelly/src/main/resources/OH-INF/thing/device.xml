@@ -31,6 +31,7 @@
 				<option value="LOW_BATTERY">@text/channel-type.shelly.alarmTrigger.option.LOW_BATTERY</option>
 				<option value="BATTERY">@text/channel-type.shelly.alarmTrigger.option.BATTERY</option>
 				<option value="POWERON">@text/channel-type.shelly.alarmTrigger.option.POWERON</option>
+				<option value="EXT_POWER">@text/channel-type.shelly.alarmTrigger.option.EXT_POWER</option>
 				<option value="BUTTON">@text/channel-type.shelly.alarmTrigger.option.BUTTON</option>
 				<option value="SENSOR">@text/channel-type.shelly.alarmTrigger.option.SENSOR</option>
 			</options>

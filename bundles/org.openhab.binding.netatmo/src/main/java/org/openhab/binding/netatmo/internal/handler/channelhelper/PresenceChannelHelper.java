@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_FLOODLIGHT;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
+
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,9 +31,10 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class PresenceChannelHelper extends ChannelHelper {
-    public PresenceChannelHelper() {
-        super(GROUP_PRESENCE);
+public class PresenceChannelHelper extends CameraChannelHelper {
+
+    public PresenceChannelHelper(Set<String> providedGroups) {
+        super(providedGroups);
     }
 
     @Override

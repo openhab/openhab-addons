@@ -482,7 +482,7 @@ public class PulseaudioHandler extends BaseThingHandler {
         }
         switch (simpleFormat) {
             case "u8":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, null, 8, 1,
+                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, null, 8, 1,
                         simpleRate.longValue(), simpleChannels.intValue());
             case "s16le":
                 return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 1,
@@ -491,16 +491,16 @@ public class PulseaudioHandler extends BaseThingHandler {
                 return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, true, 16, 1,
                         simpleRate.longValue(), simpleChannels.intValue());
             case "s24le":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false, 24, 1,
+                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 24, 1,
                         simpleRate.longValue(), simpleChannels.intValue());
             case "s24be":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, true, 24, 1,
+                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, true, 24, 1,
                         simpleRate.longValue(), simpleChannels.intValue());
             case "s32le":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false, 32, 1,
+                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 32, 1,
                         simpleRate.longValue(), simpleChannels.intValue());
             case "s32be":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, true, 32, 1,
+                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, true, 32, 1,
                         simpleRate.longValue(), simpleChannels.intValue());
             default:
                 logger.warn("unsupported format {}", simpleFormat);

@@ -10,22 +10,21 @@
 
 		<representation-property>serviceName</representation-property>
 		<config-description>
-			<parameter name="userId" type="text" required="true">
-				<label>@text/thing-type.config.shellydevice.userId.label</label>
-				<description>@text/thing-type.config.shellydevice.userId.description</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<label>@text/thing-type.config.shellydevice.password.label</label>
-				<description>@text/thing-type.config.shellydevice.password.description</description>
-				<context>password</context>
-			</parameter>
 			<parameter name="deviceIp" type="text" required="true">
-				<label>@text/thing-type.config.shellydevice.deviceIp.label</label>
-				<description>@text/thing-type.config.shellydevice.deviceIp.description</description>
+				<label>@text/thing-type.config.shelly.deviceIp.label</label>
+				<description>@text/thing-type.config.shelly.deviceIp.description</description>
 				<context>network-address</context>
 			</parameter>
+			<parameter name="userId" type="text" required="false">
+				<label>@text/thing-type.config.shelly.userId.label</label>
+				<description>@text/thing-type.config.shelly.userId.description</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<label>@text/thing-type.config.shelly.password.label</label>
+				<description>@text/thing-type.config.shelly.password.description</description>
+				<context>password</context>
+			</parameter>
 		</config-description>
-
 	</thing-type>
 
 	<thing-type id="shellyunknown">

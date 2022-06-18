@@ -5,44 +5,64 @@ The Netatmo binding integrates the following Netatmo products:
 - *Personal Weather Station*. Reports temperature, humidity, air pressure, carbon dioxide concentration in the air, as well as the ambient noise level.
 - *Thermostat*. Reports ambient temperature, allow to check target temperature, consult and change furnace heating status.
 - *Indoor Camera / Welcome*. Reports last event and persons at home, consult picture and video from event/camera.
+- *Siren*
 - *Outdoor Camera / Presence*. Reports last event, consult picture and video from event/camera.
+- *Doorbell* 
 
 See https://www.netatmo.com/ for details on their product.
 
 ## Binding Configuration
 
-Before setting up your 'Things', you will have to grant openHAB to access Netatmo API.
-Here is the procedure:
+The binding requires you to register an Application with Netatmo Connect at [https://dev.netatmo.com/](https://dev.netatmo.com/) - this will get you a set of Client ID and Client Secret parameters to be used by your configuration.
 
-Create an application at https://dev.netatmo.com/dev/createapp
+### Create Netatmo Application
 
-The variables you will need to get to setup the binding are:
+Follow instructions under:
+
+ 1. Setting Up Your Account
+ 1. Registering Your Application
+ 1. Setting Redirect URI and webhook URI can be skipped, these will be provided by the binding.
+
+Variables needed for the setup of the binding are:
 
 * `<CLIENT_ID>` Your client ID taken from your App at https://dev.netatmo.com/apps
 * `<CLIENT_SECRET>` A token provided along with the `<CLIENT_ID>`.
-* `<USERNAME>` The username you use to connect to the Netatmo API (usually your mail address).
-* `<PASSWORD>` The password attached to the above username.
 
 The binding has the following configuration options:
 
 | Parameter    | Type          | Description                                                                                |
 |--------------|---------------|--------------------------------------------------------------------------------------------|
-| features     | String        | The perimeter of functionalities given to the binding WEATHER, AIR_CARE, ENERGY, SECURITY  |
 | readFriends  | Boolean       | Enables or disables the discovery of guest weather stations.                               |
 
 
-## Bridge Configuration
+## Netatmo Account (Bridge) Configuration
 
 You will have to create at first a bridge to handle communication with your Netatmo Application.
 
-The Account bridge has the following configuration options:
+The Account bridge has the following configuration elements:
 
--   **clientId:** Client ID provided for the application you created on http://dev.netatmo.com/createapp.
--   **clientSecret:**  Client Secret provided for the application you created.
--   **username:** Your Netatmo API username (email).
--   **password:** Your Netatmo API password.
--   **webHookUrl:** Protocol, public IP and port to access openHAB server from Internet.
--   **reconnectInterval:** The reconnection interval to Netatmo API (in s).
+| Parameter         | Type   | Required | Description                                                                                                            |
+|-------------------|--------|----------|------------------------------------------------------------------------------------------------------------------------|
+| clientId          | String | Yes      | Client ID provided for the application you created on http://dev.netatmo.com/createapp                                 |
+| clientSecret      | String | Yes      | Client Secret provided for the application you created                                                                 |
+| webHookUrl        | String | No       | Protocol, public IP and port to access openHAB server from Internet                                                    |
+| reconnectInterval | Number | No       | The reconnection interval to Netatmo API (in s)                                                                        |
+| refreshToken      | String | Yes*     | The refresh token provided by Netatmo API after the granting process. Can be saved in case of file based configuration |
+
+(*) Strictly said this parameter is not mandatory at first run, until you grant your binding on Netatmo Connect. Once present, you'll not have to grant again.
+
+### Configure the Bridge
+
+1. Complete the Netatmo Application Registration if you have not already done so, see above.
+1. Make sure you have your _Client ID_ and _Client Secret_ identities available.
+1. Add a new **"Netatmo Account"** thing. Choose new Id for the account, unless you like the generated one, put in the _Client ID_ and _Client Secret_ from the Netatmo Connect Application registration in their respective fields of the bridge configuration. Save the bridge.
+1. The bridge thing will go _OFFLINE_ / _CONFIGURATION_ERROR_ - this is fine. You have to authorize this bridge with Netatmo Connect.
+1. Go to the authorization page of your server. `http://<your openHAB address>:8080/netatmo/connect/<_CLIENT_ID_>`. Your newly added bridge should be listed there (no need for you to expose your openHAB server outside your local network for this).
+1. Press the _"Authorize Thing"_ button. This will take you either to the login page of Netatmo Connect or directly to the authorization screen. Login and/or authorize the application. You will be returned and the entry should go green. 
+1. The binding will be updated with a refresh token and go _ONLINE_. The refresh token is used to re-authorize the bridge with Netatmo Connect Web API whenever required.
+1. If you're using file based .things config file, copy the provided refresh token in the **refreshToken** parameter of your thing definition (example below).
+
+Now that you have got your bridge _ONLINE_ you can now start a scan with the binding to auto discover your things.
 
 
 ## List of supported things
@@ -73,7 +93,7 @@ The Account bridge has the following configuration options:
 ### Webhook
 
 Netatmo servers can send push notifications to the Netatmo Binding by using a callback URL.
-The webhook URL is setup at binding level using "Webhook Address" parameter.
+The webhook URL is setup at Netatmo Account level using "Webhook Address" parameter.
 You will define here public way to access your openHAB server:
 
 ```
@@ -83,7 +103,7 @@ http(s)://xx.yy.zz.ww:443
 Your Netatmo App will be configured automatically by the bridge to the endpoint:
 
 ```
-http(s)://xx.yy.zz.ww:443/netatmo
+http(s)://xx.yy.zz.ww:443/netatmo/webhook/<_CLIENT_ID_>
 ```
 
 Please be aware of Netatmo own limits regarding webhook usage that lead to a 24h ban-time when webhook does not answer 5 times.
@@ -112,6 +132,8 @@ You have to calculate the ID for the outside module as follows: (it cannot be re
 
 - if the first serial character is "h": start with "02"
 - if the first serial character is "i": start with "03"
+- if the first serial character is "j": start with "04"
+- if the first serial character is "k": start with "05"
 
 append ":00:00:",
 
@@ -332,16 +354,16 @@ All these channels are read only.
 
 **Supported channels for the Room thing:**
 
-| Channel Group    | Channel Id            | Item Type            | Description                                             |
-|------------------|-----------------------|----------------------|---------------------------------------------------------|
-| room-temperature | value                 | Number:Temperature   | Current temperature in the room                         |
-| room-properties  | window-open           | Contact              | Windows of the room are opened                          |
-| room-properties  | anticipating          | Switch               | Anticipates next scheduled setpoint                     |
-| room-properties  | heating-power-request | Number:Dimensionless | Percentage of heating power                             |
-| setpoint         | value                 | Number:Temperature   | Thermostat temperature setpoint                         |
-| setpoint         | mode                  | String               | Chosen thermostat mode (home, frost guard, manual, max) |
-| setpoint         | start                 | DateTime             | Start time of the currently applied setpoint            |
-| setpoint         | end                   | DateTime             | End time of the currently applied setpoint              |
+| Channel Group | Channel Id            | Item Type            | Description                                             |
+|---------------|-----------------------|----------------------|---------------------------------------------------------|
+| temperature   | value                 | Number:Temperature   | Current temperature in the room                         |
+| properties    | window-open           | Contact              | Windows of the room are opened                          |
+| properties    | anticipating          | Switch               | Anticipates next scheduled setpoint                     |
+| properties    | heating-power-request | Number:Dimensionless | Percentage of heating power                             |
+| setpoint      | value                 | Number:Temperature   | Thermostat temperature setpoint                         |
+| setpoint      | mode                  | String               | Chosen thermostat mode (home, frost guard, manual, max) |
+| setpoint      | start                 | DateTime             | Start time of the currently applied setpoint            |
+| setpoint      | end                   | DateTime             | End time of the currently applied setpoint              |
 
 All these channels except setpoint and setpoint-mode are read only.
 
@@ -350,14 +372,14 @@ All these channels except setpoint and setpoint-mode are read only.
 
 **Supported channels for the thermostat module:**
 
-| Channel Group       | Channel Id         | Item Type            | Description                                      |
-|---------------------|--------------------|----------------------|--------------------------------------------------|
-| th-properties       | relay-status       | Contact              | Indicates if the boiler is currently heating     |
-| signal              | strength           | Number               | Signal strength (0 for no signal, 1 for weak...) |
-| signal              | value              | Number:Power         | Signal strength in dBm                           |
-| battery             | value              | Number               | Battery level                                    |
-| battery             | low-battery        | Switch               | Low battery                                      |
-| battery             | status             | String               | Description of the battery status (*)            |
+| Channel Group | Channel Id  | Item Type    | Description                                      |
+|---------------|-------------|--------------|--------------------------------------------------|
+| properties    | relay       | Contact      | Indicates if the boiler is currently heating     |
+| signal        | strength    | Number       | Signal strength (0 for no signal, 1 for weak...) |
+| signal        | value       | Number:Power | Signal strength in dBm                           |
+| battery       | value       | Number       | Battery level                                    |
+| battery       | low-battery | Switch       | Low battery                                      |
+| battery       | status      | String       | Description of the battery status (*)            |
 
 (*) Can be UNDEF on some modules
 
@@ -420,7 +442,7 @@ All these channels are read only.
 |                  | TAG_UNINSTALLED        | Triggered when a tag gets uninstalled                                                                                                                                            |  
 |                  | TAG_OPEN               | Triggered when an open event of a tag was detected                                                                                                                               |
 
-### Welcome and Presence Camera
+### Welcome, Presence and Doorbell Cameras
 
 Warnings:
 
@@ -485,6 +507,45 @@ Warnings:
 
 (*) This channel is configurable : low, poor, high.
 
+**Supported channels for the Doorbell thing:**
+
+| Channel Group | Channel ID        | Item Type    | Read/Write | Description                                                                                                                                 |
+|---------------|-------------------|--------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| status        | sd-card           | String       | Read-only  | State of the SD card                                                                                                                        |
+| status        | alim              | String       | Read-only  | State of the power connector                                                                                                                |
+| live          | picture           | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
+| live          | local-picture-url | String       | Read-only  | Local Url of the live snapshot for this camera                                                                                              |
+| live          | vpn-picture-url   | String       | Read-only  | Url of the live snapshot for this camera through Netatmo VPN.                                                                               |
+| signal        | strength          | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
+| signal        | value             | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
+| last-event    | type              | String       | Read-only  | Type of event                                                                                                                               |
+| last-event    | video-status      | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                       |
+| last-event    | time              | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
+| last-event    | local-video-url   | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding local video URL will be available here |
+| last-event    | vpn-video-url     | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding VPN video URL will be available here   |
+| sub-event     | type              | String       | Read-only  | Type of sub-event                                                                                                                           |
+| sub-event     | time              | DateTime     | Read-only  | Time of occurrence of sub-event                                                                                                             |
+| sub-event     | message           | String       | Read-only  | Message sent by Netatmo corresponding to given sub-event                                                                                    |
+| sub-event     | snapshot-url      | String       | Read-only  | Depending upon event type in the home, a snapshot picture of the corresponding local video URL will be available here                       |
+| sub-event     | vignette-url      | String       | Read-only  | A vignette representing the snapshot                                                                                                        |
+| sub-event     | snapshot          | Image        | Read-only  | picture of the snapshot                                                                                                                     |
+| sub-event     | vignet            | Image        | Read-only  | picture of the vignette                                                                                                                     |
+
+
+Note: live feeds either locally or via VPN are not available in Netatmo API.
+
+**Supported channels for the Siren thing:**
+
+| Channel Group | Channel ID        | Item Type    | Read/Write | Description                                          |
+|---------------|-------------------|--------------|------------|------------------------------------------------------|
+| siren         | status            | String       | Read-only  | Status of the siren, if silent or emitting an alarm  |
+| siren         | monitoring        | Switch       | Read-only  | State of the siren device                            |
+| signal        | strength          | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)     |
+| signal        | value             | Number:Power | Read-only  | Signal strength in dBm                               |
+| timestamp     | last-seen         | DateTime     | Read-only  | Last time the module reported its presence           |
+| battery       | value             | Number       | Read-only  | Battery level                                        |
+| battery       | low-battery       | Switch       | Read-only  | Low battery                                          |
+
 
 ### Welcome Person
 
@@ -497,29 +558,29 @@ Person things are automatically created in discovery process for all known perso
 
 **Supported channels for the Person thing:**
 
-| Channel Group  | Channel ID     | Item Type    | Description                                            |
-|----------------|----------------|--------------|--------------------------------------------------------|
-| person         | avatar-url     | String       | URL for the avatar of this person                      |
-| person         | avatar         | Image        | Avatar of this person                                  |
-| person         | at-home        | Switch       | Indicates if this person is known to be at home or not |
-| person         | last-seen      | DateTime     | Moment when this person was last seen                  |
-| person-event   | subtype        | String       | Sub-type of event                                      |
-| person-event   | message        | String       | Last event message from this person                    |
-| person-event   | time           | DateTime     | Moment of the last event for this person               |
-| person-event   | snapshot       | Image        | Picture of the last event for this person              |
-| person-event   | snapshot-url   | String       | URL for the picture of the last event for this person  |
-| person-event   | camera-id      | String       | ID of the camera that triggered the event              |
+| Channel Group | Channel ID   | Item Type | Description                                            |
+|---------------|--------------|-----------|--------------------------------------------------------|
+| person        | avatar-url   | String    | URL for the avatar of this person                      |
+| person        | avatar       | Image     | Avatar of this person                                  |
+| person        | at-home      | Switch    | Indicates if this person is known to be at home or not |
+| person        | last-seen    | DateTime  | Moment when this person was last seen                  |
+| last-event    | subtype      | String    | Sub-type of event                                      |
+| last-event    | message      | String    | Last event message from this person                    |
+| last-event    | time         | DateTime  | Moment of the last event for this person               |
+| last-event    | snapshot     | Image     | Picture of the last event for this person              |
+| last-event    | snapshot-url | String    | URL for the picture of the last event for this person  |
+| last-event    | camera-id    | String    | ID of the camera that triggered the event              |
 
 All these channels except at-home are read only.
 
 
-# Configuration Examples
+## Configuration Examples
 
 
-## things/netatmo.things
+### things/netatmo.things
 
 ```
-Bridge netatmo:account:home "Netatmo Account" [clientId="", clientSecret="", username="", password=""] {
+Bridge netatmo:account:home "Netatmo Account" [clientId="xxxxx", clientSecret="yyyy", refreshToken="zzzzz"] {
     Bridge weather-station inside "Inside Weather Station" [id="70:ee:aa:aa:aa:aa"] {
         outdoor outside   "Outside Module" [id="02:00:00:aa:aa:aa"] {
             Channels:
@@ -535,7 +596,7 @@ Bridge netatmo:account:home "Netatmo Account" [clientId="", clientSecret="", use
 ```
 
 
-## Sample configuration of live-stream-url channels:
+### Sample configuration of live-stream-url channels:
 
 ```
         ....
@@ -548,7 +609,7 @@ Bridge netatmo:account:home "Netatmo Account" [clientId="", clientSecret="", use
 ```
 
 
-## items/netatmo.items
+### items/netatmo.items
 
 ```
 # Indoor Module
@@ -587,7 +648,7 @@ Number:Length        Rain_Hour                         "Rain Last Hour [%.1f %un
 Number:Length        Rain_Today                        "Rain Today [%.1f %unit%]"                                   <rain>             { channel = "netatmo:rain:home:inside:rainModule:rain#sum-24"}
 ```
 
-## sitemaps/netatmo.sitemap
+### sitemaps/netatmo.sitemap
 
 ```
 sitemap netatmo label="Netatmo" {
@@ -635,26 +696,74 @@ sitemap netatmo label="Netatmo" {
 }
 ```
 
+## Rule Actions
 
-# Sample data
+Multiple actions are supported by this binding. In classic rules these are accessible as shown in this example (adjust getActions with your ThingId):
+
+Example
+
+```
+ val actions = getActions("netatmo","netatmo:room:home:home:livingroom")
+ if(null === actions) {
+        logInfo("actions", "Actions not found, check thing ID")
+        return
+ }
+```
+
+### setThermRoomTempSetpoint(temp,endtime)
+
+Sends a temperature setpoint (and switch to manual mode) to the thermostat for a room with an end time.
+
+Parameters:
+
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| temp    | The temperature setpoint.                                            |
+| endtime | Time the setpoint should end (Local Unix time in seconds).           |
+
+Example:
+
+```
+actions.setThermRoomTempSetpoint(19.0, 1654387205)
+```
+
+### setThermRoomModeSetpoint(mode,endtime)
+
+Sends a mode to the thermostat for a room with an optional end time.
+
+Parameters:
+
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| mode    | The mode to set: MANUAL, MAX or HOME.                                |
+| endtime | Time the setpoint should end (Local Unix time in seconds).           |
+
+Example:
+
+```
+actions.setThermRoomModeSetpoint("MANUAL", 1654387205)
+actions.setThermRoomModeSetpoint("HOME", null)
+```
+
+## Sample data
 
 If you want to evaluate this binding but have not got a Netatmo station yourself
 yet, you can search on the web for a publicly shared weather station.
 
 
-# Icons
+## Icons
 
 The following icons are used by original Netatmo web app:
 
 
-## Modules
+### Modules
 
 - https://my.netatmo.com/images/my/app/module_int.png
 - https://my.netatmo.com/images/my/app/module_ext.png
 - https://my.netatmo.com/images/my/app/module_rain.png
 
 
-## Battery status
+### Battery status
 
 - https://my.netatmo.com/images/my/app/battery_verylow.png
 - https://my.netatmo.com/images/my/app/battery_low.png
@@ -663,7 +772,7 @@ The following icons are used by original Netatmo web app:
 - https://my.netatmo.com/images/my/app/battery_full.png
 
 
-## Signal status
+### Signal status
 
 - https://my.netatmo.com/images/my/app/signal_verylow.png
 - https://my.netatmo.com/images/my/app/signal_low.png
@@ -672,7 +781,7 @@ The following icons are used by original Netatmo web app:
 - https://my.netatmo.com/images/my/app/signal_full.png
 
 
-## Wifi status
+### Wifi status
 
 - https://my.netatmo.com/images/my/app/wifi_low.png
 - https://my.netatmo.com/images/my/app/wifi_medium.png

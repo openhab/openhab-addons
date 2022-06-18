@@ -11,7 +11,7 @@
 		</parameter>
 		<parameter name="sensitivity" type="decimal" min="0" max="1">
 			<label>Sensitivity</label>
-			<description>Spot sensitivity, a higher sensitivity reduces miss rate at cost of increased false alarm rate.</description>
+			<description>Spot sensitivity, a higher sensitivity reduces miss rate at the cost of increased false detection rate.</description>
 			<default>0.5</default>
 		</parameter>
 	</config-description>

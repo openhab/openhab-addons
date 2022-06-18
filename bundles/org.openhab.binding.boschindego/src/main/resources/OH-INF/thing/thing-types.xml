@@ -48,7 +48,7 @@
 		<item-type>Number</item-type>
 		<label>Error Code</label>
 		<description>0 = no error</description>
-		<state readOnly="false"></state>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="statecode" advanced="true">
 		<item-type>Number</item-type>
@@ -78,7 +78,11 @@
 				<option value="773">Returning to Dock - Battery temp range</option>
 				<option value="774">Returning to Dock</option>
 				<option value="775">Returning to Dock - Lawn complete</option>
-				<option value="775">Returning to Dock - Relocalising</option>
+				<option value="776">Returning to Dock - Relocalising</option>
+				<option value="1025">Diagnostic mode</option>
+				<option value="1026">End of life</option>
+				<option value="1281">Software update</option>
+				<option value="64513">Docked</option>
 			</options>
 		</state>
 	</channel-type>

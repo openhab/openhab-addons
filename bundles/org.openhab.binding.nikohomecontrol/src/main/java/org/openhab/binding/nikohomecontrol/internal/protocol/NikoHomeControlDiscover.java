@@ -16,9 +16,15 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,13 +49,13 @@ public final class NikoHomeControlDiscover {
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscover.class);
 
-    private InetAddress addr;
-    private String nhcBridgeId = "";
-    private boolean isNhcII;
+    private List<String> nhcBridgeIds = new ArrayList<>();
+    private Map<String, InetAddress> addr = new HashMap<>();
+    private Map<String, Boolean> isNhcII = new HashMap<>();
 
     /**
-     * Discover a Niko Home Control IP interface by broadcasting UDP packet 0x44 to port 10000. The IP interface will
-     * reply. The address of the IP interface is than derived from that response.
+     * Discover the list of Niko Home Control IP interfaces by broadcasting UDP packet 0x44 to port 10000. The IP
+     * interface will reply. The address of the IP interface is than derived from that response.
      *
      * @param broadcast Broadcast address of the network
      * @throws IOException
@@ -68,33 +74,37 @@ public final class NikoHomeControlDiscover {
             datagramSocket.setBroadcast(true);
             datagramSocket.setSoTimeout(500);
             datagramSocket.send(discoveryPacket);
-            while (true) {
-                datagramSocket.receive(packet);
-                logger.trace("bridge discovery response {}",
-                        HexUtils.bytesToHex(Arrays.copyOf(packet.getData(), packet.getLength())));
-                if (isNhc(packet)) {
-                    break;
+            try {
+                while (true) {
+                    datagramSocket.receive(packet);
+                    logger.trace("bridge discovery response {}",
+                            HexUtils.bytesToHex(Arrays.copyOf(packet.getData(), packet.getLength())));
+                    if (isNhcController(packet)) {
+                        String bridgeId = setNhcBridgeId(packet);
+                        setIsNhcII(bridgeId, packet);
+                        setAddr(bridgeId, packet);
+                        logger.debug("IP address is {}, unique ID is {}", addr, bridgeId);
+                    }
                 }
+            } catch (SocketTimeoutException e) {
+                // all received, continue
             }
-            addr = packet.getAddress();
-            setNhcBridgeId(packet);
-            setIsNhcII(packet);
-            logger.debug("IP address is {}, unique ID is {}", addr, nhcBridgeId);
         }
     }
 
     /**
-     * @return the addr
+     * @return the discovered nhcBridgeIds
      */
-    public InetAddress getAddr() {
-        return addr;
+    public List<String> getNhcBridgeIds() {
+        return nhcBridgeIds;
     }
 
     /**
-     * @return the nhcBridgeId
+     * @param bridgeId discovered bridgeId
+     * @return the addr, null if not in the list of discovered bridgeId's
      */
-    public String getNhcBridgeId() {
-        return nhcBridgeId;
+    public @Nullable InetAddress getAddr(String bridgeId) {
+        return addr.get(bridgeId);
     }
 
     /**
@@ -103,9 +113,15 @@ public final class NikoHomeControlDiscover {
      * @param packet
      * @return true if packet is from a Niko Home Control controller
      */
-    private boolean isNhc(DatagramPacket packet) {
+    private boolean isNhcController(DatagramPacket packet) {
         byte[] packetData = packet.getData();
-        return ((packet.getLength() > 2) && (packetData[0] == 0x44));
+        boolean isNhc = (packet.getLength() > 2) && (packetData[0] == 0x44);
+        // filter response from Gen1 touchscreens
+        boolean isController = isNhc && (packetData[1] == 0x3b) || (packetData[1] == 0x0c) || (packetData[1] == 0x0e);
+        if (!isController) {
+            logger.trace("not a NHC controller");
+        }
+        return isController;
     }
 
     /**
@@ -113,7 +129,7 @@ public final class NikoHomeControlDiscover {
      *
      * @param packet
      */
-    private void setNhcBridgeId(DatagramPacket packet) {
+    private String setNhcBridgeId(DatagramPacket packet) {
         byte[] packetData = packet.getData();
         int packetLength = packet.getLength();
         packetLength = packetLength > 6 ? 6 : packetLength;
@@ -121,31 +137,45 @@ public final class NikoHomeControlDiscover {
         for (int i = 0; i < packetLength; i++) {
             sb.append(String.format("%02x", packetData[i]));
         }
-        nhcBridgeId = sb.toString();
+        String bridgeId = sb.toString();
+        nhcBridgeIds.add(bridgeId);
+        return bridgeId;
     }
 
     /**
      * Checks if this is a NHC II Connected Controller
      *
+     * @param bridgeId
      * @param packet
      */
-    private void setIsNhcII(DatagramPacket packet) {
+    private void setIsNhcII(String bridgeId, DatagramPacket packet) {
         byte[] packetData = packet.getData();
         int packetLength = packet.getLength();
         // The 16th byte in the packet is 2 for a NHC II Connected Controller
         if ((packetLength >= 16) && (packetData[15] >= 2)) {
-            isNhcII = true;
+            isNhcII.put(bridgeId, true);
         } else {
-            isNhcII = false;
+            isNhcII.put(bridgeId, false);
         }
+    }
+
+    /**
+     * Sets the IP address retrieved from the packet response
+     *
+     * @param bridgeId
+     * @param packet
+     */
+    private void setAddr(String bridgeId, DatagramPacket packet) {
+        addr.put(bridgeId, packet.getAddress());
     }
 
     /**
      * Test if the installation is a Niko Home Control II installation
      *
+     * @param bridgeId
      * @return true if this is a Niko Home Control II installation
      */
-    public boolean isNhcII() {
-        return isNhcII;
+    public boolean isNhcII(String bridgeId) {
+        return isNhcII.getOrDefault(bridgeId, false);
     }
 }

@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.AlimentationStatus;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.BatteryState;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
@@ -73,7 +74,8 @@ public class HomeStatusModule extends NAThing {
 
     public State getMonitoring() {
         OnOffType localStatus = monitoring;
-        return localStatus != null ? localStatus : UnDefType.NULL;
+        return localStatus != null ? localStatus // Monitoring is always active on Doorbell
+                : getType().equals(ModuleType.DOORBELL) ? OnOffType.ON : UnDefType.NULL;
     }
 
     public FloodLightMode getFloodlight() {

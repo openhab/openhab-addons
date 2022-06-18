@@ -136,6 +136,10 @@ public class SDMAPI {
             if (response == null || response.getAccessToken() == null || response.getAccessToken().isEmpty()) {
                 throw new InvalidSDMAccessTokenException("No SDM access token. Client may not have been authorized.");
             }
+            if (response.getRefreshToken() == null || response.getRefreshToken().isEmpty()) {
+                throw new InvalidSDMAccessTokenException(
+                        "No SDM refresh token. Delete and readd credentials, then reauthorize.");
+            }
             return BEARER + response.getAccessToken();
         } catch (OAuthException | OAuthResponseException e) {
             throw new InvalidSDMAccessTokenException(

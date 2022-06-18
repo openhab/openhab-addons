@@ -108,6 +108,7 @@ openhab:send WC_Valve_cmd_CloseValve.sendCommand(ON) // stop any active watering
 ```
 
 If you send a REFRESH command to the last update timestamp (no matter which thing), **ALL** items from **ALL** things are updated
+
 ```
 DateTime LastUpdate "LastUpdate [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" { channel="gardena:water_control:home:myWateringComputer:common#lastUpdate_timestamp" }
 

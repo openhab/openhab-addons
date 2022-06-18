@@ -10,6 +10,25 @@
 		<description>Monitoring state of the camera</description>
 	</channel-type>
 
+	<channel-type id="siren-monitoring">
+		<item-type>Switch</item-type>
+		<label>Monitoring</label>
+		<description>Monitoring state of the equipment</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="siren-status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Status of the siren</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="no_sound">Silent</option>
+				<option value="sound">Alarm</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="window-open">
 		<item-type>Contact</item-type>
 		<label>Window Status</label>
@@ -318,10 +337,11 @@
 				<option value="PERSON">Face detected</option>
 				<option value="PERSON_AWAY">Person has left home</option>
 				<option value="PERSON_HOME">Person is at home</option>
-				<option value="OUTDOOR">Motion detected by Presence</option>
+				<option value="OUTDOOR">Motion detected by Outdoor Camera</option>
 				<option value="MOVEMENT">Motion detected</option>
 				<option value="HUMAN">Human seen</option>
 				<option value="ANIMAL">Animal seen</option>
+				<option value="VEHICLE">Car seen</option>
 				<option value="NEW_MODULE">New Module has been paired</option>
 				<option value="MODULE_CONNECT">Module is connected with the Indoor Camera</option>
 				<option value="MODULE_DISCONNECT">Module lost its connection with the Indoor Camera</option>
@@ -334,6 +354,9 @@
 				<option value="BOOT">Camera booting</option>
 				<option value="SD">SD card status changed</option>
 				<option value="ALIM">Power status changed</option>
+				<option value="ACCEPTED_CALL">Call is incoming</option>
+				<option value="INCOMING_CALL">Call has been answered by a user</option>
+				<option value="MISSED_CALL">Call has not been answered by anyone</option>
 			</options>
 		</state>
 	</channel-type>
@@ -375,6 +398,7 @@
 				<option value="MOVEMENT"/>
 				<option value="HUMAN"/>
 				<option value="ANIMAL"/>
+				<option value="VEHICLE"/>
 				<option value="NEW_MODULE"/>
 				<option value="MODULE_CONNECT"/>
 				<option value="MODULE_DISCONNECT"/>
@@ -387,6 +411,9 @@
 				<option value="BOOT"/>
 				<option value="SD"/>
 				<option value="ALIM"/>
+				<option value="ACCEPTED_CALL"/>
+				<option value="INCOMING_CALL"/>
+				<option value="MISSED_CALL"/>
 			</options>
 		</event>
 	</channel-type>

@@ -13,7 +13,6 @@
 package org.openhab.binding.deutschebahn.internal;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -53,7 +52,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * The {@link DeutscheBahnTimetableHandler} is responsible for handling commands, which are
@@ -116,7 +114,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
     private final ScheduledExecutorService executorService;
 
     /**
-     * Creates an new {@link DeutscheBahnTimetableHandler}.
+     * Creates a new {@link DeutscheBahnTimetableHandler}.
      */
     public DeutscheBahnTimetableHandler( //
             final Bridge bridge, //
@@ -152,7 +150,11 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
         final DeutscheBahnTimetableConfiguration config = this.getConfigAs(DeutscheBahnTimetableConfiguration.class);
 
         try {
-            final TimetablesV1Api api = this.timetablesV1ApiFactory.create(config.accessToken, HttpUtil::executeUrl);
+            final TimetablesV1Api api = this.timetablesV1ApiFactory.create( //
+                    config.clientId, //
+                    config.clientSecret, //
+                    HttpUtil::executeUrl //
+            );
 
             final TimetableStopFilter stopFilter = config.getTrainFilterFilter();
             final TimetableStopPredicate additionalFilter = config.getAdditionalFilter();
@@ -183,7 +185,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
             });
         } catch (FilterScannerException | FilterParserException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        } catch (JAXBException | SAXException | URISyntaxException e) {
+        } catch (JAXBException e) {
             this.logger.error("Error initializing api", e);
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -195,7 +197,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Schedules an job that updates the timetable every 30 seconds.
+     * Schedules a job that updates the timetable every 30 seconds.
      */
     private void restartJob() {
         this.logger.debug("Restarting jobs for bridge {}", this.getThing().getUID());
@@ -298,7 +300,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Returns an map containing the things grouped by timetable stop position.
+     * Returns a map containing the things grouped by timetable stop position.
      */
     private GroupedThings groupThingsPerPosition() {
         final GroupedThings groupedThings = new GroupedThings();

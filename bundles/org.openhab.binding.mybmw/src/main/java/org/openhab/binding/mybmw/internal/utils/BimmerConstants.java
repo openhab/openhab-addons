@@ -54,10 +54,8 @@ public class BimmerConstants {
     public static final String CHINA_LOGIN = "/eadrax-coas/v1/login/pwd";
 
     // Http variables
-    public static final String USER_AGENT_BMW = "android(v1.07_20200330);bmw;1.7.0(11152)";
-    public static final String USER_AGENT_MINI = "android(v1.07_20200330);mini;1.7.0(11152)";
-    public static final Map<String, String> BRAND_USER_AGENTS_MAP = Map.of(BRAND_BMW, USER_AGENT_BMW, BRAND_MINI,
-            USER_AGENT_MINI);
+    public static final String USER_AGENT = "Dart/2.14 (dart:io)";
+    public static final String X_USER_AGENT = "android(SP1A.210812.016.C1);%s;2.5.2(14945);%s";
 
     public static final String LOGIN_NONCE = "login_nonce";
     public static final String AUTHORIZATION_CODE = "authorization_code";

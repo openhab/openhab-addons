@@ -28,6 +28,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hdpowerview.internal.api.Color;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.api.SurveyData;
 import org.openhab.binding.hdpowerview.internal.api.requests.RepeaterBlinking;
 import org.openhab.binding.hdpowerview.internal.api.requests.RepeaterColor;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeCalibrate;
@@ -637,12 +638,12 @@ public class HDPowerViewWebTargets {
      * class instance
      *
      * @param shadeId id of the shade to be surveyed
-     * @return Survey class instance
+     * @return List of SurveyData class instances
      * @throws HubInvalidResponseException if response is invalid
      * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public Survey getShadeSurvey(int shadeId)
+    public List<SurveyData> getShadeSurvey(int shadeId)
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         String jsonResponse = invoke(HttpMethod.GET, shades + Integer.toString(shadeId),
                 Query.of("survey", Boolean.toString(true)), null);
@@ -651,7 +652,11 @@ public class HDPowerViewWebTargets {
             if (survey == null) {
                 throw new HubInvalidResponseException("Missing survey response");
             }
-            return survey;
+            List<SurveyData> surveyData = survey.surveyData;
+            if (surveyData == null) {
+                throw new HubInvalidResponseException("Missing 'survey.surveyData' element");
+            }
+            return surveyData;
         } catch (JsonParseException e) {
             throw new HubInvalidResponseException("Error parsing survey response", e);
         }

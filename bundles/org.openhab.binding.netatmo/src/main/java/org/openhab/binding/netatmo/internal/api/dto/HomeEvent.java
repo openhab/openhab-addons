@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,9 +41,11 @@ public class HomeEvent extends Event {
     private @Nullable String personId;
     private EventCategory category = EventCategory.UNKNOWN;
     private @Nullable Snapshot snapshot;
+    private @Nullable Snapshot vignette;
     private @Nullable String videoId;
     private VideoStatus videoStatus = VideoStatus.UNKNOWN;
     private boolean isArrival;
+    private List<HomeEvent> subevents = List.of();
 
     @Override
     public ZonedDateTime getTime() {
@@ -90,7 +93,20 @@ public class HomeEvent extends Event {
 
     @Override
     public @Nullable String getSnapshotUrl() {
-        Snapshot localSnap = snapshot;
-        return localSnap != null ? localSnap.getUrl() : null;
+        Snapshot image = snapshot;
+        return image != null ? image.getUrl() : null;
+    }
+
+    public @Nullable String getVignetteUrl() {
+        Snapshot image = vignette;
+        return image != null ? image.getUrl() : null;
+    }
+
+    public List<HomeEvent> getSubevents() {
+        return subevents;
+    }
+
+    public @Nullable Snapshot getVignette() {
+        return vignette;
     }
 }

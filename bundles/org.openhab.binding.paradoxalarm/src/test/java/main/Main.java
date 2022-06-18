@@ -53,9 +53,6 @@ public class Main {
         try {
             scheduler = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
 
-            logger.info("System properties={}",
-                    System.getProperties().get(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY));
-
             ParadoxBuilderFactory factory = new ParadoxBuilderFactory();
             ICommunicatorBuilder builder = factory.createBuilder(PanelType.EVO192);
             communicator = builder.withIp150Password(ip150Password).withPcPassword(pcPassword).withIpAddress(ipAddress)

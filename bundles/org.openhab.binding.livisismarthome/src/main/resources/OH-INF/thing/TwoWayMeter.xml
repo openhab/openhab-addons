@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="livisismarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="TwoWayMeter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Two-Way-Meter</label>
+		<description>The Two-Way-Meter from the LIVISI PowerControlSolar product.</description>
+
+		<channels>
+			<channel id="powerWatt" typeId="powerConsumptionWatt"/>
+			<channel id="totalEnergy" typeId="totalEnergyConsumption"/>
+			<channel id="energyDayKwh" typeId="energyConsumptionDayKwh"/>
+			<channel id="energyDayEuro" typeId="energyConsumptionDayEuro"/>
+			<channel id="energyMonthKwh" typeId="energyConsumptionMonthKwh"/>
+			<channel id="energyMonthEuro" typeId="energyConsumptionMonthEuro"/>
+			<channel id="totalEnergyFed" typeId="totalEnergyFed"/>
+			<channel id="energyFeedDayKwh" typeId="energyFeedDayKwh"/>
+			<channel id="energyFeedDayEuro" typeId="energyFeedDayEuro"/>
+			<channel id="energyFeedMonthKwh" typeId="energyFeedMonthKwh"/>
+			<channel id="energyFeedMonthEuro" typeId="energyFeedMonthEuro"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:livisismarthome:config"/>
+	</thing-type>
+</thing:thing-descriptions>

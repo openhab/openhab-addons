@@ -53,6 +53,7 @@ public class NetatmoException extends IOException {
     public @Nullable String getMessage() {
         String message = super.getMessage();
         return message == null ? null
-                : String.format("Rest call failed: statusCode=%s, message=%s", statusCode, message);
+                : ServiceError.UNKNOWN.equals(statusCode) ? message
+                        : String.format("Rest call failed: statusCode=%s, message=%s", statusCode, message);
     }
 }
