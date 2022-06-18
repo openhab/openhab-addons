@@ -12,8 +12,15 @@
  */
 package org.openhab.binding.mercedesme.internal;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Length;
+
 import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingTypeUID;
+
+import com.google.gson.Gson;
 
 /**
  * The {@link Constants} class defines common constants, which are
@@ -27,6 +34,7 @@ public class Constants {
     public static final String COMBUSTION = "combustion";
     public static final String HYBRID = "hybrid";
     public static final String BEV = "bev";
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_COMB = new ThingTypeUID(BINDING_ID, COMBUSTION);
@@ -66,4 +74,7 @@ public class Constants {
     public static final @NonNull String NOT_SET = "not set";
 
     public static final String CODE = "code";
+
+    public static final Gson GSON = new Gson();
+    public static final Unit<Length> KILOMETRE_UNIT = MetricPrefix.KILO(SIUnits.METRE);
 }

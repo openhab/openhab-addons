@@ -13,7 +13,6 @@
 package org.openhab.binding.mercedesme.internal;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -26,6 +25,10 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
+import org.openhab.binding.mercedesme.internal.utils.Mapper;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -45,7 +48,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class VehicleHandler extends BaseThingHandler {
-
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
     private List<String> functions;
@@ -53,10 +55,12 @@ public class VehicleHandler extends BaseThingHandler {
     private Optional<AccountHandler> accountHandler = Optional.empty();;
     private Optional<VehicleConfiguration> config = Optional.empty();
     private final HttpClient hc;
+    private final String uid;
 
     public VehicleHandler(Thing thing, HttpClientFactory hcf, String uid) {
         super(thing);
         hc = hcf.getCommonHttpClient();
+        this.uid = uid;
         functions = new ArrayList<>(List.of(Constants.ODO_URL, Constants.STATUS_URL, Constants.LOCK_URL));
         switch (uid) {
             case Constants.COMBUSTION:
@@ -86,10 +90,10 @@ public class VehicleHandler extends BaseThingHandler {
             if (handler != null) {
                 accountHandler = Optional.of((AccountHandler) handler);
             } else {
-                logger.debug("Bridge Handler null");
+                logger.warn("Bridge Handler null");
             }
         } else {
-            logger.debug("Bridge null");
+            logger.warn("Bridge null");
         }
         startSchedule(config.get().refreshInterval);
         updateStatus(ThingStatus.ONLINE);
@@ -113,22 +117,55 @@ public class VehicleHandler extends BaseThingHandler {
 
     public void getData() {
         if (!accountHandler.isEmpty()) {
-            Iterator<String> iter = functions.iterator();
-            while (iter.hasNext()) {
-                String url = iter.next();
-                Request req = hc.newRequest(String.format(url, config.get().vin));
-                req.header(HttpHeader.AUTHORIZATION, "Bearer " + accountHandler.get().getToken());
-                ContentResponse cr;
-                try {
-                    cr = req.send();
-                    logger.info("Response {} {}", cr.getStatus(), cr.getContentAsString());
-                } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                    logger.warn("Error getting data {}", e.getMessage());
-                }
+            // Mileage for all cars
+            String odoUrl = String.format(Constants.ODO_URL, config.get().vin);
+            call(odoUrl);
+
+            // Electric status for hybrid and electric
+            if (uid.equals(Constants.BEV) || uid.equals(Constants.HYBRID)) {
+                String evUrl = String.format(Constants.EV_URL, config.get().vin);
+                call(evUrl);
             }
 
+            // Fuel for hybrid and combustion
+            if (uid.equals(Constants.COMBUSTION) || uid.equals(Constants.HYBRID)) {
+                String evUrl = String.format(Constants.FUEL_URL, config.get().vin);
+                call(evUrl);
+            }
+
+            // Status and Lock for all
+            String statusUrl = String.format(Constants.STATUS_URL, config.get().vin);
+            call(statusUrl);
+            String lockUrl = String.format(Constants.LOCK_URL, config.get().vin);
+            call(lockUrl);
         } else {
             logger.warn("AccountHandler not set");
         }
+    }
+
+    private void call(String url) {
+        Request req = hc.newRequest(String.format(url, config.get().vin));
+        req.header(HttpHeader.AUTHORIZATION, "Bearer " + accountHandler.get().getToken());
+        ContentResponse cr;
+        try {
+            cr = req.send();
+            logger.info("Response {} {}", cr.getStatus(), cr.getContentAsString());
+            JSONArray ja = new JSONArray(cr.getContentAsString());
+            ja.forEach(entry -> {
+                JSONObject jo = (JSONObject) entry;
+                ChannelStateMap csm = Mapper.getChannelStateMap(jo);
+                if (csm != null) {
+                    updateChannel(csm);
+                } else {
+                    logger.warn("Unable to deliver state for {}", jo);
+                }
+            });
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Error getting data {}", e.getMessage());
+        }
+    }
+
+    protected void updateChannel(ChannelStateMap csm) {
+        updateState(new ChannelUID(thing.getUID(), csm.getGroup(), csm.getChannel()), csm.getState());
     }
 }

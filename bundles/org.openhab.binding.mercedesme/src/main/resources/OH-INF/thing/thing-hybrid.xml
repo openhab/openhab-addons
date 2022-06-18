@@ -9,8 +9,17 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>Plug-In-Hybrid Electric Vehicle</label>
+		<label>Mercedes Benz Hybrid</label>
 		<description>Conventional Fuel Vehicle with supporting Electric Engine</description>
+
+		<channel-groups>
+			<channel-group id="range" typeId="range-hybrid-values"/>
+			<channel-group id="doors" typeId="door-values"/>
+			<channel-group id="windows" typeId="window-values"/>
+			<channel-group id="lights" typeId="light-values"/>
+			<channel-group id="lock" typeId="lock-values"/>
+			<channel-group id="location" typeId="location-values"/>
+		</channel-groups>
 
 		<config-description-ref uri="thing-type:mercedesme:vehicle"/>
 	</thing-type>
