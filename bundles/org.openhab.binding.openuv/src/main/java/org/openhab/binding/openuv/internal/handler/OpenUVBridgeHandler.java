@@ -58,7 +58,9 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class OpenUVBridgeHandler extends BaseBridgeHandler {
+    private static final String KEY_VERIFIED = "key_verified";
     private static final String QUERY_URL = "https://api.openuv.io/api/v1/uv?lat=%s&lng=%s&alt=%s";
+    private static final int RECONNECT_DELAY_MIN = 5;
     private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
 
     private final Logger logger = LoggerFactory.getLogger(OpenUVBridgeHandler.class);
@@ -122,13 +124,20 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 String error = uvResponse.getError();
                 if (error == null) {
                     updateStatus(ThingStatus.ONLINE);
+                    updateProperty(KEY_VERIFIED, Boolean.TRUE.toString());
                     return uvResponse.getResult();
                 }
                 throw new OpenUVException(error);
             }
         } catch (JsonSyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Invalid json received when calling `%s` : %s", url, jsonData));
+            String message = "";
+            if (jsonData.contains("MongoError")) {
+                message = String.format("Service not responding, will reconnect in %d minutes", RECONNECT_DELAY_MIN);
+                scheduleReconnect(RECONNECT_DELAY_MIN);
+            } else {
+                message = String.format("Invalid json received when calling `%s` : %s", url, jsonData);
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (OpenUVException e) {
@@ -137,16 +146,25 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
                         .format("@text/offline.comm-error-quota-exceeded [ \"%s\" ]", tomorrowMidnight.toString()));
-
-                reconnectJob = Optional.of(scheduler.schedule(this::initiateConnexion,
-                        Duration.between(LocalDateTime.now(), tomorrowMidnight).toMinutes(), TimeUnit.MINUTES));
+                scheduleReconnect(Duration.between(LocalDateTime.now(), tomorrowMidnight).toMinutes());
             } else {
-                updateStatus(ThingStatus.OFFLINE,
-                        e.isApiKeyError() ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.NONE,
-                        e.getMessage());
+                String message = e.getMessage();
+                ThingStatusDetail error = e.isApiKeyError() ? ThingStatusDetail.CONFIGURATION_ERROR
+                        : ThingStatusDetail.NONE;
+                if (e.isApiKeyError() && Boolean.TRUE.toString().equals(editProperties().get(KEY_VERIFIED))) {
+                    message = String.format("Service error while API key is good, will reconnect in %d minutes",
+                            RECONNECT_DELAY_MIN);
+                    error = ThingStatusDetail.COMMUNICATION_ERROR;
+                    scheduleReconnect(RECONNECT_DELAY_MIN);
+                }
+                updateStatus(ThingStatus.OFFLINE, error, message);
             }
         }
         return null;
+    }
+
+    private void scheduleReconnect(long delay) {
+        reconnectJob = Optional.of(scheduler.schedule(this::initiateConnexion, delay, TimeUnit.MINUTES));
     }
 
     @Override
