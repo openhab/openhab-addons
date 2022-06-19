@@ -13,7 +13,7 @@ The voice data is processed offline, locally on your openHAB server by Rustpotte
 After installing, you will be able to access the service options through the openHAB configuration page in UI (**Settings / Other Services - Rustpotter Keyword Spotter**) to edit them:
 
 * **Threshold** - Configures the detector threshold, is the min score (in range 0. to 1.) that some wake word template should obtain to trigger a detection. Defaults to 0.5.
-* **Averaged Threshold** - Configures the detector averaged threshold, is the min score (in range 0. to 1.) that the averaged wake word template should obtain to allow to continue with the detection. This way it can prevent to run the comparison of the current frame against each of the wake word templates. If set to 0. this functionality is disabled.
+* **Averaged Threshold** - Configures the detector averaged threshold, is the min score (in range 0. to 1.) that the audio should obtain against a combination of the wake word templates, the detection will be aborted if this is not the case. This way it can prevent to run the comparison of the current frame against each of the wake word templates which saves cpu. If set to 0 this functionality is disabled.
 * **Eager mode** - Enables eager mode. End detection as soon as a result is over the score, instead of waiting to see if the next frame has a higher score.
 * **Noise Detection Mode** - Use build-in noise detection to reduce computation on absence of noise. Configures the difficulty to consider a frame as noise (the required noise level).
 * **Noise Detection Sensitivity** - Noise/silence ratio in the last second to consider noise is detected. Defaults to 0.5.

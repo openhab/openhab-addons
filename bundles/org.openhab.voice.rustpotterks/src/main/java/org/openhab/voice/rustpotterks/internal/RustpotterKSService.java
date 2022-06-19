@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -117,10 +116,15 @@ public class RustpotterKSService implements KSService {
             throw new KSException("Unable to load rustpotter lib: " + e.getMessage());
         }
         var audioFormat = audioStream.getFormat();
-        var frequency = Objects.requireNonNull(audioFormat.getFrequency());
-        var bitDepth = Objects.requireNonNull(audioFormat.getBitDepth());
-        var channels = Objects.requireNonNull(audioFormat.getChannels());
-        var endianness = Objects.requireNonNull(audioFormat.isBigEndian()) ? Endianness.BIG : Endianness.LITTLE;
+        var frequency = audioFormat.getFrequency();
+        var bitDepth = audioFormat.getBitDepth();
+        var channels = audioFormat.getChannels();
+        var isBigEndian = audioFormat.isBigEndian();
+        if (frequency == null || bitDepth == null || channels == null || isBigEndian == null) {
+            throw new KSException(
+                    "Missing stream metadata: frequency, bit depth, channels and endianness must be defined.");
+        }
+        var endianness = isBigEndian ? Endianness.BIG : Endianness.LITTLE;
         logger.debug("Audio wav spec: frequency '{}', bit depth '{}', channels '{}', '{}'", frequency, bitDepth,
                 channels, audioFormat.isBigEndian() ? "big-endian" : "little-endian");
         RustpotterJava rustpotter = initRustpotter(frequency, bitDepth, channels, endianness);

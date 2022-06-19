@@ -27,9 +27,12 @@ public class RustpotterKSConfiguration {
      */
     public float threshold = 0.5f;
     /**
-     * Configures the detector averaged threshold, is the min score (in range 0. to 1.) that the averaged wake word
-     * template should obtain to allow to continue with the detection. This way it can prevent to run the comparison of
-     * the current frame against each of the wakeword templates. If set to 0 this functionality is disabled.
+     * Configures the detector averaged threshold, is the min score (in range 0. to 1.) that the audio should obtain
+     * against a
+     * combination of the wake word templates, the detection will be aborted if this is not the case. This way it can
+     * prevent to
+     * run the comparison of the current frame against each of the wake word templates which saves cpu.
+     * If set to 0 this functionality is disabled.
      */
     public float averagedThreshold = 0.2f;
     /**
