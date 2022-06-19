@@ -114,6 +114,8 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     }
 
     public @Nullable OpenUVResult getUVData(String latitude, String longitude, String altitude) {
+        String statusMessage = "";
+        ThingStatusDetail statusDetail = ThingStatusDetail.COMMUNICATION_ERROR;
         String url = String.format(QUERY_URL, latitude, longitude, altitude);
         String jsonData = "";
         try {
@@ -129,36 +131,33 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 throw new OpenUVException(error);
             }
         } catch (JsonSyntaxException e) {
-            String message = "";
             if (jsonData.contains("MongoError")) {
-                message = String.format("@text/offline.comm-error-faultly-service [ \"%d\" ]", RECONNECT_DELAY_MIN);
+                statusMessage = String.format("@text/offline.comm-error-faultly-service [ \"%d\" ]",
+                        RECONNECT_DELAY_MIN);
                 scheduleReconnectJob(RECONNECT_DELAY_MIN);
             } else {
-                message = String.format("@text/offline.invalid-json [ \"%s\", \"%s\" ]", url, jsonData);
+                statusDetail = ThingStatusDetail.NONE;
+                statusMessage = String.format("@text/offline.invalid-json [ \"%s\", \"%s\" ]", url, jsonData);
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            statusMessage = e.getMessage();
         } catch (OpenUVException e) {
-            String message = e.getMessage();
-            ThingStatusDetail error = ThingStatusDetail.NONE;
             if (e.isQuotaError()) {
                 LocalDateTime nextMidnight = LocalDate.now().plusDays(1).atStartOfDay().plusMinutes(2);
-                error = ThingStatusDetail.COMMUNICATION_ERROR;
-                message = String.format("@text/offline.comm-error-quota-exceeded [ \"%s\" ]",
+                statusMessage = String.format("@text/offline.comm-error-quota-exceeded [ \"%s\" ]",
                         nextMidnight.toString());
                 scheduleReconnectJob(Duration.between(LocalDateTime.now(), nextMidnight).toMinutes());
             } else if (e.isApiKeyError()) {
                 if (Boolean.TRUE.toString().equals(editProperties().get(KEY_VERIFIED))) {
-                    message = String.format("@text/offline.api-key-not-recognized [ \"%d\" ]", RECONNECT_DELAY_MIN);
-                    error = ThingStatusDetail.COMMUNICATION_ERROR;
+                    statusMessage = String.format("@text/offline.api-key-not-recognized [ \"%d\" ]",
+                            RECONNECT_DELAY_MIN);
                     scheduleReconnectJob(RECONNECT_DELAY_MIN);
                 } else {
-                    error = ThingStatusDetail.CONFIGURATION_ERROR;
+                    statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
                 }
             }
-            updateStatus(ThingStatus.OFFLINE, error, message);
         }
+        updateStatus(ThingStatus.OFFLINE, statusDetail, statusMessage);
         return null;
     }
 
