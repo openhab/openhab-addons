@@ -71,7 +71,7 @@ When read is true:
 * template: action template. (Required)
 * value: read template, can use the placeholders symbols $itemLabel and $state.
 * emptyValue: An alternative template. Is used when the state value is empty or NULL after the post transformation. The $itemLabel is available.
-* type: action template type.
+* type: action template type, either "tokens" or "lemmas".
 * requiredTags: allow to restrict the items targeted by its tags by ignoring items not having all these tags.
 * placeholders: only the placeholder with label state will be used, to process its POS transformation on the state.
 * targetMembers: when targeting a Group item, can be used to access the state of one of its members. In case of multiple matches, a warning is shown and the first one is used.
