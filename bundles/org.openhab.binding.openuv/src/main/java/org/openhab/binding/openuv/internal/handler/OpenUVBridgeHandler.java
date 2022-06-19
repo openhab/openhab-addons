@@ -132,10 +132,10 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
         } catch (JsonSyntaxException e) {
             String message = "";
             if (jsonData.contains("MongoError")) {
-                message = String.format("Service not responding, will reconnect in %d minutes", RECONNECT_DELAY_MIN);
+                message = String.format("@text/offline.comm-error-faultly-service [ \"%d\" ]", RECONNECT_DELAY_MIN);
                 scheduleReconnect(RECONNECT_DELAY_MIN);
             } else {
-                message = String.format("Invalid json received when calling `%s` : %s", url, jsonData);
+                message = String.format("@text/offline.invalid-json [ \"%s\", \"%s\" ]", url, jsonData);
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         } catch (IOException e) {
@@ -152,8 +152,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 ThingStatusDetail error = e.isApiKeyError() ? ThingStatusDetail.CONFIGURATION_ERROR
                         : ThingStatusDetail.NONE;
                 if (e.isApiKeyError() && Boolean.TRUE.toString().equals(editProperties().get(KEY_VERIFIED))) {
-                    message = String.format("Service error while API key is good, will reconnect in %d minutes",
-                            RECONNECT_DELAY_MIN);
+                    message = String.format("@text/offline.api-key-not-recognized [ \"%d\" ]", RECONNECT_DELAY_MIN);
                     error = ThingStatusDetail.COMMUNICATION_ERROR;
                     scheduleReconnect(RECONNECT_DELAY_MIN);
                 }
