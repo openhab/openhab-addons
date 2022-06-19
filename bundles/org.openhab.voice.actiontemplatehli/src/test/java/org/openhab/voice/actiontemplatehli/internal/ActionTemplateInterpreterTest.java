@@ -134,7 +134,7 @@ public class ActionTemplateInterpreterTest {
         var groupNPLOptionReadAction = new ActionTemplateConfiguration();
         groupNPLOptionReadAction.read = true;
         groupNPLOptionReadAction.requiredItemTags = new String[] { "Location" };
-        groupNPLOptionReadAction.template = "what channel is the on the $itemLabel tv";
+        groupNPLOptionReadAction.template = "what channel is on the $itemLabel tv";
         groupNPLOptionReadAction.value = "$groupLabel tv is on $itemOption";
         groupNPLOptionReadAction.memberTargets = new ActionTemplateGroupTargets();
         groupNPLOptionReadAction.memberTargets.itemType = "Number";
@@ -226,7 +226,7 @@ public class ActionTemplateInterpreterTest {
      */
     @Test
     public void groupItemOptionTest() throws InterpretationException {
-        var response = interpreter.interpret(Locale.ENGLISH, "what channel is the on the bedroom tv");
+        var response = interpreter.interpret(Locale.ENGLISH, "what channel is on the bedroom tv");
         assertThat(response, is("bedroom tv is on channel one"));
         response = interpreter.interpret(Locale.ENGLISH, "set bedroom channel to channel two");
         assertThat(response, is("Done"));
