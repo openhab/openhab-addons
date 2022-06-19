@@ -139,7 +139,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
             } else {
                 statusDetail = ThingStatusDetail.NONE;
                 statusMessage = String.format("@text/offline.invalid-json [ \"%s\" ]", url);
-                logger.debug(statusMessage + ": " + jsonData);
+                logger.debug("{} : {}", statusMessage, jsonData);
             }
         } catch (IOException e) {
             statusMessage = e.getMessage();
