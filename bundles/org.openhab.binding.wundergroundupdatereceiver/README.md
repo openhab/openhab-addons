@@ -13,7 +13,7 @@ The request is in itself simple to parse, so by redirecting it to your openHAB s
 E.g. use measured wind-speed to close an awning or turn on the sprinkler system after some time without rain.
 This binding allows you to mix and match products from various manufacturers that otherwise have a closed system.
 
-If you wish to pass the measurements on to rtupdate.wunderground.com, you can use a simple rule that triggers on the wundergroundupdatereceiver:wundergroundUpdateReceiver:<channel-id>:metadata#last-query-trigger to do so.
+If you wish to pass the measurements on to rtupdate.wunderground.com, you can use a simple rule that triggers on the `wundergroundupdatereceiver:wundergroundUpdateReceiver:<channel-id>:metadata#last-query-trigger` to do so.
 It can also be used to submit the same measurements to multiple weather services via multiple rules.
 
 ## Supported Things
@@ -140,8 +140,8 @@ This is supported by the discovery mechanism, creating a channel for each of the
 ### Thing file
 
 Configuration using thing and item files is not the recommended method, as you have to manually replicate the configuration, discovery produces.
-Items must be named as the request parameters in the channel type table and must have the same types.
-Items matching the request parameters submitted by your particular device must needs be discovered before being able to write appropriate item files.
+Channels must be named as the request parameters in the channel type table and the linked Items should have the same types, so the request parameter names submitted by your particular device(s) need to be found before being able to write appropriate thing files.
+You need to intercept a request from your devices(s) using something like wireshark.
 Both thing and item files must be created manually to achieve the same result as automatic discovery.
 
 Assuming you have intercepted a request such as `https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php?ID=MYSTATIONID&PASSWORD=XXXXXX&windspeedmph=3.11&dateutc=2021-02-07%2014:04:03&softwaretype=WH2600%20V2.2.8&action=updateraw&realtime=1&rtfreq=5`, you can configure a thing to intercept the request thus:
@@ -165,6 +165,7 @@ Casing of the request parameter is significant.
 None of the current channels take config.
 
 ### Item file
+
 ```
 Number:Speed WuBinding_WeatherStation_WindSpeed "Current Wind Speed [%.2f %unit%]" <wind> { channel="wundergroundupdatereceiver:wundergroundUpdateReceiver:ATHINGID:windspeedmph" }
 DateTime WuBinding_LastRecieved "Last Recieved Time [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]" <time> { channel="wundergroundupdatereceiver:wundergroundUpdateReceiver:ATHINGID:last-received-datetime" }

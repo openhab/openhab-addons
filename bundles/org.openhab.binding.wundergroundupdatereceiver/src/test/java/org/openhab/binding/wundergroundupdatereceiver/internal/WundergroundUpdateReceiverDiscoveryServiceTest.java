@@ -20,6 +20,7 @@ import static org.mockito.MockitoAnnotations.openMocks;
 import static org.openhab.binding.wundergroundupdatereceiver.internal.WundergroundUpdateReceiverBindingConstants.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpURI;
 import org.eclipse.jetty.http.HttpVersion;
@@ -55,6 +56,7 @@ import org.osgi.service.http.NamespaceException;
 /**
  * @author Daniel Demus - Initial contribution
  */
+@NonNullByDefault({})
 class WundergroundUpdateReceiverDiscoveryServiceTest {
 
     private static final String STATION_ID_1 = "abcd1234";
@@ -180,7 +182,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         sut.addHandler(handler);
 
         // Then
-        var expectedBefore = new ChannelTypeUID[] { TEMPERATURE_CHANNELTYPEUID, HUMIDITY_CHANNELTYPEUID,
+        ChannelTypeUID[] expectedBefore = new ChannelTypeUID[] { TEMPERATURE_CHANNELTYPEUID, HUMIDITY_CHANNELTYPEUID,
                 DATEUTC_CHANNELTYPEUID, SOFTWARETYPE_CHANNELTYPEUID, REALTIME_FREQUENCY_CHANNELTYPEUID,
                 LAST_QUERY_STATE_CHANNELTYPEUID, LAST_RECEIVED_DATETIME_CHANNELTYPEUID,
                 LAST_QUERY_TRIGGER_CHANNELTYPEUID };
@@ -206,8 +208,9 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         sut.doGet(req2, mock(HttpServletResponse.class, Answers.RETURNS_MOCKS));
 
         // Then
-        ChannelTypeUID[] expectedActual = ArrayUtils.addAll(expectedBefore, LOW_BATTERY_CHANNELTYPEUID,
-                SOIL_MOISTURE_CHANNELTYPEUID, SOLARRADIATION_CHANNELTYPEUID);
+        ChannelTypeUID[] expectedActual = Arrays.copyOf(expectedBefore, expectedBefore.length + 3);
+        System.arraycopy(new ChannelTypeUID[] { LOW_BATTERY_CHANNELTYPEUID, SOIL_MOISTURE_CHANNELTYPEUID,
+                SOLARRADIATION_CHANNELTYPEUID }, 0, expectedActual, expectedBefore.length, 3);
         List<ChannelTypeUID> actual = handler.getThing().getChannels().stream().map(Channel::getChannelTypeUID)
                 .collect(Collectors.toList());
         assertThat(actual, hasItems(expectedActual));

@@ -43,6 +43,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpURI;
 import org.eclipse.jetty.http.HttpVersion;
@@ -79,6 +80,7 @@ import org.osgi.service.http.NamespaceException;
 /**
  * @author Daniel Demus - Initial contribution
  */
+@NonNullByDefault({})
 class WundergroundUpdateReceiverServletTest {
 
     private static final String STATION_ID_1 = "abcd1234";
