@@ -138,7 +138,8 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 scheduleReconnectJob(RECONNECT_DELAY_MIN);
             } else {
                 statusDetail = ThingStatusDetail.NONE;
-                statusMessage = String.format("@text/offline.invalid-json [ \"%s\", \"%s\" ]", url, jsonData);
+                statusMessage = String.format("@text/offline.invalid-json [ \"%s\" ]", url);
+                logger.debug(statusMessage + ": " + jsonData);
             }
         } catch (IOException e) {
             statusMessage = e.getMessage();
