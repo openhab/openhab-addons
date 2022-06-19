@@ -461,7 +461,8 @@ public class HueBridge {
      * @return list of groups
      * @throws UnauthorizedException thrown if the user no longer exists
      */
-    public List<FullGroup> getGroups() throws IOException, ApiException {
+    public List<FullGroup> getGroups()
+            throws IOException, ApiException, ConfigurationException, CommunicationException {
         requireAuthentication();
 
         HueResult result = get(getRelativeURL("groups"));
