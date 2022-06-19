@@ -143,7 +143,7 @@ public class WemoInsightHandlerTest {
         String channelToWatch;
 
         public MockWemoInsightHandler(Thing thing, String channelToWatch) {
-            super(thing, null, new WemoHttpCall());
+            super(thing, null, null, new WemoHttpCall());
             this.channelToWatch = channelToWatch;
         }
 

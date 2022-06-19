@@ -54,9 +54,6 @@ public class OrbitBhyveDevice {
 
     JsonObject location = new JsonObject();
 
-    @SerializedName("restricted_frequency")
-    JsonObject restrictedFrequency = new JsonObject();
-
     @SerializedName("suggested_start_time")
     String suggestedStartTime = "";
 

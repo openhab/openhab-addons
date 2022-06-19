@@ -62,12 +62,12 @@ public class Channels {
         // inside the thing-types.xml file. A better solution would be to create the channel types
         // dynamically based on the WebThing description to make most of the meta data of a WebThing.
         // The goal of the WebThing meta data is to enable semantic interoperability for connected things
-        channelBuilder.withType(new ChannelTypeUID(BINDING_ID, itemType.getType()));
+        channelBuilder.withType(new ChannelTypeUID(BINDING_ID, itemType.getType().toLowerCase()));
         channelBuilder.withDescription(property.description);
         channelBuilder.withLabel(property.title);
-        var defaultTag = itemType.getTag();
-        if (defaultTag != null) {
-            channelBuilder.withDefaultTags(Set.of(defaultTag));
+        Set<String> defaultTags = itemType.getTags();
+        if (!defaultTags.isEmpty()) {
+            channelBuilder.withDefaultTags(defaultTags);
         }
         return channelBuilder.build();
     }

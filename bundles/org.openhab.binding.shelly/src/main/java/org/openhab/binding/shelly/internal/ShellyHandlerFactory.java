@@ -101,6 +101,9 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Using OH HTTP port {}", httpPort);
 
         this.coapServer = new ShellyCoapServer();
+
+        // Promote Shelly Manager usage
+        logger.info("{}", messages.get("status.managerstarted", localIP, httpPort));
     }
 
     @Override

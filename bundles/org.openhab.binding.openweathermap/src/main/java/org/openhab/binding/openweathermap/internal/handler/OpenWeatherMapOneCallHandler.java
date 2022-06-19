@@ -263,7 +263,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                 }
                 Matcher alertsMatcher = CHANNEL_GROUP_ALERTS_PREFIX_PATTERN.matcher(channelGroupId);
                 if (alertsMatcher.find() && (i = Integer.parseInt(alertsMatcher.group(1))) >= 1) {
-                    updateAlertsChannel(channelUID, i);
+                    updateAlertsChannel(channelUID, i - 1);
                     break;
                 }
                 break;
@@ -371,6 +371,12 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
         }
     }
 
+    /**
+     * Update the channel from the last OpenWeatherMap data retrieved.
+     *
+     * @param channelUID the id identifying the channel to be updated
+     * @param count the index of the minutely data referenced by the channel (minute 1 is count 0)
+     */
     private void updateMinutelyForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
@@ -410,7 +416,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
      * Update the channel from the last OpenWeatherMap data retrieved.
      *
      * @param channelUID the id identifying the channel to be updated
-     * @param count the number of the hour referenced by the channel
+     * @param count the index of the hourly data referenced by the channel (hour 1 is count 0)
      */
     private void updateHourlyForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
@@ -509,7 +515,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
      * Update the channel from the last OpenWeatherMap data retrieved.
      *
      * @param channelUID the id identifying the channel to be updated
-     * @param count
+     * @param count the index of the daily data referenced by the channel (today is count 0)
      */
     private void updateDailyForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
@@ -672,7 +678,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
      * Update the channel from the last OpenWeaterhMap data retrieved.
      *
      * @param channelUID the id identifying the channel to be updated
-     * @param count
+     * @param count the index of the alert data referenced by the channel (alert 1 is count 0)
      */
     private void updateAlertsChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
@@ -681,7 +687,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
         List<Alert> alerts = localWeatherData != null ? localWeatherData.alerts : null;
         State state = UnDefType.UNDEF;
         if (alerts != null && alerts.size() > count) {
-            Alert alert = alerts.get(count - 1);
+            Alert alert = alerts.get(count);
             switch (channelId) {
                 case CHANNEL_ALERT_EVENT:
                     state = getStringTypeState(alert.event);

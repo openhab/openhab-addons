@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="bridge-type:awattar:bridge">
+		<parameter name="country" type="text" pattern="DE|AT">
+			<label>Country</label>
+			<default>DE</default>
+			<description>Country to get prices for. Only DE (Germany) and AT (Austria) are supported.</description>
+			<options>
+				<option value="DE">DE</option>
+				<option value="AT">AT</option>
+			</options>
+		</parameter>
+		<parameter name="vatPercent" type="decimal">
+			<label>VAT Percent</label>
+			<description>Specifies the value added tax percentage</description>
+			<default>19</default>
+		</parameter>
+		<parameter name="basePrice" type="decimal">
+			<label>Base Price</label>
+			<description>Specifies the net base price per kWh</description>
+			<default>0</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:awattar:bestprice">
+		<parameter name="rangeStart" type="integer" min="0" max="23">
+			<label>Range Start</label>
+			<description>Earliest possible hour of bestprice period.</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="rangeDuration" type="integer" min="1" max="24">
+			<label>Range Duration</label>
+			<description>Duration of bestprice candidate range</description>
+			<default>24</default>
+		</parameter>
+		<parameter name="length" type="integer" min="1" max="23">
+			<label>Length</label>
+			<description>The number of hours the bestprice period should last</description>
+			<default>1</default>
+		</parameter>
+		<parameter name="consecutive" type="boolean">
+			<label>Consecutive</label>
+			<description>Do the hours need to be consecutive?</description>
+			<default>true</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

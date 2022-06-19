@@ -45,20 +45,20 @@
 	<channel-type id="dateTime-channel">
 		<item-type>DateTime</item-type>
 		<label>Date</label>
-		<description>NTP refreshed date &amp; time</description>
+		<description>NTP refreshed date and time.</description>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="string-channel">
 		<item-type>String</item-type>
 		<label>Date</label>
-		<description>NTP refreshed date &amp; time</description>
+		<description>NTP refreshed date and time.</description>
 		<category>Time</category>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="DateTimeFormat" type="text" required="false">
 				<label>Date Time Format</label>
-				<description>Formattting of the date &amp; time.</description>
+				<description>Formattting of the date and time.</description>
 				<default>yyyy-MM-dd HH:mm:ss z</default>
 			</parameter>
 		</config-description>

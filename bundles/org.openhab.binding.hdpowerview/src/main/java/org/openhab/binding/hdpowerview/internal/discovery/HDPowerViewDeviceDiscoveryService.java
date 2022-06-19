@@ -115,8 +115,7 @@ public class HDPowerViewDeviceDiscoveryService extends AbstractDiscoveryService 
             }
             String id = Integer.toString(shadeData.id);
             ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE, bridgeUid, id);
-            Integer caps = shadeData.capabilities;
-            Capabilities capabilities = db.getCapabilities((caps != null) ? caps.intValue() : -1);
+            Capabilities capabilities = db.getCapabilities(shadeData.capabilities);
 
             DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID).withLabel(shadeData.getName())
                     .withBridge(bridgeUid).withProperty(HDPowerViewShadeConfiguration.ID, id)

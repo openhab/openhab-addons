@@ -525,7 +525,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             // Old firmware release are lacking various status values, which are not updated using CoIoT.
             // In this case we keep a refresh so it gets polled using REST. Beginning with Firmware 1.6 most
             // of the values are available
-            if ((!thingHandler.autoCoIoT && (thingHandler.scheduledUpdates <= 1))
+            if ((!thingHandler.autoCoIoT && (thingHandler.scheduledUpdates < 1))
                     || (thingHandler.autoCoIoT && !profile.isLight && !profile.hasBattery)) {
                 thingHandler.requestUpdates(1, false);
             }

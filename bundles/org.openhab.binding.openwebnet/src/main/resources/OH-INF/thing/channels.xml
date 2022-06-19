@@ -16,6 +16,29 @@
 		</tags>
 	</channel-type>
 
+	<!-- Aux channel -->
+	<!--Only ON and OFF options are supported -->
+	<channel-type id="aux">
+		<item-type>String</item-type>
+		<label>Auxiliary</label>
+		<description>Controls an Auxiliary command (read/write)</description>
+		<state>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="ON">On</option>
+				<option value="TOGGLE">Toggle</option>
+				<option value="STOP">Stop</option>
+				<option value="UP">Up</option>
+				<option value="DOWN">Down</option>
+				<option value="ENABLED">Enabled</option>
+				<option value="DISABLED">Disabled</option>
+				<option value="RESET_GEN">Reset gen</option>
+				<option value="RESET_BI">Reset bi</option>
+				<option value="RESET_TRI">Reset tri</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<!-- Brightness Channel -->
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>

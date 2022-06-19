@@ -111,12 +111,12 @@ public class ThingMock implements Thing {
 
     @Override
     public ThingUID getUID() {
-        return new ThingUID("", "");
+        return new ThingUID("luftdateninfo", "test");
     }
 
     @Override
     public ThingTypeUID getThingTypeUID() {
-        return new ThingTypeUID("");
+        return new ThingTypeUID("luftdateninfo:any");
     }
 
     @Override

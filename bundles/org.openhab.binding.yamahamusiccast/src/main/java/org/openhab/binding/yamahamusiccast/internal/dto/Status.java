@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.yamahamusiccast.internal.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -75,15 +77,8 @@ public class Status {
         return volume;
     }
 
-    /**
-     * Get the volume in decibel (dB).
-     * 
-     * @return volume in dB or -90 dB if not available
-     */
-    public float getVolumeDb() {
-        if (actualVolume == null)
-            return -90f;
-        return actualVolume.getValue();
+    public @Nullable ActualVolume getActualVolume() {
+        return actualVolume;
     }
 
     public int getMaxVolume() {

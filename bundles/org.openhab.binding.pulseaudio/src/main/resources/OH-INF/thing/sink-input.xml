@@ -20,7 +20,16 @@
 		<config-description>
 			<parameter name="name" type="text" required="true">
 				<label>Name</label>
-				<description>The name of one specific device.</description>
+				<description>The name of one specific device. You can also use the application name.</description>
+			</parameter>
+			<parameter name="additionalFilters" type="text" required="false">
+				<label>Additional Filters</label>
+				<advanced>true</advanced>
+				<description>Additional filters to select the proper device on the pulseaudio server, in case of ambiguity.
+					To be
+					selected, the device should have at least a property value matching this regular expression. You can use
+					multiple
+					regular expressions (separator is ###).</description>
 			</parameter>
 		</config-description>
 	</thing-type>

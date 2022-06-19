@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
@@ -70,8 +71,9 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoLightHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
-        super(thing, upnpIOService, wemoHttpcaller);
+    public WemoLightHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
+            WemoHttpCall wemoHttpcaller) {
+        super(thing, upnpIOService, upnpService, wemoHttpcaller);
 
         logger.debug("Creating a WemoLightHandler for thing '{}'", getThing().getUID());
     }

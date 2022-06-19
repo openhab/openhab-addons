@@ -117,6 +117,10 @@ Note: After changing the DPT of already existing Channels, openHAB needs to be r
 |-----------|---------------|-------------|
 | ga        | Group address | 9.001       |
 
+
+Note: Using the Units Of Measurement feature of openHAB (Quantitytype) requires that the DPT value is set correctly.
+Automatic type conversion will be applied if required.
+
 ##### Channel Type "string"
 
 | Parameter | Description   | Default DPT |

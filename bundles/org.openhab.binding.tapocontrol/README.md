@@ -54,6 +54,9 @@ Before using Smart Plugs with openHAB the devices must be connected to the Wi-Fi
 This can be done using the Tapo provided mobile app.
 You need to setup a bridge (Cloud-Login) to commiunicate with your devices.
 
+**Note:** If the Tapo device is to be isolated from the internet e.g. on an IoT LAN, the P110 will not expose its energy and power data until it has successfully synchronised it's clock with an NTP server - at time of writing, this was `pool.ntp.org`.
+To satisfy this requirement while keeping the device isolated, your router should be configured to either permit `udp/123` out to the internet or a NAT rule created to redirect all internet bound NTP traffic to a local NTP server.
+
 ## Discovery
 
 Discovery is done by connecting to the Tapo-Cloud Service. 

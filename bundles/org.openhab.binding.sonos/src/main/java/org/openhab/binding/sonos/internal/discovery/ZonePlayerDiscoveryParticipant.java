@@ -80,54 +80,30 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
         if (device.getDetails().getManufacturerDetails().getManufacturer() != null) {
             if (device.getDetails().getManufacturerDetails().getManufacturer().toUpperCase().contains("SONOS")) {
-                boolean ignored = false;
-                String modelName = getModelName(device);
-                switch (modelName) {
-                    case "ZP80":
-                        modelName = "CONNECT";
-                        break;
-                    case "ZP100":
-                        modelName = "CONNECTAMP";
-                        break;
-                    case "One SL":
-                        modelName = "OneSL";
-                        break;
-                    case "Arc SL":
-                        modelName = "ArcSL";
-                        break;
-                    case "Sub":
-                        // The Sonos Sub is ignored
-                        ignored = true;
-                        break;
-                    default:
-                        break;
-                }
-                if (!ignored) {
-                    ThingTypeUID thingUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, modelName);
-                    if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingUID)) {
+                String id = SonosXMLParser
+                        .buildThingTypeIdFromModelName(device.getDetails().getModelDetails().getModelName());
+                String udn = device.getIdentity().getUdn().getIdentifierString();
+                if (!id.isEmpty() && !"Sub".equalsIgnoreCase(id) && !udn.isEmpty()) {
+                    ThingTypeUID thingTypeUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, id);
+                    if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingTypeUID)) {
                         // Try with the model name all in uppercase
-                        thingUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, modelName.toUpperCase());
+                        thingTypeUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, id.toUpperCase());
                         // In case a new "unknown" Sonos player is discovered a generic ThingTypeUID will be used
-                        if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingUID)) {
-                            thingUID = SonosBindingConstants.ZONEPLAYER_THING_TYPE_UID;
+                        if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingTypeUID)) {
+                            thingTypeUID = SonosBindingConstants.ZONEPLAYER_THING_TYPE_UID;
+                            logger.warn(
+                                    "'{}' is not yet a supported model, thing type '{}' is considered as default; please open an issue",
+                                    device.getDetails().getModelDetails().getModelName(), thingTypeUID);
                         }
                     }
 
-                    logger.debug("Discovered a Sonos '{}' thing with UDN '{}'", thingUID,
-                            device.getIdentity().getUdn().getIdentifierString());
-                    return new ThingUID(thingUID, device.getIdentity().getUdn().getIdentifierString());
+                    logger.debug("Discovered a Sonos '{}' thing with UDN '{}'", thingTypeUID, udn);
+                    return new ThingUID(thingTypeUID, udn);
                 }
             }
         }
 
         return null;
-    }
-
-    private String getModelName(RemoteDevice device) {
-        // For Ikea SYMFONISK models, the model name now starts with "SYMFONISK" with recent firmwares
-        // We can no more use extractModelName as it deletes the first word ("Sonos" for all other devices)
-        return device.getDetails().getModelDetails().getModelName().toUpperCase().contains("SYMFONISK") ? "SYMFONISK"
-                : SonosXMLParser.extractModelName(device.getDetails().getModelDetails().getModelName());
     }
 
     private @Nullable String getSonosRoomName(RemoteDevice device) {

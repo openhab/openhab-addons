@@ -146,7 +146,7 @@ public final class FilterScanner {
 
         private final int startPosition;
         private final String channelName;
-        private String channelGroup;
+        private final String channelGroup;
 
         /**
          * Creates an new {@link ExpectQuotesState}.

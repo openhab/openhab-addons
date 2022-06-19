@@ -130,6 +130,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         metadataRegistry.addRegistryChangeListener(metadataChangeListener);
         itemRegistry.getItems().forEach(this::createRootAccessories);
         initialiseRevision();
+        makeNewConfigurationRevision();
         logger.info("Created {} HomeKit items.", accessoryRegistry.getAllAccessories().size());
     }
 

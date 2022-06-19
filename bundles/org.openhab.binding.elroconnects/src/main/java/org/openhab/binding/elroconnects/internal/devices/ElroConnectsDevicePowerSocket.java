@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.elroconnects.internal.devices;
 
-import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.POWER_STATE;
+import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.*;
 
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsBridgeHandler;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsDeviceHandler;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -68,16 +69,22 @@ public class ElroConnectsDevicePowerSocket extends ElroConnectsDevice {
         String deviceStatus = this.deviceStatus;
         if (deviceStatus.length() < 6) {
             logger.debug("Could not decode device status: {}", deviceStatus);
+            String msg = String.format("@text/offline.device-fault [ \"%d\" ]", deviceId);
+            handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, msg);
             return;
         }
+
+        int signalStrength = Integer.parseInt(deviceStatus.substring(0, 2), 16);
+        signalStrength = (signalStrength > 4) ? 4 : ((signalStrength < 0) ? 0 : signalStrength);
+        handler.updateState(SIGNAL_STRENGTH, new DecimalType(signalStrength));
 
         String status = deviceStatus.substring(4, 6);
         State state = STAT_ON.equals(status) ? OnOffType.ON
                 : (STAT_OFF.equals(status) ? OnOffType.OFF : UnDefType.UNDEF);
         handler.updateState(POWER_STATE, state);
         if (UnDefType.UNDEF.equals(state)) {
-            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Device " + deviceId + " is not syncing with K1 hub");
+            String msg = String.format("@text/offline.device-not-syncing [ \"%d\" ]", deviceId);
+            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
         } else {
             handler.updateStatus(ThingStatus.ONLINE);
         }

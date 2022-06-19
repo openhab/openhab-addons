@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,7 +51,7 @@ import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDeviceTempe
 import org.openhab.binding.elroconnects.internal.discovery.ElroConnectsDiscoveryService;
 import org.openhab.binding.elroconnects.internal.util.ElroConnectsUtil;
 import org.openhab.core.common.NamedThreadFactory;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -59,13 +60,13 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
-import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,6 +123,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     private volatile @Nullable InetAddress addr;
     private volatile String ctrlKey = "";
 
+    private boolean legacyFirmware = false;
+
     private volatile @Nullable DatagramSocket socket;
     private volatile @Nullable DatagramPacket ackPacket;
 
@@ -140,6 +143,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     private final Gson gsonOut = new Gson();
     private Gson gsonIn = new Gson();
 
+    private @Nullable ElroConnectsDiscoveryService discoveryService = null;
+
     public ElroConnectsBridgeHandler(Bridge bridge, NetworkAddressService networkAddressService,
             ElroConnectsDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(bridge);
@@ -154,17 +159,20 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         ElroConnectsBridgeConfiguration config = getConfigAs(ElroConnectsBridgeConfiguration.class);
         connectorId = config.connectorId;
         refreshInterval = config.refreshInterval;
+        legacyFirmware = config.legacyFirmware;
 
         if (connectorId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device ID not set");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.no-connector-id");
             return;
         } else if (!CONNECTOR_ID_PATTERN.matcher(connectorId).matches()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Device ID not of format ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector");
+            String msg = String.format("@text/offline.invalid-connector-id [ \"%s\" ]", connectorId);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
             return;
         }
 
         queryString = QUERY_BASE_STRING + connectorId;
+
+        updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.submit(this::startCommunication);
     }
@@ -176,38 +184,47 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
 
     private synchronized void startCommunication() {
         ElroConnectsBridgeConfiguration config = getConfigAs(ElroConnectsBridgeConfiguration.class);
-        InetAddress addr = this.addr;
+        InetAddress addr = null;
 
+        // First try with configured IP address if there is one
         String ipAddress = config.ipAddress;
         if (!ipAddress.isEmpty()) {
             try {
-                addr = InetAddress.getByName(ipAddress);
-                this.addr = addr;
-            } catch (UnknownHostException e) {
-                addr = null;
+                this.addr = InetAddress.getByName(ipAddress);
+                addr = getAddr(false);
+            } catch (IOException e) {
                 logger.warn("Unknown host for {}, trying to discover address", ipAddress);
             }
         }
 
-        try {
-            addr = getAddr(addr == null);
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error trying to find IP address for connector ID " + connectorId + ".");
-            stopCommunication();
-            return;
-        }
+        // Then try broadcast to detect IP address if configured IP address did not work
         if (addr == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error trying to find IP address for connector ID " + connectorId + ".");
+            try {
+                addr = getAddr(true);
+            } catch (IOException e) {
+                String msg = String.format("@text/offline.find-ip-fail [ \"%s\" ]", connectorId);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+                stopCommunication();
+                return;
+            }
+        }
+
+        if (addr == null) {
+            String msg = String.format("@text/offline.find-ip-fail [ \"%s\" ]", connectorId);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
             stopCommunication();
             return;
         }
 
+        // Found valid IP address, update configuration with detected IP address
+        Configuration configuration = thing.getConfiguration();
+        configuration.put(CONFIG_IP_ADDRESS, addr.getHostAddress());
+        updateConfiguration(configuration);
+
         String ctrlKey = this.ctrlKey;
         if (ctrlKey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication data error while starting communication.");
+                    "@text/offline.communication-data-error");
             stopCommunication();
             return;
         }
@@ -217,8 +234,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             socket = createSocket(false);
             this.socket = socket;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Socket error while starting communication: " + e.getMessage());
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
             stopCommunication();
             return;
         }
@@ -243,9 +260,15 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             getCurrentScene();
 
             updateStatus(ThingStatus.ONLINE);
-            updateState(SCENE, new StringType(String.valueOf(currentScene)));
+
+            // Enable discovery of devices
+            ElroConnectsDiscoveryService service = discoveryService;
+            if (service != null) {
+                service.startBackgroundDiscovery();
+            }
         } catch (IOException e) {
-            restartCommunication("Error in communication getting initial data: " + e.getMessage());
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
             return;
         }
 
@@ -254,7 +277,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
 
     /**
      * Get the IP address and ctrl key of the connector by broadcasting message with connectorId. This should be used
-     * when initializing the connection. the ctrlKey field is set.
+     * when initializing the connection. the ctrlKey and addr fields are set.
      *
      * @param broadcast, if true find address by broadcast, otherwise simply send to configured address to retrieve key
      *            only
@@ -285,7 +308,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             awaitResponse(true);
             send(socket, queryString, false);
         } else {
-            restartCommunication("Error in communication, no socket to send keep alive");
+            restartCommunication("@text/offline.no-socket");
         }
     }
 
@@ -360,14 +383,15 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 byte[] buffer = new byte[4096];
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 while (!Thread.interrupted()) {
-                    String response = receive(socket, buffer, packet);
+                    String response = receive(socket, packet);
                     processMessage(socket, response);
                 }
             } catch (IOException e) {
-                restartCommunication("Communication error in listener: " + e.getMessage());
+                String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+                restartCommunication(msg);
             }
         } else {
-            restartCommunication("Error in communication, no socket to start listener");
+            restartCommunication("@text/offline.no-socket");
         }
     }
 
@@ -382,7 +406,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 syncScenes();
                 getCurrentScene();
             } catch (IOException e) {
-                restartCommunication("Error in communication refreshing device status: " + e.getMessage());
+                String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+                restartCommunication(msg);
             }
         }, refreshInterval, refreshInterval, TimeUnit.SECONDS);
     }
@@ -474,7 +499,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         }
 
         int deviceId = Integer.parseInt(answerContent.substring(0, 4), 16);
-        String deviceName = (new String(HexUtils.hexToBytes(answerContent.substring(4)))).replaceAll("[@$]*", "");
+        String deviceName = ElroConnectsUtil.decode(answerContent.substring(4));
         ElroConnectsDevice device = devices.get(deviceId);
         if (device != null) {
             device.setDeviceName(deviceName);
@@ -491,7 +516,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Could not decode answer {}", answerContent);
                 return;
             }
-            sceneName = (new String(HexUtils.hexToBytes(answerContent.substring(6, 38)))).replaceAll("[@$]*", "");
+            sceneName = ElroConnectsUtil.decode(answerContent.substring(6, 38));
             scenes.put(sceneId, sceneName);
             logger.debug("Scene ID {} name: {}", sceneId, sceneName);
         }
@@ -528,7 +553,21 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         if (handler != null) {
             handler.triggerAlarm();
         }
+        // Also trigger an alarm on the bridge, so the alarm also comes through when no thing for the device is
+        // configured
+        triggerChannel(ALARM, Integer.toString(deviceId));
         logger.debug("Device ID {} alarm", deviceId);
+
+        if (answerContent.length() < 22) {
+            logger.debug("Could not get device status from alarm message for device {}", deviceId);
+            return;
+        }
+        String deviceStatus = answerContent.substring(14, 22);
+        ElroConnectsDevice device = devices.get(deviceId);
+        if (device != null) {
+            device.setDeviceStatus(deviceStatus);
+            device.updateState();
+        }
     }
 
     private @Nullable ElroConnectsDevice addDevice(ElroConnectsMessage message) {
@@ -609,7 +648,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         send(socket, query, broadcast);
         byte[] buffer = new byte[4096];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-        return receive(socket, buffer, packet);
+        return receive(socket, packet);
     }
 
     private void send(DatagramSocket socket, String query, boolean broadcast) throws IOException {
@@ -618,9 +657,9 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 : addr;
         if (address == null) {
             if (broadcast) {
-                restartCommunication("No broadcast address, check network configuration");
+                restartCommunication("@text/offline.no-broadcast-address");
             } else {
-                restartCommunication("Failed sending, hub address was not set");
+                restartCommunication("@text/offline.no-hub-address");
             }
             return;
         }
@@ -630,9 +669,9 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         socket.send(queryPacket);
     }
 
-    private String receive(DatagramSocket socket, byte[] buffer, DatagramPacket packet) throws IOException {
+    private String receive(DatagramSocket socket, DatagramPacket packet) throws IOException {
         socket.receive(packet);
-        String response = new String(packet.getData(), packet.getOffset(), packet.getLength());
+        String response = new String(packet.getData(), packet.getOffset(), packet.getLength(), StandardCharsets.UTF_8);
         logger.debug("Received: {}", response);
         addr = packet.getAddress();
         return response;
@@ -670,7 +709,66 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         String ctrlKey = this.ctrlKey;
         logger.debug("Device control {}, status {}", deviceId, deviceCommand);
         ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
-                ELRO_DEVICE_CONTROL).withDeviceId(ElroConnectsUtil.encode(deviceId)).withDeviceStatus(deviceCommand);
+                ELRO_DEVICE_CONTROL, legacyFirmware).withDeviceId(deviceId).withDeviceStatus(deviceCommand);
+        sendElroMessage(elroMessage, false);
+    }
+
+    public void renameDevice(int deviceId, String deviceName) throws IOException {
+        String connectorId = this.connectorId;
+        String ctrlKey = this.ctrlKey;
+        String encodedName = ElroConnectsUtil.encode(deviceName, 15);
+        encodedName = encodedName + ElroConnectsUtil.crc16(encodedName);
+        logger.debug("Rename device {} to {}", deviceId, deviceName);
+        ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
+                ELRO_DEVICE_RENAME, legacyFirmware).withDeviceId(deviceId).withDeviceName(encodedName);
+        sendElroMessage(elroMessage, false);
+    }
+
+    private void joinDevice() throws IOException {
+        String connectorId = this.connectorId;
+        String ctrlKey = this.ctrlKey;
+        logger.debug("Put hub in join device mode");
+        ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
+                ELRO_DEVICE_JOIN);
+        sendElroMessage(elroMessage, false);
+    }
+
+    private void cancelJoinDevice() throws IOException {
+        String connectorId = this.connectorId;
+        String ctrlKey = this.ctrlKey;
+        logger.debug("Cancel hub in join device mode");
+        ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
+                ELRO_DEVICE_CANCEL_JOIN);
+        sendElroMessage(elroMessage, false);
+    }
+
+    private void removeDevice(int deviceId) throws IOException {
+        if (devices.remove(deviceId) == null) {
+            logger.debug("Device {} not known, cannot remove", deviceId);
+            return;
+        }
+        ThingHandler handler = getDeviceHandler(deviceId);
+        if (handler != null) {
+            handler.dispose();
+        }
+        String connectorId = this.connectorId;
+        String ctrlKey = this.ctrlKey;
+        logger.debug("Remove device {} from hub", deviceId);
+        ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
+                ELRO_DEVICE_REMOVE, legacyFirmware).withDeviceId(deviceId);
+        sendElroMessage(elroMessage, false);
+    }
+
+    private void replaceDevice(int deviceId) throws IOException {
+        if (getDevice(deviceId) == null) {
+            logger.debug("Device {} not known, cannot replace", deviceId);
+            return;
+        }
+        String connectorId = this.connectorId;
+        String ctrlKey = this.ctrlKey;
+        logger.debug("Replace device {} in hub", deviceId);
+        ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
+                ELRO_DEVICE_REPLACE, legacyFirmware).withDeviceId(deviceId);
         sendElroMessage(elroMessage, false);
     }
 
@@ -740,7 +838,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         String ctrlKey = this.ctrlKey;
         logger.debug("Select scene {}", scene);
         ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
-                ELRO_SELECT_SCENE).withSceneType(ElroConnectsUtil.encode(scene));
+                ELRO_SELECT_SCENE, legacyFirmware).withSceneType(scene);
         sendElroMessage(elroMessage, false);
     }
 
@@ -754,7 +852,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         String ctrlKey = this.ctrlKey;
         logger.debug("Sync scenes");
         ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
-                ELRO_SYNC_SCENES).withSceneGroup(ElroConnectsUtil.encode(0)).withSceneContent(SYNC_COMMAND)
+                ELRO_SYNC_SCENES, legacyFirmware).withSceneGroup(0).withSceneContent(SYNC_COMMAND)
                         .withAnswerContent(SYNC_COMMAND);
         sendElroMessage(elroMessage, true);
     }
@@ -762,17 +860,21 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Channel {}, command {}, type {}", channelUID, command, command.getClass());
-        if (SCENE.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                updateState(SCENE, new StringType(String.valueOf(currentScene)));
-            } else if (command instanceof DecimalType) {
-                try {
-                    selectScene(((DecimalType) command).intValue());
-                } catch (IOException e) {
-                    restartCommunication("Error in communication while setting scene: " + e.getMessage());
-                    return;
+        try {
+            if (SCENE.equals(channelUID.getId())) {
+                if (command instanceof RefreshType) {
+                    updateState(SCENE, new StringType(String.valueOf(currentScene)));
+                } else if (command instanceof StringType) {
+                    try {
+                        selectScene(Integer.valueOf(((StringType) command).toString()));
+                    } catch (NumberFormatException nfe) {
+                        logger.debug("Cannot interpret scene command {}", command);
+                    }
                 }
             }
+        } catch (IOException e) {
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
         }
     }
 
@@ -843,6 +945,10 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         return deviceHandlers.get(deviceId);
     }
 
+    public String getConnectorId() {
+        return connectorId;
+    }
+
     public @Nullable ElroConnectsDevice getDevice(int deviceId) {
         return devices.get(deviceId);
     }
@@ -860,5 +966,82 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(ElroConnectsDiscoveryService.class);
+    }
+
+    public Map<Integer, String> listDevicesFromConsole() {
+        return devices.entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getDeviceName()));
+    }
+
+    public void refreshFromConsole() {
+        try {
+            keepAlive();
+            getDeviceStatuses();
+            getDeviceNames();
+        } catch (IOException e) {
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
+        }
+    }
+
+    public void joinDeviceFromConsole() {
+        try {
+            joinDevice();
+        } catch (IOException e) {
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
+        }
+    }
+
+    public void cancelJoinDeviceFromConsole() {
+        try {
+            cancelJoinDevice();
+        } catch (IOException e) {
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
+        }
+    }
+
+    public boolean renameDeviceFromConsole(int deviceId, String deviceName) {
+        if (getDevice(deviceId) == null) {
+            return false;
+        }
+        try {
+            renameDevice(deviceId, deviceName);
+        } catch (IOException e) {
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
+        }
+        return true;
+    }
+
+    public boolean removeDeviceFromConsole(int deviceId) {
+        if (getDevice(deviceId) == null) {
+            return false;
+        }
+        try {
+            removeDevice(deviceId);
+        } catch (IOException e) {
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
+        }
+        return true;
+    }
+
+    public boolean replaceDeviceFromConsole(int deviceId) {
+        if (getDevice(deviceId) == null) {
+            return false;
+        }
+        try {
+            replaceDevice(deviceId);
+        } catch (IOException e) {
+            String msg = String.format("@text/offline.communication-error [ \"%s\" ]", e.getMessage());
+            restartCommunication(msg);
+        }
+        return true;
+    }
+
+    public void setDiscoveryService(ElroConnectsDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
     }
 }
