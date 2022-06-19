@@ -42,7 +42,6 @@ import org.openhab.binding.hue.internal.handler.sensors.TemperatureHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -66,8 +65,7 @@ import org.slf4j.LoggerFactory;
  * @author Laurent Garnier - Added support for groups
  */
 @NonNullByDefault
-public class HueDeviceDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class HueDeviceDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
             .of(HueLightHandler.SUPPORTED_THING_TYPES.stream(), DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(),
