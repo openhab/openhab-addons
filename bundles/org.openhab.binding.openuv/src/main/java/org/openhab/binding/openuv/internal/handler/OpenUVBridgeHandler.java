@@ -96,8 +96,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        reconnectJob.ifPresent(job -> job.cancel(true));
-        reconnectJob = Optional.empty();
+        freeReconnectJob();
     }
 
     @Override
@@ -133,7 +132,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
             String message = "";
             if (jsonData.contains("MongoError")) {
                 message = String.format("@text/offline.comm-error-faultly-service [ \"%d\" ]", RECONNECT_DELAY_MIN);
-                scheduleReconnect(RECONNECT_DELAY_MIN);
+                scheduleReconnectJob(RECONNECT_DELAY_MIN);
             } else {
                 message = String.format("@text/offline.invalid-json [ \"%s\", \"%s\" ]", url, jsonData);
             }
@@ -141,29 +140,36 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (OpenUVException e) {
+            String message = e.getMessage();
+            ThingStatusDetail error = ThingStatusDetail.NONE;
             if (e.isQuotaError()) {
-                LocalDateTime tomorrowMidnight = LocalDate.now().plusDays(1).atStartOfDay().plusMinutes(2);
-
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
-                        .format("@text/offline.comm-error-quota-exceeded [ \"%s\" ]", tomorrowMidnight.toString()));
-                scheduleReconnect(Duration.between(LocalDateTime.now(), tomorrowMidnight).toMinutes());
-            } else {
-                String message = e.getMessage();
-                ThingStatusDetail error = e.isApiKeyError() ? ThingStatusDetail.CONFIGURATION_ERROR
-                        : ThingStatusDetail.NONE;
-                if (e.isApiKeyError() && Boolean.TRUE.toString().equals(editProperties().get(KEY_VERIFIED))) {
+                LocalDateTime nextMidnight = LocalDate.now().plusDays(1).atStartOfDay().plusMinutes(2);
+                error = ThingStatusDetail.COMMUNICATION_ERROR;
+                message = String.format("@text/offline.comm-error-quota-exceeded [ \"%s\" ]",
+                        nextMidnight.toString());
+                scheduleReconnectJob(Duration.between(LocalDateTime.now(), nextMidnight).toMinutes());
+            } else if (e.isApiKeyError()) {
+                if (Boolean.TRUE.toString().equals(editProperties().get(KEY_VERIFIED))) {
                     message = String.format("@text/offline.api-key-not-recognized [ \"%d\" ]", RECONNECT_DELAY_MIN);
                     error = ThingStatusDetail.COMMUNICATION_ERROR;
-                    scheduleReconnect(RECONNECT_DELAY_MIN);
+                    scheduleReconnectJob(RECONNECT_DELAY_MIN);
+                } else {
+                    error = ThingStatusDetail.CONFIGURATION_ERROR;
                 }
-                updateStatus(ThingStatus.OFFLINE, error, message);
             }
+            updateStatus(ThingStatus.OFFLINE, error, message);
         }
         return null;
     }
 
-    private void scheduleReconnect(long delay) {
+    private void scheduleReconnectJob(long delay) {
+        freeReconnectJob();
         reconnectJob = Optional.of(scheduler.schedule(this::initiateConnexion, delay, TimeUnit.MINUTES));
+    }
+
+    private void freeReconnectJob() {
+        reconnectJob.ifPresent(job -> job.cancel(true));
+        reconnectJob = Optional.empty();
     }
 
     @Override
