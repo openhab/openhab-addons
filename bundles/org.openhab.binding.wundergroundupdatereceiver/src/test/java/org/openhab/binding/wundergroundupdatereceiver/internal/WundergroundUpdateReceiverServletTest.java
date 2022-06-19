@@ -43,7 +43,6 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import de.jollyday.config.With;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpURI;
@@ -51,8 +50,6 @@ import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MetaData;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Request;
-import org.hamcrest.core.Is;
-import org.jose4j.http.Get;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;

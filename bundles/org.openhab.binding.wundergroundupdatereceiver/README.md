@@ -139,10 +139,11 @@ This is supported by the discovery mechanism, creating a channel for each of the
 
 ### Thing file
 
-Configuration using thing and item files is not the recommended method, as you have to manually replicate the configuration, discovery produces.
-Channels must be named as the request parameters in the channel type table and the linked Items should have the same types, so the request parameter names submitted by your particular device(s) need to be found before being able to write appropriate thing files.
+Configuration using thing and item files is not the recommended method, as you have to manually replicate the configuration discovery produces.
+Channels _must_ be named as the request parameters in the channel type table, otherwise the binding will not be able to update with values from requests.
+So the request parameter names submitted by your particular device(s) need to be found before being able to write appropriate thing files.
 You need to intercept a request from your devices(s) using something like wireshark.
-Both thing and item files must be created manually to achieve the same result as automatic discovery.
+Both thing and item files must be created manually to produce a result practically identical to the one produced through automatic discovery.
 
 Assuming you have intercepted a request such as `https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php?ID=MYSTATIONID&PASSWORD=XXXXXX&windspeedmph=3.11&dateutc=2021-02-07%2014:04:03&softwaretype=WH2600%20V2.2.8&action=updateraw&realtime=1&rtfreq=5`, you can configure a thing to intercept the request thus:
 
