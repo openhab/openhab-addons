@@ -43,6 +43,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
+import de.jollyday.config.With;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpURI;
@@ -50,6 +51,8 @@ import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MetaData;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Request;
+import org.hamcrest.core.Is;
+import org.jose4j.http.Get;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
@@ -99,7 +102,7 @@ class WundergroundUpdateReceiverServletTest {
     }
 
     @Test
-    void the_servlet_is_active_after_the_first_handler_is_added() throws ServletException, NamespaceException {
+    void theServletIsActiveAfterTheFirstHandlerIsAdded() throws ServletException, NamespaceException {
         // Given
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
         WundergroundUpdateReceiverHandler handler = mock(WundergroundUpdateReceiverHandler.class);
@@ -114,7 +117,7 @@ class WundergroundUpdateReceiverServletTest {
     }
 
     @Test
-    void the_servlet_is_inactive_after_the_last_handler_is_removed_and_background_discovery_is_disabled()
+    void theServletIsInactiveAfterTheLastHandlerIsRemovedAndBackgroundDiscoveryIsDisabled()
             throws ServletException, NamespaceException {
         // Given
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
@@ -138,7 +141,7 @@ class WundergroundUpdateReceiverServletTest {
     }
 
     @Test
-    void the_servlet_is_active_after_the_last_handler_is_removed_but_background_discovery_is_enabled()
+    void theServletIsActiveAfterTheLastHandlerIsRemovedButBackgroundDiscoveryIsEnabled()
             throws ServletException, NamespaceException {
         // Given
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
@@ -162,7 +165,7 @@ class WundergroundUpdateReceiverServletTest {
     }
 
     @Test
-    void on_dispose_all_handlers_are_removed_and_servlet_is_inactive() throws ServletException, NamespaceException {
+    void onDisposeAllHandlersAreRemovedAndServletIsInactive() throws ServletException, NamespaceException {
         // Given
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
         WundergroundUpdateReceiverHandler handler1 = mock(WundergroundUpdateReceiverHandler.class);
@@ -187,7 +190,7 @@ class WundergroundUpdateReceiverServletTest {
     }
 
     @Test
-    void on_dispose_all_handlers_are_removed_and_servlet_is_inactive_even_though_background_discovery_is_enabled()
+    void OnDisposeAllHandlersAreRemovedAndServletIsInactiveEvenThoughBackgroundDiscoveryIsEnabled()
             throws ServletException, NamespaceException {
         // Given
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
@@ -214,7 +217,7 @@ class WundergroundUpdateReceiverServletTest {
     }
 
     @Test
-    void changed_station_id_propagates_to_handler_key() throws ServletException, NamespaceException {
+    void changedStationIdPropagatesToHandlerKey() throws ServletException, NamespaceException {
         // Given
         Thing thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(TEST_THING_UID);
@@ -256,7 +259,7 @@ class WundergroundUpdateReceiverServletTest {
     }
 
     @Test
-    void a_get_request_is_correctly_parsed() throws IOException {
+    void aGetRequestIsCorrectlyParsed() throws IOException {
         // Given
         ThingUID testThingUID = new ThingUID(WundergroundUpdateReceiverBindingConstants.THING_TYPE_UPDATE_RECEIVER,
                 "test-receiver");
@@ -399,7 +402,7 @@ class WundergroundUpdateReceiverServletTest {
     }
 
     @Test
-    void a_get_request_with_indexed_parametres_are_correctly_parsed() throws IOException {
+    void aGetRequestWithIndexedParametresAreCorrectlyParsed() throws IOException {
         // Given
         ThingUID testThingUID = new ThingUID(WundergroundUpdateReceiverBindingConstants.THING_TYPE_UPDATE_RECEIVER,
                 "test-receiver");

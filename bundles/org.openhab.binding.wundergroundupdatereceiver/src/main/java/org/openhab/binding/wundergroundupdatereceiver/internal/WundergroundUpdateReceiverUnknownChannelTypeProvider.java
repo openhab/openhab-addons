@@ -76,7 +76,7 @@ public class WundergroundUpdateReceiverUnknownChannelTypeProvider implements Cha
     }
 
     private ChannelType addChannelType(ChannelTypeUID channelTypeUID, ChannelType channelType) {
-        logger.info("Adding channelType {} for unknown parameter", channelTypeUID.getAsString());
+        logger.warn("Adding channelType {} for unknown parameter", channelTypeUID.getAsString());
         this.channelTypes.put(channelTypeUID, channelType);
         return channelType;
     }

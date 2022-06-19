@@ -69,7 +69,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
     }
 
     @Test
-    void a_request_with_an_unregistered_stationid_is_added_to_the_queue_once()
+    void aRequestWithAnUnregisteredStationidIsAddedToTheQueueOnce()
             throws ServletException, NamespaceException, IOException {
         // Given
         final String queryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "tempf=26.1&" + "humidity=74&" + "dewptf=18.9&"
@@ -108,7 +108,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
     }
 
     @Test
-    void multiple_indexed_parameters_of_the_same_channeltype_are_correctly_discovered() throws IOException {
+    void multipleIndexedParametersOfTheSameChanneltypeAreCorrectlyDiscovered() throws IOException {
         // Given
         final String queryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "temp1f=26.1&" + "humidity=74&" + "temp2f=25.1&"
                 + "lowbatt=1&" + "soilmoisture1=78&" + "soilmoisture2=73&" + "dateutc=2021-02-07%2014:04:03&"
@@ -152,7 +152,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
     }
 
     @Test
-    void unregistered_channels_are_added_on_the_fly_when_discovered() throws IOException {
+    void unregisteredChannelsAreAddedOnTheFlyWhenDiscovered() throws IOException {
         // Given
         final String firstDeviceQueryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "tempf=26.1&" + "humidity=74&"
                 + "dateutc=2021-02-07%2014:04:03&" + "softwaretype=WH2600%20V2.2.8&" + "action=updateraw&"
