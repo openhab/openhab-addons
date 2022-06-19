@@ -58,7 +58,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class OpenUVBridgeHandler extends BaseBridgeHandler {
-    private static final String KEY_VERIFIED = "key_verified";
     private static final String QUERY_URL = "https://api.openuv.io/api/v1/uv?lat=%s&lng=%s&alt=%s";
     private static final int RECONNECT_DELAY_MIN = 5;
     private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
@@ -71,6 +70,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     private final LocaleProvider localeProvider;
 
     private Optional<ScheduledFuture<?>> reconnectJob = Optional.empty();
+    private boolean keyVerified;
 
     public OpenUVBridgeHandler(Bridge bridge, LocationProvider locationProvider, TranslationProvider i18nProvider,
             LocaleProvider localeProvider, Gson gson) {
@@ -84,6 +84,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing OpenUV API bridge handler.");
+        keyVerified = false;
         BridgeConfiguration config = getConfigAs(BridgeConfiguration.class);
         if (config.apikey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -125,7 +126,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 String error = uvResponse.getError();
                 if (error == null) {
                     updateStatus(ThingStatus.ONLINE);
-                    updateProperty(KEY_VERIFIED, Boolean.TRUE.toString());
+                    keyVerified = true;
                     return uvResponse.getResult();
                 }
                 throw new OpenUVException(error);
@@ -148,7 +149,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                         nextMidnight.toString());
                 scheduleReconnectJob(Duration.between(LocalDateTime.now(), nextMidnight).toMinutes());
             } else if (e.isApiKeyError()) {
-                if (Boolean.TRUE.toString().equals(editProperties().get(KEY_VERIFIED))) {
+                if (keyVerified) {
                     statusMessage = String.format("@text/offline.api-key-not-recognized [ \"%d\" ]",
                             RECONNECT_DELAY_MIN);
                     scheduleReconnectJob(RECONNECT_DELAY_MIN);
