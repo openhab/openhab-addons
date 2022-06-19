@@ -14,12 +14,34 @@
 
   <name>openHAB Add-ons :: Bundles :: Voice :: Action Template Interpreter</name>
 
+  <properties>
+    <dep.noembedding>jackson-core,jackson-annotations,jackson-databind</dep.noembedding>
+  </properties>
+
   <dependencies>
     <!-- https://mvnrepository.com/artifact/org.apache.opennlp/opennlp -->
     <dependency>
       <groupId>org.apache.opennlp</groupId>
       <artifactId>opennlp-tools</artifactId>
-      <version>1.9.4</version>
+      <version>2.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

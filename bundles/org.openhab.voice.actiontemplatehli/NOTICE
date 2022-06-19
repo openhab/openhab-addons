@@ -14,7 +14,12 @@ https://github.com/openhab/openhab-addons
 
 == Third-party Content
     
-org.apache.opennlp: opennlp-tools
+opennlp-tools
 * License: Apache 2.0 License
 * Project: https://github.com/apache
 * Source: https://github.com/apache/opennlp
+
+jackson
+* License: Apache 2.0 License
+* Project: https://github.com/FasterXML/jackson
+* Source:  https://github.com/FasterXML/jackson
