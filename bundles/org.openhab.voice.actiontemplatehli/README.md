@@ -174,7 +174,8 @@ Tokenizing the text is enough to use the action type 'tokens' as tokens are the 
 ### POSTagger (language tags)
 
 You need to provide a model for POS tagging at '<OPENHAB_USERDATA>/actiontemplatehli/pos.bin' for your language. 
-This will produce a language tag for each token, that can be used in 'optionalLanguageTags' to make some optional for scoring.
+This will produce a language tag for each token, that can be used in 'optionalLanguageTags' to make some optional for scoring. 
+Please note that these labels may be different depending on the model, please refer to your model's documentation.
 As an example:
 
 The tokens "that,sounds,good" produces the tags "DT,VBZ,JJ".
