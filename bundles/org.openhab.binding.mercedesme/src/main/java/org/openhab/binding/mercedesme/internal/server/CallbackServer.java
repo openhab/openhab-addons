@@ -155,8 +155,14 @@ public class CallbackServer {
         return token.get().getAccessToken();
     }
 
-    public void setToken(AccessTokenResponse atr) {
-        token = Optional.of(atr);
+    /**
+     * Function is used to restore last tokenResponse from Persistence.
+     * Use case e.g. is startup
+     *
+     * @param accessTokenResponse
+     */
+    public void setToken(AccessTokenResponse accessTokenResponse) {
+        token = Optional.of(accessTokenResponse);
     }
 
     /**

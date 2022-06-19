@@ -4,9 +4,23 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+
 	<bridge-type id="account">
 		<label>Mercedes Me Account</label>
 		<description>Mercedes Benz account data</description>
+		<channels>
+			<channel id="auth-url" typeId="auth-url-channel"/>
+			<channel id="callback-url" typeId="callback-url-channel"/>
+			<channel id="callback-ip" typeId="callback-ip-channel"/>
+			<channel id="callback-port" typeId="callback-port-channel"/>
+			<channel id="token-holder" typeId="token-holder-channel"/>
+		</channels>
 		<config-description-ref uri="thing-type:mercedesme:bridge"/>
 	</bridge-type>
+
+	<channel-type id="auth-url-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Raw Data</label>
+	</channel-type>
+
 </thing:thing-descriptions>

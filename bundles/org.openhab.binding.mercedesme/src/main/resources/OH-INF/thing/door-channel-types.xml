@@ -25,7 +25,7 @@
 	</channel-type>
 	<channel-type id="deck-lid-channel">
 		<item-type>Contact</item-type>
-		<label>Hood</label>
+		<label>Deck Lid</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="rooftop-channel">

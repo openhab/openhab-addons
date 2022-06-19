@@ -91,4 +91,17 @@ class JsonTest {
 
         });
     }
+
+    @Test
+    void testEQALightsMapper() {
+        String content = FileReader.readFileInString("src/test/resources/eqa-light-sample.json");
+        JSONArray ja = new JSONArray(content);
+        ja.forEach(entry -> {
+            JSONObject jo = (JSONObject) entry;
+            ChannelStateMap csm = Mapper.getChannelStateMap(jo);
+            System.out.println(csm);
+            assertNotNull(csm);
+
+        });
+    }
 }

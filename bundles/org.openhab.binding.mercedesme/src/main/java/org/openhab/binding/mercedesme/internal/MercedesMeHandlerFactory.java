@@ -19,8 +19,11 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.items.ItemFactory;
+import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.persistence.PersistenceService;
+import org.openhab.core.persistence.PersistenceServiceRegistry;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -49,14 +52,18 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
 
     private final OAuthFactory oAuthFactory;
     private final HttpClientFactory httpClientFactory;
-    private final TimeZoneProvider timeZoneProvider;
+    private final ItemFactory itemFactory;
+    private final ItemRegistry itemRegistry;
+    private final @Nullable PersistenceService persistenceService;
 
     @Activate
-    public MercedesMeHandlerFactory(@Reference OAuthFactory oAuthFactory,
-            @Reference HttpClientFactory httpClientFactory, @Reference TimeZoneProvider timeZoneProvider) {
+    public MercedesMeHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory hcf,
+            @Reference ItemFactory itf, @Reference ItemRegistry itr, @Reference PersistenceServiceRegistry psr) {
         this.oAuthFactory = oAuthFactory;
-        this.httpClientFactory = httpClientFactory;
-        this.timeZoneProvider = timeZoneProvider;
+        this.httpClientFactory = hcf;
+        this.itemFactory = itf;
+        this.itemRegistry = itr;
+        this.persistenceService = psr.getDefault();
     }
 
     @Override
@@ -68,7 +75,8 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new AccountHandler((Bridge) thing, httpClientFactory, oAuthFactory);
+            return new AccountHandler((Bridge) thing, httpClientFactory, oAuthFactory, itemRegistry, itemFactory,
+                    persistenceService);
         }
         return new VehicleHandler(thing, httpClientFactory, thingTypeUID.getId());
     }
