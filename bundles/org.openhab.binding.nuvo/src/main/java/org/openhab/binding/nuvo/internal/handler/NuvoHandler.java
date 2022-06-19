@@ -330,9 +330,10 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 nuvoNetSrcMap.forEach((srcNum, val) -> {
                     if (val == 2) {
                         try {
-                            connector.sendCommand(S + srcNum + "DISPINFOTWO0,0,0,0,0,0,0");
+                            connector.sendCommand(SRC_KEY + srcNum + "DISPINFOTWO0,0,0,0,0,0,0");
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-                            connector.sendCommand(S + srcNum + "DISPLINES0,0,0,\"Source Unavailable\",\"\",\"\",\"\"");
+                            connector.sendCommand(
+                                    SRC_KEY + srcNum + "DISPLINES0,0,0,\"Source Unavailable\",\"\",\"\",\"\"");
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                             connector.sendCommand("SCFG" + srcNum + "NUVONET0");
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
@@ -542,13 +543,13 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     case CHANNEL_TYPE_SENDCMD:
                         if (command instanceof StringType) {
                             String commandStr = command.toString();
-                            if (commandStr.contains(DISPINFOTWO)) {
-                                String sourceKey = commandStr.split(DISPINFOTWO)[0];
+                            if (commandStr.contains(DISP_INFO_TWO)) {
+                                String sourceKey = commandStr.split(DISP_INFO_TWO)[0];
                                 dispInfoCache.put(sourceKey, commandStr);
 
                                 // if 'albumartid' is present, substitute it with the albumArtId hex string
-                                connector.sendCommand(commandStr.replace(ALBUMARTID,
-                                        (OX + Integer.toHexString(albumArtIds.get(sourceKey)))));
+                                connector.sendCommand(commandStr.replace(ALBUM_ART_ID,
+                                        (OFFSET_ZERO + Integer.toHexString(albumArtIds.get(sourceKey)))));
                             } else {
                                 connector.sendCommand(commandStr);
                             }
@@ -579,8 +580,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
                                 // re-send the cached DISPINFOTWO message, substituting in the new albumArtId
                                 if (dispInfoCache.get(target.getId()) != null) {
-                                    connector.sendCommand(dispInfoCache.get(target.getId()).replace(ALBUMARTID,
-                                            (OX + Integer.toHexString(albumArtIds.get(target.getId())))));
+                                    connector.sendCommand(dispInfoCache.get(target.getId()).replace(ALBUM_ART_ID,
+                                            (OFFSET_ZERO + Integer.toHexString(albumArtIds.get(target.getId())))));
                                 }
                             } else {
                                 albumArtMap.put(target.getId(), NO_ART);
@@ -840,14 +841,14 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 logger.debug("Album Art Request for Source: {} - Data: {}", key, updateData);
                 // 0x620FD879,80,80,2,0x00C0C0C0,0,0,0,0,1
                 String[] albumArtReq = updateData.split(COMMA);
-                albumArtIds.put(S + key, Integer.decode(albumArtReq[0]));
+                albumArtIds.put(SRC_KEY + key, Integer.decode(albumArtReq[0]));
 
                 try {
-                    if (albumArtMap.get(S + key).length > 1) {
-                        connector.sendCommand(S + key + ALBUMARTAVAILABLE + albumArtIds.get(S + key) + COMMA
-                                + albumArtMap.get(S + key).length);
+                    if (albumArtMap.get(SRC_KEY + key).length > 1) {
+                        connector.sendCommand(SRC_KEY + key + ALBUM_ART_AVAILABLE + albumArtIds.get(SRC_KEY + key)
+                                + COMMA + albumArtMap.get(SRC_KEY + key).length);
                     } else {
-                        connector.sendCommand(S + key + ALBUMARTAVAILABLE + OCO);
+                        connector.sendCommand(SRC_KEY + key + ALBUM_ART_AVAILABLE + ZERO_COMMA);
                     }
                 } catch (NuvoException e) {
                     logger.debug("Error sending ALBUMARTAVAILABLE command for source: {}", key);
@@ -861,15 +862,15 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 int offset = Integer.parseInt(albumArtFragReq[1]);
                 int length = Integer.parseInt(albumArtFragReq[2]);
 
-                if (requestedId == albumArtIds.get(S + key)) {
+                if (requestedId == albumArtIds.get(SRC_KEY + key)) {
                     byte[] chunk = new byte[length];
-                    byte[] albumArtBytes = albumArtMap.get(S + key);
+                    byte[] albumArtBytes = albumArtMap.get(SRC_KEY + key);
 
                     if (albumArtBytes != null) {
                         System.arraycopy(albumArtBytes, offset, chunk, 0, length);
                         final String frag = Base64.getEncoder().encodeToString(chunk);
                         try {
-                            connector.sendCommand(S + key + ALBUMARTFRAG + requestedId + COMMA + offset + COMMA
+                            connector.sendCommand(SRC_KEY + key + ALBUM_ART_FRAG + requestedId + COMMA + offset + COMMA
                                     + frag.length() + COMMA + frag);
                         } catch (NuvoException e) {
                             logger.debug("Error sending ALBUMARTFRAG command for source: {}, artId: {}", key,
@@ -990,11 +991,11 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
                     if (!topMenuItems.isEmpty()) {
                         connector.sendCommand(
-                                S + srcNum + "MENU," + (topMenuItems.size() < 10 ? topMenuItems.size() : 10));
+                                SRC_KEY + srcNum + "MENU," + (topMenuItems.size() < 10 ? topMenuItems.size() : 10));
                         Thread.sleep(SLEEP_BETWEEN_CMD_MS);
 
                         for (int i = 0; i < (topMenuItems.size() < 10 ? topMenuItems.size() : 10); i++) {
-                            connector.sendCommand(S + srcNum + "MENUITEM" + (i + 1) + ","
+                            connector.sendCommand(SRC_KEY + srcNum + "MENUITEM" + (i + 1) + ","
                                     + (topMenuItems.get(i).getItems().isEmpty() ? ZERO : ONE) + ",0,\""
                                     + topMenuItems.get(i).getText() + "\"");
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
@@ -1003,24 +1004,24 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
                     String[] favorites = favoriteMap.get(srcNum);
                     if (favorites != null) {
-                        connector.sendCommand(S + srcNum + "FAVORITES" + (favorites.length < 20 ? favorites.length : 20)
-                                + COMMA + ("1".equals(srcNum) ? ONE : ZERO) + COMMA + ("2".equals(srcNum) ? ONE : ZERO)
-                                + COMMA + ("3".equals(srcNum) ? ONE : ZERO) + COMMA + ("4".equals(srcNum) ? ONE : ZERO)
-                                + COMMA + ("5".equals(srcNum) ? ONE : ZERO) + COMMA
-                                + ("6".equals(srcNum) ? ONE : ZERO));
+                        connector.sendCommand(SRC_KEY + srcNum + "FAVORITES"
+                                + (favorites.length < 20 ? favorites.length : 20) + COMMA
+                                + ("1".equals(srcNum) ? ONE : ZERO) + COMMA + ("2".equals(srcNum) ? ONE : ZERO) + COMMA
+                                + ("3".equals(srcNum) ? ONE : ZERO) + COMMA + ("4".equals(srcNum) ? ONE : ZERO) + COMMA
+                                + ("5".equals(srcNum) ? ONE : ZERO) + COMMA + ("6".equals(srcNum) ? ONE : ZERO));
                         Thread.sleep(SLEEP_BETWEEN_CMD_MS);
 
                         for (int i = 0; i < (favorites.length < 20 ? favorites.length : 20); i++) {
-                            connector.sendCommand(S + srcNum + "FAVORITESITEM" + (i + 1000) + ",0,0,\""
+                            connector.sendCommand(SRC_KEY + srcNum + "FAVORITESITEM" + (i + 1000) + ",0,0,\""
                                     + favPrefixMap.get(srcNum) + favorites[i] + "\"");
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                         }
                     }
 
                     if (showReady) {
-                        connector.sendCommand(S + srcNum + "DISPINFOTWO0,0,0,0,0,0,0");
+                        connector.sendCommand(SRC_KEY + srcNum + "DISPINFOTWO0,0,0,0,0,0,0");
                         Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-                        connector.sendCommand(S + srcNum + "DISPLINES0,0,0,\"Ready\",\"\",\"\",\"\"");
+                        connector.sendCommand(SRC_KEY + srcNum + "DISPLINES0,0,0,\"Ready\",\"\",\"\",\"\"");
                         Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                     }
 

@@ -90,22 +90,22 @@ public class NuvoBindingConstants {
     public static final String COMMA = ",";
     public static final String DISPLINE = "DISPLINE";
     public static final String DISPINFO = "DISPINFO,"; // yes comma here
-    public static final String DISPINFOTWO = "DISPINFOTWO";
+    public static final String DISP_INFO_TWO = "DISPINFOTWO";
     public static final String NAME_QUOTE = "NAME\"";
     public static final String MUTE = "MUTE";
     public static final String VOL = "VOL";
-    public static final String OX = "0x";
-    public static final String OCO = "0,0";
+    public static final String OFFSET_ZERO = "0x";
+    public static final String ZERO_COMMA = "0,0";
 
     // MPS4
     public static final String TYPE_PING = "PING";
     public static final String TYPE_RESTART = "RESTART";
     public static final String DISABLE = "disable";
-    public static final String ALBUMARTID = "albumartid";
-    public static final String S = "S";
-    public static final String Z = "Z";
-    public static final String ALBUMARTAVAILABLE = "ALBUMARTAVAILABLE";
-    public static final String ALBUMARTFRAG = "ALBUMARTFRAG";
+    public static final String ALBUM_ART_ID = "albumartid";
+    public static final String SRC_KEY = "S";
+    public static final String ZONE_KEY = "Z";
+    public static final String ALBUM_ART_AVAILABLE = "ALBUMARTAVAILABLE";
+    public static final String ALBUM_ART_FRAG = "ALBUMARTFRAG";
     public static final String HTTP = "http://";
     public static final String HTTPS = "https://";
 }

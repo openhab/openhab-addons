@@ -416,7 +416,7 @@ public abstract class NuvoConnector {
             if (ZERO.equals(buttonSplit[1]) || ONE.equals(buttonSplit[1])) {
                 // a button in a menu was pressed, send SxZy,menuid,itemidx
                 if (!ZERO.equals(buttonSplit[2])) {
-                    dispatchKeyValue(TYPE_MENU_ITEM_SELECTED, matcher.group(2), S + matcher.group(2) + Z
+                    dispatchKeyValue(TYPE_MENU_ITEM_SELECTED, matcher.group(2), SRC_KEY + matcher.group(2) + ZONE_KEY
                             + matcher.group(1) + COMMA + buttonSplit[2] + COMMA + buttonSplit[3]);
                 } else {
                     // send the button # in the event, don't send extra fields menuid, itemid, etc..
@@ -431,7 +431,7 @@ public abstract class NuvoConnector {
         if (matcher.find()) {
             // pull out the source id and send SxZy plus the remainder of the message
             dispatchKeyValue(TYPE_ZONE_MENUREQ, matcher.group(2),
-                    S + matcher.group(2) + Z + matcher.group(1) + COMMA + matcher.group(3));
+                    SRC_KEY + matcher.group(2) + ZONE_KEY + matcher.group(1) + COMMA + matcher.group(3));
             return;
         }
 
