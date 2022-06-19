@@ -59,6 +59,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class OpenUVBridgeHandler extends BaseBridgeHandler {
     private static final String QUERY_URL = "https://api.openuv.io/api/v1/uv?lat=%s&lng=%s&alt=%s";
+    private static final int RECONNECT_DELAY_MIN = 5;
     private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
 
     private final Logger logger = LoggerFactory.getLogger(OpenUVBridgeHandler.class);
@@ -69,6 +70,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     private final LocaleProvider localeProvider;
 
     private Optional<ScheduledFuture<?>> reconnectJob = Optional.empty();
+    private boolean keyVerified;
 
     public OpenUVBridgeHandler(Bridge bridge, LocationProvider locationProvider, TranslationProvider i18nProvider,
             LocaleProvider localeProvider, Gson gson) {
@@ -82,6 +84,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing OpenUV API bridge handler.");
+        keyVerified = false;
         BridgeConfiguration config = getConfigAs(BridgeConfiguration.class);
         if (config.apikey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -94,8 +97,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        reconnectJob.ifPresent(job -> job.cancel(true));
-        reconnectJob = Optional.empty();
+        freeReconnectJob();
     }
 
     @Override
@@ -113,6 +115,8 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     }
 
     public @Nullable OpenUVResult getUVData(String latitude, String longitude, String altitude) {
+        String statusMessage = "";
+        ThingStatusDetail statusDetail = ThingStatusDetail.COMMUNICATION_ERROR;
         String url = String.format(QUERY_URL, latitude, longitude, altitude);
         String jsonData = "";
         try {
@@ -122,31 +126,51 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 String error = uvResponse.getError();
                 if (error == null) {
                     updateStatus(ThingStatus.ONLINE);
+                    keyVerified = true;
                     return uvResponse.getResult();
                 }
                 throw new OpenUVException(error);
             }
         } catch (JsonSyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Invalid json received when calling `%s` : %s", url, jsonData));
+            if (jsonData.contains("MongoError")) {
+                statusMessage = String.format("@text/offline.comm-error-faultly-service [ \"%d\" ]",
+                        RECONNECT_DELAY_MIN);
+                scheduleReconnectJob(RECONNECT_DELAY_MIN);
+            } else {
+                statusDetail = ThingStatusDetail.NONE;
+                statusMessage = String.format("@text/offline.invalid-json [ \"%s\" ]", url);
+                logger.debug("{} : {}", statusMessage, jsonData);
+            }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            statusMessage = e.getMessage();
         } catch (OpenUVException e) {
             if (e.isQuotaError()) {
-                LocalDateTime tomorrowMidnight = LocalDate.now().plusDays(1).atStartOfDay().plusMinutes(2);
-
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
-                        .format("@text/offline.comm-error-quota-exceeded [ \"%s\" ]", tomorrowMidnight.toString()));
-
-                reconnectJob = Optional.of(scheduler.schedule(this::initiateConnexion,
-                        Duration.between(LocalDateTime.now(), tomorrowMidnight).toMinutes(), TimeUnit.MINUTES));
-            } else {
-                updateStatus(ThingStatus.OFFLINE,
-                        e.isApiKeyError() ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.NONE,
-                        e.getMessage());
+                LocalDateTime nextMidnight = LocalDate.now().plusDays(1).atStartOfDay().plusMinutes(2);
+                statusMessage = String.format("@text/offline.comm-error-quota-exceeded [ \"%s\" ]",
+                        nextMidnight.toString());
+                scheduleReconnectJob(Duration.between(LocalDateTime.now(), nextMidnight).toMinutes());
+            } else if (e.isApiKeyError()) {
+                if (keyVerified) {
+                    statusMessage = String.format("@text/offline.api-key-not-recognized [ \"%d\" ]",
+                            RECONNECT_DELAY_MIN);
+                    scheduleReconnectJob(RECONNECT_DELAY_MIN);
+                } else {
+                    statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
+                }
             }
         }
+        updateStatus(ThingStatus.OFFLINE, statusDetail, statusMessage);
         return null;
+    }
+
+    private void scheduleReconnectJob(long delay) {
+        freeReconnectJob();
+        reconnectJob = Optional.of(scheduler.schedule(this::initiateConnexion, delay, TimeUnit.MINUTES));
+    }
+
+    private void freeReconnectJob() {
+        reconnectJob.ifPresent(job -> job.cancel(true));
+        reconnectJob = Optional.empty();
     }
 
     @Override
