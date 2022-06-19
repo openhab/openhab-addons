@@ -162,10 +162,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             return;
         }
         HDPowerViewWebTargets webTargets = bridge.getWebTargets();
-        if (webTargets == null) {
-            logger.warn("Web targets not initialized");
-            return;
-        }
         try {
             handleShadeCommand(channelId, command, webTargets, shadeId);
         } catch (HubInvalidResponseException e) {
@@ -523,9 +519,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 throw new HubProcessingException("Missing bridge handler");
             }
             HDPowerViewWebTargets webTargets = bridge.getWebTargets();
-            if (webTargets == null) {
-                throw new HubProcessingException("Web targets not initialized");
-            }
             ShadeData shadeData;
             switch (kind) {
                 case POSITION:

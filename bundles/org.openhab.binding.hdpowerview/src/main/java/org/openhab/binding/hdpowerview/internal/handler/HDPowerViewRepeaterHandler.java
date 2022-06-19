@@ -94,11 +94,6 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
             return;
         }
         HDPowerViewWebTargets webTargets = bridge.getWebTargets();
-        if (webTargets == null) {
-            logger.warn("Web targets not initialized");
-            return;
-        }
-
         try {
             RepeaterData repeaterData;
 
@@ -200,10 +195,6 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
             return;
         }
         HDPowerViewWebTargets webTargets = bridge.getWebTargets();
-        if (webTargets == null) {
-            logger.warn("Web targets not initialized");
-            return;
-        }
         try {
             logger.debug("Polling for status information");
 

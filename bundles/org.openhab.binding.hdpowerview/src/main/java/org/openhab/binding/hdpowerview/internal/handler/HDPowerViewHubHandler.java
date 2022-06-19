@@ -22,8 +22,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.ProcessingException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -89,7 +87,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private long hardRefreshPositionInterval;
     private long hardRefreshBatteryLevelInterval;
 
-    private @Nullable HDPowerViewWebTargets webTargets;
+    private @NonNullByDefault({}) HDPowerViewWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
     private @Nullable ScheduledFuture<?> hardRefreshPositionFuture;
     private @Nullable ScheduledFuture<?> hardRefreshBatteryLevelFuture;
@@ -129,10 +127,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
 
         try {
-            HDPowerViewWebTargets webTargets = this.webTargets;
-            if (webTargets == null) {
-                throw new ProcessingException("Web targets not initialized");
-            }
             int id = Integer.parseInt(channelUID.getIdWithoutGroup());
             if (sceneChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON == command) {
                 webTargets.activateScene(id);
@@ -164,7 +158,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             return;
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
         pendingShadeInitializations.clear();
         webTargets = new HDPowerViewWebTargets(httpClient, host);
         refreshInterval = config.refresh;
@@ -172,6 +165,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         hardRefreshBatteryLevelInterval = config.hardRefreshBatteryLevel;
         initializeChannels();
         firmwareVersions = null;
+
+        updateStatus(ThingStatus.UNKNOWN);
         schedulePoll();
     }
 
@@ -184,7 +179,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         deprecatedChannelsCreated = false;
     }
 
-    public @Nullable HDPowerViewWebTargets getWebTargets() {
+    public HDPowerViewWebTargets getWebTargets() {
         return webTargets;
     }
 
@@ -320,10 +315,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         if (firmwareVersions != null) {
             return;
         }
-        HDPowerViewWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            throw new ProcessingException("Web targets not initialized");
-        }
         FirmwareVersions firmwareVersions = webTargets.getFirmwareVersions();
         Firmware mainProcessor = firmwareVersions.mainProcessor;
         if (mainProcessor == null) {
@@ -346,11 +337,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private void pollShades() throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        HDPowerViewWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            throw new ProcessingException("Web targets not initialized");
-        }
-
         Shades shades = webTargets.getShades();
         List<ShadeData> shadesData = shades.shadeData;
         if (shadesData == null) {
@@ -434,11 +420,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private List<Scene> fetchScenes()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        HDPowerViewWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            throw new ProcessingException("Web targets not initialized");
-        }
-
         Scenes scenes = webTargets.getScenes();
         List<Scene> sceneData = scenes.sceneData;
         if (sceneData == null) {
@@ -520,11 +501,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private List<SceneCollection> fetchSceneCollections()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        HDPowerViewWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            throw new ProcessingException("Web targets not initialized");
-        }
-
         SceneCollections sceneCollections = webTargets.getSceneCollections();
         List<SceneCollection> sceneCollectionData = sceneCollections.sceneCollectionData;
         if (sceneCollectionData == null) {
@@ -565,11 +541,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private List<ScheduledEvent> fetchScheduledEvents()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        HDPowerViewWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            throw new ProcessingException("Web targets not initialized");
-        }
-
         ScheduledEvents scheduledEvents = webTargets.getScheduledEvents();
         List<ScheduledEvent> scheduledEventData = scheduledEvents.scheduledEventData;
         if (scheduledEventData == null) {
