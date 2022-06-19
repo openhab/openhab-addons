@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.boschindego.internal.BoschIndegoTranslationProvider;
 import org.openhab.binding.boschindego.internal.DeviceStatus;
 import org.openhab.binding.boschindego.internal.IndegoController;
 import org.openhab.binding.boschindego.internal.config.BoschIndegoConfiguration;
@@ -53,15 +54,17 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BoschIndegoHandler.class);
     private final HttpClient httpClient;
+    private final BoschIndegoTranslationProvider translationProvider;
 
     private @NonNullByDefault({}) IndegoController controller;
     private @Nullable ScheduledFuture<?> pollFuture;
     private long refreshRate;
     private boolean propertiesInitialized;
 
-    public BoschIndegoHandler(Thing thing, HttpClient httpClient) {
+    public BoschIndegoHandler(Thing thing, HttpClient httpClient, BoschIndegoTranslationProvider translationProvider) {
         super(thing);
         this.httpClient = httpClient;
+        this.translationProvider = translationProvider;
     }
 
     @Override
@@ -178,7 +181,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         updateState(ERRORCODE, new DecimalType(error));
         updateState(MOWED, new PercentType(mowed));
         updateState(STATE, new DecimalType(status));
-        updateState(TEXTUAL_STATE, new StringType(deviceStatus.getMessage()));
+        updateState(TEXTUAL_STATE, new StringType(deviceStatus.getMessage(translationProvider)));
     }
 
     private boolean isReadyToMow(DeviceStatus deviceStatus, int error) {
