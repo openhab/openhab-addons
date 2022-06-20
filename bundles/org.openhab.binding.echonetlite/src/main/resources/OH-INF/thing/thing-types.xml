@@ -27,6 +27,9 @@
 	</bridge-type>
 
 	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
 
 		<label>EchonetLite Device</label>
 		<description>Device for EchonetLite Binding</description>
