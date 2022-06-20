@@ -126,8 +126,8 @@
 
 	<channel-type id="humidity">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Humidity</label>
-		<description>Humidity in %.</description>
+		<label>Outdoor Humidity</label>
+		<description>Outdoor humidity in %.</description>
 		<category>Humidity</category>
 		<tags>
 			<tag>Measurement</tag>
