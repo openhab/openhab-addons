@@ -151,7 +151,7 @@ public class CallbackServer {
                     logger.error("Error refreshing token {}", e.getMessage());
                 }
             } else {
-                logger.info("Token valid - do nothing");
+                logger.trace("Token valid - do nothing");
             }
         }
         return token.get().getAccessToken();

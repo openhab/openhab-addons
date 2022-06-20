@@ -128,6 +128,8 @@ public class Mapper {
         if (jo.has(VALUE)) {
             String value = jo.get(VALUE).toString();
             boolean b = Boolean.valueOf(value);
+            // Yes, false is locked and true unlocked
+            // https://developer.mercedes-benz.com/products/vehicle_lock_status/specifications/vehicle_lock_status_api
             return OnOffType.from(!b);
         } else {
             logger.warn("JSONObject contains no value {}", jo);

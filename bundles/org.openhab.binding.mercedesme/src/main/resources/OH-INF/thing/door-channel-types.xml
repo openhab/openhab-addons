@@ -33,9 +33,9 @@
 		<label>Roof top</label>
 		<state readOnly="true">
 			<options>
-				<option value="0">unlocked</option>
-				<option value="1">open and locked</option>
-				<option value="2">closed and locked</option>
+				<option value="0">Unlocked</option>
+				<option value="1">Open and locked</option>
+				<option value="2">Closed and locked</option>
 			</options>
 		</state>
 	</channel-type>

@@ -13,6 +13,8 @@
 package org.openhab.binding.mercedesme.internal;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -80,6 +82,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             String callbackUrl = Utils.getCallbackAddress(config.get().callbackIP, config.get().callbackPort);
             thing.setProperty("callbackUrl", callbackUrl);
 
+            // to be removed START
+            Map<String, String> props = new HashMap<String, String>();
+            props.put("callbackUrl", callbackUrl);
+            thing.setProperties(props);
+            // to be removed END
+
             server = Optional.of(new CallbackServer(this, httpClientFactory.getCommonHttpClient(), oAuthFactory,
                     config.get(), callbackUrl));
 
@@ -120,6 +128,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             ip = Utils.getCallbackIP();
             updateConfig.put("callbackIP", ip);
         }
+        // https://developer.mercedes-benz.com/products/electric_vehicle_status/docs#_required_scopes
         if (Constants.NOT_SET.equals(scope)) {
             scope = Constants.SCOPE_EV + Constants.SPACE + Constants.SCOPE_FUEL + Constants.SPACE + Constants.SCOPE_LOCK
                     + Constants.SPACE + Constants.SCOPE_ODO + Constants.SPACE + Constants.SCOPE_OFFLINE
