@@ -285,8 +285,9 @@ public class GardenaThingHandler extends BaseThingHandler {
         ThingStatus newStatus = ThingStatus.ONLINE;
         ThingStatusDetail newDetail = ThingStatusDetail.NONE;
 
-        CommonService attributes = device.common.attributes;
-        if (attributes == null || !CONNECTION_STATUS_ONLINE.equals(attributes.rfLinkState.value)) {
+        CommonService commonServiceAttributes = device.common.attributes;
+        if (commonServiceAttributes == null
+                || !CONNECTION_STATUS_ONLINE.equals(commonServiceAttributes.rfLinkState.value)) {
             newStatus = ThingStatus.OFFLINE;
             newDetail = ThingStatusDetail.COMMUNICATION_ERROR;
         }

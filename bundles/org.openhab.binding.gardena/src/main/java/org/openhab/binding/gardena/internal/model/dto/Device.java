@@ -84,9 +84,10 @@ public class Device {
      */
     public void evaluateDeviceType() {
         if (deviceType == null) {
-            CommonService attributes = common.attributes;
-            if (attributes != null && attributes.modelType.value.toLowerCase().startsWith(DEVICE_TYPE_PREFIX)) {
-                String modelType = attributes.modelType.value.toLowerCase();
+            CommonService commonServiceAttributes = common.attributes;
+            if (commonServiceAttributes != null
+                    && commonServiceAttributes.modelType.value.toLowerCase().startsWith(DEVICE_TYPE_PREFIX)) {
+                String modelType = commonServiceAttributes.modelType.value.toLowerCase();
                 modelType = modelType.substring(14);
                 deviceType = modelType.replace(" ", "_");
             } else {
@@ -114,9 +115,9 @@ public class Device {
             // ignore
         } else if (dataItem instanceof LocationDataItem) {
             LocationDataItem locationDataItem = (LocationDataItem) dataItem;
-            Location attributes = locationDataItem.attributes;
-            if (attributes != null) {
-                location = attributes.name;
+            Location locationAttributes = locationDataItem.attributes;
+            if (locationAttributes != null) {
+                location = locationAttributes.name;
             }
         } else if (dataItem instanceof CommonServiceDataItem) {
             common = (CommonServiceDataItem) dataItem;
