@@ -75,13 +75,17 @@ Channels are seperated in groups
 Group name: `range`
 All channels `readonly`
 
-| Channel        | Type                 |  Description                 | bev | hybrid | combustion |
-|----------------|----------------------|------------------------------| ----|--------|------------|
-| mileage        | Number:Length        |  Total Mileage               | X   | X      | X          |
-| soc            | Number:Dimensionless |  Battery state of charge     | X   | X      |            |
-| range-electric | Number:Length        |  Electric range              | X   | X      |            |
-| fuel-level     | Number:Dimensionless |  Fule level in percent       |     | X      | X          |
-| range-fuel     | Number:Length        |  Fuel range                  |     | X      | X          |
+| Channel          | Type                 |  Description                 | bev | hybrid | combustion |
+|------------------|----------------------|------------------------------| ----|--------|------------|
+| mileage          | Number:Length        |  Total Mileage               | X   | X      | X          |
+| soc              | Number:Dimensionless |  Battery state of charge     | X   | X      |            |
+| range-electric   | Number:Length        |  Electric range              | X   | X      |            |
+| radius-electric  | Number:Length        |  Electric radius for map     | X   | X      |            |
+| fuel-level       | Number:Dimensionless |  Fuel level in percent       |     | X      | X          |
+| range-fuel       | Number:Length        |  Fuel range                  |     | X      | X          |
+| radius-fuel      | Number:Length        |  Fuel radius for map         |     | X      | X          |
+| range-hybrid     | Number:Length        |  Hybrid range                |     | X      |            |
+| radius-hybrid    | Number:Length        |  Hybrid radius for map       |     | X      |            |
 
 ### Doors
 

@@ -13,8 +13,6 @@
 package org.openhab.binding.mercedesme.internal;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -82,19 +80,17 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             String callbackUrl = Utils.getCallbackAddress(config.get().callbackIP, config.get().callbackPort);
             thing.setProperty("callbackUrl", callbackUrl);
 
-            // to be removed START
-            Map<String, String> props = new HashMap<String, String>();
-            props.put("callbackUrl", callbackUrl);
-            thing.setProperties(props);
-            // to be removed END
-
             server = Optional.of(new CallbackServer(this, httpClientFactory.getCommonHttpClient(), oAuthFactory,
                     config.get(), callbackUrl));
 
             if (storage.containsKey(tokenStorageKey)) {
-                String tokenSerial = storage.get(tokenStorageKey).toString();
-                AccessTokenResponse atr = (AccessTokenResponse) Utils.fromString(tokenSerial);
-                server.get().setToken(atr);
+                String tokenSerial = storage.get(tokenStorageKey);
+                if (tokenSerial != null) {
+                    AccessTokenResponse atr = (AccessTokenResponse) Utils.fromString(tokenSerial);
+                    server.get().setToken(atr);
+                } else {
+                    logger.info("Token serial null in storage");
+                }
                 logger.info("Token restored from storage {}", tokenStorageKey);
             } else {
                 logger.info("Token not found in storage");

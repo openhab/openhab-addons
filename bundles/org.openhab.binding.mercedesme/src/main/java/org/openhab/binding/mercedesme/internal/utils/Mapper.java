@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.mercedesme.internal.utils;
 
+import static org.openhab.binding.mercedesme.internal.Constants.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.json.JSONObject;
-import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -175,7 +176,7 @@ public class Mapper {
     private static State getKilometers(JSONObject jo) {
         if (jo.has(VALUE)) {
             String value = jo.get(VALUE).toString();
-            return QuantityType.valueOf(Integer.valueOf(value), Constants.KILOMETRE_UNIT);
+            return QuantityType.valueOf(Integer.valueOf(value), KILOMETRE_UNIT);
         } else {
             logger.warn("JSONObject contains no value {}", jo);
             return UnDefType.UNDEF;
@@ -196,30 +197,30 @@ public class Mapper {
      * Mapping of json id towards channel group and id
      */
     private static void init() {
-        CHANNELS.put("odo", new String[] { "mileage", "range" });
-        CHANNELS.put("rangeelectric", new String[] { "range-electric", "range" });
-        CHANNELS.put("soc", new String[] { "soc", "range" });
-        CHANNELS.put("rangeliquid", new String[] { "range-fuel", "range" });
-        CHANNELS.put("tanklevelpercent", new String[] { "fuel-level", "range" });
-        CHANNELS.put("decklidstatus", new String[] { "deck-lid", "doors" });
-        CHANNELS.put("doorstatusfrontleft", new String[] { "driver-front", "doors" });
-        CHANNELS.put("doorstatusfrontright", new String[] { "passenger-front", "doors" });
-        CHANNELS.put("doorstatusrearleft", new String[] { "driver-rear", "doors" });
-        CHANNELS.put("doorstatusrearright", new String[] { "passenger-rear", "doors" });
-        CHANNELS.put("interiorLightsFront", new String[] { "interior-front", "lights" });
-        CHANNELS.put("interiorLightsRear", new String[] { "interior-rear", "lights" });
-        CHANNELS.put("lightswitchposition", new String[] { "light-switch", "lights" });
-        CHANNELS.put("readingLampFrontLeft", new String[] { "reading-left", "lights" });
-        CHANNELS.put("readingLampFrontRight", new String[] { "reading-right", "lights" });
-        CHANNELS.put("rooftopstatus", new String[] { "rooftop", "doors" });
-        CHANNELS.put("sunroofstatus", new String[] { "sunroof", "doors" });
-        CHANNELS.put("windowstatusfrontleft", new String[] { "driver-front", "windows" });
-        CHANNELS.put("windowstatusfrontright", new String[] { "passenger-front", "windows" });
-        CHANNELS.put("windowstatusrearleft", new String[] { "driver-rear", "windows" });
-        CHANNELS.put("windowstatusrearright", new String[] { "passenger-rear", "windows" });
-        CHANNELS.put("doorlockstatusvehicle", new String[] { "doors", "lock" });
-        CHANNELS.put("doorlockstatusdecklid", new String[] { "decklid", "lock" });
-        CHANNELS.put("doorlockstatusgas", new String[] { "flap", "lock" });
-        CHANNELS.put("positionHeading", new String[] { "heading", "location" });
+        CHANNELS.put("odo", new String[] { "mileage", GROUP_RANGE });
+        CHANNELS.put("rangeelectric", new String[] { "range-electric", GROUP_RANGE });
+        CHANNELS.put("soc", new String[] { "soc", GROUP_RANGE });
+        CHANNELS.put("rangeliquid", new String[] { "range-fuel", GROUP_RANGE });
+        CHANNELS.put("tanklevelpercent", new String[] { "fuel-level", GROUP_RANGE });
+        CHANNELS.put("decklidstatus", new String[] { "deck-lid", GROUP_DOORS });
+        CHANNELS.put("doorstatusfrontleft", new String[] { "driver-front", GROUP_DOORS });
+        CHANNELS.put("doorstatusfrontright", new String[] { "passenger-front", GROUP_DOORS });
+        CHANNELS.put("doorstatusrearleft", new String[] { "driver-rear", GROUP_DOORS });
+        CHANNELS.put("doorstatusrearright", new String[] { "passenger-rear", GROUP_DOORS });
+        CHANNELS.put("interiorLightsFront", new String[] { "interior-front", GROUP_LIGHTS });
+        CHANNELS.put("interiorLightsRear", new String[] { "interior-rear", GROUP_LIGHTS });
+        CHANNELS.put("lightswitchposition", new String[] { "light-switch", GROUP_LIGHTS });
+        CHANNELS.put("readingLampFrontLeft", new String[] { "reading-left", GROUP_LIGHTS });
+        CHANNELS.put("readingLampFrontRight", new String[] { "reading-right", GROUP_LIGHTS });
+        CHANNELS.put("rooftopstatus", new String[] { "rooftop", GROUP_DOORS });
+        CHANNELS.put("sunroofstatus", new String[] { "sunroof", GROUP_DOORS });
+        CHANNELS.put("windowstatusfrontleft", new String[] { "driver-front", GROUP_WINDOWS });
+        CHANNELS.put("windowstatusfrontright", new String[] { "passenger-front", GROUP_WINDOWS });
+        CHANNELS.put("windowstatusrearleft", new String[] { "driver-rear", GROUP_WINDOWS });
+        CHANNELS.put("windowstatusrearright", new String[] { "passenger-rear", GROUP_WINDOWS });
+        CHANNELS.put("doorlockstatusvehicle", new String[] { "doors", GROUP_LOCK });
+        CHANNELS.put("doorlockstatusdecklid", new String[] { "deck-lid", GROUP_LOCK });
+        CHANNELS.put("doorlockstatusgas", new String[] { "flap", GROUP_LOCK });
+        CHANNELS.put("positionHeading", new String[] { "heading", GROUP_LOCATION });
     }
 }

@@ -41,6 +41,13 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_HYBRID = new ThingTypeUID(BINDING_ID, HYBRID);
     public static final ThingTypeUID THING_TYPE_BEV = new ThingTypeUID(BINDING_ID, BEV);
 
+    public static String GROUP_RANGE = "range";
+    public static String GROUP_DOORS = "doors";
+    public static String GROUP_WINDOWS = "windows";
+    public static String GROUP_LOCK = "lock";
+    public static String GROUP_LIGHTS = "lights";
+    public static String GROUP_LOCATION = "location";
+
     public static String MB_AUTH_URL = "https://id.mercedes-benz.com/as/authorization.oauth2";
     public static String MB_TOKEN_URL = "https://id.mercedes-benz.com/as/token.oauth2";
     public static String CALLBACK_ENDPOINT = "/mb-callback";

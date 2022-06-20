@@ -9,6 +9,7 @@
 		<channels>
 			<channel id="mileage" typeId="mileage-channel"/>
 			<channel id="range-electric" typeId="range-electric-channel"/>
+			<channel id="radius-electric" typeId="radius-electric-channel"/>
 			<channel id="soc" typeId="soc-channel"/>
 		</channels>
 	</channel-group-type>
