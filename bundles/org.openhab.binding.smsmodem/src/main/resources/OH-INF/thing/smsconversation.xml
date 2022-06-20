@@ -29,6 +29,17 @@
 				<description>Ask network for delivery report.</description>
 				<default>false</default>
 			</parameter>
+			<parameter name="encoding" type="text" required="false">
+				<label>Encoding</label>
+				<options>
+					<option value="Enc7">Enc7</option>
+					<option value="Enc8">Enc8</option>
+					<option value="EncUcs2">EncUcs2</option>
+					<option value="EncCustom">EncCustom</option>
+				</options>
+				<description>Encoding for the message to send. Default Enc7</description>
+				<default>Enc7</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 

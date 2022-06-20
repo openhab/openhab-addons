@@ -24,4 +24,5 @@ public class SMSConversationConfiguration {
 
     public String recipient = "";
     public boolean deliveryReport = false;
+    public String encoding = "Enc7";
 }

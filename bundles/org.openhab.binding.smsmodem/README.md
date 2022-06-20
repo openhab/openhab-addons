@@ -46,6 +46,8 @@ The *smsconversation* thing is just a shortcut to address/receive messages with 
 |-------|--------------------------|
 | recipient | The msisdn of the phone you want to discuss with.|
 | deliveryReport | If enabled, ask the network for a delivery report (default false)|
+| encoding | The encoding to use when sending the message (either Enc7, Enc8, EncUcs2, EncCustom, default is Enc7). EncUcs2 is good for non latin character, but SMS character size limit is then reduced|
+
 
 ```
 Thing smsmodem:smsconversation:aconversationname [ recipient="XXXXXXXXXXX", deliveryReport="true" ]
@@ -88,6 +90,12 @@ Once this action instance is retrieved, you can invoke the 'send' method on it:
 
 ```
 smsAction.sendSMS("1234567890", "Hello world!")
+```
+
+Or with a special encoding:
+
+```
+smsAction.sendSMS("1234567890", "Hello world!", "EncUcs2")
 ```
 
 ## Full Example

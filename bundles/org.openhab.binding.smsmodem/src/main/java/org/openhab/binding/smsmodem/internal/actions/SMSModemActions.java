@@ -22,6 +22,7 @@ import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smslib.message.AbstractMessage.Encoding;
 
 /**
  * The {@link SMSModemActions} exposes some actions
@@ -46,22 +47,35 @@ public class SMSModemActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "Send Message", description = "Send a message")
+    @RuleAction(label = "Send Message With Special Encoding", description = "Send a message and specify encoding")
     public void sendSMS(
             @ActionInput(name = "recipient", label = "recipient", description = "Recipient of the message") @Nullable String recipient,
-            @ActionInput(name = "message", label = "message", description = "Message to send") @Nullable String message) {
+            @ActionInput(name = "message", label = "message", description = "Message to send") @Nullable String message,
+            @ActionInput(name = "encoding", label = "encoding", description = "Encoding") @Nullable String encoding) {
         if (recipient != null && !recipient.isEmpty() && message != null) {
-            handler.send(recipient, message, false);
+            handler.send(recipient, message, false, encoding);
         } else {
             logger.error("SMSModem cannot send a message with no recipient or text");
         }
     }
 
-    public static void sendSMS(@Nullable ThingActions actions, @Nullable String recipient, @Nullable String message) {
+    @RuleAction(label = "Send Message", description = "Send a message")
+    public void sendSMS(
+            @ActionInput(name = "recipient", label = "recipient", description = "Recipient of the message") @Nullable String recipient,
+            @ActionInput(name = "message", label = "message", description = "Message to send") @Nullable String message) {
+        sendSMS(recipient, message, Encoding.Enc7.toString());
+    }
+
+    public static void sendSMS(@Nullable ThingActions actions, @Nullable String recipient, @Nullable String message,
+            @Nullable String encoding) {
         if (actions instanceof SMSModemActions) {
-            ((SMSModemActions) actions).sendSMS(recipient, message);
+            ((SMSModemActions) actions).sendSMS(recipient, message, encoding);
         } else {
             throw new IllegalArgumentException("Instance is not an SMSModemActions class.");
         }
+    }
+
+    public static void sendSMS(@Nullable ThingActions actions, @Nullable String recipient, @Nullable String message) {
+        sendSMS(actions, recipient, message, Encoding.Enc7.toString());
     }
 }

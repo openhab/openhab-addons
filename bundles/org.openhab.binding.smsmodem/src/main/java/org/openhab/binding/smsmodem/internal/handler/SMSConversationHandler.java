@@ -106,7 +106,7 @@ public class SMSConversationHandler extends BaseThingHandler {
     public void send(String text) {
         SMSModemBridgeHandler bridgeHandlerFinal = bridgeHandler;
         if (bridgeHandlerFinal != null) {
-            bridgeHandlerFinal.send(getRecipient(), text, config.deliveryReport);
+            bridgeHandlerFinal.send(getRecipient(), text, config.deliveryReport, config.encoding);
         } else {
             logger.warn("Only channel 'send' in SMSConversation can receive command");
         }

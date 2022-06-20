@@ -52,6 +52,7 @@ import org.smslib.Modem.Status;
 import org.smslib.callback.IDeviceInformationListener;
 import org.smslib.callback.IInboundOutboundMessageListener;
 import org.smslib.callback.IModemStatusListener;
+import org.smslib.message.AbstractMessage.Encoding;
 import org.smslib.message.DeliveryReportMessage;
 import org.smslib.message.InboundMessage;
 import org.smslib.message.MsIsdn;
@@ -265,8 +266,16 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
      * @param text The message content
      * @param deliveryReport If we should ask the network for a delivery report
      */
-    public void send(String recipient, String text, boolean deliveryReport) {
+    public void send(String recipient, String text, boolean deliveryReport, @Nullable String encoding) {
         OutboundMessage out = new OutboundMessage(recipient, text);
+        try {
+            if (encoding != null && !encoding.isEmpty()) {
+                Encoding encoding2 = Encoding.valueOf(encoding);
+                out.setEncoding(encoding2);
+            }
+        } catch (IllegalArgumentException e) {
+            logger.error("Encoding {} is not supported. Use Enc7, Enc8, EncUcs2, or EncCustom", encoding);
+        }
         out.setRequestDeliveryReport(deliveryReport);
         logger.debug("Sending message to {}", recipient);
         modem.queue(out);
