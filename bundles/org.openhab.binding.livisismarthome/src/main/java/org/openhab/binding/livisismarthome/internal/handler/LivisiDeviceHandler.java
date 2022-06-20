@@ -841,10 +841,15 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (buttonIndex != null && pushCount != null) {
             if (buttonIndex >= 0 && buttonIndex <= 7) {
                 final int channelIndex = buttonIndex + 1;
+                updateState(String.format(CHANNEL_BUTTON_COUNT, channelIndex), new DecimalType(pushCount));
+
                 if (isChangedByEvent) {
                     triggerButtonChannels(type, channelIndex);
                 }
-                updateState(String.format(CHANNEL_BUTTON_COUNT, channelIndex), new DecimalType(pushCount));
+
+                // Button handled so remove state to avoid re-trigger.
+                capability.getCapabilityState().setPushButtonSensorButtonIndexState(null);
+                capability.getCapabilityState().setPushButtonSensorButtonIndexType(null);
             }
         } else {
             logStateNull(capability);
