@@ -23,24 +23,9 @@
 			<description>Port Number for openHAB callback URL</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="callbackUrl" type="text">
-			<label>Callback URL</label>
-			<description>Callback URL to openHAB</description>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="authUrl" type="text">
-			<label>Authorization URL</label>
-			<description>URL to call for first time authorization</description>
-			<advanced>true</advanced>
-		</parameter>
 		<parameter name="scope" type="text">
 			<label>Authorization Scope</label>
 			<description>Scope definition for authorization</description>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="token" type="text">
-			<label>Current Token</label>
-			<description>Serialization of current valid token</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

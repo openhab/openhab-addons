@@ -40,16 +40,26 @@ public class CallbackServlet extends HttpServlet {
         String code = request.getParameter(Constants.CODE);
         if (code != null) {
             CallbackServer.callback(request.getLocalPort(), code);
+            logger.error("Code successfully extracted {}", request.getParameterMap());
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().println(request.getParameterMap());
+            response.getWriter().println("{ \"status\": \"ok\"}");
         } else {
-            logger.error("Failed to extract code from {}", request.getParameterMap());
+            response.setContentType("text/html");
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().println(request.getParameterMap());
+            response.getWriter().println("<HTML>");
+            response.getWriter().println("<BODY>");
+            response.getWriter().println("Get your access token for openHAB MercedesMe Binding<BR>");
+            response.getWriter().println("<a href=\"" + CallbackServer.getAuthorizationUrl(request.getLocalPort())
+                    + "\">Start Authorization</a>");
+            response.getWriter().println("</BODY>");
+            response.getWriter().println("</HTML>");
         }
         logger.error("Request Url {}", request.getRequestURI());
         logger.error("Local Add {}", request.getLocalAddr());
         logger.error("Port{}", request.getLocalPort());
         logger.error("Map {}", request.getParameterMap());
-        response.setContentType("application/json");
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println(request.getParameterMap());
-        response.getWriter().println("{ \"status\": \"ok\"}");
     }
 }

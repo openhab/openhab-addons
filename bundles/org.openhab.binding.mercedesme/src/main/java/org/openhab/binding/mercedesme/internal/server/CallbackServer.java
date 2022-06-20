@@ -56,10 +56,11 @@ public class CallbackServer {
     private final static Map<Integer, OAuthClientService> authMap = new HashMap<Integer, OAuthClientService>();
     private final static Map<Integer, CallbackServer> serverMap = new HashMap<Integer, CallbackServer>();
 
-    AccountConfiguration config;
+    private AccountConfiguration config;
+    private String callbackUrl;
 
     public CallbackServer(AccessTokenRefreshListener l, HttpClient hc, OAuthFactory oAuthFactory,
-            AccountConfiguration config) {
+            AccountConfiguration config, String callbackUrl) {
         oacs = oAuthFactory.createOAuthClientService(Constants.OAUTH_CLIENT_NAME, Constants.MB_TOKEN_URL,
                 Constants.MB_AUTH_URL, config.clientId, config.clientSecret, config.scope, false);
         authMap.put(Integer.valueOf(config.callbackPort), oacs);
@@ -67,11 +68,12 @@ public class CallbackServer {
         httpClient = hc;
         listener = l;
         this.config = config;
+        this.callbackUrl = callbackUrl;
     }
 
     public String getAuthorizationUrl() {
         try {
-            return oacs.getAuthorizationUrl(config.callbackUrl, null, null);
+            return oacs.getAuthorizationUrl(callbackUrl, null, null);
         } catch (OAuthException e) {
             logger.error("Error creating Authorization URL {}", e.getMessage());
             return Constants.EMPTY;
@@ -114,7 +116,7 @@ public class CallbackServer {
         if (token.isEmpty()) {
             logger.info("Token empty - start full authorization");
             try {
-                String url = oacs.getAuthorizationUrl(config.callbackUrl, null, null);
+                String url = oacs.getAuthorizationUrl(callbackUrl, null, null);
                 logger.info("Token auth url {}", url);
 
                 Request r = httpClient.newRequest(url);
@@ -178,12 +180,16 @@ public class CallbackServer {
             logger.info("Get token from code {}", code);
             // get CallbackServer instance
             CallbackServer srv = serverMap.get(port);
-            AccessTokenResponse atr = oacs.getAccessTokenResponseByAuthorizationCode(code, srv.config.callbackUrl);
+            AccessTokenResponse atr = oacs.getAccessTokenResponseByAuthorizationCode(code, srv.callbackUrl);
             logger.info("Upadte server token {}", atr.getAccessToken());
             srv.token = Optional.of(atr);
             srv.listener.onAccessTokenResponse(atr);
         } catch (OAuthException | IOException | OAuthResponseException e) {
             logger.error("Exception getting token from code {} {}", code, e.getMessage());
         }
+    }
+
+    public static String getAuthorizationUrl(int port) {
+        return serverMap.get(port).getAuthorizationUrl();
     }
 }

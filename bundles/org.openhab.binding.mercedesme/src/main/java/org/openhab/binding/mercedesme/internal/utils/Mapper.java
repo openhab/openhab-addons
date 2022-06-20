@@ -88,9 +88,12 @@ public class Mapper {
                     case "interiorLightsRear":
                     case "readingLampFrontLeft":
                     case "readingLampFrontRight":
+                        state = getOnOffType((JSONObject) jo.get(id));
+                        return new ChannelStateMap(ch[0], ch[1], state);
+
                     case "doorlockstatusdecklid":
                     case "doorlockstatusgas":
-                        state = getOnOffType((JSONObject) jo.get(id));
+                        state = getOnOffTypeLock((JSONObject) jo.get(id));
                         return new ChannelStateMap(ch[0], ch[1], state);
 
                     // Angle
@@ -114,11 +117,18 @@ public class Mapper {
         if (jo.has(VALUE)) {
             String value = jo.get(VALUE).toString();
             boolean b = Boolean.valueOf(value);
-            if (!b) {
-                return OnOffType.ON;
-            } else {
-                return OnOffType.OFF;
-            }
+            return OnOffType.from(b);
+        } else {
+            logger.warn("JSONObject contains no value {}", jo);
+            return UnDefType.UNDEF;
+        }
+    }
+
+    private static State getOnOffTypeLock(JSONObject jo) {
+        if (jo.has(VALUE)) {
+            String value = jo.get(VALUE).toString();
+            boolean b = Boolean.valueOf(value);
+            return OnOffType.from(!b);
         } else {
             logger.warn("JSONObject contains no value {}", jo);
             return UnDefType.UNDEF;
@@ -194,17 +204,17 @@ public class Mapper {
         CHANNELS.put("doorstatusfrontright", new String[] { "passenger-front", "doors" });
         CHANNELS.put("doorstatusrearleft", new String[] { "driver-rear", "doors" });
         CHANNELS.put("doorstatusrearright", new String[] { "passenger-rear", "doors" });
-        CHANNELS.put("interiorLightsFront", new String[] { "interiorfront", "lights" });
-        CHANNELS.put("interiorLightsRear", new String[] { "interiorrear", "lights" });
-        CHANNELS.put("lightswitchposition", new String[] { "lightswitch", "lights" });
-        CHANNELS.put("readingLampFrontLeft", new String[] { "readingleft", "lights" });
-        CHANNELS.put("readingLampFrontRight", new String[] { "readingright", "lights" });
+        CHANNELS.put("interiorLightsFront", new String[] { "interior-front", "lights" });
+        CHANNELS.put("interiorLightsRear", new String[] { "interior-rear", "lights" });
+        CHANNELS.put("lightswitchposition", new String[] { "light-switch", "lights" });
+        CHANNELS.put("readingLampFrontLeft", new String[] { "reading-left", "lights" });
+        CHANNELS.put("readingLampFrontRight", new String[] { "reading-right", "lights" });
         CHANNELS.put("rooftopstatus", new String[] { "rooftop", "doors" });
         CHANNELS.put("sunroofstatus", new String[] { "sunroof", "doors" });
-        CHANNELS.put("windowstatusfrontleft", new String[] { "frontleft", "windows" });
-        CHANNELS.put("windowstatusfrontright", new String[] { "frontright", "windows" });
-        CHANNELS.put("windowstatusrearleft", new String[] { "rearleft", "windows" });
-        CHANNELS.put("windowstatusrearright", new String[] { "rearright", "windows" });
+        CHANNELS.put("windowstatusfrontleft", new String[] { "driver-front", "windows" });
+        CHANNELS.put("windowstatusfrontright", new String[] { "passenger-front", "windows" });
+        CHANNELS.put("windowstatusrearleft", new String[] { "driver-rear", "windows" });
+        CHANNELS.put("windowstatusrearright", new String[] { "passenger-rear", "windows" });
         CHANNELS.put("doorlockstatusvehicle", new String[] { "doors", "lock" });
         CHANNELS.put("doorlockstatusdecklid", new String[] { "decklid", "lock" });
         CHANNELS.put("doorlockstatusgas", new String[] { "flap", "lock" });

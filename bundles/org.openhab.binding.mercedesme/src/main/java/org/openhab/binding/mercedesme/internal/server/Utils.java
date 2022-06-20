@@ -28,6 +28,8 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mercedesme.internal.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link Utils} class defines an HTTP Server for authentication callbacks
@@ -36,6 +38,7 @@ import org.openhab.binding.mercedesme.internal.Constants;
  */
 @NonNullByDefault
 public class Utils {
+    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
     private static int port = 8090;
     private static List<Integer> ports = new ArrayList<Integer>();
 
@@ -95,19 +98,31 @@ public class Utils {
         return Constants.HTTP + callbackIP + Constants.COLON + callbackPort + Constants.CALLBACK_ENDPOINT;
     }
 
-    public static Object fromString(String s) throws IOException, ClassNotFoundException {
-        byte[] data = Base64.getDecoder().decode(s);
-        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
-        Object o = ois.readObject();
-        ois.close();
-        return o;
+    public static Object fromString(String s) {
+        try {
+            byte[] data = Base64.getDecoder().decode(s);
+            ObjectInputStream ois;
+            ois = new ObjectInputStream(new ByteArrayInputStream(data));
+            Object o = ois.readObject();
+            ois.close();
+            return o;
+        } catch (IOException | ClassNotFoundException e) {
+            logger.info("Exception Token deserialization {}", e.getMessage());
+        }
+        return Constants.EMPTY;
     }
 
-    public static String toString(Serializable o) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(o);
-        oos.close();
-        return Base64.getEncoder().encodeToString(baos.toByteArray());
+    public static String toString(Serializable o) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos;
+            oos = new ObjectOutputStream(baos);
+            oos.writeObject(o);
+            oos.close();
+            return Base64.getEncoder().encodeToString(baos.toByteArray());
+        } catch (IOException e) {
+            logger.info("Exception Token serialization {}", e.getMessage());
+        }
+        return Constants.EMPTY;
     }
 }

@@ -29,7 +29,7 @@ import com.google.gson.Gson;
  * @author Bernd Weymann - Initial contribution
  */
 public class Constants {
-    private static final String BINDING_ID = "mercedesme";
+    public static final String BINDING_ID = "mercedesme";
 
     public static final String COMBUSTION = "combustion";
     public static final String HYBRID = "hybrid";

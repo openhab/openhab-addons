@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.mercedesme.internal;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mercedesme.internal.server.CallbackServer;
 import org.openhab.binding.mercedesme.internal.server.Utils;
 import org.openhab.binding.mercedesme.internal.utils.TokenWrapper;
@@ -26,11 +24,7 @@ import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.items.ItemFactory;
-import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.library.items.StringItem;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.persistence.PersistenceService;
+import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -54,24 +48,17 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private TokenWrapper tw = new TokenWrapper();
 
     private final OAuthFactory oAuthFactory;
-    private Optional<StringItem> authUrlItem = Optional.empty();
-    private Optional<StringItem> tokenItem = Optional.empty();
+    private final Storage<String> storage;
+    private final String tokenStorageKey;
 
-    private final ItemFactory itemFactory;
-    private final ItemRegistry itemRegistry;
-    private Optional<PersistenceService> persistenceService = Optional.empty();
-
-    public AccountHandler(Bridge bridge, HttpClientFactory hcf, OAuthFactory oaf, ItemRegistry itr, ItemFactory itf,
-            @Nullable PersistenceService ps) {
+    public AccountHandler(Bridge bridge, HttpClientFactory hcf, OAuthFactory oaf, Storage<String> storage) {
         super(bridge);
+
+        logger.info("Storage {}", storage.getClass().getName());
+        tokenStorageKey = bridge.getUID() + ":token";
         httpClientFactory = hcf;
         oAuthFactory = oaf;
-
-        this.itemFactory = itf;
-        this.itemRegistry = itr;
-        if (ps != null) {
-            persistenceService = Optional.of(ps);
-        }
+        this.storage = storage;
     }
 
     @Override
@@ -90,52 +77,21 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
             logger.info("Config valid - start server and start auth");
-            server = Optional
-                    .of(new CallbackServer(this, httpClientFactory.getCommonHttpClient(), oAuthFactory, config.get()));
+            String callbackUrl = Utils.getCallbackAddress(config.get().callbackIP, config.get().callbackPort);
+            thing.setProperty("callbackUrl", callbackUrl);
 
-            // get items from Persistence
-            restoreItems();
+            server = Optional.of(new CallbackServer(this, httpClientFactory.getCommonHttpClient(), oAuthFactory,
+                    config.get(), callbackUrl));
 
-            // super.updateProperty("authorizationUrl", server.get().getAuthorizationUrl());
-            authUrlItem.ifPresentOrElse(i -> {
-                StringItem si = authUrlItem.get();
-                if (si.getState().toString().equals(Constants.EMPTY)) {
-                    si.setState(StringType.valueOf(server.get().getAuthorizationUrl()));
-                    logger.info("Auth Item set Auth URL {}", authUrlItem.get().getState().toString());
-                } else {
-                    logger.info("Auth Item get Auth URL {}", authUrlItem.get().getState().toString());
-                }
-            }, () -> {
-                logger.info("Auth URL not restored from item");
-            });
-
-            tokenItem.ifPresentOrElse(i -> {
-                StringItem si = tokenItem.get();
-                if (si.getState().toString().equals(Constants.EMPTY)) {
-                    logger.info("Token item is empty");
-                } else {
-                    String tokenSerial = si.getState().toString();
-                    logger.info("Token Item {}", tokenSerial);
-                    AccessTokenResponse atr;
-                    try {
-                        atr = (AccessTokenResponse) Utils.fromString(tokenSerial);
-                        server.get().setToken(atr);
-                    } catch (ClassNotFoundException | IOException e) {
-                        logger.warn("Unable to deserialize token {}", config.get().token);
-                    }
-                }
-            }, () -> {
-                logger.info("Token not restored from item");
-            });
-
-            if (!config.get().token.equals(Constants.EMPTY)) {
-                try {
-                    AccessTokenResponse atr = (AccessTokenResponse) Utils.fromString(config.get().token);
-                    server.get().setToken(atr);
-                } catch (ClassNotFoundException | IOException e) {
-                    logger.warn("Unable to deserialize token {}", config.get().token);
-                }
+            if (storage.containsKey(tokenStorageKey)) {
+                String tokenSerial = storage.get(tokenStorageKey).toString();
+                AccessTokenResponse atr = (AccessTokenResponse) Utils.fromString(tokenSerial);
+                server.get().setToken(atr);
+                logger.info("Token restored from storage {}", tokenStorageKey);
+            } else {
+                logger.info("Token not found in storage");
             }
+
             server.get().start();
             String token = server.get().getToken();
             if (!token.equals(Constants.EMPTY)) {
@@ -170,7 +126,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                     + Constants.SPACE + Constants.SCOPE_STATUS;
             updateConfig.put("scope", scope);
         }
-        updateConfig.put("callbackUrl", Utils.getCallbackAddress(ip, port));
         super.updateConfiguration(updateConfig);
     }
 
@@ -208,79 +163,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             updateStatus(ThingStatus.ONLINE);
         }
         if (tokenResponse.getRefreshToken() != null) {
-            try {
-                String tokenSerial = Utils.toString(tokenResponse);
-                Configuration c = super.editConfiguration();
-                c.put("token", tokenSerial);
-                super.updateConfiguration(c);
-
-                // store in item
-                tokenItem.ifPresentOrElse(i -> {
-                    StringItem si = tokenItem.get();
-                    si.setState(StringType.valueOf(tokenSerial));
-                    storeItems();
-                }, () -> {
-                    logger.info("Storing Token not possible");
-                });
-            } catch (IOException e) {
-                logger.info("Error serializing token {}", e.getMessage());
-            }
+            String tokenSerial = Utils.toString(tokenResponse);
+            storage.put(tokenStorageKey, tokenSerial);
         }
     }
 
     public String getToken() {
         return server.get().getToken();
-    }
-
-    private void restoreItems() {
-        String authItemName = "MercedesMeAuthorizationURL_" + thing.getUID().getId();
-        String tokenItemName = "MercedesMeTokenSerial_" + thing.getUID().getId();
-        logger.info("Restore {} {}", tokenItemName, authItemName);
-        StringItem si = (StringItem) itemRegistry.get(authItemName);
-        if (si == null) {
-            si = (StringItem) itemFactory.createItem("String", authItemName);
-            if (si != null) {
-                si.setState(StringType.valueOf(Constants.EMPTY));
-                authUrlItem = Optional.of(si);
-            } else {
-                logger.info("Unable to create Item {}", authItemName);
-            }
-        } else {
-            logger.info("AuthUrl Item found {}", si.getState().toString());
-            authUrlItem = Optional.of(si);
-        }
-
-        si = (StringItem) itemRegistry.get(tokenItemName);
-        if (si == null) {
-            si = (StringItem) itemFactory.createItem("String", tokenItemName);
-            if (si != null) {
-                si.setState(StringType.valueOf(Constants.EMPTY));
-                tokenItem = Optional.of(si);
-            } else {
-                logger.info("Unable to create Item {}", tokenItemName);
-            }
-        } else {
-            logger.info("Token Item found {}", si.getState().toString());
-            tokenItem = Optional.of(si);
-        }
-    }
-
-    private void storeItems() {
-        if (persistenceService.isPresent()) {
-            if (authUrlItem.isPresent()) {
-                persistenceService.get().store(authUrlItem.get());
-                logger.info("Auth Item stored {}", authUrlItem.get().getState().toString());
-            } else {
-                logger.info("No Auth Url Item available");
-            }
-            if (tokenItem.isPresent()) {
-                persistenceService.get().store(tokenItem.get());
-                logger.info("Token Item stored {}", tokenItem.get().getState().toString());
-            } else {
-                logger.info("No Token Item available");
-            }
-        } else {
-            logger.info("No persistence service available");
-        }
     }
 }
