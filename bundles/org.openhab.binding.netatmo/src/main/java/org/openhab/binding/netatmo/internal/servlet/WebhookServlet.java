@@ -35,7 +35,7 @@ import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
-import org.openhab.binding.netatmo.internal.handler.capability.EventCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.HomeSecurityThingCapability;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 public class WebhookServlet extends NetatmoServlet {
     private static final long serialVersionUID = -354583910860541214L;
 
-    private final Map<String, EventCapability> dataListeners = new ConcurrentHashMap<>();
+    private final Map<String, HomeSecurityThingCapability> dataListeners = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(WebhookServlet.class);
     private final SecurityApi securityApi;
     private final NADeserializer deserializer;
@@ -71,11 +71,11 @@ public class WebhookServlet extends NetatmoServlet {
         URI uri = UriBuilder.fromUri(webHookUrl).path(path).build();
         try {
             logger.info("Setting up WebHook at Netatmo to {}", uri.toString());
-            hookSet = securityApi.addwebhook(uri);
+            hookSet = true; // securityApi.addwebhook(uri);
         } catch (UriBuilderException e) {
             logger.info("webhookUrl is not a valid URI '{}' : {}", uri, e.getMessage());
-        } catch (NetatmoException e) {
-            logger.info("Error setting webhook : {}", e.getMessage());
+            // } catch (NetatmoException e) {
+            // logger.info("Error setting webhook : {}", e.getMessage());
         }
     }
 
@@ -135,14 +135,14 @@ public class WebhookServlet extends NetatmoServlet {
 
     private void notifyListeners(List<String> tobeNotified, WebhookEvent event) {
         tobeNotified.forEach(id -> {
-            EventCapability module = dataListeners.get(id);
+            HomeSecurityThingCapability module = dataListeners.get(id);
             if (module != null) {
                 module.setNewData(event);
             }
         });
     }
 
-    public void registerDataListener(String id, EventCapability eventCapability) {
+    public void registerDataListener(String id, HomeSecurityThingCapability eventCapability) {
         dataListeners.put(id, eventCapability);
     }
 

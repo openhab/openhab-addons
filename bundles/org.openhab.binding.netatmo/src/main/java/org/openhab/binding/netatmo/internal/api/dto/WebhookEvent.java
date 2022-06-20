@@ -32,6 +32,7 @@ public class WebhookEvent extends Event {
     private @NonNullByDefault({}) NAPushType pushType;
     private String homeId = "";
     private @Nullable String snapshotUrl;
+    private @Nullable String vignetteUrl;
     private NAObjectMap<Person> persons = new NAObjectMap<>();
     // Webhook does not provide the event generation time, so we'll use the event reception time
     private ZonedDateTime time = ZonedDateTime.now();
@@ -62,5 +63,9 @@ public class WebhookEvent extends Event {
     @Override
     public @Nullable String getSnapshotUrl() {
         return snapshotUrl;
+    }
+
+    public @Nullable String getVignetteUrl() {
+        return vignetteUrl;
     }
 }
