@@ -398,9 +398,9 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             Thread.sleep(3000);
             WebSocketCreatedResponse webSocketCreatedResponse = getWebsocketInfo(socket.getLocationID());
             // only restart single socket, do not restart binding
-            WebSocket attributes = webSocketCreatedResponse.data.attributes;
-            if (attributes != null) {
-                socket.restart(attributes.url);
+            WebSocket webSocketAttributes = webSocketCreatedResponse.data.attributes;
+            if (webSocketAttributes != null) {
+                socket.restart(webSocketAttributes.url);
             }
         } catch (Exception ex) {
             // restart binding on error
