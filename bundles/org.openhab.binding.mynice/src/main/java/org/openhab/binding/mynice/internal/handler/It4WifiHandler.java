@@ -59,6 +59,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) RequestBuilder reqBuilder;
     private final MyNiceXStream xstream = new MyNiceXStream();
     private List<Device> devices = new ArrayList<>();
+    private boolean connected;
 
     public It4WifiHandler(Bridge thing) {
         super(thing);
@@ -87,7 +88,8 @@ public class It4WifiHandler extends BaseBridgeHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(It4WifiConfiguration.class);
-        connector = new It4WifiConnector(config.hostname, this);
+        connector = new It4WifiConnector(config.hostname, this, scheduler);
+        connected = false;
         if (config.username.isBlank()) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Please define a username for this thing");
@@ -121,6 +123,9 @@ public class It4WifiHandler extends BaseBridgeHandler {
                 sendCommand(CommandType.VERIFY);
                 return;
             case VERIFY:
+                if (connected) {
+                    return;
+                }
                 switch (response.authentication.perm) {
                     case admin:
                     case user:
@@ -138,6 +143,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
                 String sc = response.authentication.sc;
                 if (sc != null) {
                     reqBuilder.setChallenges(sc, response.authentication.id, config.password);
+                    connected = true;
                     sendCommand(CommandType.INFO);
                 }
                 return;

@@ -18,6 +18,10 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -26,6 +30,7 @@ import javax.net.ssl.TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mynice.internal.handler.It4WifiHandler;
+import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,16 +50,18 @@ public class It4WifiConnector extends Thread {
     private final String hostname;
     private final It4WifiHandler handler;
     private final SSLSocketFactory sslsocketfactory;
+    private final ScheduledExecutorService scheduler;
 
     private @NonNullByDefault({}) Socket client;
     private @NonNullByDefault({}) InputStreamReader in;
     private @NonNullByDefault({}) OutputStreamWriter out;
+    private Optional<ScheduledFuture<?>> keepAlive = Optional.empty();
 
-    public It4WifiConnector(String hostname, It4WifiHandler handler) {
+    public It4WifiConnector(String hostname, It4WifiHandler handler, ScheduledExecutorService scheduler) {
         super();
         this.hostname = hostname;
         this.handler = handler;
-
+        this.scheduler = scheduler;
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, new TrustManager[] { TrustAllTrustManager.getInstance() }, null);
@@ -89,6 +96,8 @@ public class It4WifiConnector extends Thread {
     private void disconnect() {
         logger.debug("Disconnecting");
 
+        cancelKeepAlive();
+
         try {
             if (in != null) {
                 in.close();
@@ -108,6 +117,11 @@ public class It4WifiConnector extends Thread {
         logger.debug("Disconnected");
     }
 
+    private void cancelKeepAlive() {
+        keepAlive.ifPresent(t -> t.cancel(false));
+        keepAlive = Optional.empty();
+    }
+
     @Override
     public void run() {
         String buffer = "";
@@ -118,9 +132,12 @@ public class It4WifiConnector extends Thread {
                 int data;
                 while ((data = in.read()) != -1) {
                     if (data == STX) {
+                        cancelKeepAlive();
                         buffer = "";
                     } else if (data == ETX) {
                         handler.received(buffer);
+                        keepAlive = Optional.of(
+                                scheduler.schedule(() -> handler.sendCommand(CommandType.VERIFY), 2, TimeUnit.MINUTES));
                     } else {
                         buffer += (char) data;
                     }
