@@ -71,11 +71,11 @@ public class WebhookServlet extends NetatmoServlet {
         URI uri = UriBuilder.fromUri(webHookUrl).path(path).build();
         try {
             logger.info("Setting up WebHook at Netatmo to {}", uri.toString());
-            hookSet = true; // securityApi.addwebhook(uri);
+            hookSet = securityApi.addwebhook(uri);
         } catch (UriBuilderException e) {
             logger.info("webhookUrl is not a valid URI '{}' : {}", uri, e.getMessage());
-            // } catch (NetatmoException e) {
-            // logger.info("Error setting webhook : {}", e.getMessage());
+        } catch (NetatmoException e) {
+            logger.info("Error setting webhook : {}", e.getMessage());
         }
     }
 
