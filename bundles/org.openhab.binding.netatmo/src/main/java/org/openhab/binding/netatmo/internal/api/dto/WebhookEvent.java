@@ -13,6 +13,8 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,7 +31,7 @@ import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
  */
 @NonNullByDefault
 public class WebhookEvent extends Event {
-    private @NonNullByDefault({}) NAPushType pushType;
+    private NAPushType pushType = NAPushType.UNKNOWN;
     private String homeId = "";
     private String deviceId = "";
     private @Nullable String snapshotUrl;
@@ -40,10 +42,6 @@ public class WebhookEvent extends Event {
 
     public String getHomeId() {
         return homeId;
-    }
-
-    public String getDeviceId() {
-        return deviceId;
     }
 
     public NAObjectMap<Person> getPersons() {
@@ -72,5 +70,21 @@ public class WebhookEvent extends Event {
 
     public @Nullable String getVignetteUrl() {
         return vignetteUrl;
+    }
+
+    public List<String> getNAObjectList() {
+        List<String> result = new ArrayList<>();
+        result.add(getCameraId());
+        addNotBlank(result, homeId);
+        addNotBlank(result, deviceId);
+        addNotBlank(result, getCameraId());
+        result.addAll(getPersons().keySet());
+        return result;
+    }
+
+    private void addNotBlank(List<String> list, String value) {
+        if (!value.isBlank()) {
+            list.add(value);
+        }
     }
 }

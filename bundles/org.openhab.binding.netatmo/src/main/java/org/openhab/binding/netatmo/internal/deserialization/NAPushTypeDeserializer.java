@@ -36,19 +36,37 @@ class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
 
     @Override
     public @Nullable NAPushType deserialize(JsonElement json, Type clazz, JsonDeserializationContext context) {
+        final String string = json.getAsString();
+        final String[] elements = string.split("-");
         ModuleType moduleType = ModuleType.UNKNOWN;
         EventType eventType = EventType.UNKNOWN;
-        String string = json.getAsString();
-        String[] elements = string.split("-");
-        try {
-            if (elements.length != 2) {
-                throw new IllegalArgumentException();
-            }
-            moduleType = ModuleType.from(elements[0]);
-            eventType = EventType.valueOf(elements[1].toUpperCase());
-        } catch (IllegalArgumentException e) {
-            logger.warn("Error deserializing push type: {}", string);
+        if (elements.length == 2) {
+            moduleType = fromNetatmoObject(elements[0]);
+            eventType = fromEvent(elements[1]);
+        } else {
+            logger.warn("Unexpected syntax received for push_type field : {}", string);
+        }
+        if (moduleType.equals(ModuleType.UNKNOWN) || eventType.equals(EventType.UNKNOWN)) {
+            logger.warn("Unknown module or event type : {}, deserialized to '{}-{}'", string, moduleType, eventType);
         }
         return new NAPushType(moduleType, eventType);
+    }
+
+    /**
+     * @param apiName : Netatmo Object name (NSD, NACamera...)
+     * @return moduletype value if found, or else Unknown
+     */
+    public static ModuleType fromNetatmoObject(String apiName) {
+        return ModuleType.AS_SET.stream().filter(mt -> apiName.equals(mt.apiName)).findFirst()
+                .orElse(ModuleType.UNKNOWN);
+    }
+
+    /**
+     * @param apiName : Netatmo Event name (hush, off, on ...)
+     * @return eventType value if found, or else Unknown
+     */
+    public static EventType fromEvent(String apiName) {
+        return EventType.AS_SET.stream().filter(et -> apiName.equalsIgnoreCase(et.name())).findFirst()
+                .orElse(EventType.UNKNOWN);
     }
 }

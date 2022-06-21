@@ -202,9 +202,4 @@ public enum ModuleType {
         return ModuleType.AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException());
     }
-
-    public static ModuleType from(String apiName) {
-        return ModuleType.AS_SET.stream().filter(mt -> apiName.equals(mt.apiName)).findFirst()
-                .orElseThrow(() -> new IllegalArgumentException());
-    }
 }

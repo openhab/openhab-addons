@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.data;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -102,6 +103,8 @@ public enum EventType {
 
     @SerializedName("missed_call") // When a call has not been answered by anyone
     MISSED_CALL(ModuleType.DOORBELL);
+
+    public static final EnumSet<EventType> AS_SET = EnumSet.allOf(EventType.class);
 
     private final Set<ModuleType> appliesTo;
 
