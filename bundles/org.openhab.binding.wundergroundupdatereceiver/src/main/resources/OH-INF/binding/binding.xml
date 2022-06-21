@@ -5,7 +5,7 @@
 
 	<name>Wunderground Update Receiver Binding</name>
 	<description>
-		This binding enables acting as a receiver of updates from weather stations that post measurements to
+		This binding enables acting as a receiver of updates from devices that post measurements to
 		https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php.
 	</description>
 </binding:binding>
