@@ -19,7 +19,7 @@
 	<channel-type id="dateutc" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Updated</label>
-		<description>The date and time of the last update in UTC as submitted by the weather station. This can be 'now'.</description>
+		<description>The date and time of the last update in UTC as submitted by the device. This can be 'now'.</description>
 		<category>Time</category>
 		<tags>
 			<tag>Point</tag>
@@ -30,8 +30,9 @@
 	<channel-type id="dateutc-datetime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Updated as DateTime</label>
-		<description>The date and time of the last update in UTC as submitted by the weather station converted to a DateTime
-			value. In case of 'now', the current time is used.</description>
+		<description>The date and time of the last update in UTC as submitted by the device converted to a DateTime
+			value. In
+			case of 'now', the current time is used.</description>
 		<category>Time</category>
 		<tags>
 			<tag>Point</tag>
@@ -126,8 +127,8 @@
 
 	<channel-type id="humidity">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Humidity</label>
-		<description>Humidity in %.</description>
+		<label>Outdoor Humidity</label>
+		<description>Outdoor humidity in %.</description>
 		<category>Humidity</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -157,7 +158,7 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="wind-chill" advanced="true">
@@ -182,7 +183,7 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<!-- for sensors 2,3,4 use soiltemp2f, soiltemp3f, and soiltemp4f -->
@@ -195,7 +196,7 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rain">
@@ -303,13 +304,13 @@
 	<channel-type id="solarradiation">
 		<item-type>Number:Intensity</item-type>
 		<label>Solar Radiation</label>
-		<description>Solar radiation</description>
+		<description>Solar radiation in W/m2.</description>
 		<category>Sun</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Light</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="uv">
@@ -332,7 +333,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.3f NM"/>
 	</channel-type>
 
 	<!-- Pollution Fields: -->
@@ -344,7 +345,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="nitrogen-dioxide-measured" advanced="true">
@@ -355,7 +356,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="nitrogen-dioxide-nox-no" advanced="true">
@@ -366,7 +367,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="nitrogen-dioxide-noy-no" advanced="true">
@@ -377,7 +378,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="nitrogen-oxides" advanced="true">
@@ -388,7 +389,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="total-reactive-nitrogen" advanced="true">
@@ -399,7 +400,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="no3-ion" advanced="true">
@@ -410,7 +411,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="so4-ion" advanced="true">
@@ -421,7 +422,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="sulfur-dioxide" advanced="true">
@@ -432,7 +433,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="sulfur-dioxide-trace-levels" advanced="true">
@@ -443,7 +444,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="carbon-monoxide" advanced="true">
@@ -454,7 +455,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="carbon-monoxide-trace-levels" advanced="true">
@@ -465,7 +466,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="elemental-carbon" advanced="true">
@@ -476,7 +477,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="organic-carbon" advanced="true">
@@ -487,7 +488,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="black-carbon" advanced="true">
@@ -498,7 +499,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="aethalometer" advanced="true">
@@ -509,7 +510,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="pm2_5-mass" advanced="true">
@@ -520,7 +521,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="pm10-mass" advanced="true">
@@ -531,7 +532,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ozone" advanced="true">
@@ -542,13 +543,13 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="softwaretype" advanced="true">
 		<item-type>String</item-type>
 		<label>Software Type</label>
-		<description>A software type string from the weather station</description>
+		<description>A software type string from the device</description>
 		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -556,7 +557,7 @@
 	<channel-type id="realtime-frequency" advanced="true">
 		<item-type>Number</item-type>
 		<label>Realtime Frequency</label>
-		<description>How often does the weather station submit measurements</description>
+		<description>How often does the device submit measurements</description>
 		<category>Number</category>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
@@ -565,7 +566,7 @@
 		<item-type>String</item-type>
 		<kind>state</kind>
 		<label>The last query</label>
-		<description>The part of the last query after the first unurlencoded '?'</description>
+		<description>The query part of the last request from the device</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -573,7 +574,7 @@
 		<item-type>String</item-type>
 		<kind>trigger</kind>
 		<label>The last query</label>
-		<description>The part of the last query after the first unurlencoded '?'</description>
+		<description>The query part of the last request from the device</description>
 		<event/>
 	</channel-type>
 

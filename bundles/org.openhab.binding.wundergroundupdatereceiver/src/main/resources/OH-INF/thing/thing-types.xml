@@ -28,7 +28,7 @@
 					The wunderground.com update api requires a station id, that is defined for the WeatherUnderground
 					account measurements are to be submitted to.<br />
 					<br />
-					In this binding it is used to identify a unique thing, so each weather-station or
+					In this binding it is used to identify a unique thing, so each device or
 					other apparatus submitting measurements can have a separate id, but if you don't intend to forward
 					the observations to wunderground.com, this value can be any non-blank string.
 				]]>

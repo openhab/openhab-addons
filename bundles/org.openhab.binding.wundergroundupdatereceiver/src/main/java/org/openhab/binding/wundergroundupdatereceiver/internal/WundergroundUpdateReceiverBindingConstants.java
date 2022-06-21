@@ -72,7 +72,7 @@ public class WundergroundUpdateReceiverBindingConstants {
     public static final String PRESSURE_GROUP = "pressure";
     public static final String POLLUTION_GROUP = "pollution";
 
-    // Known or observed request paramters received from weather stations submitting to wunderground.com
+    // Known or observed request paramters received from devices submitting to wunderground.com
     public static final String DATEUTC = "dateutc";
     public static final String SOFTWARE_TYPE = "softwaretype";
     public static final String LOW_BATTERY = "lowbatt";

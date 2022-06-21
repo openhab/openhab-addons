@@ -106,21 +106,21 @@ Additionally there is a receipt timestamp and a trigger channel.
 
 #### Metadata channel-types:
 
-| Request parameter |  Channel type id             | Type                 | Label                             | Description                                                                                         | Group       |
-|-------------------|------------------------------|----------------------|-----------------------------------|-----------------------------------------------------------------------------------------------------|-------------|
-| dateutc           | dateutc                      | String               | Last Updated                      | The date and time of the last update in UTC as submitted by the weather station. This can be 'now'. | Metadata    | 
-| softwaretype      | softwaretype                 | String               | Software Type                     | A software type string from the weather station                                                     | Metadata    | 
-| rtfreq            | realtime-frequency           | Number               | Realtime Frequency                | How often does the weather station submit measurements                                              | Metadata    | 
-| lowbatt           | system:low-battery           | Switch               | Low Battery                       | Low battery warning with possible values on (low battery) and off (battery ok)                      | Metadata    |
+| Request parameter |  Channel type id             | Type                 | Label                             | Description                                                                                | Group       |
+|-------------------|------------------------------|----------------------|-----------------------------------|--------------------------------------------------------------------------------------------|-------------|
+| dateutc           | dateutc                      | String               | Last Updated                      | The date and time of the last update in UTC as submitted by the device. This can be 'now'. | Metadata    | 
+| softwaretype      | softwaretype                 | String               | Software Type                     | A software type string from the device                                                     | Metadata    | 
+| rtfreq            | realtime-frequency           | Number               | Realtime Frequency                | How often does the device submit measurements                                              | Metadata    | 
+| lowbatt           | system:low-battery           | Switch               | Low Battery                       | Low battery warning with possible values on (low battery) and off (battery ok)             | Metadata    |
 
 #### Synthetic channel-types. These are programmatically added:
 
-|  Channel type id       | Type                 | Channel type | Label                    | Description                                                                                                                                                | Group    |
-|------------------------|----------------------|--------------|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
-| dateutc-datetime       | dateutc-datetime     | state        | Last Updated as DateTime | The date and time of the last update in UTC as submitted by the weather station converted to a DateTime value. In case of 'now', the current time is used. | Metadata | 
-| last-received-datetime | DateTime             | state        | Last Received            | The date and time of the last update.                                                                                                                      | Metadata | 
-| last-query-state       | String               | state        | The last query           | The part of the last query after the first unurlencoded '?'                                                                                                | Metadata |
-| last-query-trigger     | String               | trigger      | The last query           | The part of the last query after the first unurlencoded '?'                                                                                                | Metadata |
+|  Channel type id       | Type                 | Channel type | Label                    | Description                                                                                                                                       | Group    |
+|------------------------|----------------------|--------------|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| dateutc-datetime       | dateutc-datetime     | state        | Last Updated as DateTime | The date and time of the last update in UTC as submitted by the device converted to a DateTime value. In case of 'now', the current time is used. | Metadata | 
+| last-received-datetime | DateTime             | state        | Last Received            | The date and time of the last update.                                                                                                             | Metadata | 
+| last-query-state       | String               | state        | The last query           | The query part of the last request from the device                                                                                                | Metadata |
+| last-query-trigger     | String               | trigger      | The last query           | The query part of the last request from the device                                                                                                | Metadata |
 
 The trigger channel's payload is the last querystring, so the following dsl rule script would send the measurements on to wunderground.com:
 
