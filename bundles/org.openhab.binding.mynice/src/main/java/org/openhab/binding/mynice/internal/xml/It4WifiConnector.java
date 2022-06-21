@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class It4WifiConnector extends Thread {
+    private static final int KEEP_ALIVE_DELAY_MIN = 2;
     private static final int SERVER_PORT = 443;
     private static final char ETX = '\u0003';
     private static final char STX = '\u0002';
@@ -131,13 +132,13 @@ public class It4WifiConnector extends Thread {
             while (!interrupted()) {
                 int data;
                 while ((data = in.read()) != -1) {
+                    cancelKeepAlive();
                     if (data == STX) {
-                        cancelKeepAlive();
                         buffer = "";
                     } else if (data == ETX) {
                         handler.received(buffer);
-                        keepAlive = Optional.of(
-                                scheduler.schedule(() -> handler.sendCommand(CommandType.VERIFY), 2, TimeUnit.MINUTES));
+                        keepAlive = Optional.of(scheduler.schedule(() -> handler.sendCommand(CommandType.VERIFY),
+                                KEEP_ALIVE_DELAY_MIN, TimeUnit.MINUTES));
                     } else {
                         buffer += (char) data;
                     }
