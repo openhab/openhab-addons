@@ -35,7 +35,7 @@ import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
-import org.openhab.binding.netatmo.internal.handler.capability.HomeSecurityThingCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 public class WebhookServlet extends NetatmoServlet {
     private static final long serialVersionUID = -354583910860541214L;
 
-    private final Map<String, HomeSecurityThingCapability> dataListeners = new ConcurrentHashMap<>();
+    private final Map<String, Capability> dataListeners = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(WebhookServlet.class);
     private final SecurityApi securityApi;
     private final NADeserializer deserializer;
@@ -106,6 +106,8 @@ public class WebhookServlet extends NetatmoServlet {
                 WebhookEvent event = deserializer.deserialize(WebhookEvent.class, data);
                 List<String> toBeNotified = new ArrayList<>();
                 toBeNotified.add(event.getCameraId());
+                toBeNotified.add(event.getDeviceId());
+                toBeNotified.add(event.getHomeId());
                 toBeNotified.addAll(event.getPersons().keySet());
                 notifyListeners(toBeNotified, event);
             } catch (NetatmoException e) {
@@ -135,15 +137,15 @@ public class WebhookServlet extends NetatmoServlet {
 
     private void notifyListeners(List<String> tobeNotified, WebhookEvent event) {
         tobeNotified.forEach(id -> {
-            HomeSecurityThingCapability module = dataListeners.get(id);
+            Capability module = dataListeners.get(id);
             if (module != null) {
                 module.setNewData(event);
             }
         });
     }
 
-    public void registerDataListener(String id, HomeSecurityThingCapability eventCapability) {
-        dataListeners.put(id, eventCapability);
+    public void registerDataListener(String id, Capability capability) {
+        dataListeners.put(id, capability);
     }
 
     public void unregisterDataListener(String id) {

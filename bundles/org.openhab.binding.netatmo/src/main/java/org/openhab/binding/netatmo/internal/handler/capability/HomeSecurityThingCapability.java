@@ -64,5 +64,6 @@ public class HomeSecurityThingCapability extends Capability {
     @Override
     public void dispose() {
         webhook.ifPresent(servlet -> servlet.unregisterDataListener(handler.getId()));
+        super.dispose();
     }
 }

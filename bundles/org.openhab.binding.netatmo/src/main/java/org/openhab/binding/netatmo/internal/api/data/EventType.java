@@ -97,6 +97,9 @@ public enum EventType {
     @SerializedName("incoming_call") // When a call as been answered by a user
     INCOMING_CALL(ModuleType.DOORBELL),
 
+    @SerializedName("rtc") // Button pressed
+    RTC(ModuleType.DOORBELL),
+
     @SerializedName("missed_call") // When a call has not been answered by anyone
     MISSED_CALL(ModuleType.DOORBELL);
 

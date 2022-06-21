@@ -31,6 +31,7 @@ import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
 public class WebhookEvent extends Event {
     private @NonNullByDefault({}) NAPushType pushType;
     private String homeId = "";
+    private String deviceId = "";
     private @Nullable String snapshotUrl;
     private @Nullable String vignetteUrl;
     private NAObjectMap<Person> persons = new NAObjectMap<>();
@@ -39,6 +40,10 @@ public class WebhookEvent extends Event {
 
     public String getHomeId() {
         return homeId;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
     }
 
     public NAObjectMap<Person> getPersons() {

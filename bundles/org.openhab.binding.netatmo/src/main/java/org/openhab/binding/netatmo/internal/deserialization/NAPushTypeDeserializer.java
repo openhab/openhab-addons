@@ -18,11 +18,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.EventType;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 
 /**
  * Specialized deserializer for push_type field
@@ -31,21 +32,23 @@ import com.google.gson.JsonParseException;
  */
 @NonNullByDefault
 class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
+    private final Logger logger = LoggerFactory.getLogger(NAPushTypeDeserializer.class);
 
     @Override
-    public @Nullable NAPushType deserialize(JsonElement json, Type clazz, JsonDeserializationContext context)
-            throws JsonParseException {
+    public @Nullable NAPushType deserialize(JsonElement json, Type clazz, JsonDeserializationContext context) {
+        ModuleType moduleType = ModuleType.UNKNOWN;
+        EventType eventType = EventType.UNKNOWN;
         String string = json.getAsString();
         String[] elements = string.split("-");
-        if (elements.length > 1) {
-            try {
-                ModuleType moduleType = ModuleType.from(elements[0]);
-                EventType eventType = EventType.valueOf(elements[1].toUpperCase());
-
-                return new NAPushType(moduleType, eventType);
-            } catch (IllegalArgumentException e) {
+        try {
+            if (elements.length != 2) {
+                throw new IllegalArgumentException();
             }
+            moduleType = ModuleType.from(elements[0]);
+            eventType = EventType.valueOf(elements[1].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            logger.warn("Error deserializing push type: {}", string);
         }
-        throw new JsonParseException("Error deserializing : " + string);
+        return new NAPushType(moduleType, eventType);
     }
 }
