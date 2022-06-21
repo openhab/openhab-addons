@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mynice.internal.xml;
+package org.openhab.binding.mynice.internal.handler;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -29,7 +29,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mynice.internal.handler.It4WifiHandler;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.slf4j.Logger;
@@ -59,7 +58,7 @@ public class It4WifiConnector extends Thread {
     private Optional<ScheduledFuture<?>> keepAlive = Optional.empty();
 
     public It4WifiConnector(String hostname, It4WifiHandler handler, ScheduledExecutorService scheduler) {
-        super();
+        super(It4WifiConnector.class.getName());
         this.hostname = hostname;
         this.handler = handler;
         this.scheduler = scheduler;

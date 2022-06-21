@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mynice.internal.config.It4WifiConfiguration;
 import org.openhab.binding.mynice.internal.discovery.MyNiceDiscoveryService;
-import org.openhab.binding.mynice.internal.xml.It4WifiConnector;
 import org.openhab.binding.mynice.internal.xml.MyNiceXStream;
 import org.openhab.binding.mynice.internal.xml.RequestBuilder;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
@@ -91,7 +90,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
         connector = new It4WifiConnector(config.hostname, this, scheduler);
         connected = false;
         if (config.username.isBlank()) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Please define a username for this thing");
         } else {
             reqBuilder = new RequestBuilder(config.macAddress, config.username);
@@ -132,7 +131,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
                         sendCommand(CommandType.CONNECT);
                         return;
                     case wait:
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                                 "Please validate the user on the MyNice application");
                         scheduler.schedule(() -> handShaked(), 15, TimeUnit.SECONDS);
                         return;
@@ -160,6 +159,9 @@ public class It4WifiHandler extends BaseBridgeHandler {
                 return;
             case STATUS:
                 notifyListeners(response.getDevices());
+                break;
+            case CHANGE:
+                logger.debug("Change command accepted");
                 break;
             default:
                 logger.info("Unhandled response type : {}", response.type);
