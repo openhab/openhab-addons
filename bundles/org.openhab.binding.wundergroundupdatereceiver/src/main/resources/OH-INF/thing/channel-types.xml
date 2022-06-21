@@ -1,0 +1,581 @@
+<?xml version="1.0" ?>
+<thing:thing-descriptions bindingId="wundergroundupdatereceiver"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="last-received-datetime">
+		<item-type>DateTime</item-type>
+		<label>Last Received</label>
+		<description>The date and time of the last update.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Point</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="dateutc" advanced="true">
+		<item-type>String</item-type>
+		<label>Last Updated</label>
+		<description>The date and time of the last update in UTC as submitted by the device. This can be 'now'.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Point</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dateutc-datetime" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Updated as DateTime</label>
+		<description>The date and time of the last update in UTC as submitted by the device converted to a DateTime
+			value. In
+			case of 'now', the current time is used.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Point</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="wind-speed">
+		<item-type>Number:Speed</item-type>
+		<label>Current Wind Speed</label>
+		<description>Current wind speed, using software specific time period.</description>
+		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wind-gust-speed">
+		<item-type>Number:Speed</item-type>
+		<label>Current Gust Speed</label>
+		<description>Current wind gust speed, using software specific time period.</description>
+		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wind-gust-direction">
+		<item-type>Number:Angle</item-type>
+		<label>Gust Direction</label>
+		<description>Current wind gust direction expressed as an angle using software specific time period.</description>
+		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wind-speed-avg-2min" advanced="true">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed 2min Average</label>
+		<description>2 minute average wind speed.</description>
+		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wind-direction-avg-2min" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Wind Direction 2min Average</label>
+		<description>2 minute average wind direction.</description>
+		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wind-gust-speed-10min" advanced="true">
+		<item-type>Number:Speed</item-type>
+		<label>Gust Speed 10min Average</label>
+		<description>10 minute average gust speed.</description>
+		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wind-gust-direction-10min" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Gust Direction 10min Average</label>
+		<description>10 minute average gust direction.</description>
+		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Outdoor Humidity</label>
+		<description>Outdoor humidity in %.</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="indoor-humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Indoor Humidity</label>
+		<description>Indoor humidity in %.</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="dew-point" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Dew Point</label>
+		<description>Outdoor dew point.</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wind-chill" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Wind Chill</label>
+		<description>The apparent wind chill temperature.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<!-- for extra outdoor sensors use temp2f, temp3f, and so on -->
+	<channel-type id="indoor-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Indoor Temperature</label>
+		<description>Indoor temperature.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<!-- for sensors 2,3,4 use soiltemp2f, soiltemp3f, and soiltemp4f -->
+	<channel-type id="soil-temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Soil Temperature</label>
+		<description>Soil temperature.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="rain">
+		<item-type>Number:Length</item-type>
+		<label>Hourly Rain</label>
+		<description>Rain over the past hour.</description>
+		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="rain-daily">
+		<item-type>Number:Length</item-type>
+		<label>Daily Rain</label>
+		<description>Rain since the start of the day.</description>
+		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="rain-weekly" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Weekly Rain</label>
+		<description>Rain since the start of this week.</description>
+		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="rain-monthly" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Monthly Rain</label>
+		<description>Rain since the start if this month.</description>
+		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="rain-yearly" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Yearly Rain</label>
+		<description>Rain since the start of this year.</description>
+		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="metar" advanced="true">
+		<item-type>String</item-type>
+		<label>METAR Weather Report</label>
+		<description>METAR formatted weather report</description>
+		<category>Sun_Clouds</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="clouds" advanced="true">
+		<item-type>String</item-type>
+		<label>Cloud Cover</label>
+		<description>METAR style cloud cover.</description>
+		<category>Sun_Clouds</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- for sensors 2,3,4 use soilmoisture2, soilmoisture3, and soilmoisture4 -->
+	<channel-type id="soil-moisture" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Soil Moisture</label>
+		<description>Soil moisture in %.</description>
+		<category>Moisture</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<!-- for sensor 2 use leafwetness2 -->
+	<channel-type id="leafwetness" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Leaf Wetness</label>
+		<description>Leaf wetness in %.</description>
+		<category>Moisture</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="solarradiation">
+		<item-type>Number:Intensity</item-type>
+		<label>Solar Radiation</label>
+		<description>Solar radiation in W/m2.</description>
+		<category>Sun</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="uv">
+		<item-type>Number:Dimensionless</item-type>
+		<label>UV Index</label>
+		<description>UV index.</description>
+		<category>Sun</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Ultraviolet</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="visibility" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Visibility</label>
+		<description>Visibility.</description>
+		<category>Sun_Clouds</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f NM"/>
+	</channel-type>
+
+	<!-- Pollution Fields: -->
+	<channel-type id="nitric-oxide" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Nitric Oxide</label>
+		<description>Nitric Oxide ppm.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="nitrogen-dioxide-measured" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Nitrogen Dioxide</label>
+		<description>Nitrogen Dioxide, true measure ppb.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="nitrogen-dioxide-nox-no" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>NO2 X computed</label>
+		<description>NO2 computed, NOx-NO ppb.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="nitrogen-dioxide-noy-no" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>NO2 Y computed, NOy-NO ppb</label>
+		<description>NO2 computed, NOy-NO ppb.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="nitrogen-oxides" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Nitrogen Oxides</label>
+		<description>Nitrogen Oxides ppb.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="total-reactive-nitrogen" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Total Reactive Nitrogen</label>
+		<description>Total reactive nitrogen.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="no3-ion" advanced="true">
+		<item-type>Number:Density</item-type>
+		<label>NO3 ion</label>
+		<description>NO3 ion (nitrate, not adjusted for ammonium ion) µG/m3.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="so4-ion" advanced="true">
+		<item-type>Number:Density</item-type>
+		<label>SO4 ion</label>
+		<description>SO4 ion (sulfate, not adjusted for ammonium ion) µG/m3.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="sulfur-dioxide" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Sulfur Dioxide</label>
+		<description>Sulfur Dioxide, conventional ppb.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="sulfur-dioxide-trace-levels" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Sulfur Dioxide Trace Levels</label>
+		<description>Sulfur Dioxide, trace levels ppb.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="carbon-monoxide" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Carbon Monoxide</label>
+		<description>Carbon Monoxide, conventional ppm.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="carbon-monoxide-trace-levels" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Carbon Monoxide Trace Levels</label>
+		<description>Carbon Monoxide, trace levels ppb.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="elemental-carbon" advanced="true">
+		<item-type>Number:Density</item-type>
+		<label>Elemental Carbon</label>
+		<description>Elemental Carbon, PM2.5 µG/m3.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="organic-carbon" advanced="true">
+		<item-type>Number:Density</item-type>
+		<label>Organic Carbon</label>
+		<description>Organic Carbon, not adjusted for oxygen and hydrogen, PM2.5 µG/m3.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="black-carbon" advanced="true">
+		<item-type>Number:Density</item-type>
+		<label>Black Carbon</label>
+		<description>Black Carbon at 880 nm, µG/m3.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="aethalometer" advanced="true">
+		<item-type>Number:Density</item-type>
+		<label>Second Channel of Aethalometer</label>
+		<description>second channel of Aethalometer at 370 nm, µG/m3.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="pm2_5-mass" advanced="true">
+		<item-type>Number:Density</item-type>
+		<label>PM2.5 Mass</label>
+		<description>PM2.5 mass, µG/m3.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="pm10-mass" advanced="true">
+		<item-type>Number:Density</item-type>
+		<label>PM10 Mass</label>
+		<description>PM10 mass, µG/m3.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ozone" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Ozone</label>
+		<description>Ozone, ppb.</description>
+		<category>Pollution</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="softwaretype" advanced="true">
+		<item-type>String</item-type>
+		<label>Software Type</label>
+		<description>A software type string from the device</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="realtime-frequency" advanced="true">
+		<item-type>Number</item-type>
+		<label>Realtime Frequency</label>
+		<description>How often does the device submit measurements</description>
+		<category>Number</category>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="last-query-state" advanced="true">
+		<item-type>String</item-type>
+		<kind>state</kind>
+		<label>The last query</label>
+		<description>The query part of the last request from the device</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-query-trigger">
+		<item-type>String</item-type>
+		<kind>trigger</kind>
+		<label>The last query</label>
+		<description>The query part of the last request from the device</description>
+		<event/>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -46,6 +46,6 @@ public class PresenceChannelHelper extends CameraChannelHelper {
                     return toStringType(camera.getFloodlight());
             }
         }
-        return null;
+        return super.internalGetProperty(channelId, naThing, config);
     }
 }
