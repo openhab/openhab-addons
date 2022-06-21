@@ -176,4 +176,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     public String getToken() {
         return server.get().getToken();
     }
+
+    public String getImageApiKey() {
+        return config.get().imageApiKey;
+    }
 }

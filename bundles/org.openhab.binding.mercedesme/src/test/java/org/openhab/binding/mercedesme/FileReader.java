@@ -15,9 +15,11 @@ package org.openhab.binding.mercedesme;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mercedesme.internal.Constants;
@@ -44,5 +46,18 @@ public class FileReader {
             assertEquals(filename, Constants.EMPTY, "Read failute " + filename);
         }
         return Constants.EMPTY;
+    }
+
+    public static byte[] readFileInBytes(String filename) {
+        File file = new File(filename);
+        byte[] fileContent = null;
+        try {
+            fileContent = Files.readAllBytes(file.toPath());
+            return fileContent;
+        } catch (IOException e) {
+            // fail if file cannot be read
+            assertEquals(filename, Constants.EMPTY, "Read failute " + filename);
+        }
+        return new byte[] { 'a' };
     }
 }

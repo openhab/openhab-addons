@@ -13,16 +13,12 @@
 package org.openhab.binding.mercedesme;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.Constants;
-import org.openhab.binding.mercedesme.internal.VehicleHandler;
 import org.openhab.binding.mercedesme.internal.server.Utils;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
-import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.thing.Thing;
 
 /**
  * The {@link SerializationTest} is testing token seriial- & deserialization
@@ -60,10 +56,5 @@ class SerializationTest {
     public void testReplacement() {
         String url = String.format(Constants.STATUS_URL, "W1N");
         System.out.println(url);
-    }
-
-    @Test
-    public void testVehicleHandler() {
-        VehicleHandler vh = new VehicleHandler(mock(Thing.class), mock(HttpClientFactory.class), Constants.BEV);
     }
 }

@@ -24,6 +24,7 @@ public class AccountConfiguration {
 
     public String clientId = Constants.NOT_SET;
     public String clientSecret = Constants.NOT_SET;
+    public String imageApiKey = Constants.NOT_SET;
 
     // Advanced Parameters
     public String callbackIP = Constants.NOT_SET;

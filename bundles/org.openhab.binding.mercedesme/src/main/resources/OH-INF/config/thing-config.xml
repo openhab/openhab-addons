@@ -13,5 +13,35 @@
 			<description>Data refresh rate for your vehicle data</description>
 			<default>5</default>
 		</parameter>
+		<!-- https://developer.mercedes-benz.com/products/vehicle_images/docs#_default_image_settings -->
+		<parameter name="imagebackground" type="boolean">
+			<label>Background Image</label>
+			<description>Vehicle image provided with or without background</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="night" type="boolean">
+			<label>Background Image</label>
+			<description>Vehicle image provided with or without background</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="cropped" type="boolean">
+			<label>Background Image</label>
+			<description>Vehicle image provided with or without background</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="format" type="text">
+			<label>Background Image</label>
+			<description>Vehicle image provided with or without background</description>
+			<default>webp</default>
+			<advanced>true</advanced>
+			<options>
+				<option value="webp">webp</option>
+				<option value="png">png</option>
+				<option value="jpg">jpg</option>
+			</options>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

@@ -20,8 +20,6 @@ import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingTypeUID;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link Constants} class defines common constants, which are
  * used across the whole binding.
@@ -47,6 +45,7 @@ public class Constants {
     public static String GROUP_LOCK = "lock";
     public static String GROUP_LIGHTS = "lights";
     public static String GROUP_LOCATION = "location";
+    public static String GROUP_IMAGE = "image";
 
     public static String MB_AUTH_URL = "https://id.mercedes-benz.com/as/authorization.oauth2";
     public static String MB_TOKEN_URL = "https://id.mercedes-benz.com/as/token.oauth2";
@@ -72,6 +71,10 @@ public class Constants {
     public static String FUEL_URL = BASE_URL + "/vehicles/%s/containers/fuelstatus";
     public static String EV_URL = BASE_URL + "/vehicles/%s/containers/electricvehicle";
 
+    // https://developer.mercedes-benz.com/content-page/api_migration_guide
+    public static String IMAGE_BASE_URL = "https://api.mercedes-benz.com/vehicle_images/v2";
+    public static String IMAGE_EXTERIOR_RESOURCE_URL = IMAGE_BASE_URL + "/vehicles/%s";
+
     public static String SPACE = " ";
     public static final String EMPTY = "";
 
@@ -82,6 +85,6 @@ public class Constants {
 
     public static final String CODE = "code";
 
-    public static final Gson GSON = new Gson();
+    public static final String MIME_PNG = "image/png";
     public static final Unit<Length> KILOMETRE_UNIT = MetricPrefix.KILO(SIUnits.METRE);
 }

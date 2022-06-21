@@ -6,12 +6,16 @@
 
 	<config-description uri="thing-type:mercedesme:bridge">
 		<parameter name="clientId" type="text" required="true">
-			<label>Mercedes Benz Developer Client ID</label>
+			<label>MB Developer Client ID</label>
 			<description>>Mercedes Benz Developer Client ID</description>
 		</parameter>
 		<parameter name="clientSecret" type="text" required="true">
-			<label>Mercedes Benz Developer Client ID</label>
+			<label>MB Developer Client ID</label>
 			<description>>Mercedes Benz Developer Client ID</description>
+		</parameter>
+		<parameter name="imageApiKey" type="text">
+			<label>MB Developer Image API Key</label>
+			<description>>Mercedes Benz Developer Image API Key</description>
 		</parameter>
 		<parameter name="callbackIP" type="text">
 			<label>Callback IP Address</label>

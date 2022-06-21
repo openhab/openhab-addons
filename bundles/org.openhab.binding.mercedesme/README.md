@@ -21,6 +21,9 @@ Bridge needs configuration in order to connect properly to your Mercedes Me Acco
 Perform the following steps to obtain the configuration data and perfrom the authorization flow.
 
 1. Create Bridge account in openHAB
+    - if not given in textual configuration `callbackIP`, `callbackPort` and `scope` are autodetected
+    - leave `clientId` and `clientSecret` empty 
+    - continue with a new browser tab
 2. Go to [Mercedes Me Login](https://id.mercedes-benz.com/ciam/auth/login) page and login woth your credentials
 3. Go to [Mercedes Developer Page](https://developer.mercedes-benz.com/) Login and you'll have access to the API.
 4. Create a project in the [console tab](https://developer.mercedes-benz.com/console)

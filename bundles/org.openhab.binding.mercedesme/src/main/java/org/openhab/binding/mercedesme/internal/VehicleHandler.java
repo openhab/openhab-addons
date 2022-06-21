@@ -15,6 +15,7 @@ package org.openhab.binding.mercedesme.internal;
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -34,13 +35,17 @@ import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
+import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -56,7 +61,8 @@ import org.slf4j.LoggerFactory;
 public class VehicleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
-    private List<String> functions;
+    private static final String EXT_IMG_RES = "ExtImageResources_";
+
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private Optional<AccountHandler> accountHandler = Optional.empty();;
     private Optional<VehicleConfiguration> config = Optional.empty();
@@ -64,28 +70,40 @@ public class VehicleHandler extends BaseThingHandler {
     private final String uid;
     private Optional<ChannelStateMap> rangeFuel = Optional.empty();
     private Optional<ChannelStateMap> rangeElectric = Optional.empty();
+    private Storage<String> imageStorage;
+    private final MercedesMeCommandOptionProvider mmcop;
 
-    public VehicleHandler(Thing thing, HttpClientFactory hcf, String uid) {
+    public VehicleHandler(Thing thing, HttpClientFactory hcf, String uid, Storage<String> stringStorage,
+            MercedesMeCommandOptionProvider mmcop) {
         super(thing);
         hc = hcf.getCommonHttpClient();
         this.uid = uid;
-        functions = new ArrayList<>(List.of(ODO_URL, STATUS_URL, LOCK_URL));
-        switch (uid) {
-            case COMBUSTION:
-                functions.add(FUEL_URL);
-                break;
-            case HYBRID:
-                functions.add(FUEL_URL);
-                functions.add(EV_URL);
-                break;
-            case BEV:
-                functions.add(EV_URL);
-                break;
-        }
+        this.mmcop = mmcop;
+        imageStorage = stringStorage;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.info("Received {} {} {}", channelUID.getAsString(), command.toFullString(), channelUID.getId());
+        if (channelUID.getIdWithoutGroup().equals("image-view")) {
+            String key = command.toFullString() + "_" + config.get().vin;
+            String encodedImage = EMPTY;
+            if (imageStorage.containsKey(key)) {
+                encodedImage = imageStorage.get(key);
+                logger.info("Image {} found in storage", key);
+            } else {
+                logger.info("Request Image {} ", key);
+                encodedImage = getImage(command.toFullString());
+                imageStorage.put(key, encodedImage);
+            }
+            if (!encodedImage.equals(EMPTY)) {
+                logger.info("Update data channel");
+                RawType image = new RawType(Base64.getDecoder().decode(encodedImage), MIME_PNG);
+                updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-data"), image);
+            } else {
+                logger.info("Empty image");
+            }
+        }
     }
 
     @Override
@@ -97,14 +115,39 @@ public class VehicleHandler extends BaseThingHandler {
             BridgeHandler handler = bridge.getHandler();
             if (handler != null) {
                 accountHandler = Optional.of((AccountHandler) handler);
+                startSchedule(config.get().refreshInterval);
+                updateStatus(ThingStatus.ONLINE);
+
+                // check Image resources
+                if (!imageStorage.containsKey(EXT_IMG_RES + config.get().vin)) {
+                    String result = callImageApi(IMAGE_EXTERIOR_RESOURCE_URL);
+                    if (!result.equals(EMPTY)) {
+                        imageStorage.put(EXT_IMG_RES + config.get().vin, result);
+                    }
+                }
+                setImageOtions();
             } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "BridgeHanlder missing");
                 logger.warn("Bridge Handler null");
             }
         } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge not set");
             logger.warn("Bridge null");
         }
-        startSchedule(config.get().refreshInterval);
-        updateStatus(ThingStatus.ONLINE);
+    }
+
+    private void setImageOtions() {
+        List<CommandOption> options = new ArrayList<CommandOption>();
+        if (imageStorage.containsKey(EXT_IMG_RES + config.get().vin)) {
+            String resources = imageStorage.get(EXT_IMG_RES + config.get().vin);
+            JSONObject jo = new JSONObject(resources);
+            jo.keySet().forEach(entry -> {
+                CommandOption co = new CommandOption(entry, null);
+                options.add(co);
+                // logger.info("Add command option {}", co.toString());
+            });
+        }
+        mmcop.setCommandOptions(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-view"), options);
     }
 
     private void startSchedule(int interval) {
@@ -152,6 +195,60 @@ public class VehicleHandler extends BaseThingHandler {
         } else {
             logger.warn("AccountHandler not set");
         }
+
+        // test image data
+        // String image64 = imageStorage.get("image:test");
+        // byte[] data = Base64.getDecoder().decode(image64);
+        // if (image64 != null) {
+        // updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-data"), new RawType(data, "image/png"));
+        // } else {
+        // logger.warn("Image not found in storage");
+        // }
+    }
+
+    private String callImageApi(String url) {
+        Request req = hc.newRequest(String.format(url, config.get().vin));
+        req.header("x-api-key", accountHandler.get().getImageApiKey());
+        req.header(HttpHeader.ACCEPT, "application/json");
+        ContentResponse cr;
+        try {
+            cr = req.send();
+            logger.info("Response {} {}", cr.getStatus(), cr.getContentAsString());
+            return cr.getContentAsString();
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Error getting data {}", e.getMessage());
+        }
+        return EMPTY;
+    }
+
+    private String getImage(String key) {
+        String imageId = EMPTY;
+        if (imageStorage.containsKey(EXT_IMG_RES + config.get().vin)) {
+            String resources = imageStorage.get(EXT_IMG_RES + config.get().vin);
+            JSONObject jo = new JSONObject(resources);
+            if (jo.has(key)) {
+                imageId = jo.getString(key);
+            }
+        }
+        if (imageId.equals(EMPTY)) {
+            return imageId;
+        }
+
+        String url = IMAGE_BASE_URL + "/images/" + imageId;
+        logger.info("Image URL {}", url);
+
+        Request req = hc.newRequest(url);
+        req.header("x-api-key", accountHandler.get().getImageApiKey());
+        req.header(HttpHeader.ACCEPT, "*/*");
+        ContentResponse cr;
+        try {
+            cr = req.send();
+            byte[] response = cr.getContent();
+            return Base64.getEncoder().encodeToString(response);
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Error getting data {}", e.getMessage());
+        }
+        return EMPTY;
     }
 
     private void call(String url) {
