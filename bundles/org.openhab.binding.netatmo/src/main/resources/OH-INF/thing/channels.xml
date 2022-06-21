@@ -394,7 +394,6 @@
 				<option value="SOUND_TEST_ERROR">Alarm test failed</option>
 				<option value="DETECTOR_READY">Smoke detector installed</option>
 				<option value="DETECTOR_TAMPERED">Smoke detector tampered</option>
-
 				<option value="DETECTION_CHAMBER_CLEAN">Detection chamber clean</option>
 				<option value="DETECTION_CHAMBER_DIRTY">Detection chamber dusty</option>
 				<option value="BATTERY_LOW">Battery low</option>
