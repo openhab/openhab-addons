@@ -166,10 +166,10 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
     private DateTimeType safeResolvUtcDateTime(String dateUtc) {
         if (!dateUtc.isEmpty() && !NOW.equals(dateUtc)) {
             try {
-                // Supposedly the format is "yyyy-MM-dd hh:mm:ss" from the weather station
+                // Supposedly the format is "yyyy-MM-dd hh:mm:ss" from the device
                 return new DateTimeType(ZonedDateTime.parse(dateUtc.replace(" ", "T") + "Z"));
             } catch (Exception ex) {
-                logger.warn("The weather station is submitting unparsable datetime values: {}", dateUtc);
+                logger.warn("The device is submitting unparsable datetime values: {}", dateUtc);
             }
         }
         return new DateTimeType();
