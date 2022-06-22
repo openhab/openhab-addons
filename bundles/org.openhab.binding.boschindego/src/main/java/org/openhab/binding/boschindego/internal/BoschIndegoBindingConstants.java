@@ -38,6 +38,8 @@ public class BoschIndegoBindingConstants {
     public static final String ERRORCODE = "errorcode";
     public static final String STATECODE = "statecode";
     public static final String READY = "ready";
+    public static final String LAST_CUTTING = "lastCutting";
+    public static final String NEXT_CUTTING = "nextCutting";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_INDEGO);
 }

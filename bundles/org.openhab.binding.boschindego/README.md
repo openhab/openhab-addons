@@ -8,11 +8,12 @@ His [Java Library](https://github.com/zazaz-de/iot-device-bosch-indego-controlle
 
 Currently the binding supports  ***indego***  mowers as a thing type with these configuration parameters:
 
-| Parameter | Description                                                          |
-|-----------|----------------------------------------------------------------------|
-| username  | Username for the Bosch Indego account                                |
-| password  | Password for the Bosch Indego account                                |
-| refresh   | Specifies the refresh interval in seconds (default 180, minimum: 60) |
+| Parameter          | Description                                                     | Default |
+|--------------------|-----------------------------------------------------------------|---------|
+| username           | Username for the Bosch Indego account                           |         |
+| password           | Password for the Bosch Indego account                           |         |
+| refresh            | The number of seconds between refreshing device state           | 180     |
+| cuttingTimeRefresh | The number of minutes between refreshing last/next cutting time | 60      |
 
 ## Channels
 
@@ -24,6 +25,8 @@ Currently the binding supports  ***indego***  mowers as a thing type with these 
 | textualstate | String      | State as a text. (readonly)                                                                                                         |
 | ready        | Number      | Shows if the mower is ready to mow (1=ready, 0=not ready, readonly)                                                                 |
 | mowed        | Dimmer      | Cut grass in percent (readonly)                                                                                                     |
+| lastCutting  | DateTime    | Last cutting time (readonly)                                                                                                        |
+| nextCutting  | DateTime    | Next scheduled cutting time (readonly)                                                                                              |
 
 ### State Codes
 
@@ -76,6 +79,8 @@ Number Indego_StateCode { channel="boschindego:indego:lawnmower:statecode" }
 String Indego_TextualState { channel="boschindego:indego:lawnmower:textualstate" }
 Number Indego_Ready { channel="boschindego:indego:lawnmower:ready" }
 Dimmer Indego_Mowed { channel="boschindego:indego:lawnmower:mowed" }
+DateTime Indego_LastCutting { channel="boschindego:indego:lawnmower:lastCutting" }
+DateTime Indego_NextCutting { channel="boschindego:indego:lawnmower:nextCutting" }
 ```
 
 ### `indego.sitemap` File

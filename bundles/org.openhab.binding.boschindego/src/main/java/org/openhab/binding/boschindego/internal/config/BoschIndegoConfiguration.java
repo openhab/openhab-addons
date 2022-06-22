@@ -25,4 +25,5 @@ public class BoschIndegoConfiguration {
     public @Nullable String username;
     public @Nullable String password;
     public long refresh = 180;
+    public long cuttingTimeRefresh = 60;
 }
