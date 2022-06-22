@@ -390,7 +390,7 @@
 				<option value="MOVEMENT_HUMAN">Human seen</option>
 				<option value="MOVEMENT_VEHICLE">Car seen</option>
 				<option value="MOVEMENT_ANIMAL">Animal seen</option>
-				<option value="SOUND_TEST_OK">Alarm test successfull</option>
+				<option value="SOUND_TEST_OK">Alarm test successful</option>
 				<option value="SOUND_TEST_ERROR">Alarm test failed</option>
 				<option value="DETECTOR_READY">Smoke detector installed</option>
 				<option value="DETECTOR_TAMPERED">Smoke detector tampered</option>
@@ -400,8 +400,8 @@
 				<option value="BATTERY_VERY_LOW">Battery very low</option>
 				<option value="SMOKE_CLEARED">Smoke cleared</option>
 				<option value="SMOKE_DETECTED">Smoke detected</option>
-				<option value="WIFI_STATUS_OK">Wifi status ok</option>
-				<option value="WIFI_STATUS_ERROR">Wifi status error</option>
+				<option value="WIFI_STATUS_OK">Wi-Fi status ok</option>
+				<option value="WIFI_STATUS_ERROR">Wi-Fi status error</option>
 			</options>
 		</state>
 	</channel-type>
