@@ -22,6 +22,12 @@
 			<label>Instance Url</label>
 			<description>Url for Speech-to-Text instance created on IBM Cloud.</description>
 		</parameter>
+		<parameter name="preferMultimediaModel" type="boolean" groupName="stt">
+			<label>Prefer Multimedia Model</label>
+			<description>Prefer multimedia to telephony models. Multimedia models are intended for audio that has a minimum
+				sampling rate of 16 kHz, while telephony models are intended for audio that has a minimum sampling rate of 8 kHz.</description>
+			<default>true</default>
+		</parameter>
 		<parameter name="backgroundAudioSuppression" type="decimal" min="0" max="1" step="0.1" groupName="stt">
 			<label>Background Audio Suppression</label>
 			<description>Use the parameter to suppress side conversations or background noise.</description>
