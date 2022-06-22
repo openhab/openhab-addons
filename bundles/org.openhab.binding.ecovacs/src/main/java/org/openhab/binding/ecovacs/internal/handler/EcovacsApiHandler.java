@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecovacs.internal.api.ClientKeys;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApi;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
-import org.openhab.binding.ecovacs.internal.api.util.MD5Util;
 import org.openhab.binding.ecovacs.internal.config.EcovacsApiConfiguration;
 import org.openhab.binding.ecovacs.internal.discovery.EcovacsDeviceDiscoveryService;
 import org.openhab.core.config.core.Configuration;
@@ -69,6 +68,16 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
         return api;
     }
 
+    @Nullable
+    public EcovacsApi createApiForDevice(String serial) {
+        String country = localeProvider.getLocale().getCountry();
+        EcovacsApi api = this.api;
+        if (api == null || country.isEmpty()) {
+            return null;
+        }
+        return createApi("-" + serial, country);
+    }
+
     @Override
     public void initialize() {
         logger.debug("Initializing Ecovacs account '{}'", getThing().getUID().getId());
@@ -76,7 +85,7 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
         // and keep it in configuration afterwards
         if (!getConfig().keySet().contains("installId")) {
             Configuration newConfig = editConfiguration();
-            newConfig.put("installId", MD5Util.getMD5Hash(UUID.randomUUID().toString()));
+            newConfig.put("installId", UUID.randomUUID().toString());
             updateConfiguration(newConfig);
         }
         initializeApi();
@@ -113,7 +122,6 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
     }
 
     private void initializeApi() {
-        EcovacsApiConfiguration config = getConfigAs(EcovacsApiConfiguration.class);
         String country = localeProvider.getLocale().getCountry();
         if (country.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -121,12 +129,18 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
             return;
         }
 
+        EcovacsApi api = createApi("", country);
+        loginToApi(api);
+    }
+
+    private EcovacsApi createApi(String deviceIdSuffix, String country) {
+        EcovacsApiConfiguration config = getConfigAs(EcovacsApiConfiguration.class);
+        String deviceId = config.installId + deviceIdSuffix;
         org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration apiConfig = new org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration(
-                config.installId, config.email, config.password, config.continent, country, "EN", ClientKeys.CLIENT_KEY,
+                deviceId, config.email, config.password, config.continent, country, "EN", ClientKeys.CLIENT_KEY,
                 ClientKeys.CLIENT_SECRET, ClientKeys.AUTH_CLIENT_KEY, ClientKeys.AUTH_CLIENT_SECRET);
 
-        EcovacsApi api = EcovacsApi.create(httpClientFactory.getCommonHttpClient(), apiConfig);
-        loginToApi(api);
+        return EcovacsApi.create(httpClientFactory.getCommonHttpClient(), apiConfig);
     }
 
     private synchronized void loginToApi(final EcovacsApi api) {

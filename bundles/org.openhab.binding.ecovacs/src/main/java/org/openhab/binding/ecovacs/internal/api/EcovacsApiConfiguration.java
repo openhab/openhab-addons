@@ -13,6 +13,7 @@
 package org.openhab.binding.ecovacs.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.ecovacs.internal.api.util.MD5Util;
 
 /**
  * @author Johannes Ptaszyk - Initial contribution
@@ -32,7 +33,7 @@ public final class EcovacsApiConfiguration {
 
     public EcovacsApiConfiguration(String deviceId, String username, String password, String continent, String country,
             String language, String clientKey, String clientSecret, String authClientKey, String authClientSecret) {
-        this.deviceId = deviceId;
+        this.deviceId = MD5Util.getMD5Hash(deviceId);
         this.username = username;
         this.password = password;
         this.continent = continent;

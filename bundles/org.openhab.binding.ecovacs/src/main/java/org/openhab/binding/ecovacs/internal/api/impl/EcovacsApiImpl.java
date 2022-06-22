@@ -293,7 +293,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
             throw new IllegalStateException("Not logged in");
         }
         return new PortalAuthRequestParameter(configuration.getPortalAUthRequestWith(), loginData.getUserId(),
-                configuration.getRealm(), loginData.getToken(), configuration.getDeviceId().substring(0, 8));
+                configuration.getRealm(), loginData.getToken(), configuration.getResource());
     }
 
     private <T> T handleResponseWrapper(@Nullable ResponseWrapper<T> response) throws EcovacsApiException {

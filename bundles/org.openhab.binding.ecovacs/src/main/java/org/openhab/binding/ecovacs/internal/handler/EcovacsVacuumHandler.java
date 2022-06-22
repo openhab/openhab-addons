@@ -463,20 +463,21 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     }
 
     private void initDevice() {
+        final String serial = getDeviceSerial();
+        if (serial.isEmpty()) {
+            return;
+        }
+
         final EcovacsApiHandler handler = getApiHandler();
-        final EcovacsApi api = handler != null ? handler.getApi() : null;
+        final EcovacsApi api = handler != null ? handler.createApiForDevice(serial) : null;
 
         if (api == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 
-        final String serial = getDeviceSerial();
-        if (serial.isEmpty()) {
-            return;
-        }
-
         try {
+            api.loginAndGetAccessToken();
             Optional<EcovacsDevice> deviceOpt = api.getDevices().stream()
                     .filter(d -> serial.equals(d.getSerialNumber())).findFirst();
             if (deviceOpt.isPresent()) {
