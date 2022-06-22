@@ -24,6 +24,7 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.types.UnDefType;
 
 /**
  * {@link DoorbellCapability} give to handle Welcome Doorbell specifics
@@ -47,8 +48,8 @@ public class DoorbellCapability extends CameraCapability {
 
         handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_TYPE),
                 toStringType(event.getEventType()));
-        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_MESSAGE),
-                toStringType(event.getName()));
+        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_TIME),
+                toDateTimeType(event.getTime()));
         handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_SNAPSHOT),
                 toRawType(event.getSnapshotUrl()));
         handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_SNAPSHOT_URL),
@@ -57,7 +58,9 @@ public class DoorbellCapability extends CameraCapability {
                 toRawType(event.getVignetteUrl()));
         handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_VIGNETTE_URL),
                 toStringType(event.getVignetteUrl()));
-        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_TIME),
-                toDateTimeType(event.getTime()));
+
+        String message = event.getName();
+        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_MESSAGE),
+                message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));
     }
 }
