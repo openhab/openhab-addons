@@ -57,8 +57,9 @@ public class CallbackServer {
 
     public CallbackServer(AccessTokenRefreshListener l, HttpClient hc, OAuthFactory oAuthFactory,
             AccountConfiguration config, String callbackUrl) {
-        oacs = oAuthFactory.createOAuthClientService(Constants.OAUTH_CLIENT_NAME, Constants.MB_TOKEN_URL,
-                Constants.MB_AUTH_URL, config.clientId, config.clientSecret, config.getScope(), false);
+        oacs = oAuthFactory.createOAuthClientService(Constants.OAUTH_CLIENT_NAME + config.callbackPort,
+                Constants.MB_TOKEN_URL, Constants.MB_AUTH_URL, config.clientId, config.clientSecret, config.getScope(),
+                false);
         authMap.put(Integer.valueOf(config.callbackPort), oacs);
         serverMap.put(Integer.valueOf(config.callbackPort), this);
         httpClient = hc;
@@ -171,11 +172,13 @@ public class CallbackServer {
      */
     public static void callback(int port, String code) {
         logger.info("Callback from Servlet {} {}", port, code);
+        logger.info("Server Map {}", serverMap);
         OAuthClientService oacs = authMap.get(port);
         try {
             logger.info("Get token from code {}", code);
             // get CallbackServer instance
             CallbackServer srv = serverMap.get(port);
+            logger.info("Deliver token to {}", srv);
             AccessTokenResponse atr = oacs.getAccessTokenResponseByAuthorizationCode(code, srv.callbackUrl);
             logger.info("Upadte server token {}", atr.getAccessToken());
             srv.token = Optional.of(atr);

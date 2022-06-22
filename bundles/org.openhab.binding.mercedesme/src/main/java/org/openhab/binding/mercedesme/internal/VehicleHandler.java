@@ -42,6 +42,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -73,20 +74,21 @@ public class VehicleHandler extends BaseThingHandler {
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private Optional<AccountHandler> accountHandler = Optional.empty();;
     private Optional<VehicleConfiguration> config = Optional.empty();
-    private final HttpClient hc;
-    private final String uid;
     private Optional<ChannelStateMap> rangeFuel = Optional.empty();
     private Optional<ChannelStateMap> rangeElectric = Optional.empty();
-    private Storage<String> imageStorage;
+    private Optional<Storage<String>> imageStorage = Optional.empty();
+    private final HttpClient hc;
+    private final String uid;
+    private final StorageService storageService;
     private final MercedesMeCommandOptionProvider mmcop;
 
-    public VehicleHandler(Thing thing, HttpClientFactory hcf, String uid, Storage<String> is,
+    public VehicleHandler(Thing thing, HttpClientFactory hcf, String uid, StorageService storageService,
             MercedesMeCommandOptionProvider mmcop) {
         super(thing);
         hc = hcf.getCommonHttpClient();
         this.uid = uid;
         this.mmcop = mmcop;
-        this.imageStorage = is;
+        this.storageService = storageService;
         // https://github.com/jetty-project/jetty-reactive-httpclient/issues/33
         hc.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
     }
@@ -98,40 +100,42 @@ public class VehicleHandler extends BaseThingHandler {
 
         } else {
             if (channelUID.getIdWithoutGroup().equals("image-view")) {
-                if (command.equals("Initialze")) {
+                if (imageStorage.isPresent()) {
+                    if (command.equals("Initialze")) {
+                        getImageResources();
+                    }
+                    String key = command.toFullString() + "_" + config.get().vin;
+                    String encodedImage = EMPTY;
+                    if (imageStorage.get().containsKey(key)) {
+                        encodedImage = imageStorage.get().get(key);
+                        logger.info("Image {} found in storage", key);
+                    } else {
+                        logger.info("Request Image {} ", key);
+                        encodedImage = getImage(command.toFullString());
+                        if (!encodedImage.equals(EMPTY)) {
+                            imageStorage.get().put(key, encodedImage);
+                        }
+                    }
+                    if (!encodedImage.equals(EMPTY)) {
+                        logger.info("Update data channel");
+                        RawType image = new RawType(Base64.getDecoder().decode(encodedImage), MIME_PNG);
+                        updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-data"), image);
+                    } else {
+                        logger.info("Empty image");
+                    }
+                } else if (channelUID.getIdWithoutGroup().equals("clear-cache") && command.equals(OnOffType.ON)) {
+                    List<String> removals = new ArrayList<String>();
+                    imageStorage.get().getKeys().forEach(entry -> {
+                        if (entry.contains("_" + config.get().vin)) {
+                            removals.add(entry);
+                        }
+                    });
+                    removals.forEach(entry -> {
+                        imageStorage.get().remove(entry);
+                    });
+                    updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "clear-cache"), OnOffType.OFF);
                     getImageResources();
                 }
-                String key = command.toFullString() + "_" + config.get().vin;
-                String encodedImage = EMPTY;
-                if (imageStorage.containsKey(key)) {
-                    encodedImage = imageStorage.get(key);
-                    logger.info("Image {} found in storage", key);
-                } else {
-                    logger.info("Request Image {} ", key);
-                    encodedImage = getImage(command.toFullString());
-                    if (!encodedImage.equals(EMPTY)) {
-                        imageStorage.put(key, encodedImage);
-                    }
-                }
-                if (!encodedImage.equals(EMPTY)) {
-                    logger.info("Update data channel");
-                    RawType image = new RawType(Base64.getDecoder().decode(encodedImage), MIME_PNG);
-                    updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-data"), image);
-                } else {
-                    logger.info("Empty image");
-                }
-            } else if (channelUID.getIdWithoutGroup().equals("clear-cache") && command.equals(OnOffType.ON)) {
-                List<String> removals = new ArrayList<String>();
-                imageStorage.getKeys().forEach(entry -> {
-                    if (entry.contains("_" + config.get().vin)) {
-                        removals.add(entry);
-                    }
-                });
-                removals.forEach(entry -> {
-                    imageStorage.remove(entry);
-                });
-                updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "clear-cache"), OnOffType.OFF);
-                getImageResources();
             }
         }
     }
@@ -147,13 +151,15 @@ public class VehicleHandler extends BaseThingHandler {
                 accountHandler = Optional.of((AccountHandler) handler);
                 startSchedule(config.get().refreshInterval);
                 updateStatus(ThingStatus.ONLINE);
-
+                if (!config.get().vin.equals(NOT_SET)) {
+                    imageStorage = Optional.of(storageService.getStorage(BINDING_ID + "_" + config.get().vin));
+                    if (!imageStorage.get().containsKey(EXT_IMG_RES + config.get().vin)) {
+                        getImageResources();
+                    }
+                    setImageOtions();
+                }
                 // check Image resources
                 updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "clear-cache"), OnOffType.OFF);
-                if (!imageStorage.containsKey(EXT_IMG_RES + config.get().vin)) {
-                    getImageResources();
-                }
-                setImageOtions();
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "BridgeHanlder missing");
                 logger.warn("Bridge Handler null");
@@ -243,7 +249,7 @@ public class VehicleHandler extends BaseThingHandler {
         try {
             cr = req.send();
             if (cr.getStatus() == 200) {
-                imageStorage.put(EXT_IMG_RES + config.get().vin, cr.getContentAsString());
+                imageStorage.get().put(EXT_IMG_RES + config.get().vin, cr.getContentAsString());
                 setImageOtions();
             } else {
                 logger.info("Failed to get image resources {} {}", cr.getStatus(), cr.getContentAsString());
@@ -259,8 +265,8 @@ public class VehicleHandler extends BaseThingHandler {
             return EMPTY;
         }
         String imageId = EMPTY;
-        if (imageStorage.containsKey(EXT_IMG_RES + config.get().vin)) {
-            String resources = imageStorage.get(EXT_IMG_RES + config.get().vin);
+        if (imageStorage.get().containsKey(EXT_IMG_RES + config.get().vin)) {
+            String resources = imageStorage.get().get(EXT_IMG_RES + config.get().vin);
             JSONObject jo = new JSONObject(resources);
             if (jo.has(key)) {
                 imageId = jo.getString(key);
@@ -289,8 +295,8 @@ public class VehicleHandler extends BaseThingHandler {
 
     private void setImageOtions() {
         List<CommandOption> options = new ArrayList<CommandOption>();
-        if (imageStorage.containsKey(EXT_IMG_RES + config.get().vin)) {
-            String resources = imageStorage.get(EXT_IMG_RES + config.get().vin);
+        if (imageStorage.get().containsKey(EXT_IMG_RES + config.get().vin)) {
+            String resources = imageStorage.get().get(EXT_IMG_RES + config.get().vin);
             JSONObject jo = new JSONObject(resources);
             jo.keySet().forEach(entry -> {
                 CommandOption co = new CommandOption(entry, null);
@@ -310,7 +316,7 @@ public class VehicleHandler extends BaseThingHandler {
         ContentResponse cr;
         try {
             cr = req.send();
-            logger.info("Response {} {}", cr.getStatus(), cr.getContentAsString());
+            logger.info("{} Response {} {}", this.getThing().getLabel(), cr.getStatus(), cr.getContentAsString());
             if (cr.getStatus() == 200) {
                 JSONArray ja = new JSONArray(cr.getContentAsString());
                 ja.forEach(entry -> {

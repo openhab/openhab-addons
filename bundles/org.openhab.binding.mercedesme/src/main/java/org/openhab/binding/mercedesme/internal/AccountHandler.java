@@ -18,7 +18,6 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mercedesme.internal.server.CallbackServer;
 import org.openhab.binding.mercedesme.internal.server.Utils;
-import org.openhab.binding.mercedesme.internal.utils.TokenWrapper;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -45,7 +44,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private HttpClientFactory httpClientFactory;
     private Optional<CallbackServer> server = Optional.empty();
     private Optional<AccountConfiguration> config = Optional.empty();
-    private TokenWrapper tw = new TokenWrapper();
 
     private final OAuthFactory oAuthFactory;
     private final Storage<String> storage;
@@ -152,21 +150,31 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
      */
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
-        tw.setToken(tokenResponse);
+        logger.info("{} received new Access Token {}", config.get().callbackPort, tokenResponse.toString());
         if (!tokenResponse.isExpired(LocalDateTime.now(), 10)) {
             updateStatus(ThingStatus.ONLINE);
         }
         if (tokenResponse.getRefreshToken() != null) {
+            logger.info("{} store token in {}", config.get().callbackPort, tokenStorageKey);
             String tokenSerial = Utils.toString(tokenResponse);
             storage.put(tokenStorageKey, tokenSerial);
         }
     }
 
     public String getToken() {
-        return server.get().getToken();
+        if (server.isEmpty()) {
+            return Constants.EMPTY;
+        } else {
+            return server.get().getToken();
+        }
     }
 
     public String getImageApiKey() {
         return config.get().imageApiKey;
+    }
+
+    @Override
+    public String toString() {
+        return Integer.toString(config.get().callbackPort);
     }
 }

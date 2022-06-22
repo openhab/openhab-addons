@@ -15,7 +15,6 @@ package org.openhab.binding.mercedesme.internal;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingTypeUID;
@@ -39,49 +38,49 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_HYBRID = new ThingTypeUID(BINDING_ID, HYBRID);
     public static final ThingTypeUID THING_TYPE_BEV = new ThingTypeUID(BINDING_ID, BEV);
 
-    public static String GROUP_RANGE = "range";
-    public static String GROUP_DOORS = "doors";
-    public static String GROUP_WINDOWS = "windows";
-    public static String GROUP_LOCK = "lock";
-    public static String GROUP_LIGHTS = "lights";
-    public static String GROUP_LOCATION = "location";
-    public static String GROUP_IMAGE = "image";
+    public static final String GROUP_RANGE = "range";
+    public static final String GROUP_DOORS = "doors";
+    public static final String GROUP_WINDOWS = "windows";
+    public static final String GROUP_LOCK = "lock";
+    public static final String GROUP_LIGHTS = "lights";
+    public static final String GROUP_LOCATION = "location";
+    public static final String GROUP_IMAGE = "image";
 
-    public static String MB_AUTH_URL = "https://id.mercedes-benz.com/as/authorization.oauth2";
-    public static String MB_TOKEN_URL = "https://id.mercedes-benz.com/as/token.oauth2";
-    public static String CALLBACK_ENDPOINT = "/mb-callback";
-    public static String OAUTH_CLIENT_NAME = "#byocar";
+    public static final String MB_AUTH_URL = "https://id.mercedes-benz.com/as/authorization.oauth2";
+    public static final String MB_TOKEN_URL = "https://id.mercedes-benz.com/as/token.oauth2";
+    public static final String CALLBACK_ENDPOINT = "/mb-callback";
+    public static final String OAUTH_CLIENT_NAME = "#byocar";
 
     // https://developer.mercedes-benz.com/products/electric_vehicle_status/docs
-    public static String SCOPE_EV = "mb:vehicle:mbdata:evstatus";
+    public static final String SCOPE_EV = "mb:vehicle:mbdata:evstatus";
     // https://developer.mercedes-benz.com/products/fuel_status/docs
-    public static String SCOPE_FUEL = "mb:vehicle:mbdata:fuelstatus";
+    public static final String SCOPE_FUEL = "mb:vehicle:mbdata:fuelstatus";
     // https://developer.mercedes-benz.com/products/pay_as_you_drive_insurance/docs
-    public static String SCOPE_ODO = "mb:vehicle:mbdata:payasyoudrive";
+    public static final String SCOPE_ODO = "mb:vehicle:mbdata:payasyoudrive";
     // https://developer.mercedes-benz.com/products/vehicle_lock_status/docs
-    public static String SCOPE_LOCK = "mb:vehicle:mbdata:vehiclelock";
+    public static final String SCOPE_LOCK = "mb:vehicle:mbdata:vehiclelock";
     // https://developer.mercedes-benz.com/products/vehicle_status/docs
-    public static String SCOPE_STATUS = "mb:vehicle:mbdata:vehiclestatus";
-    public static String SCOPE_OFFLINE = "offline_access";
+    public static final String SCOPE_STATUS = "mb:vehicle:mbdata:vehiclestatus";
+    public static final String SCOPE_OFFLINE = "offline_access";
 
-    public static String BASE_URL = "https://api.mercedes-benz.com/vehicledata/v2";
-    public static String ODO_URL = BASE_URL + "/vehicles/%s/containers/payasyoudrive";
-    public static String STATUS_URL = BASE_URL + "/vehicles/%s/containers/vehiclestatus";
-    public static String LOCK_URL = BASE_URL + "/vehicles/%s/containers/vehiclelockstatus";
-    public static String FUEL_URL = BASE_URL + "/vehicles/%s/containers/fuelstatus";
-    public static String EV_URL = BASE_URL + "/vehicles/%s/containers/electricvehicle";
+    public static final String BASE_URL = "https://api.mercedes-benz.com/vehicledata/v2";
+    public static final String ODO_URL = BASE_URL + "/vehicles/%s/containers/payasyoudrive";
+    public static final String STATUS_URL = BASE_URL + "/vehicles/%s/containers/vehiclestatus";
+    public static final String LOCK_URL = BASE_URL + "/vehicles/%s/containers/vehiclelockstatus";
+    public static final String FUEL_URL = BASE_URL + "/vehicles/%s/containers/fuelstatus";
+    public static final String EV_URL = BASE_URL + "/vehicles/%s/containers/electricvehicle";
 
     // https://developer.mercedes-benz.com/content-page/api_migration_guide
-    public static String IMAGE_BASE_URL = "https://api.mercedes-benz.com/vehicle_images/v2";
-    public static String IMAGE_EXTERIOR_RESOURCE_URL = IMAGE_BASE_URL + "/vehicles/%s";
+    public static final String IMAGE_BASE_URL = "https://api.mercedes-benz.com/vehicle_images/v2";
+    public static final String IMAGE_EXTERIOR_RESOURCE_URL = IMAGE_BASE_URL + "/vehicles/%s";
 
-    public static String SPACE = " ";
+    public static final String SPACE = " ";
     public static final String EMPTY = "";
 
-    public static String HTTP = "http://";
+    public static final String HTTP = "http://";
     public static final String LOOPBACK_ADDRESS = "lo";
     public static final String COLON = ":";
-    public static final @NonNull String NOT_SET = "not set";
+    public static final String NOT_SET = "not set";
 
     public static final String CODE = "code";
 

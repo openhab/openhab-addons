@@ -41,7 +41,7 @@ Perform the following steps to obtain the configuration data and perfrom the aut
     - Pay as you drive insurance
     - Electric Vehcile Status
     - Fuel Status
-8. Select also to _Vehicle images_. Select the _Basic Trial_ version. The images will be stored so the API is used just a few times.
+8. Subscribe also to _Vehicle images_. Select the _Basic Trial_ version. The images will be stored so the API is used just a few times.
 9. Press _Subscribe_ button
 10. Generate the project credentials - you need them to configuree your Bridge from 1.
 11. Get the `Client ID` and `Client Secret` and put them into the Bridge configuration - save
