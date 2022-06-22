@@ -184,13 +184,14 @@ public class HomekitCharacteristicFactory {
     public static Characteristic createCharacteristic(HomekitTaggedItem item, HomekitAccessoryUpdater updater)
             throws HomekitException {
         final @Nullable HomekitCharacteristicType type = item.getCharacteristicType();
-        logger.trace("CreateCharacteristic, type {} item {}", type, item);
+        logger.trace("Create characteristic {}", item);
         if (optional.containsKey(type)) {
             return optional.get(type).apply(item, updater);
         }
         logger.warn("Unsupported optional characteristic. Accessory type {}, characteristic type {}",
-                item.getAccessoryType(), type);
-        throw new HomekitException("Unsupported optional characteristic. Characteristic type \"" + type + "\"");
+                item.getAccessoryType(), type.getTag());
+        throw new HomekitException(
+                "Unsupported optional characteristic. Characteristic type \"" + type.getTag() + "\"");
     }
 
     // METHODS TO CREATE SINGLE CHARACTERISTIC FROM OH ITEM
