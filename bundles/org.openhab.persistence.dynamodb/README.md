@@ -48,7 +48,7 @@ Please also note possible [Free Tier](https://aws.amazon.com/free/) benefits.
 **Note:** The below policy assumes that `eu-west-1` region is used, the new table schema is used, and the default table name of `openhab` is used.
 Modify the policy accordingly if needed.
 
-**Note 2:** As a more simple alternative, one can use pre-existing policy `AmazonDynamoDBFullAccess`, although the policy grants the openHAB user wider-than-necessary permissions.
+**Note2:** The Number in arn:aws:dynamodb:eu-west-1:084669220525:table/openhab must be replaced by the unique ID of your own table to grant access for your new db user. To get this ID there are two Options:The first one is that you create the table manually in the AWS Console. Once the table is created you could click on the new table and could see your unique Amazon Resource Name starting with arn: which you must replace in the JSON script.  The other is that you give your new database user the existing IAM policy `AmazonDynamoDBFullAccess` to grant him the right to create the new table. After that you could revoke the `AmazonDynamoDBFullAccess` from the openhab user for security reasons.
 
 ```json
 {
