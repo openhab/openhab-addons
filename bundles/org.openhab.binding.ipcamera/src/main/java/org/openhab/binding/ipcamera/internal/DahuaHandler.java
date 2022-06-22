@@ -252,11 +252,12 @@ public class DahuaHandler extends ChannelDuplexHandler {
             String content = msg.toString();
             ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
             String[] events = boundaryPattern.split(content);
-            if (events.length > 0) {
-                processSettings(events[0]);
+            if (events.length > 1) {
                 for (int i = 1; i < events.length; i++) {
                     processEvent(events[i]);
                 }
+            } else {
+                processSettings(content);
             }
         } finally {
             ReferenceCountUtil.release(msg);
