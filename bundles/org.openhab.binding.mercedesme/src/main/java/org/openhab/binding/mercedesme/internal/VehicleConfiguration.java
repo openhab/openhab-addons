@@ -24,4 +24,10 @@ public class VehicleConfiguration {
 
     public String vin = Constants.NOT_SET;
     public int refreshInterval = 5;
+
+    public boolean background = false;
+    public boolean night = false;
+    public boolean cropped = false;
+    public boolean roofOpen = false;
+    public String format = "webp";
 }

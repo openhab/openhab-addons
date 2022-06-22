@@ -107,28 +107,22 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private void handleConfig() {
         // Handle not initialized Thing with "best guess values"
         config = Optional.of(getConfigAs(AccountConfiguration.class));
-        int port = config.get().callbackPort;
-        String ip = config.get().callbackIP;
-        String scope = config.get().scope;
-
         logger.info("Config delivered {}", config.get().toString());
         Configuration updateConfig = super.editConfiguration();
         logger.info("Config to edit {}", updateConfig);
-        if (port == -1) {
-            port = Utils.getFreePort();
-            updateConfig.put("callbackPort", port);
+        if (!updateConfig.containsKey("callbackPort")) {
+            updateConfig.put("callbackPort", Utils.getFreePort());
         } else {
-            Utils.addPort(port);
+            Utils.addPort(config.get().callbackPort);
         }
-        if (Constants.NOT_SET.equals(ip)) {
-            ip = Utils.getCallbackIP();
-            updateConfig.put("callbackIP", ip);
+        if (!updateConfig.containsKey("callbackIP")) {
+            updateConfig.put("callbackIP", Utils.getCallbackIP());
         }
         // https://developer.mercedes-benz.com/products/electric_vehicle_status/docs#_required_scopes
-        if (Constants.NOT_SET.equals(scope)) {
-            scope = Constants.SCOPE_EV + Constants.SPACE + Constants.SCOPE_FUEL + Constants.SPACE + Constants.SCOPE_LOCK
-                    + Constants.SPACE + Constants.SCOPE_ODO + Constants.SPACE + Constants.SCOPE_OFFLINE
-                    + Constants.SPACE + Constants.SCOPE_STATUS;
+        if (!updateConfig.containsKey("scope")) {
+            String scope = Constants.SCOPE_EV + Constants.SPACE + Constants.SCOPE_FUEL + Constants.SPACE
+                    + Constants.SCOPE_LOCK + Constants.SPACE + Constants.SCOPE_ODO + Constants.SPACE
+                    + Constants.SCOPE_OFFLINE + Constants.SPACE + Constants.SCOPE_STATUS;
             updateConfig.put("scope", scope);
         }
         super.updateConfiguration(updateConfig);

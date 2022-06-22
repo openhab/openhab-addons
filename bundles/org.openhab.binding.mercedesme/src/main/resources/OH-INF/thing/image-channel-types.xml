@@ -12,8 +12,8 @@
 		<item-type>String</item-type>
 		<label>Image Viewport</label>
 	</channel-type>
-    <channel-type id="clear-cache-channel">
-        <item-type>Switch</item-type>
-        <label>Remove Stored Images</label>
-    </channel-type>
+	<channel-type id="clear-cache-channel">
+		<item-type>Switch</item-type>
+		<label>Remove All Stored Images</label>
+	</channel-type>
 </thing:thing-descriptions>

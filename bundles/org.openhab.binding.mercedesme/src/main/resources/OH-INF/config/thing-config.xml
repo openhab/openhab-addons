@@ -14,33 +14,38 @@
 			<default>5</default>
 		</parameter>
 		<!-- https://developer.mercedes-benz.com/products/vehicle_images/docs#_default_image_settings -->
-		<parameter name="imagebackground" type="boolean">
+		<parameter name="background" type="boolean">
 			<label>Background Image</label>
-			<description>Vehicle image provided with or without background</description>
+			<description>Vehicle images provided with or without background</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="night" type="boolean">
-			<label>Background Image</label>
-			<description>Vehicle image provided with or without background</description>
+			<label>Night Image</label>
+			<description>Vehicle images in night conditions</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="cropped" type="boolean">
-			<label>Background Image</label>
-			<description>Vehicle image provided with or without background</description>
+			<label>Cropped Image</label>
+			<description>Vehicle images in 4:3 instead of 16:9</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="roofOpen" type="boolean">
+			<label>Cabriolet Open Roof</label>
+			<description>Vehicle images with open roof (only Cabriolet)</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="format" type="text">
-			<label>Background Image</label>
-			<description>Vehicle image provided with or without background</description>
+			<label>Image Format</label>
+			<description>Preferred Image Format</description>
 			<default>webp</default>
 			<advanced>true</advanced>
 			<options>
 				<option value="webp">webp</option>
 				<option value="png">png</option>
-				<option value="jpg">jpg</option>
 			</options>
 		</parameter>
 	</config-description>

@@ -8,7 +8,7 @@
 		<channels>
 			<channel id="image-data" typeId="image-data-channel"/>
 			<channel id="image-view" typeId="image-view-channel"/>
-            <channel id="clear-cache" typeId="clear-cache-channel"/>
+			<channel id="clear-cache" typeId="clear-cache-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

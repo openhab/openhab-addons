@@ -14,6 +14,7 @@ package org.openhab.binding.mercedesme.internal;
 
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -26,14 +27,18 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.util.MultiMap;
+import org.eclipse.jetty.util.UrlEncoded;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.storage.Storage;
@@ -46,6 +51,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -61,6 +67,7 @@ import org.slf4j.LoggerFactory;
 public class VehicleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
+    public static final String CONTENT_TYPE_URL_ENCODED = "application/x-www-form-urlencoded";
     private static final String EXT_IMG_RES = "ExtImageResources_";
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
@@ -80,28 +87,51 @@ public class VehicleHandler extends BaseThingHandler {
         this.uid = uid;
         this.mmcop = mmcop;
         imageStorage = stringStorage;
+        // https://github.com/jetty-project/jetty-reactive-httpclient/issues/33
+        hc.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.info("Received {} {} {}", channelUID.getAsString(), command.toFullString(), channelUID.getId());
-        if (channelUID.getIdWithoutGroup().equals("image-view")) {
-            String key = command.toFullString() + "_" + config.get().vin;
-            String encodedImage = EMPTY;
-            if (imageStorage.containsKey(key)) {
-                encodedImage = imageStorage.get(key);
-                logger.info("Image {} found in storage", key);
-            } else {
-                logger.info("Request Image {} ", key);
-                encodedImage = getImage(command.toFullString());
-                imageStorage.put(key, encodedImage);
-            }
-            if (!encodedImage.equals(EMPTY)) {
-                logger.info("Update data channel");
-                RawType image = new RawType(Base64.getDecoder().decode(encodedImage), MIME_PNG);
-                updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-data"), image);
-            } else {
-                logger.info("Empty image");
+        if (command instanceof RefreshType) {
+
+        } else {
+            if (channelUID.getIdWithoutGroup().equals("image-view")) {
+                if (command.equals("Initialze")) {
+                    getImageResources();
+                }
+                String key = command.toFullString() + "_" + config.get().vin;
+                String encodedImage = EMPTY;
+                if (imageStorage.containsKey(key)) {
+                    encodedImage = imageStorage.get(key);
+                    logger.info("Image {} found in storage", key);
+                } else {
+                    logger.info("Request Image {} ", key);
+                    encodedImage = getImage(command.toFullString());
+                    if (!encodedImage.equals(EMPTY)) {
+                        imageStorage.put(key, encodedImage);
+                    }
+                }
+                if (!encodedImage.equals(EMPTY)) {
+                    logger.info("Update data channel");
+                    RawType image = new RawType(Base64.getDecoder().decode(encodedImage), MIME_PNG);
+                    updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-data"), image);
+                } else {
+                    logger.info("Empty image");
+                }
+            } else if (channelUID.getIdWithoutGroup().equals("clear-cache") && command.equals(OnOffType.ON)) {
+                List<String> removals = new ArrayList<String>();
+                imageStorage.getKeys().forEach(entry -> {
+                    if (entry.contains("_" + config.get().vin)) {
+                        removals.add(entry);
+                    }
+                });
+                removals.forEach(entry -> {
+                    imageStorage.remove(entry);
+                });
+                updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "clear-cache"), OnOffType.OFF);
+                getImageResources();
             }
         }
     }
@@ -119,11 +149,9 @@ public class VehicleHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
 
                 // check Image resources
+                updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "clear-cache"), OnOffType.OFF);
                 if (!imageStorage.containsKey(EXT_IMG_RES + config.get().vin)) {
-                    String result = callImageApi(IMAGE_EXTERIOR_RESOURCE_URL);
-                    if (!result.equals(EMPTY)) {
-                        imageStorage.put(EXT_IMG_RES + config.get().vin, result);
-                    }
+                    getImageResources();
                 }
                 setImageOtions();
             } else {
@@ -134,20 +162,6 @@ public class VehicleHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge not set");
             logger.warn("Bridge null");
         }
-    }
-
-    private void setImageOtions() {
-        List<CommandOption> options = new ArrayList<CommandOption>();
-        if (imageStorage.containsKey(EXT_IMG_RES + config.get().vin)) {
-            String resources = imageStorage.get(EXT_IMG_RES + config.get().vin);
-            JSONObject jo = new JSONObject(resources);
-            jo.keySet().forEach(entry -> {
-                CommandOption co = new CommandOption(entry, null);
-                options.add(co);
-                // logger.info("Add command option {}", co.toString());
-            });
-        }
-        mmcop.setCommandOptions(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-view"), options);
     }
 
     private void startSchedule(int interval) {
@@ -206,22 +220,44 @@ public class VehicleHandler extends BaseThingHandler {
         // }
     }
 
-    private String callImageApi(String url) {
-        Request req = hc.newRequest(String.format(url, config.get().vin));
+    private void getImageResources() {
+        if (accountHandler.get().getImageApiKey().equals(NOT_SET)) {
+            logger.info("Image API key not set");
+            return;
+        }
+        // add config parameters
+        MultiMap<String> parameterMap = new MultiMap<String>();
+        parameterMap.add("background", Boolean.toString(config.get().background));
+        parameterMap.add("night", Boolean.toString(config.get().night));
+        parameterMap.add("cropped", Boolean.toString(config.get().cropped));
+        parameterMap.add("roofOpen", Boolean.toString(config.get().roofOpen));
+        parameterMap.add("fileFormat", config.get().format);
+        String params = UrlEncoded.encode(parameterMap, StandardCharsets.UTF_8, false);
+        String url = String.format(IMAGE_EXTERIOR_RESOURCE_URL, config.get().vin) + "?" + params;
+        logger.info("Get Image resources {} {} ", accountHandler.get().getImageApiKey(), url);
+        Request req = hc.newRequest(url);
         req.header("x-api-key", accountHandler.get().getImageApiKey());
         req.header(HttpHeader.ACCEPT, "application/json");
+        // req.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, params, StandardCharsets.UTF_8));
         ContentResponse cr;
         try {
             cr = req.send();
-            logger.info("Response {} {}", cr.getStatus(), cr.getContentAsString());
-            return cr.getContentAsString();
+            if (cr.getStatus() == 200) {
+                imageStorage.put(EXT_IMG_RES + config.get().vin, cr.getContentAsString());
+                setImageOtions();
+            } else {
+                logger.info("Failed to get image resources {} {}", cr.getStatus(), cr.getContentAsString());
+            }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Error getting data {}", e.getMessage());
         }
-        return EMPTY;
     }
 
     private String getImage(String key) {
+        if (accountHandler.get().getImageApiKey().equals(NOT_SET)) {
+            logger.info("Image API key not set");
+            return EMPTY;
+        }
         String imageId = EMPTY;
         if (imageStorage.containsKey(EXT_IMG_RES + config.get().vin)) {
             String resources = imageStorage.get(EXT_IMG_RES + config.get().vin);
@@ -229,14 +265,14 @@ public class VehicleHandler extends BaseThingHandler {
             if (jo.has(key)) {
                 imageId = jo.getString(key);
             }
-        }
-        if (imageId.equals(EMPTY)) {
-            return imageId;
+        } else {
+            logger.info("No Image resource file found - send request");
+            getImageResources();
+            return EMPTY;
         }
 
         String url = IMAGE_BASE_URL + "/images/" + imageId;
         logger.info("Image URL {}", url);
-
         Request req = hc.newRequest(url);
         req.header("x-api-key", accountHandler.get().getImageApiKey());
         req.header(HttpHeader.ACCEPT, "*/*");
@@ -249,6 +285,23 @@ public class VehicleHandler extends BaseThingHandler {
             logger.warn("Error getting data {}", e.getMessage());
         }
         return EMPTY;
+    }
+
+    private void setImageOtions() {
+        List<CommandOption> options = new ArrayList<CommandOption>();
+        if (imageStorage.containsKey(EXT_IMG_RES + config.get().vin)) {
+            String resources = imageStorage.get(EXT_IMG_RES + config.get().vin);
+            JSONObject jo = new JSONObject(resources);
+            jo.keySet().forEach(entry -> {
+                CommandOption co = new CommandOption(entry, null);
+                options.add(co);
+                // logger.info("Add command option {}", co.toString());
+            });
+        }
+        if (options.size() == 0) {
+            options.add(new CommandOption("Initilaze", null));
+        }
+        mmcop.setCommandOptions(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-view"), options);
     }
 
     private void call(String url) {

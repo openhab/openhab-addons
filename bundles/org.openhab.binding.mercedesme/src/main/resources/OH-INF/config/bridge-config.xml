@@ -10,8 +10,8 @@
 			<description>>Mercedes Benz Developer Client ID</description>
 		</parameter>
 		<parameter name="clientSecret" type="text" required="true">
-			<label>MB Developer Client ID</label>
-			<description>>Mercedes Benz Developer Client ID</description>
+			<label>MB Developer Client Secret</label>
+			<description>>Mercedes Benz Developer Client Secret</description>
 		</parameter>
 		<parameter name="imageApiKey" type="text">
 			<label>MB Developer Image API Key</label>

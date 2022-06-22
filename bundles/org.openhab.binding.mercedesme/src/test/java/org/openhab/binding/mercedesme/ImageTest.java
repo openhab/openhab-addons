@@ -16,6 +16,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Base64;
+import java.util.Optional;
+
+import org.eclipse.jetty.util.MultiMap;
+import org.eclipse.jetty.util.UrlEncoded;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.mercedesme.internal.VehicleConfiguration;
 
 /**
  * The {@link ImageTest} Test Image conversions
@@ -37,5 +43,18 @@ class ImageTest {
             Files.write(outputFile.toPath(), base64Decoded);
         } catch (IOException e) {
         }
+    }
+
+    @Test
+    public void testConfig() {
+        Optional<VehicleConfiguration> config = Optional.of(new VehicleConfiguration());
+        MultiMap<String> parameterMap = new MultiMap<String>();
+        parameterMap.add("background", Boolean.toString(config.get().roofOpen));
+        parameterMap.add("night", Boolean.toString(config.get().roofOpen));
+        parameterMap.add("cropped", Boolean.toString(config.get().roofOpen));
+        parameterMap.add("roofOpen", Boolean.toString(config.get().roofOpen));
+        parameterMap.add("format", config.get().format);
+        String params = UrlEncoded.encode(parameterMap, null, false);
+        System.out.println(params);
     }
 }
