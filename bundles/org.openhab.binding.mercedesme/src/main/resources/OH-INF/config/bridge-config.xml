@@ -38,7 +38,7 @@
 			<default>true</default>
 		</parameter>
 		<parameter name="evScope" type="boolean">
-			<label>Electric Status</label>
+			<label>Electric Vehicle Status</label>
 			<description>Electric charge and range</description>
 			<default>true</default>
 		</parameter>
@@ -50,11 +50,6 @@
 		<parameter name="callbackPort" type="integer">
 			<label>Callback Port Number</label>
 			<description>Port Number for openHAB callback URL</description>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="scope" type="text">
-			<label>Authorization Scope</label>
-			<description>Scope definition for authorization</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

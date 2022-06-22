@@ -19,47 +19,52 @@ There's no automatic discovery.
 Bridge needs configuration in order to connect properly to your Mercedes Me Account. 
 Perform the following steps to obtain the configuration data and perfrom the authorization flow.
 
-1. Create Bridge account in openHAB
-    - if not given in textual configuration `callbackIP`, `callbackPort` and `scope` are autodetected
-    - leave `clientId` and `clientSecret` empty 
-    - continue with a new browser tab
-2. Go to [Mercedes Me Login](https://id.mercedes-benz.com/ciam/auth/login) page and login woth your credentials
-3. Go to [Mercedes Developer Page](https://developer.mercedes-benz.com/) Login and you'll have access to the API.
-4. Create a project in the [console tab](https://developer.mercedes-benz.com/console)
+1. Go to [Mercedes Developer Page](https://developer.mercedes-benz.com/). Login with your MercedesMe credentials.
+2. Create a project in the [console tab](https://developer.mercedes-benz.com/console)
     - _Project Name:_  unique name e.g. **openHAB MercedesMe binding** plus **Your bridge ID**
     - _Purpose URL:_  use link towards this binding description 
     - _Business Purpose:_  e.g. **Private usage in openHAB Smarthome system**
-5. After project is created subscribe [to these Mercedes Benz APIs](https://developer.mercedes-benz.com/products?vt=cars&vt=vans&vt=smart&p=BYOCAR) with _Add Products_ button 
-6. For all Products perform the same steps
+3. After project is created subscribe [to these Mercedes Benz APIs](https://developer.mercedes-benz.com/products?vt=cars&vt=vans&vt=smart&p=BYOCAR) with _Add Products_ button 
+4. For all Products perform the same steps
     - Select product
     - Choose _Get For Free_
     - Choose _BYOCAR_ (Build Your Own Car)
     - Button _Confirm_
-7. Select the following products
+5. Select the following products
     - Vehicle Status
     - Vehicle Lock Status
     - Pay as you drive insurance
     - Electric Vehcile Status
     - Fuel Status
-8. Subscribe also to _Vehicle images_. Select the _Basic Trial_ version. The images will be stored so the API is used just a few times.
-9. Press _Subscribe_ button
-10. Generate the project credentials - you need them to configuree your Bridge from 1.
-11. Get the `Client ID` and `Client Secret` and put them into the Bridge configuration - save
-12. The account bridge has one property `callbackUrl`. Copy it and paste it in a new browser tab
-13. A simple HTML page is shown including a link towards the Authorization flow - don't click yet
-14. The copied URL needs to be added in your Mercedes project credentials from 10.
-15. Now click onto the link from 13. You'll be asked one time if you grant access towards the API. Click ok and authorization is done!
+6. Optional: Subscribe also to _Vehicle images_. Select the _Basic Trial_ version. The images will be stored so the API is used just a few times.
+7. Press _Subscribe_ button. Your project should have [these product subscriptions](#mb-product-subscriptions)
+8. Generate the project credentials
+9. Open in new browser tab your openHAB page. Add a new Thing _MercedesMe Account_
+10. Copy paste _Client ID_ , _Client Secret_ and _API Key_ from the Mercedes tab into the openHAB config
+11. Check if the registered Mercedes products _excluding Vehicle Images_ are matching exactly with the openHab config switches
+12. Create Thing!
+13. The fresh created [account has one property](#openhab-configuration) `callbackUrl`. Copy it and paste it in a new browser tab
+14. A simple HTML page is shown including a link towards the Authorization flow - **don't click yet**. If page isn't shown please adapt IP and port in openHAB configuration with Advanced Options activated
+15. The copied URL needs to be added in your [Mercedes project credentials](#mb-credentials) from 8
+16. Now click onto the link from 12. You'll be asked one time if you [grant access](mb-access-request) towards the API. Click ok and authorization is done!
 
-Your final setup shall look like this
+Some supporting screenshots for the setup
 
-Mercedes Benz Developer setup
+### MB Credentials
 
 <img src="./doc/MBDeveloper-Credentials.png" width="600" height="350"/>
+
+### MB Product Subscriptions
+
 <img src="./doc/MBDeveloper-Subscriptions.png" width="600" height="350"/>
 
-openHAB Bridge Configuration
+### openHAB Configuration
 
-<img src="./doc/MercedesMeConfiguration.png" width="500" height="350"/>
+<img src="./doc/MercedesMeConfiguration.png" width="400" height="500"/>
+
+### MB Access Request
+
+<img src="./doc/MBAccessRequest.png" width="500" height="350"/>
 
 
 | Name            | Type    | Description                           | Default    | Required | Advanced |
@@ -67,15 +72,20 @@ openHAB Bridge Configuration
 | clientId        | text    | Mercedes Benz Developer Client ID     | N/A        | yes      | no       |
 | clientSecret    | text    | Mercedes Benz Developer Client Secret | N/A        | yes      | no       |
 | imageApiKey     | text    | Mercedes Benz Developer Image API Key | N/A        | no       | no       |
-| callbackIp      | text    | Password to access the device         | autodetect | no       | yes      |
-| callbackPort    | integer | Interval the device is polled in sec. | autodetect | no       | yes      |
-| scope           | text    | Password to access the device         | autodetect | no       | yes      |
+| odoScope        | boolean | PayAsYourDrive Insurance              | true       | yes      | no       |
+| vehicleScope    | boolean | Vehicle Status                        | true       | yes      | no       |
+| lockScope       | boolean | Lock status of doors and trunk        | true       | yes      | no       |
+| fuelScope       | boolean | Fuel Status                           | true       | yes      | no       |
+| evScope         | boolean | Electric Vehicle Status               | true       | yes      | no       |
+| callbackIp      | text    | IP address of your openHAB server     | autodetect | no       | yes      |
+| callbackPort    | integer | **Unique** port number                | autodetect | no       | yes      |
+
+The `callbackPort` needs to be unique for all created MercedesMe account things. Otherwise token exchange will be corrupted!
+
 
 ### Thing Configuration
 
 Configuration for all vehicles are the same.
-
-**Please pay some attention om vehcile images.**
 
 For vehicle images Mercedes Benz Developer offers only a trial version with limited calls.
 Check in **beforehand** if your vehicle has some restrictions or even if it's suppoerted at all.
@@ -255,8 +265,8 @@ If you're not satisfied e.g. you want a background you need to
 
 ### Receive no data
 
-Especially after setting up a new Mercedes Benz Developer Project you'll receive no valid data.
-It seems that the API isn't _filled_ yet with new data. 
+Especially after setting up a new Mercedes Benz Developer Project you'll receive no data.
+It seems that the API isn't _filled_ yet. 
 
 **Pre-Condition**
 - The MercedesMe bridge is online = authorization is fine
@@ -264,7 +274,7 @@ It seems that the API isn't _filled_ yet with new data.
 
 **Solution**
 - Reduce `refreshInterval` to 1 minute
-- Go to your vehcile, open doors and windows, turn on lights ... 
+- Go to your vehcile, open doors and windows, turn on lights, drive a bit  ... 
 - wait until values are providing the right states
 
 
