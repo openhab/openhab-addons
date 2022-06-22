@@ -17,13 +17,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -62,7 +58,7 @@ public class CallbackServer {
     public CallbackServer(AccessTokenRefreshListener l, HttpClient hc, OAuthFactory oAuthFactory,
             AccountConfiguration config, String callbackUrl) {
         oacs = oAuthFactory.createOAuthClientService(Constants.OAUTH_CLIENT_NAME, Constants.MB_TOKEN_URL,
-                Constants.MB_AUTH_URL, config.clientId, config.clientSecret, config.scope, false);
+                Constants.MB_AUTH_URL, config.clientId, config.clientSecret, config.getScope(), false);
         authMap.put(Integer.valueOf(config.callbackPort), oacs);
         serverMap.put(Integer.valueOf(config.callbackPort), this);
         httpClient = hc;
@@ -114,31 +110,31 @@ public class CallbackServer {
 
     public String getToken() {
         if (token.isEmpty()) {
-            logger.info("Token empty - start full authorization");
-            try {
-                String url = oacs.getAuthorizationUrl(callbackUrl, null, null);
-                logger.info("Token auth url {}", url);
+            logger.warn("Token empty - Manual Authorization needed at {}", callbackUrl);
+            // try {
+            // String url = oacs.getAuthorizationUrl(callbackUrl, null, null);
+            // logger.info("Token auth url {}", url);
+            //
+            // Request r = httpClient.newRequest(url);
+            // r.followRedirects(true);
+            // // ContentResponse cr = httpClient.GET(url);
+            // ContentResponse cr = r.send();
+            // logger.info("Auth Call Response {} {}", cr.getStatus(), cr.getContentAsString());
 
-                Request r = httpClient.newRequest(url);
-                r.followRedirects(true);
-                // ContentResponse cr = httpClient.GET(url);
-                ContentResponse cr = r.send();
-                logger.info("Auth Call Response {} {}", cr.getStatus(), cr.getContentAsString());
-
-                // StringBuilder result = new StringBuilder();
-                // URL curl = new URL(url);
-                // HttpURLConnection con = (HttpURLConnection) curl.openConnection();
-                // con.setRequestMethod("GET");
-                //
-                // try (BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-                // for (String line; (line = reader.readLine()) != null;) {
-                // result.append(line);
-                // }
-                // }
-                // logger.info("Token auth response {}", result);
-            } catch (OAuthException | InterruptedException | TimeoutException | ExecutionException e) {
-                logger.error("Error during authorization {}", e.getMessage());
-            }
+            // StringBuilder result = new StringBuilder();
+            // URL curl = new URL(url);
+            // HttpURLConnection con = (HttpURLConnection) curl.openConnection();
+            // con.setRequestMethod("GET");
+            //
+            // try (BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+            // for (String line; (line = reader.readLine()) != null;) {
+            // result.append(line);
+            // }
+            // }
+            // logger.info("Token auth response {}", result);
+            // } catch (OAuthException | InterruptedException | TimeoutException | ExecutionException e) {
+            // logger.error("Error during authorization {}", e.getMessage());
+            // }
             return Constants.EMPTY;
         } else {
             if (token.get().isExpired(LocalDateTime.now(), 10)) {

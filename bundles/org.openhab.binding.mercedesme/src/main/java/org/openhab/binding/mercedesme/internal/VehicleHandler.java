@@ -80,13 +80,13 @@ public class VehicleHandler extends BaseThingHandler {
     private Storage<String> imageStorage;
     private final MercedesMeCommandOptionProvider mmcop;
 
-    public VehicleHandler(Thing thing, HttpClientFactory hcf, String uid, Storage<String> stringStorage,
+    public VehicleHandler(Thing thing, HttpClientFactory hcf, String uid, Storage<String> is,
             MercedesMeCommandOptionProvider mmcop) {
         super(thing);
         hc = hcf.getCommonHttpClient();
         this.uid = uid;
         this.mmcop = mmcop;
-        imageStorage = stringStorage;
+        this.imageStorage = is;
         // https://github.com/jetty-project/jetty-reactive-httpclient/issues/33
         hc.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
     }
@@ -159,7 +159,7 @@ public class VehicleHandler extends BaseThingHandler {
                 logger.warn("Bridge Handler null");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge not set");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not set");
             logger.warn("Bridge null");
         }
     }
@@ -311,21 +311,23 @@ public class VehicleHandler extends BaseThingHandler {
         try {
             cr = req.send();
             logger.info("Response {} {}", cr.getStatus(), cr.getContentAsString());
-            JSONArray ja = new JSONArray(cr.getContentAsString());
-            ja.forEach(entry -> {
-                JSONObject jo = (JSONObject) entry;
-                ChannelStateMap csm = Mapper.getChannelStateMap(jo);
-                if (csm != null) {
-                    updateChannel(csm);
-                    if (csm.getChannel().equals("range-electric")) {
-                        rangeElectric = Optional.of(csm);
-                    } else if (csm.getChannel().equals("range-fuel")) {
-                        rangeFuel = Optional.of(csm);
+            if (cr.getStatus() == 200) {
+                JSONArray ja = new JSONArray(cr.getContentAsString());
+                ja.forEach(entry -> {
+                    JSONObject jo = (JSONObject) entry;
+                    ChannelStateMap csm = Mapper.getChannelStateMap(jo);
+                    if (csm != null) {
+                        updateChannel(csm);
+                        if (csm.getChannel().equals("range-electric")) {
+                            rangeElectric = Optional.of(csm);
+                        } else if (csm.getChannel().equals("range-fuel")) {
+                            rangeFuel = Optional.of(csm);
+                        }
+                    } else {
+                        logger.warn("Unable to deliver state for {}", jo);
                     }
-                } else {
-                    logger.warn("Unable to deliver state for {}", jo);
-                }
-            });
+                });
+            }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Error getting data {}", e.getMessage());
         }

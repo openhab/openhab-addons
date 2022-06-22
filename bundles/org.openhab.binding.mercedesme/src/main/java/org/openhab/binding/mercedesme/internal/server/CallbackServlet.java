@@ -36,11 +36,11 @@ public class CallbackServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        logger.info("Call from ");
         String code = request.getParameter(Constants.CODE);
         if (code != null) {
             CallbackServer.callback(request.getLocalPort(), code);
-            logger.error("Code successfully extracted {}", request.getParameterMap());
+            logger.info("Code successfully extracted {}", request.getParameterMap());
             response.setContentType("application/json");
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().println(request.getParameterMap());
@@ -51,15 +51,15 @@ public class CallbackServlet extends HttpServlet {
             response.getWriter().println(request.getParameterMap());
             response.getWriter().println("<HTML>");
             response.getWriter().println("<BODY>");
-            response.getWriter().println("Get your access token for openHAB MercedesMe Binding<BR>");
+            response.getWriter().println("<BR><BR>Get your access token for openHAB MercedesMe Binding<BR><BR>");
             response.getWriter().println("<a href=\"" + CallbackServer.getAuthorizationUrl(request.getLocalPort())
                     + "\">Start Authorization</a>");
             response.getWriter().println("</BODY>");
             response.getWriter().println("</HTML>");
         }
-        logger.error("Request Url {}", request.getRequestURI());
-        logger.error("Local Add {}", request.getLocalAddr());
-        logger.error("Port{}", request.getLocalPort());
-        logger.error("Map {}", request.getParameterMap());
+        logger.info("Request Url {}", request.getRequestURI());
+        logger.info("Address {}", request.getLocalAddr());
+        logger.info("Port {}", request.getLocalPort());
+        logger.info("Map {}", request.getParameterMap());
     }
 }

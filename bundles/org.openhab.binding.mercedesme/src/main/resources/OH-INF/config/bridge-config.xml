@@ -17,6 +17,31 @@
 			<label>MB Developer Image API Key</label>
 			<description>>Mercedes Benz Developer Image API Key</description>
 		</parameter>
+		<parameter name="odoScope" type="boolean">
+			<label>PayAsYourDrive Insurance</label>
+			<description>Provides total Mileage</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="vehicleScope" type="boolean">
+			<label>Vehicle Status</label>
+			<description>Status of doors, windows lights</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="lockScope" type="boolean">
+			<label>Vehicle Lock Status</label>
+			<description>Lock status of doors and trunk</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="fuelScope" type="boolean">
+			<label>Fuel Status</label>
+			<description>Tank level and range</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="evScope" type="boolean">
+			<label>Electric Status</label>
+			<description>Electric charge and range</description>
+			<default>true</default>
+		</parameter>
 		<parameter name="callbackIP" type="text">
 			<label>Callback IP Address</label>
 			<description>IP address for openHAB callback URL</description>

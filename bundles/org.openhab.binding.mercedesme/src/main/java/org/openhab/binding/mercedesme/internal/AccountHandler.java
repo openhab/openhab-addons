@@ -100,7 +100,9 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             String token = server.get().getToken();
             if (!token.equals(Constants.EMPTY)) {
                 updateStatus(ThingStatus.ONLINE);
-            } // else: status update done in authorization callback
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Manual Authorization needed");
+            }
         }
     }
 
@@ -117,13 +119,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         }
         if (!updateConfig.containsKey("callbackIP")) {
             updateConfig.put("callbackIP", Utils.getCallbackIP());
-        }
-        // https://developer.mercedes-benz.com/products/electric_vehicle_status/docs#_required_scopes
-        if (!updateConfig.containsKey("scope")) {
-            String scope = Constants.SCOPE_EV + Constants.SPACE + Constants.SCOPE_FUEL + Constants.SPACE
-                    + Constants.SCOPE_LOCK + Constants.SPACE + Constants.SCOPE_ODO + Constants.SPACE
-                    + Constants.SCOPE_OFFLINE + Constants.SPACE + Constants.SCOPE_STATUS;
-            updateConfig.put("scope", scope);
         }
         super.updateConfiguration(updateConfig);
     }

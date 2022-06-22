@@ -29,7 +29,7 @@ Perform the following steps to obtain the configuration data and perfrom the aut
     - _Project Name:_  unique name e.g. **openHAB MercedesMe binding** plus **Your bridge ID**
     - _Purpose URL:_  use link towards this binding description 
     - _Business Purpose:_  e.g. **Private usage in openHAB Smarthome system**
-5. After project is created subscribe to the API's with _Add Products_ button 
+5. After project is created subscribe [to these Mercedes Benz APIs](https://developer.mercedes-benz.com/products?vt=cars&vt=vans&vt=smart&p=BYOCAR) with _Add Products_ button 
 6. For all Products perform the same steps
     - Select product
     - Choose _Get For Free_
@@ -38,7 +38,7 @@ Perform the following steps to obtain the configuration data and perfrom the aut
 7. Select the following products
     - Vehicle Status
     - Vehicle Lock Status
-    -  Pay as you drive insurance
+    - Pay as you drive insurance
     - Electric Vehcile Status
     - Fuel Status
 8. Select also to _Vehicle images_. Select the _Basic Trial_ version. The images will be stored so the API is used just a few times.
