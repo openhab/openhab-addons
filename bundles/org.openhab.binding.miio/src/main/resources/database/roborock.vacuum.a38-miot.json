@@ -1,0 +1,382 @@
+{
+	"deviceMapping": {
+		"id": [
+			"roborock.vacuum.a38"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "vacuum-start-sweep",
+							"label": "Vacuum Start Sweep"
+						},
+						{
+							"value": "vacuum-stop-sweeping",
+							"label": "Vacuum Stop Sweeping"
+						},
+						{
+							"value": "vacuum-start-mop",
+							"label": "Vacuum Start Mop"
+						},
+						{
+							"value": "vacuum-start-sweep-mop",
+							"label": "Vacuum Start Sweep Mop"
+						},
+						{
+							"value": "vacuum-start-room-sweep",
+							"label": "Vacuum Start Room Sweep"
+						},
+						{
+							"value": "battery-start-charge",
+							"label": "Battery Start Charge"
+						},
+						{
+							"value": "generic-rpc-generic-rpc-call",
+							"label": "Generic Rpc Generic Rpc Call"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-sweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-stop-sweeping"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 4,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-mop"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 5,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-sweep-mop"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "UNKNOWN",
+						"parameters": [
+							9.0
+						],
+						"siid": 2,
+						"aiid": 6,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-room-sweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "battery-start-charge"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "UNKNOWN",
+						"parameters": [
+							1.0
+						],
+						"siid": 7,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "generic-rpc-generic-rpc-call"
+								}
+							]
+						}
+					}
+				]
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Robot Cleaner - Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Idle"
+						},
+						{
+							"value": "2",
+							"label": "Idle"
+						},
+						{
+							"value": "3",
+							"label": "Idle"
+						},
+						{
+							"value": "5",
+							"label": "Sweeping"
+						},
+						{
+							"value": "6",
+							"label": "Go Charging"
+						},
+						{
+							"value": "7",
+							"label": "Sweeping"
+						},
+						{
+							"value": "8",
+							"label": "Charging"
+						},
+						{
+							"value": "10",
+							"label": "Paused"
+						},
+						{
+							"value": "11",
+							"label": "Sweeping"
+						},
+						{
+							"value": "12",
+							"label": "Error"
+						},
+						{
+							"value": "14",
+							"label": "Updating"
+						},
+						{
+							"value": "15",
+							"label": "Go Charging"
+						},
+						{
+							"value": "16",
+							"label": "Sweeping"
+						},
+						{
+							"value": "17",
+							"label": "Sweeping"
+						},
+						{
+							"value": "18",
+							"label": "Sweeping"
+						},
+						{
+							"value": "26",
+							"label": "Go Charging"
+						},
+						{
+							"value": "22",
+							"label": "Emptying"
+						},
+						{
+							"value": "23",
+							"label": "Wash"
+						},
+						{
+							"value": "29",
+							"label": "Sweeping"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"1\"\u003d\"Idle\",\"2\"\u003d\"Idle\",\"3\"\u003d\"Idle\",\"5\"\u003d\"Sweeping\",\"6\"\u003d\"Go Charging\",\"7\"\u003d\"Sweeping\",\"8\"\u003d\"Charging\",\"10\"\u003d\"Paused\",\"11\"\u003d\"Sweeping\",\"12\"\u003d\"Error\",\"14\"\u003d\"Updating\",\"15\"\u003d\"Go Charging\",\"16\"\u003d\"Sweeping\",\"17\"\u003d\"Sweeping\",\"18\"\u003d\"Sweeping\",\"26\"\u003d\"Go Charging\",\"22\"\u003d\"Emptying\",\"23\"\u003d\"Wash\",\"29\"\u003d\"Sweeping\"]"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Robot Cleaner - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 255,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Robot Cleaner - Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "101",
+							"label": "Silent"
+						},
+						{
+							"value": "102",
+							"label": "Basic"
+						},
+						{
+							"value": "103",
+							"label": "Strong"
+						},
+						{
+							"value": "104",
+							"label": "Full Speed"
+						},
+						{
+							"value": "105",
+							"label": "Silent"
+						},
+						{
+							"value": "106",
+							"label": "Custom"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"101\"\u003d\"Silent\",\"102\"\u003d\"Basic\",\"103\"\u003d\"Strong\",\"104\"\u003d\"Full Speed\",\"105\"\u003d\"Silent\",\"106\"\u003d\"Custom\"]"
+			},
+			{
+				"property": "battery-level",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Battery - Battery Level",
+				"channel": "battery_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "brush-life-level",
+				"siid": 9,
+				"piid": 2,
+				"friendlyName": "Main Cleaning Brush - Brush Life Level",
+				"channel": "brush_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "brush-life-level1",
+				"siid": 10,
+				"piid": 2,
+				"friendlyName": "Side Cleaning Brush - Brush Life Level",
+				"channel": "brush_life_level1",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "filter-life-level",
+				"siid": 11,
+				"piid": 1,
+				"friendlyName": "Filter - Filter Life Level",
+				"channel": "filter_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			}
+		],
+		"experimental": false
+	}
+}
