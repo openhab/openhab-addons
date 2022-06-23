@@ -8,6 +8,7 @@ The Netatmo binding integrates the following Netatmo products:
 - *Siren*
 - *Outdoor Camera / Presence*. Reports last event, consult picture and video from event/camera.
 - *Doorbell* 
+- *Smoke Detector*
 
 See https://www.netatmo.com/ for details on their product.
 
@@ -573,6 +574,22 @@ Person things are automatically created in discovery process for all known perso
 
 All these channels except at-home are read only.
 
+
+### Netatmo Smart Smoke Detector
+
+All these channels are read only.
+
+**Supported channels for the Smoke Detector thing:**
+
+| Channel Group | Channel Id   | Item Type    | Description                                      |
+|---------------|--------------|--------------|--------------------------------------------------|
+| signal        | strength     | Number       | Signal strength (0 for no signal, 1 for weak...) |
+| signal        | value        | Number:Power | Signal strength in dBm                           |
+| timestamp     | last-seen    | DateTime     | Last time the module reported its presence       |
+| last-event    | type         | String       | Type of event                                    |
+| last-event    | time         | DateTime     | Moment of the last event for this person         |
+| last-event    | subtype      | String       | Sub-type of event                                |
+| last-event    | message      | String       | Last event message from this person              |
 
 ## Configuration Examples
 
