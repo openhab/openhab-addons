@@ -52,15 +52,19 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClientFactory httpClientFactory;
     private final Storage<String> tokenStorage;
     private final MercedesMeCommandOptionProvider mmcop;
+    private final MercedesMeStateOptionProvider mmsop;
+
     private final StorageService storageService;
 
     @Activate
     public MercedesMeHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory hcf,
-            @Reference StorageService storageService, final @Reference MercedesMeCommandOptionProvider cop) {
+            @Reference StorageService storageService, final @Reference MercedesMeCommandOptionProvider cop,
+            final @Reference MercedesMeStateOptionProvider sop) {
         this.oAuthFactory = oAuthFactory;
         this.httpClientFactory = hcf;
         this.storageService = storageService;
         mmcop = cop;
+        mmsop = sop;
         tokenStorage = storageService.getStorage(Constants.BINDING_ID);
     }
 
@@ -75,6 +79,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             return new AccountHandler((Bridge) thing, httpClientFactory, oAuthFactory, tokenStorage);
         }
-        return new VehicleHandler(thing, httpClientFactory, thingTypeUID.getId(), storageService, mmcop);
+        return new VehicleHandler(thing, httpClientFactory, thingTypeUID.getId(), storageService, mmcop, mmsop);
     }
 }

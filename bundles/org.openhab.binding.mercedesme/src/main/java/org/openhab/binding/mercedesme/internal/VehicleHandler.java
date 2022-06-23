@@ -54,6 +54,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,13 +82,15 @@ public class VehicleHandler extends BaseThingHandler {
     private final String uid;
     private final StorageService storageService;
     private final MercedesMeCommandOptionProvider mmcop;
+    private final MercedesMeStateOptionProvider mmsop;
 
     public VehicleHandler(Thing thing, HttpClientFactory hcf, String uid, StorageService storageService,
-            MercedesMeCommandOptionProvider mmcop) {
+            MercedesMeCommandOptionProvider mmcop, MercedesMeStateOptionProvider mmsop) {
         super(thing);
         hc = hcf.getCommonHttpClient();
         this.uid = uid;
         this.mmcop = mmcop;
+        this.mmsop = mmsop;
         this.storageService = storageService;
         // https://github.com/jetty-project/jetty-reactive-httpclient/issues/33
         hc.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
@@ -117,7 +120,6 @@ public class VehicleHandler extends BaseThingHandler {
                         }
                     }
                     if (!encodedImage.equals(EMPTY)) {
-                        logger.info("Update data channel");
                         RawType image = new RawType(Base64.getDecoder().decode(encodedImage), MIME_PNG);
                         updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-data"), image);
                     } else {
@@ -294,20 +296,24 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void setImageOtions() {
-        List<CommandOption> options = new ArrayList<CommandOption>();
+        List<CommandOption> commandOptions = new ArrayList<CommandOption>();
+        List<StateOption> stateOptions = new ArrayList<StateOption>();
         if (imageStorage.get().containsKey(EXT_IMG_RES + config.get().vin)) {
             String resources = imageStorage.get().get(EXT_IMG_RES + config.get().vin);
             JSONObject jo = new JSONObject(resources);
             jo.keySet().forEach(entry -> {
                 CommandOption co = new CommandOption(entry, null);
-                options.add(co);
+                commandOptions.add(co);
+                StateOption so = new StateOption(entry, null);
+                stateOptions.add(so);
                 // logger.info("Add command option {}", co.toString());
             });
         }
-        if (options.size() == 0) {
-            options.add(new CommandOption("Initilaze", null));
+        if (commandOptions.size() == 0) {
+            commandOptions.add(new CommandOption("Initilaze", null));
         }
-        mmcop.setCommandOptions(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-view"), options);
+        mmcop.setCommandOptions(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-view"), commandOptions);
+        mmsop.setStateOptions(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-view"), stateOptions);
     }
 
     private void call(String url) {
@@ -316,7 +322,7 @@ public class VehicleHandler extends BaseThingHandler {
         ContentResponse cr;
         try {
             cr = req.send();
-            logger.info("{} Response {} {}", this.getThing().getLabel(), cr.getStatus(), cr.getContentAsString());
+            logger.debug("{} Response {} {}", this.getThing().getLabel(), cr.getStatus(), cr.getContentAsString());
             if (cr.getStatus() == 200) {
                 JSONArray ja = new JSONArray(cr.getContentAsString());
                 ja.forEach(entry -> {

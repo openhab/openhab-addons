@@ -17,11 +17,11 @@ There's no automatic discovery.
 ## Bridge Configuration
 
 Bridge needs configuration in order to connect properly to your Mercedes Me Account. 
-Perform the following steps to obtain the configuration data and perfrom the authorization flow.
+Perform the following steps to obtain the configuration data and perform the authorization flow.
 
-1. Go to [Mercedes Developer Page](https://developer.mercedes-benz.com/). Login with your MercedesMe credentials.
+1. Go to [Mercedes Developer Page](https://developer.mercedes-benz.com/). Login with your Mercedes Me credentials.
 2. Create a project in the [console tab](https://developer.mercedes-benz.com/console)
-    - _Project Name:_  unique name e.g. **openHAB MercedesMe binding** plus **Your bridge ID**
+    - _Project Name:_  unique name e.g. **openHAB Mercedes Me binding** plus **Your bridge ID**
     - _Purpose URL:_  use link towards this binding description 
     - _Business Purpose:_  e.g. **Private usage in openHAB Smarthome system**
 3. After project is created subscribe [to these Mercedes Benz APIs](https://developer.mercedes-benz.com/products?vt=cars&vt=vans&vt=smart&p=BYOCAR) with _Add Products_ button 
@@ -34,29 +34,29 @@ Perform the following steps to obtain the configuration data and perfrom the aut
     - Vehicle Status
     - Vehicle Lock Status
     - Pay as you drive insurance
-    - Electric Vehcile Status
+    - Electric Vehicle Status
     - Fuel Status
 6. Optional: Subscribe also to _Vehicle images_. Select the _Basic Trial_ version. The images will be stored so the API is used just a few times.
 7. Press _Subscribe_ button. Your project should have [these product subscriptions](#mb-product-subscriptions)
-8. Generate the project credentials
-9. Open in new browser tab your openHAB page. Add a new Thing _MercedesMe Account_
-10. Copy paste _Client ID_ , _Client Secret_ and _API Key_ from the Mercedes tab into the openHAB config
-11. Check if the registered Mercedes products _excluding Vehicle Images_ are matching exactly with the openHab config switches
+8. Generate the [project credentials]((#mb-credentials))
+9. Open in new browser tab your openHAB page. Add a new Thing _Mercedes Me Account_
+10. Copy paste _Client ID_ , _Client Secret_ and _API Key_ from the Mercedes tab into the openHAB configuration
+11. Check if the registered Mercedes products _excluding Vehicle Images_ are matching exactly with the openHab configuration switches
 12. Create Thing!
 13. The fresh created [account has one property](#openhab-configuration) `callbackUrl`. Copy it and paste it in a new browser tab
-14. A simple HTML page is shown including a link towards the Authorization flow - **don't click yet**. If page isn't shown please adapt IP and port in openHAB configuration with Advanced Options activated
+14. A [simple HTML page is shown including a link towards the Authorization flow](#callback-page) - **don't click yet**. If page isn't shown please adapt IP and port in openHAB configuration with Advanced Options activated
 15. The copied URL needs to be added in your [Mercedes project credentials](#mb-credentials) from 8
-16. Now click onto the link from 12. You'll be asked one time if you [grant access](mb-access-request) towards the API. Click ok and authorization is done!
+16. Now click onto the link from 14. You'll be asked one time if you [grant access](mb-access-request) towards the API. Click OK and authorization is done!
 
 Some supporting screenshots for the setup
 
 ### MB Credentials
 
-<img src="./doc/MBDeveloper-Credentials.png" width="600" height="350"/>
+<img src="./doc/MBDeveloper-Credentials.png" width="500" height="280"/>
 
 ### MB Product Subscriptions
 
-<img src="./doc/MBDeveloper-Subscriptions.png" width="600" height="350"/>
+<img src="./doc/MBDeveloper-Subscriptions.png" width="500" height="300"/>
 
 ### openHAB Configuration
 
@@ -64,7 +64,12 @@ Some supporting screenshots for the setup
 
 ### MB Access Request
 
-<img src="./doc/MBAccessRequest.png" width="500" height="350"/>
+<img src="./doc/MBAccessRequest.png" width="500" height="220"/>
+
+### Callback page
+
+<img src="./doc/CallbackUrl_Page.png" width="420" height="140"/>
+
 
 
 | Name            | Type    | Description                           | Default    | Required | Advanced |
@@ -77,10 +82,10 @@ Some supporting screenshots for the setup
 | lockScope       | boolean | Lock status of doors and trunk        | true       | yes      | no       |
 | fuelScope       | boolean | Fuel Status                           | true       | yes      | no       |
 | evScope         | boolean | Electric Vehicle Status               | true       | yes      | no       |
-| callbackIp      | text    | IP address of your openHAB server     | autodetect | no       | yes      |
-| callbackPort    | integer | **Unique** port number                | autodetect | no       | yes      |
+| callbackIp      | text    | IP address of your openHAB server     | auto detect | no       | yes      |
+| callbackPort    | integer | **Unique** port number                | auto detect | no       | yes      |
 
-The `callbackPort` needs to be unique for all created MercedesMe account things. Otherwise token exchange will be corrupted!
+The `callbackPort` needs to be unique for all created Mercedes Me account things. Otherwise token exchange will be corrupted!
 
 
 ### Thing Configuration
@@ -88,18 +93,18 @@ The `callbackPort` needs to be unique for all created MercedesMe account things.
 Configuration for all vehicles are the same.
 
 For vehicle images Mercedes Benz Developer offers only a trial version with limited calls.
-Check in **beforehand** if your vehicle has some restrictions or even if it's suppoerted at all.
-Visit [Vehicle Image Details](https://developer.mercedes-benz.com/products/vehicle_images/details) in order to check your vehcile capabilities.
+Check in **beforehand** if your vehicle has some restrictions or even if it's supported at all.
+Visit [Vehicle Image Details](https://developer.mercedes-benz.com/products/vehicle_images/details) in order to check your vehicle capabilities.
 For example the EQA doesn't provide `night` images with `background`.
 If your configuration is set this way the API calls are wasted!
 
-<img src="./doc/ImageRestrictions.png" width="800" height="30"/>
+<img src="./doc/ImageRestrictions.png" width="800" height="36"/>
 
-See also [image channel section](#image) for further advise!
+See also [image channel section](#image) for further advise.
 
 
 | Name            | Type    | Description                                         | Default | Required | Advanced |
-|-----------------|---------|-----------------------------------------------------|----- ---|----------|----------|
+|-----------------|---------|-----------------------------------------------------|---------|----------|----------|
 | vin             | text    | Vehicle identification number                       | N/A     | yes      | no       |
 | refreshInterval | integer | Refresh interval in minutes                         | 5       | yes      | no       |
 | background      | boolean | Vehicle images provided with or without background  | false   | no       | yes      |
@@ -110,7 +115,7 @@ See also [image channel section](#image) for further advise!
 
 ## Channels
 
-Channels are seperated in groups
+Channels are separated in groups
 
 ### Range
 
@@ -172,7 +177,7 @@ All channels `readonly`
 | Channel          | Type                 |  Description                 |
 |------------------|----------------------|------------------------------|
 | driver-front     | Number               |  Driver window               |
-| driver-rear      | Number               |  Driver window reat          |
+| driver-rear      | Number               |  Driver window rear          |
 | passenger-front  | Number               |  Passenger window            |
 | passenger-rear   | Number               |  Passenger window rear       |
 
@@ -195,7 +200,7 @@ All channels `readonly`
 | Channel          | Type                 |  Description                 |
 |------------------|----------------------|------------------------------|
 | interior-front   | Switch               |  Driver door                 |
-| interior-rear    | Switch               |  Driver door reat            |
+| interior-rear    | Switch               |  Driver door rear            |
 | reading-left     | Switch               |  Passenger door              |
 | reading-right    | Switch               |  Passenger door rear         |
 | light-switch     | Number               |  Deck lid                    |
@@ -251,17 +256,42 @@ Group name: `image`
 | clear-cache      | Switch               |  Remove All Stored Images    |   X   |
 
 **If** the `imageApiKey` in [Bridge Configuration](#bridge-configuration) is set the vehicle thing will try to get images.
-Pay attetion to the [Advanced Image Configuration Properties](#thing-configuration) before requesting new images.
+Pay attention to the [Advanced Image Configuration Properties](#thing-configuration) before requesting new images.
 Sending commands towards the `image-view` channel will change the image.
 The `image-view` is providing options to select the available images for your specific vehicle.
-Images are stored in `jsondb` so if you requested all images the Mercedes Benz Image API will not be called anymore which is good because you have arestricted amount of calls!
+Images are stored in `jsondb` so if you requested all images the Mercedes Benz Image API will not be called anymore which is good because you have a restricted amount of calls!
 If you're not satisfied e.g. you want a background you need to
 
 1. change the [Advanced Image Configuration Properties](#thing-configuration)
 2. Switch `clear-cache` channel item to `ON` to clear all images
 3. request them via `image-view` 
 
+### Image View Options
+
+You can access the options either in a rule via `YOUR_IMAGE_VIEW_ITEM.getStateDescription().getOptions()` or in UI in widget configuration as _Action: Command options_ and as _Action Item: YOUR_IMAGE_VIEW_ITEM_ 
+
+<img src="./doc/ImageView-CommandOptions.png" width="400" height="350"/>
+
 ## Troubleshooting
+
+### Authorization fails
+
+The configuration of openHAB account thing and the Mercedes Developer project need an extract match regarding
+
+- MB project credentials vs. `clientId` `clientSecret` and `callbackUrl`
+- MB project subscription of products vs. `scope`
+
+If you follow the [bridge configuration steps](#bridge-configuration) both will match.
+Otherwise you'll receive some error message when clicking the link after opening the `callbackUrl` in your browser
+
+Most common errors:
+
+- redirect url doesn't match: Double check if `callbackUrl` is really saved correctly in your Mercedes Benz Developer project
+- scope failure: the requested scope doesn't match with the subscribed products. 
+    - Check [openHab configuration switches](#openhab-configuration) 
+    - apply changes if necessary and don't forget to save
+    - after these steps refresh the `callbackUrl` in [your browser](#callback-page) to apply these changes
+    - try a new authorization clicking the link 
 
 ### Receive no data
 
@@ -269,8 +299,8 @@ Especially after setting up a new Mercedes Benz Developer Project you'll receive
 It seems that the API isn't _filled_ yet. 
 
 **Pre-Condition**
-- The MercedesMe bridge is online = authorization is fine
-- The MercedesMe thing is online = API calls are fine 
+- The Mercedes Me bridge is online = authorization is fine
+- The Mercedes Me thing is online = API calls are fine 
 
 **Solution**
 - Reduce `refreshInterval` to 1 minute
