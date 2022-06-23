@@ -77,7 +77,7 @@ public class SecurityApi extends RestManager {
         throw new NetatmoException("home should not be null");
     }
 
-    public Collection<HomeEvent> getCameraEvents(String homeId, String deviceId, String deviceType)
+    public Collection<HomeEvent> getDeviceEvents(String homeId, String deviceId, String deviceType)
             throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GET_EVENTS, PARAM_HOME_ID, homeId, PARAM_DEVICE_ID, deviceId,
                 PARAM_DEVICES_TYPE, deviceType);

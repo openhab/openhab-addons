@@ -37,6 +37,7 @@ import org.openhab.binding.netatmo.internal.handler.capability.MeasureCapability
 import org.openhab.binding.netatmo.internal.handler.capability.PersonCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.SmokeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
@@ -133,6 +134,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
                 newCap = new PersonCapability(handler, stateDescriptionProvider, helpers);
             } else if (capability == CameraCapability.class) {
                 newCap = new CameraCapability(handler, stateDescriptionProvider, helpers);
+            } else if (capability == SmokeCapability.class) {
+                newCap = new SmokeCapability(handler, stateDescriptionProvider, helpers);
             } else if (capability == PresenceCapability.class) {
                 newCap = new PresenceCapability(handler, stateDescriptionProvider, helpers);
             } else if (capability == MeasureCapability.class) {
