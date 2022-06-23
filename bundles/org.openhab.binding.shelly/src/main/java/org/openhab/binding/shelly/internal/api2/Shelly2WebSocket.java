@@ -82,7 +82,7 @@ public class Shelly2WebSocket {
 
     public void connect() throws ShellyApiException {
         try {
-            disconnect();
+            // disconnect();
             URI uri = new URI("ws://" + deviceIp + "/rpc");
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setHeader(HttpHeaders.HOST, deviceIp);

@@ -488,17 +488,17 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         return updated;
     }
 
-    protected Shelly2RpcBaseMessage builRequest(String src, String method, Object params) {
+    protected Shelly2RpcBaseMessage buildRequest(String method, Object params) {
         Shelly2RpcBaseMessage request = new Shelly2RpcBaseMessage();
         request.id = random.nextInt();
-        // request.src = src;
+        request.src = thingName;
         request.method = !method.contains(".") ? SHELLYRPC_METHOD_CLASS_SHELLY + "." + method : method;
         request.params = params;
         request.auth = authReq;
         return request;
     }
 
-    protected Shelly2AuthRequest buioldAuthRequest(Shelly2AuthResponse authParm, String user, String realm,
+    protected Shelly2AuthRequest buildAuthRequest(Shelly2AuthResponse authParm, String user, String realm,
             String password) throws ShellyApiException {
         Shelly2AuthRequest authReq = new Shelly2AuthRequest();
         authReq.username = user;
@@ -520,9 +520,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         String value;
         boolean known = key != null && !key.isEmpty() && map.containsKey(key);
         value = known ? getString(map.get(key)) : "";
-        if (!known) {
-            int i = 1;
-        }
         logger.debug("{}: API value {} was mapped to {}", thingName, key, known ? value : "UNKNOWN");
         return value;
     }

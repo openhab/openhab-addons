@@ -170,7 +170,8 @@ public class ShellyBaseHandler extends BaseThingHandler
         this.api = !gen2 ? new Shelly1HttpApi(thingType, this) : new Shelly2ApiRpc(thingType, this);
         if (gen2) {
             config.eventsCoIoT = false;
-        } else {
+        }
+        if (config.eventsCoIoT) {
             this.coap = new Shelly1CoapHandler(this, coapServer);
         }
     }
@@ -266,14 +267,11 @@ public class ShellyBaseHandler extends BaseThingHandler
         stopping = false;
         refreshSettings = false;
         lastWakeupReason = "";
-        profile.isGen2 = gen2;
-        profile.initFromThingType(thingType);
-        api.setConfig(thingName, config);
         cache.setThingName(thingName);
         cache.clear();
 
-        logger.debug("{}: Start initializing thing {}, type {}, ip address {}, CoIoT: {}", thingName,
-                getThing().getLabel(), thingType, config.deviceIp, config.eventsCoIoT);
+        logger.debug("{}: Start initializing for thing {}, type {}, IP address {}, Gen2: {}, CoIoT: {}", thingName,
+                getThing().getLabel(), thingType, config.deviceIp, gen2, config.eventsCoIoT);
         if (config.deviceIp.isEmpty()) {
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.missing-device-ip");
             return false;
@@ -299,6 +297,8 @@ public class ShellyBaseHandler extends BaseThingHandler
         api.setConfig(thingName, config);
         api.initialize();
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thingType);
+        tmpPrf.isGen2 = gen2;
+
         if (this.getThing().getThingTypeUID().equals(THING_TYPE_SHELLYPROTECTED)) {
             changeThingType(thingName, tmpPrf.mode);
             return false; // force re-initialization
@@ -355,10 +355,11 @@ public class ShellyBaseHandler extends BaseThingHandler
         fillDeviceStatus(tmpPrf.status, false);
         postEvent(ALARM_TYPE_NONE, false);
 
-        logger.debug("{}: Thing successfully initialized.", thingName);
         profile = tmpPrf;
+        showThingConfig(profile);
 
-        updateProperties(tmpPrf, tmpPrf.status);
+        logger.debug("{}: Thing successfully initialized.", thingName);
+        updateProperties(profile, profile.status);
         setThingOnline(); // if API call was successful the thing must be online
         return true; // success
     }
@@ -948,7 +949,6 @@ public class ShellyBaseHandler extends BaseThingHandler
         }
         config.localIp = bindingConfig.localIP;
         config.localPort = String.valueOf(bindingConfig.httpPort);
-
         if (config.userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
             config.userId = bindingConfig.defaultUserId;
             config.password = bindingConfig.defaultPassword;
