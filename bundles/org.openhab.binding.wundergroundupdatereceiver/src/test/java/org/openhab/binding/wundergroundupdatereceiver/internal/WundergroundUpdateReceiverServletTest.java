@@ -65,6 +65,7 @@ import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
@@ -92,6 +93,7 @@ class WundergroundUpdateReceiverServletTest {
     private @Mock HttpService httpService;
     private @Mock ChannelTypeRegistry channelTypeRegistry;
     private @Mock WundergroundUpdateReceiverDiscoveryService discoveryService;
+    private @Mock ManagedThingProvider managedThingProvider;
 
     @BeforeEach
     public void setUp() {
@@ -231,7 +233,7 @@ class WundergroundUpdateReceiverServletTest {
                 .thenReturn(ChannelTypeBuilder.trigger(LAST_QUERY_TRIGGER_CHANNELTYPEUID, "Label").build());
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
-                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry);
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
         ThingHandlerCallback mockCallback = mock(ThingHandlerCallback.class);
         handler.setCallback(mockCallback);
 
@@ -330,7 +332,8 @@ class WundergroundUpdateReceiverServletTest {
                 .withChannels(channels).withConfiguration(config).build();
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(testThing, sut,
-                discoveryService, new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry);
+                discoveryService, new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry,
+                managedThingProvider);
         handler.setCallback(callback);
         handler.initialize();
 
@@ -443,7 +446,8 @@ class WundergroundUpdateReceiverServletTest {
                 .withChannels(channels).withConfiguration(config).build();
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(testThing, sut,
-                discoveryService, new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry);
+                discoveryService, new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry,
+                managedThingProvider);
         handler.setCallback(callback);
         handler.initialize();
 
