@@ -95,6 +95,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
     private final Logger logger = LoggerFactory.getLogger(KNXCoreTypeMapper.class);
 
     private static final String TIME_DAY_FORMAT = new String("EEE, HH:mm:ss");
+    private static final String TIME_FORMAT = new String("HH:mm:ss");
     private static final String DATE_FORMAT = new String("yyyy-MM-dd");
 
     /**
@@ -1085,7 +1086,11 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                     stb.replace(start, end, String.format(Locale.US, "%1$ta", Calendar.getInstance()));
                     value = stb.toString();
                 }
-                date = new SimpleDateFormat(TIME_DAY_FORMAT, Locale.US).parse(value);
+                try {
+                    date = new SimpleDateFormat(TIME_DAY_FORMAT, Locale.US).parse(value);
+                } catch (ParseException pe) {
+                    date = new SimpleDateFormat(TIME_FORMAT, Locale.US).parse(value);
+                }
             }
         } catch (ParseException pe) {
             // do nothing but logging
