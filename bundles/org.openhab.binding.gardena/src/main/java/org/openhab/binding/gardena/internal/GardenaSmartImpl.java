@@ -43,10 +43,12 @@ import org.openhab.binding.gardena.internal.model.DataItemDeserializer;
 import org.openhab.binding.gardena.internal.model.dto.Device;
 import org.openhab.binding.gardena.internal.model.dto.api.CreateWebSocketRequest;
 import org.openhab.binding.gardena.internal.model.dto.api.DataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.Location;
 import org.openhab.binding.gardena.internal.model.dto.api.LocationDataItem;
 import org.openhab.binding.gardena.internal.model.dto.api.LocationResponse;
 import org.openhab.binding.gardena.internal.model.dto.api.LocationsResponse;
 import org.openhab.binding.gardena.internal.model.dto.api.PostOAuth2Response;
+import org.openhab.binding.gardena.internal.model.dto.api.WebSocket;
 import org.openhab.binding.gardena.internal.model.dto.api.WebSocketCreatedResponse;
 import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommand;
 import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommandRequest;
@@ -153,9 +155,14 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     private void startWebsockets() throws Exception {
         for (LocationDataItem location : locationsResponse.data) {
             WebSocketCreatedResponse webSocketCreatedResponse = getWebsocketInfo(location.id);
-            String socketId = id + "-" + location.attributes.name;
+            Location locationAttributes = location.attributes;
+            WebSocket webSocketAttributes = webSocketCreatedResponse.data.attributes;
+            if (locationAttributes == null || webSocketAttributes == null) {
+                continue;
+            }
+            String socketId = id + "-" + locationAttributes.name;
             webSockets.put(location.id, new GardenaSmartWebSocket(this, webSocketClient, scheduler,
-                    webSocketCreatedResponse.data.attributes.url, token, socketId, location.id));
+                    webSocketAttributes.url, token, socketId, location.id));
         }
     }
 
@@ -391,7 +398,10 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             Thread.sleep(3000);
             WebSocketCreatedResponse webSocketCreatedResponse = getWebsocketInfo(socket.getLocationID());
             // only restart single socket, do not restart binding
-            socket.restart(webSocketCreatedResponse.data.attributes.url);
+            WebSocket webSocketAttributes = webSocketCreatedResponse.data.attributes;
+            if (webSocketAttributes != null) {
+                socket.restart(webSocketAttributes.url);
+            }
         } catch (Exception ex) {
             // restart binding on error
             logger.warn("Restarting GardenaSmart Webservice failed ({}): {}, restarting binding", socket.getSocketID(),
