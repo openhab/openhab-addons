@@ -348,7 +348,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     @Override
     public void onDeviceStateChanged(final DeviceDTO device) {
         synchronized (this.lock) {
-            updateChannels(device);
+            updateChannels(device, false);
         }
     }
 
@@ -367,18 +367,18 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                     if (capability.hasState()) {
                         boolean deviceChanged = updateDevice(event, capability);
                         if (deviceChanged) {
-                            updateChannels(device);
+                            updateChannels(device, true);
                         }
                     } else {
                         logger.debug("Capability {} has no state (yet?) - refreshing device.", capability.getName());
 
                         Optional<DeviceDTO> deviceOptional = refreshDevice(linkedCapabilityId);
-                        deviceOptional.ifPresent(this::updateChannels);
+                        deviceOptional.ifPresent((d) -> updateChannels(d, true));
                     }
                 }
             } else if (event.isLinkedtoDevice()) {
                 if (device.hasDeviceState()) {
-                    updateChannels(device);
+                    updateChannels(device, true);
                 } else {
                     logger.debug("Device {}/{} has no state.", device.getConfig().getName(), device.getId());
                 }
@@ -566,7 +566,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         return true;
     }
 
-    private void updateChannels(DeviceDTO device) {
+    private void updateChannels(DeviceDTO device, boolean isChangedByEvent) {
         // DEVICE STATES
         final boolean isReachable = updateStatus(device);
 
@@ -580,7 +580,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                 logger.debug("->capability:{} ({}/{})", capability.getId(), capability.getType(), capability.getName());
 
                 if (capability.hasState()) {
-                    updateCapabilityChannels(device, capability);
+                    updateCapabilityChannels(device, capability, isChangedByEvent);
                 } else {
                     logger.debug("Capability not available for device {} ({})", device.getConfig().getName(),
                             device.getType());
@@ -608,7 +608,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         }
     }
 
-    private void updateCapabilityChannels(DeviceDTO device, CapabilityDTO capability) {
+    private void updateCapabilityChannels(DeviceDTO device, CapabilityDTO capability, boolean isChangedByEvent) {
         switch (capability.getType()) {
             case CapabilityDTO.TYPE_VARIABLEACTUATOR:
                 updateVariableActuatorChannels(capability);
@@ -647,7 +647,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                 updateLuminanceSensorChannels(capability);
                 break;
             case CapabilityDTO.TYPE_PUSHBUTTONSENSOR:
-                updatePushButtonSensorChannels(capability);
+                updatePushButtonSensorChannels(capability, isChangedByEvent);
                 break;
             case CapabilityDTO.TYPE_ENERGYCONSUMPTIONSENSOR:
                 updateEnergyConsumptionSensorChannels(capability);
@@ -833,7 +833,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         }
     }
 
-    private void updatePushButtonSensorChannels(CapabilityDTO capability) {
+    private void updatePushButtonSensorChannels(CapabilityDTO capability, boolean isChangedByEvent) {
         final Integer pushCount = capability.getCapabilityState().getPushButtonSensorCounterState();
         final Integer buttonIndex = capability.getCapabilityState().getPushButtonSensorButtonIndexState();
         final String type = capability.getCapabilityState().getPushButtonSensorButtonIndexType();
@@ -841,22 +841,30 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (buttonIndex != null && pushCount != null) {
             if (buttonIndex >= 0 && buttonIndex <= 7) {
                 final int channelIndex = buttonIndex + 1;
-                if (type != null) {
-                    if (SHORT_PRESS.equals(type)) {
-                        triggerChannel(CHANNEL_BUTTON + channelIndex, CommonTriggerEvents.SHORT_PRESSED);
-                    } else if (LONG_PRESS.equals(type)) {
-                        triggerChannel(CHANNEL_BUTTON + channelIndex, CommonTriggerEvents.LONG_PRESSED);
-                    }
-                }
-                triggerChannel(CHANNEL_BUTTON + channelIndex, CommonTriggerEvents.PRESSED);
                 updateState(String.format(CHANNEL_BUTTON_COUNT, channelIndex), new DecimalType(pushCount));
+
+                if (isChangedByEvent) {
+                    triggerButtonChannels(type, channelIndex);
+                }
+
+                // Button handled so remove state to avoid re-trigger.
+                capability.getCapabilityState().setPushButtonSensorButtonIndexState(null);
+                capability.getCapabilityState().setPushButtonSensorButtonIndexType(null);
             }
-            // Button handled so remove state to avoid re-trigger.
-            capability.getCapabilityState().setPushButtonSensorButtonIndexState(null);
-            capability.getCapabilityState().setPushButtonSensorButtonIndexType(null);
         } else {
             logStateNull(capability);
         }
+    }
+
+    private void triggerButtonChannels(@Nullable String type, int channelIndex) {
+        if (type != null) {
+            if (SHORT_PRESS.equals(type)) {
+                triggerChannel(CHANNEL_BUTTON + channelIndex, CommonTriggerEvents.SHORT_PRESSED);
+            } else if (LONG_PRESS.equals(type)) {
+                triggerChannel(CHANNEL_BUTTON + channelIndex, CommonTriggerEvents.LONG_PRESSED);
+            }
+        }
+        triggerChannel(CHANNEL_BUTTON + channelIndex, CommonTriggerEvents.PRESSED);
     }
 
     private void updateEnergyConsumptionSensorChannels(CapabilityDTO capability) {
