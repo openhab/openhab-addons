@@ -343,7 +343,7 @@
 		<item-type>Number</item-type>
 		<label>Set Temperature</label>
 		<description>Set Temperature</description>
-		<category>Temperature</category>
+		<category>Heating</category>
 		<state min="0" max="50" pattern="%d °C" readOnly="false"/>
 	</channel-type>
 

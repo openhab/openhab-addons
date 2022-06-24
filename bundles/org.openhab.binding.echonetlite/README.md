@@ -1,56 +1,88 @@
 # EchonetLite Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+This binding supports devices that make use of the Echonet Lite specification (https://echonet.jp/spec_v113_lite_en/).
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+* Mitsubishi Electric MAC-568IF-E Wi-Fi interface (common on most Mitsubishi Heat Pumps).
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+Discovery is supported using UDP Multicast.
+When running over Wi-Fi it is advisable to run openhab on the network as the Echonet Lite devices.
+Multicast traffic doesn't easily route over multiple networks and will often be dropped.
+Discovery is handled via the Echonet Lite bridge, which contains the configuration of the multicast address used for discovery and asynchronous device notifications along with the port.
+It is unlikely that this configuration will require changing.
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
+No specific binding configuration required.
 
-```
-# Configuration for the EchonetLite Binding
-#
-# Default secret key for the pairing of the EchonetLite Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
+## Bridge Configuration
 
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
+The bridge configuration defaults should be applicable in most scenarios.
+If device discovery is not working, this is most likely caused by the inability to receive multicast traffic from the device nodes.
 
-_If your binding does not offer any generic configurations, you can remove this section completely._
+* __port__: Port used for messaging both to and from device nodes, defaults to 3610.
+* __multicastAddress__: Multicast address used to discover device nodes and to receive asynchronous notifications from devices.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+* __hostname__: Hostname or IP address of the device node.
+* __port__: Port used to communicate the device. 
+* __groupCode__: Group code as specified in "APPENDIX Detailed Requirements for ECHONET Device objects" (https://echonet.jp/spec_object_rp1_en/).
+For Air Conditioners the value is '1'.
+* __classCode__: Class code for the device, see __groupCode__ for reference information.
+The value for Home Air Conditioners is '48' (0x30).
+* __instance__: Instance identifier is multiple instances are running on the same IP address.
+Typically, this value will be '1'.
+* __pollIntervalMs__: Interval between polls of the device for its current status.
+If multicast is not working this will determine the latency at which changes made directly on the device will be propagated back to openhab.
+The default is 30 000ms.
+* __retryTimeoutMs__: Length of time the bridge will wait before resubmitting a request.
+Because the binding uses UDP, packets can be lost on the network, so retries are necessary.
+Testing has show that 2000ms is a reasonable default that allows for timely retries without rejecting slow, but legitimate responses.
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+Channels are derived from the Echonet Lite specification and vary from device to device depending on capabilities.
+The full set of potential channels is available from "APPENDIX Detailed Requirements for ECHONET Device objects" (https://echonet.jp/spec_object_rp1_en/)
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The channels current implemented are:
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+| Channel                            | Data Type | Description                                                   |
+|------------------------------------|-----------|---------------------------------------------------------------|
+| operationStatus                    | Switch    | Switch On/Off the device                                      |
+| installationLocation               | String    | Installation location (option)                                |
+| standardVersionInformation         | String    | Standard Version Information                                  |
+| identificationNumber               | String    | Unique id for device (used by auto discovery for the thingId) |
+| manufacturerFaultCode              | String    | Manufacturer Fault Code                                       |
+| faultStatus                        | Switch    | Fault Status                                                  |
+| faultDescription                   | String    | Fault Description                                             |
+| manufacturerCode                   | String    | Manufacturer Code                                             |
+| businessFacilityCode               | String    | Business Facility Code                                        |
+| powerSavingOperationSetting        | Switch    | Power Saving Operation Setting                                |
+| cumulativeOperatingTime            | Number    | Cumulative Operating Time                                     |
+| airFlowRate                        | String    | Air Flow Rate                                                 |
+| automaticControlOfAirFlowDirection | String    | Automatic Control Of Air Flow Direction                       |
+| automaticSwingOfAirFlow            | String    | Automatic Swing Of Air Flow                                   |
+| airFlowDirectionVertical           | String    | Air Flow Direction Vertical                                   |
+| airFlowDirectionHorizontal         | String    | Air Flow Direction Horizontal                                 |
+| operationMode                      | String    | Operation Mode                                                |
+| setTemperature                     | Number    | Set Temperature                                               |
+| measuredRoomTemperature            | Number    | Measured Room Temperature                                     |
+| measuredOutdoorTemperature         | Number    | Measured Outdoor Temperature                                  |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+### Things
+```
+Bridge echonetlite:bridge:1 [port="3610", multicastAddress="224.0.23.0"] {
+    Thing device HeatPump_Bedroom1 "HeatPump Bedroom 1" @ "Bedroom 1" [hostname="192.168.0.55", port="3610", groupCode="1", classCode="48", instance="1", pollIntervalMs="30000", retryTimeoutMs="2000"]
+}
+```
 
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+### Items
+```
+Switch HeatPumpBedroom1_OperationStatus "HeatPump Bedroom1 Operation Status" {channel="echonetlite:device:1:HeatPump_Bedroom1:operationStatus"}
+```
