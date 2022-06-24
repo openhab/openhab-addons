@@ -31,7 +31,7 @@ import org.openhab.binding.netatmo.internal.handler.capability.CameraCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.ChannelHelperCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.DeviceCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.EventCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.DoorbellCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.MeasureCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PersonCapability;
@@ -122,14 +122,14 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
                 newCap = new DeviceCapability(handler);
             } else if (capability == AirCareCapability.class) {
                 newCap = new AirCareCapability(handler);
-            } else if (capability == EventCapability.class) {
-                newCap = new EventCapability(handler);
             } else if (capability == HomeCapability.class) {
                 newCap = new HomeCapability(handler, stateDescriptionProvider);
             } else if (capability == WeatherCapability.class) {
                 newCap = new WeatherCapability(handler);
             } else if (capability == RoomCapability.class) {
                 newCap = new RoomCapability(handler);
+            } else if (capability == DoorbellCapability.class) {
+                newCap = new DoorbellCapability(handler, stateDescriptionProvider, helpers);
             } else if (capability == PersonCapability.class) {
                 newCap = new PersonCapability(handler, stateDescriptionProvider, helpers);
             } else if (capability == CameraCapability.class) {
