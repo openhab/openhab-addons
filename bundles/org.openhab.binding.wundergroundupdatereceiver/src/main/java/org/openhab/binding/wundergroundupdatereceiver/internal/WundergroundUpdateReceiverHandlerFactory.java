@@ -16,6 +16,7 @@ import static org.openhab.binding.wundergroundupdatereceiver.internal.Wundergrou
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -42,15 +43,17 @@ public class WundergroundUpdateReceiverHandlerFactory extends BaseThingHandlerFa
     private final ChannelTypeRegistry channelTypeRegistry;
     private final WundergroundUpdateReceiverUnknownChannelTypeProvider channelTypeProvider;
     private final WundergroundUpdateReceiverServlet wunderGroundUpdateReceiverServlet;
+    private final ManagedThingProvider managedThingProvider;
 
     @Activate
     public WundergroundUpdateReceiverHandlerFactory(@Reference HttpService httpService,
             @Reference WundergroundUpdateReceiverDiscoveryService discoveryService,
             @Reference WundergroundUpdateReceiverUnknownChannelTypeProvider channelTypeProvider,
-            @Reference ChannelTypeRegistry channelTypeRegistry) {
+            @Reference ChannelTypeRegistry channelTypeRegistry, @Reference ManagedThingProvider managedThingProvider) {
         this.discoveryService = discoveryService;
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelTypeProvider = channelTypeProvider;
+        this.managedThingProvider = managedThingProvider;
         this.wunderGroundUpdateReceiverServlet = new WundergroundUpdateReceiverServlet(httpService,
                 this.discoveryService);
         this.discoveryService.servletControls = this.wunderGroundUpdateReceiverServlet;
@@ -70,7 +73,8 @@ public class WundergroundUpdateReceiverHandlerFactory extends BaseThingHandlerFa
 
         if (THING_TYPE_UPDATE_RECEIVER.equals(thingTypeUID)) {
             return new WundergroundUpdateReceiverHandler(thing, this.wunderGroundUpdateReceiverServlet,
-                    this.discoveryService, this.channelTypeProvider, this.channelTypeRegistry);
+                    this.discoveryService, this.channelTypeProvider, this.channelTypeRegistry,
+                    this.managedThingProvider);
         }
 
         return null;

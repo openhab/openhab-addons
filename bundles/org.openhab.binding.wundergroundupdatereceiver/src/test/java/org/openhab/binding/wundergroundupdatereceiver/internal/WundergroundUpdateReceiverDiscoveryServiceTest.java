@@ -41,6 +41,7 @@ import org.mockito.Answers;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
+import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -129,8 +130,10 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         Thing thing = ThingBuilder.create(SUPPORTED_THING_TYPES_UIDS.stream().findFirst().get(), TEST_THING_UID)
                 .withConfiguration(new Configuration(Map.of(REPRESENTATION_PROPERTY, REQ_STATION_ID)))
                 .withLabel("test thing").withLocation("location").build();
+        ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
+        when(managedThingProvider.get(TEST_THING_UID)).thenReturn(thing);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
-                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry);
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
         handler.setCallback(mock(ThingHandlerCallback.class));
         handler.initialize();
         sut.addHandler(handler);
@@ -173,8 +176,10 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         Thing thing = ThingBuilder.create(SUPPORTED_THING_TYPES_UIDS.stream().findFirst().get(), TEST_THING_UID)
                 .withConfiguration(new Configuration(Map.of(REPRESENTATION_PROPERTY, REQ_STATION_ID)))
                 .withLabel("test thing").withLocation("location").build();
+        ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
+        when(managedThingProvider.get(any())).thenReturn(thing);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
-                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry);
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
         handler.setCallback(mock(ThingHandlerCallback.class));
 
         // When
@@ -214,6 +219,70 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         List<ChannelTypeUID> actual = handler.getThing().getChannels().stream().map(Channel::getChannelTypeUID)
                 .collect(Collectors.toList());
         assertThat(actual, hasItems(expectedActual));
+    }
+
+    @Test
+    void unregisteredChannelsAreNotAddedOnUnmanagedThings() throws IOException {
+        // Given
+        final String firstDeviceQueryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "tempf=26.1&" + "humidity=74&"
+                + "dateutc=2021-02-07%2014:04:03&" + "softwaretype=WH2600%20V2.2.8&" + "action=updateraw&"
+                + "realtime=1&" + "rtfreq=5";
+        MetaData.Request request1 = new MetaData.Request("GET", new HttpURI(
+                "http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + firstDeviceQueryString),
+                HttpVersion.HTTP_1_1, new HttpFields());
+        HttpChannel httpChannel = mock(HttpChannel.class);
+        Request req1 = new Request(httpChannel, null);
+        req1.setMetaData(request1);
+
+        TestChannelTypeRegistry channelTypeRegistry = new TestChannelTypeRegistry();
+        WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
+                true);
+        discoveryService.addUnhandledStationId(REQ_STATION_ID, req1.getParameterMap());
+        HttpService httpService = mock(HttpService.class);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
+        Thing thing = ThingBuilder.create(SUPPORTED_THING_TYPES_UIDS.stream().findFirst().get(), TEST_THING_UID)
+                .withConfiguration(new Configuration(Map.of(REPRESENTATION_PROPERTY, REQ_STATION_ID)))
+                .withLabel("test thing").withLocation("location").build();
+        ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
+        when(managedThingProvider.get(any())).thenReturn(null);
+        WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
+        handler.setCallback(mock(ThingHandlerCallback.class));
+
+        // When
+        handler.initialize();
+        sut.addHandler(handler);
+
+        // Then
+        ChannelTypeUID[] expectedBefore = new ChannelTypeUID[] { TEMPERATURE_CHANNELTYPEUID, HUMIDITY_CHANNELTYPEUID,
+                DATEUTC_CHANNELTYPEUID, SOFTWARETYPE_CHANNELTYPEUID, REALTIME_FREQUENCY_CHANNELTYPEUID,
+                LAST_QUERY_STATE_CHANNELTYPEUID, LAST_RECEIVED_DATETIME_CHANNELTYPEUID,
+                LAST_QUERY_TRIGGER_CHANNELTYPEUID };
+        List<ChannelTypeUID> before = handler.getThing().getChannels().stream().map(Channel::getChannelTypeUID)
+                .collect(Collectors.toList());
+        assertThat(before, hasItems(expectedBefore));
+
+        // When
+        final String secondDeviceQueryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "lowbatt=1&" + "soilmoisture1=78&"
+                + "soilmoisture2=73&" + "solarradiation=42.24&" + "dateutc=2021-02-07%2014:04:03&"
+                + "softwaretype=WH2600%20V2.2.8&" + "action=updateraw&" + "realtime=1&" + "rtfreq=5";
+        MetaData.Request request = new MetaData.Request("GET", new HttpURI(
+                "http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + secondDeviceQueryString),
+                HttpVersion.HTTP_1_1, new HttpFields());
+        Request req2 = new Request(httpChannel, null);
+        req2.setMetaData(request);
+        sut.activate();
+
+        // Then
+        assertThat(sut.isActive(), is(true));
+
+        // When
+        sut.doGet(req2, mock(HttpServletResponse.class, Answers.RETURNS_MOCKS));
+
+        // Then
+        List<ChannelTypeUID> actual = handler.getThing().getChannels().stream().map(Channel::getChannelTypeUID)
+                .collect(Collectors.toList());
+        assertThat(actual, equalTo(before));
     }
 
     class TestChannelTypeRegistry extends ChannelTypeRegistry {
