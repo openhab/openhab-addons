@@ -41,14 +41,24 @@ Please also note possible [Free Tier](https://aws.amazon.com/free/) benefits.
 <!-- markdownlint-disable-next-line no-emphasis-as-heading -->
 **Create policy controlling permissions for AWS user**
 
-  1. Open Services -> IAM -> Policies
-  2. Click _Create policy_
-  3. Open _JSON_ tab and input the below policy code, describing the permissions needed
+Here we create AWS IAM Policy to limit exposure to AWS resources.
+This way, openHAB DynamoDB addon has limited access to AWS, even if credentials would be compromised.
 
-**Note:** The below policy assumes that `eu-west-1` region is used, the new table schema is used, and the default table name of `openhab` is used.
-Modify the policy accordingly if needed.
+**Note:** this policy is only valid for the new table schema.
+New table schema is the default for fresh openHAB installations and for users that are taking DynamoDB into use for the first time.
+For users with old table schema, one can use pre-existing policy `AmazonDynamoDBFullAccess` (although it gives wider-than-necessary permissions).
 
-**Note 2:** As a more simple alternative, one can use pre-existing policy `AmazonDynamoDBFullAccess`, although the policy grants the openHAB user wider-than-necessary permissions.
+  1. Open Services menu, and search for _IAM_.
+  2. From top right, press the small arrow on top right corner close to your name. Copy the _Account ID_ to clipboard by pressing the small "copy" icon
+  ![AWS Account ID](doc/aws_account_id.png)
+  3. In IAM dialog, select _Policies_ from the menu on the left
+  4. Click _Create policy_
+  5. Open _JSON_ tab and input the below policy code.
+  6. Make the below the changes to the policy JSON `Resource` section
+
+* Modify the AWS account id from `055251986555` to to the one you have on clipboard (see step 2 above)
+* If you are on some other region than `eu-west-1`, change the entry accordingly
+
 
 ```json
 {
@@ -75,8 +85,8 @@ Modify the policy accordingly if needed.
                 "dynamodb:UpdateTable"
             ],
             "Resource": [
-                "arn:aws:dynamodb:eu-west-1:084669220525:table/openhab",
-                "arn:aws:dynamodb:eu-west-1:084669220525:table/openhab/index/*"
+                "arn:aws:dynamodb:eu-west-1:055251986555:table/openhab",
+                "arn:aws:dynamodb:eu-west-1:055251986555:table/openhab/index/*"
             ]
         },
         {
@@ -100,7 +110,10 @@ Modify the policy accordingly if needed.
 <!-- markdownlint-enable ol-prefix -->
 
 <!-- markdownlint-disable-next-line no-emphasis-as-heading -->
-**Create user for openHAB with IAM**
+**Create user for openHAB**
+
+Here we create AWS user with programmatic access to the DynamoDB.
+We associate the user with the policy created above.
 
   1. Open _Services_ -> _IAM_ -> _Users_ -> _Add users_. Enter `openhab` as _User name_, and tick _Programmatic access_
   2. Click _Next: Permissions_
@@ -113,10 +126,12 @@ Modify the policy accordingly if needed.
 
 This service can be configured using the MainUI or using persistence configuration file `services/dynamodb.cfg`.
 
-In order to configure the persistence service, you need to configure two things:
+In order to configure the persistence service, you need to configure AWS credentials to access DynamoDB.
 
-1. Table schema revision to use
-2. AWS credentials to access DynamoDB
+For new users, the other default settings are OK.
+
+For DynamoDB persistence users with data stored with openHAB 3.1.0 or earlier, you need to decide whether you opt in to "new" more optimized table schema, or stay with "legacy".
+See below for details.
 
 ### Table schema
 
