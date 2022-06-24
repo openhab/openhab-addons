@@ -48,7 +48,7 @@ Testing has show that 2000ms is a reasonable default that allows for timely retr
 Channels are derived from the Echonet Lite specification and vary from device to device depending on capabilities.
 The full set of potential channels is available from "APPENDIX Detailed Requirements for ECHONET Device objects" (https://echonet.jp/spec_object_rp1_en/)
 
-The channels current implemented are:
+The channels currently implemented are:
 
 | Channel                            | Data Type | Description                                                   |
 |------------------------------------|-----------|---------------------------------------------------------------|
