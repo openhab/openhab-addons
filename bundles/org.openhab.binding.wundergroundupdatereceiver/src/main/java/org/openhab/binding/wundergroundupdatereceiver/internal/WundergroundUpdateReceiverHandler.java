@@ -33,6 +33,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -63,6 +64,7 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
     private final WundergroundUpdateReceiverDiscoveryService discoveryService;
     private final WundergroundUpdateReceiverUnknownChannelTypeProvider channelTypeProvider;
     private final ChannelTypeRegistry channelTypeRegistry;
+    private final ManagedThingProvider managedThingProvider;
 
     private final ChannelUID dateutcDatetimeChannel;
     private final ChannelUID lastReceivedChannel;
@@ -75,11 +77,12 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
             WundergroundUpdateReceiverServlet wunderGroundUpdateReceiverServlet,
             WundergroundUpdateReceiverDiscoveryService discoveryService,
             WundergroundUpdateReceiverUnknownChannelTypeProvider channelTypeProvider,
-            ChannelTypeRegistry channelTypeRegistry) {
+            ChannelTypeRegistry channelTypeRegistry, ManagedThingProvider managedThingProvider) {
         super(thing);
         this.discoveryService = discoveryService;
         this.channelTypeProvider = channelTypeProvider;
         this.channelTypeRegistry = channelTypeRegistry;
+        this.managedThingProvider = managedThingProvider;
 
         final ChannelGroupUID metadatGroupUID = new ChannelGroupUID(getThing().getUID(), METADATA_GROUP);
 
@@ -205,7 +208,8 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
                 updateState(channelUID, new DecimalType(numberValue));
             }
         } else if (this.discoveryService.isDiscovering()
-                && !WundergroundUpdateReceiverParameterMapping.isExcluded(parameterName)) {
+                && !WundergroundUpdateReceiverParameterMapping.isExcluded(parameterName)
+                && this.managedThingProvider.get(this.thing.getUID()) != null) {
             ThingBuilder thingBuilder = editThing();
             buildChannel(thingBuilder, parameterName, state);
             updateThing(thingBuilder.build());
