@@ -83,7 +83,7 @@ public class Constants {
     public static final String NOT_SET = "not set";
 
     public static final String CODE = "code";
+    public static final String MIME_PREFIX = "image/";
 
-    public static final String MIME_PNG = "image/png";
     public static final Unit<Length> KILOMETRE_UNIT = MetricPrefix.KILO(SIUnits.METRE);
 }

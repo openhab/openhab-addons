@@ -120,7 +120,8 @@ public class VehicleHandler extends BaseThingHandler {
                         }
                     }
                     if (!encodedImage.equals(EMPTY)) {
-                        RawType image = new RawType(Base64.getDecoder().decode(encodedImage), MIME_PNG);
+                        RawType image = new RawType(Base64.getDecoder().decode(encodedImage),
+                                MIME_PREFIX + config.get().format);
                         updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-data"), image);
                     } else {
                         logger.info("Empty image");
@@ -261,6 +262,27 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
+    private void setImageOtions() {
+        List<CommandOption> commandOptions = new ArrayList<CommandOption>();
+        List<StateOption> stateOptions = new ArrayList<StateOption>();
+        if (imageStorage.get().containsKey(EXT_IMG_RES + config.get().vin)) {
+            String resources = imageStorage.get().get(EXT_IMG_RES + config.get().vin);
+            JSONObject jo = new JSONObject(resources);
+            jo.keySet().forEach(entry -> {
+                CommandOption co = new CommandOption(entry, null);
+                commandOptions.add(co);
+                StateOption so = new StateOption(entry, null);
+                stateOptions.add(so);
+                // logger.info("Add command option {}", co.toString());
+            });
+        }
+        if (commandOptions.size() == 0) {
+            commandOptions.add(new CommandOption("Initilaze", null));
+        }
+        mmcop.setCommandOptions(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-view"), commandOptions);
+        mmsop.setStateOptions(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-view"), stateOptions);
+    }
+
     private String getImage(String key) {
         if (accountHandler.get().getImageApiKey().equals(NOT_SET)) {
             logger.info("Image API key not set");
@@ -293,27 +315,6 @@ public class VehicleHandler extends BaseThingHandler {
             logger.warn("Error getting data {}", e.getMessage());
         }
         return EMPTY;
-    }
-
-    private void setImageOtions() {
-        List<CommandOption> commandOptions = new ArrayList<CommandOption>();
-        List<StateOption> stateOptions = new ArrayList<StateOption>();
-        if (imageStorage.get().containsKey(EXT_IMG_RES + config.get().vin)) {
-            String resources = imageStorage.get().get(EXT_IMG_RES + config.get().vin);
-            JSONObject jo = new JSONObject(resources);
-            jo.keySet().forEach(entry -> {
-                CommandOption co = new CommandOption(entry, null);
-                commandOptions.add(co);
-                StateOption so = new StateOption(entry, null);
-                stateOptions.add(so);
-                // logger.info("Add command option {}", co.toString());
-            });
-        }
-        if (commandOptions.size() == 0) {
-            commandOptions.add(new CommandOption("Initilaze", null));
-        }
-        mmcop.setCommandOptions(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-view"), commandOptions);
-        mmsop.setStateOptions(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-view"), stateOptions);
     }
 
     private void call(String url) {

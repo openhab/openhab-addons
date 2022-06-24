@@ -46,6 +46,7 @@
 			<options>
 				<option value="webp">webp</option>
 				<option value="png">png</option>
+				<option value="jpeg">jpeg</option>
 			</options>
 		</parameter>
 	</config-description>

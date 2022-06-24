@@ -42,7 +42,12 @@ public class Utils {
     private static int port = 8090;
     private static List<Integer> ports = new ArrayList<Integer>();
 
-    public static int getFreePort() {
+    /**
+     * Get free port without other Thread interference
+     *
+     * @return
+     */
+    public static synchronized int getFreePort() {
         while (ports.contains(port)) {
             port++;
         }
@@ -50,28 +55,11 @@ public class Utils {
         return port;
     }
 
-    public static void addPort(int portNr) {
-        ports.add(portNr);
-    }
-
-    public static String getCallbackAddress() {
-        // https://stackoverflow.com/questions/1062041/ip-address-not-obtained-in-java
-        String ip = Constants.NOT_SET;
-        try {
-            for (Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces(); ifaces
-                    .hasMoreElements();) {
-                NetworkInterface iface = ifaces.nextElement();
-                // guess IP address, not loopback!
-                if (!Constants.LOOPBACK_ADDRESS.equals(iface.getName())) {
-                    for (Enumeration<InetAddress> addresses = iface.getInetAddresses(); addresses.hasMoreElements();) {
-                        InetAddress address = addresses.nextElement();
-                        ip = address.getHostAddress();
-                    }
-                }
-            }
-        } catch (Exception e) {
+    public static synchronized void addPort(int portNr) {
+        if (ports.contains(portNr)) {
+            logger.warn("Port {} already occupied", portNr);
         }
-        return Constants.HTTP + ip + Constants.COLON + "8090" + Constants.CALLBACK_ENDPOINT;
+        ports.add(portNr);
     }
 
     public static String getCallbackIP() {
