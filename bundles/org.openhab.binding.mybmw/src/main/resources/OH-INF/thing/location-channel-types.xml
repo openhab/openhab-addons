@@ -16,4 +16,9 @@
 		<item-type>String</item-type>
 		<label>Address</label>
 	</channel-type>
+	<channel-type id="home-distance-channel">
+		<item-type>Number:Length</item-type>
+		<label>Distance from Home</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>
