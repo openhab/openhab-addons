@@ -36,6 +36,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -166,20 +167,26 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     @Override
     public void onDeviceUpdated(Device device) {
         for (ThingUID thingUID : UidUtils.getThingUIDs(device, getThing())) {
-            final Thing gardenaThing;
-            final GardenaThingHandler gardenaThingHandler;
-            if ((gardenaThing = getThing().getThing(thingUID)) != null
-                    && (gardenaThingHandler = (GardenaThingHandler) gardenaThing.getHandler()) != null) {
-                try {
-                    gardenaThingHandler.updateProperties(device);
-                    for (Channel channel : gardenaThing.getChannels()) {
-                        gardenaThingHandler.updateChannel(channel.getUID());
-                    }
-                    gardenaThingHandler.updateStatus(device);
-                } catch (GardenaException ex) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
-                } catch (AccountHandlerNotAvailableException ignore) {
+            final Thing gardenaThing = getThing().getThing(thingUID);
+            if (gardenaThing == null) {
+                logger.debug("No thing exists for thingUID:{}", thingUID);
+                continue;
+            }
+            final ThingHandler thingHandler = gardenaThing.getHandler();
+            if (!(thingHandler instanceof GardenaThingHandler)) {
+                logger.debug("Handler for thingUID:{} is not a 'GardenaThingHandler' ({})", thingUID, thingHandler);
+                continue;
+            }
+            final GardenaThingHandler gardenaThingHandler = (GardenaThingHandler) thingHandler;
+            try {
+                gardenaThingHandler.updateProperties(device);
+                for (Channel channel : gardenaThing.getChannels()) {
+                    gardenaThingHandler.updateChannel(channel.getUID());
                 }
+                gardenaThingHandler.updateStatus(device);
+            } catch (GardenaException ex) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+            } catch (AccountHandlerNotAvailableException ignore) {
             }
         }
     }
