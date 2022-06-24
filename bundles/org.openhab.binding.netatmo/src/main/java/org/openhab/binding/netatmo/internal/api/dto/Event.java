@@ -61,8 +61,4 @@ public abstract class Event extends NAObject {
         return Stream.of(EventSubType.values()).filter(v -> v.types.contains(getEventType()) && v.subType == subType)
                 .findFirst();
     }
-
-    public void setEventType(EventType type) {
-        this.type = type;
-    }
 }

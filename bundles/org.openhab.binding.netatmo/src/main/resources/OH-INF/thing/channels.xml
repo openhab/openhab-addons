@@ -356,6 +356,7 @@
 				<option value="ALIM">Power status changed</option>
 				<option value="ACCEPTED_CALL">Call is incoming</option>
 				<option value="INCOMING_CALL">Call has been answered by a user</option>
+				<option value="RTC">Button pressed</option>
 				<option value="MISSED_CALL">Call has not been answered by anyone</option>
 				<option value="HUSH">Smoke detector status</option>
 				<option value="SMOKE">Smoke detection</option>
@@ -433,6 +434,7 @@
 				<option value="ALIM"/>
 				<option value="ACCEPTED_CALL"/>
 				<option value="INCOMING_CALL"/>
+				<option value="RTC"/>
 				<option value="MISSED_CALL"/>
 			</options>
 		</event>
