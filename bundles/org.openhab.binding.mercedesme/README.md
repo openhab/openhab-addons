@@ -330,6 +330,124 @@ My personal experience during limited testing
 | `roofOpen`       | No    |     |         | Not support by my vehicle                               |
 | `cropped         | No    |     |         | Not desired from my side                                |
 
+## Full example
+
+The example is based on a battery electric vehicle. 
+Exchange configuration parameters in the Things section
+
+Bridge
+
+* 4711 - your desired bridge id
+* YOUR_CLIENT_ID - Client ID of the Mercedes Developer project
+* YOUR_CLIENT_SECRET - Client Secret of the Mercedes Developer project
+* YOUR_API_KEY - Image API Key of the Mercedes Developer project
+* YOUR_OPENHAB_SERVER_IP - IP address of your openHAB server
+* 8090 - a **unique** port number - each bridge in your openHAB installation needs to have different port number!
+
+Thing
+
+* eqa - your desired vehicle thing id 
+* VEHICLE_VIN - your Vehicle Identification Number
+
+### Things file
+
+```
+Bridge mercedesme:account:4711   "MercedesMe John Doe" [ clientId="YOUR_CLIENT_ID", clientSecret="YOUR_CLIENT_SECRET", imageApiKey="YOUR_API_KEY", callbackIp="YOUR_OPENHAB_SERVER_IP", callbackPort=8092, odoScope=true, vehicleScope=true, lockScope=true, fuelScope=true, evScope=true] {
+         Thing bev eqa           "Mercedes EQA"        [ vin="VEHICLE_VIN", refreshInterval=5, background=false, night=false, cropped=false, roofOpen=false, format="webp"]
+}
+```
+
+### Items file
+
+```
+Number:Length           EQA_Mileage                 "Odometer [%d %unit%]"                        {channel="mercedesme:bev:4711:eqa:range#mileage" }                                                                           
+Number:Length           EQA_Range                   "Range [%d %unit%]"                           {channel="mercedesme:bev:4711:eqa:range#range-electric"}
+Number:Length           EQA_RangeRadius             "Range Radius [%d %unit%]"                    {channel="mercedesme:bev:4711:eqa:range#radius-electric"}   
+Number:Dimensionless    EQA_BatterySoc              "Battery Charge [%.1f %%]"                    {channel="mercedesme:bev:4711:eqa:range#soc"}
+
+Contact                 EQA_DriverDoor              "Driver Door [%s]"                            {channel="mercedesme:bev:4711:eqa:doors#driver-front" }
+Contact                 EQA_DriverDoorRear          "Driver Door Rear [%s]"                       {channel="mercedesme:bev:4711:eqa:doors#driver-rear" }
+Contact                 EQA_PassengerDoor           "Passenger Door [%s]"                         {channel="mercedesme:bev:4711:eqa:doors#passenger-front" }
+Contact                 EQA_PassengerDoorRear       "Passenger Door Rear [%s]"                    {channel="mercedesme:bev:4711:eqa:doors#passenger-rear" }
+Number                  EQA_Trunk                   "Trunk [%s]"                                  {channel="mercedesme:bev:4711:eqa:doors#deck-lid" }
+Number                  EQA_Rooftop                 "Rooftop [%s]"                                {channel="mercedesme:bev:4711:eqa:doors#rooftop" }
+Number                  EQA_Sunroof                 "Sunroof [%s]"                                {channel="mercedesme:bev:4711:eqa:doors#sunroof" }
+
+Number                  EQA_DoorLock                "Door Lock [%s]"                              {channel="mercedesme:bev:4711:eqa:lock#doors" }
+Switch                  EQA_TrunkLock               "Trunk Lock [%s]"                             {channel="mercedesme:bev:4711:eqa:lock#deck-lid" }
+Switch                  EQA_FlapLock                "Charge Flap Lock [%s]"                       {channel="mercedesme:bev:4711:eqa:lock#flap" }
+
+Number                  EQA_DriverWindow            "Driver Window [%s]"                          {channel="mercedesme:bev:4711:eqa:windows#driver-front" }
+Number                  EQA_DriverWindowRear        "Driver Window Rear [%s]"                     {channel="mercedesme:bev:4711:eqa:windows#driver-rear" }
+Number                  EQA_PassengerWindow         "Passenger Window [%s]"                       {channel="mercedesme:bev:4711:eqa:windows#passenger-front" }
+Number                  EQA_PassengerWindowRear     "Passenger Window Rear [%s]"                  {channel="mercedesme:bev:4711:eqa:windows#passenger-rear" }
+
+Number:Angle            EQA_Heading                 "Heading [%.1f %unit%]"                       {channel="mercedesme:bev:4711:eqa:location#heading" }  
+
+Image                   EQA_Image                   "Image"                                       {channel="mercedesme:bev:4711:eqa:image#image-data" }  
+String                  EQA_ImageViewport           "Image Viewport [%s]"                         {channel="mercedesme:bev:4711:eqa:image#image-view" }  
+Switch                  EQA_ClearCache              "Clear Cache [%s]"                            {channel="mercedesme:bev:4711:eqa:image#clear-cache" }  
+
+Switch                  EQA_InteriorFront           "Interior Front Light [%s]"                   {channel="mercedesme:bev:4711:eqa:lights#interior-front" }  
+Switch                  EQA_InteriorRear            "Interior Rear Light [%s]"                    {channel="mercedesme:bev:4711:eqa:lights#interior-rear" }  
+Switch                  EQA_ReadingLeft             "Reading Light Left [%s]"                     {channel="mercedesme:bev:4711:eqa:lights#reading-left" }  
+Switch                  EQA_ReadingRight            "Reading Light Right [%s]"                    {channel="mercedesme:bev:4711:eqa:lights#reading-right" }  
+Number                  EQA_LightSwitch             "Main Light Switch [%s]"                      {channel="mercedesme:bev:4711:eqa:lights#light-switch" }  
+
+### Sitemap
+
+```
+sitemap MB label="Mercedes Benz EQA" {
+  Frame label="EQA Image" {
+    Image  item=EQA_Image  
+                       
+  } 
+  Frame label="Range" {
+    Text    item=EQA_Mileage           
+    Text    item=EQA_Range             
+    Text    item=EQA_RangeRadius     
+    Text    item=EQA_BatterySoc        
+  }
+
+  Frame label="Door Details" {
+    Text      item=EQA_DriverDoor 
+    Text      item=EQA_DriverDoorRear   
+    Text      item=EQA_PassengerDoor 
+    Text      item=EQA_PassengerDoorRear 
+    Text      item=EQA_Trunk
+    Text      item=EQA_Rooftop
+    Text      item=EQA_Sunroof    
+    Text      item=EQA_DoorLock
+    Text      item=EQA_TrunkLock
+    Text      item=EQA_FlapLock
+  }
+
+  Frame label="Windows" {
+    Text     item=EQA_DriverWindow
+    Text     item=EQA_DriverWindowRear 
+    Text     item=EQA_PassengerWindow
+    Text     item=EQA_PassengerWindowRear
+  }
+  
+  Frame label="Location" {
+    Text    item=EQA_Heading             
+  }
+
+  Frame label="Lights" {
+    Text       item=EQA_InteriorFront
+    Text       item=EQA_InteriorRear
+    Text       item=EQA_ReadingLeft
+    Text       item=EQA_ReadingRight
+    Text       item=EQA_LightSwitch
+  } 
+
+  Frame label="Image Properties" {
+    Selection    item=EQA_ImageViewport
+    Switch       item=EQA_ClearCache
+  } 
+}
+```
+
 ## Mercedes Benz Developer
 
 Visit [Mercedes Benz Developer](https://developer.mercedes-benz.com/) to gain more deep information.
