@@ -43,6 +43,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -79,6 +80,7 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
     private final RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider;
     private final RemoteopenhabCommandDescriptionOptionProvider commandDescriptionProvider;
     private final Gson jsonParser;
+    private final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
 
@@ -90,6 +92,7 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
             final @Reference RemoteopenhabChannelTypeProvider channelTypeProvider,
             final @Reference RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider,
             final @Reference RemoteopenhabCommandDescriptionOptionProvider commandDescriptionProvider,
+            final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService,
             final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.httpClientTrustingCert = httpClientFactory.createHttpClient(RemoteopenhabBindingConstants.BINDING_ID);
@@ -99,6 +102,7 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.commandDescriptionProvider = commandDescriptionProvider;
         this.jsonParser = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
+        this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
 
@@ -207,7 +211,7 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(RemoteopenhabBindingConstants.BRIDGE_TYPE_SERVER)) {
             return new RemoteopenhabBridgeHandler((Bridge) thing, httpClient, httpClientTrustingCert, clientBuilder,
                     eventSourceFactory, channelTypeProvider, stateDescriptionProvider, commandDescriptionProvider,
-                    jsonParser, i18nProvider, localeProvider);
+                    jsonParser, channelTypeI18nLocalizationService, i18nProvider, localeProvider);
         } else if (RemoteopenhabBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new RemoteopenhabThingHandler(thing);
         }

@@ -68,6 +68,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelType;
@@ -110,6 +111,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
     private final RemoteopenhabChannelTypeProvider channelTypeProvider;
     private final RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider;
     private final RemoteopenhabCommandDescriptionOptionProvider commandDescriptionProvider;
+    private final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
     private final Bundle bundle;
@@ -128,12 +130,14 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             RemoteopenhabChannelTypeProvider channelTypeProvider,
             RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider,
             RemoteopenhabCommandDescriptionOptionProvider commandDescriptionProvider, final Gson jsonParser,
+            final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService,
             final TranslationProvider i18nProvider, final LocaleProvider localeProvider) {
         super(bridge);
         this.httpClientTrustingCert = httpClientTrustingCert;
         this.channelTypeProvider = channelTypeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.commandDescriptionProvider = commandDescriptionProvider;
+        this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
         this.bundle = FrameworkUtil.getBundle(this.getClass());
@@ -246,29 +250,21 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                             : stateDescription.pattern;
                     ChannelTypeUID channelTypeUID;
                     ChannelType channelType = channelTypeProvider.getChannelType(itemType, readOnly, pattern);
-                    String label;
-                    String description;
-                    String defaultValue;
                     if (channelType == null) {
                         channelTypeUID = channelTypeProvider.buildNewChannelTypeUID(itemType);
                         logger.trace("Create the channel type {} for item type {} ({} and with pattern {})",
                                 channelTypeUID, itemType, readOnly ? "read only" : "read write", pattern);
-                        defaultValue = String.format("Remote %s Item", itemType);
-                        label = i18nProvider.getText(bundle, "channel-type.label", defaultValue,
-                                localeProvider.getLocale(), itemType);
-                        label = label != null && !label.isBlank() ? label : defaultValue;
-                        description = i18nProvider.getText(bundle, "channel-type.description", defaultValue,
-                                localeProvider.getLocale(), itemType);
-                        description = description != null && !description.isBlank() ? description : defaultValue;
                         StateDescriptionFragmentBuilder stateDescriptionBuilder = StateDescriptionFragmentBuilder
                                 .create().withReadOnly(readOnly);
                         if (!pattern.isEmpty()) {
                             stateDescriptionBuilder = stateDescriptionBuilder.withPattern(pattern);
                         }
-                        channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
-                                .withDescription(description)
+                        channelType = ChannelTypeBuilder.state(channelTypeUID, "@text/channel-type.label", itemType)
+                                .withDescription("@text/channel-type.description")
                                 .withStateDescriptionFragment(stateDescriptionBuilder.build())
                                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+                        channelType = channelTypeI18nLocalizationService.createLocalizedChannelType(bundle, channelType,
+                                localeProvider.getLocale());
                         channelTypeProvider.addChannelType(itemType, channelType);
                         nbChannelTypesCreated++;
                     } else {
@@ -276,11 +272,11 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                     }
                     ChannelUID channelUID = new ChannelUID(getThing().getUID(), item.name);
                     logger.trace("Create the channel {} of type {}", channelUID, channelTypeUID);
-                    defaultValue = String.format("Item %s", item.name);
-                    label = i18nProvider.getText(bundle, "channel.label", defaultValue, localeProvider.getLocale(),
-                            item.name);
+                    String defaultValue = String.format("Item %s", item.name);
+                    String label = i18nProvider.getText(bundle, "channel.label", defaultValue,
+                            localeProvider.getLocale(), item.name);
                     label = label != null && !label.isBlank() ? label : defaultValue;
-                    description = i18nProvider.getText(bundle, "channel.description", defaultValue,
+                    String description = i18nProvider.getText(bundle, "channel.description", defaultValue,
                             localeProvider.getLocale(), item.name);
                     description = description != null && !description.isBlank() ? description : defaultValue;
                     channels.add(ChannelBuilder.create(channelUID, itemType).withType(channelTypeUID)
