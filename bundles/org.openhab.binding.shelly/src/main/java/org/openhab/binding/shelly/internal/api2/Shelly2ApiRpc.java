@@ -111,13 +111,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void initialize() throws ShellyApiException {
-        ShellyThingInterface t = thing;
-        if (t != null) {
-            if (!rpcSocket.isConnected()) {
-                rpcSocket.connect();
-            }
-            initialized = true;
+        if (!rpcSocket.isConnected()) {
+            rpcSocket.connect();
         }
+        initialized = true;
     }
 
     @Override
@@ -278,8 +275,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 boolean updated = false;
                 ShellyDeviceProfile profile = getProfile();
                 ShellySettingsStatus status = profile.status;
-                if (params.sys != null) {
-                    if (params.sys.restartRequired) {
+                if (params != null && params.sys != null) {
+                    if (getBool(params.sys.restartRequired)) {
                         logger.warn("{}: Device requires restart to activate changes", thingName);
                     }
                     status.uptime = getLong(params.sys.uptime);
@@ -299,7 +296,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
                 updated |= updateSensors(getThing(), status);
 
-                if (status.temperature == SHELLY_API_INVTEMP) {
+                if (getDouble(status.temperature) == SHELLY_API_INVTEMP) {
                     // no device temp available
                     status.temperature = null;
                 } else {

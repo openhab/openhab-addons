@@ -145,6 +145,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             try {
                 ShellyApiInterface api = gen2 ? new Shelly2ApiRpc(name, config, httpClient)
                         : new Shelly1HttpApi(name, config, httpClient);
+                api.initialize();
                 profile = api.getDeviceProfile(thingType);
                 logger.debug("{}: Shelly settings : {}", name, profile.settingsJson);
                 deviceName = getString(profile.name);

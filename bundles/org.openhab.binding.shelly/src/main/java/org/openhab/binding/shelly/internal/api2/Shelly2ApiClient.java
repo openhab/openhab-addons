@@ -251,8 +251,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             updated |= updateChannel(group, CHANNEL_OUTPUT, getOnOff(rstatus.ison));
         }
         if (getDouble(rs.timerStartetAt) > 0) {
-            rstatus.hasTimer = sr.hasTimer = rs.timerDuration > 0;
-            sr.timerRemaining = getInteger(rs.timerDuration);
+            int duration = getInteger(rs.timerDuration);
+            rstatus.hasTimer = sr.hasTimer = duration > 0;
+            sr.timerRemaining = duration;
             updated |= updateChannel(group, CHANNEL_TIMER_ACTIVE, getOnOff(sr.hasTimer));
         }
         if (rs.temperature != null && getDouble(rs.temperature.tC) > status.temperature) {
@@ -410,9 +411,14 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (sdata.bat == null) {
             sdata.bat = new ShellySensorBat();
         }
-        sdata.bat.voltage = value.battery.volt;
-        sdata.bat.value = value.battery.percent;
-        sdata.charger = value.external.present;
+
+        if (value.battery != null) {
+            sdata.bat.voltage = value.battery.volt;
+            sdata.bat.value = value.battery.percent;
+        }
+        if (value.external != null) {
+            sdata.charger = value.external.present;
+        }
     }
 
     private void postAlarms(@Nullable ArrayList<@Nullable String> errors) throws ShellyApiException {
@@ -445,7 +451,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
 
         ShellySettingsInput settings = new ShellySettingsInput();
-        settings.btnType = ic.type.equalsIgnoreCase(SHELLY2_BTNT_DETACHED) ? SHELLY_BTNT_MOMENTARY : SHELLY_BTNT_EDGE;
+        settings.btnType = getString(ic.type).equalsIgnoreCase(SHELLY2_BTNT_DETACHED) ? SHELLY_BTNT_MOMENTARY
+                : SHELLY_BTNT_EDGE;
         inputs.add(settings);
     }
 
