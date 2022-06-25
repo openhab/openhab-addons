@@ -766,7 +766,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     }
                 } catch (NumberFormatException e) {
                     // Skip this key/value
-                    logger.debug("Cannot parse number in status message: value '{}', key '{}'", entry.key, entry.value);
+                    logger.debug("Cannot parse number in status message: key '{}', value '{}'", entry.key, entry.value);
                 }
             }
 
