@@ -108,7 +108,7 @@ public class NetatmoConstants {
                                 String.format("%%.%df %s", measureDefinition.scale, UnitUtils.UNIT_PLACEHOLDER)));
                 if (canScale) {
                     channels.put(String.join("-", apiDescriptor, GROUP_TIMESTAMP),
-                            new MeasureChannelDetails(GROUP_TIMESTAMP, DATETIME, "%1$tA, %1$td.%1$tm. %1$tH:%1$tM"));
+                            new MeasureChannelDetails(GROUP_TIMESTAMP, DATETIME, "@text/timestamp.pattern"));
                 }
             }
         }
