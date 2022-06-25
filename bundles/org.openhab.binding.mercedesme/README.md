@@ -139,6 +139,7 @@ All channels `readonly`
 | radius-fuel      | Number:Length        |  Fuel radius for map         |     | X      | X          |
 | range-hybrid     | Number:Length        |  Hybrid range                |     | X      |            |
 | radius-hybrid    | Number:Length        |  Hybrid radius for map       |     | X      |            |
+| last-update      | DateTime             |  Last Update                 | X   | X      | X          |
 
 ### Doors
 
@@ -154,6 +155,7 @@ All channels `readonly`
 | deck-lid         | Contact              |  Deck lid                    |
 | sunroof          | Number               |  Sun roof (Cabriolet         |
 | rooftop          | Number               |  Roof top                    |
+| last-update      | DateTime             |  Last Update                 |
 
 Mapping table `sunroof`
 
@@ -186,6 +188,7 @@ All channels `readonly`
 | driver-rear      | Number               |  Driver window rear          |
 | passenger-front  | Number               |  Passenger window            |
 | passenger-rear   | Number               |  Passenger window rear       |
+| last-update      | DateTime             |  Last Update                 |
 
 Mapping table for all windows
 
@@ -210,6 +213,7 @@ All channels `readonly`
 | reading-left     | Switch               |  Passenger door              |
 | reading-right    | Switch               |  Passenger door rear         |
 | light-switch     | Number               |  Deck lid                    |
+| last-update      | DateTime             |  Last Update                 |
 
 Mapping table `light-switch`
 
@@ -231,6 +235,7 @@ All channels `readonly`
 | doors            | Number               |  Lock status all doors       |
 | deck-lid         | Switch               |  Deck lid lock               |
 | flap             | Switch               |  Flap lock                   |
+| last-update      | DateTime             |  Last Update                 |
 
 Mapping table `doors`
 
@@ -249,6 +254,7 @@ All channels `readonly`
 | Channel          | Type                 |  Description                 |
 |------------------|----------------------|------------------------------|
 | heading          | Number:Angle         |  Vehicle heading             |
+| last-update      | DateTime             |  Last Update                 |
 
 ### Image
 
@@ -393,6 +399,7 @@ Switch                  EQA_InteriorRear            "Interior Rear Light [%s]"  
 Switch                  EQA_ReadingLeft             "Reading Light Left [%s]"                     {channel="mercedesme:bev:4711:eqa:lights#reading-left" }  
 Switch                  EQA_ReadingRight            "Reading Light Right [%s]"                    {channel="mercedesme:bev:4711:eqa:lights#reading-right" }  
 Number                  EQA_LightSwitch             "Main Light Switch [%s]"                      {channel="mercedesme:bev:4711:eqa:lights#light-switch" }  
+```
 
 ### Sitemap
 

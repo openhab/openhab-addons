@@ -11,6 +11,7 @@
 			<channel id="range-electric" typeId="range-electric-channel"/>
 			<channel id="radius-electric" typeId="radius-electric-channel"/>
 			<channel id="soc" typeId="soc-channel"/>
+			<channel id="last-update" typeId="last-update-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

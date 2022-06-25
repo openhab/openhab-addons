@@ -11,6 +11,7 @@
 			<channel id="range-fuel" typeId="range-fuel-channel"/>
 			<channel id="radius-fuel" typeId="radius-fuel-channel"/>
 			<channel id="fuel-level" typeId="fuel-level-channel"/>
+			<channel id="last-update" typeId="last-update-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

@@ -15,9 +15,17 @@ package org.openhab.binding.mercedesme.internal;
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -38,6 +46,7 @@ import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
@@ -71,6 +80,8 @@ public class VehicleHandler extends BaseThingHandler {
 
     public static final String CONTENT_TYPE_URL_ENCODED = "application/x-www-form-urlencoded";
     private static final String EXT_IMG_RES = "ExtImageResources_";
+    private static final String DATE_INPUT_PATTERN_STRING = "yyyy-MM-dd'T'HH:mm:ss";
+    private static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern(DATE_INPUT_PATTERN_STRING);
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private Optional<AccountHandler> accountHandler = Optional.empty();;
@@ -78,6 +89,8 @@ public class VehicleHandler extends BaseThingHandler {
     private Optional<ChannelStateMap> rangeFuel = Optional.empty();
     private Optional<ChannelStateMap> rangeElectric = Optional.empty();
     private Optional<Storage<String>> imageStorage = Optional.empty();
+    private final Map<String, Long> timeHash = new HashMap<String, Long>();
+    private LocalDateTime nextRefresh;
     private final HttpClient hc;
     private final String uid;
     private final StorageService storageService;
@@ -94,13 +107,20 @@ public class VehicleHandler extends BaseThingHandler {
         this.storageService = storageService;
         // https://github.com/jetty-project/jetty-reactive-httpclient/issues/33
         hc.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
+        nextRefresh = LocalDateTime.now();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.info("Received {} {} {}", channelUID.getAsString(), command.toFullString(), channelUID.getId());
         if (command instanceof RefreshType) {
-
+            if (LocalDateTime.now().isAfter(nextRefresh)) {
+                nextRefresh = LocalDateTime.now().plus(Duration.ofSeconds(10));
+                logger.info("Refresh granted - next at {}", nextRefresh);
+                getData();
+            } else {
+                logger.info("Refresh rejected {}", nextRefresh);
+            }
         } else {
             if (channelUID.getIdWithoutGroup().equals("image-view")) {
                 if (imageStorage.isPresent()) {
@@ -203,8 +223,8 @@ public class VehicleHandler extends BaseThingHandler {
 
             // Fuel for hybrid and combustion
             if (uid.equals(COMBUSTION) || uid.equals(HYBRID)) {
-                String evUrl = String.format(FUEL_URL, config.get().vin);
-                call(evUrl);
+                String fuelUrl = String.format(FUEL_URL, config.get().vin);
+                call(fuelUrl);
             }
 
             // Status and Lock for all
@@ -218,15 +238,6 @@ public class VehicleHandler extends BaseThingHandler {
         } else {
             logger.warn("AccountHandler not set");
         }
-
-        // test image data
-        // String image64 = imageStorage.get("image:test");
-        // byte[] data = Base64.getDecoder().decode(image64);
-        // if (image64 != null) {
-        // updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-data"), new RawType(data, "image/png"));
-        // } else {
-        // logger.warn("Image not found in storage");
-        // }
     }
 
     private void getImageResources() {
@@ -326,8 +337,8 @@ public class VehicleHandler extends BaseThingHandler {
             logger.debug("{} Response {} {}", this.getThing().getLabel(), cr.getStatus(), cr.getContentAsString());
             if (cr.getStatus() == 200) {
                 JSONArray ja = new JSONArray(cr.getContentAsString());
-                ja.forEach(entry -> {
-                    JSONObject jo = (JSONObject) entry;
+                for (Iterator iterator = ja.iterator(); iterator.hasNext();) {
+                    JSONObject jo = (JSONObject) iterator.next();
                     ChannelStateMap csm = Mapper.getChannelStateMap(jo);
                     if (csm != null) {
                         updateChannel(csm);
@@ -339,7 +350,7 @@ public class VehicleHandler extends BaseThingHandler {
                     } else {
                         logger.warn("Unable to deliver state for {}", jo);
                     }
-                });
+                }
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Error getting data {}", e.getMessage());
@@ -350,26 +361,26 @@ public class VehicleHandler extends BaseThingHandler {
         if (rangeElectric.isPresent()) {
             // update electric radius
             ChannelStateMap radiusElectric = new ChannelStateMap("radius-electric", GROUP_RANGE,
-                    guessRangeRadius(rangeElectric.get().getState().as(QuantityType.class)));
+                    guessRangeRadius(rangeElectric.get().getState().as(QuantityType.class)), 0);
             updateChannel(radiusElectric);
             if (rangeFuel.isPresent()) {
                 // update fuel & hybrid radius
                 ChannelStateMap radiusFuel = new ChannelStateMap("radius-fuel", GROUP_RANGE,
-                        guessRangeRadius(rangeFuel.get().getState().as(QuantityType.class)));
+                        guessRangeRadius(rangeFuel.get().getState().as(QuantityType.class)), 0);
                 updateChannel(radiusFuel);
                 int hybridKm = rangeElectric.get().getState().as(QuantityType.class).intValue()
                         + rangeFuel.get().getState().as(QuantityType.class).intValue();
                 ChannelStateMap rangeHybrid = new ChannelStateMap("range-hybrid", GROUP_RANGE,
-                        QuantityType.valueOf(hybridKm, KILOMETRE_UNIT));
+                        QuantityType.valueOf(hybridKm, KILOMETRE_UNIT), 0);
                 updateChannel(rangeHybrid);
                 ChannelStateMap radiusHybrid = new ChannelStateMap("radius-hybrid", GROUP_RANGE,
-                        guessRangeRadius(rangeHybrid.getState().as(QuantityType.class)));
+                        guessRangeRadius(rangeHybrid.getState().as(QuantityType.class)), 0);
                 updateChannel(radiusHybrid);
             }
         } else if (rangeFuel.isPresent()) {
             // update fuel & hybrid radius
             ChannelStateMap radiusFuel = new ChannelStateMap("radius-fuel", GROUP_RANGE,
-                    guessRangeRadius((QuantityType) rangeFuel.get().getState()));
+                    guessRangeRadius((QuantityType) rangeFuel.get().getState()), 0);
             updateChannel(radiusFuel);
         }
     }
@@ -398,6 +409,27 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     protected void updateChannel(ChannelStateMap csm) {
+        updateTime(csm.getGroup(), csm.getTimestamp());
         updateState(new ChannelUID(thing.getUID(), csm.getGroup(), csm.getChannel()), csm.getState());
+    }
+
+    private void updateTime(String group, long timestamp) {
+        boolean updateTime = false;
+        Long l = timeHash.get(group);
+        if (l != null) {
+            if (l.longValue() < timestamp) {
+                updateTime = true;
+            }
+        } else {
+            updateTime = true;
+        }
+        if (updateTime) {
+            timeHash.put(group, timestamp);
+            Date d = new Date(timestamp);
+            LocalDateTime ld = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            DateTimeType dtt = DateTimeType.valueOf(ld.format(DATE_INPUT_PATTERN));
+            updateState(new ChannelUID(thing.getUID(), group, "last-update"), dtt);
+            logger.debug("{} last update {}", group, dtt);
+        }
     }
 }

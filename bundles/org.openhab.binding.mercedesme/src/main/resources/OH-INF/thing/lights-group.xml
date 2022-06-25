@@ -12,6 +12,7 @@
 			<channel id="light-switch" typeId="light-switch-channel"/>
 			<channel id="reading-left" typeId="reading-left-channel"/>
 			<channel id="reading-right" typeId="reading-right-channel"/>
+			<channel id="last-update" typeId="last-update-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

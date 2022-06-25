@@ -38,6 +38,7 @@ public class Mapper {
     private final static Logger logger = LoggerFactory.getLogger(Mapper.class);
     public static final Map<String, String[]> CHANNELS = new HashMap<String, String[]>();
     public static final String VALUE = "value";
+    public static final String TIMESTAMP = "timestamp";
 
     public static ChannelStateMap getChannelStateMap(JSONObject jo) {
         if (CHANNELS.isEmpty()) {
@@ -55,13 +56,13 @@ public class Mapper {
                     case "rangeelectric":
                     case "rangeliquid":
                         state = getKilometers((JSONObject) jo.get(id));
-                        return new ChannelStateMap(ch[0], ch[1], state);
+                        return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
 
                     // Percentages
                     case "soc":
                     case "tanklevelpercent":
                         state = getPercentage((JSONObject) jo.get(id));
-                        return new ChannelStateMap(ch[0], ch[1], state);
+                        return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
 
                     // Contacts
                     case "decklidstatus":
@@ -70,7 +71,7 @@ public class Mapper {
                     case "doorstatusrearleft":
                     case "doorstatusrearright":
                         state = getContact((JSONObject) jo.get(id));
-                        return new ChannelStateMap(ch[0], ch[1], state);
+                        return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
 
                     // Number Status
                     case "lightswitchposition":
@@ -82,7 +83,7 @@ public class Mapper {
                     case "windowstatusrearright":
                     case "doorlockstatusvehicle":
                         state = getDecimal((JSONObject) jo.get(id));
-                        return new ChannelStateMap(ch[0], ch[1], state);
+                        return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
 
                     // Switches
                     case "interiorLightsFront":
@@ -90,17 +91,17 @@ public class Mapper {
                     case "readingLampFrontLeft":
                     case "readingLampFrontRight":
                         state = getOnOffType((JSONObject) jo.get(id));
-                        return new ChannelStateMap(ch[0], ch[1], state);
+                        return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
 
                     case "doorlockstatusdecklid":
                     case "doorlockstatusgas":
                         state = getOnOffTypeLock((JSONObject) jo.get(id));
-                        return new ChannelStateMap(ch[0], ch[1], state);
+                        return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
 
                     // Angle
                     case "positionHeading":
                         state = getAngle((JSONObject) jo.get(id));
-                        return new ChannelStateMap(ch[0], ch[1], state);
+                        return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
                     default:
                         logger.info("No mapping available for {}", id);
                 }
@@ -112,6 +113,13 @@ public class Mapper {
             logger.info("More than one key found {}", s);
         }
         return null;
+    }
+
+    private static long getTimestamp(JSONObject jo) {
+        if (jo.has(TIMESTAMP)) {
+            return jo.getLong(TIMESTAMP);
+        }
+        return 0;
     }
 
     private static State getOnOffType(JSONObject jo) {

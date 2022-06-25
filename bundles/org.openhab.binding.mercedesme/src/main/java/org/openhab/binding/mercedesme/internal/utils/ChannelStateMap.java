@@ -23,11 +23,13 @@ public class ChannelStateMap {
     private String channel;
     private String group;
     private State state;
+    private long timestamp;
 
-    public ChannelStateMap(String ch, String grp, State st) {
+    public ChannelStateMap(String ch, String grp, State st, long ts) {
         channel = ch;
         group = grp;
         state = st;
+        timestamp = ts;
     }
 
     public String getChannel() {
@@ -40,6 +42,10 @@ public class ChannelStateMap {
 
     public State getState() {
         return state;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 
     @Override

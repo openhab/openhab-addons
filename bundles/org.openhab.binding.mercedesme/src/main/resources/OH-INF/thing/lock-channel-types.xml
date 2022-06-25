@@ -25,4 +25,9 @@
 		<label>Flap Lock</label>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="last-update-channel">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<state readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>
