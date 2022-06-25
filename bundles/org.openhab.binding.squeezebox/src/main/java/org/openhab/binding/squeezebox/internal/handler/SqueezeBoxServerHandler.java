@@ -696,7 +696,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                         updatePlayer(listener -> listener.modeChangeEvent(mac, entry.value));
                     }
                     // Parameter Playing Time
-                    else if ("time".equals(entry.key)) {
+                    else if ("time".equals(entry.key) && !"N/A".equals(entry.value)) {
                         final int time = (int) Double.parseDouble(entry.value);
                         updatePlayer(listener -> listener.currentPlayingTimeEvent(mac, time));
                     }
