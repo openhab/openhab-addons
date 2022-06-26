@@ -186,6 +186,21 @@ Based on a standard update period of 10mn by Netatmo systems - it will auto adap
 
 All these channels are read only.
 
+**Extensible channels for the main indoor module:**
+
+| Channel Type         | Item Type            | Description                       | Channel parameters               |
+|----------------------|----------------------|-----------------------------------|----------------------------------|
+| co2-measurement      | Number:Dimensionless | CO2 measurement                   | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| co2-timestamp        | DateTime             | CO2 measurement timestamp         | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| hum-measurement      | Number:Dimensionless | Humidity measurement              | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| hum-timestamp        | DateTime             | Humidity measurement timestamp    | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| noise-measurement    | Number:Dimensionless | Noise measurement                 | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| noise-timestamp      | DateTime             | Noise measurement timestamp       | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| pressure-measurement | Number:Pressure      | Pressure measurement              | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| pressure-timestamp   | DateTime             | Pressure measurement timestamp    | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| temp-measurement     | Number:Temperature   | Temperature measurement           | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| temp-timestamp       | DateTime             | Temperature measurement timestamp | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+
 
 ### Weather Station Outdoor module
 
@@ -213,6 +228,15 @@ All these channels are read only.
 | battery             | low-battery          | Switch               | Low battery                                      |
 
 All these channels are read only.
+
+**Extensible channels for the outdoor module:**
+
+| Channel Type         | Item Type            | Description                       | Channel parameters               |
+|----------------------|----------------------|-----------------------------------|----------------------------------|
+| hum-measurement      | Number:Dimensionless | Humidity measurement              | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| hum-timestamp        | DateTime             | Humidity measurement timestamp    | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| temp-measurement     | Number:Temperature   | Temperature measurement           | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| temp-timestamp       | DateTime             | Temperature measurement timestamp | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
 
 
 ### Weather Station Additional Indoor module
@@ -244,6 +268,17 @@ All these channels are read only.
 
 All these channels are read only.
 
+**Extensible channels for the additional indoor module:**
+
+| Channel Type         | Item Type            | Description                       | Channel parameters               |
+|----------------------|----------------------|-----------------------------------|----------------------------------|
+| co2-measurement      | Number:Dimensionless | CO2 measurement                   | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| co2-timestamp        | DateTime             | CO2 measurement timestamp         | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| hum-measurement      | Number:Dimensionless | Humidity measurement              | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| hum-timestamp        | DateTime             | Humidity measurement timestamp    | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| temp-measurement     | Number:Temperature   | Temperature measurement           | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| temp-timestamp       | DateTime             | Temperature measurement timestamp | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+
 
 ### Rain Gauge
 
@@ -263,6 +298,12 @@ All these channels are read only.
 | battery             | low-battery          | Switch               | Low battery                                      |
 
 All these channels are read only.
+
+**Extensible channels for the rain guage:**
+
+| Channel Type         | Item Type            | Description                       | Channel parameters                                 |
+|----------------------|----------------------|-----------------------------------|----------------------------------------------------|
+| sum_rain-measurement | Number:Length        | Summing rain measurement          | period (30min, 1hour, 3hours, 1day, 1week, 1month) |
 
 
 ### Weather Station Wind module
@@ -325,6 +366,20 @@ All these channels are read only.
 - 4 : unhealthy
 
 All these channels are read only.
+
+**Extensible channels for the healthy home coach device:**
+
+| Channel Type         | Item Type            | Description                       | Channel parameters               |
+|----------------------|----------------------|-----------------------------------|----------------------------------|
+| hum-measurement      | Number:Dimensionless | Humidity measurement              | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| hum-timestamp        | DateTime             | Humidity measurement timestamp    | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| noise-measurement    | Number:Dimensionless | Noise measurement                 | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| noise-timestamp      | DateTime             | Noise measurement timestamp       | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| pressure-measurement | Number:Pressure      | Pressure measurement              | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| pressure-timestamp   | DateTime             | Pressure measurement timestamp    | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| temp-measurement     | Number:Temperature   | Temperature measurement           | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| temp-timestamp       | DateTime             | Temperature measurement timestamp | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+
 
 
 ### Thermostat Relay Device
