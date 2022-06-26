@@ -39,6 +39,7 @@ import org.osgi.service.component.annotations.Reference;
  * Extends the ChannelTypeProvider generating Channel Types based on {@link MeasureClass} enum.
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Garnier - Localizing the extensible channel types
  *
  */
 @NonNullByDefault
@@ -53,7 +54,7 @@ public class NetatmoChannelTypeProvider implements ChannelTypeProvider {
         MeasureClass.AS_SET.forEach(mc -> mc.channels.forEach((measureChannel, channelDetails) -> {
             StateChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder
                     .state(new ChannelTypeUID(BINDING_ID, measureChannel),
-                            String.format("@text/channel-type.netatmo.%s.label", measureChannel),
+                            String.format("@text/extensible-channel-type.%s.label", measureChannel),
                             channelDetails.itemType)
                     .withStateDescriptionFragment(channelDetails.stateDescriptionFragment)
                     .withConfigDescriptionURI(channelDetails.configURI);
