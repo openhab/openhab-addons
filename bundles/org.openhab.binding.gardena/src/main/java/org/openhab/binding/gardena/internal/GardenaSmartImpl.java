@@ -81,25 +81,25 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     private static final String URL_API_LOCATIONS = URL_API_GARDENA + "/locations";
     private static final String URL_API_COMMAND = URL_API_GARDENA + "/command";
 
-    private String id;
-    private GardenaConfig config;
-    private ScheduledExecutorService scheduler;
+    private final String id;
+    private final GardenaConfig config;
+    private final ScheduledExecutorService scheduler;
 
-    private Map<String, Device> allDevicesById = new HashMap<>();
-    private LocationsResponse locationsResponse;
-    private GardenaSmartEventListener eventListener;
+    private final Map<String, Device> allDevicesById = new HashMap<>();
+    private final LocationsResponse locationsResponse;
+    private final GardenaSmartEventListener eventListener;
 
-    private HttpClient httpClient;
-    private Map<String, GardenaSmartWebSocket> webSockets = new HashMap<>();
+    private final HttpClient httpClient;
+    private final Map<String, GardenaSmartWebSocket> webSockets = new HashMap<>();
     private @Nullable PostOAuth2Response token;
     private boolean initialized = false;
-    private WebSocketClient webSocketClient;
+    private final WebSocketClient webSocketClient;
 
-    private Set<Device> devicesToNotify = ConcurrentHashMap.newKeySet();
-    private Object deviceUpdateTaskLock = new Object();
+    private final Set<Device> devicesToNotify = ConcurrentHashMap.newKeySet();
+    private final Object deviceUpdateTaskLock = new Object();
     private @Nullable ScheduledFuture<?> deviceUpdateTask;
-    private Object newDeviceTasksLock = new Object();
-    private List<ScheduledFuture<?>> newDeviceTasks = new ArrayList<>();
+    private final Object newDeviceTasksLock = new Object();
+    private final List<ScheduledFuture<?>> newDeviceTasks = new ArrayList<>();
 
     public GardenaSmartImpl(String id, GardenaConfig config, GardenaSmartEventListener eventListener,
             ScheduledExecutorService scheduler, HttpClientFactory httpClientFactory, WebSocketFactory webSocketFactory)
@@ -328,7 +328,10 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         }
         httpClient.destroy();
         webSocketClient.destroy();
-        locationsResponse = new LocationsResponse();
+        List<LocationDataItem> locationData = locationsResponse.data;
+        if (locationData != null) {
+            locationData.clear();
+        }
         allDevicesById.clear();
     }
 
