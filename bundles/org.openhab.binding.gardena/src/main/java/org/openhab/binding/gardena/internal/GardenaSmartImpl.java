@@ -25,7 +25,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -365,7 +364,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
 
             synchronized (newDeviceTasksLock) {
                 // remove prior completed tasks from the list
-                newDeviceTasks = newDeviceTasks.stream().filter(p -> !(p.isDone())).collect(Collectors.toList());
+                newDeviceTasks.removeIf(task -> task.isDone());
                 // add a new scheduled task to the list
                 newDeviceTasks.add(scheduler.schedule(() -> {
                     if (initialized) {
