@@ -223,7 +223,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
 
         try {
             value = getItemValueAsNumber(itemRegistry.getItem(itemName));
-            logger.info("Item '{}' value {} recovered by PID controller", itemName, value);
+            logger.debug("Item '{}' value {} recovered by PID controller", itemName, value);
         } catch (ItemNotFoundException e) {
             throw new IllegalArgumentException("Configured item not found: " + itemName, e);
         } catch (PIDException e) {
