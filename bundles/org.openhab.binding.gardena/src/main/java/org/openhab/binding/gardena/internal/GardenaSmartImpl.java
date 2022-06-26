@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.gardena.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -94,8 +97,10 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     private WebSocketClient webSocketClient;
 
     private Set<Device> devicesToNotify = ConcurrentHashMap.newKeySet();
-    private @Nullable ScheduledFuture<?> deviceToNotifyFuture;
-    private @Nullable ScheduledFuture<?> newDeviceFuture;
+    private Object deviceUpdateTaskLock = new Object();
+    private @Nullable ScheduledFuture<?> deviceUpdateTask;
+    private Object newDeviceTasksLock = new Object();
+    private List<ScheduledFuture<?>> newDeviceTasks = new ArrayList<>();
 
     public GardenaSmartImpl(String id, GardenaConfig config, GardenaSmartEventListener eventListener,
             ScheduledExecutorService scheduler, HttpClientFactory httpClientFactory, WebSocketFactory webSocketFactory)
@@ -300,15 +305,20 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     @Override
     public void dispose() {
         logger.debug("Disposing GardenaSmart");
-
-        final ScheduledFuture<?> newDeviceFuture = this.newDeviceFuture;
-        if (newDeviceFuture != null) {
-            newDeviceFuture.cancel(true);
+        initialized = false;
+        synchronized (newDeviceTasksLock) {
+            for (ScheduledFuture<?> task : newDeviceTasks) {
+                task.cancel(true);
+            }
+            newDeviceTasks.clear();
         }
-
-        final ScheduledFuture<?> deviceToNotifyFuture = this.deviceToNotifyFuture;
-        if (deviceToNotifyFuture != null) {
-            deviceToNotifyFuture.cancel(true);
+        synchronized (deviceUpdateTaskLock) {
+            devicesToNotify.clear();
+            ScheduledFuture<?> task = deviceUpdateTask;
+            if (task != null) {
+                task.cancel(true);
+            }
+            deviceUpdateTask = null;
         }
         stopWebsockets();
         try {
@@ -321,7 +331,6 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         webSocketClient.destroy();
         locationsResponse = new LocationsResponse();
         allDevicesById.clear();
-        initialized = false;
     }
 
     /**
@@ -354,16 +363,21 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             device = new Device(deviceId);
             allDevicesById.put(device.id, device);
 
-            if (initialized) {
-                newDeviceFuture = scheduler.schedule(() -> {
-                    Device newDevice = allDevicesById.get(deviceId);
-                    if (newDevice != null) {
-                        newDevice.evaluateDeviceType();
-                        if (newDevice.deviceType != null) {
-                            eventListener.onNewDevice(newDevice);
+            synchronized (newDeviceTasksLock) {
+                // remove prior completed tasks from the list
+                newDeviceTasks = newDeviceTasks.stream().filter(p -> !(p.isDone())).collect(Collectors.toList());
+                // add a new scheduled task to the list
+                newDeviceTasks.add(scheduler.schedule(() -> {
+                    if (initialized) {
+                        Device newDevice = allDevicesById.get(deviceId);
+                        if (newDevice != null) {
+                            newDevice.evaluateDeviceType();
+                            if (newDevice.deviceType != null) {
+                                eventListener.onNewDevice(newDevice);
+                            }
                         }
                     }
-                }, 3, TimeUnit.SECONDS);
+                }, 3, TimeUnit.SECONDS));
             }
         }
 
@@ -418,23 +432,34 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
                 handleDataItem(dataItem);
                 Device device = allDevicesById.get(dataItem.getDeviceId());
                 if (device != null && device.active) {
-                    devicesToNotify.add(device);
+                    synchronized (deviceUpdateTaskLock) {
+                        devicesToNotify.add(device);
 
-                    // delay the deviceUpdated event to filter multiple events for the same device dataItem property
-                    if (deviceToNotifyFuture == null) {
-                        deviceToNotifyFuture = scheduler.schedule(() -> {
-                            deviceToNotifyFuture = null;
-                            Iterator<Device> notifyIterator = devicesToNotify.iterator();
-                            while (notifyIterator.hasNext()) {
-                                eventListener.onDeviceUpdated(notifyIterator.next());
-                                notifyIterator.remove();
-                            }
-                        }, 1, TimeUnit.SECONDS);
+                        // delay the deviceUpdated event to filter multiple events for the same device dataItem property
+                        ScheduledFuture<?> task = this.deviceUpdateTask;
+                        if (task == null || task.isDone()) {
+                            deviceUpdateTask = scheduler.schedule(() -> notifyDevicesUpdated(), 1, TimeUnit.SECONDS);
+                        }
                     }
                 }
             }
         } catch (GardenaException | JsonSyntaxException ex) {
             logger.warn("Ignoring message: {}", ex.getMessage());
+        }
+    }
+
+    /**
+     * Helper scheduler task to update devices
+     */
+    private void notifyDevicesUpdated() {
+        synchronized (deviceUpdateTaskLock) {
+            if (initialized) {
+                Iterator<Device> notifyIterator = devicesToNotify.iterator();
+                while (notifyIterator.hasNext()) {
+                    eventListener.onDeviceUpdated(notifyIterator.next());
+                    notifyIterator.remove();
+                }
+            }
         }
     }
 

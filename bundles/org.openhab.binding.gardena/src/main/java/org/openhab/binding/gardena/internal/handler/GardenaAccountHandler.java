@@ -140,6 +140,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         final GardenaSmart gardenaSmart = this.gardenaSmart;
         if (gardenaSmart != null) {
             gardenaSmart.dispose();
+            this.gardenaSmart = null;
         }
     }
 
@@ -158,6 +159,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
+            // TODO: should a refresh REALLY cause a complete initialisation of the bridge?
             logger.debug("Refreshing Gardena account '{}'", getThing().getUID().getId());
             disposeGardena();
             initializeGardena();
