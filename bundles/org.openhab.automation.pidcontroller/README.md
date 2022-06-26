@@ -57,6 +57,9 @@ You can view the internal P-, I- and D-parts of the controller with the inspecto
 These values are useful when tuning the controller.
 They are updated every time the output is updated.
 
+Inspector items are also used to recover the controller's previous state during startup. This feature allows the PID
+controller parameters to be updated and OpenHAB to be restarted without losing the current controller state.
+
 ## Proportional (P) Gain Parameter
 
 Parameter: `kp`
@@ -135,3 +138,11 @@ This can be done either by changing the setpoint (e.g. 20°C -> 25°C) or by for
 
 This process can take some time with slow responding control loops like heating systems.
 You will get faster results with constant lighting or PV zero export applications.
+
+## Persisting controller state across restarts
+
+Persisting controller state requires inspector items `iInspector`, `dInspector`, `eInspector` to be configured.
+The PID controller uses these Items to expose internal state in order to restore it during startup or reload.
+
+In addition, you need to have persistence set up for these items in OpenHAB. Please see OpenHAB documentation regarding
+[Persistence](https://www.openhab.org/docs/configuration/persistence.html) for more details and instructions.
