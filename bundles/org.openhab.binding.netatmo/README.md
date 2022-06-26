@@ -713,14 +713,14 @@ Number:Speed         Rain_Intensity                    "Rain Intensity [%.1f %un
 Number:Length        Rain_Hour                         "Rain Last Hour [%.1f %unit%]"                               <rain>             { channel = "netatmo:rain:myaccount:inside:rainModule:rain#sum-1"}
 Number:Length        Rain_Today                        "Rain Today [%.1f %unit%]"                                   <rain>             { channel = "netatmo:rain:myaccount:inside:rainModule:rain#sum-24"}
 
-// Caméra
+// Camera
 Switch               CameraMonitoring                  "Monitoring"                                                 <switch>           { channel = "netatmo:welcome:myaccount:myhome:mycam:status#monitoring", autoupdate="false" }
 String               CameraAlimState                   "Alim State [%s]"                                            <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:status#alim" }
 String               CameraSDCardState                 "SD Card State [%s]"                                         <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:status#sd-card" }
 Image                CameraLiveSnapshot                "Live Snapshot"                                              <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:live#picture" }
 String               CameraLiveStreamLocalUrl          "Live Video Stream [%s]"                                     <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:live#local-stream-url" }
 String               CameraLiveStreamVpnUrl            "Live Video Stream [%s]"                                     <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:live#vpn-stream-url" }
-Number               CameraWifiStrength                "Wifi Strength [%s]"                                         <wifi>             { channel = "netatmo:welcome:myaccount:myhome:mycam:signal#strength" }
+Number               CameraWifiStrength                "Wi-Fi Strength [%s]"                                        <wifi>             { channel = "netatmo:welcome:myaccount:myhome:mycam:signal#strength" }
 DateTime             CameraEventTime                   "Event Timestamp [%1$tb %1$td %1$tH:%1$tM]"                  <time>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#time" }
 String               CameraEventType                   "Event Type [%s]"                                            <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#type" }
 String               CameraEventMessage                "Event Message [%s]"                                         <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#message" }
