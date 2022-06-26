@@ -307,7 +307,9 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         initialized = false;
         synchronized (newDeviceTasksLock) {
             for (ScheduledFuture<?> task : newDeviceTasks) {
-                task.cancel(true);
+                if (!task.isDone()) {
+                    task.cancel(true);
+                }
             }
             newDeviceTasks.clear();
         }
