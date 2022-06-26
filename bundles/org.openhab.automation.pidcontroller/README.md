@@ -35,14 +35,14 @@ This is then transferred to the action module.
 | `ki`             | Decimal | I: [Integral Gain](#integral-i-gain-parameter) Parameter                                                                                           | Y        |
 | `kd`             | Decimal | D: [Derivative Gain](#derivative-d-gain-parameter) Parameter                                                                                       | Y        |
 | `kdTimeConstant` | Decimal | D-T1: [Derivative Gain Time Constant](#derivative-time-constant-d-t1-parameter) in sec.                                                            | Y        |
-| `commandItem`    | String  | Send a String "RESET" to this item to reset the I- and the D-part to 0.                                                                             | N        |
+| `commandItem`    | String  | Send a String "RESET" to this item to reset the I- and the D-part to 0.                                                                            | N        |
 | `loopTime`       | Decimal | The interval the output value will be updated in milliseconds. Note: the output will also be updated when the input value or the setpoint changes. | Y        |
-| `integralMinValue` | Decimal | The I-part will be limited (min) to this value.                                                                                                  | N        |
-| `integralMaxValue` | Decimal | The I-part will be limited (max) to this value.                                                                                                  | N        |
-| `pInspector`     | Item    | Name of the debug Item for the current P-part                                                                                                      | N        |
-| `iInspector`     | Item    | Name of the debug Item for the current I-part                                                                                                      | N        |
-| `dInspector`     | Item    | Name of the debug Item for the current D-part                                                                                                      | N        |
-| `eInspector`     | Item    | Name of the debug Item for the current regulation difference (error)                                                                               | N        |
+| `integralMinValue` | Decimal | The I-part will be limited (min) to this value.                                                                                                    | N        |
+| `integralMaxValue` | Decimal | The I-part will be limited (max) to this value.                                                                                                    | N        |
+| `pInspector`     | Item    | Name of the inspector Item for the current P-part                                                                                                  | N        |
+| `iInspector`     | Item    | Name of the inspector Item for the current I-part                                                                                                  | N        |
+| `dInspector`     | Item    | Name of the inspector Item for the current D-part                                                                                                  | N        |
+| `eInspector`     | Item    | Name of the inspector Item for the current regulation difference (error)                                                                           | N        |
 
 The `loopTime` should be max a tenth of the system response.
 E.g. the heating needs 10 min to heat up the room, the loop time should be max 1 min.
