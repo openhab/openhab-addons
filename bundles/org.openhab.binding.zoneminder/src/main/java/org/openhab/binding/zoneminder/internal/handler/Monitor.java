@@ -101,7 +101,7 @@ public class Monitor {
     }
 
     public void setState(MonitorState state) {
-        this.alarm = (state != MonitorState.IDLE && state != MonitorState.UNKNOWN);
+        this.alarm = (state != MonitorState.IDLE && state != MonitorState.UNKNOWN && state != MonitorState.PREALERT);
         this.state = state;
     }
 
