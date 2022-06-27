@@ -144,25 +144,33 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
         requestData = request.toByteArray();
 
         if (logger.isTraceEnabled()) {
-            logger.trace("getRequestDataAsArrayOfBytes(): ntfSessionID={}.", reqSessionID);
-            logger.trace("getRequestDataAsArrayOfBytes(): reqCommandOriginator={}.", reqCommandOriginator);
-            logger.trace("getRequestDataAsArrayOfBytes(): reqPriorityLevel={}.", reqPriorityLevel);
-            logger.trace("getRequestDataAsArrayOfBytes(): reqParameterActive={}.", reqParameterActive);
-            logger.trace("getRequestDataAsArrayOfBytes(): reqFPI1={}.", reqFPI1);
-            logger.trace("getRequestDataAsArrayOfBytes(): reqFPI2={}.", reqFPI2);
-            logger.trace("getRequestDataAsArrayOfBytes(): reqMainParameter={}.", reqMainParameter);
+            logger.trace("getRequestDataAsArrayOfBytes(): ntfSessionID={}.", hex(reqSessionID));
+            logger.trace("getRequestDataAsArrayOfBytes(): reqCommandOriginator={}.", hex(reqCommandOriginator));
+            logger.trace("getRequestDataAsArrayOfBytes(): reqPriorityLevel={}.", hex(reqPriorityLevel));
+            logger.trace("getRequestDataAsArrayOfBytes(): reqParameterActive={}.", hex(reqParameterActive));
+            logger.trace("getRequestDataAsArrayOfBytes(): reqFPI1={}.", bin(reqFPI1));
+            logger.trace("getRequestDataAsArrayOfBytes(): reqFPI2={}.", bin(reqFPI2));
+            logger.trace("getRequestDataAsArrayOfBytes(): reqMainParameter={}.", hex(reqMainParameter));
             logger.trace("getRequestDataAsArrayOfBytes(): reqFunctionalParameters={}.", reqFunctionalParameters);
-            logger.trace("getRequestDataAsArrayOfBytes(): reqIndexArrayCount={}.", reqIndexArrayCount);
-            logger.trace("getRequestDataAsArrayOfBytes(): reqIndexArray01={} (reqNodeId={}.", reqIndexArray01,
+            logger.trace("getRequestDataAsArrayOfBytes(): reqIndexArrayCount={}.", hex(reqIndexArrayCount));
+            logger.trace("getRequestDataAsArrayOfBytes(): reqIndexArray01={} (reqNodeId={}).", reqIndexArray01,
                     reqIndexArray01);
-            logger.trace("getRequestDataAsArrayOfBytes(): reqPriorityLevelLock={}.", reqPriorityLevelLock);
-            logger.trace("getRequestDataAsArrayOfBytes(): reqPL03={}.", reqPL03);
-            logger.trace("getRequestDataAsArrayOfBytes(): reqPL47={}.", reqPL47);
-            logger.trace("getRequestDataAsArrayOfBytes(): reqLockTime={}.", reqLockTime);
+            logger.trace("getRequestDataAsArrayOfBytes(): reqPriorityLevelLock={}.", hex(reqPriorityLevelLock));
+            logger.trace("getRequestDataAsArrayOfBytes(): reqPL03={}.", hex(reqPL03));
+            logger.trace("getRequestDataAsArrayOfBytes(): reqPL47={}.", hex(reqPL47));
+            logger.trace("getRequestDataAsArrayOfBytes(): reqLockTime={}.", hex(reqLockTime));
 
             logger.trace("getRequestDataAsArrayOfBytes() data is {}.", new Packet(requestData).toString());
         }
         return requestData;
+    }
+
+    private String hex(int i) {
+        return Integer.toHexString(i);
+    }
+
+    private String bin(int i) {
+        return Integer.toBinaryString(i);
     }
 
     @Override
