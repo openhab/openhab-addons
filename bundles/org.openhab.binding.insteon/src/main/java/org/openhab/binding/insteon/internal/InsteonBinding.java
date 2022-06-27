@@ -117,6 +117,7 @@ public class InsteonBinding {
     private PortListener portListener = new PortListener();
     private int devicePollIntervalMilliseconds = 300000;
     private int deadDeviceTimeout = -1;
+    private boolean driverInitialized = false;
     private int messagesReceived = 0;
     private boolean isActive = false; // state of binding
     private int x10HouseUnit = -1;
@@ -165,6 +166,10 @@ public class InsteonBinding {
 
     public Driver getDriver() {
         return driver;
+    }
+
+    public boolean isDriverInitialized() {
+        return driverInitialized;
     }
 
     public boolean startPolling() {
@@ -519,6 +524,8 @@ public class InsteonBinding {
             if (!missing.isEmpty()) {
                 handler.addMissingDevices(missing);
             }
+
+            driverInitialized = true;
         }
 
         @Override

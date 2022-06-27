@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class InsteonNetworkHandler extends BaseBridgeHandler {
+    private static final int DRIVER_INITIALIZED_TIME_IN_SECONDS = 1;
     private static final int LOG_DEVICE_STATISTICS_DELAY_IN_SECONDS = 600;
     private static final int RETRY_DELAY_IN_SECONDS = 30;
     private static final int SETTLE_TIME_IN_SECONDS = 5;
@@ -54,6 +55,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
 
     private @Nullable InsteonBinding insteonBinding;
     private @Nullable InsteonDeviceDiscoveryService insteonDeviceDiscoveryService;
+    private @Nullable ScheduledFuture<?> driverInitializedJob = null;
     private @Nullable ScheduledFuture<?> pollingJob = null;
     private @Nullable ScheduledFuture<?> reconnectJob = null;
     private @Nullable ScheduledFuture<?> settleJob = null;
@@ -104,9 +106,24 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
                             insteonBinding.logDeviceStatistics();
                         }, 0, LOG_DEVICE_STATISTICS_DELAY_IN_SECONDS, TimeUnit.SECONDS);
 
-                        insteonBinding.setIsActive(true);
+                        // wait until driver is initialized before setting network to ONLINE
+                        driverInitializedJob = scheduler.scheduleWithFixedDelay(() -> {
+                            logger.debug("driver is not initialized yet");
 
-                        updateStatus(ThingStatus.ONLINE);
+                            if (insteonBinding.isDriverInitialized()) {
+                                logger.debug("driver is initialized");
+
+                                insteonBinding.setIsActive(true);
+
+                                updateStatus(ThingStatus.ONLINE);
+
+                                ScheduledFuture<?> driverInitializedJob = this.driverInitializedJob;
+                                if (driverInitializedJob != null) {
+                                    driverInitializedJob.cancel(false);
+                                }
+                                this.driverInitializedJob = null;
+                            }
+                        }, 0, DRIVER_INITIALIZED_TIME_IN_SECONDS, TimeUnit.SECONDS);
                     } else {
                         String msg = "Initialization failed, unable to start the Insteon bridge with the port '"
                                 + config.getPort() + "'.";
@@ -128,6 +145,12 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.debug("Shutting down Insteon bridge");
+
+        ScheduledFuture<?> driverInitializedJob = this.driverInitializedJob;
+        if (driverInitializedJob != null) {
+            driverInitializedJob.cancel(false);
+        }
+        this.driverInitializedJob = null;
 
         ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
