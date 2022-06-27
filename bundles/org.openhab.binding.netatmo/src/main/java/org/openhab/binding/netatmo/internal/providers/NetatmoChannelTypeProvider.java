@@ -22,17 +22,24 @@ import java.util.Locale;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
+import org.osgi.framework.Bundle;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Extends the ChannelTypeProvider generating Channel Types based on {@link MeasureClass} enum.
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Garnier - Localizing the extensible channel types
  *
  */
 @NonNullByDefault
@@ -40,15 +47,20 @@ import org.osgi.service.component.annotations.Component;
 public class NetatmoChannelTypeProvider implements ChannelTypeProvider {
     private final Collection<ChannelType> channelTypes = new HashSet<>();
 
-    public NetatmoChannelTypeProvider() {
+    @Activate
+    public NetatmoChannelTypeProvider(final @Reference ChannelTypeI18nLocalizationService localizationService,
+            final @Reference LocaleProvider localeProvider, ComponentContext componentContext) {
+        final Bundle bundle = componentContext.getBundleContext().getBundle();
         MeasureClass.AS_SET.forEach(mc -> mc.channels.forEach((measureChannel, channelDetails) -> {
             StateChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder
-                    .state(new ChannelTypeUID(BINDING_ID, measureChannel), measureChannel.replace("-", " "),
+                    .state(new ChannelTypeUID(BINDING_ID, measureChannel),
+                            String.format("@text/extensible-channel-type.%s.label", measureChannel),
                             channelDetails.itemType)
                     .withStateDescriptionFragment(channelDetails.stateDescriptionFragment)
                     .withConfigDescriptionURI(channelDetails.configURI);
-
-            channelTypes.add(channelTypeBuilder.build());
+            ChannelType channelType = localizationService.createLocalizedChannelType(bundle, channelTypeBuilder.build(),
+                    localeProvider.getLocale());
+            channelTypes.add(channelType);
         }));
     }
 
