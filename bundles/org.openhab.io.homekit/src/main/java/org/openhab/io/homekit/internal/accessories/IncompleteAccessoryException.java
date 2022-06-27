@@ -24,7 +24,7 @@ public class IncompleteAccessoryException extends Exception {
     private static final long serialVersionUID = 8595808359805444177L;
 
     public IncompleteAccessoryException(HomekitCharacteristicType missingType) {
-        super(String.format("Missing accessory type %s", missingType.getTag()));
+        super(String.format("Missing accessory characteristic %s", missingType.getTag()));
     }
 
     public IncompleteAccessoryException(String message) {

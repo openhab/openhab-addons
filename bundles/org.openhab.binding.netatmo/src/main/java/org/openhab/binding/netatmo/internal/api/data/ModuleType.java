@@ -30,16 +30,18 @@ import org.openhab.binding.netatmo.internal.handler.capability.CameraCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.ChannelHelperCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.DeviceCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.EventCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.DoorbellCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.MeasureCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PersonCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.SmokeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AirQualityChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EnergyChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.channelhelper.EventChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventDoorbellChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventPersonChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.PersonChannelHelper;
@@ -51,7 +53,6 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.SecurityChanne
 import org.openhab.binding.netatmo.internal.handler.channelhelper.SetpointChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.SirenChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.Therm1ChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.TimestampChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.WindChannelHelper;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -66,30 +67,27 @@ public enum ModuleType {
     ACCOUNT(FeatureArea.NONE, "", null, Set.of()),
 
     HOME(FeatureArea.NONE, "NAHome", ACCOUNT,
-            Set.of(DeviceCapability.class, EventCapability.class, HomeCapability.class, ChannelHelperCapability.class),
+            Set.of(DeviceCapability.class, HomeCapability.class, ChannelHelperCapability.class),
             new ChannelGroup(SecurityChannelHelper.class, GROUP_SECURITY),
             new ChannelGroup(EnergyChannelHelper.class, GROUP_ENERGY)),
 
-    PERSON(FeatureArea.SECURITY, "NAPerson", HOME,
-            Set.of(EventCapability.class, PersonCapability.class, ChannelHelperCapability.class),
+    PERSON(FeatureArea.SECURITY, "NAPerson", HOME, Set.of(PersonCapability.class, ChannelHelperCapability.class),
             new ChannelGroup(PersonChannelHelper.class, GROUP_PERSON),
             new ChannelGroup(EventPersonChannelHelper.class, GROUP_PERSON_LAST_EVENT)),
 
-    WELCOME(FeatureArea.SECURITY, "NACamera", HOME,
-            Set.of(EventCapability.class, CameraCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
-            ChannelGroup.EVENT, new ChannelGroup(CameraChannelHelper.class, GROUP_CAM_STATUS, GROUP_CAM_LIVE)),
+    WELCOME(FeatureArea.SECURITY, "NACamera", HOME, Set.of(CameraCapability.class, ChannelHelperCapability.class),
+            ChannelGroup.SIGNAL, ChannelGroup.EVENT,
+            new ChannelGroup(CameraChannelHelper.class, GROUP_CAM_STATUS, GROUP_CAM_LIVE)),
 
     SIREN(FeatureArea.SECURITY, "NIS", WELCOME, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
-            ChannelGroup.BATTERY, new ChannelGroup(TimestampChannelHelper.class, GROUP_TIMESTAMP),
-            new ChannelGroup(SirenChannelHelper.class, GROUP_SIREN)),
+            ChannelGroup.BATTERY, ChannelGroup.TIMESTAMP, new ChannelGroup(SirenChannelHelper.class, GROUP_SIREN)),
 
-    PRESENCE(FeatureArea.SECURITY, "NOC", HOME,
-            Set.of(EventCapability.class, PresenceCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
-            ChannelGroup.EVENT,
+    PRESENCE(FeatureArea.SECURITY, "NOC", HOME, Set.of(PresenceCapability.class, ChannelHelperCapability.class),
+            ChannelGroup.SIGNAL, ChannelGroup.EVENT,
             new ChannelGroup(PresenceChannelHelper.class, GROUP_CAM_STATUS, GROUP_CAM_LIVE, GROUP_PRESENCE)),
 
-    DOORBELL(FeatureArea.SECURITY, "NDB", HOME,
-            Set.of(EventCapability.class, CameraCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+    DOORBELL(FeatureArea.SECURITY, "NDB", HOME, Set.of(DoorbellCapability.class, ChannelHelperCapability.class),
+            ChannelGroup.SIGNAL,
             new ChannelGroup(CameraChannelHelper.class, GROUP_DOORBELL_STATUS, GROUP_DOORBELL_LIVE),
             new ChannelGroup(EventDoorbellChannelHelper.class, GROUP_DOORBELL_LAST_EVENT, GROUP_DOORBELL_SUB_EVENT)),
 
@@ -135,7 +133,11 @@ public enum ModuleType {
 
     ROOM(FeatureArea.ENERGY, "NARoom", HOME, Set.of(RoomCapability.class, ChannelHelperCapability.class),
             new ChannelGroup(RoomChannelHelper.class, GROUP_TYPE_ROOM_PROPERTIES, GROUP_TYPE_ROOM_TEMPERATURE),
-            new ChannelGroup(SetpointChannelHelper.class, GROUP_SETPOINT));
+            new ChannelGroup(SetpointChannelHelper.class, GROUP_SETPOINT)),
+
+    SMOKE_DETECTOR(FeatureArea.SECURITY, "NSD", HOME, Set.of(SmokeCapability.class, ChannelHelperCapability.class),
+            ChannelGroup.SIGNAL, ChannelGroup.TIMESTAMP,
+            new ChannelGroup(EventChannelHelper.class, GROUP_SMOKE_LAST_EVENT));
 
     public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);
 
@@ -202,11 +204,6 @@ public enum ModuleType {
 
     public static ModuleType from(ThingTypeUID thingTypeUID) {
         return ModuleType.AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
-                .orElseThrow(() -> new IllegalArgumentException());
-    }
-
-    public static ModuleType from(String apiName) {
-        return ModuleType.AS_SET.stream().filter(mt -> apiName.equals(mt.apiName)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException());
     }
 }

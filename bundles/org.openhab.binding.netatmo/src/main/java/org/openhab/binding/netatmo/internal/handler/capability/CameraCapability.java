@@ -97,7 +97,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
     public List<NAObject> updateReadings() {
         List<NAObject> result = new ArrayList<>();
         securityCapability.ifPresent(cap -> {
-            Collection<HomeEvent> events = cap.getCameraEvents(handler.getId(), moduleType.apiName);
+            Collection<HomeEvent> events = cap.getDeviceEvents(handler.getId(), moduleType.apiName);
             if (!events.isEmpty()) {
                 HomeEvent event = events.iterator().next();
                 result.add(event);
