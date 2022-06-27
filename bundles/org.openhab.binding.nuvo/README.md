@@ -53,7 +53,7 @@ Some notes:
 
 * If the port is set to 5006, the binding will adjust its protocol to connect to the Nuvo amplifier thing via an MPS4 IP connection.
 * MPS4 connections do not support commands using `SxDISPINFO`& `SxDISPLINE` (display_lineN channels) including those outlined in the advanced rules section below.
-* As of OH 3.3.0, the binding supports NuvoNet source communication for any/all of the amplifier's 6 inputs but only when using an MPS4 connection.
+* As of OH 3.4.0, the binding supports NuvoNet source communication for any/all of the amplifier's 6 inputs but only when using an MPS4 connection.
 * By implementing NuvoNet communication, the binding can now support sending custom menus, custom favorite lists, album art, etc. to the Nuvo keypads for each source configured as an openHAB NuvoNet source.
 * If a zone has a maximum volume limit configured by the Nuvo configurator, the volume slider will automatically drop back to that level if set above the configured limit.
 * Source display_line1 thru 4 can only be updated on non NuvoNet sources when not using an MPS4 connection.
@@ -69,6 +69,7 @@ Some notes:
 ```
 
 * Here is an example of ser2net.yaml (for ser2net version >= 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Nuvo amplifier):
+
 ```
 connection: &conNuvo
     accepter: tcp,4444
