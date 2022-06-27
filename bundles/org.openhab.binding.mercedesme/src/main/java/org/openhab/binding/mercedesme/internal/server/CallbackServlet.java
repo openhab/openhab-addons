@@ -48,10 +48,20 @@ public class CallbackServlet extends HttpServlet {
         } else {
             response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().println(request.getParameterMap());
             response.getWriter().println("<HTML>");
             response.getWriter().println("<BODY>");
-            response.getWriter().println("<BR><BR>Get your access token for openHAB MercedesMe Binding<BR><BR>");
+            response.getWriter().println("<B>Error messages</B>");
+            response.getWriter().println("<BR>");
+            response.getWriter().println(request.getParameterMap());
+            response.getWriter().println("<BR><BR>");
+            response.getWriter().println("<B>Configured scopes</B><BR>");
+            String[] scopes = CallbackServer.getScope(request.getLocalPort()).split(Constants.SPACE);
+            for (int i = 0; i < scopes.length; i++) {
+                response.getWriter().println(scopes[i] + "<BR>");
+            }
+            response.getWriter().println("<BR><BR>");
+            response.getWriter().println("<B>Get your access token for openHAB MercedesMe Binding</B>");
+            response.getWriter().println("<BR>");
             response.getWriter().println("<a href=\"" + CallbackServer.getAuthorizationUrl(request.getLocalPort())
                     + "\">Start Authorization</a>");
             response.getWriter().println("</BODY>");

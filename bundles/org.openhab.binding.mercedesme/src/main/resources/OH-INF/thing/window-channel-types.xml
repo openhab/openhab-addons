@@ -59,9 +59,9 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="last-update-channel">
+	<channel-type id="last-windows-update-channel">
 		<item-type>DateTime</item-type>
-		<label>Last Update</label>
-		<state readOnly="true"/>
+		<label>Last Window Update</label>
+		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

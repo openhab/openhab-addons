@@ -7,10 +7,10 @@
 		<label>Lock Status</label>
 		<description>Vehicle Lock Status</description>
 		<channels>
-			<channel id="doors" typeId="doors-channel"/>
-			<channel id="deck-lid" typeId="deck-lid-channel"/>
-			<channel id="flap" typeId="flap-channel"/>
-			<channel id="last-update" typeId="last-update-channel"/>
+			<channel id="doors" typeId="doors-lock-channel"/>
+			<channel id="deck-lid" typeId="deck-lid-lock-channel"/>
+			<channel id="flap" typeId="flap-lock-channel"/>
+			<channel id="last-update" typeId="last-lock-update-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

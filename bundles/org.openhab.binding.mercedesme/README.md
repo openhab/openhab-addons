@@ -26,7 +26,7 @@ Perform the following steps to obtain the configuration data and perform the aut
 1. Go to [Mercedes Developer Page](https://developer.mercedes-benz.com/). Login with your Mercedes Me credentials.
 2. Create a project in the [console tab](https://developer.mercedes-benz.com/console)
     - _Project Name:_  unique name e.g. **openHAB Mercedes Me binding** plus **Your bridge ID**
-    - _Purpose URL:_  use link towards this binding description 
+    - _Purpose URL:_  use link towards [this binding description](https://github.com/weymann/OH3-MercedesMe-Drops)
     - _Business Purpose:_  e.g. **Private usage in openHAB Smarthome system**
 3. After project is created subscribe [to these Mercedes Benz APIs](https://developer.mercedes-benz.com/products?vt=cars&vt=vans&vt=smart&p=BYOCAR) with _Add Products_ button 
 4. For all Products perform the same steps
@@ -72,7 +72,7 @@ Some supporting screenshots for the setup
 
 ### Callback page
 
-<img src="./doc/CallbackUrl_Page.png" width="420" height="140"/>
+<img src="./doc/CallbackUrl_Page.png" width="500" height="350"/>
 
 
 

@@ -77,6 +77,10 @@ public class CallbackServer {
         }
     }
 
+    public String getScope() {
+        return config.getScope();
+    }
+
     public void start() {
         logger.error("Start Callback Server");
         if (!server.isEmpty()) {
@@ -190,5 +194,9 @@ public class CallbackServer {
 
     public static String getAuthorizationUrl(int port) {
         return serverMap.get(port).getAuthorizationUrl();
+    }
+
+    public static String getScope(int port) {
+        return serverMap.get(port).getScope();
     }
 }

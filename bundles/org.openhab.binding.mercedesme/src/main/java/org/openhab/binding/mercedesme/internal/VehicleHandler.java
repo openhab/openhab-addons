@@ -21,6 +21,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -121,45 +122,45 @@ public class VehicleHandler extends BaseThingHandler {
             } else {
                 logger.info("Refresh rejected {}", nextRefresh);
             }
-        } else {
-            if (channelUID.getIdWithoutGroup().equals("image-view")) {
-                if (imageStorage.isPresent()) {
-                    if (command.equals("Initialze")) {
-                        getImageResources();
-                    }
-                    String key = command.toFullString() + "_" + config.get().vin;
-                    String encodedImage = EMPTY;
-                    if (imageStorage.get().containsKey(key)) {
-                        encodedImage = imageStorage.get().get(key);
-                        logger.info("Image {} found in storage", key);
-                    } else {
-                        logger.info("Request Image {} ", key);
-                        encodedImage = getImage(command.toFullString());
-                        if (!encodedImage.equals(EMPTY)) {
-                            imageStorage.get().put(key, encodedImage);
-                        }
-                    }
-                    if (!encodedImage.equals(EMPTY)) {
-                        RawType image = new RawType(Base64.getDecoder().decode(encodedImage),
-                                MIME_PREFIX + config.get().format);
-                        updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-data"), image);
-                    } else {
-                        logger.info("Empty image");
-                    }
-                } else if (channelUID.getIdWithoutGroup().equals("clear-cache") && command.equals(OnOffType.ON)) {
-                    List<String> removals = new ArrayList<String>();
-                    imageStorage.get().getKeys().forEach(entry -> {
-                        if (entry.contains("_" + config.get().vin)) {
-                            removals.add(entry);
-                        }
-                    });
-                    removals.forEach(entry -> {
-                        imageStorage.get().remove(entry);
-                    });
-                    updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "clear-cache"), OnOffType.OFF);
+        } else if (channelUID.getIdWithoutGroup().equals("image-view")) {
+            if (imageStorage.isPresent()) {
+                if (command.equals("Initialze")) {
                     getImageResources();
                 }
+                String key = command.toFullString() + "_" + config.get().vin;
+                String encodedImage = EMPTY;
+                if (imageStorage.get().containsKey(key)) {
+                    encodedImage = imageStorage.get().get(key);
+                    logger.info("Image {} found in storage", key);
+                } else {
+                    logger.info("Request Image {} ", key);
+                    encodedImage = getImage(command.toFullString());
+                    if (!encodedImage.equals(EMPTY)) {
+                        imageStorage.get().put(key, encodedImage);
+                    }
+                }
+                if (!encodedImage.equals(EMPTY)) {
+                    RawType image = new RawType(Base64.getDecoder().decode(encodedImage),
+                            MIME_PREFIX + config.get().format);
+                    updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-data"), image);
+                } else {
+                    logger.info("Empty image");
+                }
             }
+        } else if (channelUID.getIdWithoutGroup().equals("clear-cache") && command.equals(OnOffType.ON)) {
+            logger.info("Remove all  Images");
+            List<String> removals = new ArrayList<String>();
+            imageStorage.get().getKeys().forEach(entry -> {
+                if (entry.contains("_" + config.get().vin)) {
+                    removals.add(entry);
+                }
+            });
+            removals.forEach(entry -> {
+                imageStorage.get().remove(entry);
+                logger.info("Remove Image {}", entry);
+            });
+            updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "clear-cache"), OnOffType.OFF);
+            getImageResources();
         }
     }
 
@@ -274,21 +275,27 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void setImageOtions() {
-        List<CommandOption> commandOptions = new ArrayList<CommandOption>();
-        List<StateOption> stateOptions = new ArrayList<StateOption>();
+        List<String> entries = new ArrayList<String>();
         if (imageStorage.get().containsKey(EXT_IMG_RES + config.get().vin)) {
             String resources = imageStorage.get().get(EXT_IMG_RES + config.get().vin);
             JSONObject jo = new JSONObject(resources);
             jo.keySet().forEach(entry -> {
-                CommandOption co = new CommandOption(entry, null);
-                commandOptions.add(co);
-                StateOption so = new StateOption(entry, null);
-                stateOptions.add(so);
+                entries.add(entry);
                 // logger.info("Add command option {}", co.toString());
             });
         }
+        Collections.sort(entries);
+        List<CommandOption> commandOptions = new ArrayList<CommandOption>();
+        List<StateOption> stateOptions = new ArrayList<StateOption>();
+        entries.forEach(entry -> {
+            CommandOption co = new CommandOption(entry, null);
+            commandOptions.add(co);
+            StateOption so = new StateOption(entry, null);
+            stateOptions.add(so);
+        });
         if (commandOptions.size() == 0) {
             commandOptions.add(new CommandOption("Initilaze", null));
+            stateOptions.add(new StateOption("Initilaze", null));
         }
         mmcop.setCommandOptions(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-view"), commandOptions);
         mmsop.setStateOptions(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-view"), stateOptions);
@@ -405,7 +412,7 @@ public class VehicleHandler extends BaseThingHandler {
             return UnDefType.UNDEF;
         }
         double radius = s.intValue() * 0.8;
-        return QuantityType.valueOf(radius, KILOMETRE_UNIT);
+        return QuantityType.valueOf(Math.round(radius), KILOMETRE_UNIT);
     }
 
     protected void updateChannel(ChannelStateMap csm) {
@@ -429,7 +436,7 @@ public class VehicleHandler extends BaseThingHandler {
             LocalDateTime ld = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
             DateTimeType dtt = DateTimeType.valueOf(ld.format(DATE_INPUT_PATTERN));
             updateState(new ChannelUID(thing.getUID(), group, "last-update"), dtt);
-            logger.debug("{} last update {}", group, dtt);
+            logger.info("{} last update {}", group, dtt);
         }
     }
 }

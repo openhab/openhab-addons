@@ -99,7 +99,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             if (!token.equals(Constants.EMPTY)) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Manual Authorization needed");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "Manual Authorization needed at " + callbackUrl);
             }
         }
     }
@@ -122,11 +123,11 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     private boolean isConfigValid() {
+        config = Optional.of(getConfigAs(AccountConfiguration.class));
         if (!config.isEmpty()) {
             if (!config.get().callbackIP.equals(Constants.NOT_SET) && config.get().callbackPort != -1
                     && !config.get().clientId.equals(Constants.NOT_SET)
                     && !config.get().clientSecret.equals(Constants.NOT_SET)) {
-                // Callback address with port and client data is set - config seems to be valid
                 return true;
             }
         } else {
