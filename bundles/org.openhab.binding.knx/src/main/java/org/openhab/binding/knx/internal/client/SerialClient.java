@@ -36,6 +36,8 @@ import tuwien.auto.calimero.link.medium.TPSettings;
 @NonNullByDefault
 public class SerialClient extends AbstractKNXClient {
 
+    private static final String CALIMERO_ERROR_CANNOT_OPEN_PORT = "failed to open serial port";
+
     private final Logger logger = LoggerFactory.getLogger(SerialClient.class);
 
     private final String serialPort;
@@ -69,7 +71,8 @@ public class SerialClient extends AbstractKNXClient {
                     e);
         } catch (KNXException e) {
             final String msg = e.getMessage();
-            if ((msg != null) && (msg.startsWith("can not open serial port"))) {
+            // TODO add a test for this string match; error message might change in later version of Calimero library
+            if ((msg != null) && (msg.startsWith(CALIMERO_ERROR_CANNOT_OPEN_PORT))) {
                 StringBuilder sb = new StringBuilder("Available ports are:\n");
                 Enumeration<?> portList = CommPortIdentifier.getPortIdentifiers();
                 while (portList.hasMoreElements()) {

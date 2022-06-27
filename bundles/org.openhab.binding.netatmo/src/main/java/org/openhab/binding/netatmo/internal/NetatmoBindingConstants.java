@@ -66,8 +66,10 @@ public class NetatmoBindingConstants {
     public static final String OPTION_PERSON = "-person";
     public static final String OPTION_ROOM = "-room";
     public static final String OPTION_THERMOSTAT = "-thermostat";
+    public static final String OPTION_SMOKE = "-smoke";
     public static final Set<String> GROUP_VARIATIONS = Set.of(OPTION_EXTENDED, OPTION_OUTSIDE, OPTION_DOORBELL,
-            OPTION_PERSON, OPTION_ROOM, OPTION_THERMOSTAT);
+            OPTION_PERSON, OPTION_ROOM, OPTION_THERMOSTAT, OPTION_SMOKE);
+
     public static final String GROUP_TYPE_TIMESTAMP_EXTENDED = GROUP_TIMESTAMP + OPTION_EXTENDED;
     public static final String GROUP_TYPE_BATTERY_EXTENDED = GROUP_BATTERY + OPTION_EXTENDED;
     public static final String GROUP_TYPE_PRESSURE_EXTENDED = GROUP_PRESSURE + OPTION_EXTENDED;
@@ -79,6 +81,7 @@ public class NetatmoBindingConstants {
     public static final String GROUP_DOORBELL_LAST_EVENT = GROUP_LAST_EVENT + OPTION_DOORBELL;
     public static final String GROUP_DOORBELL_SUB_EVENT = GROUP_SUB_EVENT + OPTION_DOORBELL;
     public static final String GROUP_PERSON_LAST_EVENT = GROUP_LAST_EVENT + OPTION_PERSON;
+    public static final String GROUP_SMOKE_LAST_EVENT = GROUP_LAST_EVENT + OPTION_SMOKE;
     public static final String GROUP_TYPE_ROOM_TEMPERATURE = GROUP_TEMPERATURE + OPTION_ROOM;
     public static final String GROUP_TYPE_ROOM_PROPERTIES = GROUP_PROPERTIES + OPTION_ROOM;
     public static final String GROUP_TYPE_TH_PROPERTIES = GROUP_PROPERTIES + OPTION_THERMOSTAT;

@@ -100,6 +100,6 @@ public class ChannelTypeUtils {
                 return picture;
             }
         }
-        return UnDefType.UNDEF;
+        return UnDefType.NULL;
     }
 }

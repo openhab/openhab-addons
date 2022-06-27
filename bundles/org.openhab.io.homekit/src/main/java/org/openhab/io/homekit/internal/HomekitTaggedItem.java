@@ -282,7 +282,7 @@ public class HomekitTaggedItem {
     }
 
     public String toString() {
-        return "Item:" + proxyItem.getItem() + "  HomeKit type:" + homekitAccessoryType + " HomeKit characteristic:"
-                + homekitCharacteristicType;
+        return "Item:" + proxyItem.getItem() + "  HomeKit type: '" + homekitAccessoryType.getTag()
+                + "' characteristic: '" + homekitCharacteristicType.getTag() + "'";
     }
 }

@@ -51,6 +51,7 @@ public class ChannelGroup {
     public static final ChannelGroup LOCATION = new ChannelGroup(LocationChannelHelper.class, GROUP_LOCATION);
     public static final ChannelGroup BATTERY_EXT = new ChannelGroup(BatteryChannelHelper.class,
             GROUP_TYPE_BATTERY_EXTENDED);
+    public static final ChannelGroup TIMESTAMP = new ChannelGroup(TimestampChannelHelper.class, GROUP_TIMESTAMP);
     public static final ChannelGroup TSTAMP_EXT = new ChannelGroup(TimestampChannelHelper.class,
             GROUP_TYPE_TIMESTAMP_EXTENDED);
     public static final ChannelGroup TEMP_OUTSIDE_EXT = new ChannelGroup(TemperatureChannelHelper.class,

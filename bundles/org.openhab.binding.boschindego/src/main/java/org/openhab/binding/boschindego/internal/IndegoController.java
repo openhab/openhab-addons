@@ -216,7 +216,7 @@ public class IndegoController {
                 throw new IndegoAuthenticationException("Context rejected");
             }
             if (!HttpStatus.isSuccess(status)) {
-                throw new IndegoAuthenticationException("The request failed with HTTP error: " + status);
+                throw new IndegoException("The request failed with error: " + status);
             }
             String jsonResponse = response.getContentAsString();
             if (jsonResponse.isEmpty()) {
