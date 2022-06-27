@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeRunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.GetProduct;
+import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
@@ -194,14 +195,16 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
 
             VeluxProduct thisProduct = thisBridgeHandler.existingProducts().get(veluxActuator.getProductBridgeIndex());
             VeluxProductPosition mainPosition = VeluxProductPosition.UNKNOWN;
+            FunctionalParameters functionalParameters = null;
 
             switch (channelId) {
                 case CHANNEL_VANE_POSITION:
                     if (command instanceof PercentType) {
                         VeluxProductPosition vanePosition = new VeluxProductPosition((PercentType) command);
                         thisProduct.setVanePosition(vanePosition.getPositionAsVeluxType());
+                        functionalParameters = thisProduct.getFunctionalParameters();
+                        mainPosition = new VeluxProductPosition();
                     }
-                    mainPosition = new VeluxProductPosition(thisProduct.getCurrentPosition());
                     break;
                 case CHANNEL_ACTUATOR_POSITION:
                     if (command instanceof UpDownType) {
@@ -231,8 +234,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
             if (!mainPosition.equals(VeluxProductPosition.UNKNOWN)) {
                 LOGGER.debug("handleCommand(): sending command '{}' for channel id '{}'.", command, channelId);
                 new VeluxBridgeRunProductCommand().sendCommand(thisBridgeHandler.thisBridge,
-                        veluxActuator.getProductBridgeIndex().toInt(), mainPosition,
-                        thisProduct.getFunctionalParameters());
+                        veluxActuator.getProductBridgeIndex().toInt(), mainPosition, functionalParameters);
                 if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
                     LOGGER.trace("handleCommand(): actuator position will be updated via polling.");
                 }
