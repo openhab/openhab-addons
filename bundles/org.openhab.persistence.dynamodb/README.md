@@ -50,7 +50,6 @@ For users with old table schema, one can use pre-existing policy `AmazonDynamoDB
 
   1. Open Services menu, and search for _IAM_.
   2. From top right, press the small arrow on top right corner close to your name. Copy the _Account ID_ to clipboard by pressing the small "copy" icon
-  ![AWS Account ID](doc/aws_account_id.png)
   3. In IAM dialog, select _Policies_ from the menu on the left
   4. Click _Create policy_
   5. Open _JSON_ tab and input the below policy code.
