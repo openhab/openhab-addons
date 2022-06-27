@@ -36,7 +36,7 @@ public class StreamOutput {
     private final String boundary;
     private String contentType;
     private final ServletOutputStream output;
-    private BlockingQueue<byte[]> fifo = new ArrayBlockingQueue<byte[]>(30);
+    private BlockingQueue<byte[]> fifo = new ArrayBlockingQueue<byte[]>(50);
     private boolean connected = false;
     public boolean isSnapshotBased = false;
 

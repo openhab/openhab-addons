@@ -47,11 +47,11 @@
 				<context>serial-port</context>
 				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
-				<description>Serial port to use for connecting to the projector</description>
+				<description>Serial port to use for connecting to the projector.</description>
 			</parameter>
 			<parameter name="model" type="text" required="true">
 				<label>Model</label>
-				<description>Projector model to be controlled</description>
+				<description>Projector model to be controlled.</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
 					<option value="VPL-HW10">VPL-HW10</option>

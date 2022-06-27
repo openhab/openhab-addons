@@ -50,11 +50,16 @@ import org.slf4j.LoggerFactory;
 public class EcobeeSensorThingHandler extends BaseThingHandler {
 
     public static final String CAPABILITY_ADC = "adc";
+    public static final String CAPABILITY_AIR_PRESSURE = "airPressure";
+    public static final String CAPABILITY_AIR_QUALITY = "airQuality";
+    public static final String CAPABILITY_AIR_QUALITY_ACCURACY = "airQualityAccuracy";
     public static final String CAPABILITY_CO2 = "co2";
+    public static final String CAPABILITY_CO2_PPM = "co2PPM";
     public static final String CAPABILITY_DRY_CONTACT = "dryContact";
     public static final String CAPABILITY_HUMIDITY = "humidity";
     public static final String CAPABILITY_OCCUPANCY = "occupancy";
     public static final String CAPABILITY_TEMPERATURE = "temperature";
+    public static final String CAPABILITY_VOC_PPM = "vocPPM";
     public static final String CAPABILITY_UNKNOWN = "unknown";
 
     private final Logger logger = LoggerFactory.getLogger(EcobeeSensorThingHandler.class);
@@ -144,9 +149,14 @@ public class EcobeeSensorThingHandler extends BaseThingHandler {
                 acceptedItemType = "Switch";
                 break;
             case CAPABILITY_ADC:
+            case CAPABILITY_AIR_PRESSURE:
+            case CAPABILITY_AIR_QUALITY:
+            case CAPABILITY_AIR_QUALITY_ACCURACY:
             case CAPABILITY_CO2:
+            case CAPABILITY_CO2_PPM:
             case CAPABILITY_DRY_CONTACT:
             case CAPABILITY_UNKNOWN:
+            case CAPABILITY_VOC_PPM:
             default:
                 acceptedItemType = "String";
                 break;
@@ -167,9 +177,14 @@ public class EcobeeSensorThingHandler extends BaseThingHandler {
                 channelTypeUID = CHANNELTYPEUID_OCCUPANCY;
                 break;
             case CAPABILITY_ADC:
+            case CAPABILITY_AIR_PRESSURE:
+            case CAPABILITY_AIR_QUALITY:
+            case CAPABILITY_AIR_QUALITY_ACCURACY:
             case CAPABILITY_CO2:
+            case CAPABILITY_CO2_PPM:
             case CAPABILITY_DRY_CONTACT:
             case CAPABILITY_UNKNOWN:
+            case CAPABILITY_VOC_PPM:
             default:
                 channelTypeUID = CHANNELTYPEUID_GENERIC;
                 break;
@@ -198,9 +213,14 @@ public class EcobeeSensorThingHandler extends BaseThingHandler {
                 state = EcobeeUtils.undefOrOnOff("true".equals(value));
                 break;
             case CAPABILITY_ADC:
+            case CAPABILITY_AIR_PRESSURE:
+            case CAPABILITY_AIR_QUALITY:
+            case CAPABILITY_AIR_QUALITY_ACCURACY:
             case CAPABILITY_CO2:
+            case CAPABILITY_CO2_PPM:
             case CAPABILITY_DRY_CONTACT:
             case CAPABILITY_UNKNOWN:
+            case CAPABILITY_VOC_PPM:
             default:
                 state = EcobeeUtils.undefOrString(value);
                 break;

@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="groupepsa"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<bridge-type id="bridge">
+		<label>Groupe PSA Bridge</label>
+		<description>The bridge to communicate with the PSA (Peugeot, Citroen, Vauxhall, Opel, DS) Web API for End-Users</description>
+		<category>WebService</category>
+
+		<representation-property>vendor</representation-property>
+
+		<config-description>
+			<parameter name="vendor" type="text" required="true">
+				<label>Brand</label>
+				<description>The brand of the car</description>
+				<options>
+					<option value="PEUGEOT">Peugeot</option>
+					<option value="CITROEN">Citroen</option>
+					<option value="DS">DS</option>
+					<option value="OPEL">Opel</option>
+					<option value="VAUXHALL">Vauxhall</option>
+				</options>
+			</parameter>
+			<parameter name="userName" type="text" required="true">
+				<label>User Name</label>
+				<description>The user name for the mypeugot/mycitroen/myds/myopel/myvauxhall website or app</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<description>The password for the given user</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" required="false" unit="min">
+				<label>Polling Interval</label>
+				<default>60</default>
+				<description>How often the available vehicles should be queried in minutes</description>
+			</parameter>
+			<parameter name="clientId" type="text" required="true">
+				<advanced>true</advanced>
+				<default>07364655-93cb-4194-8158-6b035ac2c24c</default>
+				<label>Client ID</label>
+				<description>The client ID for API access: can normally left at the default value. (see:
+					https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article)</description>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="true">
+				<advanced>true</advanced>
+				<default>F2kK7lC5kF5qN7tM0wT8kE3cW1dP0wC5pI6vC0sQ5iP5cN8cJ8</default>
+				<label>Client Secret</label>
+				<description>The client secret for API access: can normally left at the default value. (see:
+					https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article)</description>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<thing-type id="vehicle">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Groupe PSA Car</label>
+		<description>Car connected via Groupe PSA (Peugeot, Citroen, Vauxhall, Opel, DS) Bridge</description>
+
+		<channel-groups>
+			<channel-group id="battery" typeId="battery"/>
+			<channel-group id="doors" typeId="doors"/>
+			<channel-group id="environment" typeId="environment"/>
+			<channel-group id="motion" typeId="motion"/>
+			<channel-group id="position" typeId="position"/>
+			<channel-group id="various" typeId="various"/>
+			<channel-group id="fuel" typeId="fuel"/>
+			<channel-group id="electric" typeId="electric"/>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">N/A</property>
+			<property name="model">N/A</property>
+			<property name="vin">N/A</property>
+		</properties>
+
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>ID</label>
+				<description>Vehicle API ID (obtained automatically during discovery, not equal to the VIN)</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" required="false" unit="min">
+				<label>Polling Interval</label>
+				<default>5</default>
+				<description>How often this vehicle should be polled for updated information</description>
+			</parameter>
+			<parameter name="onlineInterval" type="integer" required="false" unit="min">
+				<label>Online Timeout</label>
+				<default>15</default>
+				<description>Timeout when the vehicle is considered offline</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-group-type id="battery">
+		<label>Battery</label>
+		<description>Main battery</description>
+		<category>Energy</category>
+		<channels>
+			<channel id="current" typeId="current"/>
+			<channel id="voltage" typeId="voltage"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="doors">
+		<label>Doors</label>
+		<description>State of the doors</description>
+		<category>Door</category>
+		<channels>
+			<channel id="locked" typeId="doorLock"/>
+			<channel id="driver" typeId="doorOpen">
+				<label>Driver Door</label>
+				<description>Driver door open state</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="environment">
+		<label>Environment</label>
+		<description>Environmental conditions</description>
+		<channels>
+			<channel id="temperature" typeId="temperature">
+				<label>Outside Temperature</label>
+				<description>Outside Temperature</description>
+			</channel>
+			<channel id="daytime" typeId="daytime"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="motion">
+		<label>Motion</label>
+		<description>Motion information</description>
+		<channels>
+			<channel id="ignition" typeId="ignition"/>
+			<channel id="acceleration" typeId="acceleration"/>
+			<channel id="moving" typeId="moving"/>
+			<channel id="speed" typeId="speed"/>
+			<channel id="mileage" typeId="mileage"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="position">
+		<label>Position</label>
+		<description>Location information</description>
+		<channels>
+			<channel id="position" typeId="position"/>
+			<channel id="heading" typeId="heading"/>
+			<channel id="type" typeId="type"/>
+			<channel id="signal" typeId="system.signal-strength"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="various">
+		<label>Various</label>
+		<description>Miscellaneous information</description>
+		<channels>
+			<channel id="lastUpdated" typeId="lastUpdated"/>
+			<channel id="privacy" typeId="privacy"/>
+			<channel id="belt" typeId="belt"/>
+			<channel id="emergency" typeId="emergency"/>
+			<channel id="service" typeId="service"/>
+			<channel id="preconditioning" typeId="preconditioning"/>
+			<channel id="preconditioningFailure" typeId="preconditioningFailure"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Electrical current</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Voltage</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="daytime">
+		<item-type>Contact</item-type>
+		<label>Daytime</label>
+		<description>Enabled if it is daytime</description>
+	</channel-type>
+
+	<channel-type id="doorLock">
+		<item-type>String</item-type>
+		<label>Door Lock</label>
+		<description>Door lock state</description>
+		<category>Door</category>
+		<state readOnly="true">
+			<options>
+				<option value="Unlocked">Unlocked</option>
+				<option value="Locked">Locked</option>
+				<option value="SuperLocked">Super Locked</option>
+				<option value="DriverDoorUnlocked">Driver Door Unlocked</option>
+				<option value="CabinDoorsUnlocked">Cabin Doors Unlocked</option>
+				<option value="CargoDoorsLocked">Cargo Doors Locked</option>
+				<option value="CargoDoorsUnlocked">Cargo Doors Unlocked</option>
+				<option value="RearDoorsLocked">Rear Doors Locked</option>
+				<option value="RearDoorsUnlocked">Rear Doors Unlocked</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="doorOpen">
+		<item-type>Contact</item-type>
+		<label>Door Open</label>
+		<description>Door is open</description>
+		<category>Door</category>
+	</channel-type>
+
+	<channel-type id="ignition">
+		<item-type>String</item-type>
+		<label>Ignition</label>
+		<description>Ignition state</description>
+		<state readOnly="true">
+			<options>
+				<option value="Stop">Stop</option>
+				<option value="StartUp">Start up</option>
+				<option value="Start">Start</option>
+				<option value="Free">Free</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="moving">
+		<item-type>Contact</item-type>
+		<label>Moving</label>
+		<description>Vehicle is moving</description>
+	</channel-type>
+
+	<channel-type id="acceleration">
+		<item-type>Number:Acceleration</item-type>
+		<label>Acceleration</label>
+		<description>Current acceleration</description>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="speed">
+		<item-type>Number:Speed</item-type>
+		<label>Speed</label>
+		<description>Current speed</description>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="mileage">
+		<item-type>Number:Length</item-type>
+		<label>Mileage</label>
+		<description>Total travelled distance</description>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="position">
+		<item-type>Location</item-type>
+		<label>Position</label>
+		<description>Last known position</description>
+		<state pattern="%2$s°N %3$s°E %1$sm"/>
+	</channel-type>
+
+	<channel-type id="heading">
+		<item-type>Number:Angle</item-type>
+		<label>Heading</label>
+		<description>Direction of travel</description>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="type">
+		<item-type>String</item-type>
+		<label>Position Type</label>
+		<description>Position acquisition type</description>
+		<state readOnly="true">
+			<options>
+				<option value="Estimate">Estimate</option>
+				<option value="Acquire">Acquire</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="lastUpdated">
+		<item-type>DateTime</item-type>
+		<label>Time of Last Update</label>
+		<description>Last time the results were updated on the server</description>
+		<category>Time</category>
+	</channel-type>
+
+	<channel-type id="privacy">
+		<item-type>String</item-type>
+		<label>Privacy Status</label>
+		<description>Privacy status</description>
+		<state readOnly="true">
+			<options>
+				<option value="None">None</option>
+				<option value="Geolocation">Location</option>
+				<option value="Full">Full</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="belt">
+		<item-type>String</item-type>
+		<label>Belt Status</label>
+		<description>Seat belt status</description>
+		<state readOnly="true">
+			<options>
+				<option value="Normal">Belts on</option>
+				<option value="Omission">Belt open</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="emergency">
+		<item-type>String</item-type>
+		<label>Emergency Call</label>
+		<description>Emergency call status</description>
+		<state readOnly="true">
+			<options>
+				<option value="NoRequest">None</option>
+				<option value="AirbagUnabled">Airbag Deployed</option>
+				<option value="Requested">Emergency Call Requested</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="service">
+		<item-type>String</item-type>
+		<label>Service</label>
+		<description>Service Type</description>
+		<state readOnly="true">
+			<options>
+				<option value="Electric">Electric</option>
+				<option value="Hybrid">Hybrid</option>
+				<option value="Unknown">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="preconditioning">
+		<item-type>String</item-type>
+		<label>Air Conditioning</label>
+		<description>Air conditioning status</description>
+		<state readOnly="true">
+			<options>
+				<option value="Enabled">Enabled</option>
+				<option value="Disabled">Disabled</option>
+				<option value="Finished">Finished</option>
+				<option value="Failure">Failure</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="preconditioningFailure">
+		<item-type>String</item-type>
+		<label>Air Conditioning Failure</label>
+		<description>Air conditioning failure cause</description>
+		<state readOnly="true">
+			<options>
+				<option value="Defect">Defect</option>
+				<option value="DoorOpened">Door Opened</option>
+				<option value="LowBattery">Low Battery</option>
+				<option value="LowFuelLevel">Low Fuel Level</option>
+				<option value="TooManyUnusedProg">Too many times unused</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-group-type id="fuel">
+		<label>Fuel</label>
+		<description>Thermic Motor Fuel Status</description>
+		<category>Energy</category>
+		<channels>
+			<channel id="autonomy" typeId="autonomy"/>
+			<channel id="consumption" typeId="consumption"/>
+			<channel id="level" typeId="level"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="electric">
+		<label>Electric Energy</label>
+		<description>Electric motor energy status</description>
+		<channels>
+			<channel id="autonomy" typeId="autonomy">
+				<label>Electric Autonomy</label>
+				<description>Remaining distance</description>
+			</channel>
+			<channel id="level" typeId="level">
+				<label>Electricity Level</label>
+				<description>Electricity level</description>
+			</channel>
+			<channel id="residual" typeId="residual"/>
+			<channel id="batteryCapacity" typeId="capacity"/>
+			<channel id="batteryHealthCapacity" typeId="healthCapacity"/>
+			<channel id="batteryHealthResistance" typeId="healthResistance"/>
+			<channel id="chargingStatus" typeId="chargingStatus"/>
+			<channel id="chargingMode" typeId="chargingMode"/>
+			<channel id="chargingPlugged" typeId="chargingPlugged"/>
+			<channel id="chargingRate" typeId="chargingRate"/>
+			<channel id="chargingRemainingTime" typeId="chargingRemainingTime"/>
+			<channel id="chargingNextDelayedTime" typeId="chargingNextDelayedTime"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="level">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fuel Level</label>
+		<description>Fuel level</description>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="autonomy">
+		<item-type>Number:Length</item-type>
+		<label>Fuel Autonomy</label>
+		<description>Remaining distance</description>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="consumption">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Fuel Consumption</label>
+		<description>Fuel consumption</description>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="residual">
+		<item-type>Number:Energy</item-type>
+		<label>Remaining Charge</label>
+		<description>Remaining battery charge</description>
+		<category>BatteryLevel</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="capacity">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Capacity</label>
+		<description>Battery capacity</description>
+		<category>BatteryLevel</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="healthCapacity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Health - Capacity</label>
+		<description>Health of the battery capacity</description>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="healthResistance">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Health - Resistance</label>
+		<description>Health of the battery resistance</description>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="chargingStatus">
+		<item-type>String</item-type>
+		<label>Charging Status</label>
+		<description>Battery charging status</description>
+		<state readOnly="true">
+			<options>
+				<option value="Disconnected">Disconnected</option>
+				<option value="InProgess">In Progress</option>
+				<option value="Failure">Failure</option>
+				<option value="Stopped">Stopped</option>
+				<option value="Finished">Finished</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="chargingMode">
+		<item-type>String</item-type>
+		<label>Charging Mode</label>
+		<description>Battery charging mode</description>
+		<state readOnly="true">
+			<options>
+				<option value="No">No</option>
+				<option value="Slow">Slow</option>
+				<option value="Quick">Fast</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="chargingPlugged">
+		<item-type>Contact</item-type>
+		<label>Plugged In</label>
+		<description>Vehicle plugged in to charger</description>
+	</channel-type>
+
+	<channel-type id="chargingRate">
+		<item-type>Number:Speed</item-type>
+		<label>Charging Rate</label>
+		<description>Battery Charging Rate</description>
+		<category>BatteryLevel</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="chargingRemainingTime">
+		<item-type>Number:Time</item-type>
+		<label>Charging Time Remaining</label>
+		<description>Time remaining till charged</description>
+		<category>Time</category>
+		<state pattern="%tT"/>
+	</channel-type>
+
+	<channel-type id="chargingNextDelayedTime">
+		<item-type>Number:Time</item-type>
+		<label>Time Till Next Charging</label>
+		<description>Time till the next charging starts</description>
+		<category>Time</category>
+		<state pattern="%tT"/>
+	</channel-type>
+
+</thing:thing-descriptions>

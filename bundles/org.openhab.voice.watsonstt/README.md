@@ -24,6 +24,7 @@ Use your favorite configuration UI to edit **Settings / Other Services - IBM Wat
 
 Use your favorite configuration UI to edit **Settings / Other Services - IBM Watson Speech-to-Text**:
 
+* **Prefer Multimedia Model** - Prefer multimedia to telephony [models](https://cloud.ibm.com/docs/speech-to-text?topic=speech-to-text-models-ng). Multimedia models are intended for audio that has a minimum sampling rate of 16 kHz, while telephony models are intended for audio that has a minimum sampling rate of 8 kHz.
 * **Background Audio Suppression** - Use the parameter to suppress side conversations or background noise.
 * **Speech Detector Sensitivity** - Use the parameter to suppress word insertions from music, coughing, and other non-speech events.
 * **Single Utterance Mode** - When enabled recognition stops listening after a single utterance.

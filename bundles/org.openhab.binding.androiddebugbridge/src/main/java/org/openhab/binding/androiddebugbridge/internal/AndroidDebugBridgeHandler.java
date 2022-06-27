@@ -180,6 +180,12 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                         break;
                 }
                 break;
+            case START_INTENT_CHANNEL:
+                if (command instanceof RefreshType) {
+                    return;
+                }
+                adbConnection.startIntent(command.toFullString());
+                break;
             case RECORD_INPUT_CHANNEL:
                 recordDeviceInput(command);
                 break;

@@ -18,6 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,16 +41,17 @@ public class ShadeCapabilitiesDatabase {
      */
     private static final Map<Integer, Capabilities> CAPABILITIES_DATABASE = Arrays.asList(
     // @formatter:off
-            new Capabilities(0).primary().tiltOnClosed()                      .text("Bottom Up"),
-            new Capabilities(1).primary().tiltOnClosed()                      .text("Bottom Up Tilt 90°"),
-            new Capabilities(2).primary().tiltAnywhere().tilt180()            .text("Bottom Up Tilt 180°"),
-            new Capabilities(3).primary().tiltOnClosed()                      .text("Vertical"),
-            new Capabilities(4).primary().tiltAnywhere().tilt180()            .text("Vertical Tilt 180°"),
-            new Capabilities(5)          .tiltAnywhere().tilt180()            .text("Tilt Only 180°"),
-            new Capabilities(6).primary()                                     .text("Top Down")                 .primaryStateInverted(),
-            new Capabilities(7).primary()                         .secondary().text("Top Down Bottom Up"),
-            new Capabilities(8).primary()                                     .text("Duolite Lift")             .withBlackoutShade(),
-            new Capabilities(9).primary().tiltAnywhere()                      .text("Duolite Lift and Tilt 90°").withBlackoutShade(),
+            new Capabilities(0).primary()                                                       .text("Bottom Up"),
+            new Capabilities(1).primary()        .tiltOnClosed()                                .text("Bottom Up Tilt 90°"),
+            new Capabilities(2).primary()        .tiltAnywhere().tilt180()                      .text("Bottom Up Tilt 180°"),
+            new Capabilities(3).primary()        .tiltAnywhere().tilt180()                      .text("Vertical Tilt 180°"),
+            new Capabilities(4).primary()                                                       .text("Vertical"),
+            new Capabilities(5)                  .tiltAnywhere().tilt180()                      .text("Tilt Only 180°"),
+            new Capabilities(6).primaryInverted()                                               .text("Top Down"),
+            new Capabilities(7).primary()                                 .secondary()          .text("Top Down Bottom Up"),
+            new Capabilities(8).primary()                                 .secondaryOverlapped().text("Dual Overlapped"),
+            // note: for the following capabilities entry the 'tiltOnClosed()' applies to the primary shade
+            new Capabilities(9).primary()        .tiltOnClosed()          .secondaryOverlapped().text("Dual Overlapped Tilt 90°"),
     // @formatter:on
             new Capabilities()).stream().collect(Collectors.toMap(Capabilities::getValue, Function.identity()));
 
@@ -58,17 +60,20 @@ public class ShadeCapabilitiesDatabase {
      */
     private static final Map<Integer, Type> TYPE_DATABASE = Arrays.asList(
     // @formatter:off
+            new Type( 1).capabilities(0).text("Roller / Solar"),
             new Type( 4).capabilities(0).text("Roman"),
             new Type( 5).capabilities(0).text("Bottom Up"),
             new Type( 6).capabilities(0).text("Duette"),
             new Type( 7).capabilities(6).text("Top Down"),
             new Type( 8).capabilities(7).text("Duette Top Down Bottom Up"),
             new Type( 9).capabilities(7).text("Duette DuoLite Top Down Bottom Up"),
-            new Type(18).capabilities(1).text("Silhouette"),
+            new Type(18).capabilities(1).text("Pirouette"),
             new Type(23).capabilities(1).text("Silhouette"),
+            new Type(38).capabilities(9).text("Silhouette Duolite"),
             new Type(42).capabilities(0).text("M25T Roller Blind"),
             new Type(43).capabilities(1).text("Facette"),
-            new Type(44).capabilities(0).text("Twist"),
+            // note: the following shade type has the functionality of a capabilities 1 shade
+            new Type(44).capabilities(0).text("Twist").capabilitiesOverride(1),
             new Type(47).capabilities(7).text("Pleated Top Down Bottom Up"),
             new Type(49).capabilities(0).text("AC Roller"),
             new Type(51).capabilities(2).text("Venetian"),
@@ -77,9 +82,10 @@ public class ShadeCapabilitiesDatabase {
             new Type(56).capabilities(3).text("Vertical Slats Split Stack"),
             new Type(62).capabilities(2).text("Venetian"),
             new Type(65).capabilities(8).text("Vignette Duolite"),
-            new Type(69).capabilities(3).text("Curtain Left Stack"),
-            new Type(70).capabilities(3).text("Curtain Right Stack"),
-            new Type(71).capabilities(3).text("Curtain Split Stack"),
+            new Type(66).capabilities(5).text("Shutter"),
+            new Type(69).capabilities(4).text("Curtain Left Stack"),
+            new Type(70).capabilities(4).text("Curtain Right Stack"),
+            new Type(71).capabilities(4).text("Curtain Split Stack"),
             new Type(79).capabilities(8).text("Duolite Lift"),
     // @formatter:on
             new Type()).stream().collect(Collectors.toMap(Type::getValue, Function.identity()));
@@ -110,6 +116,7 @@ public class ShadeCapabilitiesDatabase {
      */
     public static class Type extends Base {
         private int capabilities = -1;
+        private int capabilitiesOverride = -1;
 
         protected Type() {
         }
@@ -128,6 +135,11 @@ public class ShadeCapabilitiesDatabase {
             return this;
         }
 
+        protected Type capabilitiesOverride(int capabilitiesOverride) {
+            this.capabilitiesOverride = capabilitiesOverride;
+            return this;
+        }
+
         /**
          * Get shade types's 'capabilities'.
          *
@@ -135,6 +147,15 @@ public class ShadeCapabilitiesDatabase {
          */
         public int getCapabilities() {
             return capabilities;
+        }
+
+        /**
+         * Get shade's type specific 'capabilities'.
+         *
+         * @return 'typeCapabilities'.
+         */
+        public int getCapabilitiesOverride() {
+            return capabilitiesOverride;
         }
     }
 
@@ -148,15 +169,15 @@ public class ShadeCapabilitiesDatabase {
         private boolean supportsSecondary;
         private boolean supportsTiltOnClosed;
         private boolean supportsTiltAnywhere;
-        private boolean supportsBlackoutShade;
-        private boolean primaryStateInverted;
+        private boolean supportsSecondaryOverlapped;
+        private boolean primaryInverted;
         private boolean tilt180Degrees;
 
         public Capabilities() {
         }
 
-        protected Capabilities withBlackoutShade() {
-            supportsBlackoutShade = true;
+        protected Capabilities secondaryOverlapped() {
+            supportsSecondaryOverlapped = true;
             return this;
         }
 
@@ -189,8 +210,9 @@ public class ShadeCapabilitiesDatabase {
             return this;
         }
 
-        protected Capabilities primaryStateInverted() {
-            primaryStateInverted = true;
+        protected Capabilities primaryInverted() {
+            supportsPrimary = true;
+            primaryInverted = true;
             return this;
         }
 
@@ -227,21 +249,21 @@ public class ShadeCapabilitiesDatabase {
         }
 
         /**
-         * Check if the Capabilities class instance supports a secondary shade.
+         * Check if the Capabilities class instance if the primary shade is inverted.
          *
          * @return true if the primary shade is inverted.
          */
-        public boolean isPrimaryStateInverted() {
-            return primaryStateInverted;
+        public boolean isPrimaryInverted() {
+            return primaryInverted;
         }
 
         /**
-         * Check if the Capabilities class instance supports 'tilt when closed'.
+         * Check if the Capabilities class instance supports 'tilt on closed'.
          *
          * Note: Simple bottom up or vertical shades that do not have independent vane controls, can be tilted in a
          * simple way, only when they are fully closed, by moving the shade motor a bit further.
          *
-         * @return true if the primary shade is inverted.
+         * @return true if the it supports tilt on closed.
          */
         public boolean supportsTiltOnClosed() {
             return supportsTiltOnClosed && !supportsTiltAnywhere;
@@ -250,19 +272,20 @@ public class ShadeCapabilitiesDatabase {
         /**
          * Check if the Capabilities class instance supports 180 degrees tilt.
          *
-         * @return true if the primary shade supports 180 degrees.
+         * @return true if the tilt range is 180 degrees.
          */
         public boolean supportsTilt180() {
             return tilt180Degrees;
         }
 
         /**
-         * Check if the Capabilities class instance supports a secondary 'DuoLite' blackout shade.
+         * Check if the Capabilities class instance supports an overlapped secondary shade.
+         * e.g. a 'DuoLite' or blackout shade.
          *
-         * @return true if the primary shade supports a secondary blackout shade.
+         * @return true if the shade supports a secondary overlapped shade.
          */
-        public boolean supportsBlackoutShade() {
-            return supportsBlackoutShade;
+        public boolean supportsSecondaryOverlapped() {
+            return supportsSecondaryOverlapped;
         }
     }
 
@@ -297,13 +320,35 @@ public class ShadeCapabilitiesDatabase {
     }
 
     /**
-     * Return a Capabilities class instance that corresponds to the given 'capabilities' parameter.
+     * Return a Capabilities class instance that corresponds to the given 'capabilitiesId' parameter. If the
+     * 'capabilitiesId' parameter is for a valid capabilities entry in the database, then that respective Capabilities
+     * class instance is returned. Otherwise a blank Capabilities class instance is returned.
      *
-     * @param capabilities the shade 'capabilities' parameter.
-     * @return corresponding instance of Capabilities class.
+     * @param capabilitiesId the target capabilities Id.
+     * @return corresponding Capabilities class instance.
      */
-    public Capabilities getCapabilities(int capabilities) {
-        return CAPABILITIES_DATABASE.getOrDefault(capabilities, new Capabilities());
+    public Capabilities getCapabilities(@Nullable Integer capabilitiesId) {
+        return CAPABILITIES_DATABASE.getOrDefault(capabilitiesId != null ? capabilitiesId.intValue() : -1,
+                new Capabilities());
+    }
+
+    /**
+     * Return a Capabilities class instance that corresponds to the given 'typeId' parameter. If the 'typeId' parameter
+     * is a valid type in the database, and it has a 'capabilitiesOverride' value, then an instance of the respective
+     * overridden Capabilities class is returned. Otherwise if the 'capabilitiesId' parameter is for a valid
+     * capabilities entry in the database, then that respective Capabilities class instance is returned. Otherwise a
+     * blank Capabilities class instance is returned.
+     *
+     * @param typeId the target shade type Id (to check if it has a 'capabilitiesOverride' value).
+     * @param capabilitiesId the target capabilities value (when type Id does not have a 'capabilitiesOverride').
+     * @return corresponding Capabilities class instance.
+     */
+    public Capabilities getCapabilities(int typeId, @Nullable Integer capabilitiesId) {
+        int targetCapabilities = TYPE_DATABASE.getOrDefault(typeId, new Type()).getCapabilitiesOverride();
+        if (targetCapabilities < 0) {
+            targetCapabilities = capabilitiesId != null ? capabilitiesId.intValue() : -1;
+        }
+        return getCapabilities(targetCapabilities);
     }
 
     private static final String REQUEST_DEVELOPERS_TO_UPDATE = " => Please request developers to update the database!";

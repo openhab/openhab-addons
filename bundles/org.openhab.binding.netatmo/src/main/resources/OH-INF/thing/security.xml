@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="security">
+		<label>Home Security</label>
+		<channels>
+			<channel id="person-count" typeId="person-count"/>
+			<channel id="unknown-person-count" typeId="unknown-person-count"/>
+			<channel id="unknown-person-picture" typeId="unknown-person-picture"/>
+			<channel id="home-event" typeId="home-event"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="status">
+		<label>Camera Status</label>
+		<channels>
+			<channel id="monitoring" typeId="monitoring-status"/>
+			<channel id="sd-card" typeId="sd-card-status"/>
+			<channel id="alim" typeId="alim-status"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="siren">
+		<label>Siren Status</label>
+		<channels>
+			<channel id="status" typeId="siren-status"/>
+			<channel id="monitoring" typeId="siren-monitoring"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="status-doorbell">
+		<label>Camera Status</label>
+		<channels>
+			<channel id="sd-card" typeId="sd-card-status"/>
+			<channel id="alim" typeId="alim-status"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="live">
+		<label>Live Monitoring</label>
+		<channels>
+			<channel id="picture" typeId="live-picture"/>
+			<channel id="local-picture-url" typeId="live-picture-url">
+				<label>Live Snapshot Local URL</label>
+				<description>Local URL of the live snapshot for this camera.</description>
+			</channel>
+			<channel id="vpn-picture-url" typeId="live-picture-url">
+				<label>Live Snapshot VPN URL</label>
+				<description>URL of the live snapshot for this camera through Netatmo VPN.</description>
+			</channel>
+			<channel id="local-stream-url" typeId="live-stream-url">
+				<label>Live Stream Local URL</label>
+				<description>Local URL of the live stream for this camera.</description>
+			</channel>
+			<channel id="vpn-stream-url" typeId="live-stream-url">
+				<label>Live Stream VPN URL</label>
+				<description>URL of the live stream for this camera through Netatmo VPN.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="live-doorbell">
+		<label>Live Monitoring</label>
+		<channels>
+			<channel id="picture" typeId="live-picture"/>
+			<channel id="local-picture-url" typeId="live-picture-url">
+				<label>Live Snapshot Local URL</label>
+				<description>Local URL of the live snapshot for this camera.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="last-event">
+		<label>Last Event</label>
+		<channels>
+			<channel id="type" typeId="event-type"/>
+			<channel id="subtype" typeId="event-subtype"/>
+			<channel id="person-id" typeId="person-id"/>
+			<channel id="video-status" typeId="video-status"/>
+			<channel id="message" typeId="message"/>
+			<channel id="time" typeId="timestamp">
+				<label>Event Timestamp</label>
+				<description>Moment when event occurred.</description>
+			</channel>
+			<channel id="snapshot" typeId="event-picture"/>
+			<channel id="snapshot-url" typeId="event-picture-url"/>
+			<channel id="local-video-url" typeId="video-url">
+				<label>Video Local URL</label>
+				<description>Local URL of the event recording.</description>
+			</channel>
+			<channel id="vpn-video-url" typeId="video-url">
+				<label>Video VPN URL</label>
+				<description>URL of the event recording through Netatmo VPN.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sub-event-doorbell">
+		<label>Sub Event</label>
+		<channels>
+			<channel id="type" typeId="event-type"/>
+			<channel id="time" typeId="timestamp">
+				<label>Sub-Event Timestamp</label>
+				<description>Moment when then sub-event occurred.</description>
+			</channel>
+			<channel id="message" typeId="message"/>
+			<channel id="snapshot" typeId="event-picture"/>
+			<channel id="snapshot-url" typeId="event-picture-url"/>
+			<channel id="vignette" typeId="event-picture">
+				<label>Vignette</label>
+				<description>Vignette of the Snapshot.</description>
+			</channel>
+			<channel id="vignette-url" typeId="event-picture-url">
+				<label>Vignette URL</label>
+				<description>URL of the vignette.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="last-event-doorbell">
+		<label>Last Event</label>
+		<channels>
+			<channel id="type" typeId="event-type"/>
+			<channel id="video-status" typeId="video-status"/>
+			<channel id="time" typeId="timestamp">
+				<label>Event Timestamp</label>
+				<description>Moment when event occurred.</description>
+			</channel>
+			<channel id="local-video-url" typeId="video-url">
+				<label>Video Local URL</label>
+				<description>Local URL of the event recording.</description>
+			</channel>
+			<channel id="vpn-video-url" typeId="video-url">
+				<label>Video VPN URL</label>
+				<description>URL of the event recording through Netatmo VPN.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="last-event-smoke">
+		<label>Last Event</label>
+		<channels>
+			<channel id="type" typeId="event-type"/>
+			<channel id="time" typeId="timestamp">
+				<label>Event Timestamp</label>
+				<description>Moment when event occurred.</description>
+			</channel>
+			<channel id="subtype" typeId="event-subtype"/>
+			<channel id="message" typeId="message"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="last-event-person">
+		<label>Last Event</label>
+		<channels>
+			<channel id="subtype" typeId="event-subtype"/>
+			<channel id="message" typeId="message">
+				<description>Last event message from this person.</description>
+			</channel>
+			<channel id="time" typeId="timestamp">
+				<label>Person Timestamp</label>
+				<description>Moment of the last event for this person.</description>
+			</channel>
+			<channel id="snapshot" typeId="event-picture">
+				<description>Picture of the last event for this person.</description>
+			</channel>
+			<channel id="snapshot-url" typeId="event-picture-url">
+				<description>URL for the picture of the last event for this person.</description>
+			</channel>
+			<channel id="camera-id" typeId="camera-id"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="person">
+		<label>Person</label>
+		<channels>
+			<channel id="avatar-url" typeId="avatar-picture-url"/>
+			<channel id="avatar" typeId="avatar-picture"/>
+			<channel id="at-home" typeId="at-home"/>
+			<channel id="last-seen" typeId="timestamp">
+				<label>Last Seen</label>
+				<description>Moment when this person was last seen.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="presence">
+		<label>Presence Camera</label>
+		<channels>
+			<channel id="floodlight" typeId="floodlight-mode"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

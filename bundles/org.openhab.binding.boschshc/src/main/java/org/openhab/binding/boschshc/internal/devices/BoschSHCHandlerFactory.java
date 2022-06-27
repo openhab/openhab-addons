@@ -21,7 +21,9 @@ import java.util.function.Function;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
+import org.openhab.binding.boschshc.internal.devices.camera.CameraHandler;
 import org.openhab.binding.boschshc.internal.devices.climatecontrol.ClimateControlHandler;
+import org.openhab.binding.boschshc.internal.devices.intrusion.IntrusionDetectionHandler;
 import org.openhab.binding.boschshc.internal.devices.lightcontrol.LightControlHandler;
 import org.openhab.binding.boschshc.internal.devices.motiondetector.MotionDetectorHandler;
 import org.openhab.binding.boschshc.internal.devices.shuttercontrol.ShutterControlHandler;
@@ -45,6 +47,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Stefan Kästle - Initial contribution
  * @author Christian Oeing - Added Shutter Control and ThermostatHandler; refactored handler mapping
  * @author Christian Oeing - Added WallThermostatHandler
+ * @author David Pace - Added cameras and intrusion detection system
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.boschshc", service = ThingHandlerFactory.class)
@@ -69,7 +72,10 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL, ShutterControlHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_THERMOSTAT, ThermostatHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_CLIMATE_CONTROL, ClimateControlHandler::new),
-            new ThingTypeHandlerMapping(THING_TYPE_WALL_THERMOSTAT, WallThermostatHandler::new));
+            new ThingTypeHandlerMapping(THING_TYPE_WALL_THERMOSTAT, WallThermostatHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_CAMERA_360, CameraHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_CAMERA_EYES, CameraHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_INTRUSION_DETECTION_SYSTEM, IntrusionDetectionHandler::new));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
