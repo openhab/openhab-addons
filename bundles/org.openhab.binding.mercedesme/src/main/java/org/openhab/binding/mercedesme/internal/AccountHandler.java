@@ -51,8 +51,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     public AccountHandler(Bridge bridge, HttpClientFactory hcf, OAuthFactory oaf, Storage<String> storage) {
         super(bridge);
-
-        logger.info("Storage {}", storage.getClass().getName());
         tokenStorageKey = bridge.getUID() + ":token";
         httpClientFactory = hcf;
         oAuthFactory = oaf;
@@ -66,15 +64,13 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     @Override
     public void initialize() {
-        logger.info("Initialize");
         updateStatus(ThingStatus.UNKNOWN);
         config = Optional.of(getConfigAs(AccountConfiguration.class));
         handleConfig();
-        if (!isConfigValid()) {
-            logger.info("Config not valid");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        String configValidReason = configValid();
+        if (!configValidReason.equals(Constants.EMPTY)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configValidReason);
         } else {
-            logger.info("Config valid - start server and start auth");
             String callbackUrl = Utils.getCallbackAddress(config.get().callbackIP, config.get().callbackPort);
             thing.setProperty("callbackUrl", callbackUrl);
 
@@ -87,11 +83,10 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                     AccessTokenResponse atr = (AccessTokenResponse) Utils.fromString(tokenSerial);
                     server.get().setToken(atr);
                 } else {
-                    logger.info("Token serial null in storage");
+                    logger.debug("Token cannot be restored from storage - manual authorization needed");
                 }
-                logger.info("Token restored from storage {}", tokenStorageKey);
             } else {
-                logger.info("Token not found in storage");
+                logger.debug("Token not found in storage - manual authorization needed");
             }
 
             server.get().start();
@@ -106,11 +101,9 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     private void handleConfig() {
-        // Handle not initialized Thing with "best guess values"
+        // if Callback IP and Callback Port are not set => autodetect these values
         config = Optional.of(getConfigAs(AccountConfiguration.class));
-        logger.info("Config delivered {}", config.get().toString());
         Configuration updateConfig = super.editConfiguration();
-        logger.info("Config to edit {}", updateConfig);
         if (!updateConfig.containsKey("callbackPort")) {
             updateConfig.put("callbackPort", Utils.getFreePort());
         } else {
@@ -122,27 +115,30 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         super.updateConfiguration(updateConfig);
     }
 
-    private boolean isConfigValid() {
+    private String configValid() {
         config = Optional.of(getConfigAs(AccountConfiguration.class));
         if (!config.isEmpty()) {
-            if (!config.get().callbackIP.equals(Constants.NOT_SET) && config.get().callbackPort != -1
-                    && !config.get().clientId.equals(Constants.NOT_SET)
-                    && !config.get().clientSecret.equals(Constants.NOT_SET)) {
-                return true;
+            if (config.get().callbackIP.equals(Constants.NOT_SET)) {
+                return "Callback IP " + Constants.NOT_SET;
+            } else if (config.get().callbackPort == -1) {
+                return "Callback Port " + Constants.NOT_SET;
+            } else if (config.get().clientId.equals(Constants.NOT_SET)) {
+                return "Client ID " + Constants.NOT_SET;
+            } else if (config.get().clientSecret.equals(Constants.NOT_SET)) {
+                return "Client Secret " + Constants.NOT_SET;
+            } else {
+                return Constants.EMPTY;
             }
         } else {
-            logger.info("Config is empty");
+            logger.debug("Config is empty");
         }
-        return false;
+        return Constants.EMPTY;
     }
 
     @Override
     public void dispose() {
         if (!server.isEmpty()) {
-            logger.info("Dispose - stop server");
             server.get().stop();
-        } else {
-            logger.info("Dispose - no server created");
         }
     }
 
@@ -151,12 +147,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
      */
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
-        logger.info("{} received new Access Token {}", config.get().callbackPort, tokenResponse.toString());
+        logger.trace("{} received new Access Token {}", config.get().callbackPort, tokenResponse.toString());
         if (!tokenResponse.isExpired(LocalDateTime.now(), 10)) {
             updateStatus(ThingStatus.ONLINE);
         }
         if (tokenResponse.getRefreshToken() != null) {
-            logger.info("{} store token in {}", config.get().callbackPort, tokenStorageKey);
+            logger.trace("{} store token in {}", config.get().callbackPort, tokenStorageKey);
             String tokenSerial = Utils.toString(tokenResponse);
             storage.put(tokenStorageKey, tokenSerial);
         }

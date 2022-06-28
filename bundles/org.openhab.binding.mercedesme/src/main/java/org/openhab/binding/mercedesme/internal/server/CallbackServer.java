@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 public class CallbackServer {
     private final static Logger logger = LoggerFactory.getLogger(CallbackServer.class);
 
-    private HttpClient httpClient;
     private AccessTokenRefreshListener listener;
     private Optional<Server> server = Optional.empty();
     private OAuthClientService oacs;
@@ -62,7 +61,6 @@ public class CallbackServer {
                 false);
         authMap.put(Integer.valueOf(config.callbackPort), oacs);
         serverMap.put(Integer.valueOf(config.callbackPort), this);
-        httpClient = hc;
         listener = l;
         this.config = config;
         this.callbackUrl = callbackUrl;
@@ -82,9 +80,9 @@ public class CallbackServer {
     }
 
     public void start() {
-        logger.error("Start Callback Server");
+        logger.debug("Start Callback Server for port {}", config.callbackPort);
         if (!server.isEmpty()) {
-            logger.info("Callback server already started");
+            logger.debug("Callback server for port {} already started", config.callbackPort);
             return;
         }
         server = Optional.of(new Server());
@@ -97,59 +95,35 @@ public class CallbackServer {
         try {
             server.get().start();
         } catch (Exception e) {
-            logger.error("Cannot start Callback Server {}", e.getMessage());
+            logger.warn("Cannot start Callback Server for port {}, Error {}", config.callbackPort, e.getMessage());
         }
     }
 
     public void stop() {
-        logger.error("Stop Callback Server");
+        logger.debug("Stop Callback Server");
         try {
             if (!server.isEmpty()) {
                 server.get().stop();
                 server = Optional.empty();
             }
         } catch (Exception e) {
-            logger.error("Cannot stop Callback Server {}", e.getMessage());
+            logger.warn("Cannot start Callback Server for port {}, Error {}", config.callbackPort, e.getMessage());
         }
     }
 
     public String getToken() {
         if (token.isEmpty()) {
-            logger.warn("Token empty - Manual Authorization needed at {}", callbackUrl);
-            // try {
-            // String url = oacs.getAuthorizationUrl(callbackUrl, null, null);
-            // logger.info("Token auth url {}", url);
-            //
-            // Request r = httpClient.newRequest(url);
-            // r.followRedirects(true);
-            // // ContentResponse cr = httpClient.GET(url);
-            // ContentResponse cr = r.send();
-            // logger.info("Auth Call Response {} {}", cr.getStatus(), cr.getContentAsString());
-
-            // StringBuilder result = new StringBuilder();
-            // URL curl = new URL(url);
-            // HttpURLConnection con = (HttpURLConnection) curl.openConnection();
-            // con.setRequestMethod("GET");
-            //
-            // try (BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-            // for (String line; (line = reader.readLine()) != null;) {
-            // result.append(line);
-            // }
-            // }
-            // logger.info("Token auth response {}", result);
-            // } catch (OAuthException | InterruptedException | TimeoutException | ExecutionException e) {
-            // logger.error("Error during authorization {}", e.getMessage());
-            // }
+            logger.debug("Token empty - Manual Authorization needed at {}", callbackUrl);
             return Constants.EMPTY;
         } else {
             if (token.get().isExpired(LocalDateTime.now(), 10)) {
-                logger.info("Token expired - start refreshing");
+                logger.trace("Token expired - start refreshing");
                 try {
                     AccessTokenResponse act = oacs.refreshToken();
                     token = Optional.of(act);
                     listener.onAccessTokenResponse(act);
                 } catch (OAuthException | IOException | OAuthResponseException e) {
-                    logger.error("Error refreshing token {}", e.getMessage());
+                    logger.warn("Error refreshing token {}", e.getMessage());
                 }
             } else {
                 logger.trace("Token valid - do nothing");
@@ -175,28 +149,42 @@ public class CallbackServer {
      * @param code
      */
     public static void callback(int port, String code) {
-        logger.info("Callback from Servlet {} {}", port, code);
-        logger.info("Server Map {}", serverMap);
-        OAuthClientService oacs = authMap.get(port);
+        logger.trace("Callback from Servlet {} {}", port, code);
         try {
-            logger.info("Get token from code {}", code);
+            OAuthClientService oacs = authMap.get(port);
+            logger.trace("Get token from code {}", code);
             // get CallbackServer instance
             CallbackServer srv = serverMap.get(port);
-            logger.info("Deliver token to {}", srv);
-            AccessTokenResponse atr = oacs.getAccessTokenResponseByAuthorizationCode(code, srv.callbackUrl);
-            logger.info("Upadte server token {}", atr.getAccessToken());
-            srv.token = Optional.of(atr);
-            srv.listener.onAccessTokenResponse(atr);
+            logger.trace("Deliver token to {}", srv);
+            if (srv != null && oacs != null) {
+                AccessTokenResponse atr = oacs.getAccessTokenResponseByAuthorizationCode(code, srv.callbackUrl);
+                srv.token = Optional.of(atr);
+                srv.listener.onAccessTokenResponse(atr);
+            } else {
+                logger.warn("Either Cllbackserver {} or Authorization Service {} not found", srv, oacs);
+            }
         } catch (OAuthException | IOException | OAuthResponseException e) {
-            logger.error("Exception getting token from code {} {}", code, e.getMessage());
+            logger.warn("Exception getting token from code {} {}", code, e.getMessage());
         }
     }
 
     public static String getAuthorizationUrl(int port) {
-        return serverMap.get(port).getAuthorizationUrl();
+        CallbackServer srv = serverMap.get(port);
+        if (srv != null) {
+            return srv.getAuthorizationUrl();
+        } else {
+            logger.debug("No Callbackserver found for {}", port);
+            return Constants.EMPTY;
+        }
     }
 
     public static String getScope(int port) {
-        return serverMap.get(port).getScope();
+        CallbackServer srv = serverMap.get(port);
+        if (srv != null) {
+            return srv.getScope();
+        } else {
+            logger.debug("No Callbackserver found for {}", port);
+            return Constants.EMPTY;
+        }
     }
 }

@@ -95,7 +95,7 @@ public class Utils {
             ois.close();
             return o;
         } catch (IOException | ClassNotFoundException e) {
-            logger.info("Exception Token deserialization {}", e.getMessage());
+            logger.debug("Exception Token deserialization {}", e.getMessage());
         }
         return Constants.EMPTY;
     }
@@ -109,7 +109,7 @@ public class Utils {
             oos.close();
             return Base64.getEncoder().encodeToString(baos.toByteArray());
         } catch (IOException e) {
-            logger.info("Exception Token serialization {}", e.getMessage());
+            logger.debug("Exception Token serialization {}", e.getMessage());
         }
         return Constants.EMPTY;
     }

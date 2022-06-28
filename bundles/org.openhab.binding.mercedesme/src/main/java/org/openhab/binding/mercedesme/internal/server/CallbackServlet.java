@@ -36,11 +36,10 @@ public class CallbackServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        logger.info("Call from ");
         String code = request.getParameter(Constants.CODE);
         if (code != null) {
             CallbackServer.callback(request.getLocalPort(), code);
-            logger.info("Code successfully extracted {}", request.getParameterMap());
+            logger.trace("Code successfully extracted {}", request.getParameterMap());
             response.setContentType("application/json");
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().println(request.getParameterMap());
@@ -67,9 +66,7 @@ public class CallbackServlet extends HttpServlet {
             response.getWriter().println("</BODY>");
             response.getWriter().println("</HTML>");
         }
-        logger.info("Request Url {}", request.getRequestURI());
-        logger.info("Address {}", request.getLocalAddr());
-        logger.info("Port {}", request.getLocalPort());
-        logger.info("Map {}", request.getParameterMap());
+        logger.debug("Call from {}:{} parameters {}", request.getLocalAddr(), request.getLocalPort(),
+                request.getParameterMap());
     }
 }

@@ -103,14 +103,14 @@ public class Mapper {
                         state = getAngle((JSONObject) jo.get(id));
                         return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
                     default:
-                        logger.info("No mapping available for {}", id);
+                        logger.trace("No mapping available for {}", id);
                 }
             } else {
-                logger.info("No mapping available for {}", id);
+                logger.trace("No mapping available for {}", id);
             }
 
         } else {
-            logger.info("More than one key found {}", s);
+            logger.debug("More than one key found {}", s);
         }
         return null;
     }

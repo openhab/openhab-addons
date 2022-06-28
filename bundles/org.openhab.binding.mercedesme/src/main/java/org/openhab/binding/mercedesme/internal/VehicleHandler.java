@@ -113,14 +113,14 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info("Received {} {} {}", channelUID.getAsString(), command.toFullString(), channelUID.getId());
+        logger.trace("Received {} {} {}", channelUID.getAsString(), command.toFullString(), channelUID.getId());
         if (command instanceof RefreshType) {
             if (LocalDateTime.now().isAfter(nextRefresh)) {
                 nextRefresh = LocalDateTime.now().plus(Duration.ofSeconds(10));
-                logger.info("Refresh granted - next at {}", nextRefresh);
+                logger.trace("Refresh granted - next at {}", nextRefresh);
                 getData();
             } else {
-                logger.info("Refresh rejected {}", nextRefresh);
+                logger.trace("Refresh rejected {}", nextRefresh);
             }
         } else if (channelUID.getIdWithoutGroup().equals("image-view")) {
             if (imageStorage.isPresent()) {
@@ -131,9 +131,9 @@ public class VehicleHandler extends BaseThingHandler {
                 String encodedImage = EMPTY;
                 if (imageStorage.get().containsKey(key)) {
                     encodedImage = imageStorage.get().get(key);
-                    logger.info("Image {} found in storage", key);
+                    logger.trace("Image {} found in storage", key);
                 } else {
-                    logger.info("Request Image {} ", key);
+                    logger.trace("Request Image {} ", key);
                     encodedImage = getImage(command.toFullString());
                     if (!encodedImage.equals(EMPTY)) {
                         imageStorage.get().put(key, encodedImage);
@@ -144,11 +144,10 @@ public class VehicleHandler extends BaseThingHandler {
                             MIME_PREFIX + config.get().format);
                     updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-data"), image);
                 } else {
-                    logger.info("Empty image");
+                    logger.debug("Image {} is empty", key);
                 }
             }
         } else if (channelUID.getIdWithoutGroup().equals("clear-cache") && command.equals(OnOffType.ON)) {
-            logger.info("Remove all  Images");
             List<String> removals = new ArrayList<String>();
             imageStorage.get().getKeys().forEach(entry -> {
                 if (entry.contains("_" + config.get().vin)) {
@@ -157,7 +156,6 @@ public class VehicleHandler extends BaseThingHandler {
             });
             removals.forEach(entry -> {
                 imageStorage.get().remove(entry);
-                logger.info("Remove Image {}", entry);
             });
             updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "clear-cache"), OnOffType.OFF);
             getImageResources();
@@ -254,7 +252,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     private void getImageResources() {
         if (accountHandler.get().getImageApiKey().equals(NOT_SET)) {
-            logger.info("Image API key not set");
+            logger.debug("Image API key not set");
             return;
         }
         // add config parameters
@@ -266,7 +264,7 @@ public class VehicleHandler extends BaseThingHandler {
         parameterMap.add("fileFormat", config.get().format);
         String params = UrlEncoded.encode(parameterMap, StandardCharsets.UTF_8, false);
         String url = String.format(IMAGE_EXTERIOR_RESOURCE_URL, config.get().vin) + "?" + params;
-        logger.info("Get Image resources {} {} ", accountHandler.get().getImageApiKey(), url);
+        logger.debug("Get Image resources {} {} ", accountHandler.get().getImageApiKey(), url);
         Request req = hc.newRequest(url);
         req.header("x-api-key", accountHandler.get().getImageApiKey());
         req.header(HttpHeader.ACCEPT, "application/json");
@@ -278,7 +276,7 @@ public class VehicleHandler extends BaseThingHandler {
                 imageStorage.get().put(EXT_IMG_RES + config.get().vin, cr.getContentAsString());
                 setImageOtions();
             } else {
-                logger.info("Failed to get image resources {} {}", cr.getStatus(), cr.getContentAsString());
+                logger.debug("Failed to get image resources {} {}", cr.getStatus(), cr.getContentAsString());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Error getting image resources {}", e.getMessage());
@@ -292,7 +290,6 @@ public class VehicleHandler extends BaseThingHandler {
             JSONObject jo = new JSONObject(resources);
             jo.keySet().forEach(entry -> {
                 entries.add(entry);
-                // logger.info("Add command option {}", co.toString());
             });
         }
         Collections.sort(entries);
@@ -314,7 +311,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     private String getImage(String key) {
         if (accountHandler.get().getImageApiKey().equals(NOT_SET)) {
-            logger.info("Image API key not set");
+            logger.debug("Image API key not set");
             return EMPTY;
         }
         String imageId = EMPTY;
@@ -325,13 +322,11 @@ public class VehicleHandler extends BaseThingHandler {
                 imageId = jo.getString(key);
             }
         } else {
-            logger.info("No Image resource file found - send request");
             getImageResources();
             return EMPTY;
         }
 
         String url = IMAGE_BASE_URL + "/images/" + imageId;
-        logger.info("Image URL {}", url);
         Request req = hc.newRequest(url);
         req.header("x-api-key", accountHandler.get().getImageApiKey());
         req.header(HttpHeader.ACCEPT, "*/*");
@@ -341,7 +336,7 @@ public class VehicleHandler extends BaseThingHandler {
             byte[] response = cr.getContent();
             return Base64.getEncoder().encodeToString(response);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Error getting data {}", e.getMessage());
+            logger.warn("Get Image {} error {}", url, e.getMessage());
         }
         return EMPTY;
     }
@@ -450,7 +445,7 @@ public class VehicleHandler extends BaseThingHandler {
             LocalDateTime ld = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
             DateTimeType dtt = DateTimeType.valueOf(ld.format(DATE_INPUT_PATTERN));
             updateState(new ChannelUID(thing.getUID(), group, "last-update"), dtt);
-            logger.info("{} last update {}", group, dtt);
+            logger.trace("{} last update {}", group, dtt);
         }
     }
 }
