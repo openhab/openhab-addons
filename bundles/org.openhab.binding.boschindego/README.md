@@ -37,6 +37,7 @@ Currently the binding supports  ***indego***  mowers as a thing type with these 
 | 261   | Docked                                      |
 | 262   | Docked - Loading map                        |
 | 263   | Docked - Saving map                         |
+| 266   | Leaving dock                                |
 | 513   | Mowing                                      |
 | 514   | Relocalising                                |
 | 515   | Loading map                                 |
@@ -55,6 +56,7 @@ Currently the binding supports  ***indego***  mowers as a thing type with these 
 | 1025  | Diagnostic mode                             |
 | 1026  | End of life                                 |
 | 1281  | Software update                             |
+| 1537  | Energy save mode                            |
 | 64513 | Docked                                      |
 
 ## Full Example

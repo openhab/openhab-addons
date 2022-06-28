@@ -41,6 +41,7 @@ public class DeviceStatus {
             entry(261, new DeviceStatus("docked", true, DeviceCommand.RETURN)),
             entry(262, new DeviceStatus("docked-loading-map", false, DeviceCommand.MOW)),
             entry(263, new DeviceStatus("docked-saving-map", false, DeviceCommand.RETURN)),
+            entry(266, new DeviceStatus("leaving-dock", false, DeviceCommand.MOW)),
             entry(513, new DeviceStatus("mowing", false, DeviceCommand.MOW)),
             entry(514, new DeviceStatus("relocalising", false, DeviceCommand.MOW)),
             entry(515, new DeviceStatus("loading-map", false, DeviceCommand.MOW)),
@@ -59,6 +60,7 @@ public class DeviceStatus {
             entry(1025, new DeviceStatus("diagnostic-mode", false, null)),
             entry(1026, new DeviceStatus("end-of-life", false, null)),
             entry(1281, new DeviceStatus("software-update", false, null)),
+            entry(1537, new DeviceStatus("energy-save-mode", true, DeviceCommand.RETURN)),
             entry(64513, new DeviceStatus("docked", true, DeviceCommand.RETURN)));
 
     private String textKey;
