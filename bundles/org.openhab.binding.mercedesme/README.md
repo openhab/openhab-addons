@@ -21,6 +21,16 @@ There's no automatic discovery.
 ## Bridge Configuration
 
 Bridge needs configuration in order to connect properly to your Mercedes Me Account. 
+
+### Pre Conditions
+
+- **each bridge shall have it's own Mercedes Benz Client ID!**
+ Don't create several `account` bridges with the same client id! If this is not the case the tokens won't be stored properly and the authorization is jeopardized!
+- **each bridge shall have it's own port.**
+ It's absolutely necessary to assign a different port for each `account` bridge. If this is not the case the tokens won't be stored properly and the authorization is jeopardized!
+
+### Bridge Setup
+
 Perform the following steps to obtain the configuration data and perform the authorization flow.
 
 1. Go to [Mercedes Developer Page](https://developer.mercedes-benz.com/). Login with your Mercedes Me credentials.

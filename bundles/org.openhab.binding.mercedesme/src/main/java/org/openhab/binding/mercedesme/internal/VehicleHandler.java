@@ -97,6 +97,7 @@ public class VehicleHandler extends BaseThingHandler {
     private final StorageService storageService;
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
+    private boolean online = false;
 
     public VehicleHandler(Thing thing, HttpClientFactory hcf, String uid, StorageService storageService,
             MercedesMeCommandOptionProvider mmcop, MercedesMeStateOptionProvider mmsop) {
@@ -165,7 +166,7 @@ public class VehicleHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = Optional.of(getConfigAs(VehicleConfiguration.class));
-        updateStatus(ThingStatus.UNKNOWN);
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
@@ -213,8 +214,8 @@ public class VehicleHandler extends BaseThingHandler {
             if (EMPTY.equals(token)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Check Bridge Authorization");
                 return;
-            } else {
-                updateStatus(ThingStatus.ONLINE);
+            } else if (!online) { // only update if thing isn't already ONLINE
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
             }
 
             // Mileage for all cars
@@ -447,5 +448,11 @@ public class VehicleHandler extends BaseThingHandler {
             updateState(new ChannelUID(thing.getUID(), group, "last-update"), dtt);
             logger.trace("{} last update {}", group, dtt);
         }
+    }
+
+    @Override
+    public void updateStatus(ThingStatus ts, ThingStatusDetail tsd, @Nullable String details) {
+        online = ts.equals(ThingStatus.ONLINE);
+        super.updateStatus(ts, tsd, details);
     }
 }

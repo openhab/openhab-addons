@@ -44,14 +44,13 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private HttpClientFactory httpClientFactory;
     private Optional<CallbackServer> server = Optional.empty();
     private Optional<AccountConfiguration> config = Optional.empty();
+    private Optional<String> tokenStorageKey = Optional.empty();
 
     private final OAuthFactory oAuthFactory;
     private final Storage<String> storage;
-    private final String tokenStorageKey;
 
     public AccountHandler(Bridge bridge, HttpClientFactory hcf, OAuthFactory oaf, Storage<String> storage) {
         super(bridge);
-        tokenStorageKey = bridge.getUID() + ":token";
         httpClientFactory = hcf;
         oAuthFactory = oaf;
         this.storage = storage;
@@ -76,9 +75,9 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
             server = Optional.of(new CallbackServer(this, httpClientFactory.getCommonHttpClient(), oAuthFactory,
                     config.get(), callbackUrl));
-
-            if (storage.containsKey(tokenStorageKey)) {
-                String tokenSerial = storage.get(tokenStorageKey);
+            tokenStorageKey = Optional.of(config.get().clientId + ":token");
+            if (storage.containsKey(tokenStorageKey.get())) {
+                String tokenSerial = storage.get(tokenStorageKey.get());
                 if (tokenSerial != null) {
                     AccessTokenResponse atr = (AccessTokenResponse) Utils.fromString(tokenSerial);
                     server.get().setToken(atr);
@@ -113,6 +112,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             updateConfig.put("callbackIP", Utils.getCallbackIP());
         }
         super.updateConfiguration(updateConfig);
+        // get new config after update
+        config = Optional.of(getConfigAs(AccountConfiguration.class));
     }
 
     private String configValid() {
@@ -154,7 +155,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         if (tokenResponse.getRefreshToken() != null) {
             logger.trace("{} store token in {}", config.get().callbackPort, tokenStorageKey);
             String tokenSerial = Utils.toString(tokenResponse);
-            storage.put(tokenStorageKey, tokenSerial);
+            storage.put(tokenStorageKey.get(), tokenSerial);
         }
     }
 
