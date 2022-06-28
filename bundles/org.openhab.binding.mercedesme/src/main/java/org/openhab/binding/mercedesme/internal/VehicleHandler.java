@@ -215,6 +215,8 @@ public class VehicleHandler extends BaseThingHandler {
             if (EMPTY.equals(token)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Check Bridge Authorization");
                 return;
+            } else {
+                updateStatus(ThingStatus.ONLINE);
             }
 
             // Mileage for all cars
@@ -238,6 +240,10 @@ public class VehicleHandler extends BaseThingHandler {
             call(statusUrl);
             String lockUrl = String.format(LOCK_URL, config.get().vin);
             call(lockUrl);
+
+            // [todo] remove test for call to one specific resource
+            // String lightUrl = BASE_URL + "/vehicles/%s/resources/interiorLightsFront";
+            // call(String.format(lightUrl, config.get().vin));
 
             // Range radius for all types
             updateRadius();
@@ -275,7 +281,7 @@ public class VehicleHandler extends BaseThingHandler {
                 logger.info("Failed to get image resources {} {}", cr.getStatus(), cr.getContentAsString());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Error getting data {}", e.getMessage());
+            logger.warn("Error getting image resources {}", e.getMessage());
         }
     }
 
@@ -341,12 +347,14 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void call(String url) {
-        Request req = hc.newRequest(String.format(url, config.get().vin));
+        String requestUrl = String.format(url, config.get().vin);
+        Request req = hc.newRequest(requestUrl);
         req.header(HttpHeader.AUTHORIZATION, "Bearer " + accountHandler.get().getToken());
         ContentResponse cr;
         try {
             cr = req.send();
-            logger.debug("{} Response {} {}", this.getThing().getLabel(), cr.getStatus(), cr.getContentAsString());
+            logger.debug("{} {} Response {} {}", this.getThing().getLabel(), requestUrl, cr.getStatus(),
+                    cr.getContentAsString());
             if (cr.getStatus() == 200) {
                 JSONArray ja = new JSONArray(cr.getContentAsString());
                 for (Iterator iterator = ja.iterator(); iterator.hasNext();) {
@@ -354,6 +362,7 @@ public class VehicleHandler extends BaseThingHandler {
                     ChannelStateMap csm = Mapper.getChannelStateMap(jo);
                     if (csm != null) {
                         updateChannel(csm);
+                        // store maps for range radius calculation
                         if (csm.getChannel().equals("range-electric")) {
                             rangeElectric = Optional.of(csm);
                         } else if (csm.getChannel().equals("range-fuel")) {
@@ -365,7 +374,7 @@ public class VehicleHandler extends BaseThingHandler {
                 }
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Error getting data {}", e.getMessage());
+            logger.warn("Error getting {} data {}", requestUrl, e.getMessage());
         }
     }
 
