@@ -652,7 +652,7 @@ All these channels are read only.
 ### things/netatmo.things
 
 ```
-Bridge netatmo:account:home "Netatmo Account" [clientId="xxxxx", clientSecret="yyyy", refreshToken="zzzzz"] {
+Bridge netatmo:account:myaccount "Netatmo Account" [clientId="xxxxx", clientSecret="yyyy", refreshToken="zzzzz"] {
     Bridge weather-station inside "Inside Weather Station" [id="70:ee:aa:aa:aa:aa"] {
         outdoor outside   "Outside Module" [id="02:00:00:aa:aa:aa"] {
             Channels:
@@ -660,64 +660,75 @@ Bridge netatmo:account:home "Netatmo Account" [clientId="xxxxx", clientSecret="y
         }
         rain rainModule        "Rain Module"    [id="05:00:00:aa:aa:aa"] {
             Channels:
-                Type sum_rain-measurement: rainThisWeek  "Rain This Week"     [period="1week"]
-                Type sum_rain-measurement: rainThisMonth "Rain This Month"    [period="1month"]
+                Type sum_rain-measurement : rainThisWeek  "Rain This Week"     [period="1week"]
+                Type sum_rain-measurement : rainThisMonth "Rain This Month"    [period="1month"]
+        }
+    }
+    Bridge home myhome "My home" [ id="0123456789abcdef", refreshInterval=150 ] {
+        Thing welcome mycam "My camera" [ id="70:aa:bb:cc:dd:ee" ] {
+            Channels:
+                Type live-stream-url : live#local-stream-url [ quality="high" ]
+                Type live-stream-url : live#vpn-stream-url [ quality="low" ]
         }
     }
 }
 ```
 
 
-### Sample configuration of live-stream-url channels:
-
-```
-        ....
-        Thing welcome camera "Caméra" [ id="xxxxxx" ] {
-            Channels:
-                Type live-stream-url : live#local-stream-url [ quality="high" ]
-                Type live-stream-url : live#vpn-stream-url [ quality="low" ]
-        }
-        ...
-```
-
-
 ### items/netatmo.items
 
 ```
-# Indoor Module
-Number:Temperature   Indoor_Temp                       "Temperature [%.1f %unit%]"                                  <temperature>      { channel = "netatmo:weather-station:home:inside:temperature#value" }
-Number:Temperature   Indoor_Min_Temp                   "Min Temperature Today [%.1f %unit%]"                        <temperature>      { channel = "netatmo:weather-station:home:inside:temperature#min-today" }
-Number:Temperature   Indoor_Max_Temp                   "Max Temperature Today [%.1f %unit%]"                        <temperature>      { channel = "netatmo:weather-station:home:inside:temperature#max-today" }
-Number:Dimensionless Indoor_Humidity                   "Humidity [%d %unit%]"                                       <humidity>         { channel = "netatmo:weather-station:home:inside:humidity#value" }
-Number               Indoor_Humidex                    "Humidex [%.0f]"                                             <temperature_hot>  { channel = "netatmo:weather-station:home:inside:humidity#humidex" }
-Number:Temperature   Indoor_HeatIndex                  "HeatIndex [%.1f %unit%]"                                    <temperature_hot>  { channel = "netatmo:weather-station:home:inside:temperature#heat-index" }
-Number:Temperature   Indoor_Dewpoint                   "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:weather-station:home:inside:temperature#dewpoint" }
-Number:Temperature   Indoor_DewpointDepression         "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:weather-station:home:inside:temperature#dewpoint-depression" }
-Number:Dimensionless Indoor_Co2                        "CO2 [%d %unit%]"                                            <carbondioxide>    { channel = "netatmo:weather-station:home:inside:airquality#co2" }
-Number:Pressure      Indoor_Pressure                   "Pressure [%.1f %unit%]"                                     <pressure>         { channel = "netatmo:weather-station:home:inside:pressure#value" }
-Number:Pressure      Indoor_AbsolutePressure           "AbsolutePressure [%.1f %unit%]"                             <pressure>         { channel = "netatmo:weather-station:home:inside:pressure#absolute" }
-Number:Dimensionless Indoor_Noise                      "Noise [%d %unit%]"                                          <soundvolume>      { channel = "netatmo:weather-station:home:inside:noise#value" }
-Number               Indoor_RadioStatus                 "RadioStatus [%s]"                                          <signal>           { channel = "netatmo:weather-station:home:inside:signal#strength" }
-DateTime             Indoor_TimeStamp                  "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                  <calendar>         { channel = "netatmo:weather-station:home:inside:timestamp#measures" }
-DateTime             Indoor_LastSeen            "LastSeen [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                          <text>             { channel = "netatmo:weather-station:home:inside:timestamp#last-seen" }
+// Indoor Module
+Number:Temperature   Indoor_Temp                       "Temperature [%.1f %unit%]"                                  <temperature>      { channel = "netatmo:weather-station:myaccount:inside:temperature#value" }
+Number:Temperature   Indoor_Min_Temp                   "Min Temperature Today [%.1f %unit%]"                        <temperature>      { channel = "netatmo:weather-station:myaccount:inside:temperature#min-today" }
+Number:Temperature   Indoor_Max_Temp                   "Max Temperature Today [%.1f %unit%]"                        <temperature>      { channel = "netatmo:weather-station:myaccount:inside:temperature#max-today" }
+Number:Dimensionless Indoor_Humidity                   "Humidity [%d %unit%]"                                       <humidity>         { channel = "netatmo:weather-station:myaccount:inside:humidity#value" }
+Number               Indoor_Humidex                    "Humidex [%.0f]"                                             <temperature_hot>  { channel = "netatmo:weather-station:myaccount:inside:humidity#humidex" }
+Number:Temperature   Indoor_HeatIndex                  "HeatIndex [%.1f %unit%]"                                    <temperature_hot>  { channel = "netatmo:weather-station:myaccount:inside:temperature#heat-index" }
+Number:Temperature   Indoor_Dewpoint                   "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:weather-station:myaccount:inside:temperature#dewpoint" }
+Number:Temperature   Indoor_DewpointDepression         "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:weather-station:myaccount:inside:temperature#dewpoint-depression" }
+Number:Dimensionless Indoor_Co2                        "CO2 [%d %unit%]"                                            <carbondioxide>    { channel = "netatmo:weather-station:myaccount:inside:airquality#co2" }
+Number:Pressure      Indoor_Pressure                   "Pressure [%.1f %unit%]"                                     <pressure>         { channel = "netatmo:weather-station:myaccount:inside:pressure#value" }
+Number:Pressure      Indoor_AbsolutePressure           "AbsolutePressure [%.1f %unit%]"                             <pressure>         { channel = "netatmo:weather-station:myaccount:inside:pressure#absolute" }
+Number:Dimensionless Indoor_Noise                      "Noise [%d %unit%]"                                          <soundvolume>      { channel = "netatmo:weather-station:myaccount:inside:noise#value" }
+Number               Indoor_RadioStatus                 "RadioStatus [%s]"                                          <signal>           { channel = "netatmo:weather-station:myaccount:inside:signal#strength" }
+DateTime             Indoor_TimeStamp                  "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                  <calendar>         { channel = "netatmo:weather-station:myaccount:inside:timestamp#measures" }
+DateTime             Indoor_LastSeen            "LastSeen [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                          <text>             { channel = "netatmo:weather-station:myaccount:inside:timestamp#last-seen" }
 
-# Outdoor Module
-Number:Temperature   Outdoor_Temperature               "Temperature [%.1f %unit%]"                                  <temperature>      { channel = "netatmo:outdoor:home:inside:outside:temperature#value" }
-String               Outdoor_TempTrend                 "TempTrend [%s]"                                             <line>             { channel = "netatmo:outdoor:home:inside:outside:temperature#trend" }
-Number:Dimensionless Outdoor_Humidity                  "Humidity [%d %unit%]"                                       <humidity>         { channel = "netatmo:outdoor:home:inside:outside:humidity#value" }
-Number               Outdoor_Humidex                   "Humidex [%.0f]"                                             <temperature_hot>  { channel = "netatmo:outdoor:home:inside:outside:humidity#humidex" }
-Number:Temperature   Outdoor_HeatIndex                 "heat-index [%.1f %unit%]"                                   <temperature_hot>  { channel = "netatmo:outdoor:home:inside:outside:temperature#heat-index" }
-Number:Temperature   Outdoor_Dewpoint                  "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:outdoor:home:inside:outside:temperature#dewpoint" }
-Number:Temperature   Outdoor_DewpointDepression        "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:outdoor:home:inside:outside:temperature#dewpoint-depression" }
-Number               Outdoor_RadioStatus               "RfStatus [%.0f / 5]"                                        <signal>           { channel = "netatmo:outdoor:home:inside:outside:signal#strength" }
-Switch               Outdoor_LowBattery                "LowBattery [%s]"                                            <siren>            { channel = "netatmo:outdoor:home:inside:outside:battery#low-battery" }
-DateTime             Outdoor_TimeStamp                 "Measures TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"         <calendar>         { channel = "netatmo:outdoor:home:inside:outside:timestamp#measures" }
-DateTime             Outdoor_LastMessage               "LastMessage [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                <text>             { channel = "netatmo:outdoor:home:inside:outside:timestamp#last-seen" }
+// Outdoor Module
+Number:Temperature   Outdoor_Temperature               "Temperature [%.1f %unit%]"                                  <temperature>      { channel = "netatmo:outdoor:myaccount:inside:outside:temperature#value" }
+String               Outdoor_TempTrend                 "TempTrend [%s]"                                             <line>             { channel = "netatmo:outdoor:myaccount:inside:outside:temperature#trend" }
+Number:Dimensionless Outdoor_Humidity                  "Humidity [%d %unit%]"                                       <humidity>         { channel = "netatmo:outdoor:myaccount:inside:outside:humidity#value" }
+Number               Outdoor_Humidex                   "Humidex [%.0f]"                                             <temperature_hot>  { channel = "netatmo:outdoor:myaccount:inside:outside:humidity#humidex" }
+Number:Temperature   Outdoor_HeatIndex                 "heat-index [%.1f %unit%]"                                   <temperature_hot>  { channel = "netatmo:outdoor:myaccount:inside:outside:temperature#heat-index" }
+Number:Temperature   Outdoor_Dewpoint                  "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:outdoor:myaccount:inside:outside:temperature#dewpoint" }
+Number:Temperature   Outdoor_DewpointDepression        "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:outdoor:myaccount:inside:outside:temperature#dewpoint-depression" }
+Number               Outdoor_RadioStatus               "RfStatus [%.0f / 5]"                                        <signal>           { channel = "netatmo:outdoor:myaccount:inside:outside:signal#strength" }
+Switch               Outdoor_LowBattery                "LowBattery [%s]"                                            <siren>            { channel = "netatmo:outdoor:myaccount:inside:outside:battery#low-battery" }
+DateTime             Outdoor_TimeStamp                 "Measures TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"         <calendar>         { channel = "netatmo:outdoor:myaccount:inside:outside:timestamp#measures" }
+DateTime             Outdoor_LastMessage               "LastMessage [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                <text>             { channel = "netatmo:outdoor:myaccount:inside:outside:timestamp#last-seen" }
 
-# Rain Module
-Number:Speed         Rain_Intensity                    "Rain Intensity [%.1f %unit%]"                               <rain>             { channel = "netatmo:rain:home:inside:rainModule:rain#value"}
-Number:Length        Rain_Hour                         "Rain Last Hour [%.1f %unit%]"                               <rain>             { channel = "netatmo:rain:home:inside:rainModule:rain#sum-1"}
-Number:Length        Rain_Today                        "Rain Today [%.1f %unit%]"                                   <rain>             { channel = "netatmo:rain:home:inside:rainModule:rain#sum-24"}
+// Rain Module
+Number:Speed         Rain_Intensity                    "Rain Intensity [%.1f %unit%]"                               <rain>             { channel = "netatmo:rain:myaccount:inside:rainModule:rain#value"}
+Number:Length        Rain_Hour                         "Rain Last Hour [%.1f %unit%]"                               <rain>             { channel = "netatmo:rain:myaccount:inside:rainModule:rain#sum-1"}
+Number:Length        Rain_Today                        "Rain Today [%.1f %unit%]"                                   <rain>             { channel = "netatmo:rain:myaccount:inside:rainModule:rain#sum-24"}
+
+// Camera
+Switch               CameraMonitoring                  "Monitoring"                                                 <switch>           { channel = "netatmo:welcome:myaccount:myhome:mycam:status#monitoring", autoupdate="false" }
+String               CameraAlimState                   "Alim State [%s]"                                            <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:status#alim" }
+String               CameraSDCardState                 "SD Card State [%s]"                                         <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:status#sd-card" }
+Image                CameraLiveSnapshot                "Live Snapshot"                                              <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:live#picture" }
+String               CameraLiveStreamLocalUrl          "Live Video Stream [%s]"                                     <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:live#local-stream-url" }
+String               CameraLiveStreamVpnUrl            "Live Video Stream [%s]"                                     <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:live#vpn-stream-url" }
+Number               CameraWifiStrength                "Wi-Fi Strength [%s]"                                        <wifi>             { channel = "netatmo:welcome:myaccount:myhome:mycam:signal#strength" }
+DateTime             CameraEventTime                   "Event Timestamp [%1$tb %1$td %1$tH:%1$tM]"                  <time>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#time" }
+String               CameraEventType                   "Event Type [%s]"                                            <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#type" }
+String               CameraEventMessage                "Event Message [%s]"                                         <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#message" }
+Image                CameraEventSnapshot               "Event Snapshot"                                             <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#snapshot" }
+String               CameraEventStreamLocalUrl         "Event Video Stream [%s]"                                    <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#local-video-url" }
+String               CameraEventStreamVpnUrl           "Event Video Stream [%s]"                                    <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#vpn-video-url" }
+String               CameraEventVideoStatus            "Video Status [%s]"                                          <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#video-status" }
+String               CameraEventPersonId               "Person Id [%s]"                                             <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#person-id" }
 ```
 
 ### sitemaps/netatmo.sitemap
@@ -765,6 +776,33 @@ sitemap netatmo label="Netatmo" {
         Text item=Rain_Month
         Text item=Rain_BatteryVP
     }
+    Frame label="Camera" icon="camera" {
+        Switch item=CameraMonitoring
+        Text item=CameraAlimState
+        Text item=CameraSDCardState
+        Text item=CameraWifiStrength
+        Image item=CameraLiveSnapshot
+        Text label="Live (local)" icon="none" {
+            Video url="xxxxxx" item=CameraLiveStreamLocalUrl encoding="HLS"
+        }
+        Text label="Live (VPN)" icon="none" {
+            Video url="xxxxxx" item=CameraLiveStreamVpnUrl encoding="HLS"
+        }
+        Text label="Last event" icon="none" {
+            Text item=CameraEventTime
+            Text item=CameraEventType
+            Text item=CameraEventMessage
+            Text item=CameraEventPersonId
+            Image item=CameraEventSnapshot
+            Text item=CameraEventVideoStatus
+            Text label="Video (local)" icon="none" {
+                Video url="xxxxxx" item=CameraEventStreamLocalUrl encoding="HLS"
+            }
+            Text label="Video (VPN)" icon="none" {
+                Video url="xxxxxx" item=CameraEventStreamVpnUrl encoding="HLS"
+            }
+        }
+    }
 }
 ```
 
@@ -775,7 +813,7 @@ Multiple actions are supported by this binding. In classic rules these are acces
 Example
 
 ```
- val actions = getActions("netatmo","netatmo:room:home:home:livingroom")
+ val actions = getActions("netatmo","netatmo:room:myaccount:myhome:livingroom")
  if(null === actions) {
         logInfo("actions", "Actions not found, check thing ID")
         return
