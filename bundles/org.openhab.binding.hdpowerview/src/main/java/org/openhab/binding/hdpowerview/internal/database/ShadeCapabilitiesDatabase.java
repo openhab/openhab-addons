@@ -155,7 +155,7 @@ public class ShadeCapabilitiesDatabase {
          * @return 'typeCapabilities'.
          */
         public int getCapabilitiesOverride() {
-            return capabilitiesOverride;
+            return capabilitiesOverride < 0 ? capabilities : capabilitiesOverride;
         }
     }
 
