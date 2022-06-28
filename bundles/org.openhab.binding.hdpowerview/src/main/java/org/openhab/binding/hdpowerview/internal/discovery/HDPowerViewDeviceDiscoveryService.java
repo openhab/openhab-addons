@@ -40,9 +40,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Discovers an HD PowerView Shade from an existing hub
+ * Discovers HD PowerView Shades and Repeaters from an existing hub
  *
  * @author Andy Lintner - Initial contribution
+ * @author Jacob Laursen - Add Repeater discovery
  */
 @NonNullByDefault
 public class HDPowerViewDeviceDiscoveryService extends AbstractDiscoveryService {
@@ -87,9 +88,6 @@ public class HDPowerViewDeviceDiscoveryService extends AbstractDiscoveryService 
         return () -> {
             try {
                 HDPowerViewWebTargets webTargets = hub.getWebTargets();
-                if (webTargets == null) {
-                    throw new HubProcessingException("Web targets not initialized");
-                }
                 discoverShades(webTargets);
                 discoverRepeaters(webTargets);
             } catch (HubMaintenanceException e) {
@@ -115,8 +113,7 @@ public class HDPowerViewDeviceDiscoveryService extends AbstractDiscoveryService 
             }
             String id = Integer.toString(shadeData.id);
             ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE, bridgeUid, id);
-            Integer caps = shadeData.capabilities;
-            Capabilities capabilities = db.getCapabilities((caps != null) ? caps.intValue() : -1);
+            Capabilities capabilities = db.getCapabilities(shadeData.capabilities);
 
             DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID).withLabel(shadeData.getName())
                     .withBridge(bridgeUid).withProperty(HDPowerViewShadeConfiguration.ID, id)

@@ -16,10 +16,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
+import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
 
 /**
  * {@link HomeSecurityThingCapability} is the ancestor of capabilities hosted by a security home
@@ -33,6 +35,7 @@ public class HomeSecurityThingCapability extends Capability {
     protected final NetatmoDescriptionProvider descriptionProvider;
     protected final EventChannelHelper eventHelper;
 
+    private Optional<WebhookServlet> webhook = Optional.empty();
     protected Optional<SecurityCapability> securityCapability = Optional.empty();
     protected Optional<HomeCapability> homeCapability = Optional.empty();
 
@@ -51,5 +54,16 @@ public class HomeSecurityThingCapability extends Capability {
         super.initialize();
         securityCapability = handler.getHomeCapability(SecurityCapability.class);
         homeCapability = handler.getHomeCapability(HomeCapability.class);
+        ApiBridgeHandler accountHandler = handler.getAccountHandler();
+        if (accountHandler != null) {
+            webhook = accountHandler.getWebHookServlet();
+            webhook.ifPresent(servlet -> servlet.registerDataListener(handler.getId(), this));
+        }
+    }
+
+    @Override
+    public void dispose() {
+        webhook.ifPresent(servlet -> servlet.unregisterDataListener(handler.getId()));
+        super.dispose();
     }
 }

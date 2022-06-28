@@ -13,6 +13,7 @@
 package org.openhab.binding.nikohomecontrol.internal.protocol;
 
 import java.net.InetAddress;
+import java.time.ZoneId;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -65,6 +66,13 @@ public interface NhcControllerEvent {
     }
 
     /**
+     * Get the time zone ID of the Niko Home Control system.
+     *
+     * @return the zone ID
+     */
+    public ZoneId getTimeZone();
+
+    /**
      * Called to indicate the connection with the Niko Home Control Controller is offline.
      *
      * @param message
@@ -92,7 +100,7 @@ public interface NhcControllerEvent {
     public void noticeEvent(String noticeText);
 
     /**
-     * This method is called when properties are updated from from the Niko Home Control controller.
+     * This method is called when properties are updated from the Niko Home Control controller.
      */
     public void updatePropertiesEvent();
 }

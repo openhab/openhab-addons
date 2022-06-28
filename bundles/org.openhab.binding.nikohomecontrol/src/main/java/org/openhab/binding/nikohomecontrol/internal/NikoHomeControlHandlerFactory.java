@@ -21,6 +21,7 @@ import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridg
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler2;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlEnergyMeterHandler;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlThermostatHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -28,6 +29,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -42,7 +44,16 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.nikohomecontrol")
 public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
 
-    private @NonNullByDefault({}) NetworkAddressService networkAddressService;
+    private final NetworkAddressService networkAddressService;
+    private final TimeZoneProvider timeZoneProvider;
+
+    @Activate
+    public NikoHomeControlHandlerFactory(final @Reference NetworkAddressService networkAddressService,
+            final @Reference TimeZoneProvider timeZoneProvider) {
+        super();
+        this.networkAddressService = networkAddressService;
+        this.timeZoneProvider = timeZoneProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -53,9 +64,9 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (BRIDGE_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             if (BRIDGEII_THING_TYPE.equals(thing.getThingTypeUID())) {
-                return new NikoHomeControlBridgeHandler2((Bridge) thing, networkAddressService);
+                return new NikoHomeControlBridgeHandler2((Bridge) thing, networkAddressService, timeZoneProvider);
             } else {
-                return new NikoHomeControlBridgeHandler1((Bridge) thing);
+                return new NikoHomeControlBridgeHandler1((Bridge) thing, timeZoneProvider);
             }
         } else if (THING_TYPE_THERMOSTAT.equals(thing.getThingTypeUID())) {
             return new NikoHomeControlThermostatHandler(thing);
@@ -66,14 +77,5 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
     }
 }

@@ -20,10 +20,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NhcEnergyMeter} class represents the energyMeters metering Niko Home Control communication object. It
- * contains all
- * fields representing a Niko Home Control energyMeters meter and has methods to receive energyMeters usage information.
- * A specific
- * implementation is {@link NhcEnergyMeter2}.
+ * contains all fields representing a Niko Home Control energyMeters meter and has methods to receive energyMeters usage
+ * information. A specific implementation is {@link NhcEnergyMeter2}.
  *
  * @author Mark Herwege - Initial Contribution
  */
@@ -71,6 +69,7 @@ public abstract class NhcEnergyMeter {
         NhcEnergyMeterEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.energyMeterRemoved();
+            unsetEventHandler();
         }
     }
 
@@ -83,6 +82,15 @@ public abstract class NhcEnergyMeter {
      */
     public void setEventHandler(NhcEnergyMeterEvent eventHandler) {
         this.eventHandler = eventHandler;
+    }
+
+    /**
+     * This method should be called when an object implementing the {@NhcEnergyMeterEvent} interface is disposed.
+     * It resets the reference, so no updates go to the handler anymore.
+     *
+     */
+    public void unsetEventHandler() {
+        this.eventHandler = null;
     }
 
     /**

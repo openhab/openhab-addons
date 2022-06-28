@@ -16,6 +16,7 @@ import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindin
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,6 +30,7 @@ import org.openhab.binding.nikohomecontrol.internal.discovery.NikoHomeControlDis
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcControllerEvent;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -55,8 +57,11 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
     private volatile @Nullable ScheduledFuture<?> refreshTimer;
 
-    public NikoHomeControlBridgeHandler(Bridge nikoHomeControlBridge) {
+    protected final TimeZoneProvider timeZoneProvider;
+
+    public NikoHomeControlBridgeHandler(Bridge nikoHomeControlBridge, TimeZoneProvider timeZoneProvider) {
         super(nikoHomeControlBridge);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -79,6 +84,10 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
         scheduler.submit(() -> {
             comm.startCommunication();
+
+            int refreshInterval = getConfig().as(NikoHomeControlBridgeConfig.class).refresh;
+            setupRefreshTimer(refreshInterval);
+
             if (!comm.communicationActive()) {
                 bridgeOffline();
                 return;
@@ -87,9 +96,6 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
             updateProperties();
 
             updateStatus(ThingStatus.ONLINE);
-
-            int refreshInterval = getConfig().as(NikoHomeControlBridgeConfig.class).refresh;
-            setupRefreshTimer(refreshInterval);
         });
     }
 
@@ -153,11 +159,6 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     @Override
     public void controllerOnline() {
         bridgeOnline();
-
-        int refreshInterval = getConfig().as(NikoHomeControlBridgeConfig.class).refresh;
-        if (refreshTimer == null) {
-            setupRefreshTimer(refreshInterval);
-        }
     }
 
     /**
@@ -178,6 +179,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
             comm.stopCommunication();
         }
         nhcComm = null;
+        super.dispose();
     }
 
     @Override
@@ -254,6 +256,11 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     @Override
     public int getPort() {
         return getConfig().as(NikoHomeControlBridgeConfig.class).port;
+    }
+
+    @Override
+    public ZoneId getTimeZone() {
+        return timeZoneProvider.getTimeZone();
     }
 
     @Override

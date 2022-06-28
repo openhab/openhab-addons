@@ -473,6 +473,7 @@ For example, ceiling fans often include lighting functionality. Such fans can be
 - two separate HomeKit accessories - fan **and** light. 
   
   iOS home app would show them as **two tiles** that can be controlled directly from home screen.
+  
   ![ios_fan_and_light_home_screen.png](doc/ios_fan_and_light_home_screen.png)
   
 - one complex accessory - fan **with** light. 
@@ -517,12 +518,17 @@ Group           FanWithLight        "Fan with Light"                           {
 
 ![ui_fan_with_light_primary.png](doc/ui_fan_with_light_primary.png)
 
+Similarly, you can create a sensor with battery
+
+![ui_sensor_with_battery.png](doc/ui_sensor_with_battery.png)
+
 However, home app does not support changing of tiles for already added accessory. 
 If you want to change the tile after the accessory was added, you need either to rename the group, if you use textual item configuration, or to delete and to create a new group with a different name, if you use UI for configuration.
 
 You can combine more than two accessories as well as accessories linked to different physical devices. 
 You can also do unusually combinations, e.g. you can combine temperature sensor with blinds and light. 
 It will be represented by home app as follows
+
 ![ios_complex_accessory_detail_screen.png](doc/ios_complex_accessory_detail_screen.png)
 
 

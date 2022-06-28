@@ -69,6 +69,8 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_OVERRULETIME = "overruletime";
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_DEMAND = "demand";
+    public static final String CHANNEL_HEATING_MODE = "heatingmode";
+    public static final String CHANNEL_HEATING_DEMAND = "heatingdemand";
 
     public static final String CHANNEL_POWER = "power";
 

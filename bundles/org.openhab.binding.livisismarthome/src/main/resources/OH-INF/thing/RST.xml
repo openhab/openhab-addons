@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="livisismarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="RST">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Radiator Mounted Smart Thermostat (RST)</label>
+		<description>A thermostat, that supports setting the temperature and measuring the current temperature and humidity.</description>
+
+		<channels>
+			<channel id="targetTemperature" typeId="thermostatActuatorPointTemperature"/>
+			<channel id="currentTemperature" typeId="temperatureSensorTemperature"/>
+			<channel id="frostWarning" typeId="temperatureSensorFrostWarning"/>
+			<channel id="humidity" typeId="humiditySensorHumidity"/>
+			<channel id="moldWarning" typeId="humiditySensorMoldWarning"/>
+			<channel id="operationMode" typeId="thermostatActuatorOperationMode"/>
+			<channel id="windowReductionActive" typeId="thermostatActuatorWindowReductionActive"/>
+			<channel id="batteryLow" typeId="system.low-battery"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:livisismarthome:config"/>
+	</thing-type>
+</thing:thing-descriptions>

@@ -35,7 +35,7 @@
 					To be
 					selected, the device should have at least a property value matching this regular expression. You can use
 					multiple
-					regular expressions (separator ###).</description>
+					regular expressions (separator is ###).</description>
 			</parameter>
 			<parameter name="simpleProtocolSinkPort" type="integer" required="false">
 				<label>Simple Protocol Port</label>

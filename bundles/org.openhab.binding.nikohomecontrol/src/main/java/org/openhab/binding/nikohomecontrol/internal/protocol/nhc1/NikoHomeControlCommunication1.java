@@ -70,8 +70,6 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     private volatile boolean listenerStopped;
     private volatile boolean nhcEventsRunning;
 
-    private ScheduledExecutorService scheduler;
-
     // We keep only 2 gson adapters used to serialize and deserialize all messages sent and received
     protected final Gson gsonOut = new Gson();
     protected Gson gsonIn;
@@ -83,8 +81,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
      */
     public NikoHomeControlCommunication1(NhcControllerEvent handler, ScheduledExecutorService scheduler,
             String eventThreadName) {
-        super(handler);
-        this.scheduler = scheduler;
+        super(handler, scheduler);
         this.eventThreadName = eventThreadName;
 
         // When we set up this object, we want to get the proper gson adapter set up once
@@ -121,9 +118,12 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             // IP-interface.
             (new Thread(this::runNhcEvents, eventThreadName)).start();
 
-        } catch (IOException | InterruptedException e) {
-            stopCommunication();
+            handler.controllerOnline();
+        } catch (InterruptedException e) {
             handler.controllerOffline("@text/offline.communication-error");
+        } catch (IOException e) {
+            handler.controllerOffline("@text/offline.communication-error");
+            scheduleRestartCommunication();
         }
     }
 
@@ -132,7 +132,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
      *
      */
     @Override
-    public synchronized void stopCommunication() {
+    public synchronized void resetCommunication() {
         listenerStopped = true;
 
         Socket socket = nhcSocket;
@@ -181,7 +181,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 // this is a socket error, not a communication stop triggered from outside this runnable
                 logger.debug("IO error in listener");
                 // the IO has stopped working, so we need to close cleanly and try to restart
-                restartCommunication();
+                scheduleRestartCommunication();
                 return;
             }
         } finally {
@@ -213,10 +213,12 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
         sendAndReadMessage("getalarms");
     }
 
-    @SuppressWarnings("null")
     private void sendAndReadMessage(String command) throws IOException {
-        sendMessage(new NhcMessageCmd1(command));
-        readMessage(nhcIn.readLine());
+        BufferedReader in = nhcIn;
+        if (in != null) {
+            sendMessage(new NhcMessageCmd1(command));
+            readMessage(in.readLine());
+        }
     }
 
     /**
@@ -224,19 +226,23 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
      *
      * @param nhcMessage
      */
-    @SuppressWarnings("null")
     private synchronized void sendMessage(Object nhcMessage) {
         String json = gsonOut.toJson(nhcMessage);
-        logger.debug("send json {}", json);
-        nhcOut.println(json);
-        if (nhcOut.checkError()) {
-            logger.debug("error sending message, trying to restart communication");
-            restartCommunication();
-            // retry sending after restart
-            logger.debug("resend json {}", json);
-            nhcOut.println(json);
-            if (nhcOut.checkError()) {
-                handler.controllerOffline("@text/offline.communication-error");
+        PrintWriter out = nhcOut;
+        if (out != null) {
+            logger.debug("send json {}", json);
+            out.println(json);
+            if (out.checkError()) {
+                logger.debug("error sending message, trying to restart communication");
+                restartCommunication();
+                // retry sending after restart
+                logger.debug("resend json {}", json);
+                out.println(json);
+                if (out.checkError()) {
+                    handler.controllerOffline("@text/offline.communication-error");
+                    // Keep on trying to restart, but don't send message anymore
+                    scheduleRestartCommunication();
+                }
             }
         }
     }

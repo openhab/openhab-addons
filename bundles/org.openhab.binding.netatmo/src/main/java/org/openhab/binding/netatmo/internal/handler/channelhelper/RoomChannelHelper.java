@@ -15,6 +15,8 @@ package org.openhab.binding.netatmo.internal.handler.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
@@ -32,8 +34,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class RoomChannelHelper extends ChannelHelper {
 
-    public RoomChannelHelper() {
-        super(GROUP_TYPE_ROOM_TEMPERATURE, GROUP_TYPE_ROOM_PROPERTIES);
+    public RoomChannelHelper(Set<String> providedGroups) {
+        super(providedGroups);
     }
 
     @Override

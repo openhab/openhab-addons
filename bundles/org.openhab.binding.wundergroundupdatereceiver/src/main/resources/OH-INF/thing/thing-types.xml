@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wundergroundupdatereceiver"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="wundergroundUpdateReceiver">
+		<label>Update Receiver</label>
+		<description>An endpoint thing that can receive and propagate HTTP GET updates meant for a particular station id at
+			wunderground.com</description>
+
+		<channel-groups>
+			<channel-group id="metadata" typeId="metadata-group"/>
+			<channel-group id="wind" typeId="wind-group"/>
+			<channel-group id="temperature" typeId="temperature-group"/>
+			<channel-group id="humidity" typeId="humidity-group"/>
+			<channel-group id="rain" typeId="rain-group"/>
+			<channel-group id="sunlight" typeId="sunlight-group"/>
+			<channel-group id="pressure" typeId="pressure-group"/>
+			<channel-group id="pollution" typeId="pollution-group"/>
+		</channel-groups>
+
+		<representation-property>stationId</representation-property>
+		<config-description>
+			<parameter name="stationId" type="text" required="true" pattern="\w+">
+				<label>Station ID</label>
+				<description><![CDATA[<br />
+					The wunderground.com update api requires a station id, that is defined for the WeatherUnderground
+					account measurements are to be submitted to.<br />
+					<br />
+					In this binding it is used to identify a unique thing, so each device or
+					other apparatus submitting measurements can have a separate id, but if you don't intend to forward
+					the observations to wunderground.com, this value can be any non-blank string.
+				]]>
+				</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>
