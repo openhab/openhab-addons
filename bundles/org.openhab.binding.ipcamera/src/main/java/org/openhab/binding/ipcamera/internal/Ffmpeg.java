@@ -18,6 +18,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -56,12 +59,19 @@ public class Ffmpeg {
     public Ffmpeg(IpCameraHandler handle, FFmpegFormat format, String ffmpegLocation, String inputArguments,
             String input, String outArguments, String output, String username, String password) {
         this.format = format;
-        this.password = password;
+
+        try {
+            this.password = URLEncoder.encode(password, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException ex) {
+            logger.warn("encoding password failed {} ", ex.getMessage());
+            this.password = password;
+        }
+
         ipCameraHandler = handle;
         String altInput = input;
         // Input can be snapshots not just rtsp or http
         if (!password.isEmpty() && !input.contains("@") && input.contains("rtsp")) {
-            String credentials = username + ":" + password + "@";
+            String credentials = username + ":" + this.password + "@";
             // will not work for https: but currently binding does not use https
             altInput = input.substring(0, 7) + credentials + input.substring(7);
         }
