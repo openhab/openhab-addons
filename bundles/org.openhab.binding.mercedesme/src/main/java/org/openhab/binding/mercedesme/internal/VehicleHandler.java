@@ -174,7 +174,6 @@ public class VehicleHandler extends BaseThingHandler {
             if (handler != null) {
                 accountHandler = Optional.of((AccountHandler) handler);
                 startSchedule(config.get().refreshInterval);
-                updateStatus(ThingStatus.ONLINE);
                 if (!config.get().vin.equals(NOT_SET)) {
                     imageStorage = Optional.of(storageService.getStorage(BINDING_ID + "_" + config.get().vin));
                     if (!imageStorage.get().containsKey(EXT_IMG_RES + config.get().vin)) {
@@ -212,6 +211,12 @@ public class VehicleHandler extends BaseThingHandler {
 
     public void getData() {
         if (!accountHandler.isEmpty()) {
+            String token = accountHandler.get().getToken();
+            if (EMPTY.equals(token)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Check Bridge Authorization");
+                return;
+            }
+
             // Mileage for all cars
             String odoUrl = String.format(ODO_URL, config.get().vin);
             call(odoUrl);
