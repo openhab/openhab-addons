@@ -358,8 +358,13 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                     SCgetHouseStatus receiver = new SCgetHouseStatus();
                     receiver.setResponse(rxCmd, rxData, isSequentialEnforced);
                     if (receiver.isCommunicationSuccessful()) {
-                        // ignore Functional Parameters in GW_NODE_STATE_POSITION_CHANGED_NTF, since some (e.g. Somfy)
-                        // devices provide buggy values
+                        /*
+                         * Ignore Functional Parameters in GW_NODE_STATE_POSITION_CHANGED_NTF, since some (e.g. Somfy)
+                         * devices provide buggy values.
+                         *
+                         * NOTE: this means we must explicitly update the functional parameters in the
+                         * ChannelActuatorPosition.handleRefresh() method instead.
+                         */
                         bridgeInstance.existingProducts().update(new ProductBridgeIndex(receiver.getNtfNodeID()),
                                 receiver.getNtfState(), receiver.getNtfCurrentPosition(), receiver.getNtfTarget(),
                                 null);
