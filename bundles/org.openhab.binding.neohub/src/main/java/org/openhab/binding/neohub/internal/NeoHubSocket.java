@@ -41,7 +41,7 @@ public class NeoHubSocket extends NeoHubSocketBase {
     }
 
     @Override
-    public String sendMessage(final String requestJson) throws IOException, NeoHubException {
+    public synchronized String sendMessage(final String requestJson) throws IOException, NeoHubException {
         IOException caughtException = null;
         StringBuilder builder = new StringBuilder();
 

@@ -150,7 +150,7 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
     }
 
     @Override
-    public String sendMessage(final String requestJson) throws IOException, NeoHubException {
+    public synchronized String sendMessage(final String requestJson) throws IOException, NeoHubException {
         // start the session
         startSession();
 
