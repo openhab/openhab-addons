@@ -215,7 +215,7 @@
 /bundles/org.openhab.binding.neeo/ @tmrobert8
 /bundles/org.openhab.binding.neohub/ @andrewfg
 /bundles/org.openhab.binding.nest/ @wborn
-/bundles/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
+/bundles/org.openhab.binding.netatmo/ @clinique @lolodomo
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
 /bundles/org.openhab.binding.networkupstools/ @Hilbrand
 /bundles/org.openhab.binding.nibeheatpump/ @paulianttila
