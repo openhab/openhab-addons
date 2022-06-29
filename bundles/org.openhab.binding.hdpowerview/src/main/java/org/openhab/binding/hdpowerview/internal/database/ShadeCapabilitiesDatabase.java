@@ -155,7 +155,7 @@ public class ShadeCapabilitiesDatabase {
          * @return 'typeCapabilities'.
          */
         public int getCapabilitiesOverride() {
-            return capabilitiesOverride < 0 ? capabilities : capabilitiesOverride;
+            return capabilitiesOverride;
         }
     }
 
@@ -335,16 +335,21 @@ public class ShadeCapabilitiesDatabase {
     /**
      * Return a Capabilities class instance that corresponds to the given 'typeId' parameter. If the 'typeId' parameter
      * is a valid type in the database, and it has a 'capabilitiesOverride' value, then an instance of the respective
-     * overridden Capabilities class is returned. Otherwise if the 'capabilitiesId' parameter is for a valid
-     * capabilities entry in the database, then that respective Capabilities class instance is returned. Otherwise a
-     * blank Capabilities class instance is returned.
+     * overridden Capabilities class is returned. Otherwise if the type is a valid 'capabilities' instance then that is
+     * returned. Otherwise if the 'capabilitiesId' parameter is for a valid capabilities entry in the database, then
+     * that respective Capabilities class instance is returned. Otherwise a blank Capabilities class instance is
+     * returned.
      *
      * @param typeId the target shade type Id (to check if it has a 'capabilitiesOverride' value).
      * @param capabilitiesId the target capabilities value (when type Id does not have a 'capabilitiesOverride').
      * @return corresponding Capabilities class instance.
      */
     public Capabilities getCapabilities(int typeId, @Nullable Integer capabilitiesId) {
-        int targetCapabilities = TYPE_DATABASE.getOrDefault(typeId, new Type()).getCapabilitiesOverride();
+        Type type = TYPE_DATABASE.getOrDefault(typeId, new Type());
+        int targetCapabilities = type.getCapabilitiesOverride();
+        if (targetCapabilities < 0) {
+            targetCapabilities = type.getCapabilities();
+        }
         if (targetCapabilities < 0) {
             targetCapabilities = capabilitiesId != null ? capabilitiesId.intValue() : -1;
         }
