@@ -8,25 +8,31 @@ His [Java Library](https://github.com/zazaz-de/iot-device-bosch-indego-controlle
 
 Currently the binding supports  ***indego***  mowers as a thing type with these configuration parameters:
 
-| Parameter          | Description                                                     | Default |
-|--------------------|-----------------------------------------------------------------|---------|
-| username           | Username for the Bosch Indego account                           |         |
-| password           | Password for the Bosch Indego account                           |         |
-| refresh            | The number of seconds between refreshing device state           | 180     |
-| cuttingTimeRefresh | The number of minutes between refreshing last/next cutting time | 60      |
+| Parameter             | Description                                                             | Default |
+|-----------------------|-------------------------------------------------------------------------|---------|
+| username              | Username for the Bosch Indego account                                   |         |
+| password              | Password for the Bosch Indego account                                   |         |
+| refresh               | The number of seconds between refreshing device state                   | 180     |
+| cuttingTimeMapRefresh | The number of minutes between refreshing last/next cutting time and map | 60      |
 
 ## Channels
 
-| Channel      | Item Type   | Description                                                                                                                         |
-|--------------|-------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| state        | Number      | You can send commands to this channel to control the mower and read the simplified state from it (1=mow, 2=return to dock, 3=pause) |
-| errorcode    | Number      | Error code of the mower (0=no error, readonly)                                                                                      |
-| statecode    | Number      | Detailed state of the mower (readonly)                                                                                              |
-| textualstate | String      | State as a text. (readonly)                                                                                                         |
-| ready        | Number      | Shows if the mower is ready to mow (1=ready, 0=not ready, readonly)                                                                 |
-| mowed        | Dimmer      | Cut grass in percent (readonly)                                                                                                     |
-| lastCutting  | DateTime    | Last cutting time (readonly)                                                                                                        |
-| nextCutting  | DateTime    | Next scheduled cutting time (readonly)                                                                                              |
+| Channel            | Item Type                | Description                                                                                                                         | Writeable |
+|--------------------|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| state              | Number                   | You can send commands to this channel to control the mower and read the simplified state from it (1=mow, 2=return to dock, 3=pause) | Yes       |
+| errorcode          | Number                   | Error code of the mower (0=no error)                                                                                                |           |
+| statecode          | Number                   | Detailed state of the mower                                                                                                         |           |
+| textualstate       | String                   | State as a text.                                                                                                                    |           |
+| ready              | Number                   | Shows if the mower is ready to mow (1=ready, 0=not ready)                                                                           |           |
+| mowed              | Dimmer                   | Cut grass in percent                                                                                                                |           |
+| lastCutting        | DateTime                 | Last cutting time                                                                                                                   |           |
+| nextCutting        | DateTime                 | Next scheduled cutting time                                                                                                         |           |
+| batteryVoltage     | Number:ElectricPotential | Battery voltage reported by the device                                                                                              |           |
+| batteryLevel       | Number                   | Battery level as a percentage (0-100%)                                                                                              |           |
+| lowBattery         | Switch                   | Low battery warning with possible values on (low battery) and off (battery ok)                                                      |           |
+| batteryTemperature | Number:Temperature       | Battery temperature reported by the device                                                                                          |           |
+| gardenSize         | Number:Area              | Garden size mapped by the device                                                                                                    |           |
+| gardenMap          | Image                    | Garden map mapped by the device                                                                                                     |           |
 
 ### State Codes
 
@@ -81,6 +87,12 @@ Number Indego_Ready { channel="boschindego:indego:lawnmower:ready" }
 Dimmer Indego_Mowed { channel="boschindego:indego:lawnmower:mowed" }
 DateTime Indego_LastCutting { channel="boschindego:indego:lawnmower:lastCutting" }
 DateTime Indego_NextCutting { channel="boschindego:indego:lawnmower:nextCutting" }
+Number:ElectricPotential Indego_BatteryVoltage { channel="boschindego:indego:lawnmower:batteryVoltage" }
+Number Indego_BatteryLevel { channel="boschindego:indego:lawnmower:batteryLevel" }
+Switch Indego_LowBattery { channel="boschindego:indego:lawnmower:lowBattery" }
+Number:Temperature Indego_BatteryTemperature { channel="boschindego:indego:lawnmower:batteryTemperature" }
+Number:Area Indego_GardenSize { channel="boschindego:indego:lawnmower:gardenSize" }
+Image Indego_GardenMap { channel="boschindego:indego:lawnmower:gardenMap" }
 ```
 
 ### `indego.sitemap` File

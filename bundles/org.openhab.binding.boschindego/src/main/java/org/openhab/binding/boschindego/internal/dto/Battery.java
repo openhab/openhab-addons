@@ -10,20 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschindego.internal.config;
+package org.openhab.binding.boschindego.internal.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Configuration for the Bosch Indego thing.
- *
+ * Battery data.
+ * 
  * @author Jacob Laursen - Initial contribution
  */
-@NonNullByDefault
-public class BoschIndegoConfiguration {
-    public @Nullable String username;
-    public @Nullable String password;
-    public long refresh = 180;
-    public long cuttingTimeMapRefresh = 60;
+public class Battery {
+    public double voltage;
+
+    public int cycles;
+
+    public double discharge;
+
+    @SerializedName("ambient_temp")
+    public int ambientTemperature;
+
+    @SerializedName("battery_temp")
+    public int batteryTemperature;
+
+    public int percent;
 }
