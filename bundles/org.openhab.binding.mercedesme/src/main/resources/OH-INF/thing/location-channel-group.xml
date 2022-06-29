@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="location-values">
 		<label>Vehicle Location</label>
-		<description>Coordinates and heading of the vehicle</description>
+		<description>Heading of vehicle</description>
 		<channels>
 			<channel id="heading" typeId="heading-channel"/>
 			<channel id="last-update" typeId="last-location-update-channel"/>

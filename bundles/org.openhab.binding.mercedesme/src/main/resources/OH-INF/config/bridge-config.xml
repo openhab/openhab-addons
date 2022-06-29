@@ -11,11 +11,11 @@
 		</parameter>
 		<parameter name="clientSecret" type="text" required="true">
 			<label>MB Developer Client Secret</label>
-			<description>>Mercedes Benz Developer Client Secret</description>
+			<description>Mercedes Benz Developer Client Secret</description>
 		</parameter>
 		<parameter name="imageApiKey" type="text">
 			<label>MB Developer Image API Key</label>
-			<description>>Mercedes Benz Developer Image API Key</description>
+			<description>Mercedes Benz Developer Image API Key</description>
 		</parameter>
 		<parameter name="odoScope" type="boolean">
 			<label>PayAsYourDrive Insurance</label>
