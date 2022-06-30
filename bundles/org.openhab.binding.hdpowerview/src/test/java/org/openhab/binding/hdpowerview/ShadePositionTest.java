@@ -413,10 +413,10 @@ public class ShadePositionTest {
         /*
          * - type not in database
          * - null external capabilities
-         * => return invalid (-1)
+         * => return default (0)
          */
         caps = db.getCapabilities(0, null);
-        assertEquals(-1, caps.getValue());
+        assertEquals(0, caps.getValue());
         /*
          * - type not in database
          * - valid external capabilities (1)
@@ -426,27 +426,27 @@ public class ShadePositionTest {
         assertEquals(1, caps.getValue());
         /*
          * - type not in database
-         * - invalid external capabilities (99)
-         * => return invalid (-1)
+         * - external capabilities not in database (99)
+         * => return default (0)
          */
         caps = db.getCapabilities(0, 99);
-        assertEquals(-1, caps.getValue());
+        assertEquals(0, caps.getValue());
         /*
-         * - type 1 in database
-         * - inherent capabilities (0)
+         * - type 62 in database
+         * - inherent capabilities (2)
          * - null external capabilities
-         * => return inherent capabilities (0)
+         * => return inherent capabilities (2)
          */
-        caps = db.getCapabilities(1, null);
-        assertEquals(0, caps.getValue());
+        caps = db.getCapabilities(62, null);
+        assertEquals(2, caps.getValue());
         /*
-         * - type 1 in database
-         * - inherent capabilities (0)
+         * - type 62 in database
+         * - inherent capabilities (2)
          * - non matching external capabilities (1)
-         * => return inherent capabilities (0)
+         * => return external capabilities (1)
          */
-        caps = db.getCapabilities(1, 1);
-        assertEquals(0, caps.getValue());
+        caps = db.getCapabilities(62, 1);
+        assertEquals(1, caps.getValue());
         /*
          * - type 44 in database
          * - inherent capabilities (0)
