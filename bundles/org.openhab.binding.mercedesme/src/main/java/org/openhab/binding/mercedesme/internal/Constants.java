@@ -15,6 +15,7 @@ package org.openhab.binding.mercedesme.internal;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingTypeUID;
@@ -25,6 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class Constants {
     public static final String BINDING_ID = "mercedesme";
 

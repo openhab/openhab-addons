@@ -25,7 +25,6 @@ import java.util.Base64;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.slf4j.Logger;
@@ -38,9 +37,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Utils {
-    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
+    private static final List<Integer> PORTS = new ArrayList<Integer>();
     private static int port = 8090;
-    private static List<Integer> ports = new ArrayList<Integer>();
 
     /**
      * Get free port without other Thread interference
@@ -48,22 +47,22 @@ public class Utils {
      * @return
      */
     public static synchronized int getFreePort() {
-        while (ports.contains(port)) {
+        while (PORTS.contains(port)) {
             port++;
         }
-        ports.add(port);
+        PORTS.add(port);
         return port;
     }
 
     public static synchronized void addPort(int portNr) {
-        if (ports.contains(portNr)) {
-            logger.warn("Port {} already occupied", portNr);
+        if (PORTS.contains(portNr)) {
+            LOGGER.warn("Port {} already occupied", portNr);
         }
-        ports.add(portNr);
+        PORTS.add(portNr);
     }
 
     public static synchronized void removePort(int portNr) {
-        ports.remove(portNr);
+        PORTS.remove(portNr);
     }
 
     public static String getCallbackIP() {
@@ -86,7 +85,7 @@ public class Utils {
         return ip;
     }
 
-    public static String getCallbackAddress(@NonNull String callbackIP, int callbackPort) {
+    public static String getCallbackAddress(String callbackIP, int callbackPort) {
         return Constants.HTTP + callbackIP + Constants.COLON + callbackPort + Constants.CALLBACK_ENDPOINT;
     }
 
@@ -99,7 +98,7 @@ public class Utils {
             ois.close();
             return o;
         } catch (IOException | ClassNotFoundException e) {
-            logger.debug("Exception Token deserialization {}", e.getMessage());
+            LOGGER.debug("Exception Token deserialization {}", e.getMessage());
         }
         return Constants.EMPTY;
     }
@@ -113,7 +112,7 @@ public class Utils {
             oos.close();
             return Base64.getEncoder().encodeToString(baos.toByteArray());
         } catch (IOException e) {
-            logger.debug("Exception Token serialization {}", e.getMessage());
+            LOGGER.debug("Exception Token serialization {}", e.getMessage());
         }
         return Constants.EMPTY;
     }

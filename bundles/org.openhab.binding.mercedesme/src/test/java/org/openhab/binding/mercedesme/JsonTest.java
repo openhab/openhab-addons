@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,7 @@ import org.openhab.binding.mercedesme.internal.utils.Mapper;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 class JsonTest {
     public static final String DATE_INPUT_PATTERN_STRING = "yyyy-MM-dd'T'HH:mm:ss";
     public static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern(DATE_INPUT_PATTERN_STRING);
@@ -189,7 +191,7 @@ class JsonTest {
         for (Iterator iterator = ja.iterator(); iterator.hasNext();) {
             JSONObject jo = (JSONObject) iterator.next();
             Set<String> s = jo.keySet();
-            if (s.size() > 0) {
+            if (!s.isEmpty()) {
                 String id = s.toArray()[0].toString();
                 JSONObject val = jo.getJSONObject(id);
                 if (val.has("timestamp")) {

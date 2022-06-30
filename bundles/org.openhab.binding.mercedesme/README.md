@@ -322,10 +322,12 @@ Especially after setting the frist Mercedes Benz Developer Project you'll receiv
 It seems that the API isn't _filled_ yet. 
 
 **Pre-Condition**
+
 - The Mercedes Me bridge is online = authorization is fine
 - The Mercedes Me thing is online = API calls are fine 
 
 **Solution**
+
 - Reduce `refreshInterval` to 1 minute
 - Go to your vehcile, open doors and windows, turn on lights, drive a bit  ... 
 - wait until values are providing the right states

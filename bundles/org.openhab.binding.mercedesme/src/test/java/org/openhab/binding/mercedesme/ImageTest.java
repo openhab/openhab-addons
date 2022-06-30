@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import org.openhab.binding.mercedesme.internal.VehicleConfiguration;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 class ImageTest {
 
     @Test

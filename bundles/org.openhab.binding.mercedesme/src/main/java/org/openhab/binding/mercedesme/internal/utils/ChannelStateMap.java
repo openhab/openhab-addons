@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mercedesme.internal.utils;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.core.types.State;
 
 /**
@@ -19,6 +21,7 @@ import org.openhab.core.types.State;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class ChannelStateMap {
     private String channel;
     private String group;
@@ -51,5 +54,9 @@ public class ChannelStateMap {
     @Override
     public String toString() {
         return group + ":" + channel + " " + state;
+    }
+
+    public boolean isValid() {
+        return !channel.equals(Constants.EMPTY);
     }
 }

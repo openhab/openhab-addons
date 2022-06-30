@@ -14,6 +14,7 @@ package org.openhab.binding.mercedesme;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.Constants;
@@ -23,6 +24,7 @@ import org.openhab.binding.mercedesme.internal.Constants;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 class ConfigurationTest {
 
     @Test

@@ -89,7 +89,7 @@ public class VehicleHandler extends BaseThingHandler {
     private static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern(DATE_INPUT_PATTERN_STRING);
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
-    private Optional<AccountHandler> accountHandler = Optional.empty();;
+    private Optional<AccountHandler> accountHandler = Optional.empty();
     private Optional<VehicleConfiguration> config = Optional.empty();
     private Optional<ChannelStateMap> rangeFuel = Optional.empty();
     private Optional<ChannelStateMap> rangeElectric = Optional.empty();
@@ -355,7 +355,7 @@ public class VehicleHandler extends BaseThingHandler {
             StateOption so = new StateOption(entry, null);
             stateOptions.add(so);
         });
-        if (commandOptions.size() == 0) {
+        if (commandOptions.isEmpty()) {
             commandOptions.add(new CommandOption("Initilaze", null));
             stateOptions.add(new StateOption("Initilaze", null));
         }
@@ -413,7 +413,7 @@ public class VehicleHandler extends BaseThingHandler {
                 for (Iterator iterator = ja.iterator(); iterator.hasNext();) {
                     JSONObject jo = (JSONObject) iterator.next();
                     ChannelStateMap csm = Mapper.getChannelStateMap(jo);
-                    if (csm != null) {
+                    if (csm.isValid()) {
                         updateChannel(csm);
                         // store ChannelMap for range radius calculation
                         if (csm.getChannel().equals("range-electric")) {
@@ -453,7 +453,7 @@ public class VehicleHandler extends BaseThingHandler {
                 for (Iterator iterator = ja.iterator(); iterator.hasNext();) {
                     JSONObject jo = (JSONObject) iterator.next();
                     ChannelStateMap csm = Mapper.getChannelStateMap(jo);
-                    if (csm != null) {
+                    if (csm.isValid()) {
                         updateChannel(csm);
                         // store ChannelMap for range radius calculation
                         if (csm.getChannel().equals("range-electric")) {
