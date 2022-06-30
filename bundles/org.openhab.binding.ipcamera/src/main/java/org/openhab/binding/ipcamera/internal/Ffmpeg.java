@@ -18,7 +18,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -59,13 +58,7 @@ public class Ffmpeg {
     public Ffmpeg(IpCameraHandler handle, FFmpegFormat format, String ffmpegLocation, String inputArguments,
             String input, String outArguments, String output, String username, String password) {
         this.format = format;
-
-        try {
-            this.password = URLEncoder.encode(password, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException ex) {
-            logger.warn("encoding password failed {} ", ex.getMessage());
-            this.password = password;
-        }
+        this.password = URLEncoder.encode(password, StandardCharsets.UTF_8);
 
         ipCameraHandler = handle;
         String altInput = input;
