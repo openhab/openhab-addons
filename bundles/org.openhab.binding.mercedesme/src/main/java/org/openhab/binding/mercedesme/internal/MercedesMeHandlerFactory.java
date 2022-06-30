@@ -49,7 +49,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final Storage<String> tokenStorage;
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
-
     private final StorageService storageService;
 
     @Activate

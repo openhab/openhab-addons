@@ -41,11 +41,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
-    private HttpClientFactory httpClientFactory;
-    private Optional<CallbackServer> server = Optional.empty();
-    private Optional<String> tokenStorageKey = Optional.empty();
     private final OAuthFactory oAuthFactory;
     private final Storage<String> storage;
+    private final HttpClientFactory httpClientFactory;
+    private Optional<CallbackServer> server = Optional.empty();
+    private Optional<String> tokenStorageKey = Optional.empty();
 
     Optional<AccountConfiguration> config = Optional.empty();
 
@@ -180,7 +180,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     /**
-     * Intermediate function to correct storage of token.
+     * Will help early adopters of this binding not too loose their already stored token
      * Before token was stored with unique key bridge.getUUID now token is stored with key clientId.
      * With this change you're able to delete and create bridges in openHAB without loosing token data if the same
      * clientId is configured

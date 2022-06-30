@@ -430,8 +430,14 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Fallback solution with Java11 classes
+     * Performs try with Java11 HttpClient - https://zetcode.com/java/getpostrequest/ to identify Community problem
+     * https://community.openhab.org/t/mercedes-me-binding/136852/21
+     *
+     * @param requestUrl
+     */
     private void fallbackCall(String requestUrl) {
-        // perform try with Java11 HttpClient - https://zetcode.com/java/getpostrequest/
         logger.debug("Perform fallback call");
 
         // Calculate endpoint for debugging

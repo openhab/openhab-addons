@@ -62,7 +62,7 @@ public class Utils {
     }
 
     public static synchronized void removePort(int portNr) {
-        PORTS.remove(portNr);
+        PORTS.remove(Integer.valueOf(portNr));
     }
 
     public static String getCallbackIP() {
