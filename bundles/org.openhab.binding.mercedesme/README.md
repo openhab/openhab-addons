@@ -23,7 +23,7 @@ There's no automatic discovery.
 
 Bridge needs configuration in order to connect properly to your Mercedes Me Account. 
 
-### Pre Conditions
+### Pre-Conditions
 
 - **each bridge shall have it's own Mercedes Benz Client ID!**
  Don't create several `account` bridges with the same client id! If this is not the case the tokens won't be stored properly and the authorization is jeopardized!
@@ -101,7 +101,7 @@ Some supporting screenshots for the setup
 | callbackPort    | integer | **Unique** port number                | auto detect | no       | yes      |
 
 The `callbackPort` needs to be unique for all created Mercedes Me account things. Otherwise token exchange will be corrupted.
-Set the advanced options by yoursself if you know your IP and Port, otherwise give auto detect a try.
+Set the advanced options by yourself if you know your IP and Port, otherwise give auto detect a try.
 
 
 ## Thing Configuration
@@ -147,7 +147,7 @@ Channels are separated in groups
 ### Range
 
 Group name: `range`
-All channels `readonly`
+All channels `read-only`
 
 | Channel          | Type                 |  Description                 | bev | hybrid | combustion |
 |------------------|----------------------|------------------------------| ----|--------|------------|
@@ -168,7 +168,7 @@ Channels with `radius` are just giving a _guess_ which radius can be reached in 
 ### Doors
 
 Group name: `doors`
-All channels `readonly`
+All channels `read-only`
 
 | Channel          | Type                 |  Description                 |
 |------------------|----------------------|------------------------------|
@@ -228,7 +228,7 @@ Mapping table for all windows
 ### Lights
 
 Group name: `lights`
-All channels `readonly`
+All channels `read-only`
 
 | Channel          | Type                 |  Description                 |
 |------------------|----------------------|------------------------------|
@@ -252,7 +252,7 @@ Mapping table `light-switch`
 ### Lock
 
 Group name: `lock`
-All channels `readonly`
+All channels `read-only`
 
 | Channel          | Type                 |  Description                 |
 |------------------|----------------------|------------------------------|
@@ -291,7 +291,7 @@ Group name: `image`
 | image-view       | text                 |  Vehicle Image Viewpoint     |   X   |
 | clear-cache      | Switch               |  Remove All Stored Images    |   X   |
 
-**If** the `imageApiKey` in [Bridge Configuration](#bridge-configuration) is set the vehicle thing will try to get images.
+**If** the `imageApiKey` in [Bridge Configuration Parameters](#bridge-configuration-parameters) is set the vehicle thing will try to get images.
 Pay attention to the [Advanced Image Configuration Properties](#thing-configuration) before requesting new images.
 Sending commands towards the `image-view` channel will change the image.
 The `image-view` is providing options to select the available images for your specific vehicle.
@@ -322,7 +322,7 @@ Otherwise you'll receive some error message when clicking the link after opening
 
 Most common errors:
 
-- redirect url doesn't match: Double check if `callbackUrl` is really saved correctly in your Mercedes Benz Developer project
+- redirect URL doesn't match: Double check if `callbackUrl` is really saved correctly in your Mercedes Benz Developer project
 - scope failure: the requested scope doesn't match with the subscribed products. 
     - Check [openHab configuration switches](#openhab-configuration) 
     - apply changes if necessary and don't forget to save
@@ -342,7 +342,7 @@ It seems that the API isn't _filled_ yet.
 **Solution**
 
 - Reduce `refreshInterval` to 1 minute
-- Go to your vehcile, open doors and windows, turn on lights, drive a bit  ... 
+- Go to your vehicle, open doors and windows, turn on lights, drive a bit  ... 
 - wait until values are providing the right states
 
 ### Images
@@ -351,7 +351,7 @@ Testing the whole image settings is hard due to the restricted call number towar
 
 My personal experience during limited testing
 
-| Test             |Tested | Ok  |  Not Ok | Comment                                                 |
+| Test             |Tested | OK  |  Not OK | Comment                                                 |
 |------------------|-------|-----|---------|---------------------------------------------------------|
 | `format` webp    | Yes   |  X  |         |                                                         |
 | `format` png     | Yes   |     |    X    | Internal Server Error 500 on Mercedes Server side       |
@@ -366,8 +366,8 @@ My personal experience during limited testing
 
 Data is stored in directory `%USER_DATA%/jsondb` for handling tokens and vehicle images.
 
- * _mercedesme.json_ - token is stored with key `clientId` which is provided by `account` [bridge](#bridge-configuration-parameters)
- * _mercedesme_%VEHICLE_VIN%.json_ - images are stored per vehicle. File name contains `vin` cofigured by [vehicle thing](#thing-configuration)
+ * _mercedesme.json_ - token is stored with key `clientId` which is provided by `account` [Brige Configuration Parameters](#bridge-configuration-parameters)
+ * _mercedesme_%VEHICLE_VIN%.json_ - images are stored per vehicle. File name contains `vin` configured by [vehicle Thing Configuration](#thing-configuration)
 
 With this data the binding is able to operate without new authorization towards Mercedes each startup and reduces the restricted calls towards image API.
 Also these files are properly stored in your [backup](https://community.openhab.org/t/docs-on-how-to-backup-openhab/100182) e.g. if you perform `openhab-cli backup`
