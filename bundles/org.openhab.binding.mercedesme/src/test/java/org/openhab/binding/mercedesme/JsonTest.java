@@ -14,8 +14,8 @@ package org.openhab.binding.mercedesme;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -207,8 +207,8 @@ class JsonTest {
             }
         }
         Date d = new Date(lastTimestamp);
-        LocalDateTime ld = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        assertEquals("2022-06-19T16:46:31", ld.format(DATE_INPUT_PATTERN));
+        ZonedDateTime zdt = d.toInstant().atZone(ZoneId.of("Europe/Paris"));
+        assertEquals("2022-06-19T16:46:31", zdt.format(DATE_INPUT_PATTERN));
     }
 
     @Test
