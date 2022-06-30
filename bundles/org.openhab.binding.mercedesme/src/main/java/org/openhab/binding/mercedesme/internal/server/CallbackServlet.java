@@ -49,7 +49,7 @@ public class CallbackServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().println("<HTML>");
             response.getWriter().println("<BODY>");
-            response.getWriter().println("<B>Error messages</B>");
+            response.getWriter().println("<B>Call Parameters</B>");
             response.getWriter().println("<BR>");
             response.getWriter().println(request.getParameterMap());
             response.getWriter().println("<BR><BR>");

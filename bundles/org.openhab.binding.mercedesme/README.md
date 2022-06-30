@@ -85,7 +85,7 @@ Some supporting screenshots for the setup
 
 <img src="./doc/CallbackUrl_Page.png" width="500" height="350"/>
 
-
+### Bridge Configuration
 
 | Name            | Type    | Description                           | Default     | Required | Advanced |
 |-----------------|---------|---------------------------------------|-------------|----------|----------|
@@ -104,7 +104,7 @@ The `callbackPort` needs to be unique for all created Mercedes Me account things
 Set the advanced options by yoursself if you know your IP and Port, otherwise give auto detect a try.
 
 
-### Thing Configuration
+## Thing Configuration
 
 Configuration for all vehicles are the same.
 
@@ -346,6 +346,17 @@ My personal experience during limited testing
 | `night`          | No    |     |         | Not support by my vehicle                               |
 | `roofOpen`       | No    |     |         | Not support by my vehicle                               |
 | `cropped         | No    |     |         | Not desired from my side                                |
+
+## Storage
+
+Data is stored in directory `%USER_DATA%/jsondb` for handling tokens and vehicle images.
+
+ * _mercedesme.json_ - token is stored with key `clientId` which is provided by `account` [bridge](#bridge-configuration)
+ * _mercedesme_%VEHICLE_VIN%.json_ - images are stored per vehicle. File name contains `vin` cofigured by [vehicle thing](#thing-configuration)
+
+With this data the binding is able to operate without new authorization towards Mercedes each startup and reduces the restricted calls towards image API.
+Also these files are properly stored in your [backup](https://community.openhab.org/t/docs-on-how-to-backup-openhab/100182) e.g. if you perform `openhab-cli backup`
+
 
 ## Full example
 

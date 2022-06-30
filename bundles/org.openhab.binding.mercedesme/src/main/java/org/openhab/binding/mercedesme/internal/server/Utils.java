@@ -62,6 +62,10 @@ public class Utils {
         ports.add(portNr);
     }
 
+    public static synchronized void removePort(int portNr) {
+        ports.remove(portNr);
+    }
+
     public static String getCallbackIP() {
         // https://stackoverflow.com/questions/1062041/ip-address-not-obtained-in-java
         String ip = Constants.NOT_SET;

@@ -43,11 +43,11 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private HttpClientFactory httpClientFactory;
     private Optional<CallbackServer> server = Optional.empty();
-    private Optional<AccountConfiguration> config = Optional.empty();
     private Optional<String> tokenStorageKey = Optional.empty();
-
     private final OAuthFactory oAuthFactory;
     private final Storage<String> storage;
+
+    Optional<AccountConfiguration> config = Optional.empty();
 
     public AccountHandler(Bridge bridge, HttpClientFactory hcf, OAuthFactory oaf, Storage<String> storage) {
         super(bridge);
@@ -142,6 +142,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     public void dispose() {
         if (!server.isEmpty()) {
             server.get().stop();
+            Utils.removePort(config.get().callbackPort);
         }
     }
 
@@ -150,12 +151,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
      */
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
-        logger.trace("{} received new Access Token {}", config.get().callbackPort, tokenResponse.toString());
+        logger.debug("{} received new Access Token", config.get().callbackPort);
         if (!tokenResponse.isExpired(LocalDateTime.now(), 10)) {
             updateStatus(ThingStatus.ONLINE);
         }
         if (tokenResponse.getRefreshToken() != null) {
-            logger.trace("{} store token in {}", config.get().callbackPort, tokenStorageKey);
+            logger.debug("{} store token in {}", config.get().callbackPort, tokenStorageKey.get());
             String tokenSerial = Utils.toString(tokenResponse);
             storage.put(tokenStorageKey.get(), tokenSerial);
         }

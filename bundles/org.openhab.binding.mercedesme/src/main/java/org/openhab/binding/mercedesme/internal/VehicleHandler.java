@@ -14,6 +14,10 @@ package org.openhab.binding.mercedesme.internal;
 
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -220,25 +224,65 @@ public class VehicleHandler extends BaseThingHandler {
 
             // Mileage for all cars
             String odoUrl = String.format(ODO_URL, config.get().vin);
-            call(odoUrl);
+            if (accountConfigAvailable()) {
+                if (accountHandler.get().config.get().odoScope) {
+                    call(odoUrl);
+                } else {
+                    logger.debug("{} Odo scope not activated", this.getThing().getLabel());
+                }
+            } else {
+                logger.debug("{} Account not properly configured", this.getThing().getLabel());
+            }
 
             // Electric status for hybrid and electric
             if (uid.equals(BEV) || uid.equals(HYBRID)) {
                 String evUrl = String.format(EV_URL, config.get().vin);
-                call(evUrl);
+                if (accountConfigAvailable()) {
+                    if (accountHandler.get().config.get().evScope) {
+                        call(evUrl);
+                    } else {
+                        logger.debug("{} Electric Status scope not activated", this.getThing().getLabel());
+                    }
+                } else {
+                    logger.debug("{} Account not properly configured", this.getThing().getLabel());
+                }
             }
 
             // Fuel for hybrid and combustion
             if (uid.equals(COMBUSTION) || uid.equals(HYBRID)) {
                 String fuelUrl = String.format(FUEL_URL, config.get().vin);
-                call(fuelUrl);
+                if (accountConfigAvailable()) {
+                    if (accountHandler.get().config.get().fuelScope) {
+                        call(fuelUrl);
+                    } else {
+                        logger.debug("{} Fuel scope not activated", this.getThing().getLabel());
+                    }
+                } else {
+                    logger.debug("{} Account not properly configured", this.getThing().getLabel());
+                }
             }
 
             // Status and Lock for all
             String statusUrl = String.format(STATUS_URL, config.get().vin);
-            call(statusUrl);
+            if (accountConfigAvailable()) {
+                if (accountHandler.get().config.get().vehicleScope) {
+                    call(statusUrl);
+                } else {
+                    logger.debug("{} Vehicle Status scope not activated", this.getThing().getLabel());
+                }
+            } else {
+                logger.debug("{} Account not properly configured", this.getThing().getLabel());
+            }
             String lockUrl = String.format(LOCK_URL, config.get().vin);
-            call(lockUrl);
+            if (accountConfigAvailable()) {
+                if (accountHandler.get().config.get().lockScope) {
+                    call(lockUrl);
+                } else {
+                    logger.debug("{} Lock scope not activated", this.getThing().getLabel());
+                }
+            } else {
+                logger.debug("{} Account not properly configured", this.getThing().getLabel());
+            }
 
             // [todo] remove test for call to one specific resource
             // String lightUrl = BASE_URL + "/vehicles/%s/resources/interiorLightsFront";
@@ -249,6 +293,15 @@ public class VehicleHandler extends BaseThingHandler {
         } else {
             logger.warn("AccountHandler not set");
         }
+    }
+
+    private boolean accountConfigAvailable() {
+        if (accountHandler.isPresent()) {
+            if (accountHandler.get().config.isPresent()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void getImageResources() {
@@ -344,7 +397,6 @@ public class VehicleHandler extends BaseThingHandler {
 
     private void call(String url) {
         String requestUrl = String.format(url, config.get().vin);
-
         // Calculate endpoint for debugging
         String[] endpoint = requestUrl.split("/");
         String finalEndpoint = endpoint[endpoint.length - 1];
@@ -376,6 +428,46 @@ public class VehicleHandler extends BaseThingHandler {
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("{} Error getting data {}", debugPrefix, e.getMessage());
+            fallbackCall(requestUrl);
+        }
+    }
+
+    private void fallbackCall(String requestUrl) {
+        // perform try with Java11 HttpClient - https://zetcode.com/java/getpostrequest/
+        logger.debug("Perform fallback call");
+
+        // Calculate endpoint for debugging
+        String[] endpoint = requestUrl.split("/");
+        String finalEndpoint = endpoint[endpoint.length - 1];
+        // debug prefix contains Thing label and call endpoint for propper debugging
+        String debugPrefix = this.getThing().getLabel() + Constants.COLON + finalEndpoint;
+
+        java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(requestUrl))
+                .header(HttpHeader.AUTHORIZATION.toString(), "Bearer " + accountHandler.get().getToken()).GET().build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            logger.debug("{} Response {} {}", debugPrefix, response.statusCode(), response.body());
+            if (response.statusCode() == 200) {
+                JSONArray ja = new JSONArray(response.body());
+                for (Iterator iterator = ja.iterator(); iterator.hasNext();) {
+                    JSONObject jo = (JSONObject) iterator.next();
+                    ChannelStateMap csm = Mapper.getChannelStateMap(jo);
+                    if (csm != null) {
+                        updateChannel(csm);
+                        // store ChannelMap for range radius calculation
+                        if (csm.getChannel().equals("range-electric")) {
+                            rangeElectric = Optional.of(csm);
+                        } else if (csm.getChannel().equals("range-fuel")) {
+                            rangeFuel = Optional.of(csm);
+                        }
+                    } else {
+                        logger.warn("{} Unable to deliver state for {}", debugPrefix, jo);
+                    }
+                }
+            }
+        } catch (IOException | InterruptedException e) {
+            logger.warn("{} Error getting data via fallback {}", debugPrefix, e.getMessage());
         }
     }
 
