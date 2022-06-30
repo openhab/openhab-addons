@@ -403,4 +403,58 @@ public class ShadePositionTest {
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), UnDefType.UNDEF);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), 88);
     }
+
+    /**
+     * Test the getCapabilities functionality.
+     */
+    @Test
+    public void testGetCapabilities() {
+        Capabilities caps;
+        /*
+         * - type not in database
+         * - null external capabilities
+         * => return default (0)
+         */
+        caps = db.getCapabilities(0, null);
+        assertEquals(0, caps.getValue());
+        /*
+         * - type not in database
+         * - valid external capabilities (1)
+         * => return external capabilities (1)
+         */
+        caps = db.getCapabilities(0, 1);
+        assertEquals(1, caps.getValue());
+        /*
+         * - type not in database
+         * - external capabilities not in database (99)
+         * => return default (0)
+         */
+        caps = db.getCapabilities(0, 99);
+        assertEquals(0, caps.getValue());
+        /*
+         * - type 62 in database
+         * - inherent capabilities (2)
+         * - null external capabilities
+         * => return inherent capabilities (2)
+         */
+        caps = db.getCapabilities(62, null);
+        assertEquals(2, caps.getValue());
+        /*
+         * - type 62 in database
+         * - inherent capabilities (2)
+         * - non matching external capabilities (1)
+         * => return external capabilities (1)
+         */
+        caps = db.getCapabilities(62, 1);
+        assertEquals(1, caps.getValue());
+        /*
+         * - type 44 in database
+         * - inherent capabilities (0)
+         * - with capabilitiesOverride (1)
+         * - non matching external capabilities (2)
+         * => return capabilitiesOverride (1)
+         */
+        caps = db.getCapabilities(44, 2);
+        assertEquals(1, caps.getValue());
+    }
 }
