@@ -85,7 +85,9 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                     logger.debug("Token cannot be restored from storage - manual authorization needed");
                 }
             } else {
-                logger.debug("Token not found in storage - manual authorization needed");
+                if (!keyMigration()) {
+                    logger.debug("Token not found in storage - manual authorization needed");
+                }
             }
 
             server.get().start();
@@ -174,5 +176,34 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public String toString() {
         return Integer.toString(config.get().callbackPort);
+    }
+
+    /**
+     * Intermediate function to correct storage of token.
+     * Before token was stored with unique key bridge.getUUID now token is stored with key clientId.
+     * With this change you're able to delete and create bridges in openHAB without loosing token data if the same
+     * clientId is configured
+     */
+    private boolean keyMigration() {
+        String oldTokenStorageKey = super.getThing().getUID() + ":token";
+        if (storage.containsKey(oldTokenStorageKey)) {
+            String tokenSerial = storage.get(oldTokenStorageKey);
+            if (tokenSerial != null) {
+                AccessTokenResponse atr = (AccessTokenResponse) Utils.fromString(tokenSerial);
+                server.get().setToken(atr);
+                logger.debug("Token migration successful");
+                // put migration token with adjusted key
+                storage.put(tokenStorageKey.get(), tokenSerial);
+                // remove migration token from storage
+                storage.remove(oldTokenStorageKey);
+                return true;
+            } else {
+                logger.debug("Cannot restore Token for migration");
+                return false;
+            }
+        } else {
+            logger.debug("No Token for migration found");
+            return false;
+        }
     }
 }

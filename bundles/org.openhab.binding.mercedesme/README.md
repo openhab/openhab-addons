@@ -1,6 +1,7 @@
 # MercedesMe Binding
 
-Connects your Mercedes Me Account and attached vehicles to openHAB.
+This binding provides similar access to your Mercedes Benz vehicle like the Smartphone App _Mercedes Me_.
+For this you need a Mercedes developer account to get data from your vehicles.
 Setup requires some time so follow [the steps of bridge configuration](#bridge-configuration)
 
 If you face some problems during setup or runtime please have a look into the [Troubleshooting section](#troubleshooting)
