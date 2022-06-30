@@ -232,7 +232,7 @@ public class VeluxProduct {
      * Return the product unique index.
      * Either the serial number (for normal Velux devices), or its name (for e.g. Somfy devices).
      *
-     * @return ..
+     * @return the serial number or its name
      */
     public String getProductUniqueIndex() {
         if (!v2 || serialNumber.startsWith(VeluxProductSerialNo.UNKNOWN)) {
@@ -416,9 +416,10 @@ public class VeluxProduct {
 
     /**
      * Set the Functional Parameters. Calls setProductAllowedValues() so that any values that are not allowed by normal
-     * products will be replaced by the 'undefined' (i.e. 0xF7FF) value.
+     * products will be replaced by the 'undefined' (i.e. 0xF7FF) value. If newFunctionalParameters is null, then no new
+     * value is set.
      *
-     * @param newFunctionalParameters the new values of the Functional Parameters.
+     * @param newFunctionalParameters the new values of the Functional Parameters, or null if nothing is to be set.
      * @return <b>modified</b> if any of the Functional Parameters have been changed.
      */
     public boolean setFunctionalParameters(@Nullable FunctionalParameters newFunctionalParameters) {
@@ -438,7 +439,7 @@ public class VeluxProduct {
      *
      * @return the index of the vane position Functional Parameter, or -1 if not supported.
      */
-    private int getVanePositionIndex() {
+    public int getVanePositionIndex() {
         switch (actuatorType) {
             case BLIND_1_0:
                 return 0;
