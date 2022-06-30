@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class MimicConfiguration {
-    public String url = "";
+    public String url = "http://localhost:59125";
     public Double speakingRate = 1.0;
     public Double audioVolatility = 0.667;
     public Double phonemeVolatility = 0.8;
