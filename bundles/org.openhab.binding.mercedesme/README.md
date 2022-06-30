@@ -85,7 +85,7 @@ Some supporting screenshots for the setup
 
 <img src="./doc/CallbackUrl_Page.png" width="500" height="350"/>
 
-### Bridge Configuration
+### Bridge Configuration Parameters
 
 | Name            | Type    | Description                           | Default     | Required | Advanced |
 |-----------------|---------|---------------------------------------|-------------|----------|----------|
@@ -342,16 +342,16 @@ My personal experience during limited testing
 | `format` png     | Yes   |     |    X    | Internal Server Error 500 on Mercedes Server side       |
 | `format` jpeg    | No    |     |         | Not tested due to missing transparency in jpeg format   |
 | all options off  | Yes   |  X  |         |                                                         |
-| ´background`     | Yes   |  X  |         |                                                         |
+| `background`     | Yes   |  X  |         |                                                         |
 | `night`          | No    |     |         | Not support by my vehicle                               |
 | `roofOpen`       | No    |     |         | Not support by my vehicle                               |
-| `cropped         | No    |     |         | Not desired from my side                                |
+| `cropped`        | No    |     |         | Not desired from my side                                |
 
 ## Storage
 
 Data is stored in directory `%USER_DATA%/jsondb` for handling tokens and vehicle images.
 
- * _mercedesme.json_ - token is stored with key `clientId` which is provided by `account` [bridge](#bridge-configuration)
+ * _mercedesme.json_ - token is stored with key `clientId` which is provided by `account` [bridge](#bridge-configuration-parameters)
  * _mercedesme_%VEHICLE_VIN%.json_ - images are stored per vehicle. File name contains `vin` cofigured by [vehicle thing](#thing-configuration)
 
 With this data the binding is able to operate without new authorization towards Mercedes each startup and reduces the restricted calls towards image API.

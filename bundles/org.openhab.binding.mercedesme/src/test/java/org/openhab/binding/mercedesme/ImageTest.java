@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.mercedesme;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Base64;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Optional;
 
 import org.eclipse.jetty.util.MultiMap;
@@ -30,31 +28,28 @@ import org.openhab.binding.mercedesme.internal.VehicleConfiguration;
  */
 class ImageTest {
 
-    void testImageBytes() {
-        byte[] content = FileReader.readFileInBytes("src/test/resources/UIScreenshot.png");
-        System.out.println(content.length);
-        System.out.println(content);
-        String base64 = Base64.getEncoder().encodeToString(content);
-        System.out.println(base64.length());
-        // System.out.println(base64);
-        byte[] base64Decoded = Base64.getDecoder().decode(base64);
-        File outputFile = new File("src/test/resources/UIScreenshot-rewrite.png");
-        try {
-            Files.write(outputFile.toPath(), base64Decoded);
-        } catch (IOException e) {
-        }
-    }
-
     @Test
     public void testConfig() {
         Optional<VehicleConfiguration> config = Optional.of(new VehicleConfiguration());
         MultiMap<String> parameterMap = new MultiMap<String>();
-        parameterMap.add("background", Boolean.toString(config.get().roofOpen));
-        parameterMap.add("night", Boolean.toString(config.get().roofOpen));
-        parameterMap.add("cropped", Boolean.toString(config.get().roofOpen));
+        parameterMap.add("background", Boolean.toString(config.get().background));
+        parameterMap.add("night", Boolean.toString(config.get().night));
+        parameterMap.add("cropped", Boolean.toString(config.get().cropped));
         parameterMap.add("roofOpen", Boolean.toString(config.get().roofOpen));
         parameterMap.add("format", config.get().format);
         String params = UrlEncoded.encode(parameterMap, null, false);
-        System.out.println(params);
+        assertEquals("background=false&night=false&cropped=false&roofOpen=false&format=webp", params);
+
+        config.get().background = true;
+        config.get().format = "png";
+        config.get().cropped = true;
+        parameterMap = new MultiMap<String>();
+        parameterMap.add("background", Boolean.toString(config.get().background));
+        parameterMap.add("night", Boolean.toString(config.get().night));
+        parameterMap.add("cropped", Boolean.toString(config.get().cropped));
+        parameterMap.add("roofOpen", Boolean.toString(config.get().roofOpen));
+        parameterMap.add("format", config.get().format);
+        params = UrlEncoded.encode(parameterMap, null, false);
+        assertEquals("background=true&night=false&cropped=true&roofOpen=false&format=png", params);
     }
 }
