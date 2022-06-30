@@ -64,6 +64,7 @@
 				<option value="261">@text/indego.state.docked</option>
 				<option value="262">@text/indego.state.docked-loading-map</option>
 				<option value="263">@text/indego.state.docked-saving-map</option>
+				<option value="266">@text/indego.state.leaving-dock</option>
 				<option value="512">@text/indego.state.mowing</option>
 				<option value="514">@text/indego.state.relocalising</option>
 				<option value="515">@text/indego.state.loading-map</option>
@@ -82,6 +83,7 @@
 				<option value="1025">@text/indego.state.diagnostic-mode</option>
 				<option value="1026">@text/indego.state.end-of-life</option>
 				<option value="1281">@text/indego.state.software-update</option>
+				<option value="1537">@text/indego.state.energy-save-mode</option>
 				<option value="64513">@text/indego.state.docked</option>
 			</options>
 		</state>
