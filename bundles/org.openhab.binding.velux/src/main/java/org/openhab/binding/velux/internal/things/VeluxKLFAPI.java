@@ -291,11 +291,11 @@ public class VeluxKLFAPI {
         GW_CLEAR_ACTIVATION_LOG_REQ((short) 0x0502, "Request clear all data  in activation log."),
         GW_CLEAR_ACTIVATION_LOG_CFM((short) 0x0503, "Confirm clear all data  in activation log."),
         GW_GET_ACTIVATION_LOG_LINE_REQ((short) 0x0504, "Request line from activation log."),
-        GW_GET_ACTIVATION_LOG_LINE_CFM((short) 0x0505, "Acknowldge to confirm line from activation log."),
+        GW_GET_ACTIVATION_LOG_LINE_CFM((short) 0x0505, "Acknowledge to confirm line from activation log."),
         GW_ACTIVATION_LOG_UPDATED_NTF((short) 0x0506, "Notification to confirm line from activation log."),
         GW_GET_MULTIPLE_ACTIVATION_LOG_LINES_REQ((short) 0x0507, "Request lines from activation log."),
         GW_GET_MULTIPLE_ACTIVATION_LOG_LINES_NTF((short) 0x0508, "Notification error log  data from activation log."),
-        GW_GET_MULTIPLE_ACTIVATION_LOG_LINES_CFM((short) 0x0509, "Acknowldge to confirm lines from activation log."),
+        GW_GET_MULTIPLE_ACTIVATION_LOG_LINES_CFM((short) 0x0509, "Acknowledge to confirm lines from activation log."),
 
         GW_SET_UTC_REQ((short) 0x2000, "Request to set UTC time."),
         GW_SET_UTC_CFM((short) 0x2001, "Acknowledge to GW_SET_UTC_REQ."),

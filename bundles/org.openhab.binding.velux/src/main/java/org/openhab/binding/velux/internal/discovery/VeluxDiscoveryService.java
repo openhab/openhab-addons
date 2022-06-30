@@ -69,7 +69,7 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
     // Private
 
     private void updateLocalization() {
-        if (localization.equals(Localization.UNKNOWN) && (localeProvider != null) && (i18nProvider != null)) {
+        if (Localization.UNKNOWN.equals(localization) && (localeProvider != null) && (i18nProvider != null)) {
             logger.trace("updateLocalization(): creating Localization based on locale={},translation={}).",
                     localeProvider, i18nProvider);
             localization = new Localization(localeProvider, i18nProvider);

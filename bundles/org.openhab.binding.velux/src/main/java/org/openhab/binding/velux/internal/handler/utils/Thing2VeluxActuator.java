@@ -136,10 +136,10 @@ public class Thing2VeluxActuator {
      * @return <b>bridgeProductIndex</B> for accessing the Velux device (or ProductBridgeIndex.UNKNOWN if not found).
      */
     public ProductBridgeIndex getProductBridgeIndex() {
-        if (thisProduct.equals(VeluxProduct.UNKNOWN)) {
+        if (VeluxProduct.UNKNOWN.equals(thisProduct)) {
             mapThing2Velux();
         }
-        if (thisProduct.equals(VeluxProduct.UNKNOWN)) {
+        if (VeluxProduct.UNKNOWN.equals(thisProduct)) {
             return ProductBridgeIndex.UNKNOWN;
         }
         return thisProduct.getBridgeProductIndex();
@@ -152,7 +152,7 @@ public class Thing2VeluxActuator {
      * @return <b>isKnown</B> as boolean.
      */
     public boolean isKnown() {
-        return (!(this.getProductBridgeIndex().equals(ProductBridgeIndex.UNKNOWN)));
+        return (!(ProductBridgeIndex.UNKNOWN.equals(getProductBridgeIndex())));
     }
 
     /**
@@ -163,10 +163,10 @@ public class Thing2VeluxActuator {
      * @return <b>isInverted</B> for handling of values of the Velux device (or false if not found)..
      */
     public boolean isInverted() {
-        if (thisProduct.equals(VeluxProduct.UNKNOWN)) {
+        if (VeluxProduct.UNKNOWN.equals(thisProduct)) {
             mapThing2Velux();
         }
-        if (thisProduct.equals(VeluxProduct.UNKNOWN)) {
+        if (VeluxProduct.UNKNOWN.equals(thisProduct)) {
             logger.warn("isInverted(): Thing not found in Velux Bridge.");
         }
         return isInverted;

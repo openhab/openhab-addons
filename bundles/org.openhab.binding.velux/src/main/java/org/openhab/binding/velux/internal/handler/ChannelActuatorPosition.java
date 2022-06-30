@@ -143,6 +143,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                                 .from(position.getPositionAsPercentType(veluxActuator.isInverted()).intValue() > 50);
                         break;
                     default:
+                        // unknown channel => do nothing..
                 }
             }
             if (newState == null) {
@@ -214,6 +215,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                     }
                     break;
                 default:
+                    // unknown channel => do nothing..
             }
 
             if (!mainPosition.equals(VeluxProductPosition.UNKNOWN)) {
