@@ -134,6 +134,16 @@ See also [image channel section](#image) for further advise.
 
 Channels are separated in groups
 
+| Channel Group ID                 | Description                                       |
+|----------------------------------|---------------------------------------------------|
+| [range](#range)                  | Provides mileage, range and charge / fuel levels  |
+| [doors](#doors)                  | Details of all doors                              |
+| [windows](#windows)              | Current position of windows                       |
+| [lights](#lights)                | Interior lights and main light switch             |
+| [lock](#lock)                    | Overall lock state of vehicle                     |
+| [location](#location)            | Heading of the vehicle                            |
+| [image](#image)                  | Images of your vehicle                            |
+
 ### Range
 
 Group name: `range`
@@ -151,6 +161,9 @@ All channels `readonly`
 | range-hybrid     | Number:Length        |  Hybrid range                |     | X      |            |
 | radius-hybrid    | Number:Length        |  Hybrid radius for map       |     | X      |            |
 | last-update      | DateTime             |  Last Update                 | X   | X      | X          |
+
+Channels with `radius` are just giving a _guess_ which radius can be reached in a map display.
+
 
 ### Doors
 

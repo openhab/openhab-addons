@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@SuppressWarnings("serial")
 @NonNullByDefault
 public class CallbackServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(CallbackServlet.class);

@@ -46,6 +46,7 @@ class JsonTest {
         expectedResults.add("range:mileage 4131 km");
         String content = FileReader.readFileInString("src/test/resources/odo.json");
         JSONArray ja = new JSONArray(content);
+        assertTrue(ja.length() > 0);
         ja.forEach(entry -> {
             JSONObject jo = (JSONObject) entry;
             ChannelStateMap csm = Mapper.getChannelStateMap(jo);
@@ -66,6 +67,7 @@ class JsonTest {
         expectedResults.add("range:soc 78 %");
         String content = FileReader.readFileInString("src/test/resources/evstatus.json");
         JSONArray ja = new JSONArray(content);
+        assertTrue(ja.length() > 0);
         ja.forEach(entry -> {
             JSONObject jo = (JSONObject) entry;
             ChannelStateMap csm = Mapper.getChannelStateMap(jo);
@@ -86,6 +88,7 @@ class JsonTest {
         expectedResults.add("range:fuel-level 90 %");
         String content = FileReader.readFileInString("src/test/resources/fuel.json");
         JSONArray ja = new JSONArray(content);
+        assertTrue(ja.length() > 0);
         ja.forEach(entry -> {
             JSONObject jo = (JSONObject) entry;
             ChannelStateMap csm = Mapper.getChannelStateMap(jo);
@@ -107,6 +110,7 @@ class JsonTest {
         expectedResults.add("location:heading 120 °");
         String content = FileReader.readFileInString("src/test/resources/lock.json");
         JSONArray ja = new JSONArray(content);
+        assertTrue(ja.length() > 0);
         ja.forEach(entry -> {
             JSONObject jo = (JSONObject) entry;
             ChannelStateMap csm = Mapper.getChannelStateMap(jo);
@@ -141,6 +145,7 @@ class JsonTest {
 
         String content = FileReader.readFileInString("src/test/resources/status.json");
         JSONArray ja = new JSONArray(content);
+        assertTrue(ja.length() > 0);
         ja.forEach(entry -> {
             JSONObject jo = (JSONObject) entry;
             ChannelStateMap csm = Mapper.getChannelStateMap(jo);
@@ -171,6 +176,7 @@ class JsonTest {
 
         String content = FileReader.readFileInString("src/test/resources/eqa-light-sample.json");
         JSONArray ja = new JSONArray(content);
+        assertTrue(ja.length() > 0);
         ja.forEach(entry -> {
             JSONObject jo = (JSONObject) entry;
             ChannelStateMap csm = Mapper.getChannelStateMap(jo);
@@ -187,8 +193,9 @@ class JsonTest {
     void testTimeStamp() {
         String content = FileReader.readFileInString("src/test/resources/eqa-light-sample.json");
         JSONArray ja = new JSONArray(content);
+        assertTrue(ja.length() > 0);
         long lastTimestamp = 0;
-        for (Iterator iterator = ja.iterator(); iterator.hasNext();) {
+        for (Iterator<Object> iterator = ja.iterator(); iterator.hasNext();) {
             JSONObject jo = (JSONObject) iterator.next();
             Set<String> s = jo.keySet();
             if (!s.isEmpty()) {
@@ -202,5 +209,39 @@ class JsonTest {
         Date d = new Date(lastTimestamp);
         LocalDateTime ld = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         assertEquals("2022-06-19T16:46:31", ld.format(DATE_INPUT_PATTERN));
+    }
+
+    @Test
+    void testInvalidData() {
+        String content = FileReader.readFileInString("src/test/resources/invalid-key.json");
+        JSONArray ja = new JSONArray(content);
+        assertTrue(ja.length() > 0);
+        ja.forEach(entry -> {
+            JSONObject jo = (JSONObject) entry;
+            ChannelStateMap csm = Mapper.getChannelStateMap(jo);
+            assertNotNull(csm);
+            assertFalse(csm.isValid());
+        });
+    }
+
+    @Test
+    void testMissingTimestamp() {
+        List<String> expectedResults = new ArrayList<String>();
+        expectedResults.add("range:mileage 4131 km");
+        String content = FileReader.readFileInString("src/test/resources/invalid-timestamp.json");
+        JSONArray ja = new JSONArray(content);
+        assertTrue(ja.length() > 0);
+        ja.forEach(entry -> {
+            JSONObject jo = (JSONObject) entry;
+            ChannelStateMap csm = Mapper.getChannelStateMap(jo);
+            assertNotNull(csm);
+            assertTrue(expectedResults.contains(csm.toString()));
+            assertEquals(-1, csm.getTimestamp());
+            boolean removed = expectedResults.remove(csm.toString());
+            if (!removed) {
+                assertTrue(false, csm.toString() + " not removed");
+            }
+        });
+        assertEquals(0, expectedResults.size(), "All content delivered");
     }
 }

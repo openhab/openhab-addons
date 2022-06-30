@@ -81,6 +81,7 @@ public class Utils {
                 }
             }
         } catch (Exception e) {
+            LOGGER.trace("Autodetect IP failed {}", e.getMessage());
         }
         return ip;
     }

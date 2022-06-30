@@ -37,6 +37,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.measure.quantity.Length;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -69,7 +71,6 @@ import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,26 +82,25 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class VehicleHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
-
-    public static final String CONTENT_TYPE_URL_ENCODED = "application/x-www-form-urlencoded";
+    private static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private static final String EXT_IMG_RES = "ExtImageResources_";
-    private static final String DATE_INPUT_PATTERN_STRING = "yyyy-MM-dd'T'HH:mm:ss";
-    private static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern(DATE_INPUT_PATTERN_STRING);
+    private static final String INITIALIZE_COMMAND = "Initialze";
+
+    private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
+    private final Map<String, Long> timeHash = new HashMap<String, Long>();
+    private final MercedesMeCommandOptionProvider mmcop;
+    private final MercedesMeStateOptionProvider mmsop;
+    private final StorageService storageService;
+    private final HttpClient hc;
+    private final String uid;
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private Optional<AccountHandler> accountHandler = Optional.empty();
-    private Optional<VehicleConfiguration> config = Optional.empty();
-    private Optional<ChannelStateMap> rangeFuel = Optional.empty();
-    private Optional<ChannelStateMap> rangeElectric = Optional.empty();
+    private Optional<QuantityType<?>> rangeElectric = Optional.empty();
     private Optional<Storage<String>> imageStorage = Optional.empty();
-    private final Map<String, Long> timeHash = new HashMap<String, Long>();
+    private Optional<VehicleConfiguration> config = Optional.empty();
+    private Optional<QuantityType<?>> rangeFuel = Optional.empty();
     private LocalDateTime nextRefresh;
-    private final HttpClient hc;
-    private final String uid;
-    private final StorageService storageService;
-    private final MercedesMeCommandOptionProvider mmcop;
-    private final MercedesMeStateOptionProvider mmsop;
     private boolean online = false;
 
     public VehicleHandler(Thing thing, HttpClientFactory hcf, String uid, StorageService storageService,
@@ -129,7 +129,7 @@ public class VehicleHandler extends BaseThingHandler {
             }
         } else if (channelUID.getIdWithoutGroup().equals("image-view")) {
             if (imageStorage.isPresent()) {
-                if (command.equals("Initialze")) {
+                if (command.toFullString().equals(INITIALIZE_COMMAND)) {
                     getImageResources();
                 }
                 String key = command.toFullString() + "_" + config.get().vin;
@@ -144,7 +144,7 @@ public class VehicleHandler extends BaseThingHandler {
                         imageStorage.get().put(key, encodedImage);
                     }
                 }
-                if (!encodedImage.equals(EMPTY)) {
+                if (encodedImage != null && !EMPTY.equals(encodedImage)) {
                     RawType image = new RawType(Base64.getDecoder().decode(encodedImage),
                             MIME_PREFIX + config.get().format);
                     updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-data"), image);
@@ -322,10 +322,8 @@ public class VehicleHandler extends BaseThingHandler {
         Request req = hc.newRequest(url);
         req.header("x-api-key", accountHandler.get().getImageApiKey());
         req.header(HttpHeader.ACCEPT, "application/json");
-        // req.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, params, StandardCharsets.UTF_8));
-        ContentResponse cr;
         try {
-            cr = req.send();
+            ContentResponse cr = req.send();
             if (cr.getStatus() == 200) {
                 imageStorage.get().put(EXT_IMG_RES + config.get().vin, cr.getContentAsString());
                 setImageOtions();
@@ -410,16 +408,16 @@ public class VehicleHandler extends BaseThingHandler {
             logger.debug("{} Response {} {}", debugPrefix, cr.getStatus(), cr.getContentAsString());
             if (cr.getStatus() == 200) {
                 JSONArray ja = new JSONArray(cr.getContentAsString());
-                for (Iterator iterator = ja.iterator(); iterator.hasNext();) {
+                for (Iterator<Object> iterator = ja.iterator(); iterator.hasNext();) {
                     JSONObject jo = (JSONObject) iterator.next();
                     ChannelStateMap csm = Mapper.getChannelStateMap(jo);
                     if (csm.isValid()) {
                         updateChannel(csm);
                         // store ChannelMap for range radius calculation
                         if (csm.getChannel().equals("range-electric")) {
-                            rangeElectric = Optional.of(csm);
+                            rangeElectric = Optional.of((QuantityType<?>) csm.getState());
                         } else if (csm.getChannel().equals("range-fuel")) {
-                            rangeFuel = Optional.of(csm);
+                            rangeFuel = Optional.of((QuantityType<?>) csm.getState());
                         }
                     } else {
                         logger.warn("{} Unable to deliver state for {}", debugPrefix, jo);
@@ -450,16 +448,16 @@ public class VehicleHandler extends BaseThingHandler {
             logger.debug("{} Response {} {}", debugPrefix, response.statusCode(), response.body());
             if (response.statusCode() == 200) {
                 JSONArray ja = new JSONArray(response.body());
-                for (Iterator iterator = ja.iterator(); iterator.hasNext();) {
+                for (Iterator<Object> iterator = ja.iterator(); iterator.hasNext();) {
                     JSONObject jo = (JSONObject) iterator.next();
                     ChannelStateMap csm = Mapper.getChannelStateMap(jo);
                     if (csm.isValid()) {
                         updateChannel(csm);
                         // store ChannelMap for range radius calculation
                         if (csm.getChannel().equals("range-electric")) {
-                            rangeElectric = Optional.of(csm);
+                            rangeElectric = Optional.of((QuantityType<?>) csm.getState());
                         } else if (csm.getChannel().equals("range-fuel")) {
-                            rangeFuel = Optional.of(csm);
+                            rangeFuel = Optional.of((QuantityType<?>) csm.getState());
                         }
                     } else {
                         logger.warn("{} Unable to deliver state for {}", debugPrefix, jo);
@@ -475,26 +473,25 @@ public class VehicleHandler extends BaseThingHandler {
         if (rangeElectric.isPresent()) {
             // update electric radius
             ChannelStateMap radiusElectric = new ChannelStateMap("radius-electric", GROUP_RANGE,
-                    guessRangeRadius(rangeElectric.get().getState().as(QuantityType.class)), 0);
+                    guessRangeRadius(rangeElectric.get()), 0);
             updateChannel(radiusElectric);
             if (rangeFuel.isPresent()) {
                 // update fuel & hybrid radius
                 ChannelStateMap radiusFuel = new ChannelStateMap("radius-fuel", GROUP_RANGE,
-                        guessRangeRadius(rangeFuel.get().getState().as(QuantityType.class)), 0);
+                        guessRangeRadius(rangeFuel.get()), 0);
                 updateChannel(radiusFuel);
-                int hybridKm = rangeElectric.get().getState().as(QuantityType.class).intValue()
-                        + rangeFuel.get().getState().as(QuantityType.class).intValue();
-                ChannelStateMap rangeHybrid = new ChannelStateMap("range-hybrid", GROUP_RANGE,
-                        QuantityType.valueOf(hybridKm, KILOMETRE_UNIT), 0);
+                int hybridKm = rangeElectric.get().intValue() + rangeFuel.get().intValue();
+                QuantityType<Length> hybridRangeState = QuantityType.valueOf(hybridKm, KILOMETRE_UNIT);
+                ChannelStateMap rangeHybrid = new ChannelStateMap("range-hybrid", GROUP_RANGE, hybridRangeState, 0);
                 updateChannel(rangeHybrid);
                 ChannelStateMap radiusHybrid = new ChannelStateMap("radius-hybrid", GROUP_RANGE,
-                        guessRangeRadius(rangeHybrid.getState().as(QuantityType.class)), 0);
+                        guessRangeRadius(hybridRangeState), 0);
                 updateChannel(radiusHybrid);
             }
         } else if (rangeFuel.isPresent()) {
             // update fuel & hybrid radius
             ChannelStateMap radiusFuel = new ChannelStateMap("radius-fuel", GROUP_RANGE,
-                    guessRangeRadius((QuantityType) rangeFuel.get().getState()), 0);
+                    guessRangeRadius(rangeFuel.get()), 0);
             updateChannel(radiusFuel);
         }
     }
@@ -514,10 +511,7 @@ public class VehicleHandler extends BaseThingHandler {
      * @param range
      * @return mapping from air-line distance to "real road" distance
      */
-    public static State guessRangeRadius(@Nullable QuantityType s) {
-        if (s == null) {
-            return UnDefType.UNDEF;
-        }
+    public static State guessRangeRadius(QuantityType<?> s) {
         double radius = s.intValue() * 0.8;
         return QuantityType.valueOf(Math.round(radius), KILOMETRE_UNIT);
     }

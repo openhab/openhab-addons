@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Mapper {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Mapper.class);
+    private static final Logger logger = LoggerFactory.getLogger(Mapper.class);
 
     public static final ChannelStateMap INVALID_MAP = new ChannelStateMap(EMPTY, EMPTY, UnDefType.UNDEF, -1);
     public static final Map<String, String[]> CHANNELS = new HashMap<String, String[]>();
@@ -51,8 +51,8 @@ public class Mapper {
         Set<String> s = jo.keySet();
         if (s.size() == 1) {
             String id = s.toArray()[0].toString();
-            if (CHANNELS.containsKey(id)) {
-                String[] ch = CHANNELS.get(id);
+            String[] ch = CHANNELS.get(id);
+            if (ch != null) {
                 State state;
                 switch (id) {
                     // Kilometer values
@@ -107,13 +107,13 @@ public class Mapper {
                         state = getAngle((JSONObject) jo.get(id));
                         return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
                     default:
-                        LOGGER.trace("No mapping available for {}", id);
+                        logger.trace("No mapping available for {}", id);
                 }
             } else {
-                LOGGER.trace("No mapping available for {}", id);
+                logger.trace("No mapping available for {}", id);
             }
         } else {
-            LOGGER.debug("More than one key found {}", s);
+            logger.debug("More than one key found {}", s);
         }
         return INVALID_MAP;
     }
@@ -122,7 +122,7 @@ public class Mapper {
         if (jo.has(TIMESTAMP)) {
             return jo.getLong(TIMESTAMP);
         }
-        return 0;
+        return -1;
     }
 
     private static State getOnOffType(JSONObject jo) {
@@ -131,7 +131,7 @@ public class Mapper {
             boolean b = Boolean.valueOf(value);
             return OnOffType.from(b);
         } else {
-            LOGGER.warn("JSONObject contains no value {}", jo);
+            logger.warn("JSONObject contains no value {}", jo);
             return UnDefType.UNDEF;
         }
     }
@@ -144,7 +144,7 @@ public class Mapper {
             // https://developer.mercedes-benz.com/products/vehicle_lock_status/specifications/vehicle_lock_status_api
             return OnOffType.from(!b);
         } else {
-            LOGGER.warn("JSONObject contains no value {}", jo);
+            logger.warn("JSONObject contains no value {}", jo);
             return UnDefType.UNDEF;
         }
     }
@@ -154,7 +154,7 @@ public class Mapper {
             String value = jo.get(VALUE).toString();
             return QuantityType.valueOf(Double.valueOf(value), Units.DEGREE_ANGLE);
         } else {
-            LOGGER.warn("JSONObject contains no value {}", jo);
+            logger.warn("JSONObject contains no value {}", jo);
             return UnDefType.UNDEF;
         }
     }
@@ -164,7 +164,7 @@ public class Mapper {
             String value = jo.get(VALUE).toString();
             return DecimalType.valueOf(value);
         } else {
-            LOGGER.warn("JSONObject contains no value {}", jo);
+            logger.warn("JSONObject contains no value {}", jo);
             return UnDefType.UNDEF;
         }
     }
@@ -179,7 +179,7 @@ public class Mapper {
                 return OpenClosedType.OPEN;
             }
         } else {
-            LOGGER.warn("JSONObject contains no value {}", jo);
+            logger.warn("JSONObject contains no value {}", jo);
             return UnDefType.UNDEF;
         }
     }
@@ -189,7 +189,7 @@ public class Mapper {
             String value = jo.get(VALUE).toString();
             return QuantityType.valueOf(Integer.valueOf(value), KILOMETRE_UNIT);
         } else {
-            LOGGER.warn("JSONObject contains no value {}", jo);
+            logger.warn("JSONObject contains no value {}", jo);
             return UnDefType.UNDEF;
         }
     }
@@ -199,7 +199,7 @@ public class Mapper {
             String value = jo.get(VALUE).toString();
             return QuantityType.valueOf(Integer.valueOf(value), Units.PERCENT);
         } else {
-            LOGGER.warn("JSONObject contains no value {}", jo);
+            logger.warn("JSONObject contains no value {}", jo);
             return UnDefType.UNDEF;
         }
     }
