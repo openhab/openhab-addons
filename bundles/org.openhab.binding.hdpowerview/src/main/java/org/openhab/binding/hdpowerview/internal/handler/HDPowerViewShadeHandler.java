@@ -320,7 +320,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
 
         if (propChanged && db.isCapabilitiesInDatabase(capabilitiesVal) && db.isTypeInDatabase(type)
-                && (capabilitiesVal != db.getType(type).getCapabilities())) {
+                && (capabilitiesVal != db.getType(type).getCapabilities()) && (shadeData.capabilities != null)) {
             db.logCapabilitiesMismatch(type, capabilitiesVal);
         }
     }
