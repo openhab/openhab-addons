@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.AccountConfiguration;
+import org.openhab.binding.mercedesme.internal.Constants;
 
 /**
  * The {@link ConfigurationTest} Test configuration settings
@@ -27,9 +28,16 @@ class ConfigurationTest {
     @Test
     void testScope() {
         AccountConfiguration ac = new AccountConfiguration();
-        System.out.println(ac.getScope());
         assertEquals(
                 "offline_access mb:vehicle:mbdata:payasyoudrive mb:vehicle:mbdata:vehiclestatus mb:vehicle:mbdata:vehiclelock mb:vehicle:mbdata:fuelstatus mb:vehicle:mbdata:evstatus",
                 ac.getScope());
+    }
+
+    @Test
+    void testApiUrlEndpoint() {
+        String url = Constants.FUEL_URL;
+        String[] endpoint = url.split("/");
+        String finalEndpoint = endpoint[endpoint.length - 1];
+        assertEquals("fuelstatus", finalEndpoint);
     }
 }

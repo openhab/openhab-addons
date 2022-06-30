@@ -344,13 +344,18 @@ public class VehicleHandler extends BaseThingHandler {
 
     private void call(String url) {
         String requestUrl = String.format(url, config.get().vin);
+
+        // Calculate endpoint for debugging
+        String[] endpoint = requestUrl.split("/");
+        String finalEndpoint = endpoint[endpoint.length - 1];
+        // debug prefix contains Thing label and call endpoint for propper debugging
+        String debugPrefix = this.getThing().getLabel() + Constants.COLON + finalEndpoint;
+
         Request req = hc.newRequest(requestUrl);
         req.header(HttpHeader.AUTHORIZATION, "Bearer " + accountHandler.get().getToken());
-        ContentResponse cr;
         try {
-            cr = req.send();
-            logger.debug("{} {} Response {} {}", this.getThing().getLabel(), requestUrl, cr.getStatus(),
-                    cr.getContentAsString());
+            ContentResponse cr = req.send();
+            logger.debug("{} Response {} {}", debugPrefix, cr.getStatus(), cr.getContentAsString());
             if (cr.getStatus() == 200) {
                 JSONArray ja = new JSONArray(cr.getContentAsString());
                 for (Iterator iterator = ja.iterator(); iterator.hasNext();) {
@@ -358,19 +363,19 @@ public class VehicleHandler extends BaseThingHandler {
                     ChannelStateMap csm = Mapper.getChannelStateMap(jo);
                     if (csm != null) {
                         updateChannel(csm);
-                        // store maps for range radius calculation
+                        // store ChannelMap for range radius calculation
                         if (csm.getChannel().equals("range-electric")) {
                             rangeElectric = Optional.of(csm);
                         } else if (csm.getChannel().equals("range-fuel")) {
                             rangeFuel = Optional.of(csm);
                         }
                     } else {
-                        logger.warn("Unable to deliver state for {}", jo);
+                        logger.warn("{} Unable to deliver state for {}", debugPrefix, jo);
                     }
                 }
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Error getting {} data {}", requestUrl, e.getMessage());
+            logger.warn("{} Error getting data {}", debugPrefix, e.getMessage());
         }
     }
 
