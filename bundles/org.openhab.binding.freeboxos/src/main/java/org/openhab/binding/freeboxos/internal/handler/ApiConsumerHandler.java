@@ -144,6 +144,22 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
             int refreshInterval = getConfigAs(ApiConsumerConfiguration.class).refreshInterval;
             logger.debug("Scheduling state update every {} seconds for thing {}...", refreshInterval,
                     getThing().getUID());
+            if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.DUTY_CYCLE) {
+                boolean rebooting = true;
+                while (rebooting) {
+                    try {
+                        internalPoll();
+                        rebooting = false;
+                    } catch (FreeboxException ignore) {
+                        try {
+                            Thread.sleep(20000);
+                        } catch (InterruptedException e) {
+                            rebooting = false;
+                        }
+                    }
+                }
+            }
+
             globalJob = scheduler.scheduleWithFixedDelay(() -> {
                 try {
                     internalPoll();
