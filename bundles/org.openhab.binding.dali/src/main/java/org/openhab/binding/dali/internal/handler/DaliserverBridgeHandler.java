@@ -142,7 +142,7 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
                 } catch (Exception e) {
                     logger.warn("Unexpected exception while sending command to daliserver: {} Message: {}", frame,
                             e.getMessage());
-                    logger.error("Stacktrace", e);
+                    logger.trace("Stacktrace", e);
                     future.completeExceptionally(e);
                 }
             });

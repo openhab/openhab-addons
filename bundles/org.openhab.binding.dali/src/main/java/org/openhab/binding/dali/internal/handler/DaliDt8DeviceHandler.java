@@ -181,7 +181,6 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                 super.handleCommand(channelUID, command);
             }
         } catch (DaliException e) {
-            logger.error("Dali Exception", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
