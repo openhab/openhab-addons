@@ -52,6 +52,7 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
+            final DaliserverBridgeHandler daliHandler = getBridgeHandler();
             if (CHANNEL_COLOR_TEMPERATURE.equals(channelUID.getId())) {
                 DaliAddress address;
                 if (THING_TYPE_DEVICE_DT8.equals(this.thing.getThingTypeUID())) {
@@ -69,15 +70,15 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                     final byte mirekLsb = (byte) (mirek & 0xff);
                     final byte mirekMsb = (byte) ((mirek >> 8) & 0xff);
                     // Write mirek value to the DTR0+DTR1 registers
-                    getBridgeHandler().sendCommand(DaliStandardCommand.createSetDTR0Command(mirekLsb));
-                    getBridgeHandler().sendCommand(DaliStandardCommand.createSetDTR1Command(mirekMsb));
+                    daliHandler.sendCommand(DaliStandardCommand.createSetDTR0Command(mirekLsb));
+                    daliHandler.sendCommand(DaliStandardCommand.createSetDTR1Command(mirekMsb));
                     // Indicate that the follwing command is a DT8 (WW/CW and single-channel RGB) command
-                    getBridgeHandler().sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
+                    daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
                     // Set the color temperature to the value in DTR0+DTR1
-                    getBridgeHandler().sendCommand(DaliStandardCommand.createSetColorTemperatureCommand(address));
+                    daliHandler.sendCommand(DaliStandardCommand.createSetColorTemperatureCommand(address));
                     // Finish the command sequence
-                    getBridgeHandler().sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
-                    getBridgeHandler().sendCommand(DaliStandardCommand.createActivateCommand(address));
+                    daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
+                    daliHandler.sendCommand(DaliStandardCommand.createActivateCommand(address));
 
                 }
 
@@ -86,14 +87,14 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                     readAddress = DaliAddress.createShortAddress(readDeviceTargetId);
                 }
                 // Write argument 0x02 (query color temperature) to DTR0 and set DT8
-                getBridgeHandler().sendCommand(DaliStandardCommand.createSetDTR0Command(2));
-                getBridgeHandler().sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
+                daliHandler.sendCommand(DaliStandardCommand.createSetDTR0Command(2));
+                daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
                 // Mirek MSB is returned as result
-                CompletableFuture<@Nullable NumericMask> responseMsb = getBridgeHandler().sendCommandWithResponse(
+                CompletableFuture<@Nullable NumericMask> responseMsb = daliHandler.sendCommandWithResponse(
                         DaliStandardCommand.createQueryColorValueCommand(readAddress), DaliResponse.NumericMask.class);
-                getBridgeHandler().sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
+                daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
                 // Mirek LSB is written to DTR0
-                CompletableFuture<@Nullable NumericMask> responseLsb = getBridgeHandler().sendCommandWithResponse(
+                CompletableFuture<@Nullable NumericMask> responseLsb = daliHandler.sendCommandWithResponse(
                         DaliStandardCommand.createQueryContentDTR0Command(readAddress), DaliResponse.NumericMask.class);
 
                 CompletableFuture.allOf(responseMsb, responseLsb).thenAccept(x -> {
@@ -127,16 +128,16 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                     final int b = (int) (254 * (rgb[2].floatValue() / 100));
                     logger.trace("RGB: {} {} {}", r, g, b);
                     // Write RGB values to the DTR0+DTR1+DTR2 registers
-                    getBridgeHandler().sendCommand(DaliStandardCommand.createSetDTR0Command(r));
-                    getBridgeHandler().sendCommand(DaliStandardCommand.createSetDTR1Command(g));
-                    getBridgeHandler().sendCommand(DaliStandardCommand.createSetDTR2Command(b));
+                    daliHandler.sendCommand(DaliStandardCommand.createSetDTR0Command(r));
+                    daliHandler.sendCommand(DaliStandardCommand.createSetDTR1Command(g));
+                    daliHandler.sendCommand(DaliStandardCommand.createSetDTR2Command(b));
                     // Indicate that the following command is a DT8 (WW/CW and single-channel RGB) command
-                    getBridgeHandler().sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
+                    daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
                     // Set the color to the values in DTR0+DTR1+DTR2
-                    getBridgeHandler().sendCommand(DaliStandardCommand.createSetRgbDimlevelCommand(address));
+                    daliHandler.sendCommand(DaliStandardCommand.createSetRgbDimlevelCommand(address));
                     // Finish the command sequence
-                    getBridgeHandler().sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
-                    getBridgeHandler().sendCommand(DaliStandardCommand.createActivateCommand(address));
+                    daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
+                    daliHandler.sendCommand(DaliStandardCommand.createActivateCommand(address));
                 }
 
                 DaliAddress readAddress = address;
@@ -144,22 +145,22 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                     readAddress = DaliAddress.createShortAddress(readDeviceTargetId);
                 }
                 // Write argument 0xE9 (query red dimlevel) to DTR0 and set DT8
-                getBridgeHandler().sendCommand(DaliStandardCommand.createSetDTR0Command(0xe9));
-                getBridgeHandler().sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
+                daliHandler.sendCommand(DaliStandardCommand.createSetDTR0Command(0xe9));
+                daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
                 // Red component is returned as result
-                CompletableFuture<@Nullable NumericMask> responseRed = getBridgeHandler().sendCommandWithResponse(
+                CompletableFuture<@Nullable NumericMask> responseRed = daliHandler.sendCommandWithResponse(
                         DaliStandardCommand.createQueryColorValueCommand(readAddress), DaliResponse.NumericMask.class);
                 // Write argument 0xEA (query green dimlevel) to DTR0 and set DT8
-                getBridgeHandler().sendCommand(DaliStandardCommand.createSetDTR0Command(0xea));
-                getBridgeHandler().sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
+                daliHandler.sendCommand(DaliStandardCommand.createSetDTR0Command(0xea));
+                daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
                 // Green component is returned as result
-                CompletableFuture<@Nullable NumericMask> responseGreen = getBridgeHandler().sendCommandWithResponse(
+                CompletableFuture<@Nullable NumericMask> responseGreen = daliHandler.sendCommandWithResponse(
                         DaliStandardCommand.createQueryColorValueCommand(readAddress), DaliResponse.NumericMask.class);
                 // Write argument 0xEB (query blue dimlevel) to DTR0 and set DT8
-                getBridgeHandler().sendCommand(DaliStandardCommand.createSetDTR0Command(0xeb));
-                getBridgeHandler().sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
+                daliHandler.sendCommand(DaliStandardCommand.createSetDTR0Command(0xeb));
+                daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
                 // Blue component is returned as result
-                CompletableFuture<@Nullable NumericMask> responseBlue = getBridgeHandler().sendCommandWithResponse(
+                CompletableFuture<@Nullable NumericMask> responseBlue = daliHandler.sendCommandWithResponse(
                         DaliStandardCommand.createQueryColorValueCommand(readAddress), DaliResponse.NumericMask.class);
 
                 CompletableFuture.allOf(responseRed, responseGreen, responseBlue).thenAccept(x -> {
