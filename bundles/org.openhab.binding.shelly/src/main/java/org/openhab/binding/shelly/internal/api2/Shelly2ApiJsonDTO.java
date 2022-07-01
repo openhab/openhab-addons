@@ -39,7 +39,8 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_RESET = "Shelly.FactoryReset";
     public static final String SHELLYRPC_METHOD_CHECKUPD = "Shelly.CheckForUpdate";
     public static final String SHELLYRPC_METHOD_UPDATE = "Shelly.Update";
-    public static final String SHELLYRPC_METHOD_GETSWITCHSTATUS = "Switch.GetStatus";
+    public static final String SHELLYRPC_METHOD_SWITCH_STATUS = "Switch.GetStatus";
+    public static final String SHELLYRPC_METHOD_SWITCH_SET = "Switch.Set";
     public static final String SHELLYRPC_METHOD_COVER_SETPOS = "Cover.GoToPosition";
     public static final String SHELLY2_COVER_CMD_OPEN = "Open";
     public static final String SHELLY2_COVER_CMD_CLOSE = "Close";
@@ -113,7 +114,7 @@ public class Shelly2ApiJsonDTO {
         public String id;
         public String mac;
         public String model;
-        public Integer gem;
+        public Integer gen;
         @SerializedName("fw_id")
         public String firmware;
         public String ver;
@@ -549,9 +550,10 @@ public class Shelly2ApiJsonDTO {
         public Integer id = 0;
         public String method;
 
-        class Shelly2RpcRequestParams {
+        public static class Shelly2RpcRequestParams {
             public Integer id;
             public Integer pos;
+            public Boolean on;
             public Shelly2WsConfig config;
         }
 
@@ -623,16 +625,19 @@ public class Shelly2ApiJsonDTO {
     public static String SHELLY2_AUTHTTYPE_DIGEST = "digest";
     public static String SHELLY2_AUTHTTYPE_STRING = "string";
     public static String SHELLY2_AUTHALG_SHA256 = "SHA-256";
-    public static String SHELLY2_AUTH_NOISE = ":auth:6370ec69915103833b5222b368555393393f098bfbfbb59f47e0590af135f062"; // =
-                                                                                                                        // ':auth:'+HexHash("dummy_method:dummy_uri");
+    // = ':auth:'+HexHash("dummy_method:dummy_uri");
+    public static String SHELLY2_AUTH_NOISE = "6370ec69915103833b5222b368555393393f098bfbfbb59f47e0590af135f062";
 
     public static class Shelly2AuthRequest {
         public String username;
         public Long nonce;
         public Long cnonce;
+        public Integer nc;
         public String realm;
         public String algorithm;
         public String response;
+        @SerializedName("auth_type")
+        public String authType;
     }
 
     public static class Shelly2AuthResponse { // on 401 message contains the auth info

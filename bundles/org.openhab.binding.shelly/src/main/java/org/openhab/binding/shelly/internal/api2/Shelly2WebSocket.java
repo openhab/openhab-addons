@@ -82,7 +82,6 @@ public class Shelly2WebSocket {
 
     public void connect() throws ShellyApiException {
         try {
-            // disconnect();
             URI uri = new URI("ws://" + deviceIp + "/rpc");
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setHeader(HttpHeaders.HOST, deviceIp);
@@ -164,6 +163,7 @@ public class Shelly2WebSocket {
             }
         } catch (ShellyApiException | NullPointerException e) {
             logger.warn("Unable to process WebSocket message: {}", receivedMessage, e);
+            logger.debug("", e);
         }
     }
 
@@ -184,7 +184,7 @@ public class Shelly2WebSocket {
         }
     }
 
-    private void disconnect() {
+    public void disconnect() {
         try {
             if (session != null) {
                 Session s = session;

@@ -314,8 +314,10 @@ public class ShellyChannelDefinitions {
             boolean timer = rs.hasTimer != null || rstatus.hasTimer != null; // Dimmer 1/2 have
             addChannel(thing, add, rs.ison != null, group, CHANNEL_OUTPUT);
             addChannel(thing, add, rs.name != null, group, CHANNEL_OUTPUT_NAME);
-            addChannel(thing, add, timer, group, CHANNEL_TIMER_ACTIVE);
-            if (!profile.isRGBW2) {
+
+            if (!profile.isRGBW2 || profile.inColor) {
+                // Dimmer 1/2 have has_timer under /status
+                addChannel(thing, add, timer, group, CHANNEL_TIMER_ACTIVE);
                 addChannel(thing, add, rs.autoOn != null, group, CHANNEL_TIMER_AUTOON);
                 addChannel(thing, add, rs.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
             }

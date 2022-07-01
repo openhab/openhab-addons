@@ -372,9 +372,9 @@ public class ShellyBaseHandler extends BaseThingHandler
         logger.debug("{}: Device "
                 + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{})"
                 + ",isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isMotion:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}"
-                + ",alwaysOn:{}, ,updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays,
-                profile.isRoller, profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter,
-                profile.isSensor, profile.isDW, profile.hasBattery,
+                + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays, profile.isRoller,
+                profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter, profile.isSensor,
+                profile.isDW, profile.hasBattery,
                 profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "", profile.isSense,
                 profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2, profile.inColor,
                 profile.alwaysOn, profile.updatePeriod);
