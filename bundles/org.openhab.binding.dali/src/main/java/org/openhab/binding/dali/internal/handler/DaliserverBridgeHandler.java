@@ -142,6 +142,7 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
                 } catch (Exception e) {
                     logger.warn("Unexpected exception while sending command to daliserver: {} Message: {}", frame,
                             e.getMessage());
+                    logger.trace("Stacktrace", e);
                     future.completeExceptionally(e);
                 }
             });
@@ -161,7 +162,7 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
             }
             byte status = response[1], rval = response[2];
             if (status == 0) {
-                result.parse(null);
+                // No return value to process.
             } else if (status == 1) {
                 result.parse(new DaliBackwardFrame(rval));
             } else if (status == 255) {
