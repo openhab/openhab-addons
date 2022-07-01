@@ -34,8 +34,7 @@
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
-				<description>Please enter the serial number of the sensor you want to create. It must match the serial
-					number of this sensor in MCD.</description>
+				<description>Please enter the serial number of the sensor. It must match the serial number of this sensor in MCD.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -54,6 +53,62 @@
 			<options>
 				<option value="BEDEXIT">Bed Exit</option>
 				<option value="BEDENTRY">Bed Entry</option>
+				<option value="FALL">Fall</option>
+				<option value="CHANGEPOSITION">Change Position</option>
+				<option value="BATTERYSTATE">Battery State</option>
+				<option value="INACTIVITY">Inactivity</option>
+				<option value="ALARM">Alarm</option>
+				<option value="OPEN">Open</option>
+				<option value="CLOSE">Close</option>
+				<option value="ON">On</option>
+				<option value="OFF">Off</option>
+				<option value="ACTIVITY">Activity</option>
+				<option value="CAPACITY">Capacity</option>
+				<option value="GAS">Gas</option>
+				<option value="VITALVALUE">Vital Value</option>
+				<option value="ROOMEXIT">Room Exit</option>
+				<option value="ROOMENTRY">Room Entry</option>
+				<option value="REMOVESENSOR">Remove Sensor</option>
+				<option value="SITDOWN">Sit Down</option>
+				<option value="STANDUP">Stand Up</option>
+				<option value="INACTIVITYROOM">Inactivity Room</option>
+				<option value="SMOKEALARM">Smoke Alarm</option>
+				<option value="HEAT">Heat</option>
+				<option value="COLD">Cold</option>
+				<option value="QUALITYAIR">Quality Air</option>
+				<option value="ALARMAIR">Alarm Air</option>
+				<option value="ROOMTEMPERATURE">Room Temperature</option>
+				<option value="HUMIDITY">Humidity</option>
+				<option value="AIRPRESSURE">Airpressure</option>
+				<option value="CO2">CO2</option>
+				<option value="INDEXUV">UV Index</option>
+				<option value="WEARTIME">Weartime</option>
+				<option value="FIRSTURINE">First Urine</option>
+				<option value="NEWDIAPER">New Diaper</option>
+				<option value="DIAPERREMOVED">Diaper Removal</option>
+				<option value="NOCONNECTION">No Connection</option>
+				<option value="LOWBATTERY">Low Battery</option>
+				<option value="CONTROLLSENSOR">Controll Sensor</option>
+				<option value="LYING">Lying</option>
+				<option value="SPILLED">Spilled</option>
+				<option value="DAMAGED">Damaged</option>
+				<option value="GEOEXIT">Geo Exit</option>
+				<option value="GEOENTRY">Geo Entry</option>
+				<option value="WALKING">Walking</option>
+				<option value="RESTING">Resting</option>
+				<option value="TURNAROUND">Turnaround</option>
+				<option value="HOMEEMERGENCY">Home Emergency</option>
+				<option value="TOILETFLUSH">Toilet Flush</option>
+				<option value="DORSALPOSITION">Dorsal Position</option>
+				<option value="ABDOMINALPOSITION">Abdominal Position</option>
+				<option value="LYINGLEFT">Lying Left</option>
+				<option value="LYINGRIGHT">Lying Right</option>
+				<option value="LYINGHALFLEFT">Lying Half Left</option>
+				<option value="LYINGHALFRIGHT">Lying Half Right</option>
+				<option value="MOVEMENT">Movement</option>
+				<option value="PRESENCE">Presence</option>
+				<option value="NUMBERPERSONS">Number Persons</option>
+				<option value="BRIGHTNESSZONE">Brightness Zone</option>
 			</options>
 		</command>
 	</channel-type>

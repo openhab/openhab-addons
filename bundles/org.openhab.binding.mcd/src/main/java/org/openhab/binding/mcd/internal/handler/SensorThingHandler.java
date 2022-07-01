@@ -27,11 +27,14 @@ import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.mcd.internal.util.Callback;
 import org.openhab.binding.mcd.internal.util.SensorEventDef;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -47,22 +50,21 @@ import com.google.gson.JsonObject;
  * 
  * @author Simon Dengler - Initial contribution
  */
+@NonNullByDefault
 public class SensorThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SensorThingHandler.class);
     private final HttpClient httpClient;
-    private final Gson gson;
-    private McdBridgeHandler mcdBridgeHandler;
-    private String serialNumber = "";
+    private final @Nullable Gson gson;
+    private @Nullable McdBridgeHandler mcdBridgeHandler;
+    private @Nullable String serialNumber = "";
     private @Nullable SensorThingConfiguration config;
     private int maxSensorEventId = 0;
     private boolean initIsDone = false;
 
-    public SensorThingHandler(Thing thing) {
+    public SensorThingHandler(Thing thing, HttpClient httpClient) {
         super(thing);
-        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
-        httpClient = new HttpClient(sslContextFactory);
-        httpClient.setFollowRedirects(false);
+        this.httpClient = httpClient;
         gson = new Gson();
     }
 
@@ -80,9 +82,7 @@ public class SensorThingHandler extends BaseThingHandler {
     }
 
     @Override
-    @NonNullByDefault
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug(command.getClass().toGenericString());
         if (command instanceof RefreshType) {
             refreshChannelValue();
         } else if (mcdBridgeHandler != null) {
@@ -96,7 +96,7 @@ public class SensorThingHandler extends BaseThingHandler {
                     try {
                         sensorEventId = Integer.parseInt(commandString);
                         if (sensorEventId < 1 || sensorEventId > maxSensorEventId) {
-                            throw new Exception(); // go to catch block
+                            logger.info("Invalid Command!");
                         } else {
                             sendSensorEvent(serialNumber, sensorEventId);
                         }
@@ -118,39 +118,45 @@ public class SensorThingHandler extends BaseThingHandler {
 
     // this is called from initialize()
     private void init() {
-        if (config != null) {
-            serialNumber = config.getSerialNumber();
+        SensorThingConfiguration localConfig = config;
+        if (localConfig != null) {
+            serialNumber = localConfig.getSerialNumber();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Cannot access config data.");
         }
-        if (mcdBridgeHandler != null) {
-            if (mcdBridgeHandler.getAccessToken() != null) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
+        McdBridgeHandler localMcdBridgeHandler = mcdBridgeHandler;
+        if (localMcdBridgeHandler != null) {
+            // if (localMcdBridgeHandler.getAccessToken() != null) {
+            updateStatus(ThingStatus.ONLINE);
+            // } else {
+            // updateStatus(ThingStatus.OFFLINE);
+            // }
             if (!initIsDone) {
                 // build and register listener
-                mcdBridgeHandler.register(() -> {
+                localMcdBridgeHandler.register(() -> {
                     try {
                         // determine, if thing is specified correctly and if it is online
                         fetchDeviceInfo(res -> {
-                            JsonObject result = res.getAsJsonObject();
-                            if (result.has("SerialNumber")) {
-                                // check for serial number in MCD cloud
-                                if (result.get("SerialNumber").isJsonNull()) {
-                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                            "Serial number does not exist in MCD!");
-                                } else {
-                                    // refresh channel values and set thing status to ONLINE
-                                    refreshChannelValue();
-                                    updateStatus(ThingStatus.ONLINE);
+                            if (res != null) {
+                                JsonObject result = res.getAsJsonObject();
+                                if (result.has("SerialNumber")) {
+                                    // check for serial number in MCD cloud
+                                    if (result.get("SerialNumber").isJsonNull()) {
+                                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                                "Serial number does not exist in MCD!");
+                                    } else {
+                                        // refresh channel values and set thing status to ONLINE
+                                        refreshChannelValue();
+                                        updateStatus(ThingStatus.ONLINE);
+                                    }
                                 }
                             }
                         });
                         fetchEventDef(jsonElement -> {
-                            JsonArray eventDefArray = jsonElement.getAsJsonArray();
-                            maxSensorEventId = eventDefArray.size();
+                            if (jsonElement != null) {
+                                JsonArray eventDefArray = jsonElement.getAsJsonArray();
+                                maxSensorEventId = eventDefArray.size();
+                            }
                             /*
                              * eventDef = new JsonObject();
                              * for (JsonElement elem : eventDefArray) {
@@ -163,8 +169,7 @@ public class SensorThingHandler extends BaseThingHandler {
                              */
                         });
                     } catch (Exception e) {
-                        logger.debug("{}", e.getMessage());
-                        updateStatus(ThingStatus.OFFLINE);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     }
                 });
                 initIsDone = true;
@@ -202,13 +207,11 @@ public class SensorThingHandler extends BaseThingHandler {
                                 "Unable to synchronize! Please assign sensor to patient or organization unit in MCD!");
                     }
                 } catch (Exception e) {
-                    logger.debug("{}", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             });
         } catch (Exception e) {
-            logger.debug("{}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -218,16 +221,18 @@ public class SensorThingHandler extends BaseThingHandler {
      * @param latestValue the latest value as JsonObject as obtained from the REST
      *            API
      */
-    private void updateChannels(JsonObject latestValue) {
-        String event = latestValue.get("EventDef").getAsString();
-        String dateString = latestValue.get("DateEntry").getAsString();
-        try {
-            Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(dateString);
-            dateString = new SimpleDateFormat("dd.MM.yyyy', 'HH:mm:ss").format(date);
-        } catch (Exception e) {
-            logger.debug("{}", e.getMessage());
+    private void updateChannels(@Nullable JsonObject latestValue) {
+        if (latestValue != null) {
+            String event = latestValue.get("EventDef").getAsString();
+            String dateString = latestValue.get("DateEntry").getAsString();
+            try {
+                Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(dateString);
+                dateString = new SimpleDateFormat("dd.MM.yyyy', 'HH:mm:ss").format(date);
+            } catch (Exception e) {
+                logger.debug("{}", e.getMessage());
+            }
+            updateState(LAST_VALUE, new StringType(event + ", " + dateString));
         }
-        updateState(LAST_VALUE, new StringType(event + ", " + dateString));
     }
 
     /**
@@ -240,21 +245,26 @@ public class SensorThingHandler extends BaseThingHandler {
      * @throws Exception Throws HTTP related Exceptions.
      */
     private void fetchLatestValue(String urlString, Callback callback) throws Exception {
-        String accessToken = mcdBridgeHandler.getAccessToken();
-        httpClient.start();
-        Request request = httpClient.newRequest(urlString).method(HttpMethod.GET)
-                .header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
-                .header(HttpHeader.ACCEPT, "application/json")
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
-        request.send(new BufferingResponseListener() {
-            @NonNullByDefault({})
-            @Override
-            public void onComplete(Result result) {
-                String contentString = getContentAsString();
-                JsonArray content = gson.fromJson(contentString, JsonArray.class);
-                callback.jsonElementTypeCallback(content);
-            }
-        });
+        McdBridgeHandler localMcdBridgeHandler = mcdBridgeHandler;
+        if (localMcdBridgeHandler != null) {
+            String accessToken = localMcdBridgeHandler.getAccessToken();
+            Request request = httpClient.newRequest(urlString).method(HttpMethod.GET)
+                    .header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
+                    .header(HttpHeader.ACCEPT, "application/json")
+                    .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+            request.send(new BufferingResponseListener() {
+                @NonNullByDefault({})
+                @Override
+                public void onComplete(Result result) {
+                    String contentString = getContentAsString();
+                    Gson localGson = gson;
+                    if (localGson != null) {
+                        JsonArray content = localGson.fromJson(contentString, JsonArray.class);
+                        callback.jsonElementTypeCallback(content);
+                    }
+                }
+            });
+        }
     }
 
     /**
@@ -264,22 +274,27 @@ public class SensorThingHandler extends BaseThingHandler {
      * @throws Exception throws http related exceptions
      */
     private void fetchDeviceInfo(Callback callback) throws Exception {
-        String accessToken = mcdBridgeHandler.getAccessToken();
-        httpClient.start();
-        Request request = httpClient
-                .newRequest("https://cunds-syncapi.azurewebsites.net/api/Device?serialNumber=" + serialNumber)
-                .method(HttpMethod.GET).header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
-                .header(HttpHeader.ACCEPT, "application/json")
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
-        request.send(new BufferingResponseListener() {
-            @NonNullByDefault({})
-            @Override
-            public void onComplete(Result result) {
-                String contentString = getContentAsString();
-                JsonObject content = gson.fromJson(contentString, JsonObject.class);
-                callback.jsonElementTypeCallback(content);
-            }
-        });
+        McdBridgeHandler localMcdBridgeHandler = mcdBridgeHandler;
+        if (localMcdBridgeHandler != null) {
+            String accessToken = localMcdBridgeHandler.getAccessToken();
+            Request request = httpClient
+                    .newRequest("https://cunds-syncapi.azurewebsites.net/api/Device?serialNumber=" + serialNumber)
+                    .method(HttpMethod.GET).header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
+                    .header(HttpHeader.ACCEPT, "application/json")
+                    .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+            request.send(new BufferingResponseListener() {
+                @NonNullByDefault({})
+                @Override
+                public void onComplete(Result result) {
+                    String contentString = getContentAsString();
+                    Gson localGson = gson;
+                    if (localGson != null) {
+                        JsonObject content = localGson.fromJson(contentString, JsonObject.class);
+                        callback.jsonElementTypeCallback(content);
+                    }
+                }
+            });
+        }
     }
 
     /**
@@ -292,21 +307,26 @@ public class SensorThingHandler extends BaseThingHandler {
      * @throws Exception Throws HTTP related Exceptions.
      */
     private void fetchEventDef(Callback callback) throws Exception {
-        String accessToken = mcdBridgeHandler.getAccessToken();
-        httpClient.start();
-        Request request = httpClient.newRequest("https://cunds-syncapi.azurewebsites.net/api/ApiSensor/GetEventDef")
-                .method(HttpMethod.GET).header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
-                .header(HttpHeader.ACCEPT, "application/json")
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
-        request.send(new BufferingResponseListener() {
-            @NonNullByDefault({})
-            @Override
-            public void onComplete(Result result) {
-                String contentString = getContentAsString();
-                JsonArray content = gson.fromJson(contentString, JsonArray.class);
-                callback.jsonElementTypeCallback(content);
-            }
-        });
+        McdBridgeHandler localMcdBridgeHandler = mcdBridgeHandler;
+        if (localMcdBridgeHandler != null) {
+            String accessToken = localMcdBridgeHandler.getAccessToken();
+            Request request = httpClient.newRequest("https://cunds-syncapi.azurewebsites.net/api/ApiSensor/GetEventDef")
+                    .method(HttpMethod.GET).header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
+                    .header(HttpHeader.ACCEPT, "application/json")
+                    .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+            request.send(new BufferingResponseListener() {
+                @NonNullByDefault({})
+                @Override
+                public void onComplete(Result result) {
+                    String contentString = getContentAsString();
+                    Gson localGson = gson;
+                    if (localGson != null) {
+                        JsonArray content = localGson.fromJson(contentString, JsonArray.class);
+                        callback.jsonElementTypeCallback(content);
+                    }
+                }
+            });
+        }
     }
 
     /**
@@ -321,28 +341,30 @@ public class SensorThingHandler extends BaseThingHandler {
      *         MCD cloud
      */
     @Nullable
-    String getUrlStringFromDeviceInfo(JsonObject deviceInfo) {
-        if (deviceInfo.has("SerialNumber") && deviceInfo.get("SerialNumber").getAsString().equals(serialNumber)) {
-            if (deviceInfo.has("PatientDevices") && deviceInfo.getAsJsonArray("PatientDevices").size() != 0) {
-                JsonArray array = deviceInfo.getAsJsonArray("PatientDevices");
-                JsonObject patient = array.get(0).getAsJsonObject();
-                if (patient.has("UuidPerson") && !patient.get("UuidPerson").isJsonNull()) {
-                    return "https://cunds-syncapi.azurewebsites.net/api/ApiSensor/GetLatestApiSensorEvents"
-                            + "?UuidPatient=" + patient.get("UuidPerson").getAsString() + "&SerialNumber="
-                            + serialNumber + "&Count=1";
+    String getUrlStringFromDeviceInfo(@Nullable JsonObject deviceInfo) {
+        if (deviceInfo != null) {
+            if (deviceInfo.has("SerialNumber") && deviceInfo.get("SerialNumber").getAsString().equals(serialNumber)) {
+                if (deviceInfo.has("PatientDevices") && deviceInfo.getAsJsonArray("PatientDevices").size() != 0) {
+                    JsonArray array = deviceInfo.getAsJsonArray("PatientDevices");
+                    JsonObject patient = array.get(0).getAsJsonObject();
+                    if (patient.has("UuidPerson") && !patient.get("UuidPerson").isJsonNull()) {
+                        return "https://cunds-syncapi.azurewebsites.net/api/ApiSensor/GetLatestApiSensorEvents"
+                                + "?UuidPatient=" + patient.get("UuidPerson").getAsString() + "&SerialNumber="
+                                + serialNumber + "&Count=1";
+                    }
+                } else if (deviceInfo.has("OrganisationUnitDevices")
+                        && deviceInfo.getAsJsonArray("OrganisationUnitDevices").size() != 0) {
+                    JsonArray array = deviceInfo.getAsJsonArray("OrganisationUnitDevices");
+                    JsonObject orgUnit = array.get(0).getAsJsonObject();
+                    if (orgUnit.has("UuidOrganisationUnit") && !orgUnit.get("UuidOrganisationUnit").isJsonNull()) {
+                        return "https://cunds-syncapi.azurewebsites.net/api/ApiSensor/GetLatestApiSensorEvents"
+                                + "?UuidOrganisationUnit=" + orgUnit.get("UuidOrganisationUnit").getAsString()
+                                + "&SerialNumber=" + serialNumber + "&Count=1";
+                    }
                 }
-            } else if (deviceInfo.has("OrganisationUnitDevices")
-                    && deviceInfo.getAsJsonArray("OrganisationUnitDevices").size() != 0) {
-                JsonArray array = deviceInfo.getAsJsonArray("OrganisationUnitDevices");
-                JsonObject orgUnit = array.get(0).getAsJsonObject();
-                if (orgUnit.has("UuidOrganisationUnit") && !orgUnit.get("UuidOrganisationUnit").isJsonNull()) {
-                    return "https://cunds-syncapi.azurewebsites.net/api/ApiSensor/GetLatestApiSensorEvents"
-                            + "?UuidOrganisationUnit=" + orgUnit.get("UuidOrganisationUnit").getAsString()
-                            + "&SerialNumber=" + serialNumber + "&Count=1";
-                }
+            } else {
+                init();
             }
-        } else {
-            init();
         }
         return null;
     }
@@ -354,16 +376,19 @@ public class SensorThingHandler extends BaseThingHandler {
      * @param jsonArray the array that contains the latest value
      * @return the latest value as JsonObject or null.
      */
-    JsonObject getLatestValueFromJsonArray(JsonArray jsonArray) {
-        if (jsonArray.size() != 0) {
-            JsonObject patientObject = jsonArray.get(0).getAsJsonObject();
-            JsonArray devicesArray = patientObject.getAsJsonArray("Devices");
-            if (devicesArray.size() != 0) {
-                JsonObject deviceObject = devicesArray.get(0).getAsJsonObject();
-                if (deviceObject.has("Events")) {
-                    JsonArray eventsArray = deviceObject.getAsJsonArray("Events");
-                    if (eventsArray.size() != 0) {
-                        return eventsArray.get(0).getAsJsonObject();
+    @Nullable
+    static JsonObject getLatestValueFromJsonArray(@Nullable JsonArray jsonArray) {
+        if (jsonArray != null) {
+            if (jsonArray.size() != 0) {
+                JsonObject patientObject = jsonArray.get(0).getAsJsonObject();
+                JsonArray devicesArray = patientObject.getAsJsonArray("Devices");
+                if (devicesArray.size() != 0) {
+                    JsonObject deviceObject = devicesArray.get(0).getAsJsonObject();
+                    if (deviceObject.has("Events")) {
+                        JsonArray eventsArray = deviceObject.getAsJsonArray("Events");
+                        if (eventsArray.size() != 0) {
+                            return eventsArray.get(0).getAsJsonObject();
+                        }
                     }
                 }
             }
@@ -380,38 +405,38 @@ public class SensorThingHandler extends BaseThingHandler {
      */
     private void sendSensorEvent(@Nullable String serialNumber, int sensorEventDef) {
         try {
-            httpClient.start();
-            String accessToken = mcdBridgeHandler.getAccessToken();
-            Date date = new Date();
-            String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
-            Request request = httpClient.newRequest("https://cunds-syncapi.azurewebsites.net/api/ApiSensor")
-                    .method(HttpMethod.POST).header(HttpHeader.CONTENT_TYPE, "application/json")
-                    // .header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
-                    .header(HttpHeader.ACCEPT, "application/json")
-                    .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("SerialNumber", serialNumber);
-            jsonObject.addProperty("IdApiSensorEventDef", sensorEventDef);
-            jsonObject.addProperty("DateEntry", dateString);
-            jsonObject.addProperty("DateSend", dateString);
-            request.content(
-                    new StringContentProvider("application/json", jsonObject.toString(), StandardCharsets.UTF_8));
-            request.send(new BufferingResponseListener() {
-                @NonNullByDefault({})
-                @Override
-                public void onComplete(Result result) {
-                    if (result.getResponse().getStatus() != 201) {
-                        logger.warn("Unable to send sensor event!");
-                        logger.debug("{}", result.getResponse().toString());
-                    } else {
-                        logger.debug("Sensor event was stored successfully.");
-                        refreshChannelValue();
+            McdBridgeHandler localMcdBridgeHandler = mcdBridgeHandler;
+            if (localMcdBridgeHandler != null) {
+                String accessToken = localMcdBridgeHandler.getAccessToken();
+                Date date = new Date();
+                String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
+                Request request = httpClient.newRequest("https://cunds-syncapi.azurewebsites.net/api/ApiSensor")
+                        .method(HttpMethod.POST).header(HttpHeader.CONTENT_TYPE, "application/json")
+                        // .header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
+                        .header(HttpHeader.ACCEPT, "application/json")
+                        .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("SerialNumber", serialNumber);
+                jsonObject.addProperty("IdApiSensorEventDef", sensorEventDef);
+                jsonObject.addProperty("DateEntry", dateString);
+                jsonObject.addProperty("DateSend", dateString);
+                request.content(
+                        new StringContentProvider("application/json", jsonObject.toString(), StandardCharsets.UTF_8));
+                request.send(new BufferingResponseListener() {
+                    @NonNullByDefault({})
+                    @Override
+                    public void onComplete(Result result) {
+                        if (result.getResponse().getStatus() != 201) {
+                            logger.debug("Unable to send sensor event:\n{}", result.getResponse().toString());
+                        } else {
+                            logger.debug("Sensor event was stored successfully.\nLine break test!");
+                            refreshChannelValue();
+                        }
                     }
-                }
-            });
+                });
+            }
         } catch (Exception e) {
-            logger.debug("{}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to send sensor event. An error has occured.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }

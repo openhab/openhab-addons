@@ -19,15 +19,19 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.mcd.internal.handler.McdBridgeHandler;
 import org.openhab.binding.mcd.internal.handler.SensorThingHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link McdHandlerFactory} is responsible for creating things and thing
@@ -41,6 +45,12 @@ public class McdHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_MCD_BRIDGE,
             THING_TYPE_SENSOR);
+    private final HttpClient httpClient;
+
+    @Activate
+    public McdHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -52,11 +62,11 @@ public class McdHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_MCD_BRIDGE.equals(thingTypeUID)) {
-            return new McdBridgeHandler((Bridge) thing);
+            return new McdBridgeHandler((Bridge) thing, httpClient);
         }
 
         if (THING_TYPE_SENSOR.equals(thingTypeUID)) {
-            return new SensorThingHandler(thing);
+            return new SensorThingHandler(thing, httpClient);
         }
 
         return null;

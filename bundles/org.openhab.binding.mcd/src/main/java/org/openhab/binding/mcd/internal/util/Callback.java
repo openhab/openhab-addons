@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.mcd.internal.util;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonElement;
 
 /**
@@ -19,6 +22,7 @@ import com.google.gson.JsonElement;
  * 
  * @author Simon Dengler - Initial contribution
  */
+@NonNullByDefault
 public interface Callback {
-    void jsonElementTypeCallback(JsonElement jsonObject);
+    void jsonElementTypeCallback(@Nullable JsonElement jsonObject);
 }

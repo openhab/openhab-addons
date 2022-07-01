@@ -14,11 +14,13 @@ package org.openhab.binding.mcd.internal.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author Dengler - Initial contribution
  */
+@NonNullByDefault
 public class SensorEventDefTest {
     @Test
     public void testGetSensorEventDefinition() {

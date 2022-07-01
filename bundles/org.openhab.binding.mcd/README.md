@@ -2,10 +2,24 @@
 
 This binding allows you to send sensor events from your openHAB environment to the cloud application Managing Care Digital (MCD) by [C&S Computer und Software GmbH](https://www.managingcare.de/). 
 
+MCD is the platform for inpatient and outpatient nursing services. Our REST API allows you to send a variety of sensor events to the system and thus being able to connect your Ambient Assisted Living (AAL) or smart home environment to the documentation software of your nursing service. 
+
+Please note that a valid account is needed to access MCD and the Sensor API.
+
 
 ## Supported Things
 
 There are two supported things: **MCD Bridge** and **MCD Sensor Thing**. 
+
+
+## Discovery
+
+Discovery is not supported.
+
+
+## Binding Configuration
+
+No binding configuration required. 
 
 
 ## Thing Configuration
@@ -32,39 +46,75 @@ Each sensor thing (`mcdSensor`) needs to be configured with the identical serial
 
 ## Channels
 
-The `mcdBridge` supports the following channel:
+The `mcdSensor` thing supports the following channels.  To see the sensors' events, please visit [Managing Care Digital](https://cundsdokumentation.de/) and navigate to the dashboard. 
 
 | channel     | type   | description                                   |
 |-------------|--------|-----------------------------------------------|
-| loginStatus | Switch | login status of the bridge (ON for logged in) |
+| lastEvent | String | shows the last event that was sent with date and time |
+| sendEvent | String | stateless channel for sending events to the API |
 
-The `mcdSensor` thing supports the following channels. Please note that these channels (except from `lastValue`) should only be used 
-to send data. To see the sensors' events, please visit [Managing Care Digital](https://cundsdokumentation.de/).
+The channel `sendEvents` accepts valid Sensor Event Definitions as well as the corresponding ID. The following table contains allcurrently accepted Sensor Event Definitions and their respective ID. As soon as new events are added to the API, you can use their ID, even if the Definition is not yet added to this list. 
 
-| channel        | type   | description                                                                                                              |
-|----------------|--------|--------------------------------------------------------------------------------------------------------------------------|
-| lastValue      | String | READONLY; shows the last event that was sent                                                                             |
-| ---            | ---    | channels, that send two different states:                                                                                |
-| bedStatus      | Switch | set OFF to send bed exit, ON to send bed entry                                                                           |
-| sitStatus      | Switch | set OFF to send sit down, ON to send stand up                                                                            |
-| openShut       | Switch | set OFF to send shut, ON to send open                                                                                    |
-| light          | Switch | send OFF or ON                                                                                                           |
-| presence       | Switch | set OFF to send room exit, ON to send room entry                                                                         |
-| ---            | ---    | channels, that send only one state when set ON:                                                                          |
-| fall           | Switch | set ON to send fall event, will be reset to OFF automatically after sending                                              |
-| changePosition | Switch | set ON to send event for position change in bed, will be reset to OFF automatically after sending                        |
-| batteryState   | Switch | set ON to send warning for an empty battery, will be reset to OFF automatically after sending                            |
-| inactivity     | Switch | set ON to send event for long inactivity, will be reset to OFF automatically after sending                               |
-| alarm          | Switch | set ON to send an alarm, will be reset to OFF automatically after sending                                                |
-| activity       | Switch | set ON to send event for detected activity, will be reset to OFF automatically after sending                             |
-| urine          | Switch | set ON to send event for capacity limit in smart incontinence material, will be reset to OFF automatically after sending |
-| gas            | Switch | set ON to send event for detected gas, will be reset to OFF automatically after sending                                  |
-| removedSensor  | Switch | set ON to send event for sensor removal, will be reset to OFF automatically after sending                                |
-| inactivityRoom | Switch | set ON to send event for long inactivity in a room, will be reset to OFF automatically after sending                     |
-| smokeAlarm     | Switch | set ON to send event for smoke detection, will be reset to OFF automatically after sending                               |
-| heat           | Switch | set ON to send event for detected heat, will be reset to OFF automatically after sending                                 |
-| cold           | Switch | set ON to send event for detected cold, will be reset to OFF automatically after sending                                 |
-| alarmAir       | Switch | set ON to send event for bad air quality, will be reset to OFF automatically after sending                               |
+| ID | Definition |
+|----|------------|
+| 2 | BEDEXIT |
+| 3 | BEDENTRY |
+| 4 | FALL |
+| 5 | CHANGEPOSITION |
+| 6 | BATTERYSTATE |
+| 7 | INACTIVITY |
+| 8 | ALARM |
+| 9 | OPEN |
+| 10 | CLOSE |
+| 11 | ON |
+| 12 | OFF |
+| 13 | ACTIVITY |
+| 14 | CAPACITY |
+| 15 | GAS |
+| 16 | VITALVALUE |
+| 17 | ROOMEXIT |
+| 18 | ROOMENTRY |
+| 19 | REMOVESENSOR |
+| 20 | SITDOWN |
+| 21 | STANDUP |
+| 22 | INACTIVITYROOM |
+| 23 | SMOKEALARM |
+| 24 | HEAT |
+| 25 | COLD |
+| 26 | QUALITYAIR |
+| 27 | ALARMAIR |
+| 28 | ROOMTEMPERATURE |
+| 29 | HUMIDITY |
+| 30 | AIRPRESSURE |
+| 31 | CO2 |
+| 32 | INDEXUV |
+| 33 | WEARTIME |
+| 34 | FIRSTURINE |
+| 35 | NEWDIAPER |
+| 36 | DIAPERREMOVED |
+| 37 | NOCONNECTION |
+| 38 | LOWBATTERY |
+| 39 | CONTROLLSENSOR |
+| 40 | LYING |
+| 41 | SPILLED |
+| 42 | DAMAGED |
+| 43 | GEOEXIT |
+| 44 | GEOENTRY |
+| 45 | WALKING |
+| 46 | RESTING |
+| 47 | TURNAROUND |
+| 48 | HOMEEMERGENCY |
+| 49 | TOILETFLUSH |
+| 50 | DORSALPOSITION |
+| 51 | ABDOMINALPOSITION |
+| 52 | LYINGLEFT |
+| 53 | LYINGRIGHT |
+| 54 | LYINGHALFLEFT |
+| 55 | LYINGHALFRIGHT |
+| 56 | MOVEMENT |
+| 57 | PRESENCE |
+| 58 | NUMBERPERSONS |
+| 59 | BRIGHTNESSZONE |
 
 
 ## Full Example
@@ -79,52 +129,17 @@ Bridge mcd:mcdBridge:exampleBridge [userEmail="your.email@examle.com", userPassw
     Thing mcd:mcdSensor:secondExamlpeSensor [serialNumber="456"]
 }
 ```
+
 demo.items:
+
 ```
-Switch loginStatus "Login Status" {channel="mcd:mcdBridge:exampleBridge:loginStatus"}
 String lastValue "Last Value" {channel="mcd:mcdSensor:examlpeSensor:lastValue"}
-Switch sitStatus "Sit Status" {channel="mcd:mcdSensor:examlpeSensor:sitStatus"}
+String sendEvent "Sit Status" {channel="mcd:mcdSensor:examlpeSensor:sendEvent"}
 ```
+
 demo.sitemap:
+
 ```
-Switch item=loginStatus
-Switch item=sitStatus
+Text item=sendEvent
 Text item=lastValue
 ```
-
-## Further information
-
-This binding was created as part of our recent and current research activities. For further information about our projects please visit our [Website](https://www.managingcare.de/) or write an email to: institut(at)cs-ag.de. 
-
-[//]: # (## Discovery)
-
-[//]: # ()
-[//]: # (There is no auto discovery available. )
-
-[//]: # (## Binding Configuration)
-
-[//]: # ()
-[//]: # (_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_)
-
-[//]: # ()
-[//]: # (```)
-
-[//]: # (# Configuration for the MCD Binding)
-
-[//]: # (#)
-
-[//]: # (# Default secret key for the pairing of the MCD Thing.)
-
-[//]: # (# It has to be between 10-40 &#40;alphanumeric&#41; characters.)
-
-[//]: # (# This may be changed by the user for security reasons.)
-
-[//]: # (secret=openHABSecret)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._)
-
-[//]: # ()
-[//]: # (_If your binding does not offer any generic configurations, you can remove this section completely._)

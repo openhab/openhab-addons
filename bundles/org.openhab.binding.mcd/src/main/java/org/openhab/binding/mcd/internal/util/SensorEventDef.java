@@ -15,15 +15,18 @@ package org.openhab.binding.mcd.internal.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * class that contains MCD SensorEventDefinitions
  * 
  * @author Simon Dengler - Initial contribution
  */
+@NonNullByDefault
 public class SensorEventDef {
 
     // Sensor Events in order of their ids as specified by C&S syncapi
-    private final static String[] sensorEventDefinitionArray = { "", "UNDEFINED", "BEDEXIT", "BEDENTRY", "FALL",
+    private static final String[] EVENT_DEFINITION_ARRAY = { "", "UNDEFINED", "BEDEXIT", "BEDENTRY", "FALL",
             "CHANGEPOSITION", "BATTERYSTATE", "INACTIVITY", "ALARM", "OPEN", "CLOSE", "ON", "OFF", "ACTIVITY",
             "CAPACITY", "GAS", "VITALVALUE", "ROOMEXIT", "ROOMENTRY", "REMOVESENSOR", "SITDOWN", "STANDUP",
             "INACTIVITYROOM", "SMOKEALARM", "HEAT", "COLD", "QUALITYAIR", "ALARMAIR", "ROOMTEMPERATURE", "HUMIDITY",
@@ -33,7 +36,7 @@ public class SensorEventDef {
             "LYINGRIGHT", "LYINGHALFLEFT", "LYINGHALFRIGHT", "MOVEMENT", "PRESENCE", "NUMBERPERSONS",
             "BRIGHTNESSZONE" };
     private static ArrayList<String> sensorEventDefinition = new ArrayList<String>(
-            Arrays.asList(sensorEventDefinitionArray));
+            Arrays.asList(EVENT_DEFINITION_ARRAY));
 
     public static ArrayList<String> getSensorEventDefinition() {
         return sensorEventDefinition;

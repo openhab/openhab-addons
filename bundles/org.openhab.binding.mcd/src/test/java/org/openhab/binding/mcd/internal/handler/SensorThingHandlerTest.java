@@ -18,18 +18,20 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 /**
  * @author Dengler - Initial contribution
  */
+@NonNullByDefault
 public class SensorThingHandlerTest {
 
     private final Gson gson = new Gson();
-    private final SensorThingHandler sensorThingHandler = new SensorThingHandler(null);
 
     @Test
     public void getLatestValueFromJsonObjectTest() {
@@ -40,14 +42,15 @@ public class SensorThingHandlerTest {
                 + "            \"DateEntry\": \"2021-11-22T10:17:56.2866667\"\n" + "          }\n" + "        ]\n"
                 + "      }\n" + "    ]\n" + "  }\n" + "]";
         JsonArray array = gson.fromJson(arrayString, JsonArray.class);
-        assertEquals("{\"EventDef\":\"Alarm\",\"DateEntry\":\"2021-11-22T10:17:56.2866667\"}",
-                sensorThingHandler.getLatestValueFromJsonArray(array).toString());
+        JsonObject object = SensorThingHandler.getLatestValueFromJsonArray(array);
+        String string = object != null ? object.toString() : null;
+        assertEquals("{\"EventDef\":\"Alarm\",\"DateEntry\":\"2021-11-22T10:17:56.2866667\"}", string);
         arrayString = "[\n" + "  {\n" + "    \"IdPatient\": 1,\n" + "    \"LastName\": \"Mustermann\",\n"
                 + "    \"FirstName\": \"Max\",\n" + "    \"Devices\": [\n" + "      {\n" + "        \"IdDevice\": 2,\n"
                 + "        \"SerialNumber\": \"001\",\n" + "        \"Name\": \"Test Sitzkissen\"\n" + "      }\n"
                 + "    ]\n" + "  }\n" + "]";
         array = gson.fromJson(arrayString, JsonArray.class);
-        assertNull(sensorThingHandler.getLatestValueFromJsonArray(array));
+        assertNull(SensorThingHandler.getLatestValueFromJsonArray(array));
     }
 
     @Test
@@ -57,7 +60,6 @@ public class SensorThingHandlerTest {
             String dateString = new SimpleDateFormat("yyyy-MM-dd', 'HH:mm:ss").format(date);
             assertEquals("2021-11-22, 14:00:09", dateString);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
         }
     }
 }
