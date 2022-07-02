@@ -64,8 +64,6 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private @NonNullByDefault({}) IndegoController controller;
     private @Nullable ScheduledFuture<?> statePollFuture;
     private @Nullable ScheduledFuture<?> cuttingTimePollFuture;
-    private long stateRefreshRate;
-    private long cuttingTimeRefreshRate;
     private boolean propertiesInitialized;
     private int previousStateCode;
 
@@ -96,14 +94,12 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
 
         controller = new IndegoController(httpClient, username, password);
-        stateRefreshRate = config.refresh;
-        cuttingTimeRefreshRate = config.cuttingTimeRefresh;
 
         updateStatus(ThingStatus.UNKNOWN);
         this.statePollFuture = scheduler.scheduleWithFixedDelay(this::refreshStateWithExceptionHandling, 0,
-                stateRefreshRate, TimeUnit.SECONDS);
+                config.refresh, TimeUnit.SECONDS);
         this.cuttingTimePollFuture = scheduler.scheduleWithFixedDelay(this::refreshCuttingTimesWithExceptionHandling, 0,
-                cuttingTimeRefreshRate, TimeUnit.MINUTES);
+                config.cuttingTimeRefresh, TimeUnit.MINUTES);
     }
 
     @Override
