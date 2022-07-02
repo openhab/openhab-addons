@@ -108,8 +108,6 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
 
                         // wait until driver is initialized before setting network to ONLINE
                         driverInitializedJob = scheduler.scheduleWithFixedDelay(() -> {
-                            logger.debug("driver is not initialized yet");
-
                             if (insteonBinding.isDriverInitialized()) {
                                 logger.debug("driver is initialized");
 
@@ -119,9 +117,11 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
 
                                 ScheduledFuture<?> driverInitializedJob = this.driverInitializedJob;
                                 if (driverInitializedJob != null) {
-                                    driverInitializedJob.cancel(false);
+                                    driverInitializedJob.cancel(true);
                                 }
                                 this.driverInitializedJob = null;
+                            } else {
+                                logger.debug("driver is not initialized yet");
                             }
                         }, 0, DRIVER_INITIALIZED_TIME_IN_SECONDS, TimeUnit.SECONDS);
                     } else {
