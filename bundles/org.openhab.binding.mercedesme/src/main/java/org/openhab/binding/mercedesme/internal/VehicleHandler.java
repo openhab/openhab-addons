@@ -499,7 +499,7 @@ public class VehicleHandler extends BaseThingHandler {
                 }
             }
         } else {
-            logger.info("JSON Array expected but received {}", json);
+            logger.debug("JSON Array expected but received {}", json);
         }
     }
 

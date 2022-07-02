@@ -129,8 +129,13 @@ See also [image channel section](#image) for further advise.
 | roofOpen        | boolean | Vehicle images with open roof (only Cabriolet)      | false   | no       | yes      |
 | format          | text    | Vehicle images format (webp or png)                 | webp    | no       | yes      |
 
-For all vehicles you're free to give the tank / batterie capacity.
-Giving these values in the configuration the open fuel / charge capacities are reported in the [range](#range) channels.
+For all vehicles you're free to give the tank / battery capacity.
+Giving these values in configuration the open fuel / charge capacities are reported in the [range](#range) channels.
+
+| Name            | Type    | Description                                         | Default | Required | Advanced | combustion | bev | hybrid |
+|-----------------|---------|-----------------------------------------------------|---------|----------|----------|------------|-----|--------|
+| batteryCapacity | decimal | Battery Capacity                                    | N/A     | no       | no       |            | X   | X      |
+| fuelCapacity    | decimal | Fuel Capacity                                       | N/A     | no       | no       | X          |     | X      |
 
 ## Channels
 
