@@ -89,7 +89,9 @@ public enum RotelModel {
     RT1570("RT-1570", 115200, 14, null, false, null, false, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
     T11("T11", 115200, 12, null, false, null, false, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
     T14("T14", 115200, 13, null, false, null, false, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
+    M8("M8", 115200, 0, null, false, null, false, -1, false, true, 4, 0, NO_SPECIAL_CHARACTERS),
     P5("P5", 115200, 20, 96, true, 10, 10, false, -1, true, false, true, 4, 0, NO_SPECIAL_CHARACTERS),
+    S5("S5", 115200, 0, null, false, null, false, -1, false, true, 4, 0, NO_SPECIAL_CHARACTERS),
     X3("X3", 115200, 18, 96, true, 10, 10, false, -1, true, false, true, 4, 0, NO_SPECIAL_CHARACTERS),
     X5("X5", 115200, 19, 96, true, 10, 10, false, -1, true, false, true, 4, 0, NO_SPECIAL_CHARACTERS);
 
