@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.boschindego.internal.handler.BoschIndegoHandler;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
@@ -43,14 +44,16 @@ public class BoschIndegoHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
     private final BoschIndegoTranslationProvider translationProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public BoschIndegoHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider,
-            ComponentContext componentContext) {
+            final @Reference TimeZoneProvider timeZoneProvider, ComponentContext componentContext) {
         super.activate(componentContext);
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.translationProvider = new BoschIndegoTranslationProvider(i18nProvider, localeProvider);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -63,7 +66,7 @@ public class BoschIndegoHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_INDEGO.equals(thingTypeUID)) {
-            return new BoschIndegoHandler(thing, httpClient, translationProvider);
+            return new BoschIndegoHandler(thing, httpClient, translationProvider, timeZoneProvider);
         }
 
         return null;

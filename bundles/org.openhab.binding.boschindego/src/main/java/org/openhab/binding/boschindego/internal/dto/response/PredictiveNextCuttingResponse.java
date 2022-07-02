@@ -16,6 +16,8 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -23,11 +25,11 @@ import com.google.gson.annotations.SerializedName;
  * 
  * @author Jacob Laursen - Initial contribution
  */
-public class PredictiveCuttingTimeResponse {
+public class PredictiveNextCuttingResponse {
     @SerializedName("mow_next")
     public String nextCutting;
 
-    public Instant getNextCutting() {
+    public @Nullable Instant getNextCutting() {
         try {
             return ZonedDateTime.parse(nextCutting).toInstant();
         } catch (final DateTimeParseException e) {

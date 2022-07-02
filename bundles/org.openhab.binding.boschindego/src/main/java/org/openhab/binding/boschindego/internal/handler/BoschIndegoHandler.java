@@ -14,6 +14,8 @@ package org.openhab.binding.boschindego.internal.handler;
 
 import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.*;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +30,8 @@ import org.openhab.binding.boschindego.internal.dto.DeviceCommand;
 import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
@@ -55,16 +59,20 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(BoschIndegoHandler.class);
     private final HttpClient httpClient;
     private final BoschIndegoTranslationProvider translationProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     private @NonNullByDefault({}) IndegoController controller;
-    private @Nullable ScheduledFuture<?> pollFuture;
-    private long refreshRate;
+    private @Nullable ScheduledFuture<?> statePollFuture;
+    private @Nullable ScheduledFuture<?> cuttingTimePollFuture;
     private boolean propertiesInitialized;
+    private int previousStateCode;
 
-    public BoschIndegoHandler(Thing thing, HttpClient httpClient, BoschIndegoTranslationProvider translationProvider) {
+    public BoschIndegoHandler(Thing thing, HttpClient httpClient, BoschIndegoTranslationProvider translationProvider,
+            TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.httpClient = httpClient;
         this.translationProvider = translationProvider;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -86,29 +94,37 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
 
         controller = new IndegoController(httpClient, username, password);
-        refreshRate = config.refresh;
 
         updateStatus(ThingStatus.UNKNOWN);
-        this.pollFuture = scheduler.scheduleWithFixedDelay(this::refreshState, 0, refreshRate, TimeUnit.SECONDS);
+        this.statePollFuture = scheduler.scheduleWithFixedDelay(this::refreshStateWithExceptionHandling, 0,
+                config.refresh, TimeUnit.SECONDS);
+        this.cuttingTimePollFuture = scheduler.scheduleWithFixedDelay(this::refreshCuttingTimesWithExceptionHandling, 0,
+                config.cuttingTimeRefresh, TimeUnit.MINUTES);
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing Indego handler");
-        ScheduledFuture<?> pollFuture = this.pollFuture;
+        ScheduledFuture<?> pollFuture = this.statePollFuture;
         if (pollFuture != null) {
             pollFuture.cancel(true);
         }
-        this.pollFuture = null;
+        this.statePollFuture = null;
+        pollFuture = this.cuttingTimePollFuture;
+        if (pollFuture != null) {
+            pollFuture.cancel(true);
+        }
+        this.cuttingTimePollFuture = null;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command == RefreshType.REFRESH) {
-            scheduler.submit(() -> this.refreshState());
-            return;
-        }
         try {
+            if (command == RefreshType.REFRESH) {
+                handleRefreshCommand(channelUID.getId());
+                return;
+            }
+
             if (command instanceof DecimalType && channelUID.getId().equals(STATE)) {
                 sendCommand(((DecimalType) command).intValue());
             }
@@ -117,6 +133,23 @@ public class BoschIndegoHandler extends BaseThingHandler {
                     "@text/offline.comm-error.authentication-failure");
         } catch (IndegoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    private void handleRefreshCommand(String channelId) throws IndegoAuthenticationException, IndegoException {
+        switch (channelId) {
+            case STATE:
+            case TEXTUAL_STATE:
+            case MOWED:
+            case ERRORCODE:
+            case STATECODE:
+            case READY:
+                this.refreshState();
+                break;
+            case LAST_CUTTING:
+            case NEXT_CUTTING:
+                this.refreshCuttingTimes();
+                break;
         }
     }
 
@@ -150,21 +183,64 @@ public class BoschIndegoHandler extends BaseThingHandler {
         updateState(state);
     }
 
-    private void refreshState() {
+    private void refreshStateWithExceptionHandling() {
         try {
-            if (!propertiesInitialized) {
-                getThing().setProperty(Thing.PROPERTY_SERIAL_NUMBER, controller.getSerialNumber());
-                propertiesInitialized = true;
-            }
-
-            DeviceStateResponse state = controller.getState();
-            updateStatus(ThingStatus.ONLINE);
-            updateState(state);
+            refreshState();
         } catch (IndegoAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.authentication-failure");
         } catch (IndegoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    private void refreshState() throws IndegoAuthenticationException, IndegoException {
+        if (!propertiesInitialized) {
+            getThing().setProperty(Thing.PROPERTY_SERIAL_NUMBER, controller.getSerialNumber());
+            propertiesInitialized = true;
+        }
+
+        DeviceStateResponse state = controller.getState();
+        updateStatus(ThingStatus.ONLINE);
+        updateState(state);
+
+        // When state code changed, refresh cutting times immediately.
+        if (state.state != previousStateCode) {
+            refreshCuttingTimes();
+            previousStateCode = state.state;
+        }
+    }
+
+    private void refreshCuttingTimesWithExceptionHandling() {
+        try {
+            refreshCuttingTimes();
+        } catch (IndegoAuthenticationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.authentication-failure");
+        } catch (IndegoException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    private void refreshCuttingTimes() throws IndegoAuthenticationException, IndegoException {
+        if (isLinked(LAST_CUTTING)) {
+            Instant lastCutting = controller.getPredictiveLastCutting();
+            if (lastCutting != null) {
+                updateState(LAST_CUTTING,
+                        new DateTimeType(ZonedDateTime.ofInstant(lastCutting, timeZoneProvider.getTimeZone())));
+            } else {
+                updateState(LAST_CUTTING, UnDefType.UNDEF);
+            }
+        }
+
+        if (isLinked(NEXT_CUTTING)) {
+            Instant nextCutting = controller.getPredictiveNextCutting();
+            if (nextCutting != null) {
+                updateState(NEXT_CUTTING,
+                        new DateTimeType(ZonedDateTime.ofInstant(nextCutting, timeZoneProvider.getTimeZone())));
+            } else {
+                updateState(NEXT_CUTTING, UnDefType.UNDEF);
+            }
         }
     }
 
@@ -200,7 +276,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             logger.debug("Command is equal to state");
             return false;
         }
-        // Cant pause while the mower is docked
+        // Can't pause while the mower is docked
         if (command == DeviceCommand.PAUSE && deviceStatus.getAssociatedCommand() == DeviceCommand.RETURN) {
             logger.debug("Can't pause the mower while it's docked or docking");
             return false;

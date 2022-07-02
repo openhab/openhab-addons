@@ -38,7 +38,8 @@ import org.openhab.binding.boschindego.internal.dto.response.AuthenticationRespo
 import org.openhab.binding.boschindego.internal.dto.response.DeviceCalendarResponse;
 import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse;
 import org.openhab.binding.boschindego.internal.dto.response.LocationWeatherResponse;
-import org.openhab.binding.boschindego.internal.dto.response.PredictiveCuttingTimeResponse;
+import org.openhab.binding.boschindego.internal.dto.response.PredictiveLastCuttingResponse;
+import org.openhab.binding.boschindego.internal.dto.response.PredictiveNextCuttingResponse;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
@@ -455,9 +456,8 @@ public class IndegoController {
      * @throws IndegoException if any communication or parsing error occurred
      */
     public boolean getPredictiveMoving() throws IndegoAuthenticationException, IndegoException {
-        final PredictiveStatus status = getRequestWithAuthentication(
-                SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive", PredictiveStatus.class);
-        return status.enabled;
+        return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive",
+                PredictiveStatus.class).enabled;
     }
 
     /**
@@ -474,17 +474,27 @@ public class IndegoController {
     }
 
     /**
+     * Queries predictive last cutting as {@link Instant}.
+     * 
+     * @return predictive last cutting
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public @Nullable Instant getPredictiveLastCutting() throws IndegoAuthenticationException, IndegoException {
+        return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/lastcutting",
+                PredictiveLastCuttingResponse.class).getLastCutting();
+    }
+
+    /**
      * Queries predictive next cutting as {@link Instant}.
      * 
      * @return predictive next cutting
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
-    public Instant getPredictiveNextCutting() throws IndegoAuthenticationException, IndegoException {
-        final PredictiveCuttingTimeResponse nextCutting = getRequestWithAuthentication(
-                SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/nextcutting",
-                PredictiveCuttingTimeResponse.class);
-        return nextCutting.getNextCutting();
+    public @Nullable Instant getPredictiveNextCutting() throws IndegoAuthenticationException, IndegoException {
+        return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/nextcutting",
+                PredictiveNextCuttingResponse.class).getNextCutting();
     }
 
     /**
@@ -495,9 +505,8 @@ public class IndegoController {
      * @throws IndegoException if any communication or parsing error occurred
      */
     public DeviceCalendarResponse getPredictiveExclusionTime() throws IndegoAuthenticationException, IndegoException {
-        final DeviceCalendarResponse calendar = getRequestWithAuthentication(
-                SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/calendar", DeviceCalendarResponse.class);
-        return calendar;
+        return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/calendar",
+                DeviceCalendarResponse.class);
     }
 
     /**
