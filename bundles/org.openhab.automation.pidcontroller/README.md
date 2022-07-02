@@ -144,5 +144,5 @@ You will get faster results with constant lighting or PV zero export application
 Persisting controller state requires inspector items `iInspector`, `dInspector`, `eInspector` to be configured.
 The PID controller uses these Items to expose internal state in order to restore it during startup or reload.
 
-In addition, you need to have persistence set up for these items in OpenHAB. Please see OpenHAB documentation regarding
+In addition, you need to have persistence set up for these items in openHAB. Please see openHAB documentation regarding
 [Persistence](https://www.openhab.org/docs/configuration/persistence.html) for more details and instructions.
