@@ -151,7 +151,7 @@ All channels `read-only`
 
 | Channel          | Type                 |  Description                 | bev | hybrid | combustion |
 |------------------|----------------------|------------------------------| ----|--------|------------|
-| mileage          | Number:Length        |  Total Mileage               | X   | X      | X          |
+| mileage          | Number:Length        |  Total mileage               | X   | X      | X          |
 | soc              | Number:Dimensionless |  Battery state of charge     | X   | X      |            |
 | range-electric   | Number:Length        |  Electric range              | X   | X      |            |
 | radius-electric  | Number:Length        |  Electric radius for map     | X   | X      |            |
@@ -160,7 +160,7 @@ All channels `read-only`
 | radius-fuel      | Number:Length        |  Fuel radius for map         |     | X      | X          |
 | range-hybrid     | Number:Length        |  Hybrid range                |     | X      |            |
 | radius-hybrid    | Number:Length        |  Hybrid radius for map       |     | X      |            |
-| last-update      | DateTime             |  Last Update                 | X   | X      | X          |
+| last-update      | DateTime             |  Last range update           | X   | X      | X          |
 
 Channels with `radius` are just giving a _guess_ which radius can be reached in a map display.
 
@@ -177,9 +177,9 @@ All channels `read-only`
 | passenger-front  | Contact              |  Passenger door              |
 | passenger-rear   | Contact              |  Passenger door rear         |
 | deck-lid         | Contact              |  Deck lid                    |
-| sunroof          | Number               |  Sun roof (Cabriolet         |
+| sunroof          | Number               |  Sun roof (only Cabriolet)   |
 | rooftop          | Number               |  Roof top                    |
-| last-update      | DateTime             |  Last Update                 |
+| last-update      | DateTime             |  Last doors update           |
 
 Mapping table `sunroof`
 
@@ -212,7 +212,7 @@ All channels `readonly`
 | driver-rear      | Number               |  Driver window rear          |
 | passenger-front  | Number               |  Passenger window            |
 | passenger-rear   | Number               |  Passenger window rear       |
-| last-update      | DateTime             |  Last Update                 |
+| last-update      | DateTime             |  Last windows update         |
 
 Mapping table for all windows
 
@@ -232,12 +232,12 @@ All channels `read-only`
 
 | Channel          | Type                 |  Description                 |
 |------------------|----------------------|------------------------------|
-| interior-front   | Switch               |  Driver door                 |
-| interior-rear    | Switch               |  Driver door rear            |
-| reading-left     | Switch               |  Passenger door              |
-| reading-right    | Switch               |  Passenger door rear         |
-| light-switch     | Number               |  Deck lid                    |
-| last-update      | DateTime             |  Last Update                 |
+| interior-front   | Switch               |  Interior light front        |
+| interior-rear    | Switch               |  Interior light rear         |
+| reading-left     | Switch               |  Reading light left          |
+| reading-right    | Switch               |  Reading light right         |
+| light-switch     | Number               |  Main light switch           |
+| last-update      | DateTime             |  Last lights update          |
 
 Mapping table `light-switch`
 
@@ -259,7 +259,7 @@ All channels `read-only`
 | doors            | Number               |  Lock status all doors       |
 | deck-lid         | Switch               |  Deck lid lock               |
 | flap             | Switch               |  Flap lock                   |
-| last-update      | DateTime             |  Last Update                 |
+| last-update      | DateTime             |  Last lock update            |
 
 Mapping table `doors`
 
@@ -278,7 +278,7 @@ All channels `readonly`
 | Channel          | Type                 |  Description                 |
 |------------------|----------------------|------------------------------|
 | heading          | Number:Angle         |  Vehicle heading             |
-| last-update      | DateTime             |  Last Update                 |
+| last-update      | DateTime             |  Last location update        |
 
 ### Image
 
@@ -287,9 +287,9 @@ Group name: `image`
 
 | Channel          | Type                 |  Description                 | Write |
 |------------------|----------------------|------------------------------|-------|
-| image-data       | Raw                  |  Vehicle Image               |       |
-| image-view       | text                 |  Vehicle Image Viewpoint     |   X   |
-| clear-cache      | Switch               |  Remove All Stored Images    |   X   |
+| image-data       | Raw                  |  Vehicle image               |       |
+| image-view       | text                 |  Vehicle image viewpoint     |   X   |
+| clear-cache      | Switch               |  Remove all stored images    |   X   |
 
 **If** the `imageApiKey` in [Bridge Configuration Parameters](#bridge-configuration-parameters) is set the vehicle thing will try to get images.
 Pay attention to the [Advanced Image Configuration Properties](#thing-configuration) before requesting new images.
