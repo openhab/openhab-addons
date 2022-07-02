@@ -407,22 +407,7 @@ public class VehicleHandler extends BaseThingHandler {
             ContentResponse cr = req.send();
             logger.debug("{} Response {} {}", debugPrefix, cr.getStatus(), cr.getContentAsString());
             if (cr.getStatus() == 200) {
-                JSONArray ja = new JSONArray(cr.getContentAsString());
-                for (Iterator<Object> iterator = ja.iterator(); iterator.hasNext();) {
-                    JSONObject jo = (JSONObject) iterator.next();
-                    ChannelStateMap csm = Mapper.getChannelStateMap(jo);
-                    if (csm.isValid()) {
-                        updateChannel(csm);
-                        // store ChannelMap for range radius calculation
-                        if (csm.getChannel().equals("range-electric")) {
-                            rangeElectric = Optional.of((QuantityType<?>) csm.getState());
-                        } else if (csm.getChannel().equals("range-fuel")) {
-                            rangeFuel = Optional.of((QuantityType<?>) csm.getState());
-                        }
-                    } else {
-                        logger.warn("{} Unable to deliver state for {}", debugPrefix, jo);
-                    }
-                }
+                distributeContent(cr.getContentAsString().trim());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("{} Error getting data {}", debugPrefix, e.getMessage());
@@ -438,8 +423,6 @@ public class VehicleHandler extends BaseThingHandler {
      * @param requestUrl
      */
     private void fallbackCall(String requestUrl) {
-        logger.debug("Perform fallback call");
-
         // Calculate endpoint for debugging
         String[] endpoint = requestUrl.split("/");
         String finalEndpoint = endpoint[endpoint.length - 1];
@@ -451,27 +434,35 @@ public class VehicleHandler extends BaseThingHandler {
                 .header(HttpHeader.AUTHORIZATION.toString(), "Bearer " + accountHandler.get().getToken()).GET().build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            logger.debug("{} Response {} {}", debugPrefix, response.statusCode(), response.body());
+            logger.debug("{} Fallback Response {} {}", debugPrefix, response.statusCode(), response.body());
             if (response.statusCode() == 200) {
-                JSONArray ja = new JSONArray(response.body());
-                for (Iterator<Object> iterator = ja.iterator(); iterator.hasNext();) {
-                    JSONObject jo = (JSONObject) iterator.next();
-                    ChannelStateMap csm = Mapper.getChannelStateMap(jo);
-                    if (csm.isValid()) {
-                        updateChannel(csm);
-                        // store ChannelMap for range radius calculation
-                        if (csm.getChannel().equals("range-electric")) {
-                            rangeElectric = Optional.of((QuantityType<?>) csm.getState());
-                        } else if (csm.getChannel().equals("range-fuel")) {
-                            rangeFuel = Optional.of((QuantityType<?>) csm.getState());
-                        }
-                    } else {
-                        logger.warn("{} Unable to deliver state for {}", debugPrefix, jo);
-                    }
-                }
+                distributeContent(response.body().trim());
             }
         } catch (IOException | InterruptedException e) {
             logger.warn("{} Error getting data via fallback {}", debugPrefix, e.getMessage());
+        }
+    }
+
+    private void distributeContent(String json) {
+        if (json.startsWith("[") && json.endsWith("]")) {
+            JSONArray ja = new JSONArray(json);
+            for (Iterator<Object> iterator = ja.iterator(); iterator.hasNext();) {
+                JSONObject jo = (JSONObject) iterator.next();
+                ChannelStateMap csm = Mapper.getChannelStateMap(jo);
+                if (csm.isValid()) {
+                    updateChannel(csm);
+                    // store ChannelMap for range radius calculation
+                    if (csm.getChannel().equals("range-electric")) {
+                        rangeElectric = Optional.of((QuantityType<?>) csm.getState());
+                    } else if (csm.getChannel().equals("range-fuel")) {
+                        rangeFuel = Optional.of((QuantityType<?>) csm.getState());
+                    }
+                } else {
+                    logger.warn("Unable to deliver state for {}", jo);
+                }
+            }
+        } else {
+            logger.info("JSON Array expected but received {}", json);
         }
     }
 
