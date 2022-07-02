@@ -169,8 +169,6 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_TIMER_AUTOOFF, "timerAutoOff", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
 
-                // RGBW2-color
-                .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_LIGHT_POWER, "system:power", ITEMT_SWITCH))
                 // Power Meter
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_CURRENTWATTS, "meterWatts", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_TOTALKWH, "meterTotal", ITEMT_ENERGY))
@@ -227,11 +225,11 @@ public class ShellyChannelDefinitions {
                 // TRV
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_POSITION, "sensorPosition", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_MODE, "controlMode", ITEMT_STRING))
-                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SCHEDULE, "controlSchedule", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_PROFILE, "controlProfile", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SETTEMP, "targetTemp", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BCONTROL, "boostControl", ITEMT_SWITCH))
-                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BTIMER, "boostTimer", ITEMT_TIME));
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BTIMER, "boostTimer", ITEMT_TIME))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SCHEDULE, "controlSchedule", ITEMT_SWITCH));
     }
 
     public static @Nullable ShellyChannel getDefinition(String channelName) throws IllegalArgumentException {
@@ -311,16 +309,13 @@ public class ShellyChannelDefinitions {
 
         if (profile.settings.relays != null) {
             ShellySettingsRelay rs = profile.settings.relays.get(idx);
-            boolean timer = rs.hasTimer != null || rstatus.hasTimer != null; // Dimmer 1/2 have
             addChannel(thing, add, rs.ison != null, group, CHANNEL_OUTPUT);
             addChannel(thing, add, rs.name != null, group, CHANNEL_OUTPUT_NAME);
 
-            if (!profile.isRGBW2 || profile.inColor) {
-                // Dimmer 1/2 have has_timer under /status
-                addChannel(thing, add, timer, group, CHANNEL_TIMER_ACTIVE);
-                addChannel(thing, add, rs.autoOn != null, group, CHANNEL_TIMER_AUTOON);
-                addChannel(thing, add, rs.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
-            }
+            boolean timer = rs.hasTimer != null || rstatus.hasTimer != null; // Dimmer 1/2 have
+            addChannel(thing, add, timer, group, CHANNEL_TIMER_ACTIVE);
+            addChannel(thing, add, rs.autoOn != null, group, CHANNEL_TIMER_AUTOON);
+            addChannel(thing, add, rs.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
         }
 
         // Shelly 1/1PM Addon
@@ -362,7 +357,6 @@ public class ShellyChannelDefinitions {
         if (profile.settings.lights != null) {
             ShellySettingsRgbwLight light = profile.settings.lights.get(idx);
             String whiteGroup = profile.isRGBW2 ? group : CHANNEL_GROUP_WHITE_CONTROL;
-
             // Create power channel in color mode and brightness channel in white mode
             addChannel(thing, add, profile.inColor, group, CHANNEL_LIGHT_POWER);
             addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
@@ -371,6 +365,7 @@ public class ShellyChannelDefinitions {
             addChannel(thing, add, light.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
             addChannel(thing, add, light.temp != null, whiteGroup, CHANNEL_COLOR_TEMP);
         }
+
         return add;
     }
 
@@ -501,7 +496,7 @@ public class ShellyChannelDefinitions {
             addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MODE);
             addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE);
             addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SCHEDULE);
-            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE); // TRV
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE);
         }
 
         // Battery

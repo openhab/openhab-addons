@@ -174,6 +174,7 @@ public class ShellyDeviceProfile {
     }
 
     public void initFromThingType(String name) {
+        logger.debug("{}: Init from thing type {}", thingName, name);
         String thingType = (name.contains("-") ? substringBefore(name, "-") : name).toLowerCase().trim();
         if (thingType.isEmpty()) {
             return;
