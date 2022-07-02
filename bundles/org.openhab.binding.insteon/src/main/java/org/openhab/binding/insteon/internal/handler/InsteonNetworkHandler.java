@@ -80,66 +80,64 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
         logger.debug("Starting Insteon bridge");
         InsteonNetworkConfiguration config = getConfigAs(InsteonNetworkConfiguration.class);
 
-        scheduler.execute(() -> {
-            SerialPortManager serialPortManager = this.serialPortManager;
-            if (serialPortManager == null) {
-                String msg = "Initialization failed, serial port manager is null.";
-                logger.warn(msg);
+        SerialPortManager serialPortManager = this.serialPortManager;
+        if (serialPortManager == null) {
+            String msg = "Initialization failed, serial port manager is null.";
+            logger.warn(msg);
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
 
-                return;
-            }
-            insteonBinding = new InsteonBinding(this, config, serialPortManager, scheduler);
-            updateStatus(ThingStatus.UNKNOWN);
+            return;
+        }
+        insteonBinding = new InsteonBinding(this, config, serialPortManager, scheduler);
+        updateStatus(ThingStatus.UNKNOWN);
 
-            // hold off on starting to poll until devices that already are defined as things are added.
-            // wait SETTLE_TIME_IN_SECONDS to start then check every second afterwards until it has been at
-            // least SETTLE_TIME_IN_SECONDS since last device was created.
-            settleJob = scheduler.scheduleWithFixedDelay(() -> {
-                // check to see if it has been at least SETTLE_TIME_IN_SECONDS since last device was created
-                if (System.currentTimeMillis() - lastInsteonDeviceCreatedTimestamp > SETTLE_TIME_IN_SECONDS * 1000) {
-                    // settle time has expired start polling
-                    InsteonBinding insteonBinding = this.insteonBinding;
-                    if (insteonBinding != null && insteonBinding.startPolling()) {
-                        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                            insteonBinding.logDeviceStatistics();
-                        }, 0, LOG_DEVICE_STATISTICS_DELAY_IN_SECONDS, TimeUnit.SECONDS);
+        // hold off on starting to poll until devices that already are defined as things are added.
+        // wait SETTLE_TIME_IN_SECONDS to start then check every second afterwards until it has been at
+        // least SETTLE_TIME_IN_SECONDS since last device was created.
+        settleJob = scheduler.scheduleWithFixedDelay(() -> {
+            // check to see if it has been at least SETTLE_TIME_IN_SECONDS since last device was created
+            if (System.currentTimeMillis() - lastInsteonDeviceCreatedTimestamp > SETTLE_TIME_IN_SECONDS * 1000) {
+                // settle time has expired start polling
+                InsteonBinding insteonBinding = this.insteonBinding;
+                if (insteonBinding != null && insteonBinding.startPolling()) {
+                    pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                        insteonBinding.logDeviceStatistics();
+                    }, 0, LOG_DEVICE_STATISTICS_DELAY_IN_SECONDS, TimeUnit.SECONDS);
 
-                        // wait until driver is initialized before setting network to ONLINE
-                        driverInitializedJob = scheduler.scheduleWithFixedDelay(() -> {
-                            if (insteonBinding.isDriverInitialized()) {
-                                logger.debug("driver is initialized");
+                    // wait until driver is initialized before setting network to ONLINE
+                    driverInitializedJob = scheduler.scheduleWithFixedDelay(() -> {
+                        if (insteonBinding.isDriverInitialized()) {
+                            logger.debug("driver is initialized");
 
-                                insteonBinding.setIsActive(true);
+                            insteonBinding.setIsActive(true);
 
-                                updateStatus(ThingStatus.ONLINE);
+                            updateStatus(ThingStatus.ONLINE);
 
-                                ScheduledFuture<?> driverInitializedJob = this.driverInitializedJob;
-                                if (driverInitializedJob != null) {
-                                    driverInitializedJob.cancel(true);
-                                }
-                                this.driverInitializedJob = null;
-                            } else {
-                                logger.debug("driver is not initialized yet");
+                            ScheduledFuture<?> driverInitializedJob = this.driverInitializedJob;
+                            if (driverInitializedJob != null) {
+                                driverInitializedJob.cancel(true);
                             }
-                        }, 0, DRIVER_INITIALIZED_TIME_IN_SECONDS, TimeUnit.SECONDS);
-                    } else {
-                        String msg = "Initialization failed, unable to start the Insteon bridge with the port '"
-                                + config.getPort() + "'.";
-                        logger.warn(msg);
+                            this.driverInitializedJob = null;
+                        } else {
+                            logger.debug("driver is not initialized yet");
+                        }
+                    }, 0, DRIVER_INITIALIZED_TIME_IN_SECONDS, TimeUnit.SECONDS);
+                } else {
+                    String msg = "Initialization failed, unable to start the Insteon bridge with the port '"
+                            + config.getPort() + "'.";
+                    logger.warn(msg);
 
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
-                    }
-
-                    ScheduledFuture<?> settleJob = this.settleJob;
-                    if (settleJob != null) {
-                        settleJob.cancel(false);
-                    }
-                    this.settleJob = null;
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 }
-            }, SETTLE_TIME_IN_SECONDS, 1, TimeUnit.SECONDS);
-        });
+
+                ScheduledFuture<?> settleJob = this.settleJob;
+                if (settleJob != null) {
+                    settleJob.cancel(false);
+                }
+                this.settleJob = null;
+            }
+        }, SETTLE_TIME_IN_SECONDS, 1, TimeUnit.SECONDS);
     }
 
     @Override
