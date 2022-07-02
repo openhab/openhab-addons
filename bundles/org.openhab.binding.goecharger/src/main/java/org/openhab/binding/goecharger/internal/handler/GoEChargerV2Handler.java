@@ -152,12 +152,12 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 if (goeResponse.sessionChargeConsumption == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((goeResponse.sessionChargeConsumption / 1000d), Units.KILOWATT_HOUR);
+                return new QuantityType<>(goeResponse.sessionChargeConsumption / 1000d, Units.KILOWATT_HOUR);
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
                 if (goeResponse.sessionChargeConsumptionLimit == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((goeResponse.sessionChargeConsumptionLimit / 1000d), Units.KILOWATT_HOUR);
+                return new QuantityType<>(goeResponse.sessionChargeConsumptionLimit / 1000d, Units.KILOWATT_HOUR);
             case TOTAL_CONSUMPTION:
                 if (goeResponse.totalChargeConsumption == null) {
                     return UnDefType.UNDEF;
@@ -182,17 +182,17 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((goeResponse.energy[4]), Units.AMPERE);
+                return new QuantityType<>(goeResponse.energy[4], Units.AMPERE);
             case CURRENT_L2:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((goeResponse.energy[5]), Units.AMPERE);
+                return new QuantityType<>(goeResponse.energy[5], Units.AMPERE);
             case CURRENT_L3:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((goeResponse.energy[6]), Units.AMPERE);
+                return new QuantityType<>(goeResponse.energy[6], Units.AMPERE);
             case POWER_L1:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
