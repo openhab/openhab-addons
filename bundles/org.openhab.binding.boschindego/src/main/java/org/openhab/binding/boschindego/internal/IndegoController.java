@@ -174,10 +174,11 @@ public class IndegoController {
      * @param dtoClass the DTO class to which the JSON result should be deserialized
      * @return the deserialized DTO from the JSON response
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoUnreachableException if device cannot be reached (gateway timeout error)
      * @throws IndegoException if any communication or parsing error occurred
      */
     private <T> T getRequestWithAuthentication(String path, Class<? extends T> dtoClass)
-            throws IndegoAuthenticationException, IndegoException {
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         if (!session.isValid()) {
             authenticate();
         }
@@ -203,10 +204,11 @@ public class IndegoController {
      * @param dtoClass the DTO class to which the JSON result should be deserialized
      * @return the deserialized DTO from the JSON response
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoUnreachableException if device cannot be reached (gateway timeout error)
      * @throws IndegoException if any communication or parsing error occurred
      */
     private <T> T getRequest(String path, Class<? extends T> dtoClass)
-            throws IndegoAuthenticationException, IndegoException {
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         try {
             Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.GET).header(CONTEXT_HEADER_NAME,
                     session.getContextId());
@@ -480,9 +482,11 @@ public class IndegoController {
      * 
      * @return the device state
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoUnreachableException if device cannot be reached (gateway timeout error)
      * @throws IndegoException if any communication or parsing error occurred
      */
-    public OperatingDataResponse getOperatingData() throws IndegoAuthenticationException, IndegoException {
+    public OperatingDataResponse getOperatingData()
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/operatingData",
                 OperatingDataResponse.class);
     }

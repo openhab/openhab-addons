@@ -146,7 +146,8 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
     }
 
-    private void handleRefreshCommand(String channelId) throws IndegoAuthenticationException, IndegoException {
+    private void handleRefreshCommand(String channelId)
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         switch (channelId) {
             case STATE:
             case TEXTUAL_STATE:
@@ -232,7 +233,8 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
     }
 
-    private void refreshOperatingData() throws IndegoAuthenticationException, IndegoException {
+    private void refreshOperatingData()
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         updateOperatingData(controller.getOperatingData());
         updateStatus(ThingStatus.ONLINE);
     }
