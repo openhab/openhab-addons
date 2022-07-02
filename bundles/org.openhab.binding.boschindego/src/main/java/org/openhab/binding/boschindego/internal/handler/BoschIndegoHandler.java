@@ -119,12 +119,12 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command == RefreshType.REFRESH) {
-            handleRefreshCommand(channelUID.getId());
-            return;
-        }
-
         try {
+            if (command == RefreshType.REFRESH) {
+                handleRefreshCommand(channelUID.getId());
+                return;
+            }
+
             if (command instanceof DecimalType && channelUID.getId().equals(STATE)) {
                 sendCommand(((DecimalType) command).intValue());
             }
@@ -136,7 +136,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
     }
 
-    private void handleRefreshCommand(String channelId) {
+    private void handleRefreshCommand(String channelId) throws IndegoAuthenticationException, IndegoException {
         switch (channelId) {
             case STATE:
             case TEXTUAL_STATE:
@@ -144,11 +144,11 @@ public class BoschIndegoHandler extends BaseThingHandler {
             case ERRORCODE:
             case STATECODE:
             case READY:
-                scheduler.submit(() -> this.refreshStateWithExceptionHandling());
+                this.refreshState();
                 break;
             case LAST_CUTTING:
             case NEXT_CUTTING:
-                scheduler.submit(() -> this.refreshCuttingTimesWithExceptionHandling());
+                this.refreshCuttingTimes();
                 break;
         }
     }
