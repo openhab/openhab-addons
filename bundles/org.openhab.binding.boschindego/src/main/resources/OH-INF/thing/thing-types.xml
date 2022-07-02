@@ -16,6 +16,12 @@
 			<channel id="ready" typeId="ready"/>
 			<channel id="lastCutting" typeId="lastCutting"/>
 			<channel id="nextCutting" typeId="nextCutting"/>
+			<channel id="batteryVoltage" typeId="batteryVoltage"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+			<channel id="batteryTemperature" typeId="batteryTemperature"/>
+			<channel id="gardenSize" typeId="gardenSize"/>
+			<channel id="gardenMap" typeId="gardenMap"/>
 		</channels>
 		<config-description>
 			<parameter name="username" type="text" required="true">
@@ -32,9 +38,9 @@
 				<description>The number of seconds between refreshing device state.</description>
 				<default>180</default>
 			</parameter>
-			<parameter name="cuttingTimeRefresh" type="integer" min="1">
-				<label>Cutting Time Refresh Interval</label>
-				<description>The number of minutes between refreshing last/next cutting time.</description>
+			<parameter name="cuttingTimeMapRefresh" type="integer" min="1">
+				<label>Cutting Time/Map Refresh Interval</label>
+				<description>The number of minutes between refreshing last/next cutting time and map.</description>
 				<advanced>true</advanced>
 				<default>60</default>
 			</parameter>
@@ -130,6 +136,35 @@
 		<label>Next Cutting</label>
 		<description>Next scheduled cutting time</description>
 		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryVoltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<description>Battery voltage reported by the device</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryTemperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Temperature</label>
+		<description>Battery temperature reported by the device</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="gardenSize">
+		<item-type>Number:Area</item-type>
+		<label>Garden Size</label>
+		<description>Garden size mapped by the device</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="gardenMap">
+		<item-type>Image</item-type>
+		<label>Garden Map</label>
+		<description>Garden map mapped by the device</description>
 		<state readOnly="true"/>
 	</channel-type>
 
