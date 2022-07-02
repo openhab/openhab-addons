@@ -4,14 +4,18 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:mercedesme:vehicle">
+	<config-description uri="thing-type:mercedesme:bev">
 		<parameter name="vin" type="text" required="true">
 			<label>Vehicle Identification Number</label>
 		</parameter>
 		<parameter name="refreshInterval" type="integer" min="1" unit="min" required="true">
 			<label>Refresh Interval</label>
-			<description>Data refresh rate for your vehicle data</description>
+			<description>Data refresh rate for vehicle data</description>
 			<default>5</default>
+		</parameter>
+		<parameter name="batteryCapacity" type="decimal">
+			<label>Battery Capacity</label>
+			<description>Battery capacity in kwh of vehicle</description>
 		</parameter>
 		<!-- https://developer.mercedes-benz.com/products/vehicle_images/docs#_default_image_settings -->
 		<parameter name="background" type="boolean">

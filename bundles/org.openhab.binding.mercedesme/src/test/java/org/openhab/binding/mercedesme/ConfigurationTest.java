@@ -42,4 +42,15 @@ class ConfigurationTest {
         String finalEndpoint = endpoint[endpoint.length - 1];
         assertEquals("fuelstatus", finalEndpoint);
     }
+
+    @Test
+    void testRound() {
+        int socValue = 66;
+        double batteryCapacity = 66.5;
+        float chargedValue = Math.round(socValue * 1000 * (float) batteryCapacity / 1000) / (float) 100;
+        assertEquals(43.89, chargedValue, 0.01);
+        float unchargedValue = Math.round((100 - socValue) * 1000 * (float) batteryCapacity / 1000) / (float) 100;
+        assertEquals(22.61, unchargedValue, 0.01);
+        assertEquals(batteryCapacity, chargedValue + unchargedValue, 0.01);
+    }
 }

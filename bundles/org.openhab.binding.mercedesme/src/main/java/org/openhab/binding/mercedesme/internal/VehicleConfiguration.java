@@ -24,6 +24,8 @@ public class VehicleConfiguration {
 
     public String vin = Constants.NOT_SET;
     public int refreshInterval = 5;
+    public float batteryCapacity = -1;
+    public float fuelCapacity = -1;
 
     // Advanced
     public boolean background = false;

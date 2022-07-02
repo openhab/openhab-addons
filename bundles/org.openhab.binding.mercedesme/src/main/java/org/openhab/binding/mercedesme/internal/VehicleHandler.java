@@ -57,6 +57,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
@@ -451,11 +452,47 @@ public class VehicleHandler extends BaseThingHandler {
                 ChannelStateMap csm = Mapper.getChannelStateMap(jo);
                 if (csm.isValid()) {
                     updateChannel(csm);
+
+                    /**
+                     * handle some specific channels
+                     */
                     // store ChannelMap for range radius calculation
                     if (csm.getChannel().equals("range-electric")) {
                         rangeElectric = Optional.of((QuantityType<?>) csm.getState());
                     } else if (csm.getChannel().equals("range-fuel")) {
                         rangeFuel = Optional.of((QuantityType<?>) csm.getState());
+                    } else if (csm.getChannel().equals("soc")) {
+                        if (config.get().batteryCapacity > 0) {
+                            float socValue = ((QuantityType<?>) csm.getState()).floatValue();
+                            float batteryCapacity = config.get().batteryCapacity;
+                            float chargedValue = Math.round(socValue * 1000 * batteryCapacity / 1000) / (float) 100;
+                            ChannelStateMap charged = new ChannelStateMap("charged", GROUP_RANGE,
+                                    QuantityType.valueOf(chargedValue, Units.KILOWATT_HOUR), csm.getTimestamp());
+                            updateChannel(charged);
+                            float unchargedValue = Math.round((100 - socValue) * 1000 * batteryCapacity / 1000)
+                                    / (float) 100;
+                            ChannelStateMap uncharged = new ChannelStateMap("uncharged", GROUP_RANGE,
+                                    QuantityType.valueOf(unchargedValue, Units.KILOWATT_HOUR), csm.getTimestamp());
+                            updateChannel(uncharged);
+                        } else {
+                            logger.debug("No battery capacity given");
+                        }
+                    } else if (csm.getChannel().equals("fuel-level")) {
+                        if (config.get().fuelCapacity > 0) {
+                            float fuelLevelValue = ((QuantityType<?>) csm.getState()).floatValue();
+                            float fuelCapacity = config.get().fuelCapacity;
+                            float litersInTank = Math.round(fuelLevelValue * 1000 * fuelCapacity / 1000) / (float) 100;
+                            ChannelStateMap tankFilled = new ChannelStateMap("tank-remain", GROUP_RANGE,
+                                    QuantityType.valueOf(litersInTank, Units.LITRE), csm.getTimestamp());
+                            updateChannel(tankFilled);
+                            float litersFree = Math.round((100 - fuelLevelValue) * 1000 * fuelCapacity / 1000)
+                                    / (float) 100;
+                            ChannelStateMap tankOpen = new ChannelStateMap("tank-open", GROUP_RANGE,
+                                    QuantityType.valueOf(litersFree, Units.LITRE), csm.getTimestamp());
+                            updateChannel(tankOpen);
+                        } else {
+                            logger.debug("No fuel capacity given");
+                        }
                     }
                 } else {
                     logger.warn("Unable to deliver state for {}", jo);

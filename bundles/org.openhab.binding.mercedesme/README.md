@@ -106,8 +106,6 @@ Set the advanced options by yourself if you know your IP and Port, otherwise giv
 
 ## Thing Configuration
 
-Configuration for all vehicles are the same.
-
 For vehicle images Mercedes Benz Developer offers only a trial version with limited calls.
 Check in **beforehand** if your vehicle has some restrictions or even if it's supported at all.
 Visit [Vehicle Image Details](https://developer.mercedes-benz.com/products/vehicle_images/details) in order to check your vehicle capabilities.
@@ -120,6 +118,7 @@ If your configuration is set this way the API calls are wasted!
 See also [image channel section](#image) for further advise.
 
 
+
 | Name            | Type    | Description                                         | Default | Required | Advanced |
 |-----------------|---------|-----------------------------------------------------|---------|----------|----------|
 | vin             | text    | Vehicle identification number                       | N/A     | yes      | no       |
@@ -129,6 +128,9 @@ See also [image channel section](#image) for further advise.
 | cropped         | boolean | Vehicle images in 4:3 instead of 16:9               | false   | no       | yes      |
 | roofOpen        | boolean | Vehicle images with open roof (only Cabriolet)      | false   | no       | yes      |
 | format          | text    | Vehicle images format (webp or png)                 | webp    | no       | yes      |
+
+For all vehicles you're free to give the tank / batterie capacity.
+Giving these values in the configuration the open fuel / charge capacities are reported in the [range](#range) channels.
 
 ## Channels
 
@@ -153,9 +155,14 @@ All channels `read-only`
 |------------------|----------------------|------------------------------| ----|--------|------------|
 | mileage          | Number:Length        |  Total mileage               | X   | X      | X          |
 | soc              | Number:Dimensionless |  Battery state of charge     | X   | X      |            |
+| charged          | Number:Energy        |  Charged Battery Energy      | X   | X      |            |
+| uncharged        | Number:Energy        |  Uncharged Battery Energy    | X   | X      |            |
+| soc              | Number:Dimensionless |  Battery state of charge     | X   | X      |            |
 | range-electric   | Number:Length        |  Electric range              | X   | X      |            |
 | radius-electric  | Number:Length        |  Electric radius for map     | X   | X      |            |
 | fuel-level       | Number:Dimensionless |  Fuel level in percent       |     | X      | X          |
+| fuel-remain      | Number:Volume        |  Reamaining Fuel             |     | X      | X          |
+| fuel-open        | Number:Volume        |  Open Fuel Capacity          |     | X      | X          |
 | range-fuel       | Number:Length        |  Fuel range                  |     | X      | X          |
 | radius-fuel      | Number:Length        |  Fuel radius for map         |     | X      | X          |
 | range-hybrid     | Number:Length        |  Hybrid range                |     | X      |            |

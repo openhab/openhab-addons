@@ -22,6 +22,6 @@
 			<channel-group id="image" typeId="image-values"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:mercedesme:vehicle"/>
+		<config-description-ref uri="thing-type:mercedesme:bev"/>
 	</thing-type>
 </thing:thing-descriptions>
