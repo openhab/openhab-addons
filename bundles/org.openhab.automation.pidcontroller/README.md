@@ -58,7 +58,7 @@ These values are useful when tuning the controller.
 They are updated every time the output is updated.
 
 Inspector items are also used to recover the controller's previous state during startup. This feature allows the PID
-controller parameters to be updated and OpenHAB to be restarted without losing the current controller state.
+controller parameters to be updated and openHAB to be restarted without losing the current controller state.
 
 ## Proportional (P) Gain Parameter
 
