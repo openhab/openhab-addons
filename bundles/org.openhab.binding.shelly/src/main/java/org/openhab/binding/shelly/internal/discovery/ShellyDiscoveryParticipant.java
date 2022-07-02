@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.discovery;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.substringBeforeLast;
 import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
 
 import java.io.IOException;
@@ -100,7 +100,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Nullable
     @Override
     public DiscoveryResult createResult(final ServiceInfo service) {
-        String name = service.getName().toLowerCase(); // Duao: Name starts with" Shelly" rather than "shelly"
+        String name = service.getName().toLowerCase(); // Shelly Duo: Name starts with" Shelly" rather than "shelly"
         if (!name.startsWith("shelly")) {
             return null;
         }
@@ -111,7 +111,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             String model = "unknown";
             String deviceName = "";
             ThingUID thingUID = null;
-            ShellyDeviceProfile profile = null;
+            ShellyDeviceProfile profile;
             Map<String, Object> properties = new TreeMap<>();
 
             name = service.getName().toLowerCase();
@@ -144,8 +144,8 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
                 profile = api.getDeviceProfile(thingType);
                 logger.debug("{}: Shelly settings : {}", name, profile.settingsJson);
-                deviceName = getString(profile.settings.name);
-                model = getString(profile.settings.device.type);
+                deviceName = profile.name;
+                model = profile.deviceType;
                 mode = profile.mode;
 
                 properties = ShellyBaseHandler.fillDeviceProperties(profile);
@@ -174,6 +174,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 addProperty(properties, PROPERTY_SERVICE_NAME, name);
                 addProperty(properties, PROPERTY_DEV_NAME, deviceName);
                 addProperty(properties, PROPERTY_DEV_TYPE, thingType);
+                addProperty(properties, PROPERTY_DEV_GEN, "1");
                 addProperty(properties, PROPERTY_DEV_MODE, mode);
 
                 logger.debug("{}: Adding Shelly {}, UID={}", name, deviceName, thingUID.getAsString());

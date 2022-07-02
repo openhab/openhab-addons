@@ -289,9 +289,6 @@ public class ShellyUtils {
 
     public static DateTimeType getTimestamp(String zone, long timestamp) {
         try {
-            if (timestamp == 0) {
-                throw new IllegalArgumentException("Timestamp value 0 is invalid");
-            }
             ZoneId zoneId = !zone.isEmpty() ? ZoneId.of(zone) : ZoneId.systemDefault();
             ZonedDateTime zdt = LocalDateTime.now().atZone(zoneId);
             int delta = zdt.getOffset().getTotalSeconds();
@@ -345,5 +342,13 @@ public class ShellyUtils {
             strength = 0;
         }
         return new DecimalType(strength);
+    }
+
+    public static boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
+    }
+
+    public static char lastChar(String s) {
+        return s.length() > 1 ? s.charAt(s.length() - 1) : '*';
     }
 }

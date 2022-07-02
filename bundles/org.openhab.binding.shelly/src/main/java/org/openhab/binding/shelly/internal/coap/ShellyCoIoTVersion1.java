@@ -24,8 +24,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
-import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
+import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCoIoTInterface {
     private final Logger logger = LoggerFactory.getLogger(ShellyCoIoTVersion1.class);
 
-    public ShellyCoIoTVersion1(String thingName, ShellyBaseHandler thingHandler, Map<String, CoIotDescrBlk> blkMap,
+    public ShellyCoIoTVersion1(String thingName, ShellyThingInterface thingHandler, Map<String, CoIotDescrBlk> blkMap,
             Map<String, CoIotDescrSen> sensorMap) {
         super(thingName, thingHandler, blkMap, sensorMap);
     }
@@ -207,7 +207,8 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                                 getStringType(s.valueStr));
                         break;
                     case "concentration":// Shelly Gas
-                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM, getDecimal(s.value));
+                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM,
+                                toQuantityType(getDouble(s.value), DIGITS_NONE, Units.PARTS_PER_MILLION));
                         break;
                     case "sensorerror":
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR, getStringType(s.valueStr));

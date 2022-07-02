@@ -78,7 +78,8 @@ public class ShellyManagerServlet extends HttpServlet {
 
         try {
             httpService.registerServlet(SERVLET_URI, this, null, httpService.createDefaultHttpContext());
-            logger.debug("{}: Started at '{}'", className, SERVLET_URI);
+            // Promote Shelly Manager usage
+            logger.info("{}", translationProvider.get("status.managerstarted", localIp, localPort + ""));
         } catch (NamespaceException | ServletException | IllegalArgumentException e) {
             logger.warn("{}: Unable to initialize bindingConfig", className, e);
         }

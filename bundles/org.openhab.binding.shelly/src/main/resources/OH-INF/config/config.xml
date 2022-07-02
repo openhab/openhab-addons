@@ -78,7 +78,7 @@
 			<default>0</default>
 		</parameter>
 		<parameter name="eventsRoller" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.roller.eventsRoller.label)</label>
+			<label>@text/thing-type.config.shelly.roller.eventsRoller.label</label>
 			<description>@text/thing-type.config.shelly.roller.eventsRoller.description</description>
 			<advanced>true</advanced>
 			<default>false</default>

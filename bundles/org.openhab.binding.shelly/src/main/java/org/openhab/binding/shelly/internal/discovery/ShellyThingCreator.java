@@ -84,6 +84,7 @@ public class ShellyThingCreator {
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYBUTTON1_STR, THING_TYPE_SHELLYBUTTON1_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYBUTTON2_STR, THING_TYPE_SHELLYBUTTON2_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYUNI_STR, THING_TYPE_SHELLYUNI_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYMOTION2_STR, THING_TYPE_SHELLYMOTION_STR);
 
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED_STR);
     }
@@ -144,11 +145,19 @@ public class ShellyThingCreator {
 
         // Check general mapping
         if (!deviceType.isEmpty()) {
-            String res = THING_TYPE_MAPPING.get(deviceType);
+            String res = THING_TYPE_MAPPING.get(deviceType); // by device type
+            if (res != null) {
+                return res;
+            }
+
+            String dt = mode.equals(SHELLY_MODE_RELAY) || mode.equals(SHELLY_MODE_ROLLER) ? deviceType + "-" + mode
+                    : deviceType;
+            res = THING_TYPE_MAPPING.get(dt); // <DT>-relay / <DT>-roller
             if (res != null) {
                 return res;
             }
         }
+
         String res = THING_TYPE_MAPPING.get(type);
         if (res != null) {
             return res;
