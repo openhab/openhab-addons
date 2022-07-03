@@ -70,7 +70,7 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class SmartHomeDeviceHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(SmartHomeDeviceHandler.class);
+    private final static Logger logger = LoggerFactory.getLogger(SmartHomeDeviceHandler.class);
 
     private @Nullable SmartHomeBaseDevice smartHomeBaseDevice;
     private final Gson gson;
@@ -347,7 +347,6 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             if (shd.getCapabilities().stream().map(capability -> capability.interfaceName)
                     .anyMatch(SUPPORTED_INTERFACES::contains)) {
                 result.add(shd);
-
             }
         } else {
             SmartHomeGroup shg = (SmartHomeGroup) baseDevice;
