@@ -168,37 +168,37 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.energy[4] / 1000d), Units.AMPERE);
+                return new QuantityType<>((Double) (goeResponse.energy[4]), Units.AMPERE);
             case CURRENT_L2:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.energy[5] / 1000d), Units.AMPERE);
+                return new QuantityType<>((Double) (goeResponse.energy[5]), Units.AMPERE);
             case CURRENT_L3:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.energy[6] / 1000d), Units.AMPERE);
+                return new QuantityType<>((Double) (goeResponse.energy[6]), Units.AMPERE);
             case POWER_L1:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[7] * 1000, Units.WATT);
+                return new QuantityType<>(goeResponse.energy[7], Units.WATT);
             case POWER_L2:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[8] * 1000, Units.WATT);
+                return new QuantityType<>(goeResponse.energy[8], Units.WATT);
             case POWER_L3:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[9] * 1000, Units.WATT);
+                return new QuantityType<>(goeResponse.energy[9], Units.WATT);
             case POWER_ALL:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[11] * 1000, Units.WATT);
+                return new QuantityType<>(goeResponse.energy[11], Units.WATT);
             case FORCE_STATE:
                 if (goeResponse.forceState == null) {
                     return UnDefType.UNDEF;
