@@ -27,6 +27,7 @@ It provides features to control and view the current state of echo devices:
 - change the equalizer settings
 - get information about the next alarm, reminder and timer
 - send a message to the echo devices
+- control alexa smart thermostat
 
 It also provides features to control devices connected to your echo:
 
@@ -58,6 +59,7 @@ Some ideas what you can do in your home by using rules and other openHAB control
 - Change the equalizer settings depending on the bluetooth connection
 - Turn on a light on your alexa alarm time
 - Activate or deactivate the Alexa Guard with presence detection
+- Adjust thermostat setPoint and mode
 
 With the possibility to control your lights you could do:
 
@@ -452,6 +454,11 @@ The channels of the smarthome devices will be generated at runtime. Check in the
 | glassBreakDetectionState | Contact   | R           | smartHomeDevice | Glass break detection alarm
 | smokeAlarmDetectionState | Contact   | R           | smartHomeDevice | Smoke detection alarm
 | temperature              | Number    | R           | smartHomeDevice | Temperature
+| targetSetpoint           | Number    | R/W         | smartHomeDevice | Thermostat target setpoint
+| upperSetpoint            | Number    | R/W         | smartHomeDevice | Thermostat upper setpoint (AUTO)
+| lowerSetpoint            | Number    | R/W         | smartHomeDevice | Thermostat lower setpoint (AUTO)
+| relativeHumidity         | Number    | R           | smartHomeDevice | Thermostat humidity
+| thermostatMode           | String    | R/W         | smartHomeDevice | Thermostat operation mode
 
 ### Example
 
