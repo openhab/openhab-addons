@@ -28,7 +28,7 @@ public class GoEStatusResponseBaseDTO {
     public Integer maxCurrent;
 
     @SerializedName("nrg")
-    public Integer[] energy;
+    public Double[] energy;
 
     @SerializedName("err")
     public Integer errorCode;
