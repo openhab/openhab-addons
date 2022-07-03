@@ -1178,12 +1178,12 @@ public class Connection {
         JsonObject parameters = new JsonObject();
         parameters.addProperty("action", action);
         if (property != null) {
-            if (action == "setThermostatMode") {
+            if (action.equals("setThermostatMode")) {
                 if (value instanceof StringType) {
                     parameters.addProperty(property + ".value", value.toString());
                 }
-            } else if (action == "setTargetTemperature") {
-                if (property == "targetTemperature") {
+            } else if (action.equals("setTargetTemperature")) {
+                if (property.equals("targetTemperature")) {
                     if (value instanceof QuantityType<?>) {
                         parameters.addProperty(property + ".value", ((QuantityType<?>) value).floatValue());
                         parameters.addProperty(property + ".scale",
@@ -1194,7 +1194,7 @@ public class Connection {
                     try {
                         devices = getSmartHomeDeviceStatesJson(new HashSet<>(getSmarthomeDeviceList()));
                     } catch (URISyntaxException e) {
-                        logger.error(e.toString());
+                        logger.error("{}", e.toString());
                     }
                     Object applianceId = "AAA_SonarCloudService_00QAbw7vzYhdndv3-Sirp40Zargm3orQ0tKQK9sIKbqIM6-rFm3KsAnOKWApPNqtmzGL6cOR30mQrIwEQtDA";
                     JsonArray states = devices.get(applianceId);
@@ -1227,7 +1227,7 @@ public class Connection {
                             }
                         }
                     }
-                    if (property == "lowerSetTemperature") {
+                    if (property.equals("lowerSetTemperature")) {
                         if (value instanceof QuantityType<?>) {
                             parameters.addProperty("upperSetTemperature.value", upperSetpoint);
                             parameters.addProperty("upperSetTemperature.scale",
@@ -1238,7 +1238,7 @@ public class Connection {
                                     ((QuantityType<?>) value).getUnit().equals(SIUnits.CELSIUS) ? "celsius"
                                             : "fahrenheit");
                         }
-                    } else if (property == "upperSetTemperature") {
+                    } else if (property.equals("upperSetTemperature")) {
                         if (value instanceof QuantityType<?>) {
                             parameters.addProperty(property + ".value", ((QuantityType<?>) value).floatValue());
                             parameters.addProperty(property + ".scale",

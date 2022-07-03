@@ -81,7 +81,7 @@ public abstract class HandlerBase {
             if (properties != null) {
                 List<JsonSmartHomeCapabilities.Property> supported = Objects.requireNonNullElse(properties.supported,
                         List.of());
-                logger.trace(capability.toString() + " | " + supported.toString());
+                logger.trace("{} | {}", capability.toString(), supported.toString());
                 for (Property property : supported) {
                     String name = property.name;
                     if (name != null) {

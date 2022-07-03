@@ -75,7 +75,7 @@ public class HandlerTemperatureSensor extends HandlerBase {
     public void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         for (JsonObject state : stateList) {
             QuantityType<Temperature> temperatureValue = null;
-            logger.debug("Updating " + interfaceName + " with state: " + state.toString());
+            logger.debug("Updating {} with state: {}", interfaceName, state.toString());
             if (TEMPERATURE.propertyName.equals(state.get("name").getAsString())) {
                 JsonObject value = state.get("value").getAsJsonObject();
                 // For groups take the first

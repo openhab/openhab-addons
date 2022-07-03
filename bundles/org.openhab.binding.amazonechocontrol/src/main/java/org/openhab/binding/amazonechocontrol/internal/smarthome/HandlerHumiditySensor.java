@@ -74,7 +74,7 @@ public class HandlerHumiditySensor extends HandlerBase {
     public void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         for (JsonObject state : stateList) {
             State humidityValue = null;
-            logger.debug("Updating " + interfaceName + " with state: " + state.toString());
+            logger.debug("Updating {} with state: {}", interfaceName, state.toString());
             if (HUMIDITY.propertyName.equals(state.get("name").getAsString())) {
                 // For groups take the first
                 if (humidityValue == null) {

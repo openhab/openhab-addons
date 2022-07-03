@@ -94,7 +94,7 @@ public class HandlerThermostatController extends HandlerBase {
         for (JsonObject state : stateList) {
             QuantityType<Temperature> temperatureValue = null;
             StringType operationValue = null;
-            logger.debug("Updating " + interfaceName + " with state: " + state.toString());
+            logger.debug("Updating {} with state: {}", interfaceName, state.toString());
             if (TARGET_SETPOINT.propertyName.equals(state.get("name").getAsString())) {
                 // For groups take the first
                 if (temperatureValue == null) {
