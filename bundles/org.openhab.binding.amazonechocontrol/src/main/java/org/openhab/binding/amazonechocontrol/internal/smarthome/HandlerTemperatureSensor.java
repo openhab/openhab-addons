@@ -79,14 +79,12 @@ public class HandlerTemperatureSensor extends HandlerBase {
             if (TEMPERATURE.propertyName.equals(state.get("name").getAsString())) {
                 JsonObject value = state.get("value").getAsJsonObject();
                 // For groups take the first
-                if (temperatureValue == null) {
-                    float temperature = value.get("value").getAsFloat();
-                    String scale = value.get("scale").getAsString();
-                    if ("CELSIUS".equals(scale)) {
-                        temperatureValue = new QuantityType<Temperature>(temperature, SIUnits.CELSIUS);
-                    } else {
-                        temperatureValue = new QuantityType<Temperature>(temperature, ImperialUnits.FAHRENHEIT);
-                    }
+                float temperature = value.get("value").getAsFloat();
+                String scale = value.get("scale").getAsString();
+                if ("CELSIUS".equals(scale)) {
+                    temperatureValue = new QuantityType<Temperature>(temperature, SIUnits.CELSIUS);
+                } else {
+                    temperatureValue = new QuantityType<Temperature>(temperature, ImperialUnits.FAHRENHEIT);
                 }
                 updateState(TEMPERATURE.channelId, temperatureValue == null ? UnDefType.UNDEF : temperatureValue);
             }

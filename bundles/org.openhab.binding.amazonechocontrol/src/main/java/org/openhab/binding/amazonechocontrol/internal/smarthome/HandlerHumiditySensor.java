@@ -77,11 +77,8 @@ public class HandlerHumiditySensor extends HandlerBase {
             logger.debug("Updating {} with state: {}", interfaceName, state.toString());
             if (HUMIDITY.propertyName.equals(state.get("name").getAsString())) {
                 // For groups take the first
-                if (humidityValue == null) {
-                    // humidityValue = state.get("value").getAsInt();
-                    humidityValue = getQuantityTypeState(state.get("value").getAsInt(), PERCENT);
-                    updateState(HUMIDITY.channelId, humidityValue == null ? UnDefType.UNDEF : humidityValue);
-                }
+                humidityValue = getQuantityTypeState(state.get("value").getAsInt(), PERCENT);
+                updateState(HUMIDITY.channelId, humidityValue == null ? UnDefType.UNDEF : humidityValue);
             }
         }
     }

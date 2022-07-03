@@ -58,6 +58,7 @@ import com.google.gson.JsonSyntaxException;
 public class WebSocketConnection {
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnection.class);
     private final Gson gson = new Gson();
+    private final org.eclipse.jetty.client.HttpClient httpClient;
     private final WebSocketClient webSocketClient;
     private final IWebSocketCommandHandler webSocketCommandHandler;
     private final AmazonEchoControlWebSocket amazonEchoControlWebSocket;
@@ -73,10 +74,11 @@ public class WebSocketConnection {
             IWebSocketCommandHandler webSocketCommandHandler) throws IOException {
         this.webSocketCommandHandler = webSocketCommandHandler;
         amazonEchoControlWebSocket = new AmazonEchoControlWebSocket();
-        webSocketClient = new WebSocketClient(new SslContextFactory.Client());
+        httpClient = new org.eclipse.jetty.client.HttpClient(new SslContextFactory.Client());
+        webSocketClient = new WebSocketClient(httpClient);
         try {
             String host;
-            if (amazonSite.equalsIgnoreCase("amazon.com")) {
+            if ("amazon.com".equalsIgnoreCase(amazonSite)) {
                 host = "dp-gw-na-js." + amazonSite;
             } else {
                 host = "dp-gw-na." + amazonSite;

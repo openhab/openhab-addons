@@ -647,7 +647,7 @@ public class Connection {
                 for (Map.Entry<@Nullable String, List<String>> header : headerFields.entrySet()) {
                     String key = header.getKey();
                     if (key != null && !key.isEmpty()) {
-                        if (key.equalsIgnoreCase("Set-Cookie")) {
+                        if ("Set-Cookie".equalsIgnoreCase(key)) {
                             // store cookie
                             for (String cookieHeader : header.getValue()) {
                                 if (!cookieHeader.isEmpty()) {
@@ -658,7 +658,7 @@ public class Connection {
                                 }
                             }
                         }
-                        if (key.equalsIgnoreCase("Location")) {
+                        if ("Location".equalsIgnoreCase(key)) {
                             // get redirect location
                             location = header.getValue().get(0);
                             if (!location.isEmpty()) {
@@ -1178,12 +1178,12 @@ public class Connection {
         JsonObject parameters = new JsonObject();
         parameters.addProperty("action", action);
         if (property != null) {
-            if (action.equals("setThermostatMode")) {
+            if ("setThermostatMode".equals(action)) {
                 if (value instanceof StringType) {
                     parameters.addProperty(property + ".value", value.toString());
                 }
-            } else if (action.equals("setTargetTemperature")) {
-                if (property.equals("targetTemperature")) {
+            } else if ("setTargetTemperature".equals(action)) {
+                if ("targetTemperature".equals(property)) {
                     if (value instanceof QuantityType<?>) {
                         parameters.addProperty(property + ".value", ((QuantityType<?>) value).floatValue());
                         parameters.addProperty(property + ".scale",
@@ -1207,14 +1207,14 @@ public class Connection {
                                     .getAsString();
                             String name = Objects.requireNonNullElse(state.get("name"), JsonNull.INSTANCE)
                                     .getAsString();
-                            if (interfaceName.equals("Alexa.ThermostatController")) {
-                                if (name.equals("upperSetpoint")) {
+                            if ("Alexa.ThermostatController".equals(interfaceName)) {
+                                if ("upperSetpoint".equals(name)) {
                                     stateValue = Objects.requireNonNullElse(state.get("value"), JsonNull.INSTANCE)
                                             .getAsJsonObject();
                                     upperSetpoint = Objects
                                             .requireNonNullElse(stateValue.get("value"), JsonNull.INSTANCE)
                                             .getAsFloat();
-                                } else if (name.equals("lowerSetpoint")) {
+                                } else if ("lowerSetpoint".equals(name)) {
                                     stateValue = Objects.requireNonNullElse(state.get("value"), JsonNull.INSTANCE)
                                             .getAsJsonObject();
                                     lowerSetpoint = Objects
@@ -1227,7 +1227,7 @@ public class Connection {
                             }
                         }
                     }
-                    if (property.equals("lowerSetTemperature")) {
+                    if ("lowerSetTemperature".equals(property)) {
                         if (value instanceof QuantityType<?>) {
                             parameters.addProperty("upperSetTemperature.value", upperSetpoint);
                             parameters.addProperty("upperSetTemperature.scale",
@@ -1238,7 +1238,7 @@ public class Connection {
                                     ((QuantityType<?>) value).getUnit().equals(SIUnits.CELSIUS) ? "celsius"
                                             : "fahrenheit");
                         }
-                    } else if (property.equals("upperSetTemperature")) {
+                    } else if ("upperSetTemperature".equals(property)) {
                         if (value instanceof QuantityType<?>) {
                             parameters.addProperty(property + ".value", ((QuantityType<?>) value).floatValue());
                             parameters.addProperty(property + ".scale",
