@@ -140,7 +140,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
 
         if (handler != null) {
             String uid = thing.getUID().getAsString();
-            thingTable.addThing(uid, (ShellyThingInterface) handler);
+            thingTable.addThing(uid, handler);
             logger.debug("Thing handler for uid {} added, total things = {}", uid, thingTable.size());
             return handler;
         }

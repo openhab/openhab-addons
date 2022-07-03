@@ -46,7 +46,6 @@ import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotGenericSe
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensorTypeAdapter;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
-import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.unit.Units;
@@ -94,9 +93,9 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private ShellyDeviceProfile profile;
     private ShellyApiInterface api;
 
-    public ShellyCoapHandler(ShellyBaseHandler thingHandler, ShellyCoapServer coapServer) {
+    public ShellyCoapHandler(ShellyThingInterface thingHandler, ShellyCoapServer coapServer) {
         this.thingHandler = thingHandler;
-        this.thingName = thingHandler.thingName;
+        this.thingName = thingHandler.getThingName();
         this.profile = thingHandler.getProfile();
         this.api = thingHandler.getApi();
         this.coapServer = coapServer;
