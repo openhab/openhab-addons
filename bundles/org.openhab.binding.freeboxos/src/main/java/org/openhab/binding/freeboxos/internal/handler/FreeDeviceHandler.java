@@ -161,10 +161,9 @@ public abstract class FreeDeviceHandler extends HostHandler {
         try {
             internalCallReboot();
             triggerChannel(new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT), "reboot_requested");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
-                    "System rebooting, will take some seconds...");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "System rebooting...");
             stopRefreshJob();
-            scheduler.schedule(this::initialize, 10, TimeUnit.SECONDS);
+            scheduler.schedule(this::initialize, 30, TimeUnit.SECONDS);
         } catch (FreeboxException e) {
             logger.warn("Error rebooting device : {}", e.getMessage());
         }

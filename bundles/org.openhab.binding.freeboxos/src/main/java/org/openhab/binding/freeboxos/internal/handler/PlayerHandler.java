@@ -103,7 +103,7 @@ public class PlayerHandler extends FreeDeviceHandler {
                 try {
                     getManager(PlayerManager.class).sendKey(ip, remoteCode, aKey, longPress, count);
                 } catch (FreeboxException e) {
-                    logger.info("Error sending key", e.getMessage());
+                    logger.info("Error sending key : {}", e.getMessage());
                 }
             } else {
                 logger.warn("A remote code must be configured in the on the player thing.");

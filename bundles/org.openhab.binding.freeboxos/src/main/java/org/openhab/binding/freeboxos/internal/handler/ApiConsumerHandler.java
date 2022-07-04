@@ -144,7 +144,8 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
             int refreshInterval = getConfigAs(ApiConsumerConfiguration.class).refreshInterval;
             logger.debug("Scheduling state update every {} seconds for thing {}...", refreshInterval,
                     getThing().getUID());
-            if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.DUTY_CYCLE) {
+            ThingStatusDetail detail = thing.getStatusInfo().getStatusDetail();
+            if (ThingStatusDetail.DUTY_CYCLE.equals(detail)) {
                 boolean rebooting = true;
                 while (rebooting) {
                     try {
