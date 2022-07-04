@@ -50,7 +50,8 @@ import org.slf4j.LoggerFactory;
  * @author Guenther Schreiner - Initial contribution.
  */
 @NonNullByDefault
-class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProtocol, SlipBridgeCommunicationProtocol {
+public class SCgetHouseStatus extends GetHouseStatus
+        implements BridgeCommunicationProtocol, SlipBridgeCommunicationProtocol {
     private final Logger logger = LoggerFactory.getLogger(SCgetHouseStatus.class);
 
     private static final String DESCRIPTION = "Retrieve House Status";

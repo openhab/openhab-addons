@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Guenther Schreiner - Initial contribution.
  */
 @NonNullByDefault
-class SCgetProduct extends GetProduct implements SlipBridgeCommunicationProtocol {
+public class SCgetProduct extends GetProduct implements SlipBridgeCommunicationProtocol {
     private final Logger logger = LoggerFactory.getLogger(SCgetProduct.class);
 
     private static final String DESCRIPTION = "Retrieve Product";

@@ -39,11 +39,11 @@ import org.slf4j.LoggerFactory;
  * produce buggy values in their Functional Parameters when reporting their Vane Position.
  * <p>
  * This API set is the one used (for example) by Home Assistant.
- * 
+ *
  * @author Andrew Fiddian-Green - Initial contribution.
  */
 @NonNullByDefault
-class SCgetProductStatus extends GetProduct implements SlipBridgeCommunicationProtocol {
+public class SCgetProductStatus extends GetProduct implements SlipBridgeCommunicationProtocol {
     private final Logger logger = LoggerFactory.getLogger(SCgetProductStatus.class);
 
     private static final String DESCRIPTION = "Retrieve Product Status";
@@ -210,6 +210,11 @@ class SCgetProductStatus extends GetProduct implements SlipBridgeCommunicationPr
                         VeluxProductSerialNo.UNKNOWN, state, pos, pos, ntfFunctionalParameters, 0, 0);
 
                 success = true;
+                if (!isSequentialEnforced) {
+                    logger.trace(
+                            "setResponse(): skipping wait for more packets as sequential processing is not enforced.");
+                    finished = true;
+                }
                 break;
 
             case GW_SESSION_FINISHED_NTF:
