@@ -178,20 +178,21 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 LOGGER.warn("handleRefresh(): unknown actuator.");
                 break;
             }
-
-            VeluxProduct thisProduct = thisBridgeHandler.existingProducts().get(veluxActuator.getProductBridgeIndex());
             VeluxProductPosition mainPosition = VeluxProductPosition.UNKNOWN;
             FunctionalParameters functionalParameters = null;
 
             switch (channelId) {
                 case CHANNEL_VANE_POSITION:
                     if (command instanceof PercentType) {
+                        VeluxProduct product = thisBridgeHandler.existingProducts()
+                                .get(veluxActuator.getProductBridgeIndex()).clone();
                         VeluxProductPosition vanePosition = new VeluxProductPosition((PercentType) command);
-                        thisProduct.setVanePosition(vanePosition.getPositionAsVeluxType());
-                        functionalParameters = thisProduct.getFunctionalParameters();
+                        product.setVanePosition(vanePosition.getPositionAsVeluxType());
+                        functionalParameters = product.getFunctionalParameters();
                         mainPosition = new VeluxProductPosition();
                     }
                     break;
+
                 case CHANNEL_ACTUATOR_POSITION:
                     if (command instanceof UpDownType) {
                         mainPosition = UpDownType.UP.equals(command) ^ veluxActuator.isInverted()
@@ -207,6 +208,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                         mainPosition = new VeluxProductPosition(ptCommand);
                     }
                     break;
+
                 case CHANNEL_ACTUATOR_STATE:
                     if (command instanceof OnOffType) {
                         mainPosition = OnOffType.OFF.equals(command) ^ veluxActuator.isInverted()
@@ -214,6 +216,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                                 : new VeluxProductPosition(PercentType.HUNDRED);
                     }
                     break;
+
                 default:
                     // unknown channel => do nothing..
             }

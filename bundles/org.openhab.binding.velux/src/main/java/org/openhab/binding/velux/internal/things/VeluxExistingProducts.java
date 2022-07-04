@@ -115,7 +115,7 @@ public class VeluxExistingProducts {
     public boolean update(ProductBridgeIndex bridgeProductIndex, int productState, int productPosition,
             int productTarget, @Nullable FunctionalParameters productFunctionalParameters) {
         logger.debug(
-                "update(bridgeProductIndex={},productState={},productPosition={},productTarget={},functionalParameters={}) called.",
+                "update[B](bridgeProductIndex:{}, productState:{}, productPosition:{}, productTarget:{}, functionalParameters:{}) called.",
                 bridgeProductIndex.toInt(), productState, productPosition, productTarget, productFunctionalParameters);
         if (!isRegistered(bridgeProductIndex)) {
             logger.warn("update() failed as actuator (with index {}) is not registered.", bridgeProductIndex.toInt());
@@ -125,7 +125,7 @@ public class VeluxExistingProducts {
         dirty |= thisProduct.setState(productState);
         dirty |= thisProduct.setCurrentPosition(productPosition);
         dirty |= thisProduct.setTarget(productTarget);
-        if (productFunctionalParameters != null) {
+        if ((productFunctionalParameters != null) && thisProduct.supportsVanePosition()) {
             dirty |= thisProduct.setFunctionalParameters(productFunctionalParameters);
         }
         if (dirty) {
@@ -138,11 +138,10 @@ public class VeluxExistingProducts {
         return true;
     }
 
-    public boolean update(VeluxProduct currentProduct) {
-        logger.trace("update(currentProduct={}) called.", currentProduct);
-        return update(currentProduct.getBridgeProductIndex(), currentProduct.getState(),
-                currentProduct.getCurrentPosition(), currentProduct.getTarget(),
-                currentProduct.getFunctionalParameters());
+    public boolean update(VeluxProduct product) {
+        logger.trace("update[A](currentProduct={}) called.", product);
+        return update(product.getBridgeProductIndex(), product.getState(), product.getCurrentPosition(),
+                product.getTarget(), product.getFunctionalParameters());
     }
 
     public VeluxProduct get(String productUniqueIndex) {

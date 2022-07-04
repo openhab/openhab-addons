@@ -218,8 +218,11 @@ public class VeluxProduct {
     @Override
     public String toString() {
         if (this.v2) {
-            return String.format("Product \"%s\" / %s (bridgeIndex=%d,serial=%s,position=%04X)", this.name, this.typeId,
-                    this.bridgeProductIndex.toInt(), this.serialNumber, this.currentPosition);
+            FunctionalParameters functionalParameters = this.functionalParameters;
+            String functionalParametersString = functionalParameters == null ? "null" : functionalParameters.toString();
+            return String.format(
+                    "Product \"%s\" / %s (bridgeIndex=%d, serial=%s, position=%04X, functionalParameters=%s)", name,
+                    typeId, bridgeProductIndex.toInt(), serialNumber, currentPosition, functionalParametersString);
         } else {
             return String.format("Product \"%s\" / %s (bridgeIndex %d)", this.name, this.typeId,
                     this.bridgeProductIndex.toInt());
@@ -439,7 +442,7 @@ public class VeluxProduct {
      *
      * @return the index of the vane position Functional Parameter, or -1 if not supported.
      */
-    public int getVanePositionIndex() {
+    private int getVanePositionIndex() {
         switch (actuatorType) {
             case BLIND_1_0:
                 return 0;
@@ -450,6 +453,15 @@ public class VeluxProduct {
             default:
         }
         return -1;
+    }
+
+    /**
+     * Indicates if the actuator supports a vane position.
+     *
+     * @return true if vane position is supported.
+     */
+    public boolean supportsVanePosition() {
+        return getVanePositionIndex() >= 0;
     }
 
     /**
@@ -476,12 +488,12 @@ public class VeluxProduct {
     public void setVanePosition(int vanePosition) {
         int index = getVanePositionIndex();
         if ((index >= 0) && FunctionalParameters.isNormalPosition(vanePosition)) {
-            FunctionalParameters functionalParameters = this.functionalParameters = new FunctionalParameters();
+            functionalParameters = new FunctionalParameters();
             functionalParameters.setValue(index, vanePosition);
         } else {
             functionalParameters = null;
-            logger.info("setVanePosition(): actuator type '{}' ({}) does not support vane position {}.",
-                    actuatorType.getNodeType(), actuatorType.getDescription(), vanePosition);
+            logger.info("setVanePosition(): actuator type {} ({}) does not support vane position {}.",
+                    ActuatorType.get(actuatorType.getNodeType()), actuatorType.getDescription(), vanePosition);
         }
     }
 
