@@ -136,15 +136,13 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     private synchronized void updateState() {
         logger.trace("Update state for device: {}", getThing().getThingTypeUID().getId());
         if (!lastReceivedValues.isEmpty()) {
-            for (CosemObject cosemObject : lastReceivedValues) {
-                String channel = cosemObject.getType().name().toLowerCase();
+            for (final CosemObject cosemObject : lastReceivedValues) {
+                for (final Entry<String, ? extends State> entry : cosemObject.getCosemValues().entrySet()) {
+                    final String channel = cosemObject.getType().name().toLowerCase()
+                            /* CosemObject has a specific sub channel if key not empty */
+                            + (entry.getKey().isEmpty() ? "" : "_" + entry.getKey());
 
-                for (Entry<String, ? extends State> entry : cosemObject.getCosemValues().entrySet()) {
-                    if (!entry.getKey().isEmpty()) {
-                        /* CosemObject has a specific sub channel */
-                        channel += "_" + entry.getKey();
-                    }
-                    State newState = entry.getValue();
+                    final State newState = entry.getValue();
                     logger.debug("Updating state for channel {} to value {}", channel, newState);
                     updateState(channel, newState);
                 }
