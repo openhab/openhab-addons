@@ -49,7 +49,9 @@ By default both remote access and push notifications are enabled.
 
 For private hosted myopenHAB installations, the base URL can be changed to point another cloud instance.
 
-Private hosted myopenHAB installations may enable selected items in openHAB to have their state updates pushed to the cloud service for integrations with services like IFTTT.  Note that this is not supported on the community hosted myopenHAB service due to high load concerns and will have no effect if enabled with the default URL configured.  This is also not required for remote access through the cloud service to function.
+Private hosted myopenHAB installations may enable selected items in openHAB to have their state updates pushed to the cloud service for integrations with services like IFTTT.
+Note that this is not supported on the community hosted myopenHAB service due to high load concerns and will have no effect if enabled with the default URL configured.
+This is also not required for remote access through the cloud service to function.
 
 Alternatively, you can configure the settings in the file `conf/services/openhabcloud.cfg`:
 
