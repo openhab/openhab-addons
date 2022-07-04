@@ -77,7 +77,7 @@ public class SCgetProductStatus extends GetProduct implements SlipBridgeCommunic
     private int ntfState;
     private int ntfCurrentPosition;
     private final int ntfTarget = VeluxProductPosition.VPP_VELUX_IGNORE; // final because no value is returned
-                                                                                 // by this BCP
+                                                                         // by this BCP
     private @Nullable FunctionalParameters ntfFunctionalParameters;
 
     public SCgetProductStatus() {
@@ -263,8 +263,7 @@ public class SCgetProductStatus extends GetProduct implements SlipBridgeCommunic
     @Override
     public VeluxProduct getProduct() {
         return success
-                ? new VeluxProduct(ntfName, ntfNodeID, ntfState, ntfCurrentPosition, ntfTarget,
-                        ntfFunctionalParameters)
+                ? new VeluxProduct(ntfName, ntfNodeID, ntfState, ntfCurrentPosition, ntfTarget, ntfFunctionalParameters)
                 : VeluxProduct.UNKNOWN;
     }
 }
