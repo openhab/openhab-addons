@@ -515,8 +515,9 @@ public class VeluxProduct {
     public void setVanePosition(int vanePosition) {
         int index = getVanePositionIndex();
         if ((index >= 0) && FunctionalParameters.isNormalPosition(vanePosition)) {
-            functionalParameters = new FunctionalParameters();
+            FunctionalParameters functionalParameters = new FunctionalParameters();
             functionalParameters.setValue(index, vanePosition);
+            this.functionalParameters = functionalParameters;
         } else {
             functionalParameters = null;
             logger.info("setVanePosition(): actuator type {} ({}) does not support vane position {}.",
