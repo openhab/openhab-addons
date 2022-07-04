@@ -85,5 +85,4 @@ public class PlayerManager extends ListableRest<Player, PlayerResponse, PlayersR
     public void reboot(int id) throws FreeboxException {
         post(subPaths.get(id), SYSTEM_SUB_PATH, REBOOT_SUB_PATH);
     }
-
 }

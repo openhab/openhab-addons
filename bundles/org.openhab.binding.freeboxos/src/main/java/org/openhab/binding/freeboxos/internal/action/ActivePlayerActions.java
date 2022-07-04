@@ -63,6 +63,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.handler.ActivePlayerHandler;
 import org.openhab.binding.freeboxos.internal.handler.PlayerHandler;
 import org.openhab.core.automation.annotation.RuleAction;
+import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,5 +89,9 @@ public class ActivePlayerActions extends PlayerActions {
             logger.warn("Freebox Player Action service ThingHandler is null!");
         }
 >>>>>>> 46dadb1 SAT warnings handling
+    }
+
+    public static void reboot(ThingActions actions) {
+        ((ActivePlayerActions) actions).reboot();
     }
 }
