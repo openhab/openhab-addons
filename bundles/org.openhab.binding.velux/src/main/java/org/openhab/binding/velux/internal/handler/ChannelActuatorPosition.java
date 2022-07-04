@@ -111,22 +111,24 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
             }
 
             int posValue;
-            VeluxProduct product = bcp.getProduct();
+            VeluxProduct newProduct = bcp.getProduct();
             switch (channelId) {
                 case CHANNEL_VANE_POSITION:
-                    product.setActuatorType(thisBridgeHandler.existingProducts()
-                            .get(veluxActuator.getProductBridgeIndex()).getActuatorType());
+                    VeluxProduct oldProduct = thisBridgeHandler.existingProducts()
+                            .get(newProduct.getBridgeProductIndex());
+                    newProduct.setActuatorType(oldProduct.getActuatorType());
+                    newProduct.setTarget(oldProduct.getTarget());
                     /*
                      * For vanes we have to explicitly update the existing product state (specifically its functional
                      * parameters) here, since the functional parameters are specifically IGNORED when the
                      * SlipVeluxBridge.bridgeDirectCommunicate() method processes any normal
                      * GW_NODE_STATE_POSITION_CHANGED_NTF state notifications.
                      */
-                    thisBridgeHandler.existingProducts().update(product);
-                    posValue = product.getVanePosition();
+                    thisBridgeHandler.existingProducts().update(newProduct);
+                    posValue = newProduct.getVanePosition();
                     break;
                 default:
-                    posValue = product.getDisplayPosition();
+                    posValue = newProduct.getDisplayPosition();
             }
             VeluxProductPosition position = new VeluxProductPosition(posValue);
 

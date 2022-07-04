@@ -28,7 +28,6 @@ import org.openhab.binding.velux.internal.bridge.slip.utils.SlipRFC1055;
 import org.openhab.binding.velux.internal.development.Threads;
 import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
-import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -358,16 +357,7 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                     SCgetHouseStatus receiver = new SCgetHouseStatus();
                     receiver.setResponse(rxCmd, rxData, isSequentialEnforced);
                     if (receiver.isCommunicationSuccessful()) {
-                        /*
-                         * Ignore Functional Parameters in GW_NODE_STATE_POSITION_CHANGED_NTF, since some (e.g. Somfy)
-                         * devices provide buggy values.
-                         *
-                         * NOTE: this means we must explicitly update the functional parameters in the
-                         * ChannelActuatorPosition.handleRefresh() method instead.
-                         */
-                        bridgeInstance.existingProducts().update(new ProductBridgeIndex(receiver.getNtfNodeID()),
-                                receiver.getNtfState(), receiver.getNtfCurrentPosition(), receiver.getNtfTarget(),
-                                null);
+                        bridgeInstance.existingProducts().update(receiver.getProduct());
                         logger.trace(loggerFmt, rxName, "=> special command", "=> product updated");
                         if (rcvonly) {
                             // receive-only: return success to confirm that product(s) were updated

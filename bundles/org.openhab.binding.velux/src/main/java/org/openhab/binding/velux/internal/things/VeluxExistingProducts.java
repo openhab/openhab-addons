@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
@@ -112,21 +111,27 @@ public class VeluxExistingProducts {
         return true;
     }
 
-    public boolean update(ProductBridgeIndex bridgeProductIndex, int productState, int productPosition,
-            int productTarget, @Nullable FunctionalParameters productFunctionalParameters) {
+    public boolean update(VeluxProduct newProduct) {
+        ProductBridgeIndex productBridgeIndex = newProduct.getBridgeProductIndex();
+        int newState = newProduct.getState();
+        int newCurrentPosition = newProduct.getCurrentPosition();
+        int newTarget = newProduct.getTarget();
+        FunctionalParameters newFunctionalParameters = newProduct.getFunctionalParameters();
         logger.debug(
-                "update[B](bridgeProductIndex:{}, productState:{}, productPosition:{}, productTarget:{}, functionalParameters:{}) called.",
-                bridgeProductIndex.toInt(), productState, productPosition, productTarget, productFunctionalParameters);
-        if (!isRegistered(bridgeProductIndex)) {
-            logger.warn("update() failed as actuator (with index {}) is not registered.", bridgeProductIndex.toInt());
+                "update(productBridgeIndex:{}, state:{}, currentPosition:{}, target:{}, functionalParameters:{}) called.",
+                productBridgeIndex.toInt(), newState, newCurrentPosition, newTarget, newFunctionalParameters);
+        if (!isRegistered(productBridgeIndex)) {
+            logger.warn("update() failed as actuator (with index {}) is not registered.", productBridgeIndex.toInt());
             return false;
         }
-        VeluxProduct thisProduct = this.get(bridgeProductIndex);
-        dirty |= thisProduct.setState(productState);
-        dirty |= thisProduct.setCurrentPosition(productPosition);
-        dirty |= thisProduct.setTarget(productTarget);
-        if ((productFunctionalParameters != null) && thisProduct.supportsVanePosition()) {
-            dirty |= thisProduct.setFunctionalParameters(productFunctionalParameters);
+        VeluxProduct thisProduct = this.get(productBridgeIndex);
+        dirty |= thisProduct.setState(newState);
+        dirty |= thisProduct.setCurrentPosition(newCurrentPosition);
+        if (newTarget != VeluxProductPosition.VPP_VELUX_IGNORE) {
+            dirty |= thisProduct.setTarget(newTarget);
+        }
+        if (thisProduct.supportsVanePosition() && (newFunctionalParameters != null)) {
+            dirty |= thisProduct.setFunctionalParameters(newFunctionalParameters);
         }
         if (dirty) {
             String uniqueIndex = thisProduct.getProductUniqueIndex();
@@ -136,12 +141,6 @@ public class VeluxExistingProducts {
         }
         logger.trace("update() successfully finished (dirty={}).", dirty);
         return true;
-    }
-
-    public boolean update(VeluxProduct product) {
-        logger.trace("update[A](currentProduct={}) called.", product);
-        return update(product.getBridgeProductIndex(), product.getState(), product.getCurrentPosition(),
-                product.getTarget(), product.getFunctionalParameters());
     }
 
     public VeluxProduct get(String productUniqueIndex) {

@@ -21,9 +21,7 @@ import org.openhab.binding.velux.internal.bridge.slip.SCgetProduct;
 import org.openhab.binding.velux.internal.bridge.slip.SCgetProductStatus;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
-import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
-import org.openhab.binding.velux.internal.things.VeluxProductName;
-import org.openhab.binding.velux.internal.things.VeluxProductType;
+import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.openhab.binding.velux.internal.things.VeluxProductType.ActuatorType;
 
 /**
@@ -37,7 +35,6 @@ class VanePositionTests {
     private static final byte PRODUCT_INDEX = 6;
     private static final int MAIN_POSITION_TARGET = 0xC800;
     private static final int VANE_POSITION_TARGET = 0x634f;
-    private static final int VANE_POSITION_BAD = 0;
     private static final ActuatorType ACTUATOR_TYPE = ActuatorType.BLIND_17;
 
     private static byte[] toByteArray(String input) {
@@ -89,6 +86,7 @@ class VanePositionTests {
         assertTrue(bcp.isCommunicationSuccessful());
         assertTrue(bcp.isCommunicationFinished());
         assertEquals(MAIN_POSITION_TARGET, product.getCurrentPosition());
+        assertEquals(VeluxProductPosition.VPP_VELUX_IGNORE, product.getTarget());
         assertEquals(PRODUCT_INDEX, product.getBridgeProductIndex().toInt());
         assertEquals(ACTUATOR_TYPE, product.getActuatorType());
         assertEquals(VANE_POSITION_TARGET, product.getVanePosition());
@@ -124,9 +122,10 @@ class VanePositionTests {
 
         // check positive assertions
         assertEquals(MAIN_POSITION_TARGET, product.getCurrentPosition());
+        assertEquals(MAIN_POSITION_TARGET, product.getTarget());
         assertEquals(PRODUCT_INDEX, product.getBridgeProductIndex().toInt());
         assertEquals(ACTUATOR_TYPE, product.getActuatorType());
-        assertEquals(VANE_POSITION_BAD, product.getVanePosition());
+        assertEquals(VeluxProductPosition.VPP_VELUX_UNKNOWN, product.getVanePosition());
 
         // check negative assertions
         assertNotEquals(VANE_POSITION_TARGET, product.getVanePosition());
@@ -152,19 +151,15 @@ class VanePositionTests {
         assertTrue(bcp.isCommunicationFinished());
 
         // post initialise the product
-        VeluxProduct product = new VeluxProduct(new VeluxProductName(bcp.name()), VeluxProductType.SLIDER_SHUTTER,
-                new ProductBridgeIndex(bcp.getNtfNodeID()));
+        VeluxProduct product = bcp.getProduct();
         product.setActuatorType(ACTUATOR_TYPE);
-        product.setCurrentPosition(bcp.getNtfCurrentPosition());
-        product.setTarget(bcp.getNtfTarget());
-        product.setFunctionalParameters(bcp.getFunctionalParameters());
 
         // check positive assertions
         assertEquals(MAIN_POSITION_TARGET, product.getCurrentPosition());
         assertEquals(MAIN_POSITION_TARGET, product.getTarget());
         assertEquals(PRODUCT_INDEX, product.getBridgeProductIndex().toInt());
         assertEquals(ACTUATOR_TYPE, product.getActuatorType());
-        assertEquals(VANE_POSITION_BAD, product.getVanePosition());
+        assertEquals(VeluxProductPosition.VPP_VELUX_UNKNOWN, product.getVanePosition());
 
         // check negative assertions
         assertNotEquals(VANE_POSITION_TARGET, product.getVanePosition());

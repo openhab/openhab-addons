@@ -15,18 +15,14 @@ package org.openhab.binding.velux.internal.bridge.slip;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.common.GetProduct;
 import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
-import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
-import org.openhab.binding.velux.internal.things.VeluxProductName;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
-import org.openhab.binding.velux.internal.things.VeluxProductSerialNo;
-import org.openhab.binding.velux.internal.things.VeluxProductType;
-import org.openhab.binding.velux.internal.things.VeluxProductType.ActuatorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +72,13 @@ public class SCgetProductStatus extends GetProduct implements SlipBridgeCommunic
     private boolean success = false;
     private boolean finished = false;
 
-    private VeluxProduct product = VeluxProduct.UNKNOWN;
+    private final String ntfName = getClass().getName();
+    private int ntfNodeID;
+    private int ntfState;
+    private int ntfCurrentPosition;
+    private final int ntfTarget = VeluxProductPosition.VPP_VELUX_IGNORE; // final because no value is returned
+                                                                                 // by this BCP
+    private @Nullable FunctionalParameters ntfFunctionalParameters;
 
     public SCgetProductStatus() {
         logger.debug("SCgetProductStatus(Constructor) called.");
@@ -160,19 +162,19 @@ public class SCgetProductStatus extends GetProduct implements SlipBridgeCommunic
                 // Extracting information items
                 int ntfSessionID = responseData.getTwoByteValue(0);
                 int ntfStatusID = responseData.getOneByteValue(2);
-                int ntfNodeId = responseData.getOneByteValue(3);
+                ntfNodeID = responseData.getOneByteValue(3);
                 int ntfRunStatus = responseData.getOneByteValue(4);
                 int ntfStatusReply = responseData.getOneByteValue(5);
                 int ntfStatusType = responseData.getOneByteValue(6);
                 int ntfStatusCount = responseData.getOneByteValue(7);
                 int ntfFirstParameterIndex = responseData.getOneByteValue(8);
                 int ntfFirstParameter = responseData.getTwoByteValue(9);
-                FunctionalParameters ntfFunctionalParameters = FunctionalParameters.readArrayIndexed(responseData, 11);
+                ntfFunctionalParameters = FunctionalParameters.readArrayIndexed(responseData, 11);
 
                 if (logger.isTraceEnabled()) {
                     logger.trace("setResponse(): ntfSessionID={}.", ntfSessionID);
                     logger.trace("setResponse(): ntfStatusID={}.", ntfStatusID);
-                    logger.trace("setResponse(): ntfNodeId={}.", ntfNodeId);
+                    logger.trace("setResponse(): ntfNodeID={}.", ntfNodeID);
                     logger.trace("setResponse(): ntfRunStatus={}.", ntfRunStatus);
                     logger.trace("setResponse(): ntfStatusReply={}.", ntfStatusReply);
                     logger.trace("setResponse(): ntfStatusType={}.", ntfStatusType);
@@ -182,32 +184,26 @@ public class SCgetProductStatus extends GetProduct implements SlipBridgeCommunic
                     logger.trace("setResponse(): ntfFunctionalParameters={}.", ntfFunctionalParameters);
                 }
 
-                if (!KLF200Response.check4matchingNodeID(logger, reqNodeId, ntfNodeId)) {
+                if (!KLF200Response.check4matchingNodeID(logger, reqNodeId, ntfNodeID)) {
                     break;
                 }
 
-                int pos;
                 if ((ntfStatusCount > 0) && (ntfFirstParameterIndex == 0)) {
-                    pos = ntfFirstParameter;
+                    ntfCurrentPosition = ntfFirstParameter;
                 } else {
-                    pos = VeluxProductPosition.VPP_VELUX_UNKNOWN;
+                    ntfCurrentPosition = VeluxProductPosition.VPP_VELUX_UNKNOWN;
                 }
 
-                int state;
                 switch (ntfRunStatus) {
                     case 1:
-                        state = 1;
+                        ntfState = 1;
                         break;
                     case 2:
-                        state = 4;
+                        ntfState = 4;
                         break;
                     default:
-                        state = 2;
+                        ntfState = 2;
                 }
-
-                product = new VeluxProduct(new VeluxProductName(responseCmd.name()), VeluxProductType.UNDEFTYPE,
-                        ActuatorType.UNDEFTYPE, new ProductBridgeIndex(ntfNodeId), ntfNodeId, 0, 0, 0, 0,
-                        VeluxProductSerialNo.UNKNOWN, state, pos, pos, ntfFunctionalParameters, 0, 0);
 
                 success = true;
                 if (!isSequentialEnforced) {
@@ -259,9 +255,16 @@ public class SCgetProductStatus extends GetProduct implements SlipBridgeCommunic
         reqNodeId = nodeId;
     }
 
+    /**
+     * Return a skeleton product instance with the newly received values in it.
+     *
+     * @return the skeleton product instance with the updated data values.
+     */
     @Override
     public VeluxProduct getProduct() {
-        logger.trace("getProduct(): returning {}.", product);
-        return product;
+        return success
+                ? new VeluxProduct(ntfName, ntfNodeID, ntfState, ntfCurrentPosition, ntfTarget,
+                        ntfFunctionalParameters)
+                : VeluxProduct.UNKNOWN;
     }
 }

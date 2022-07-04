@@ -20,6 +20,7 @@ import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
+import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,11 +74,13 @@ public class SCgetHouseStatus extends GetHouseStatus
     private boolean success = false;
     private boolean finished = false;
 
+    private final String ntfName = getClass().getName();
     private int ntfNodeID;
     private int ntfState;
     private int ntfCurrentPosition;
     private int ntfTarget;
-    private @Nullable FunctionalParameters ntfFunctionalParameters = null;
+    private final @Nullable FunctionalParameters ntfFunctionalParameters = null; // final because some devices (e.g.
+                                                                                 // Somfy) return bad data on this BCP
 
     /*
      * ===========================================================
@@ -115,7 +118,7 @@ public class SCgetHouseStatus extends GetHouseStatus
                 ntfState = responseData.getOneByteValue(1);
                 ntfCurrentPosition = responseData.getTwoByteValue(2);
                 ntfTarget = responseData.getTwoByteValue(4);
-                ntfFunctionalParameters = FunctionalParameters.readArray(responseData, 6);
+                FunctionalParameters ntfFunctionalParameters = FunctionalParameters.readArray(responseData, 6);
                 int ntfRemainingTime = responseData.getTwoByteValue(14);
                 int ntfTimeStamp = responseData.getFourByteValue(16);
 
@@ -124,7 +127,8 @@ public class SCgetHouseStatus extends GetHouseStatus
                     logger.trace("setResponse(): ntfState={}.", ntfState);
                     logger.trace("setResponse(): ntfCurrentPosition={}.", String.format("0x%04X", ntfCurrentPosition));
                     logger.trace("setResponse(): ntfTarget={}.", String.format("0x%04X", ntfTarget));
-                    logger.trace("setResponse(): ntfFunctionalParameters={}.", ntfFunctionalParameters);
+                    logger.trace("setResponse(): ntfFunctionalParameters={} => {}.", ntfFunctionalParameters,
+                            this.ntfFunctionalParameters);
                     logger.trace("setResponse(): ntfRemainingTime={}.", ntfRemainingTime);
                     logger.trace("setResponse(): ntfTimeStamp={}.", ntfTimeStamp);
                 }
@@ -154,38 +158,13 @@ public class SCgetHouseStatus extends GetHouseStatus
      */
 
     /**
-     * @return <b>ntfNodeID</b> returns the Actuator Id as int.
+     * Return a skeleton product instance with the newly received values in it.
+     *
+     * @return the skeleton product instance with the updated data values.
      */
-    public int getNtfNodeID() {
-        return ntfNodeID;
-    }
-
-    /**
-     * @return <b>ntfState</b> returns the state of the Actuator as int.
-     */
-    public int getNtfState() {
-        return ntfState;
-    }
-
-    /**
-     * @return <b>ntfCurrentPosition</b> returns the current position of the Actuator as int.
-     */
-    public int getNtfCurrentPosition() {
-        return ntfCurrentPosition;
-    }
-
-    /**
-     * @return <b>ntfTarget</b> returns the target position of the Actuator as int.
-     */
-    public int getNtfTarget() {
-        return ntfTarget;
-    }
-
-    /**
-     * @return <b>ntfFunctionalParameters</b> returns the Functional Parameters.
-     */
-    public @Nullable FunctionalParameters getFunctionalParameters() {
-        FunctionalParameters functionalParameters = ntfFunctionalParameters;
-        return functionalParameters != null ? functionalParameters.clone() : null;
+    public VeluxProduct getProduct() {
+        return success
+                ? new VeluxProduct(ntfName, ntfNodeID, ntfState, ntfCurrentPosition, ntfTarget, ntfFunctionalParameters)
+                : VeluxProduct.UNKNOWN;
     }
 }
