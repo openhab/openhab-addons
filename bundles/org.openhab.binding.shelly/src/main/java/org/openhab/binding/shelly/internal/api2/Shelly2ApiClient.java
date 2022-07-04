@@ -360,7 +360,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         status.emeters.set(cs.id, emeter);
 
         postAlarms(cs.errors);
-        if (rs.calibrating) {
+        if (rs.calibrating != null && rs.calibrating) {
             getThing().postEvent(SHELLY_EVENT_ROLLER_CALIB, false);
         }
 
@@ -497,14 +497,13 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     protected Shelly2AuthRequest buildAuthRequest(Shelly2AuthResponse authParm, String user, String realm,
             String password) throws ShellyApiException {
         Shelly2AuthRequest authReq = new Shelly2AuthRequest();
-        authParm.nc = 1;
+        authParm.nc = authParm.nc == null ? 1 : authParm.nc;
         authReq.username = "admin";
         authReq.realm = realm;
         authReq.nonce = authParm.nonce;
         authReq.cnonce = (long) Math.floor(Math.random() * 10e8);
-        authReq.algorithm = authParm.algorithm;
-
-        String ha1 = sha256(authReq.username + ":" + realm + ":" + password);
+        authReq.algorithm = "SHA-256";
+        String ha1 = sha256(authReq.username + ":" + authReq.realm + ":" + password);
         String ha2 = sha256("dummy_method:dummy_uri");
         authReq.response = sha256(
                 ha1 + ":" + authReq.nonce + ":" + authParm.nc + ":" + authReq.cnonce + ":" + "auth" + ":" + ha2);
