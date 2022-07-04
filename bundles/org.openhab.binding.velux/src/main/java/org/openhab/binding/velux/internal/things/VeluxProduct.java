@@ -181,23 +181,26 @@ public class VeluxProduct {
      * Constructs a skeleton product to be used as a data transfer object for updating some state fields to another
      * (fully specified) product.
      *
-     * @param name the product name (temporary name for the dto).
-     * @param productBridgeIndex the product bridge index.
+     * @param name the product name (temporary name for the skeleton DTO).
+     * @param index the product bridge index.
      * @param state the new state.
      * @param currentPosition the new current position.
-     * @param targetPosition the new target position.
+     * @param target the new target position.
      * @param functionalParameters the new functional parameters.
      */
-    public VeluxProduct(String name, int productBridgeIndex, int state, int currentPosition, int targetPosition,
+    public VeluxProduct(String name, int index, int state, int currentPosition, int target,
             @Nullable FunctionalParameters functionalParameters) {
+        logger.trace(
+                "VeluxProduct(name:{}, index:{}, state:{}, currentPosition:{}, target:{}, functionalParameters:{}) (skeleton) created.",
+                name, index, state, currentPosition, target, functionalParameters);
         this.v2 = true;
         this.typeId = VeluxProductType.UNDEFTYPE;
         this.actuatorType = ActuatorType.UNDEFTYPE;
         this.name = new VeluxProductName(name);
-        this.bridgeProductIndex = new ProductBridgeIndex(productBridgeIndex);
+        this.bridgeProductIndex = new ProductBridgeIndex(index);
         this.state = state;
         this.currentPosition = currentPosition;
-        this.targetPosition = targetPosition;
+        this.targetPosition = target;
         this.functionalParameters = functionalParameters != null ? functionalParameters.clone() : null;
     }
 
