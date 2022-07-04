@@ -121,6 +121,14 @@ public class BoschIndegoHandler extends BaseThingHandler {
             pollFuture.cancel(true);
         }
         this.cuttingTimeMapPollFuture = null;
+
+        scheduler.execute(() -> {
+            try {
+                controller.deauthenticate();
+            } catch (IndegoException e) {
+                logger.debug("Deauthentication failed", e);
+            }
+        });
     }
 
     @Override
