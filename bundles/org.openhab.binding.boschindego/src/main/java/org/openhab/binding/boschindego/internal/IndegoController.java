@@ -168,6 +168,21 @@ public class IndegoController {
     }
 
     /**
+     * Deauthenticate session. This method should be called as part of cleanup to reduce
+     * lingering sessions. This can potentially avoid killed sessions in situation with
+     * multiple clients (e.g. openHAB and mobile app) if restrictions on concurrent
+     * number of sessions would be put on the service.
+     *
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public void deauthenticate() throws IndegoException {
+        if (session.isValid()) {
+            deleteRequest("authenticate");
+            session.invalidate();
+        }
+    }
+
+    /**
      * Wraps {@link #getRequest(String, Class)} into an authenticated session.
      *
      * @param path the relative path to which the request should be sent
@@ -428,6 +443,32 @@ public class IndegoController {
                     throw new IndegoAuthenticationException("Context rejected", e);
                 }
             }
+            throw new IndegoException(e);
+        }
+    }
+
+    /**
+     * Sends a DELETE request to the server.
+     * 
+     * @param path the relative path to which the request should be sent
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    private void deleteRequest(String path) throws IndegoException {
+        try {
+            Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.DELETE)
+                    .header(CONTEXT_HEADER_NAME, session.getContextId());
+            if (logger.isTraceEnabled()) {
+                logger.trace("DELETE request for {}", BASE_URL + path);
+            }
+            ContentResponse response = sendRequest(request);
+            int status = response.getStatus();
+            if (!HttpStatus.isSuccess(status)) {
+                throw new IndegoException("The request failed with error: " + status);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IndegoException(e);
+        } catch (TimeoutException | ExecutionException e) {
             throw new IndegoException(e);
         }
     }
