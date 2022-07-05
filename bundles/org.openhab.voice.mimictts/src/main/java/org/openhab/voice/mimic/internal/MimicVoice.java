@@ -13,6 +13,7 @@
 package org.openhab.voice.mimic.internal;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -49,7 +50,7 @@ public class MimicVoice implements Voice {
      */
     @Override
     public String getUID() {
-        return "mimictts:" + getTechnicalName().replaceAll("[^a-zA-Z0-9_]", "");
+        return "mimictts:" + getTechnicalName().replaceAll("[^a-zA-Z0-9_]", "_");
     }
 
     /**
@@ -57,18 +58,38 @@ public class MimicVoice implements Voice {
      *
      * @return A String voice technical name
      */
-    String getTechnicalName() {
+    public String getTechnicalName() {
         String speakerId = (speaker != null) ? "#" + speaker : "";
         return (key + speakerId);
     }
 
     @Override
     public String getLabel() {
-        return name + ((speaker != null) ? "#" + speaker : "");
+        return name + ((speaker != null) ? " (" + speaker + ")" : "");
     }
 
     @Override
     public Locale getLocale() {
         return locale;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTechnicalName());
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        MimicVoice other = (MimicVoice) obj;
+        return Objects.equals(getTechnicalName(), other.getTechnicalName());
     }
 }

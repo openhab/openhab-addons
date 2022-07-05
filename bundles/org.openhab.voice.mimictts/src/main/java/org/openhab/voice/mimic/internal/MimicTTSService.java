@@ -16,14 +16,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,16 +35,15 @@ import org.openhab.core.voice.TTSService;
 import org.openhab.core.voice.Voice;
 import org.openhab.voice.mimic.internal.dto.VoiceDto;
 import org.osgi.framework.Constants;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Mimic Voice service implementation.
@@ -83,33 +78,18 @@ public class MimicTTSService implements TTSService {
 
     /** The only wave format supported */
     private static final AudioFormat AUDIO_FORMAT = new AudioFormat(AudioFormat.CONTAINER_WAVE,
-            AudioFormat.CODEC_PCM_SIGNED, false, 16, 52000, 22050L, 1);;
+            AudioFormat.CODEC_PCM_SIGNED, false, 16, 52000, 22050L, 1);
+
+    private Set<Voice> availableVoices = new HashSet<>();
 
     /**
      * Logger.
      */
     private final Logger logger = LoggerFactory.getLogger(MimicTTSService.class);
 
-    private final MimicConfiguration config;
+    private final MimicConfiguration config = new MimicConfiguration();
 
     private final Gson gson = new GsonBuilder().create();
-
-    @Activate
-    public MimicTTSService(final @Reference ConfigurationAdmin configAdmin) {
-        Dictionary<String, Object> dict;
-        config = new MimicConfiguration();
-        try {
-            dict = configAdmin.getConfiguration(SERVICE_PID).getProperties();
-            if (dict != null) {
-                // convert dict to map :
-                Map<String, Object> dictCopy = Collections.list(dict.keys()).stream()
-                        .collect(Collectors.toMap(Function.identity(), dict::get));
-                updateConfig(dictCopy);
-            }
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
 
     @Activate
     protected void activate(Map<String, Object> config) {
@@ -124,6 +104,7 @@ public class MimicTTSService implements TTSService {
     @Modified
     private void updateConfig(Map<String, Object> newConfig) {
         logger.debug("Updating configuration");
+
         // client id
         Object param = newConfig.get(PARAM_URL);
         if (param == null) {
@@ -131,23 +112,38 @@ public class MimicTTSService implements TTSService {
         } else {
             config.url = param.toString();
         }
+
         // audio volatility
-        param = newConfig.get(PARAM_AUDIOVOLATITLITY);
-        if (param != null) {
-            config.audioVolatility = Double.parseDouble(param.toString());
+        try {
+            param = newConfig.get(PARAM_AUDIOVOLATITLITY);
+            if (param != null) {
+                config.audioVolatility = Double.parseDouble(param.toString());
+            }
+        } catch (NumberFormatException e) {
+            logger.warn("Cannot parse audioVolatility parameter. Using default");
         }
 
         // phoneme volatility
-        param = newConfig.get(PARAM_PHONEMEVOLATITLITY);
-        if (param != null) {
-            config.phonemeVolatility = Double.parseDouble(param.toString());
+        try {
+            param = newConfig.get(PARAM_PHONEMEVOLATITLITY);
+            if (param != null) {
+                config.phonemeVolatility = Double.parseDouble(param.toString());
+            }
+        } catch (NumberFormatException e) {
+            logger.warn("Cannot parse phonemeVolatility parameter. Using default");
         }
 
         // speakingRate
-        param = newConfig.get(PARAM_SPEAKINGRATE);
-        if (param != null) {
-            config.speakingRate = Double.parseDouble(param.toString());
+        try {
+            param = newConfig.get(PARAM_SPEAKINGRATE);
+            if (param != null) {
+                config.speakingRate = Double.parseDouble(param.toString());
+            }
+        } catch (NumberFormatException e) {
+            logger.warn("Cannot parse speakingRate parameter. Using default");
         }
+
+        refreshVoices();
     }
 
     @Override
@@ -162,31 +158,33 @@ public class MimicTTSService implements TTSService {
 
     @Override
     public Set<Voice> getAvailableVoices() {
+        return availableVoices;
+    }
+
+    public void refreshVoices() {
         String url = config.url + LIST_VOICES_URL;
+        availableVoices.clear();
         try {
             String responseVoices = HttpRequestBuilder.getFrom(url).getContentAsString();
             VoiceDto[] mimicVoiceResponse = gson.fromJson(responseVoices, VoiceDto[].class);
             if (mimicVoiceResponse == null) {
-                logger.error("Cannot get mimic voices from the URL {}", url);
-                return Collections.emptySet();
+                logger.warn("Cannot get mimic voices from the URL {}", url);
+                return;
+            } else if (mimicVoiceResponse.length == 0) {
+                logger.debug("Voice set response from Mimic is empty ?!");
+                return;
             }
-            if (mimicVoiceResponse.length == 0) {
-                logger.warn("Voice set from mimic is empty ?!");
-            }
-            Set<Voice> voiceSet = new HashSet<>();
             for (VoiceDto voiceDto : mimicVoiceResponse) {
                 if (voiceDto.speakers != null && voiceDto.speakers.size() > 0) {
                     for (String speaker : voiceDto.speakers) {
-                        voiceSet.add(new MimicVoice(voiceDto.key, voiceDto.language, voiceDto.name, speaker));
+                        availableVoices.add(new MimicVoice(voiceDto.key, voiceDto.language, voiceDto.name, speaker));
                     }
                 } else {
-                    voiceSet.add(new MimicVoice(voiceDto.key, voiceDto.language, voiceDto.name, null));
+                    availableVoices.add(new MimicVoice(voiceDto.key, voiceDto.language, voiceDto.name, null));
                 }
             }
-            return voiceSet;
-        } catch (IOException e) {
-            logger.error("Cannot get mimic voices from the URL {}", url);
-            return Collections.emptySet();
+        } catch (IOException | JsonSyntaxException e) {
+            logger.warn("Cannot get mimic voices from the URL {}, error {}", url, e.getMessage());
         }
     }
 
@@ -206,12 +204,21 @@ public class MimicTTSService implements TTSService {
      */
     @Override
     public AudioStream synthesize(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
+
+        if (!availableVoices.contains(voice)) {
+            // let a chance for the service to update :
+            refreshVoices();
+            if (!availableVoices.contains(voice)) {
+                throw new TTSException("Voice " + voice.getUID() + " not available for MimicTTS");
+            }
+        }
+
         logger.debug("Synthesize '{}' for voice '{}' in format {}", text, voice.getUID(), requestedFormat);
         // Validate arguments
         // trim text
         String trimmedText = text.trim();
         if (trimmedText.isEmpty()) {
-            throw new TTSException("The passed text is null or empty");
+            throw new TTSException("The passed text is empty");
         }
         if (!AUDIO_FORMAT.isCompatible(requestedFormat)) {
             throw new TTSException("The passed AudioFormat is unsupported");

@@ -1,21 +1,25 @@
 # Mimic Text-to-Speech
 
-Mimic (version 3 and above) is an offline open source Text-To-speech engine designed by Mycroft A.I. for the eponym Vocal Assistant.
-It provides multiple voices, available in different languages and variants.
-Its neural network is built upon some very good and some not-so-good models. Try some to be sure you get the best one for your need.
-Mimic3 doesn't need Mycroft, it can be run standalone as a service or command line utility.
-When launched as a web server, it exposes its capability through a web API. This TTS bundle make use of these feature, so please take note : this openHAB TTS bundle is NOT a standalone ! it requires mimic web server to run somewhere (on your openHAB computer, or your network)
+Mimic (version 3 and above) is an offline open source Text-To-speech engine designed by Mycroft A.I. for the eponym Vocal Assistant, that provides multiple voices, available in different languages and variants.
 
-It supports a subset of SSML. If you want to use SSML, be sure to start your text with `<speak>`.
+Its neural network is built upon some very good and some not-so-good models, so try some to be sure you get the best one for your need.
+
+Mimic3 doesn't need Mycroft, and it can be run as a simple command line utility, or as a web server with an API.
+
+This TTS bundle make use of this last feature, so please take note : this openHAB TTS bundle is NOT a standalone, and it requires the Mimic web server to run somewhere (on your openHAB computer, or your network).
+
+You can find more information about the Mimic web server, and how to install it, on the [official documentation](https://mycroft-ai.gitbook.io/docs/mycroft-technologies/mimic-tts/mimic-3#installation).
+
+It supports a subset of SSML, and if you want to use it, be sure to start your text with `<speak>`.
 
 ## Configuration
 
 Using your favorite configuration UI to edit **Settings / Other Services - Mimic Text-to-Speech** and set:
 
-* **url** - Mimic URL. default to `http://localhost:59125`
+* **url** - Mimic URL. Default to `http://localhost:59125`
 * **speakingRate** - Controls how fast the voice speaks the text. A value of 1 is the speed of the training dataset. Less than 1 is faster, and more than 1 is slower.
 * **audioVolatility** - The amount of noise added to the generated audio (0-1). Can help mask audio artifacts from the voice model. Multi-speaker models tend to sound better with a lower amount of noise than single speaker models.
-* **phonemeVolatility ...** - The amount of noise used to generate phoneme durations (0-1). Allows for variable speaking cadance, with a value closer to 1 being more variable. Multi-speaker models tend to sound better with a lower amount of phoneme variability than single speaker models.
+* **phonemeVolatility** - The amount of noise used to generate phoneme durations (0-1). Allows for variable speaking cadance, with a value closer to 1 being more variable. Multi-speaker models tend to sound better with a lower amount of phoneme variability than single speaker models.
 
 In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `mimictts.cfg`
 
