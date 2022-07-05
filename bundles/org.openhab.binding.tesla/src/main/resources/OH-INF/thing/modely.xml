@@ -142,6 +142,11 @@
 				<description>Allows waking up the vehicle, when commands are sent to it. Execution of commands will be delayed in
 					this case and you could cause the vehicle to stay awake very long.</description>
 			</parameter>
+			<parameter name="enableEvents" type="boolean" required="false">
+				<default>false</default>
+				<label>Enable Events</label>
+				<description>Enable the event stream for the vehicle</description>
+			</parameter>
 		</config-description>
 
 	</thing-type>
