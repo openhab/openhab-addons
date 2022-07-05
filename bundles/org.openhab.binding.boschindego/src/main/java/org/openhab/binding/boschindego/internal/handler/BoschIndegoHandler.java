@@ -16,6 +16,7 @@ import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstan
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -71,7 +72,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> statePollFuture;
     private @Nullable ScheduledFuture<?> cuttingTimeMapPollFuture;
     private boolean propertiesInitialized;
-    private int previousStateCode;
+    private Optional<Integer> previousStateCode = Optional.empty();
 
     public BoschIndegoHandler(Thing thing, HttpClient httpClient, BoschIndegoTranslationProvider translationProvider,
             TimeZoneProvider timeZoneProvider) {
@@ -102,6 +103,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         controller = new IndegoController(httpClient, username, password);
 
         updateStatus(ThingStatus.UNKNOWN);
+        previousStateCode = Optional.empty();
         this.statePollFuture = scheduler.scheduleWithFixedDelay(this::refreshStateAndOperatingDataWithExceptionHandling,
                 0, config.refresh, TimeUnit.SECONDS);
         this.cuttingTimeMapPollFuture = scheduler.scheduleWithFixedDelay(
@@ -235,10 +237,10 @@ public class BoschIndegoHandler extends BaseThingHandler {
         updateState(state);
 
         // When state code changed, refresh cutting times immediately.
-        if (state.state != previousStateCode) {
+        if (previousStateCode.isPresent() && state.state != previousStateCode.get()) {
             refreshCuttingTimes();
-            previousStateCode = state.state;
         }
+        previousStateCode = Optional.of(state.state);
     }
 
     private void refreshOperatingData()
