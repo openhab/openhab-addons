@@ -540,11 +540,17 @@ public class VeluxProduct {
 
     /**
      * Set the actuator type.
+     * Only allowed if the current value is undefined.
      *
      * @param actuatorType the new value for the actuator type.
      */
     public void setActuatorType(ActuatorType actuatorType) {
-        this.actuatorType = actuatorType;
-        this.typeId = actuatorType.getTypeClass();
+        if (this.actuatorType == ActuatorType.UNDEFTYPE) {
+            this.actuatorType = actuatorType;
+            this.typeId = actuatorType.getTypeClass();
+        } else {
+            logger.debug("setActuatorType() failed: not allowed to change actuatorType from {} to {}.",
+                    this.actuatorType, actuatorType);
+        }
     }
 }
