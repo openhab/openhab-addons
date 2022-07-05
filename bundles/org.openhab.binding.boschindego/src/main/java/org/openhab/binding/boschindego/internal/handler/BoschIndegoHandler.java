@@ -31,6 +31,7 @@ import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse
 import org.openhab.binding.boschindego.internal.dto.response.OperatingDataResponse;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
+import org.openhab.binding.boschindego.internal.exceptions.IndegoUnreachableException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -145,12 +146,16 @@ public class BoschIndegoHandler extends BaseThingHandler {
         } catch (IndegoAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.authentication-failure");
+        } catch (IndegoUnreachableException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.unreachable");
         } catch (IndegoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    private void handleRefreshCommand(String channelId) throws IndegoAuthenticationException, IndegoException {
+    private void handleRefreshCommand(String channelId)
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         switch (channelId) {
             case STATE:
             case TEXTUAL_STATE:
@@ -212,6 +217,9 @@ public class BoschIndegoHandler extends BaseThingHandler {
         } catch (IndegoAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.authentication-failure");
+        } catch (IndegoUnreachableException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.unreachable");
         } catch (IndegoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -233,7 +241,8 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
     }
 
-    private void refreshOperatingData() throws IndegoAuthenticationException, IndegoException {
+    private void refreshOperatingData()
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         updateOperatingData(controller.getOperatingData());
         updateStatus(ThingStatus.ONLINE);
     }
