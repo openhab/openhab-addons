@@ -497,7 +497,7 @@ public class IndegoController {
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
-    public String getSerialNumber() throws IndegoAuthenticationException, IndegoException {
+    public synchronized String getSerialNumber() throws IndegoAuthenticationException, IndegoException {
         if (!session.isInitialized()) {
             logger.debug("Session not yet initialized when serial number was requested; authenticating...");
             authenticate();
