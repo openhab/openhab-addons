@@ -13,7 +13,6 @@
 package org.openhab.binding.velux.internal.bridge.slip;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProtocol;
 import org.openhab.binding.velux.internal.bridge.common.GetHouseStatus;
 import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
@@ -21,6 +20,8 @@ import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
+import org.openhab.binding.velux.internal.things.VeluxProductName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,13 +75,7 @@ public class SCgetHouseStatus extends GetHouseStatus
     private boolean success = false;
     private boolean finished = false;
 
-    private final String ntfName = getClass().getName();
-    private int ntfNodeID;
-    private int ntfState;
-    private int ntfCurrentPosition;
-    private int ntfTarget;
-    private final @Nullable FunctionalParameters ntfFunctionalParameters = null; // final because some devices (e.g.
-                                                                                 // Somfy) return bad data on this BCP
+    private VeluxProduct product = VeluxProduct.UNKNOWN;
 
     /*
      * ===========================================================
@@ -114,10 +109,10 @@ public class SCgetHouseStatus extends GetHouseStatus
                 if (!KLF200Response.isLengthValid(logger, responseCommand, thisResponseData, 20)) {
                     break;
                 }
-                ntfNodeID = responseData.getOneByteValue(0);
-                ntfState = responseData.getOneByteValue(1);
-                ntfCurrentPosition = responseData.getTwoByteValue(2);
-                ntfTarget = responseData.getTwoByteValue(4);
+                int ntfNodeID = responseData.getOneByteValue(0);
+                int ntfState = responseData.getOneByteValue(1);
+                int ntfCurrentPosition = responseData.getTwoByteValue(2);
+                int ntfTarget = responseData.getTwoByteValue(4);
                 FunctionalParameters ntfFunctionalParameters = FunctionalParameters.readArray(responseData, 6);
                 int ntfRemainingTime = responseData.getTwoByteValue(14);
                 int ntfTimeStamp = responseData.getFourByteValue(16);
@@ -127,11 +122,17 @@ public class SCgetHouseStatus extends GetHouseStatus
                     logger.trace("setResponse(): ntfState={}.", ntfState);
                     logger.trace("setResponse(): ntfCurrentPosition={}.", String.format("0x%04X", ntfCurrentPosition));
                     logger.trace("setResponse(): ntfTarget={}.", String.format("0x%04X", ntfTarget));
-                    logger.trace("setResponse(): ntfFunctionalParameters={} => {}.", ntfFunctionalParameters,
-                            this.ntfFunctionalParameters);
+                    logger.trace("setResponse(): ntfFunctionalParameters={} (returns null).", ntfFunctionalParameters);
                     logger.trace("setResponse(): ntfRemainingTime={}.", ntfRemainingTime);
                     logger.trace("setResponse(): ntfTimeStamp={}.", ntfTimeStamp);
                 }
+
+                // this BCP returns wrong values on some (e.g. Somfy) devices so return null instead
+                ntfFunctionalParameters = null;
+
+                product = new VeluxProduct(new VeluxProductName(getClass().getName()),
+                        new ProductBridgeIndex(ntfNodeID), ntfState, ntfCurrentPosition, ntfTarget,
+                        ntfFunctionalParameters);
 
                 success = true;
                 break;
@@ -157,14 +158,8 @@ public class SCgetHouseStatus extends GetHouseStatus
      * Methods in addition to the interface {@link BridgeCommunicationProtocol}
      */
 
-    /**
-     * Return a skeleton product instance with the newly received values in it.
-     *
-     * @return the skeleton product instance with the updated data values.
-     */
     public VeluxProduct getProduct() {
-        return success
-                ? new VeluxProduct(ntfName, ntfNodeID, ntfState, ntfCurrentPosition, ntfTarget, ntfFunctionalParameters)
-                : VeluxProduct.UNKNOWN;
+        logger.trace("getProduct(): returning {}.", product);
+        return product;
     }
 }

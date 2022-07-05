@@ -13,15 +13,17 @@
 package org.openhab.binding.velux.internal.bridge.slip;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.common.GetProduct;
 import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
+import org.openhab.binding.velux.internal.things.VeluxProductName;
 import org.openhab.binding.velux.internal.things.VeluxProductSerialNo;
 import org.openhab.binding.velux.internal.things.VeluxProductType;
+import org.openhab.binding.velux.internal.things.VeluxProductType.ActuatorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,13 +79,7 @@ public class SCgetProduct extends GetProduct implements SlipBridgeCommunicationP
     private boolean success = false;
     private boolean finished = false;
 
-    private final String ntfName = getClass().getName();
-    private int ntfNodeID;
-    private int ntfState;
-    private int ntfCurrentPosition;
-    private int ntfTarget;
-    private final @Nullable FunctionalParameters ntfFunctionalParameters = null; // final because some devices (e.g.
-                                                                                 // Somfy) return bad data on this BCP
+    private VeluxProduct product = VeluxProduct.UNKNOWN;
 
     /*
      * ===========================================================
@@ -155,7 +151,7 @@ public class SCgetProduct extends GetProduct implements SlipBridgeCommunicationP
                     break;
                 }
                 // Extracting information items
-                ntfNodeID = responseData.getOneByteValue(0);
+                int ntfNodeID = responseData.getOneByteValue(0);
                 int ntfOrder = responseData.getTwoByteValue(1);
                 int ntfPlacement = responseData.getOneByteValue(3);
                 String ntfName = responseData.getString(4, 64);
@@ -167,9 +163,9 @@ public class SCgetProduct extends GetProduct implements SlipBridgeCommunicationP
                 int ntfPowerMode = responseData.getOneByteValue(74);
                 int ntfBuildNumber = responseData.getOneByteValue(75);
                 byte[] ntfSerialNumber = responseData.getByteArray(76, 8);
-                ntfState = responseData.getOneByteValue(84);
-                ntfCurrentPosition = responseData.getTwoByteValue(85);
-                ntfTarget = responseData.getTwoByteValue(87);
+                int ntfState = responseData.getOneByteValue(84);
+                int ntfCurrentPosition = responseData.getTwoByteValue(85);
+                int ntfTarget = responseData.getTwoByteValue(87);
                 FunctionalParameters ntfFunctionalParameters = FunctionalParameters.readArray(responseData, 89);
                 int ntfRemainingTime = responseData.getFourByteValue(97);
                 int ntfTimeStamp = responseData.getFourByteValue(99);
@@ -199,8 +195,7 @@ public class SCgetProduct extends GetProduct implements SlipBridgeCommunicationP
                     logger.trace("setResponse(): ntfState={}.", ntfState);
                     logger.trace("setResponse(): ntfCurrentPosition={}.", String.format("0x%04X", ntfCurrentPosition));
                     logger.trace("setResponse(): ntfTarget={}.", String.format("0x%04X", ntfTarget));
-                    logger.trace("setResponse(): ntfFunctionalParameters={} => {}.", ntfFunctionalParameters,
-                            this.ntfFunctionalParameters);
+                    logger.trace("setResponse(): ntfFunctionalParameters={} (returns null).", ntfFunctionalParameters);
                     logger.trace("setResponse(): ntfRemainingTime={}.", ntfRemainingTime);
                     logger.trace("setResponse(): ntfTimeStamp={}.", ntfTimeStamp);
                     logger.trace("setResponse(): ntfNbrOfAlias={}.", ntfNbrOfAlias);
@@ -219,12 +214,21 @@ public class SCgetProduct extends GetProduct implements SlipBridgeCommunicationP
                     ntfName = "#".concat(String.valueOf(ntfNodeID));
                     logger.debug("setResponse(): device provided invalid name, using '{}' instead.", ntfName);
                 }
-                String commonSerialNumber = VeluxProductSerialNo.toString(ntfSerialNumber);
+
+                String ntfSerialNumberString = VeluxProductSerialNo.toString(ntfSerialNumber);
                 if (VeluxProductSerialNo.isInvalid(ntfSerialNumber)) {
-                    commonSerialNumber = new String(ntfName);
+                    ntfSerialNumberString = new String(ntfName);
                     logger.debug("setResponse(): device provided invalid serial number, using name '{}' instead.",
-                            commonSerialNumber);
+                            ntfSerialNumberString);
                 }
+
+                // this BCP returns wrong values on some (e.g. Somfy) devices so return null instead
+                ntfFunctionalParameters = null;
+
+                product = new VeluxProduct(new VeluxProductName(ntfName), VeluxProductType.get(ntfNodeTypeSubType),
+                        ActuatorType.get(ntfNodeTypeSubType), new ProductBridgeIndex(ntfNodeID), ntfOrder, ntfPlacement,
+                        ntfVelocity, ntfNodeVariation, ntfPowerMode, ntfSerialNumberString, ntfState,
+                        ntfCurrentPosition, ntfTarget, ntfFunctionalParameters, ntfRemainingTime, ntfTimeStamp);
 
                 success = true;
                 break;
@@ -257,15 +261,9 @@ public class SCgetProduct extends GetProduct implements SlipBridgeCommunicationP
         reqNodeID = nodeId;
     }
 
-    /**
-     * Return a skeleton product instance with the newly received values in it.
-     *
-     * @return the skeleton product instance with the updated data values.
-     */
     @Override
     public VeluxProduct getProduct() {
-        return success
-                ? new VeluxProduct(ntfName, ntfNodeID, ntfState, ntfCurrentPosition, ntfTarget, ntfFunctionalParameters)
-                : VeluxProduct.UNKNOWN;
+        logger.trace("getProduct(): returning {}.", product);
+        return product;
     }
 }
