@@ -31,12 +31,13 @@ import org.openhab.binding.netatmo.internal.handler.capability.CameraCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.ChannelHelperCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.DeviceCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.EventCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.DoorbellCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.MeasureCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PersonCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.SmokeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
@@ -112,13 +113,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing) : new ModuleHandler(thing);
 
         List<ChannelHelper> helpers = new ArrayList<>();
-        moduleType.channelHelpers.forEach(helperClass -> {
-            try {
-                helpers.add(helperClass.getConstructor().newInstance());
-            } catch (ReflectiveOperationException e) {
-                logger.warn("Error creating or initializing helper class : {}", e.getMessage());
-            }
-        });
+        moduleType.channelGroups
+                .forEach(channelGroup -> channelGroup.getHelperInstance().ifPresent(helper -> helpers.add(helper)));
 
         moduleType.capabilities.forEach(capability -> {
             Capability newCap = null;
@@ -126,18 +122,20 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
                 newCap = new DeviceCapability(handler);
             } else if (capability == AirCareCapability.class) {
                 newCap = new AirCareCapability(handler);
-            } else if (capability == EventCapability.class) {
-                newCap = new EventCapability(handler);
             } else if (capability == HomeCapability.class) {
                 newCap = new HomeCapability(handler, stateDescriptionProvider);
             } else if (capability == WeatherCapability.class) {
                 newCap = new WeatherCapability(handler);
             } else if (capability == RoomCapability.class) {
                 newCap = new RoomCapability(handler);
+            } else if (capability == DoorbellCapability.class) {
+                newCap = new DoorbellCapability(handler, stateDescriptionProvider, helpers);
             } else if (capability == PersonCapability.class) {
                 newCap = new PersonCapability(handler, stateDescriptionProvider, helpers);
             } else if (capability == CameraCapability.class) {
                 newCap = new CameraCapability(handler, stateDescriptionProvider, helpers);
+            } else if (capability == SmokeCapability.class) {
+                newCap = new SmokeCapability(handler, stateDescriptionProvider, helpers);
             } else if (capability == PresenceCapability.class) {
                 newCap = new PresenceCapability(handler, stateDescriptionProvider, helpers);
             } else if (capability == MeasureCapability.class) {

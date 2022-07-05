@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_THERM_RELAY;
+
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,8 +32,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class Therm1ChannelHelper extends ChannelHelper {
 
-    public Therm1ChannelHelper() {
-        super(GROUP_TYPE_TH_PROPERTIES);
+    public Therm1ChannelHelper(Set<String> providedGroups) {
+        super(providedGroups);
     }
 
     @Override

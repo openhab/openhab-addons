@@ -10,6 +10,7 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port </context>
+				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
 				<description>The serial port to use for connecting to the KNX bus</description>
 			</parameter>

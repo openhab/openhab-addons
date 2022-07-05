@@ -39,7 +39,15 @@ Before the binding can communicate with the hub, the following Configuration Par
 | portNumber              | Port number of the NeoHub (Default=4242)                                                    |
 | pollingInterval         | Time (seconds) between polling requests to the NeoHub (Min=4, Max=60, Default=60)           |
 | socketTimeout           | Time (seconds) to allow for TCP socket connections to the hub to succeed (Min=4, Max=20, Default=5) |
-| preferLegacyApi         | Prefer if the binding should use the legacy API; this only works so long as the legacy API is still supported; otherwise the binding will switch to the new API anyway (Default=false) |
+| preferLegacyApi         | ADVANCED: Prefer the binding to use older API calls; if these are not supported, it switches to the new calls (Default=false) |
+
+## Connection Refused Errors
+
+From early 2022 Heatmiser introduced NeoHub firmware that has the ability to enable / disable the NeoHub `portNumber` 4242.
+If this port is disabled the OpenHAB binding cannot connect and the binding will report a *"Connection Refused"* warning in the log.
+In prior firmware versions the port was always enabled.
+But in the new firmware the port is initially enabled on power up but if no communication occurs for 48 hours it is automatically disabled.
+Alternatively the Heatmiser mobile App has a setting (Settings | System | API Access | Legacy API Enable | On) whereby the port can be permanently enabled.
 
 ## Thing Configuration for "NeoStat" and "NeoPlug"
 

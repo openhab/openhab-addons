@@ -140,6 +140,19 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="last-event-smoke">
+		<label>Last Event</label>
+		<channels>
+			<channel id="type" typeId="event-type"/>
+			<channel id="time" typeId="timestamp">
+				<label>Event Timestamp</label>
+				<description>Moment when event occurred.</description>
+			</channel>
+			<channel id="subtype" typeId="event-subtype"/>
+			<channel id="message" typeId="message"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="last-event-person">
 		<label>Last Event</label>
 		<channels>

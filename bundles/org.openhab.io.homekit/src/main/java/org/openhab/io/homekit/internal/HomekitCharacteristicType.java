@@ -153,4 +153,9 @@ public enum HomekitCharacteristicType {
     public static Optional<HomekitCharacteristicType> valueOfTag(String tag) {
         return Optional.ofNullable(TAG_MAP.get(tag));
     }
+
+    @Override
+    public String toString() {
+        return tag;
+    }
 }

@@ -12,11 +12,9 @@
  */
 package org.openhab.binding.gardena.internal;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,6 +35,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.gardena.internal.config.GardenaConfig;
 import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundException;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
@@ -44,10 +43,12 @@ import org.openhab.binding.gardena.internal.model.DataItemDeserializer;
 import org.openhab.binding.gardena.internal.model.dto.Device;
 import org.openhab.binding.gardena.internal.model.dto.api.CreateWebSocketRequest;
 import org.openhab.binding.gardena.internal.model.dto.api.DataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.Location;
 import org.openhab.binding.gardena.internal.model.dto.api.LocationDataItem;
 import org.openhab.binding.gardena.internal.model.dto.api.LocationResponse;
 import org.openhab.binding.gardena.internal.model.dto.api.LocationsResponse;
 import org.openhab.binding.gardena.internal.model.dto.api.PostOAuth2Response;
+import org.openhab.binding.gardena.internal.model.dto.api.WebSocket;
 import org.openhab.binding.gardena.internal.model.dto.api.WebSocketCreatedResponse;
 import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommand;
 import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommandRequest;
@@ -87,10 +88,10 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     private GardenaSmartEventListener eventListener;
 
     private HttpClient httpClient;
-    private List<GardenaSmartWebSocket> webSockets = new ArrayList<>();
+    private Map<String, GardenaSmartWebSocket> webSockets = new HashMap<>();
     private @Nullable PostOAuth2Response token;
     private boolean initialized = false;
-    private WebSocketFactory webSocketFactory;
+    private WebSocketClient webSocketClient;
 
     private Set<Device> devicesToNotify = ConcurrentHashMap.newKeySet();
     private @Nullable ScheduledFuture<?> deviceToNotifyFuture;
@@ -103,7 +104,6 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         this.config = config;
         this.eventListener = eventListener;
         this.scheduler = scheduler;
-        this.webSocketFactory = webSocketFactory;
 
         logger.debug("Starting GardenaSmart");
         try {
@@ -111,6 +111,13 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             httpClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
             httpClient.setIdleTimeout(httpClient.getConnectTimeout());
             httpClient.start();
+
+            String webSocketId = String.valueOf(hashCode());
+            webSocketClient = webSocketFactory.createWebSocketClient(webSocketId);
+            webSocketClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
+            webSocketClient.setStopTimeout(3000);
+            webSocketClient.setMaxIdleTimeout(150000);
+            webSocketClient.start();
 
             // initially load access token
             verifyToken();
@@ -132,6 +139,10 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
 
             startWebsockets();
             initialized = true;
+        } catch (GardenaException ex) {
+            dispose();
+            // pass GardenaException to calling function
+            throw ex;
         } catch (Exception ex) {
             dispose();
             throw new GardenaException(ex.getMessage(), ex);
@@ -144,9 +155,14 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     private void startWebsockets() throws Exception {
         for (LocationDataItem location : locationsResponse.data) {
             WebSocketCreatedResponse webSocketCreatedResponse = getWebsocketInfo(location.id);
-            String socketId = id + "-" + location.attributes.name;
-            webSockets.add(new GardenaSmartWebSocket(this, webSocketCreatedResponse, config, scheduler,
-                    webSocketFactory, token, socketId));
+            Location locationAttributes = location.attributes;
+            WebSocket webSocketAttributes = webSocketCreatedResponse.data.attributes;
+            if (locationAttributes == null || webSocketAttributes == null) {
+                continue;
+            }
+            String socketId = id + "-" + locationAttributes.name;
+            webSockets.put(location.id, new GardenaSmartWebSocket(this, webSocketClient, scheduler,
+                    webSocketAttributes.url, token, socketId, location.id));
         }
     }
 
@@ -154,7 +170,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
      * Stops all websockets.
      */
     private void stopWebsockets() {
-        for (GardenaSmartWebSocket webSocket : webSockets) {
+        for (GardenaSmartWebSocket webSocket : webSockets.values()) {
             webSocket.stop();
         }
         webSockets.clear();
@@ -203,7 +219,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
 
             if (status != 200 && status != 204 && status != 201 && status != 202) {
                 throw new GardenaException(String.format("Error %s %s, %s", status, contentResponse.getReason(),
-                        contentResponse.getContentAsString()));
+                        contentResponse.getContentAsString()), status);
             }
 
             if (result == null) {
@@ -225,11 +241,10 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         PostOAuth2Response token = this.token;
         if (token == null || token.isRefreshTokenExpired()) {
             // new token
-            logger.debug("Gardena API login using password, reason: {}",
+            logger.debug("Gardena API login using apiSecret, reason: {}",
                     token == null ? "no token available" : "refresh token expired");
-            fields.add("grant_type", "password");
-            fields.add("username", config.getEmail());
-            fields.add("password", config.getPassword());
+            fields.add("grant_type", "client_credentials");
+            fields.add("client_secret", config.getApiSecret());
             token = executeRequest(HttpMethod.POST, URL_API_TOKEN, fields, PostOAuth2Response.class);
             token.postProcess();
             this.token = token;
@@ -297,10 +312,12 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         stopWebsockets();
         try {
             httpClient.stop();
+            webSocketClient.stop();
         } catch (Exception e) {
             // ignore
         }
         httpClient.destroy();
+        webSocketClient.destroy();
         locationsResponse = new LocationsResponse();
         allDevicesById.clear();
         initialized = false;
@@ -311,12 +328,17 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
      */
     @Override
     public synchronized void restartWebsockets() {
-        logger.debug("Restarting GardenaSmart Webservice");
+        logger.debug("Restarting GardenaSmart Webservices");
         stopWebsockets();
         try {
             startWebsockets();
         } catch (Exception ex) {
-            logger.warn("Restarting GardenaSmart Webservice failed: {}, restarting binding", ex.getMessage());
+            // restart binding
+            if (logger.isDebugEnabled()) {
+                logger.warn("Restarting GardenaSmart Webservices failed! Restarting binding", ex);
+            } else {
+                logger.warn("Restarting GardenaSmart Webservices failed: {}! Restarting binding", ex.getMessage());
+            }
             eventListener.onError();
         }
     }
@@ -350,13 +372,41 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     }
 
     @Override
-    public void onWebSocketClose() {
-        restartWebsockets();
+    public void onWebSocketClose(String id) {
+        restartWebsocket(webSockets.get(id));
     }
 
     @Override
-    public void onWebSocketError() {
-        eventListener.onError();
+    public void onWebSocketError(String id) {
+        restartWebsocket(webSockets.get(id));
+    }
+
+    private void restartWebsocket(@Nullable GardenaSmartWebSocket socket) {
+        synchronized (this) {
+            if (socket != null && !socket.isClosing()) {
+                // close socket, if still open
+                logger.info("Restarting GardenaSmart Webservice ({})", socket.getSocketID());
+                socket.stop();
+            } else {
+                // if socket is already closing, exit function and do not restart socket
+                return;
+            }
+        }
+
+        try {
+            Thread.sleep(3000);
+            WebSocketCreatedResponse webSocketCreatedResponse = getWebsocketInfo(socket.getLocationID());
+            // only restart single socket, do not restart binding
+            WebSocket webSocketAttributes = webSocketCreatedResponse.data.attributes;
+            if (webSocketAttributes != null) {
+                socket.restart(webSocketAttributes.url);
+            }
+        } catch (Exception ex) {
+            // restart binding on error
+            logger.warn("Restarting GardenaSmart Webservice failed ({}): {}, restarting binding", socket.getSocketID(),
+                    ex.getMessage());
+            eventListener.onError();
+        }
     }
 
     @Override

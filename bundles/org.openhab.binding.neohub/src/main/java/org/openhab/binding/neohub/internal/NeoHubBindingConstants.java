@@ -157,6 +157,7 @@ public class NeoHubBindingConstants {
     public static final String CMD_CODE_TIMER = "{\"TIMER_%s\":\"%s\"}";
     public static final String CMD_CODE_MANUAL = "{\"MANUAL_%s\":\"%s\"}";
     public static final String CMD_CODE_READ_DCB = "{\"READ_DCB\":100}";
+    public static final String CMD_CODE_FIRMWARE = "{\"FIRMWARE\":0}";
 
     /*
      * note: from NeoHub rev2.6 onwards the INFO command is "deprecated" and it

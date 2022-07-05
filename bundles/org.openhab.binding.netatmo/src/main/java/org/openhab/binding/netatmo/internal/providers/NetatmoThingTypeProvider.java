@@ -75,7 +75,7 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
 
                 ThingTypeBuilder thingTypeBuilder = ThingTypeBuilder.instance(thingTypeUID, thingTypeUID.toString())
                         .withRepresentationProperty(NAThingConfiguration.ID)
-                        .withExtensibleChannelTypeIds(moduleType.extensions)
+                        .withExtensibleChannelTypeIds(moduleType.getExtensions())
                         .withChannelGroupDefinitions(getGroupDefinitions(moduleType))
                         .withConfigDescriptionURI(moduleType.getConfigDescription());
 
@@ -94,8 +94,8 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
     }
 
     private List<ChannelGroupDefinition> getGroupDefinitions(ModuleType thingType) {
-        return thingType.groupTypes.stream().map(groupTypeName -> new ChannelGroupDefinition(toGroupName(groupTypeName),
-                new ChannelGroupTypeUID(BINDING_ID, groupTypeName))).collect(Collectors.toList());
+        return thingType.getGroupTypes().stream().map(groupType -> new ChannelGroupDefinition(toGroupName(groupType),
+                new ChannelGroupTypeUID(BINDING_ID, groupType))).collect(Collectors.toList());
     }
 
     public static String toGroupName(String groupeTypeName) {

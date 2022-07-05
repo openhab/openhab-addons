@@ -107,10 +107,7 @@
 		<category>Energy</category>
 		<channels>
 			<channel id="current" typeId="current"/>
-			<channel id="voltage" typeId="level">
-				<label>Battery Level</label>
-				<description>Battery level</description>
-			</channel>
+			<channel id="voltage" typeId="voltage"/>
 		</channels>
 	</channel-group-type>
 

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_PERSON_AT_HOME;
 
 import java.util.Set;
 
@@ -32,8 +32,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class EventPersonChannelHelper extends EventChannelHelper {
 
-    public EventPersonChannelHelper() {
-        super(GROUP_PERSON_LAST_EVENT);
+    public EventPersonChannelHelper(Set<String> providedGroups) {
+        super(providedGroups);
     }
 
     @Override

@@ -23,6 +23,8 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
  */
 @NonNullByDefault
 public class NAPushType {
+    public final static NAPushType UNKNOWN = new NAPushType(ModuleType.UNKNOWN, EventType.UNKNOWN);
+
     private final ModuleType moduleType;
     private final EventType event;
 

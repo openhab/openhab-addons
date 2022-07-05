@@ -29,7 +29,7 @@
 		</parameter>
 		<parameter name="oauthCode" type="text" groupName="authentication">
 			<label>Authorization Code</label>
-			<description><![CDATA[This code is used once for retrieving the Google Cloud Platform access and refresh tokens. Open the following URL in your browser to generate an authorization code:<br><br>https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/cloud-platform&access_type=offline&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id={{clientId}}<br><br>After your browser has been redirected to https://www.google.com, the authorization code will be set in the browser URL as value of the "code" URL query parameter.]]></description>
+			<description><![CDATA[This code is used once for retrieving the Google Cloud Platform access and refresh tokens. Open the following URL in your browser to generate an authorization code:<br><br>https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/cloud-platform&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id={{clientId}}<br><br>After your browser has been redirected to https://www.google.com, the authorization code will be set in the browser URL as value of the "code" URL query parameter.]]></description>
 		</parameter>
 		<parameter name="singleUtteranceMode" type="boolean" groupName="stt">
 			<label>Single Utterance Mode</label>
