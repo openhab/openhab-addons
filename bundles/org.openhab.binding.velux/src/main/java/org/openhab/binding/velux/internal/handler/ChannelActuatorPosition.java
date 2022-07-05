@@ -119,10 +119,10 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                     newProduct.setActuatorType(oldProduct.getActuatorType());
                     newProduct.setTarget(oldProduct.getTarget());
                     /*
-                     * For vanes we have to explicitly update the existing product state (specifically its functional
-                     * parameters) here, since the functional parameters are specifically IGNORED when the
-                     * SlipVeluxBridge.bridgeDirectCommunicate() method processes any normal
-                     * GW_NODE_STATE_POSITION_CHANGED_NTF state notifications.
+                     * For vanes we must explicitly call existingProducts.update() to make sure that the functional
+                     * parameters are updated, because these are not updated via 'GW_NODE_STATE_POSITION_CHANGED_NTF'
+                     * house status notification messages (because on some, e.g. Somfy, devices they contain wrong
+                     * values).
                      */
                     thisBridgeHandler.existingProducts().update(newProduct);
                     posValue = newProduct.getVanePosition();
@@ -130,8 +130,8 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 default:
                     posValue = newProduct.getDisplayPosition();
             }
-            VeluxProductPosition position = new VeluxProductPosition(posValue);
 
+            VeluxProductPosition position = new VeluxProductPosition(posValue);
             if (position.isValid()) {
                 switch (channelId) {
                     case CHANNEL_VANE_POSITION:

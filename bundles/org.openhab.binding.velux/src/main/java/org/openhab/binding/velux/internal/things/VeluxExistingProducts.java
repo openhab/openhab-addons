@@ -111,27 +111,25 @@ public class VeluxExistingProducts {
         return true;
     }
 
-    public boolean update(VeluxProduct newProduct) {
-        ProductBridgeIndex productBridgeIndex = newProduct.getBridgeProductIndex();
-        int newState = newProduct.getState();
-        int newCurrentPosition = newProduct.getCurrentPosition();
-        int newTarget = newProduct.getTarget();
-        FunctionalParameters newFunctionalParameters = newProduct.getFunctionalParameters();
-        logger.debug(
-                "update(productBridgeIndex:{}, state:{}, currentPosition:{}, target:{}, functionalParameters:{}) called.",
-                productBridgeIndex.toInt(), newState, newCurrentPosition, newTarget, newFunctionalParameters);
+    public boolean update(VeluxProduct fromProduct) {
+        logger.debug("update(product:{}", fromProduct);
+        ProductBridgeIndex productBridgeIndex = fromProduct.getBridgeProductIndex();
         if (!isRegistered(productBridgeIndex)) {
             logger.warn("update() failed as actuator (with index {}) is not registered.", productBridgeIndex.toInt());
             return false;
         }
         VeluxProduct thisProduct = this.get(productBridgeIndex);
-        dirty |= thisProduct.setState(newState);
-        dirty |= thisProduct.setCurrentPosition(newCurrentPosition);
-        if (newTarget != VeluxProductPosition.VPP_VELUX_IGNORE) {
-            dirty |= thisProduct.setTarget(newTarget);
+        dirty |= thisProduct.setState(fromProduct.getState());
+        dirty |= thisProduct.setCurrentPosition(fromProduct.getCurrentPosition());
+        int target = fromProduct.getTarget();
+        if (target != VeluxProductPosition.VPP_VELUX_IGNORE) {
+            dirty |= thisProduct.setTarget(target);
         }
-        if (thisProduct.supportsVanePosition() && (newFunctionalParameters != null)) {
-            dirty |= thisProduct.setFunctionalParameters(newFunctionalParameters);
+        if (thisProduct.supportsVanePosition()) {
+            FunctionalParameters functionalParameters = fromProduct.getFunctionalParameters();
+            if (functionalParameters != null) {
+                dirty |= thisProduct.setFunctionalParameters(functionalParameters);
+            }
         }
         if (dirty) {
             String uniqueIndex = thisProduct.getProductUniqueIndex();

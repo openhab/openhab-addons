@@ -124,7 +124,7 @@ public class VeluxProduct {
      *            value from 0 to 199.
      */
     public VeluxProduct(VeluxProductName name, VeluxProductType typeId, ProductBridgeIndex bridgeProductIndex) {
-        logger.trace("VeluxProduct(v1,name={}) created.", name.toString());
+        logger.trace("VeluxProduct(v1,name={}) created.", name);
         this.name = name;
         this.typeId = typeId;
         this.bridgeProductIndex = bridgeProductIndex;
@@ -149,7 +149,7 @@ public class VeluxProduct {
      * @param state This field indicates the operating state of the node.
      * @param currentPosition This field indicates the current position of the node.
      * @param target This field indicates the target position of the current operation.
-     * @param functionalParameters the target Functional Parameters.
+     * @param functionalParameters the target Functional Parameters (may be null).
      * @param remainingTime This field indicates the remaining time for a node activation in seconds.
      * @param timeStamp UTC time stamp for last known position.
      */
@@ -157,7 +157,7 @@ public class VeluxProduct {
             ProductBridgeIndex bridgeProductIndex, int order, int placement, int velocity, int variation, int powerMode,
             String serialNumber, int state, int currentPosition, int target,
             @Nullable FunctionalParameters functionalParameters, int remainingTime, int timeStamp) {
-        logger.trace("VeluxProduct(v2,name={}) created.", name.toString());
+        logger.trace("VeluxProduct(v2,name={}) created.", name);
         this.name = name;
         this.typeId = typeId;
         this.actuatorType = actuatorType;
@@ -178,26 +178,30 @@ public class VeluxProduct {
     }
 
     /**
-     * Constructs a skeleton product to be used as a data transfer object for updating some state fields to another
-     * (fully specified) product.
+     * Constructor for a 'skeleton' product. Such products are used as data transfer objects to carry the limited sub
+     * set of data fields which are returned by 'GW_STATUS_REQUEST_NTF' or 'GW_NODE_STATE_POSITION_CHANGED_NTF'
+     * notifications, and to transfer those respective field values to another product that had already been created via
+     * a 'GW_GET_NODE_INFORMATION_NTF' notification, with all the other fields already filled.
      *
-     * @param name the product name (temporary name for the skeleton DTO).
-     * @param index the product bridge index.
-     * @param state the new state.
-     * @param currentPosition the new current position.
-     * @param target the new target position.
-     * @param functionalParameters the new functional parameters.
+     * @param notificationCommandName the name of the notification command that created the product.
+     * @param productBridgeIndex the product bridge index from the notification.
+     * @param state the actuator state from the notification.
+     * @param currentPosition the current actuator position from the notification.
+     * @param target the target position from the notification (may be VeluxProductPosition.VPP_VELUX_IGNORE).
+     * @param functionalParameters the actuator functional parameters (may be null).
      */
-    public VeluxProduct(String name, int index, int state, int currentPosition, int target,
-            @Nullable FunctionalParameters functionalParameters) {
-        logger.trace(
-                "VeluxProduct(name:{}, index:{}, state:{}, currentPosition:{}, target:{}, functionalParameters:{}) (skeleton) created.",
-                name, index, state, currentPosition, target, functionalParameters);
+    public VeluxProduct(VeluxProductName notificationCommandName, ProductBridgeIndex productBridgeIndex, int state,
+            int currentPosition, int target, @Nullable FunctionalParameters functionalParameters) {
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                    "VeluxProduct(name:{}, index:{}, state:{}, currentPosition:{}, target:{}, functionalParameters:{}) (skeleton) created.",
+                    notificationCommandName, productBridgeIndex, state, currentPosition, target, functionalParameters);
+        }
         this.v2 = true;
         this.typeId = VeluxProductType.UNDEFTYPE;
         this.actuatorType = ActuatorType.UNDEFTYPE;
-        this.name = new VeluxProductName(name);
-        this.bridgeProductIndex = new ProductBridgeIndex(index);
+        this.name = notificationCommandName;
+        this.bridgeProductIndex = productBridgeIndex;
         this.state = state;
         this.currentPosition = currentPosition;
         this.targetPosition = target;
