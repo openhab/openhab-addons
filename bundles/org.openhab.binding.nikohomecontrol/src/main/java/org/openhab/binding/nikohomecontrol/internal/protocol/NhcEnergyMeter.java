@@ -20,10 +20,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NhcEnergyMeter} class represents the energyMeters metering Niko Home Control communication object. It
- * contains all
- * fields representing a Niko Home Control energyMeters meter and has methods to receive energyMeters usage information.
- * A specific
- * implementation is {@link NhcEnergyMeter2}.
+ * contains all fields representing a Niko Home Control energyMeters meter and has methods to receive energyMeters usage
+ * information. A specific implementation is {@link NhcEnergyMeter2}.
  *
  * @author Mark Herwege - Initial Contribution
  */

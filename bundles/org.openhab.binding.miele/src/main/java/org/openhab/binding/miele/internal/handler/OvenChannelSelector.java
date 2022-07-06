@@ -150,7 +150,6 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
         @Override
-
         public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             if ("true".equals(s)) {
                 return getState("OPEN");

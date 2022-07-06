@@ -40,9 +40,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Discovers an HD PowerView Shade from an existing hub
+ * Discovers HD PowerView Shades and Repeaters from an existing hub
  *
  * @author Andy Lintner - Initial contribution
+ * @author Jacob Laursen - Add Repeater discovery
  */
 @NonNullByDefault
 public class HDPowerViewDeviceDiscoveryService extends AbstractDiscoveryService {
@@ -87,9 +88,6 @@ public class HDPowerViewDeviceDiscoveryService extends AbstractDiscoveryService 
         return () -> {
             try {
                 HDPowerViewWebTargets webTargets = hub.getWebTargets();
-                if (webTargets == null) {
-                    throw new HubProcessingException("Web targets not initialized");
-                }
                 discoverShades(webTargets);
                 discoverRepeaters(webTargets);
             } catch (HubMaintenanceException e) {

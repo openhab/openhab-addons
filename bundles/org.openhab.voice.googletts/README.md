@@ -39,7 +39,7 @@ Using your favorite configuration UI to edit **Settings / Other Services - Googl
 * **Client Secret** - Google Cloud Platform OAuth 2.0-Client Secret.
 * **Authorization Code** - This code is used once for retrieving the Google Cloud Platform access and refresh tokens.
 **Please go to your browser ...**
-[https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/cloud-platform&access_type=offline&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=<clientId>](https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/cloud-platform&access_type=offline&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=<clientId>) (replace `<clientId>` by your Client Id)
+[https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/cloud-platform&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=<clientId>](https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/cloud-platform&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=<clientId>) (replace `<clientId>` by your Client Id)
 **... to generate an authorization code and paste it here**.
 After your browser has been redirected to https://www.google.com, the authorization code will be set in the browser URL as value of the "code" URL query parameter.
 After initial authorization, this code is not needed anymore.

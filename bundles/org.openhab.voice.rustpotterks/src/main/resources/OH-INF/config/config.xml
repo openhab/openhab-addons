@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="voice:rustpotterks">
+		<parameter-group name="wakewordDetector">
+			<label>Wakeword Detector</label>
+			<description>Wakeword detection options.</description>
+		</parameter-group>
+		<parameter-group name="noiseDetector">
+			<label>Noise Detector</label>
+			<description>Optional noise detection options.</description>
+		</parameter-group>
+		<parameter-group name="vadDetector">
+			<label>VAD Detector</label>
+			<description>Optional voice activity detector options.</description>
+		</parameter-group>
+		<parameter name="threshold" type="decimal" min="0" max="1" groupName="wakewordDetector">
+			<label>Threshold</label>
+			<description>Configures the detector threshold, is the min score (in range 0. to 1.) that some of the wakeword
+				templates should obtain to trigger a detection. Model defined value takes prevalence if present.</description>
+			<default>0.5</default>
+		</parameter>
+		<parameter name="averagedThreshold" type="decimal" min="0" max="1" groupName="wakewordDetector">
+			<label>Averaged Threshold</label>
+			<description>Configures the detector averaged threshold, is the min score (in range 0. to 1.) that the audio should
+				obtain against a combination of the wake word templates, the detection will be aborted if this is not the case. This
+				way it can prevent to run the comparison of the current frame against each of the wake word templates which saves
+				cpu. If set to 0 this functionality is disabled.</description>
+			<default>0.2</default>
+		</parameter>
+		<parameter name="comparatorRef" type="decimal" min="0" max="1" groupName="wakewordDetector">
+			<label>Comparator Ref</label>
+			<description>Configures the reference for the comparator used to match the samples.</description>
+			<default>0.22</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="comparatorBandSize" type="integer" groupName="wakewordDetector">
+			<label>Comparator Band Size</label>
+			<description>Configures the band-size for the comparator used to match the samples.</description>
+			<default>6</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="eagerMode" type="boolean" groupName="wakewordDetector">
+			<label>Eager Mode</label>
+			<description>Enables eager mode. End detection as soon as a result is over the score, instead of waiting to
+				see if the
+				next frame has a higher score.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="noiseDetectionMode" type="text" groupName="noiseDetector">
+			<label>Noise Detection Mode</label>
+			<description>Use a noise detector to reduce computation in the absence of sound. Configures the difficulty to
+				consider
+				a
+				frame as noise (the required noise level).</description>
+			<default>disabled</default>
+			<options>
+				<option value="disabled">Disabled</option>
+				<option value="easiest">Easiest</option>
+				<option value="easy">Easy</option>
+				<option value="normal">Normal</option>
+				<option value="hard">Hard</option>
+				<option value="hardest">Hardest</option>
+			</options>
+		</parameter>
+		<parameter name="noiseSensitivity" type="decimal" min="0" max="1" groupName="noiseDetector">
+			<label>Noise Sensitivity</label>
+			<description>Noise/silence ratio in the last second to consider voice is detected.</description>
+			<default>0.5</default>
+		</parameter>
+		<parameter name="vadMode" type="text" groupName="vadDetector">
+			<label>VAD Mode</label>
+			<description>Use a vad detector to reduce computation in the absence of vocal sound.</description>
+			<default>disabled</default>
+			<options>
+				<option value="disabled">Disabled</option>
+				<option value="low-bitrate">Low Bitrate</option>
+				<option value="quality">Quality</option>
+				<option value="aggressive">Aggressive</option>
+				<option value="very-aggressive">Very Aggressive</option>
+			</options>
+		</parameter>
+		<parameter name="vadSensitivity" type="decimal" min="0" max="1" groupName="vadDetector">
+			<label>VAD Sensitivity</label>
+			<description>Voice/silence ratio in the last second to consider voice is detected.</description>
+			<default>0.5</default>
+		</parameter>
+		<parameter name="vadDelay" type="integer" groupName="vadDetector">
+			<label>VAD Delay</label>
+			<description>Seconds to disable the vad detector after voice is detected.</description>
+			<default>3</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

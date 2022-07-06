@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.protocol;
 
+import java.time.ZoneId;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -54,7 +55,7 @@ public abstract class NikoHomeControlCommunication {
     // restart attempts
     private volatile int delay = 0;
     private volatile int attempt = 0;
-    protected @Nullable ScheduledFuture<?> scheduledRestart = null;
+    protected volatile @Nullable ScheduledFuture<?> scheduledRestart = null;
 
     protected NikoHomeControlCommunication(NhcControllerEvent handler, ScheduledExecutorService scheduler) {
         this.handler = handler;
@@ -136,6 +137,15 @@ public abstract class NikoHomeControlCommunication {
      * @return True if active
      */
     public abstract boolean communicationActive();
+
+    /**
+     * Return the timezone for the system.
+     *
+     * @return zoneId
+     */
+    public ZoneId getTimeZone() {
+        return handler.getTimeZone();
+    }
 
     /**
      * Return all actions in the Niko Home Control Controller.
