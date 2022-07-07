@@ -62,7 +62,7 @@ public class VehicleTests {
     private static final int LOCATION = 4;
     private static final int CHARGE_PROFILE = 44;
     private static final int TIRES = 8;
-    public static final PointType HOME_LOCATION = new PointType("50.128796616501326, 8.681081342382187");
+    public static final PointType HOME_LOCATION = new PointType("54.321,9.876");
     @Nullable
     ArgumentCaptor<ChannelUID> channelCaptor;
     @Nullable
