@@ -468,7 +468,6 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_LOCATION, ADDRESS, StringType.valueOf(pos.address.formatted));
             PointType homeLocation = locationProvider.getLocation();
             if (homeLocation != null) {
-                vehicleLocation.distanceFrom(vehicleLocation);
                 updateChannel(CHANNEL_GROUP_LOCATION, HOME_DISTANCE,
                         QuantityType.valueOf(vehicleLocation.distanceFrom(homeLocation).intValue(), SIUnits.METRE));
             } else {
