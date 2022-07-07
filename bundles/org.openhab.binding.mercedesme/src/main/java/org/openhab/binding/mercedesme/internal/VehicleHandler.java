@@ -185,15 +185,12 @@ public class VehicleHandler extends BaseThingHandler {
                     }
                     setImageOtions();
                 }
-                // check Image resources
                 updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "clear-cache"), OnOffType.OFF);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "BridgeHanlder missing");
-                logger.warn("Bridge Handler null");
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not set");
-            logger.warn("Bridge null");
         }
     }
 
@@ -229,10 +226,10 @@ public class VehicleHandler extends BaseThingHandler {
                 if (accountHandler.get().config.get().odoScope) {
                     call(odoUrl);
                 } else {
-                    logger.debug("{} Odo scope not activated", this.getThing().getLabel());
+                    logger.trace("{} Odo scope not activated", this.getThing().getLabel());
                 }
             } else {
-                logger.debug("{} Account not properly configured", this.getThing().getLabel());
+                logger.trace("{} Account not properly configured", this.getThing().getLabel());
             }
 
             // Electric status for hybrid and electric
@@ -242,10 +239,10 @@ public class VehicleHandler extends BaseThingHandler {
                     if (accountHandler.get().config.get().evScope) {
                         call(evUrl);
                     } else {
-                        logger.debug("{} Electric Status scope not activated", this.getThing().getLabel());
+                        logger.trace("{} Electric Status scope not activated", this.getThing().getLabel());
                     }
                 } else {
-                    logger.debug("{} Account not properly configured", this.getThing().getLabel());
+                    logger.trace("{} Account not properly configured", this.getThing().getLabel());
                 }
             }
 
@@ -256,10 +253,10 @@ public class VehicleHandler extends BaseThingHandler {
                     if (accountHandler.get().config.get().fuelScope) {
                         call(fuelUrl);
                     } else {
-                        logger.debug("{} Fuel scope not activated", this.getThing().getLabel());
+                        logger.trace("{} Fuel scope not activated", this.getThing().getLabel());
                     }
                 } else {
-                    logger.debug("{} Account not properly configured", this.getThing().getLabel());
+                    logger.trace("{} Account not properly configured", this.getThing().getLabel());
                 }
             }
 
@@ -269,25 +266,21 @@ public class VehicleHandler extends BaseThingHandler {
                 if (accountHandler.get().config.get().vehicleScope) {
                     call(statusUrl);
                 } else {
-                    logger.debug("{} Vehicle Status scope not activated", this.getThing().getLabel());
+                    logger.trace("{} Vehicle Status scope not activated", this.getThing().getLabel());
                 }
             } else {
-                logger.debug("{} Account not properly configured", this.getThing().getLabel());
+                logger.trace("{} Account not properly configured", this.getThing().getLabel());
             }
             String lockUrl = String.format(LOCK_URL, config.get().vin);
             if (accountConfigAvailable()) {
                 if (accountHandler.get().config.get().lockScope) {
                     call(lockUrl);
                 } else {
-                    logger.debug("{} Lock scope not activated", this.getThing().getLabel());
+                    logger.trace("{} Lock scope not activated", this.getThing().getLabel());
                 }
             } else {
-                logger.debug("{} Account not properly configured", this.getThing().getLabel());
+                logger.trace("{} Account not properly configured", this.getThing().getLabel());
             }
-
-            // [todo] remove test for call to one specific resource
-            // String lightUrl = BASE_URL + "/vehicles/%s/resources/interiorLightsFront";
-            // call(String.format(lightUrl, config.get().vin));
 
             // Range radius for all types
             updateRadius();
@@ -571,7 +564,6 @@ public class VehicleHandler extends BaseThingHandler {
             LocalDateTime ld = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
             DateTimeType dtt = DateTimeType.valueOf(ld.format(DATE_INPUT_PATTERN));
             updateState(new ChannelUID(thing.getUID(), group, "last-update"), dtt);
-            logger.trace("{} last update {}", group, dtt);
         }
     }
 
