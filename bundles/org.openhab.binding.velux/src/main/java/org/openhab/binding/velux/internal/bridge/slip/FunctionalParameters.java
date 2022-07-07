@@ -190,7 +190,7 @@ public class FunctionalParameters {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if ((obj == null) || !(obj instanceof FunctionalParameters)) {
+        if (!(obj instanceof FunctionalParameters)) {
             return false;
         }
         FunctionalParameters other = (FunctionalParameters) obj;
