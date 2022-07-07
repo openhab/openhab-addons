@@ -30,6 +30,7 @@ import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
 import org.openhab.binding.miele.internal.api.dto.HomeDevice;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -285,6 +286,30 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     protected void updateExtendedState(String channelId, State state) {
         ChannelUID channelUid = new ChannelUID(getThing().getUID(), channelId);
         logger.trace("Update state of {} with extended state '{}'", channelUid, state);
+        updateState(channelUid, state);
+    }
+
+    protected void updateSwitchOnOffFromState(DeviceProperty dp) {
+        if (!STATE_PROPERTY_NAME.equals(dp.Name)) {
+            return;
+        }
+
+        // Switch is trigger channel, but current state can be deduced from state.
+        ChannelUID channelUid = new ChannelUID(getThing().getUID(), SWITCH_CHANNEL_ID);
+        State state = OnOffType.from(!dp.Value.equals(String.valueOf(STATE_OFF)));
+        logger.trace("Update state of {} to {} through '{}'", channelUid, state, dp.Name);
+        updateState(channelUid, state);
+    }
+
+    protected void updateSwitchStartStopFromState(DeviceProperty dp) {
+        if (!STATE_PROPERTY_NAME.equals(dp.Name)) {
+            return;
+        }
+
+        // Switch is trigger channel, but current state can be deduced from state.
+        ChannelUID channelUid = new ChannelUID(getThing().getUID(), SWITCH_CHANNEL_ID);
+        State state = OnOffType.from(dp.Value.equals(String.valueOf(STATE_RUNNING)));
+        logger.trace("Update state of {} to {} through '{}'", channelUid, state, dp.Name);
         updateState(channelUid, state);
     }
 

@@ -168,16 +168,32 @@ public class IndegoController {
     }
 
     /**
+     * Deauthenticate session. This method should be called as part of cleanup to reduce
+     * lingering sessions. This can potentially avoid killed sessions in situation with
+     * multiple clients (e.g. openHAB and mobile app) if restrictions on concurrent
+     * number of sessions would be put on the service.
+     *
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public void deauthenticate() throws IndegoException {
+        if (session.isValid()) {
+            deleteRequest("authenticate");
+            session.invalidate();
+        }
+    }
+
+    /**
      * Wraps {@link #getRequest(String, Class)} into an authenticated session.
      *
      * @param path the relative path to which the request should be sent
      * @param dtoClass the DTO class to which the JSON result should be deserialized
      * @return the deserialized DTO from the JSON response
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoUnreachableException if device cannot be reached (gateway timeout error)
      * @throws IndegoException if any communication or parsing error occurred
      */
     private <T> T getRequestWithAuthentication(String path, Class<? extends T> dtoClass)
-            throws IndegoAuthenticationException, IndegoException {
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         if (!session.isValid()) {
             authenticate();
         }
@@ -203,10 +219,11 @@ public class IndegoController {
      * @param dtoClass the DTO class to which the JSON result should be deserialized
      * @return the deserialized DTO from the JSON response
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoUnreachableException if device cannot be reached (gateway timeout error)
      * @throws IndegoException if any communication or parsing error occurred
      */
     private <T> T getRequest(String path, Class<? extends T> dtoClass)
-            throws IndegoAuthenticationException, IndegoException {
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         try {
             Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.GET).header(CONTEXT_HEADER_NAME,
                     session.getContextId());
@@ -433,6 +450,32 @@ public class IndegoController {
     }
 
     /**
+     * Sends a DELETE request to the server.
+     * 
+     * @param path the relative path to which the request should be sent
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    private void deleteRequest(String path) throws IndegoException {
+        try {
+            Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.DELETE)
+                    .header(CONTEXT_HEADER_NAME, session.getContextId());
+            if (logger.isTraceEnabled()) {
+                logger.trace("DELETE request for {}", BASE_URL + path);
+            }
+            ContentResponse response = sendRequest(request);
+            int status = response.getStatus();
+            if (!HttpStatus.isSuccess(status)) {
+                throw new IndegoException("The request failed with error: " + status);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IndegoException(e);
+        } catch (TimeoutException | ExecutionException e) {
+            throw new IndegoException(e);
+        }
+    }
+
+    /**
      * Send request. This method exists for the purpose of avoiding multiple calls to
      * the server at the same time.
      * 
@@ -454,7 +497,7 @@ public class IndegoController {
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
-    public String getSerialNumber() throws IndegoAuthenticationException, IndegoException {
+    public synchronized String getSerialNumber() throws IndegoAuthenticationException, IndegoException {
         if (!session.isInitialized()) {
             logger.debug("Session not yet initialized when serial number was requested; authenticating...");
             authenticate();
@@ -480,9 +523,11 @@ public class IndegoController {
      * 
      * @return the device state
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoUnreachableException if device cannot be reached (gateway timeout error)
      * @throws IndegoException if any communication or parsing error occurred
      */
-    public OperatingDataResponse getOperatingData() throws IndegoAuthenticationException, IndegoException {
+    public OperatingDataResponse getOperatingData()
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/operatingData",
                 OperatingDataResponse.class);
     }

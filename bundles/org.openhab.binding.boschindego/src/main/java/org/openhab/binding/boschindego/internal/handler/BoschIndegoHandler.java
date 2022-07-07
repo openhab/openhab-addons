@@ -16,6 +16,7 @@ import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstan
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -31,6 +32,7 @@ import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse
 import org.openhab.binding.boschindego.internal.dto.response.OperatingDataResponse;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
+import org.openhab.binding.boschindego.internal.exceptions.IndegoUnreachableException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -70,7 +72,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> statePollFuture;
     private @Nullable ScheduledFuture<?> cuttingTimeMapPollFuture;
     private boolean propertiesInitialized;
-    private int previousStateCode;
+    private Optional<Integer> previousStateCode = Optional.empty();
 
     public BoschIndegoHandler(Thing thing, HttpClient httpClient, BoschIndegoTranslationProvider translationProvider,
             TimeZoneProvider timeZoneProvider) {
@@ -101,6 +103,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         controller = new IndegoController(httpClient, username, password);
 
         updateStatus(ThingStatus.UNKNOWN);
+        previousStateCode = Optional.empty();
         this.statePollFuture = scheduler.scheduleWithFixedDelay(this::refreshStateAndOperatingDataWithExceptionHandling,
                 0, config.refresh, TimeUnit.SECONDS);
         this.cuttingTimeMapPollFuture = scheduler.scheduleWithFixedDelay(
@@ -121,6 +124,14 @@ public class BoschIndegoHandler extends BaseThingHandler {
             pollFuture.cancel(true);
         }
         this.cuttingTimeMapPollFuture = null;
+
+        scheduler.execute(() -> {
+            try {
+                controller.deauthenticate();
+            } catch (IndegoException e) {
+                logger.debug("Deauthentication failed", e);
+            }
+        });
     }
 
     @Override
@@ -137,12 +148,16 @@ public class BoschIndegoHandler extends BaseThingHandler {
         } catch (IndegoAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.authentication-failure");
+        } catch (IndegoUnreachableException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.unreachable");
         } catch (IndegoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    private void handleRefreshCommand(String channelId) throws IndegoAuthenticationException, IndegoException {
+    private void handleRefreshCommand(String channelId)
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         switch (channelId) {
             case STATE:
             case TEXTUAL_STATE:
@@ -204,6 +219,9 @@ public class BoschIndegoHandler extends BaseThingHandler {
         } catch (IndegoAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.authentication-failure");
+        } catch (IndegoUnreachableException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.unreachable");
         } catch (IndegoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -219,13 +237,14 @@ public class BoschIndegoHandler extends BaseThingHandler {
         updateState(state);
 
         // When state code changed, refresh cutting times immediately.
-        if (state.state != previousStateCode) {
+        if (previousStateCode.isPresent() && state.state != previousStateCode.get()) {
             refreshCuttingTimes();
-            previousStateCode = state.state;
         }
+        previousStateCode = Optional.of(state.state);
     }
 
-    private void refreshOperatingData() throws IndegoAuthenticationException, IndegoException {
+    private void refreshOperatingData()
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         updateOperatingData(controller.getOperatingData());
         updateStatus(ThingStatus.ONLINE);
     }
