@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.velux.internal.bridge.slip;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
@@ -28,22 +30,30 @@ import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 public class FunctionalParameters {
     private static final int FUNCTIONAL_PARAMETER_COUNT = 4;
 
-    private final int[] values = new int[FUNCTIONAL_PARAMETER_COUNT];
+    private final int[] values;
 
     /**
-     * Constructor.
-     * Initialises the array of values.
+     * Private constructor to create a FunctionalParameters instance with all empty values.
      */
-    public FunctionalParameters() {
-        for (int i = 0; i < FUNCTIONAL_PARAMETER_COUNT; i++) {
-            values[i] = VeluxProductPosition.VPP_VELUX_UNKNOWN;
-        }
+    private FunctionalParameters() {
+        values = new int[FUNCTIONAL_PARAMETER_COUNT];
+        Arrays.fill(values, VeluxProductPosition.VPP_VELUX_UNKNOWN);
+    }
+
+    /**
+     * Public constructor to create a FunctionalParameters instance from one specific value at one specific index.
+     */
+    public FunctionalParameters(int index, int newValue) {
+        this();
+        values[index] = newValue;
     }
 
     @Override
     public FunctionalParameters clone() {
         FunctionalParameters result = new FunctionalParameters();
-        result.setValues(this);
+        for (int i = 0; i < FUNCTIONAL_PARAMETER_COUNT; i++) {
+            result.values[i] = values[i];
+        }
         return result;
     }
 
@@ -53,56 +63,46 @@ public class FunctionalParameters {
     }
 
     /**
-     * Return the functional parameter values as an array of int.
+     * Return the functional parameter value at index.
      *
-     * @return
+     * @return the value at the index.
      */
-    public int[] getValues() {
-        return values;
+    public int getValue(int index) {
+        return values[index];
     }
 
     /**
-     * Set a new set of Functional Parameter values.
+     * Create a Functional Parameters instance from the merger of the data in 'foundationFunctionalParameters' and
+     * 'substituteFunctionalParameters'. Invalid parameter values are not merged. If either
+     * 'foundationFunctionalParameters' or 'substituteFunctionalParameters' is null, the merge includes only the data
+     * from the non null parameter set. And if both sets of parameters are null then the result is also null.
      *
-     * @param newFunctionalParameters the new set of Functional Parameter values.
+     * @param foundationFunctionalParameters the Functional Parameters to be used as the foundation for the merge.
+     * @param substituteFunctionalParameters the Functional Parameters to substituted on top (if they can be).
+     * @return a new Functional Parameters class instance containing the merged data.
      */
-    public void setValues(FunctionalParameters newFunctionalParameters) {
-        System.arraycopy(newFunctionalParameters.getValues(), 0, values, 0, FUNCTIONAL_PARAMETER_COUNT);
-    }
-
-    /**
-     * Set one specific Functional Parameter value.
-     * Note: Java runtime does the range check, and eventually throws index out of bound exception.
-     *
-     * @param index the index of the value to be set.
-     * @param newValue the new value.
-     */
-    public void setValue(int index, int newValue) {
-        values[index] = newValue;
-    }
-
-    /**
-     * Copy the Functional Parameters from newFunctionalParameters. Substitute VPP_VELUX_UNKNOWN for any values that
-     * are not supported by the VeluxProduct class.
-     *
-     * @param newFunctionalParameters the Functional Parameters to copy from.
-     * @return isModified if any of the values have been modified.
-     */
-    public boolean setProductAllowedFPValues(FunctionalParameters newFunctionalParameters) {
-        boolean isModified = false;
-        int[] newVals = newFunctionalParameters.getValues();
-        for (int i = 0; i < FUNCTIONAL_PARAMETER_COUNT; i++) {
-            if ((values[i] == newVals[i]) || isIgnore(newVals[i])) {
-                continue;
-            } else if (isNormalPosition(newVals[i])) {
-                values[i] = newVals[i];
-                isModified = true;
-            } else {
-                values[i] = VeluxProductPosition.VPP_VELUX_UNKNOWN;
-                isModified = true;
+    public static @Nullable FunctionalParameters createMergeSubstitute(
+            @Nullable FunctionalParameters foundationFunctionalParameters,
+            @Nullable FunctionalParameters substituteFunctionalParameters) {
+        if (foundationFunctionalParameters == null && substituteFunctionalParameters == null) {
+            return null;
+        }
+        FunctionalParameters result = new FunctionalParameters();
+        if (foundationFunctionalParameters != null) {
+            for (int i = 0; i < FUNCTIONAL_PARAMETER_COUNT; i++) {
+                if (isNormalPosition(foundationFunctionalParameters.values[i])) {
+                    result.values[i] = foundationFunctionalParameters.values[i];
+                }
             }
         }
-        return isModified;
+        if (substituteFunctionalParameters != null) {
+            for (int i = 0; i < FUNCTIONAL_PARAMETER_COUNT; i++) {
+                if (isNormalPosition(substituteFunctionalParameters.values[i])) {
+                    result.values[i] = substituteFunctionalParameters.values[i];
+                }
+            }
+        }
+        return result;
     }
 
     /**
@@ -116,28 +116,8 @@ public class FunctionalParameters {
     }
 
     /**
-     * Check if a given parameter value is the 'undefined' actuator position value (i.e. 0xF7FF).
-     *
-     * @param paramValue the value to be checked.
-     * @return true if it is the 'undefined' value.
-     */
-    public static boolean isUndefined(int paramValue) {
-        return paramValue == VeluxProductPosition.VPP_VELUX_UNKNOWN;
-    }
-
-    /**
-     * Check if a given parameter value is the 'ignore' actuator position value (i.e. 0xD400).
-     *
-     * @param paramValue the value to be checked.
-     * @return true if it is the 'ignore' value.
-     */
-    public static boolean isIgnore(int paramValue) {
-        return paramValue == VeluxProductPosition.VPP_VELUX_IGNORE;
-    }
-
-    /**
-     * Read the Functional Parameters from the given Packet. Where the parameters are packed into an array of two byte
-     * integer values.
+     * Create a FunctionalParameters instance from the given Packet. Where the parameters are packed into an array of
+     * two byte integer values.
      *
      * @param responseData the Packet to read from.
      * @param startPosition the read starting position.
@@ -159,8 +139,8 @@ public class FunctionalParameters {
     }
 
     /**
-     * Read the Functional Parameters from the given Packet. Where the parameters are packed into an array of three byte
-     * records each comprising a one byte index followed by a two byte integer value.
+     * Create a FunctionalParameters instance from the given Packet. Where the parameters are packed into an array of
+     * three byte records each comprising a one byte index followed by a two byte integer value.
      *
      * @param responseData the Packet to read from.
      * @param startPosition the read starting position.
@@ -206,5 +186,19 @@ public class FunctionalParameters {
             bitMask = bitMask >>> 1;
         }
         return fpIndex;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if ((obj == null) || !(obj instanceof FunctionalParameters)) {
+            return false;
+        }
+        FunctionalParameters other = (FunctionalParameters) obj;
+        for (int i = 0; i < FUNCTIONAL_PARAMETER_COUNT; i++) {
+            if (values[i] != other.values[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 }
