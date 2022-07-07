@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Guenther Schreiner - Initial contribution.
  */
 @NonNullByDefault
-class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommunicationProtocol {
+public class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommunicationProtocol {
     private final Logger logger = LoggerFactory.getLogger(SCrunProductCommand.class);
 
     private static final String DESCRIPTION = "Send Command to Actuator";
@@ -334,7 +334,7 @@ class SCrunProductCommand extends RunProductCommand implements SlipBridgeCommuni
         logger.debug("setNodeIdAndParameters({}) called.", nodeId);
         reqIndexArray01 = nodeId;
         reqMainParameter = mainParameter;
-        reqFunctionalParameters = functionalParameters != null ? functionalParameters.clone() : null;
+        reqFunctionalParameters = functionalParameters;
         return this;
     }
 }
