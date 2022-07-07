@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
+import org.openhab.binding.velux.internal.things.VeluxProduct.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +45,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VeluxExistingProducts {
     private final Logger logger = LoggerFactory.getLogger(VeluxExistingProducts.class);
-
-    // bit mask to normalise the stored state of Somfy devices
-    private static final int SOMFY_STATE_BIT_MASK = 0b111;
 
     // Type definitions, class-internal variables
 
@@ -99,9 +97,7 @@ public class VeluxExistingProducts {
         }
         logger.trace("register() registering new product {}.", newProduct);
 
-        if (newProduct.isSomfyProduct()) {
-            newProduct.setState(newProduct.getState() & SOMFY_STATE_BIT_MASK);
-        }
+        newProduct.setState(newProduct.getState() & State.DOCUMENTED_STATES_BIT_MASK.value);
 
         String uniqueIndex = newProduct.getProductUniqueIndex();
         logger.trace("register() registering by UniqueIndex {}", uniqueIndex);
@@ -126,11 +122,7 @@ public class VeluxExistingProducts {
             return false;
         }
         VeluxProduct thisProduct = this.get(productBridgeIndex);
-        if (thisProduct.isSomfyProduct()) {
-            dirty |= thisProduct.setState(newProduct.getState() & SOMFY_STATE_BIT_MASK);
-        } else {
-            dirty |= thisProduct.setState(newProduct.getState());
-        }
+        dirty |= thisProduct.setState(newProduct.getState() & State.DOCUMENTED_STATES_BIT_MASK.value);
         dirty |= thisProduct.setCurrentPosition(newProduct.getCurrentPosition());
         int newTarget = newProduct.getTarget();
         if (VeluxProductPosition.VPP_VELUX_IGNORE != newTarget) {

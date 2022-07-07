@@ -71,7 +71,8 @@ public class VeluxProduct {
         EXECUTING(4),
         DONE(5),
         MANUAL_OVERRIDE(0x80),
-        UNKNOWN(0xFF);
+        UNKNOWN(0xFF),
+        DOCUMENTED_STATES_BIT_MASK(0b10000111);
 
         public final int value;
 
