@@ -45,6 +45,9 @@ import org.slf4j.LoggerFactory;
 public class VeluxExistingProducts {
     private final Logger logger = LoggerFactory.getLogger(VeluxExistingProducts.class);
 
+    // bit mask to normalise the stored state of Somfy devices
+    private static final int SOMFY_STATE_BIT_MASK = 0b111;
+
     // Type definitions, class-internal variables
 
     private Map<String, VeluxProduct> existingProductsByUniqueIndex;
@@ -96,6 +99,10 @@ public class VeluxExistingProducts {
         }
         logger.trace("register() registering new product {}.", newProduct);
 
+        if (newProduct.isSomfyProduct()) {
+            newProduct.setState(newProduct.getState() & SOMFY_STATE_BIT_MASK);
+        }
+
         String uniqueIndex = newProduct.getProductUniqueIndex();
         logger.trace("register() registering by UniqueIndex {}", uniqueIndex);
         existingProductsByUniqueIndex.put(uniqueIndex, newProduct);
@@ -111,24 +118,28 @@ public class VeluxExistingProducts {
         return true;
     }
 
-    public boolean update(VeluxProduct fromProduct) {
-        logger.debug("update(product:{}", fromProduct);
-        ProductBridgeIndex productBridgeIndex = fromProduct.getBridgeProductIndex();
+    public boolean update(VeluxProduct newProduct) {
+        logger.debug("update(newProduct:{}", newProduct);
+        ProductBridgeIndex productBridgeIndex = newProduct.getBridgeProductIndex();
         if (!isRegistered(productBridgeIndex)) {
             logger.warn("update() failed as actuator (with index {}) is not registered.", productBridgeIndex.toInt());
             return false;
         }
         VeluxProduct thisProduct = this.get(productBridgeIndex);
-        dirty |= thisProduct.setState(fromProduct.getState());
-        dirty |= thisProduct.setCurrentPosition(fromProduct.getCurrentPosition());
-        int target = fromProduct.getTarget();
-        if (target != VeluxProductPosition.VPP_VELUX_IGNORE) {
-            dirty |= thisProduct.setTarget(target);
+        if (thisProduct.isSomfyProduct()) {
+            dirty |= thisProduct.setState(newProduct.getState() & SOMFY_STATE_BIT_MASK);
+        } else {
+            dirty |= thisProduct.setState(newProduct.getState());
+        }
+        dirty |= thisProduct.setCurrentPosition(newProduct.getCurrentPosition());
+        int newTarget = newProduct.getTarget();
+        if (VeluxProductPosition.VPP_VELUX_IGNORE != newTarget) {
+            dirty |= thisProduct.setTarget(newTarget);
         }
         if (thisProduct.supportsVanePosition()) {
-            FunctionalParameters functionalParameters = fromProduct.getFunctionalParameters();
-            if (functionalParameters != null) {
-                dirty |= thisProduct.setFunctionalParameters(functionalParameters);
+            FunctionalParameters newFunctionalParameters = newProduct.getFunctionalParameters();
+            if (newFunctionalParameters != null) {
+                dirty |= thisProduct.setFunctionalParameters(newFunctionalParameters);
             }
         }
         if (dirty) {

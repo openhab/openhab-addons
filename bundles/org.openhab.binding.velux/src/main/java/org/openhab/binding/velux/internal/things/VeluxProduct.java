@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.velux.internal.things;
 
+import java.util.regex.Pattern;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
@@ -77,6 +79,10 @@ public class VeluxProduct {
             this.value = value;
         }
     }
+
+    // Pattern to match a Velux serial number '00:00:00:00:00:00:00:00'
+    private static final Pattern VELUX_SERIAL_NUMBER = Pattern.compile(
+            "^[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}$");
 
     // Class internal
 
@@ -172,7 +178,7 @@ public class VeluxProduct {
         this.state = state;
         this.currentPosition = currentPosition;
         this.targetPosition = target;
-        this.functionalParameters = functionalParameters != null ? functionalParameters.clone() : null;
+        this.functionalParameters = functionalParameters;
         this.remainingTime = remainingTime;
         this.timeStamp = timeStamp;
     }
@@ -205,7 +211,7 @@ public class VeluxProduct {
         this.state = state;
         this.currentPosition = currentPosition;
         this.targetPosition = target;
-        this.functionalParameters = functionalParameters != null ? functionalParameters.clone() : null;
+        this.functionalParameters = functionalParameters;
     }
 
     // Utility methods
@@ -213,12 +219,12 @@ public class VeluxProduct {
     @Override
     public VeluxProduct clone() {
         if (this.v2) {
-            return new VeluxProduct(this.name, this.typeId, this.actuatorType, this.bridgeProductIndex, this.order,
-                    this.placement, this.velocity, this.variation, this.powerMode, this.serialNumber, this.state,
-                    this.currentPosition, this.targetPosition, this.functionalParameters, this.remainingTime,
-                    this.timeStamp);
+            FunctionalParameters functionalParameters = this.functionalParameters;
+            return new VeluxProduct(name, typeId, actuatorType, bridgeProductIndex, order, placement, velocity,
+                    variation, powerMode, serialNumber, state, currentPosition, targetPosition,
+                    functionalParameters == null ? null : functionalParameters.clone(), remainingTime, timeStamp);
         } else {
-            return new VeluxProduct(this.name, this.typeId, this.bridgeProductIndex);
+            return new VeluxProduct(name, typeId, bridgeProductIndex);
         }
     }
 
@@ -252,11 +258,12 @@ public class VeluxProduct {
             FunctionalParameters functionalParameters = this.functionalParameters;
             String functionalParametersString = functionalParameters == null ? "null" : functionalParameters.toString();
             return String.format(
-                    "Product \"%s\" / %s (bridgeIndex=%d, serial=%s, position=%04X, functionalParameters=%s)", name,
-                    typeId, bridgeProductIndex.toInt(), serialNumber, currentPosition, functionalParametersString);
+                    "VeluxProduct(v2, name:%s, typeId:%s, bridgeIndex:%d, state:%d, serial:%s, position:%04X, functionalParameters:%s)",
+                    name, typeId, bridgeProductIndex.toInt(), state, serialNumber, currentPosition,
+                    functionalParametersString);
         } else {
-            return String.format("Product \"%s\" / %s (bridgeIndex %d)", this.name, this.typeId,
-                    this.bridgeProductIndex.toInt());
+            return String.format("VeluxProduct(v1, name:%s, typeId:%s, bridgeIndex:%d)", name, typeId,
+                    bridgeProductIndex.toInt());
         }
     }
 
@@ -444,27 +451,23 @@ public class VeluxProduct {
      * @return the Functional Parameters.
      */
     public @Nullable FunctionalParameters getFunctionalParameters() {
-        FunctionalParameters functionalParameters = this.functionalParameters;
-        return functionalParameters != null ? functionalParameters.clone() : null;
+        return functionalParameters;
     }
 
     /**
-     * Set the Functional Parameters. Calls setProductAllowedValues() so that any values that are not allowed by normal
-     * products will be replaced by the 'undefined' (i.e. 0xF7FF) value. If newFunctionalParameters is null, then no new
-     * value is set.
+     * Set the Functional Parameters. Calls getMergeSubstitute() to merge the existing parameters (if any) and the new
+     * parameters (if any).
      *
      * @param newFunctionalParameters the new values of the Functional Parameters, or null if nothing is to be set.
      * @return <b>modified</b> if any of the Functional Parameters have been changed.
      */
     public boolean setFunctionalParameters(@Nullable FunctionalParameters newFunctionalParameters) {
-        if (newFunctionalParameters == null) {
+        if ((newFunctionalParameters == null) || newFunctionalParameters.equals(functionalParameters)) {
             return false;
         }
-        FunctionalParameters functionalParameters = this.functionalParameters;
-        if (functionalParameters == null) {
-            functionalParameters = this.functionalParameters = new FunctionalParameters();
-        }
-        return functionalParameters.setProductAllowedFPValues(newFunctionalParameters);
+        functionalParameters = FunctionalParameters.createMergeSubstitute(functionalParameters,
+                newFunctionalParameters);
+        return true;
     }
 
     /**
@@ -505,7 +508,7 @@ public class VeluxProduct {
         FunctionalParameters functionalParameters = this.functionalParameters;
         int index = getVanePositionIndex();
         if ((index >= 0) && (functionalParameters != null)) {
-            return functionalParameters.getValues()[index];
+            return functionalParameters.getValue(index);
         }
         return VeluxProductPosition.VPP_VELUX_UNKNOWN;
     }
@@ -519,9 +522,7 @@ public class VeluxProduct {
     public void setVanePosition(int vanePosition) {
         int index = getVanePositionIndex();
         if ((index >= 0) && FunctionalParameters.isNormalPosition(vanePosition)) {
-            FunctionalParameters functionalParameters = new FunctionalParameters();
-            functionalParameters.setValue(index, vanePosition);
-            this.functionalParameters = functionalParameters;
+            functionalParameters = new FunctionalParameters(index, vanePosition);
         } else {
             functionalParameters = null;
             logger.info("setVanePosition(): actuator type {} ({}) does not support vane position {}.",
@@ -552,5 +553,15 @@ public class VeluxProduct {
             logger.debug("setActuatorType() failed: not allowed to change actuatorType from {} to {}.",
                     this.actuatorType, actuatorType);
         }
+    }
+
+    /**
+     * Return whether the product is a Somfy device.
+     * i.e. one whose serial number does NOT match the format '00:00:00:00:00:00:00:00'
+     *
+     * @return true if the device is a Somfy device
+     */
+    public boolean isSomfyProduct() {
+        return !VELUX_SERIAL_NUMBER.matcher(serialNumber).find();
     }
 }
