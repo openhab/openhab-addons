@@ -1,7 +1,5 @@
 # Kaleidescape Binding
 
-![Kaleidescape logo](doc/Kaleidescape_Logo.png)
-
 This binding is used to control and retrieve information from a Kaleidescape movie player.
 All movie player components including the original K-Player series, M Class Players, Cinema One, Alto, and Strato are supported.
 The 4 zone audio only KMUSIC-4000 is not supported at this time.
