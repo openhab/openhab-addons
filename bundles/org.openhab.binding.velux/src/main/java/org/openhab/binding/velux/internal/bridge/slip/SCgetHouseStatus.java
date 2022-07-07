@@ -127,10 +127,10 @@ public class SCgetHouseStatus extends GetHouseStatus
                     logger.trace("setResponse(): ntfTimeStamp={}.", ntfTimeStamp);
                 }
 
-                // this BCP returns wrong values on some (e.g. Somfy) devices so return null instead
+                // this BCP returns wrong functional parameters on some (e.g. Somfy) devices so return null instead
                 ntfFunctionalParameters = null;
 
-                product = new VeluxProduct(new VeluxProductName(getClass().getName()),
+                product = new VeluxProduct(new VeluxProductName(getClass().getSimpleName()),
                         new ProductBridgeIndex(ntfNodeID), ntfState, ntfCurrentPosition, ntfTarget,
                         ntfFunctionalParameters);
 

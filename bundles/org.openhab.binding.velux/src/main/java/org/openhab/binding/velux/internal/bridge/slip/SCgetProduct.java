@@ -222,7 +222,7 @@ public class SCgetProduct extends GetProduct implements SlipBridgeCommunicationP
                             ntfSerialNumberString);
                 }
 
-                // this BCP returns wrong values on some (e.g. Somfy) devices so return null instead
+                // this BCP returns wrong functional parameters on some (e.g. Somfy) devices so return null instead
                 ntfFunctionalParameters = null;
 
                 product = new VeluxProduct(new VeluxProductName(ntfName), VeluxProductType.get(ntfNodeTypeSubType),
