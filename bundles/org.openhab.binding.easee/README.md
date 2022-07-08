@@ -124,13 +124,13 @@ The Master Charger is like the "normal" charger but has some extra channel to co
 - minimum configuration
 
 ```
-easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="123456" ]
+Bridge easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="123456" ]
 ```
 
 - manual configuration with two chargers, pollingInterval set to 1 minute.
 
 ```
-easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="471111", dataPollingInterval=1 ] {
+Bridge easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="471111", dataPollingInterval=1 ] {
         Thing mastercharger myCharger1 [ id="EHXXXXX1", circuitId="1234567" ]
         Thing charger myCharger2 [ id="EHXXXXX2" ]
 }

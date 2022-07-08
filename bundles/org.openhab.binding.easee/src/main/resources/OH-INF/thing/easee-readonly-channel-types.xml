@@ -45,7 +45,7 @@
 			<options>
 				<option value="0">Offline</option>
 				<option value="1">Disconnected</option>
-				<option value="2">Standby</option>
+				<option value="2">AwaitingStart</option>
 				<option value="3">Charging</option>
 				<option value="4">Completed</option>
 				<option value="5">Error</option>
