@@ -115,13 +115,19 @@ then
     var actualMaxChargingCurrentInt = (GoEChargerMaxCurrent.state as Number).intValue
 
     if (GoEChargerExcessCharge.state == ON) {
-        var totalPowerOutputInWatt = (Total_power_fast.state as DecimalType) * 1000
-        if (totalPowerOutputInWatt > 0) {
-            totalPowerOutputInWatt = 0
-        }
-
         var currentChargingPower = GoEChargerPowerAll.state as Number
-        var availableChargingPowerInWatt = (totalPowerOutputInWatt * -1) + currentChargingPower
+        var totalPowerOutputInWatt = (Total_power_fast.state as DecimalType) * 1000
+        var availableChargingPowerInWatt = 0
+
+        if (totalPowerOutputInWatt > 0 && currentChargingPower > 0) {
+            // take care if already charging
+            availableChargingPowerInWatt = currentChargingPower.intValue - totalPowerOutputInWatt.intValue
+        } else {
+            if (totalPowerOutputInWatt > 0) {
+                totalPowerOutputInWatt = 0
+            }
+            availableChargingPowerInWatt = (totalPowerOutputInWatt.intValue * -1) + currentChargingPower.intValue
+        }
 
         var maxAmp3Phases = (availableChargingPowerInWatt / 3) / 230
         if (maxAmp3Phases > 16.0) {
