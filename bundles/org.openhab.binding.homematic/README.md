@@ -666,6 +666,10 @@ import org.openhab.core.types.RefreshType
 Var_1.sendCommand(RefreshType.REFRESH)
 ```
 
+```java
+Var_1.sendCommand(REFRESH)
+```
+
 **Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS thing is currently not supported.
 You have to delete the thing, start a scan and add it again.
 
