@@ -191,7 +191,6 @@ public class TadoHomeHandler extends BaseBridgeHandler {
                 }
 
                 break;
-
         }
     }
 
