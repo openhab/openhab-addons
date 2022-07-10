@@ -104,7 +104,8 @@ public class SCgetHouseStatus extends GetHouseStatus
         success = false;
         finished = true;
         Packet responseData = new Packet(thisResponseData);
-        switch (Command.get(responseCommand)) {
+        Command responseCmd = Command.get(responseCommand);
+        switch (responseCmd) {
             case GW_NODE_STATE_POSITION_CHANGED_NTF:
                 if (!KLF200Response.isLengthValid(logger, responseCommand, thisResponseData, 20)) {
                     break;
@@ -130,9 +131,8 @@ public class SCgetHouseStatus extends GetHouseStatus
                 // this BCP returns wrong functional parameters on some (e.g. Somfy) devices so return null instead
                 ntfFunctionalParameters = null;
 
-                product = new VeluxProduct(new VeluxProductName(getClass().getSimpleName()),
-                        new ProductBridgeIndex(ntfNodeID), ntfState, ntfCurrentPosition, ntfTarget,
-                        ntfFunctionalParameters);
+                product = new VeluxProduct(new VeluxProductName(responseCmd.name()), new ProductBridgeIndex(ntfNodeID),
+                        ntfState, ntfCurrentPosition, ntfTarget, ntfFunctionalParameters);
 
                 success = true;
                 break;
