@@ -407,8 +407,8 @@ public class VeluxProduct {
         if (this.state == newState) {
             return false;
         } else {
-            logger.trace("setState(name={},index={}) state {} replaced by {}.", name.toString(),
-                    bridgeProductIndex.toInt(), this.state, newState);
+            logger.trace("setState(name={},index={}) state {} replaced by {}.", name, bridgeProductIndex, state,
+                    newState);
             this.state = newState;
             return true;
         }
@@ -429,8 +429,8 @@ public class VeluxProduct {
         if (this.currentPosition == newCurrentPosition) {
             return false;
         } else {
-            logger.trace("setCurrentPosition(name={},index={}) currentPosition {} replaced by {}.", name.toString(),
-                    bridgeProductIndex.toInt(), this.currentPosition, newCurrentPosition);
+            logger.trace("setCurrentPosition(name={},index={}) currentPosition {} replaced by {}.", name,
+                    bridgeProductIndex, currentPosition, newCurrentPosition);
             this.currentPosition = newCurrentPosition;
             return true;
         }
@@ -451,8 +451,8 @@ public class VeluxProduct {
         if (this.targetPosition == newTarget) {
             return false;
         } else {
-            logger.trace("setCurrentPosition(name={},index={}) target {} replaced by {}.", name.toString(),
-                    bridgeProductIndex.toInt(), this.targetPosition, newTarget);
+            logger.trace("setTarget(name={},index={}) target {} replaced by {}.", name, bridgeProductIndex,
+                    targetPosition, newTarget);
             this.targetPosition = newTarget;
             return true;
         }

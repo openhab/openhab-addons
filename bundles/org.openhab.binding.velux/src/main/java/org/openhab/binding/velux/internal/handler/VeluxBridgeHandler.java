@@ -559,7 +559,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                     updateState(channelUID, positionAsPercent);
                     continue;
                 }
-                logger.trace("syncChannelsWithProducts(): update channel {} to 'UNDEFINED'.", channelUID);
+                logger.trace("syncChannelsWithProducts(): updating channel {} to 'UNDEFINED'.", channelUID);
                 updateState(channelUID, UnDefType.UNDEF);
                 continue;
             }
