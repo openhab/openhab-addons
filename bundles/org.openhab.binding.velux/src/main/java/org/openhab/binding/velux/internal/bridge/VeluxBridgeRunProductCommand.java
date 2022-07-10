@@ -16,6 +16,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
+import org.openhab.binding.velux.internal.bridge.slip.SCrunProductCommand;
+import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
+import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,34 +38,71 @@ import org.slf4j.LoggerFactory;
 public class VeluxBridgeRunProductCommand {
     private final Logger logger = LoggerFactory.getLogger(VeluxBridgeRunProductCommand.class);
 
+    private final VeluxBridge bridge;
+    private final @Nullable SCrunProductCommand bcp;
+
+    private int nodeID;
+    private int mainPosition;
+    private @Nullable FunctionalParameters functionalParameters;
+
+    /**
+     * Create and initialise the bcp.
+     *
+     * @param bridge the bridge to send the command to.
+     */
+    public VeluxBridgeRunProductCommand(VeluxBridge bridge) {
+        this.bridge = bridge;
+        RunProductCommand bcp = bridge.bridgeAPI().runProductCommand();
+        if (bcp instanceof SCrunProductCommand) {
+            this.bcp = (SCrunProductCommand) bcp;
+        } else {
+            this.bcp = null;
+        }
+    }
+
     // Class access methods
 
     /**
-     * Login into bridge, instruct the bridge to pass a command towards an actuator based
-     * on a well-prepared environment of a {@link VeluxBridgeProvider}.
+     * Set the command parameters.
      *
-     * @param bridge Initialized Velux bridge handler.
-     * @param nodeId Number of Actuator to be modified.
-     * @param mainValue Target value for Actuator main parameter.
-     * @param functionalParameters the target Functional Parameters.
-     * @return true if successful, and false otherwise.
+     * @param nodeID the actuator node to be commanded.
+     * @param mainPosition the new main position.
+     * @param functionalParameters the new functional parameters.
      */
-    public boolean sendCommand(VeluxBridge bridge, int nodeId, VeluxProductPosition mainValue,
+    public void setParameters(int nodeID, VeluxProductPosition mainPosition,
             @Nullable FunctionalParameters functionalParameters) {
-        logger.trace("sendCommand(nodeId={},value={},functionalParameters={}) called.", nodeId, mainValue,
+        this.nodeID = nodeID;
+        this.mainPosition = mainPosition.getPositionAsVeluxType();
+        this.functionalParameters = functionalParameters;
+    }
+
+    /**
+     * Send the command and wait for the result.
+     *
+     * @return true if the command was sent.
+     */
+    public boolean sendCommand() {
+        logger.debug("sendCommand() called, nodeID:{}, mainPosition:{}, functionalParameters:{}", nodeID, mainPosition,
                 functionalParameters);
-
         boolean success = false;
-        RunProductCommand bcp = bridge.bridgeAPI().runProductCommand();
+        SCrunProductCommand bcp = this.bcp;
         if (bcp != null) {
-            int mainParameter = mainValue.getPositionAsVeluxType();
-
-            bcp.setNodeIdAndParameters(nodeId, mainParameter, functionalParameters);
+            bcp.setNodeIdAndParameters(nodeID, mainPosition, functionalParameters);
             if (bridge.bridgeCommunicate(bcp) && bcp.isCommunicationSuccessful()) {
                 success = true;
             }
         }
         logger.debug("sendCommand() finished {}.", (success ? "successfully" : "with failure"));
         return success;
+    }
+
+    public Command getRequestingCommand() {
+        SCrunProductCommand bcp = this.bcp;
+        return bcp != null ? bcp.getRequestingCommand() : Command.UNDEFTYPE;
+    }
+
+    public VeluxProduct getProduct() {
+        SCrunProductCommand bcp = this.bcp;
+        return bcp != null ? bcp.getProduct() : VeluxProduct.UNKNOWN;
     }
 }

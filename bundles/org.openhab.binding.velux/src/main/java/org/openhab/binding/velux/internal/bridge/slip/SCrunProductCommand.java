@@ -21,6 +21,10 @@ import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
+import org.openhab.binding.velux.internal.things.VeluxProduct;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ActuatorState;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
+import org.openhab.binding.velux.internal.things.VeluxProductName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +91,8 @@ public class SCrunProductCommand extends RunProductCommand implements SlipBridge
 
     private boolean success = false;
     private boolean finished = false;
+
+    private VeluxProduct product = VeluxProduct.UNKNOWN;
 
     /*
      * ===========================================================
@@ -335,6 +341,20 @@ public class SCrunProductCommand extends RunProductCommand implements SlipBridge
         reqIndexArray01 = nodeId;
         reqMainParameter = mainParameter;
         reqFunctionalParameters = functionalParameters;
+
+        // create skeleton product that clones the new command positions
+        product = new VeluxProduct(new VeluxProductName(COMMAND.name()), new ProductBridgeIndex(reqIndexArray01),
+                ActuatorState.EXECUTING.value, reqMainParameter, reqMainParameter, reqFunctionalParameters);
+
         return this;
+    }
+
+    public VeluxProduct getProduct() {
+        logger.trace("getProduct(): returning {}.", product);
+        return product;
+    }
+
+    public Command getRequestingCommand() {
+        return COMMAND;
     }
 }
