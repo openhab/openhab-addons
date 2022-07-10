@@ -14,6 +14,9 @@ package org.openhab.binding.velux.internal.handler;
 
 import static org.openhab.binding.velux.internal.VeluxBindingConstants.*;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeRunProductCommand;
@@ -21,6 +24,8 @@ import org.openhab.binding.velux.internal.bridge.common.GetProduct;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ActuatorState;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -64,6 +69,12 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
         throw new AssertionError();
     }
 
+    /*
+     * List of product states that shall be processed
+     */
+    private static final List<ActuatorState> STATES_TO_PROCESS = Arrays.asList(ActuatorState.DONE,
+            ActuatorState.EXECUTING, ActuatorState.MANUAL, ActuatorState.UNKNOWN);
+
     // Public methods
 
     /**
@@ -90,13 +101,16 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 break;
             }
 
-            GetProduct bcp;
+            GetProduct bcp = null;
             switch (channelId) {
                 case CHANNEL_VANE_POSITION:
                     bcp = thisBridgeHandler.thisBridge.bridgeAPI().getProductStatus();
                     break;
-                default:
+                case CHANNEL_ACTUATOR_POSITION:
+                case CHANNEL_ACTUATOR_STATE:
                     bcp = thisBridgeHandler.thisBridge.bridgeAPI().getProduct();
+                default:
+                    // unknown channel, will exit
             }
 
             if (bcp == null) {
@@ -110,44 +124,50 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 break;
             }
 
-            int posValue;
             VeluxProduct newProduct = bcp.getProduct();
-            switch (channelId) {
-                case CHANNEL_VANE_POSITION:
-                    VeluxProduct oldProduct = thisBridgeHandler.existingProducts()
-                            .get(newProduct.getBridgeProductIndex());
-                    newProduct.setActuatorType(oldProduct.getActuatorType());
-                    newProduct.setTarget(oldProduct.getTarget());
-                    /*
-                     * For vanes we must explicitly call existingProducts.update() to make sure that the functional
-                     * parameters are updated, because these are not updated via 'GW_NODE_STATE_POSITION_CHANGED_NTF'
-                     * house status notification messages (because on some, e.g. Somfy, devices they contain wrong
-                     * values).
-                     */
-                    thisBridgeHandler.existingProducts().update(newProduct);
-                    posValue = newProduct.getVanePosition();
-                    break;
-                default:
-                    posValue = newProduct.getDisplayPosition();
-            }
-
-            VeluxProductPosition position = new VeluxProductPosition(posValue);
-            if (position.isValid()) {
-                switch (channelId) {
-                    case CHANNEL_VANE_POSITION:
-                        newState = position.getPositionAsPercentType(false);
-                        break;
-                    case CHANNEL_ACTUATOR_POSITION:
-                        newState = position.getPositionAsPercentType(veluxActuator.isInverted());
-                        break;
-                    case CHANNEL_ACTUATOR_STATE:
-                        newState = OnOffType
-                                .from(position.getPositionAsPercentType(veluxActuator.isInverted()).intValue() > 50);
-                        break;
-                    default:
-                        // unknown channel => do nothing..
+            if (STATES_TO_PROCESS.contains(newProduct.getActuatorState())) {
+                ProductBridgeIndex productBridgeIndex = newProduct.getBridgeProductIndex();
+                VeluxProduct existingProduct = thisBridgeHandler.existingProducts().get(productBridgeIndex);
+                if (!VeluxProduct.UNKNOWN.equals(existingProduct)) {
+                    switch (channelId) {
+                        case CHANNEL_VANE_POSITION:
+                            newProduct.setActuatorType(existingProduct.getActuatorType());
+                            newProduct.setTarget(existingProduct.getTarget());
+                            // fall through..
+                        case CHANNEL_ACTUATOR_POSITION:
+                        case CHANNEL_ACTUATOR_STATE:
+                            if (thisBridgeHandler.existingProducts().update(bcp.getRequestingCommand(), newProduct)) {
+                                existingProduct = thisBridgeHandler.existingProducts().get(productBridgeIndex);
+                                int posValue = VeluxProductPosition.VPP_VELUX_UNKNOWN;
+                                switch (channelId) {
+                                    case CHANNEL_VANE_POSITION:
+                                        posValue = existingProduct.getVaneDisplayPosition();
+                                        break;
+                                    case CHANNEL_ACTUATOR_POSITION:
+                                    case CHANNEL_ACTUATOR_STATE:
+                                        posValue = existingProduct.getDisplayPosition();
+                                }
+                                VeluxProductPosition position = new VeluxProductPosition(posValue);
+                                if (position.isValid()) {
+                                    switch (channelId) {
+                                        case CHANNEL_VANE_POSITION:
+                                            newState = position.getPositionAsPercentType(false);
+                                            break;
+                                        case CHANNEL_ACTUATOR_POSITION:
+                                            newState = position.getPositionAsPercentType(veluxActuator.isInverted());
+                                            break;
+                                        case CHANNEL_ACTUATOR_STATE:
+                                            newState = OnOffType
+                                                    .from(position.getPositionAsPercentType(veluxActuator.isInverted())
+                                                            .intValue() > 50);
+                                            break;
+                                    }
+                                }
+                            }
+                    }
                 }
             }
+
             if (newState == null) {
                 newState = UnDefType.UNDEF;
             }
@@ -180,17 +200,19 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 LOGGER.warn("handleRefresh(): unknown actuator.");
                 break;
             }
+
             VeluxProductPosition mainPosition = VeluxProductPosition.UNKNOWN;
             FunctionalParameters functionalParameters = null;
+            ProductBridgeIndex productBridgeIndex = veluxActuator.getProductBridgeIndex();
 
             switch (channelId) {
                 case CHANNEL_VANE_POSITION:
                     if (command instanceof PercentType) {
-                        VeluxProduct product = thisBridgeHandler.existingProducts()
-                                .get(veluxActuator.getProductBridgeIndex()).clone();
-                        VeluxProductPosition vanePosition = new VeluxProductPosition((PercentType) command);
-                        product.setVanePosition(vanePosition.getPositionAsVeluxType());
-                        functionalParameters = product.getFunctionalParameters();
+                        VeluxProduct existingProductClone = thisBridgeHandler.existingProducts().get(productBridgeIndex)
+                                .clone();
+                        existingProductClone.setVanePosition(
+                                new VeluxProductPosition((PercentType) command).getPositionAsVeluxType());
+                        functionalParameters = existingProductClone.getFunctionalParameters();
                         mainPosition = new VeluxProductPosition();
                     }
                     break;
@@ -225,10 +247,13 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
 
             if (!mainPosition.equals(VeluxProductPosition.UNKNOWN)) {
                 LOGGER.debug("handleCommand(): sending command '{}' for channel id '{}'.", command, channelId);
-                new VeluxBridgeRunProductCommand().sendCommand(thisBridgeHandler.thisBridge,
-                        veluxActuator.getProductBridgeIndex().toInt(), mainPosition, functionalParameters);
-                if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
-                    LOGGER.trace("handleCommand(): actuator position will be updated via polling.");
+                VeluxBridgeRunProductCommand bcp = new VeluxBridgeRunProductCommand(thisBridgeHandler.thisBridge);
+                bcp.setParameters(productBridgeIndex.toInt(), mainPosition, functionalParameters);
+                if (bcp.sendCommand()) {
+                    if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
+                        LOGGER.trace("handleCommand(): actuator position will be updated via polling.");
+                    }
+                    thisBridgeHandler.existingProducts().update(bcp.getRequestingCommand(), bcp.getProduct());
                 }
             } else {
                 LOGGER.info("handleCommand(): ignoring command '{}' for channel id '{}'.", command, channelId);
