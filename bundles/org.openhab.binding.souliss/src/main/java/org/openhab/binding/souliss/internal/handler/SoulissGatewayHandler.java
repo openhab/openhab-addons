@@ -151,7 +151,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             var props = cfg.getProperties();
             var pNode = props.get("node");
             if (pNode != null) {
-                var thingNode = Integer.parseInt(pNode.toString());
+                var thingNode = (int) Float.parseFloat(pNode.toString());
 
                 if (thingNode > maxNode) {
                     maxNode = thingNode;
