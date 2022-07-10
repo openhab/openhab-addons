@@ -102,19 +102,22 @@ public class VeluxProductPosition {
      *            0xc800, or 0xD200 for stop).
      */
     public VeluxProductPosition(int veluxPosition) {
-        logger.trace("VeluxProductPosition(constructur with {} as veluxPosition) called.", veluxPosition);
-        if ((veluxPosition == VPP_VELUX_UNKNOWN) || (veluxPosition == VPP_VELUX_STOP) || (veluxPosition < VPP_VELUX_MIN)
-                || (veluxPosition > VPP_VELUX_MAX)) {
-            logger.trace("VeluxProductPosition() gives up.");
-            this.position = new PercentType(VPP_UNKNOWN);
-            this.isValid = false;
-        } else {
+        logger.trace("VeluxProductPosition(constructor with {} as veluxPosition) called.", veluxPosition);
+        if (isValid(veluxPosition)) {
             float result = (ONE * veluxPosition - VPP_VELUX_MIN) / (VPP_VELUX_MAX - VPP_VELUX_MIN);
             result = Math.round(VPP_OPENHAB_MIN + result * (VPP_OPENHAB_MAX - VPP_OPENHAB_MIN));
-            logger.trace("VeluxProductPosition() created with percent-type {}.", (int) result);
             this.position = new PercentType((int) result);
             this.isValid = true;
+            logger.trace("VeluxProductPosition() created with percent-type {}.", (int) result);
+        } else {
+            this.position = new PercentType(VPP_UNKNOWN);
+            this.isValid = false;
+            logger.trace("VeluxProductPosition() gives up.");
         }
+    }
+
+    public static boolean isValid(int position) {
+        return (position <= VeluxProductPosition.VPP_VELUX_MAX) && (position >= VeluxProductPosition.VPP_VELUX_MIN);
     }
 
     /**
