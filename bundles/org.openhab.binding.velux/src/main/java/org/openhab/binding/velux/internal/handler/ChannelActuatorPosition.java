@@ -23,6 +23,7 @@ import org.openhab.binding.velux.internal.bridge.VeluxBridgeRunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.GetProduct;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
+import org.openhab.binding.velux.internal.things.VeluxExistingProducts;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ActuatorState;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
@@ -127,17 +128,15 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
             VeluxProduct newProduct = bcp.getProduct();
             if (STATES_TO_PROCESS.contains(newProduct.getActuatorState())) {
                 ProductBridgeIndex productBridgeIndex = newProduct.getBridgeProductIndex();
-                VeluxProduct existingProduct = thisBridgeHandler.existingProducts().get(productBridgeIndex);
+                VeluxExistingProducts existingProducts = thisBridgeHandler.existingProducts();
+                VeluxProduct existingProduct = existingProducts.get(productBridgeIndex);
                 if (!VeluxProduct.UNKNOWN.equals(existingProduct)) {
                     switch (channelId) {
                         case CHANNEL_VANE_POSITION:
-                            newProduct.setActuatorType(existingProduct.getActuatorType());
-                            newProduct.setTarget(existingProduct.getTarget());
-                            // fall through..
                         case CHANNEL_ACTUATOR_POSITION:
-                        case CHANNEL_ACTUATOR_STATE:
-                            if (thisBridgeHandler.existingProducts().update(bcp.getRequestingCommand(), newProduct)) {
-                                existingProduct = thisBridgeHandler.existingProducts().get(productBridgeIndex);
+                        case CHANNEL_ACTUATOR_STATE: {
+                            if (existingProducts.update(bcp.getRequestingCommand(), newProduct)) {
+                                existingProduct = existingProducts.get(productBridgeIndex);
                                 int posValue = VeluxProductPosition.VPP_VELUX_UNKNOWN;
                                 switch (channelId) {
                                     case CHANNEL_VANE_POSITION:
@@ -160,10 +159,10 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                                             newState = OnOffType
                                                     .from(position.getPositionAsPercentType(veluxActuator.isInverted())
                                                             .intValue() > 50);
-                                            break;
                                     }
                                 }
                             }
+                        }
                     }
                 }
             }
@@ -203,13 +202,13 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
 
             VeluxProductPosition mainPosition = VeluxProductPosition.UNKNOWN;
             FunctionalParameters functionalParameters = null;
+            VeluxExistingProducts existingProducts = thisBridgeHandler.existingProducts();
             ProductBridgeIndex productBridgeIndex = veluxActuator.getProductBridgeIndex();
 
             switch (channelId) {
                 case CHANNEL_VANE_POSITION:
                     if (command instanceof PercentType) {
-                        VeluxProduct existingProductClone = thisBridgeHandler.existingProducts().get(productBridgeIndex)
-                                .clone();
+                        VeluxProduct existingProductClone = existingProducts.get(productBridgeIndex).clone();
                         existingProductClone.setVanePosition(
                                 new VeluxProductPosition((PercentType) command).getPositionAsVeluxType());
                         functionalParameters = existingProductClone.getFunctionalParameters();
@@ -253,8 +252,8 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                     if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
                         LOGGER.trace("handleCommand(): actuator position will be updated via polling.");
                     }
-                    if (mainPosition.isValid() && thisBridgeHandler.existingProducts()
-                            .update(bcp.getRequestingCommand(), bcp.getProduct())) {
+                    if (mainPosition.isValid()
+                            && existingProducts.update(bcp.getRequestingCommand(), bcp.getProduct())) {
                         LOGGER.trace("handleCommand(): actuator position immediate update requested.");
                     }
                 }
