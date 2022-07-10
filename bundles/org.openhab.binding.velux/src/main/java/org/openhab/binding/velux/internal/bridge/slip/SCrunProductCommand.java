@@ -25,6 +25,7 @@ import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ActuatorState;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.openhab.binding.velux.internal.things.VeluxProductName;
+import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -335,18 +336,23 @@ public class SCrunProductCommand extends RunProductCommand implements SlipBridge
      */
 
     @Override
-    public SCrunProductCommand setNodeIdAndParameters(int nodeId, int mainParameter,
+    public boolean setNodeIdAndParameters(int nodeId, int mainParameter,
             @Nullable FunctionalParameters functionalParameters) {
         logger.debug("setNodeIdAndParameters({}) called.", nodeId);
-        reqIndexArray01 = nodeId;
-        reqMainParameter = mainParameter;
-        reqFunctionalParameters = functionalParameters;
 
-        // create skeleton product that clones the new command positions
-        product = new VeluxProduct(new VeluxProductName(COMMAND.name()), new ProductBridgeIndex(reqIndexArray01),
-                ActuatorState.EXECUTING.value, reqMainParameter, reqMainParameter, reqFunctionalParameters);
+        if ((mainParameter != VeluxProductPosition.VPP_VELUX_IGNORE) || (functionalParameters != null)) {
+            reqIndexArray01 = nodeId;
+            reqMainParameter = mainParameter;
+            reqFunctionalParameters = functionalParameters;
 
-        return this;
+            // create skeleton product that clones the new command positions
+            product = new VeluxProduct(new VeluxProductName(COMMAND.name()), new ProductBridgeIndex(reqIndexArray01),
+                    ActuatorState.EXECUTING.value, reqMainParameter, reqMainParameter, reqFunctionalParameters);
+
+            return true;
+        }
+        product = VeluxProduct.UNKNOWN;
+        return false;
     }
 
     public VeluxProduct getProduct() {

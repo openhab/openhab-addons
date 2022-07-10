@@ -72,7 +72,8 @@ public class VeluxBridgeRunProductCommand {
     public void setParameters(int nodeID, VeluxProductPosition mainPosition,
             @Nullable FunctionalParameters functionalParameters) {
         this.nodeID = nodeID;
-        this.mainPosition = mainPosition.getPositionAsVeluxType();
+        this.mainPosition = mainPosition.isValid() ? mainPosition.getPositionAsVeluxType()
+                : VeluxProductPosition.VPP_VELUX_IGNORE;
         this.functionalParameters = functionalParameters;
     }
 
@@ -84,14 +85,9 @@ public class VeluxBridgeRunProductCommand {
     public boolean sendCommand() {
         logger.debug("sendCommand() called, nodeID:{}, mainPosition:{}, functionalParameters:{}", nodeID, mainPosition,
                 functionalParameters);
-        boolean success = false;
         SCrunProductCommand bcp = this.bcp;
-        if (bcp != null) {
-            bcp.setNodeIdAndParameters(nodeID, mainPosition, functionalParameters);
-            if (bridge.bridgeCommunicate(bcp) && bcp.isCommunicationSuccessful()) {
-                success = true;
-            }
-        }
+        boolean success = (bcp != null) && bcp.setNodeIdAndParameters(nodeID, mainPosition, functionalParameters)
+                && bridge.bridgeCommunicate(bcp) && bcp.isCommunicationSuccessful();
         logger.debug("sendCommand() finished {}.", (success ? "successfully" : "with failure"));
         return success;
     }
