@@ -193,21 +193,20 @@ public class SCgetProductStatus extends GetProduct implements SlipBridgeCommunic
                 int ntfState;
                 switch (ntfRunStatus) {
                     case 1:
-                        ntfState = VeluxProduct.State.ERROR.value;
+                        ntfState = VeluxProduct.ActuatorState.ERROR.value;
                         break;
                     case 2:
-                        ntfState = VeluxProduct.State.EXECUTING.value;
+                        ntfState = VeluxProduct.ActuatorState.EXECUTING.value;
                         break;
                     default:
-                        ntfState = VeluxProduct.State.DONE.value;
+                        ntfState = VeluxProduct.ActuatorState.DONE.value;
                 }
 
                 // this BCP does not return a target value
                 int ntfTarget = VeluxProductPosition.VPP_VELUX_IGNORE;
 
-                product = new VeluxProduct(new VeluxProductName(getClass().getSimpleName()),
-                        new ProductBridgeIndex(ntfNodeID), ntfState, ntfCurrentPosition, ntfTarget,
-                        ntfFunctionalParameters);
+                product = new VeluxProduct(new VeluxProductName(responseCmd.name()), new ProductBridgeIndex(ntfNodeID),
+                        ntfState, ntfCurrentPosition, ntfTarget, ntfFunctionalParameters);
 
                 success = true;
                 if (!isSequentialEnforced) {
@@ -263,5 +262,10 @@ public class SCgetProductStatus extends GetProduct implements SlipBridgeCommunic
     public VeluxProduct getProduct() {
         logger.trace("getProduct(): returning {}.", product);
         return product;
+    }
+
+    @Override
+    public Command getRequestingCommand() {
+        return COMMAND;
     }
 }

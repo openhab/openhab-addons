@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.velux.internal.things;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
+import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ActuatorState;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
-import org.openhab.binding.velux.internal.things.VeluxProduct.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +60,15 @@ public class VeluxExistingProducts {
      * Value to flag any changes towards the getter.
      */
     private boolean dirty;
+
+    /*
+     * Lists of conditions for filtering when the existing products database shall be updated.
+     * - list of requesting commands whose results shall be rejected.
+     * - list of product states whose positions shall be accepted.
+     */
+    private static final List<Command> REJECTED_COMMANDS = Arrays.asList(Command.GW_OPENHAB_RECEIVEONLY);
+    private static final List<ActuatorState> ACCEPTED_STATES = Arrays.asList(ActuatorState.EXECUTING,
+            ActuatorState.DONE);
 
     // Constructor methods
 
@@ -97,8 +109,6 @@ public class VeluxExistingProducts {
         }
         logger.trace("register() registering new product {}.", newProduct);
 
-        newProduct.setState(newProduct.getState() & State.DOCUMENTED_STATES_BIT_MASK.value);
-
         String uniqueIndex = newProduct.getProductUniqueIndex();
         logger.trace("register() registering by UniqueIndex {}", uniqueIndex);
         existingProductsByUniqueIndex.put(uniqueIndex, newProduct);
@@ -114,7 +124,17 @@ public class VeluxExistingProducts {
         return true;
     }
 
-    public boolean update(VeluxProduct newProduct) {
+    /**
+     * Update the product in the existing products database by applying the data from the new product argument. This
+     * method may ignore the new product if it was created by certain originating commands, or if the new product has
+     * certain actuator states.
+     *
+     * @param requestingCommand the command that requested the data from the hub and so triggered calling this method.
+     * @param newProduct the product containing new data.
+     *
+     * @return true if the product exists in the database.
+     */
+    public boolean update(Command requestingCommand, VeluxProduct newProduct) {
         logger.debug("update(newProduct:{}", newProduct);
         ProductBridgeIndex productBridgeIndex = newProduct.getBridgeProductIndex();
         if (!isRegistered(productBridgeIndex)) {
@@ -122,24 +142,40 @@ public class VeluxExistingProducts {
             return false;
         }
         VeluxProduct thisProduct = this.get(productBridgeIndex);
-        dirty |= thisProduct.setState(newProduct.getState() & State.DOCUMENTED_STATES_BIT_MASK.value);
-        dirty |= thisProduct.setCurrentPosition(newProduct.getCurrentPosition());
-        int newTarget = newProduct.getTarget();
-        if (VeluxProductPosition.VPP_VELUX_IGNORE != newTarget) {
-            dirty |= thisProduct.setTarget(newTarget);
-        }
-        if (thisProduct.supportsVanePosition()) {
-            FunctionalParameters newFunctionalParameters = newProduct.getFunctionalParameters();
-            if (newFunctionalParameters != null) {
-                dirty |= thisProduct.setFunctionalParameters(newFunctionalParameters);
+
+        // exceptionally ignore rejected commands, with bad data data from buggy (e.g. Somfy) device messages
+        boolean exceptionallyIgnorePositionValues = thisProduct.isSomfyProduct()
+                && REJECTED_COMMANDS.contains(requestingCommand)
+                && !VeluxProductPosition.isValid(newProduct.getCurrentPosition())
+                && !VeluxProductPosition.isValid(newProduct.getTarget());
+
+        // always update the actuator state
+        int newState = newProduct.getState();
+        dirty |= thisProduct.setState(newState);
+
+        // only update the actuator position values if permitted
+        if (ACCEPTED_STATES.contains(ActuatorState.of(newState)) && !exceptionallyIgnorePositionValues) {
+            dirty |= thisProduct.setCurrentPosition(newProduct.getCurrentPosition());
+            int newTarget = newProduct.getTarget();
+            if (VeluxProductPosition.VPP_VELUX_IGNORE != newTarget) {
+                dirty |= thisProduct.setTarget(newTarget);
+            }
+            if (thisProduct.supportsVanePosition()) {
+                FunctionalParameters newFunctionalParameters = newProduct.getFunctionalParameters();
+                if (newFunctionalParameters != null) {
+                    dirty |= thisProduct.setFunctionalParameters(newFunctionalParameters);
+                }
             }
         }
+
+        // update modified product database
         if (dirty) {
             String uniqueIndex = thisProduct.getProductUniqueIndex();
             logger.trace("update(): updating by UniqueIndex {}.", uniqueIndex);
             existingProductsByUniqueIndex.replace(uniqueIndex, thisProduct);
             modifiedProductsByUniqueIndex.put(uniqueIndex, thisProduct);
         }
+
         logger.trace("update() successfully finished (dirty={}).", dirty);
         return true;
     }

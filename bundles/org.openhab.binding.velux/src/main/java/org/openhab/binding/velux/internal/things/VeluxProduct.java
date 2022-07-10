@@ -63,25 +63,47 @@ public class VeluxProduct {
     }
 
     // State (of movement) of an actuator
-    public static enum State {
+    public static enum ActuatorState {
         NON_EXECUTING(0),
         ERROR(1),
         NOT_USED(2),
         WAITING_FOR_POWER(3),
         EXECUTING(4),
         DONE(5),
-        MANUAL_OVERRIDE(0x80),
         UNKNOWN(0xFF),
-        DOCUMENTED_STATES_BIT_MASK(0b10000111);
+        MANUAL(0b10000000),
+        ACTION_MASK(0b111);
 
         public final int value;
 
-        private State(int value) {
+        private ActuatorState(int value) {
             this.value = value;
+        }
+
+        public static ActuatorState of(int value) {
+            if ((value < NON_EXECUTING.value) || (value > UNKNOWN.value)) {
+                return ERROR;
+            }
+            if (value == UNKNOWN.value) {
+                return UNKNOWN;
+            }
+            if ((value & MANUAL.value) != 0) {
+                return MANUAL;
+            }
+            int masked = value & ACTION_MASK.value;
+            for (ActuatorState state : values()) {
+                if (state.value > DONE.value) {
+                    break;
+                }
+                if (masked == state.value) {
+                    return state;
+                }
+            }
+            return ERROR;
         }
     }
 
-    // Pattern to match a Velux serial number '00:00:00:00:00:00:00:00'
+    // pattern to match a Velux serial number '00:00:00:00:00:00:00:00'
     private static final Pattern VELUX_SERIAL_NUMBER = Pattern.compile(
             "^[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}$");
 
@@ -99,12 +121,14 @@ public class VeluxProduct {
     private int variation = 0;
     private int powerMode = 0;
     private String serialNumber = VeluxProductSerialNo.UNKNOWN;
-    private int state = State.UNKNOWN.value;
+    private int state = ActuatorState.UNKNOWN.value;
     private int currentPosition = 0;
     private int targetPosition = 0;
     private @Nullable FunctionalParameters functionalParameters = null;
     private int remainingTime = 0;
     private int timeStamp = 0;
+
+    private final boolean isSomfyProduct;
 
     // Constructor
 
@@ -119,6 +143,7 @@ public class VeluxProduct {
         this.typeId = VeluxProductType.UNDEFTYPE;
         this.bridgeProductIndex = ProductBridgeIndex.UNKNOWN;
         this.actuatorType = ActuatorType.UNDEFTYPE;
+        this.isSomfyProduct = false;
     }
 
     /**
@@ -136,6 +161,7 @@ public class VeluxProduct {
         this.typeId = typeId;
         this.bridgeProductIndex = bridgeProductIndex;
         this.actuatorType = ActuatorType.WINDOW_4_0;
+        this.isSomfyProduct = false;
     }
 
     /**
@@ -182,6 +208,8 @@ public class VeluxProduct {
         this.functionalParameters = functionalParameters;
         this.remainingTime = remainingTime;
         this.timeStamp = timeStamp;
+        // isSomfyProduct is true if serial number not matching the '00:00:00:00:00:00:00:00' pattern
+        this.isSomfyProduct = !VELUX_SERIAL_NUMBER.matcher(serialNumber).find();
     }
 
     /**
@@ -213,6 +241,7 @@ public class VeluxProduct {
         this.currentPosition = currentPosition;
         this.targetPosition = target;
         this.functionalParameters = functionalParameters;
+        this.isSomfyProduct = false;
     }
 
     // Utility methods
@@ -343,6 +372,15 @@ public class VeluxProduct {
     }
 
     /**
+     * Get the actuator state.
+     *
+     * @return state cast to an ActuatorState enum.
+     */
+    public ActuatorState getActuatorState() {
+        return ActuatorState.of(state);
+    }
+
+    /**
      * @param newState Update the operating state of the node.
      * @return <B>modified</B> as type boolean to signal a real modification.
      */
@@ -425,23 +463,22 @@ public class VeluxProduct {
      * @return The display position of the actuator
      */
     public int getDisplayPosition() {
-        // manual override flag set: position is 'unknown'
-        if ((state & State.MANUAL_OVERRIDE.value) != 0) {
-            return VeluxProductPosition.VPP_VELUX_UNKNOWN;
-        }
-        // only check other conditions if targetPosition is valid and differs from currentPosition
-        if ((targetPosition != currentPosition) && (targetPosition <= VeluxProductPosition.VPP_VELUX_MAX)
-                && (targetPosition >= VeluxProductPosition.VPP_VELUX_MIN)) {
-            int state = this.state & 0xf;
-            // actuator is in motion: for quicker UI update, return targetPosition
-            if ((state > State.ERROR.value) && (state < State.DONE.value)) {
-                return targetPosition;
-            }
-            // motion complete but currentPosition is not valid: return targetPosition
-            if ((state == State.DONE.value) && ((currentPosition > VeluxProductPosition.VPP_VELUX_MAX)
-                    || (currentPosition < VeluxProductPosition.VPP_VELUX_MIN))) {
-                return targetPosition;
-            }
+        switch (getActuatorState()) {
+            case EXECUTING:
+                if (VeluxProductPosition.isValid(targetPosition)) {
+                    return targetPosition;
+                }
+                break;
+            case DONE:
+                if (!VeluxProductPosition.isValid(currentPosition) && VeluxProductPosition.isValid(targetPosition)) {
+                    return targetPosition;
+                }
+                break;
+            case ERROR:
+            case UNKNOWN:
+            case MANUAL:
+                return VeluxProductPosition.VPP_VELUX_UNKNOWN;
+            default:
         }
         return currentPosition;
     }
@@ -532,6 +569,23 @@ public class VeluxProduct {
     }
 
     /**
+     * Get the display position of the vanes depending on the product state.
+     * See 'getDisplayPosition()'.
+     *
+     * @return the display position.
+     */
+    public int getVaneDisplayPosition() {
+        switch (getActuatorState()) {
+            case ERROR:
+            case UNKNOWN:
+            case MANUAL:
+                return VeluxProductPosition.VPP_VELUX_UNKNOWN;
+            default:
+        }
+        return getVanePosition();
+    }
+
+    /**
      * Get the actuator type.
      *
      * @return the actuator type.
@@ -557,12 +611,9 @@ public class VeluxProduct {
     }
 
     /**
-     * Return whether the product is a Somfy device.
-     * i.e. one whose serial number does NOT match the format '00:00:00:00:00:00:00:00'
-     *
-     * @return true if the device is a Somfy device
+     * @return true if it is a Somfy product.
      */
     public boolean isSomfyProduct() {
-        return !VELUX_SERIAL_NUMBER.matcher(serialNumber).find();
+        return isSomfyProduct;
     }
 }

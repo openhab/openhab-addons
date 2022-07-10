@@ -271,4 +271,13 @@ class SCgetProducts extends GetProducts implements SlipBridgeCommunicationProtoc
             return new VeluxProduct[0];
         }
     }
+
+    public Command getRequestCommandType() {
+        return COMMAND;
+    }
+
+    @Override
+    public Command getRequestingCommand() {
+        return Command.GW_GET_ALL_NODES_INFORMATION_REQ;
+    }
 }

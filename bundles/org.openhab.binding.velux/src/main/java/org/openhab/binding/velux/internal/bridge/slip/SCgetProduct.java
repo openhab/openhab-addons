@@ -266,4 +266,9 @@ public class SCgetProduct extends GetProduct implements SlipBridgeCommunicationP
         logger.trace("getProduct(): returning {}.", product);
         return product;
     }
+
+    @Override
+    public Command getRequestingCommand() {
+        return COMMAND;
+    }
 }
