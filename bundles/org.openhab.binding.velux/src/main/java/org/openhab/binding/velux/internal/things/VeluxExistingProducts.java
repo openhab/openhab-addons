@@ -150,8 +150,11 @@ public class VeluxExistingProducts {
                 && !VeluxProductPosition.isValid(newProduct.getTarget());
 
         // always update the actuator state
+        int oldState = thisProduct.getState();
         int newState = newProduct.getState();
-        dirty |= thisProduct.setState(newState);
+        if (thisProduct.setState(newState)) {
+            dirty = !ActuatorState.equals(oldState, newState);
+        }
 
         // only update the actuator position values if permitted
         if (ACCEPTED_STATES.contains(ActuatorState.of(newState)) && !exceptionallyIgnorePositionValues) {

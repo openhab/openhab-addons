@@ -71,8 +71,10 @@ public class VeluxProduct {
         EXECUTING(4),
         DONE(5),
         UNKNOWN(0xFF),
-        MANUAL(0b10000000),
-        ACTION_MASK(0b111);
+        MANUAL(0b10000000);
+
+        private static final int ACTION_MASK = 0b111;
+        private static final int EQUALS_MASK = ACTION_MASK | MANUAL.value;
 
         public final int value;
 
@@ -80,6 +82,12 @@ public class VeluxProduct {
             this.value = value;
         }
 
+        /**
+         * Create an ActuatorState from an integer seed value.
+         *
+         * @param value the seed value.
+         * @return the ActuatorState.
+         */
         public static ActuatorState of(int value) {
             if ((value < NON_EXECUTING.value) || (value > UNKNOWN.value)) {
                 return ERROR;
@@ -90,7 +98,7 @@ public class VeluxProduct {
             if ((value & MANUAL.value) != 0) {
                 return MANUAL;
             }
-            int masked = value & ACTION_MASK.value;
+            int masked = value & ACTION_MASK;
             for (ActuatorState state : values()) {
                 if (state.value > DONE.value) {
                     break;
@@ -100,6 +108,17 @@ public class VeluxProduct {
                 }
             }
             return ERROR;
+        }
+
+        /**
+         * Check if the masked values of the two input arguments are the same.
+         *
+         * @param value1 first value to check.
+         * @param value2 second value to check.
+         * @return true if the masked values of value1 and value2 are the same.
+         */
+        public static boolean equals(int value1, int value2) {
+            return (value1 & EQUALS_MASK) == (value2 & EQUALS_MASK);
         }
     }
 
