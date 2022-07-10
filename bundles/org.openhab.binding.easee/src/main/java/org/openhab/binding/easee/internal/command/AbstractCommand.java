@@ -202,7 +202,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     protected void onCompleteCodeOk(@Nullable String json) {
         JsonObject jsonObject = transform(json);
         if (jsonObject != null) {
-            logger.info("success");
+            logger.debug("success");
             handler.updateChannelStatus(transformer.transform(jsonObject, getChannelGroup()));
             processResult(jsonObject);
         }
