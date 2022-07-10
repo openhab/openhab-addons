@@ -25,7 +25,9 @@ import org.openhab.binding.velux.internal.bridge.slip.SCgetProductStatus;
 import org.openhab.binding.velux.internal.bridge.slip.SCrunProductCommand;
 import org.openhab.binding.velux.internal.things.VeluxExistingProducts;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI;
+import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ActuatorState;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.openhab.binding.velux.internal.things.VeluxProductName;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
@@ -41,17 +43,17 @@ import org.openhab.binding.velux.internal.things.VeluxProductType.ActuatorType;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestNotificationsAndDatabase {
     // validation parameters
-    private static final byte PRODUCT_INDEX_SOMFY = 6;
-    private static final byte PRODUCT_INDEX_VELUX = 0;
-    private static final int MAIN_POSITION_SOMFY = 0xC800;
-    private static final int MAIN_POSITION_VELUX = 0x4600;
-    private static final int VANE_POSITION_SOMFY = 0x634f;
-    private static final int TARGET_POSITION_SOMFY = 0xB800;
-    private static final Integer STATE_SOMFY = 45;
+    private static final byte PRODUCT_INDEX_A = 6;
+    private static final byte PRODUCT_INDEX_B = 0;
+    private static final int MAIN_POSITION_A = 0xC800;
+    private static final int MAIN_POSITION_B = 0x4600;
+    private static final int VANE_POSITION_A = 0x634f;
+    private static final int TARGET_POSITION = 0xB800;
+    private static final int STATE_SOMFY = 0x2D;
 
     private static final int UNKNOWN_POSITION = VeluxProductPosition.VPP_VELUX_UNKNOWN;
     private static final int IGNORE_POSITION = VeluxProductPosition.VPP_VELUX_IGNORE;
-    private static final int STATE_DONE = VeluxProduct.State.DONE.value;
+    private static final int STATE_DONE = VeluxProduct.ActuatorState.DONE.value;
 
     private static final ActuatorType ACTUATOR_TYPE_SOMFY = ActuatorType.BLIND_17;
     private static final ActuatorType ACTUATOR_TYPE_VELUX = ActuatorType.WINDOW_4_1;
@@ -106,14 +108,14 @@ public class TestNotificationsAndDatabase {
                 + " 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
                 + " 00 00 00 00 00 01 04 40 00 00 00 00 00 00 00 00 00 00 00 00 00 2D C8 00 C8 00 F7 FF F7 FF 00 00 F7 FF 00"
                 + " 00 4F 00 4A EA 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00";
-        final short command = VeluxKLFAPI.Command.GW_GET_NODE_INFORMATION_NTF.getShort();
+        final Command command = VeluxKLFAPI.Command.GW_GET_NODE_INFORMATION_NTF;
 
         // initialise the BCP
         SCgetProduct bcp = new SCgetProduct();
-        bcp.setProductId(PRODUCT_INDEX_SOMFY);
+        bcp.setProductId(PRODUCT_INDEX_A);
 
         // set the packet response
-        bcp.setResponse(command, toByteArray(packet), false);
+        bcp.setResponse(command.getShort(), toByteArray(packet), false);
 
         // check BCP status
         assertTrue(bcp.isCommunicationSuccessful());
@@ -124,18 +126,18 @@ public class TestNotificationsAndDatabase {
 
         // check positive assertions
         assertEquals(STATE_SOMFY, product.getState());
-        assertEquals(MAIN_POSITION_SOMFY, product.getCurrentPosition());
-        assertEquals(MAIN_POSITION_SOMFY, product.getTarget());
-        assertEquals(PRODUCT_INDEX_SOMFY, product.getBridgeProductIndex().toInt());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(MAIN_POSITION_A, product.getTarget());
+        assertEquals(PRODUCT_INDEX_A, product.getBridgeProductIndex().toInt());
         assertEquals(ACTUATOR_TYPE_SOMFY, product.getActuatorType());
         assertEquals(UNKNOWN_POSITION, product.getVanePosition());
         assertNull(product.getFunctionalParameters());
         assertTrue(product.supportsVanePosition());
         assertTrue(product.isSomfyProduct());
+        assertEquals(ActuatorState.DONE, product.getActuatorState());
 
         // check negative assertions
-        assertNotEquals(STATE_DONE, product.getState());
-        assertNotEquals(VANE_POSITION_SOMFY, product.getVanePosition());
+        assertNotEquals(VANE_POSITION_A, product.getVanePosition());
 
         // register in existing products database
         VeluxExistingProducts existingProducts = getExistingProducts();
@@ -156,11 +158,11 @@ public class TestNotificationsAndDatabase {
         assertFalse(existingProducts.register(product));
 
         // updating again with the same data should NOT set the dirty flag
-        assertTrue(existingProducts.update(product));
+        assertTrue(existingProducts.update(bcp.getRequestingCommand(), product));
         assertFalse(existingProducts.isDirty());
 
         // check that the product in the database is indeed the one just created
-        VeluxProduct existing = existingProducts.get(new ProductBridgeIndex(PRODUCT_INDEX_SOMFY));
+        VeluxProduct existing = existingProducts.get(new ProductBridgeIndex(PRODUCT_INDEX_A));
         assertEquals(product, existing);
         assertEquals(1, existingProducts.getNoMembers());
         assertTrue(existingProducts.isRegistered(product.getBridgeProductIndex()));
@@ -173,13 +175,13 @@ public class TestNotificationsAndDatabase {
     @Order(4)
     public void testExistingUnknownVanePosition() {
         VeluxExistingProducts existingProducts = getExistingProducts();
-        VeluxProduct product = existingProducts.get(new ProductBridgeIndex(PRODUCT_INDEX_SOMFY));
+        VeluxProduct product = existingProducts.get(new ProductBridgeIndex(PRODUCT_INDEX_A));
 
         // confirm the product details
-        assertEquals(STATE_DONE, product.getState());
-        assertEquals(MAIN_POSITION_SOMFY, product.getCurrentPosition());
-        assertEquals(MAIN_POSITION_SOMFY, product.getTarget());
-        assertEquals(PRODUCT_INDEX_SOMFY, product.getBridgeProductIndex().toInt());
+        assertEquals(STATE_SOMFY, product.getState());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(MAIN_POSITION_A, product.getTarget());
+        assertEquals(PRODUCT_INDEX_A, product.getBridgeProductIndex().toInt());
         assertEquals(ACTUATOR_TYPE_SOMFY, product.getActuatorType());
         assertEquals(UNKNOWN_POSITION, product.getVanePosition());
         assertNull(product.getFunctionalParameters());
@@ -195,14 +197,14 @@ public class TestNotificationsAndDatabase {
         // initialise the test parameters
         final String packet = "00 D8 01 06 00 01 01 02 00 C8 00 03 63 4F 00 00 00 00 00 00 00 00 00 00 00 00 00"
                 + " 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00";
-        final short command = VeluxKLFAPI.Command.GW_STATUS_REQUEST_NTF.getShort();
+        final Command command = VeluxKLFAPI.Command.GW_STATUS_REQUEST_NTF;
 
         // initialise the BCP
         SCgetProductStatus bcp = new SCgetProductStatus();
-        bcp.setProductId(PRODUCT_INDEX_SOMFY);
+        bcp.setProductId(PRODUCT_INDEX_A);
 
         // set the packet response
-        bcp.setResponse(command, toByteArray(packet), false);
+        bcp.setResponse(command.getShort(), toByteArray(packet), false);
 
         // check BCP status
         assertTrue(bcp.isCommunicationSuccessful());
@@ -217,25 +219,22 @@ public class TestNotificationsAndDatabase {
 
         // check positive assertions
         assertEquals(STATE_DONE, product.getState());
-        assertEquals(MAIN_POSITION_SOMFY, product.getCurrentPosition());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
         assertEquals(IGNORE_POSITION, product.getTarget());
-        assertEquals(PRODUCT_INDEX_SOMFY, product.getBridgeProductIndex().toInt());
+        assertEquals(PRODUCT_INDEX_A, product.getBridgeProductIndex().toInt());
         assertEquals(ACTUATOR_TYPE_SOMFY, product.getActuatorType());
-        assertEquals(VANE_POSITION_SOMFY, product.getVanePosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
         assertNotNull(product.getFunctionalParameters());
+        assertEquals(ActuatorState.DONE, product.getActuatorState());
 
         // test updating the existing product in the database
         VeluxExistingProducts existingProducts = getExistingProducts();
-        assertTrue(existingProducts.update(product));
+        assertTrue(existingProducts.update(bcp.getRequestingCommand(), product));
         assertTrue(existingProducts.isDirty());
 
         // updating again with the same data should NOT set the dirty flag
         existingProducts.resetDirtyFlag();
-        assertTrue(existingProducts.update(product));
-        assertFalse(existingProducts.isDirty());
-
-        // clean up
-        existingProducts.resetDirtyFlag();
+        assertTrue(existingProducts.update(bcp.getRequestingCommand(), product));
         assertFalse(existingProducts.isDirty());
     }
 
@@ -247,16 +246,17 @@ public class TestNotificationsAndDatabase {
     @Order(6)
     public void testExistingValidVanePosition() {
         VeluxExistingProducts existingProducts = getExistingProducts();
-        VeluxProduct product = existingProducts.get(new ProductBridgeIndex(PRODUCT_INDEX_SOMFY));
+        VeluxProduct product = existingProducts.get(new ProductBridgeIndex(PRODUCT_INDEX_A));
 
         // confirm the product details
         assertEquals(STATE_DONE, product.getState());
-        assertEquals(MAIN_POSITION_SOMFY, product.getCurrentPosition());
-        assertEquals(MAIN_POSITION_SOMFY, product.getTarget());
-        assertEquals(PRODUCT_INDEX_SOMFY, product.getBridgeProductIndex().toInt());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(MAIN_POSITION_A, product.getTarget());
+        assertEquals(PRODUCT_INDEX_A, product.getBridgeProductIndex().toInt());
         assertEquals(ACTUATOR_TYPE_SOMFY, product.getActuatorType());
-        assertEquals(VANE_POSITION_SOMFY, product.getVanePosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
         assertNotNull(product.getFunctionalParameters());
+        assertEquals(ActuatorState.DONE, product.getActuatorState());
     }
 
     /**
@@ -289,20 +289,18 @@ public class TestNotificationsAndDatabase {
 
         // check positive assertions
         assertEquals(STATE_SOMFY, product.getState());
-        assertEquals(MAIN_POSITION_SOMFY, product.getCurrentPosition());
-        assertEquals(TARGET_POSITION_SOMFY, product.getTarget());
-        assertEquals(PRODUCT_INDEX_SOMFY, product.getBridgeProductIndex().toInt());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(TARGET_POSITION, product.getTarget());
+        assertEquals(PRODUCT_INDEX_A, product.getBridgeProductIndex().toInt());
         assertEquals(ACTUATOR_TYPE_SOMFY, product.getActuatorType());
         assertEquals(UNKNOWN_POSITION, product.getVanePosition());
         assertNull(product.getFunctionalParameters());
 
         // check negative assertions
-        assertNotEquals(VANE_POSITION_SOMFY, product.getVanePosition());
+        assertNotEquals(VANE_POSITION_A, product.getVanePosition());
 
-        // test updating the existing product in the database
         VeluxExistingProducts existingProducts = getExistingProducts();
-        assertTrue(existingProducts.update(product));
-        assertTrue(existingProducts.isDirty());
+        existingProducts.update(Command.GW_GET_NODE_INFORMATION_REQ, product);
     }
 
     /**
@@ -313,15 +311,15 @@ public class TestNotificationsAndDatabase {
     @Order(8)
     public void testExistingValidVanePositionWithNewTargetValue() {
         VeluxExistingProducts existingProducts = getExistingProducts();
-        VeluxProduct product = existingProducts.get(new ProductBridgeIndex(PRODUCT_INDEX_SOMFY));
+        VeluxProduct product = existingProducts.get(new ProductBridgeIndex(PRODUCT_INDEX_A));
 
         // confirm the product details
-        assertEquals(STATE_DONE, product.getState());
-        assertEquals(MAIN_POSITION_SOMFY, product.getCurrentPosition());
-        assertEquals(TARGET_POSITION_SOMFY, product.getTarget());
-        assertEquals(PRODUCT_INDEX_SOMFY, product.getBridgeProductIndex().toInt());
+        assertEquals(STATE_SOMFY, product.getState());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(TARGET_POSITION, product.getTarget());
+        assertEquals(PRODUCT_INDEX_A, product.getBridgeProductIndex().toInt());
         assertEquals(ACTUATOR_TYPE_SOMFY, product.getActuatorType());
-        assertEquals(VANE_POSITION_SOMFY, product.getVanePosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
         assertNotNull(product.getFunctionalParameters());
     }
 
@@ -341,7 +339,7 @@ public class TestNotificationsAndDatabase {
 
         // initialise the BCP
         SCgetProduct bcp = new SCgetProduct();
-        bcp.setProductId(PRODUCT_INDEX_VELUX);
+        bcp.setProductId(PRODUCT_INDEX_B);
 
         // set the packet response
         bcp.setResponse(command, toByteArray(packet), false);
@@ -355,9 +353,9 @@ public class TestNotificationsAndDatabase {
 
         // check positive assertions
         assertEquals(STATE_DONE, product.getState());
-        assertEquals(MAIN_POSITION_VELUX, product.getCurrentPosition());
-        assertEquals(MAIN_POSITION_VELUX, product.getTarget());
-        assertEquals(PRODUCT_INDEX_VELUX, product.getBridgeProductIndex().toInt());
+        assertEquals(MAIN_POSITION_B, product.getCurrentPosition());
+        assertEquals(MAIN_POSITION_B, product.getTarget());
+        assertEquals(PRODUCT_INDEX_B, product.getBridgeProductIndex().toInt());
         assertEquals(ACTUATOR_TYPE_VELUX, product.getActuatorType());
         assertEquals(UNKNOWN_POSITION, product.getVanePosition());
         assertNull(product.getFunctionalParameters());
@@ -365,7 +363,7 @@ public class TestNotificationsAndDatabase {
 
         // check negative assertions
         assertFalse(product.supportsVanePosition());
-        assertNotEquals(VANE_POSITION_SOMFY, product.getVanePosition());
+        assertNotEquals(VANE_POSITION_A, product.getVanePosition());
 
         // register in existing products database
         VeluxExistingProducts existingProducts = getExistingProducts();
@@ -375,7 +373,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(2, existingProducts.getNoMembers());
 
         // check that the product in the database is indeed the one just created
-        VeluxProduct existing = existingProducts.get(new ProductBridgeIndex(PRODUCT_INDEX_VELUX));
+        VeluxProduct existing = existingProducts.get(new ProductBridgeIndex(PRODUCT_INDEX_B));
         assertEquals(product, existing);
         assertTrue(existingProducts.isRegistered(product.getBridgeProductIndex()));
     }
@@ -394,21 +392,21 @@ public class TestNotificationsAndDatabase {
 
         // confirm the product details for the Somfy product
         VeluxProduct product = modified[0];
-        assertEquals(STATE_DONE, product.getState());
-        assertEquals(MAIN_POSITION_SOMFY, product.getCurrentPosition());
-        assertEquals(TARGET_POSITION_SOMFY, product.getTarget());
-        assertEquals(PRODUCT_INDEX_SOMFY, product.getBridgeProductIndex().toInt());
+        assertEquals(STATE_SOMFY, product.getState());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(TARGET_POSITION, product.getTarget());
+        assertEquals(PRODUCT_INDEX_A, product.getBridgeProductIndex().toInt());
         assertEquals(ACTUATOR_TYPE_SOMFY, product.getActuatorType());
-        assertEquals(VANE_POSITION_SOMFY, product.getVanePosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
         assertTrue(product.isSomfyProduct());
         assertNotNull(product.getFunctionalParameters());
 
         // confirm the product details for the Velux product
         product = modified[1];
         assertEquals(STATE_DONE, product.getState());
-        assertEquals(MAIN_POSITION_VELUX, product.getCurrentPosition());
-        assertEquals(MAIN_POSITION_VELUX, product.getTarget());
-        assertEquals(PRODUCT_INDEX_VELUX, product.getBridgeProductIndex().toInt());
+        assertEquals(MAIN_POSITION_B, product.getCurrentPosition());
+        assertEquals(MAIN_POSITION_B, product.getTarget());
+        assertEquals(PRODUCT_INDEX_B, product.getBridgeProductIndex().toInt());
         assertEquals(ACTUATOR_TYPE_VELUX, product.getActuatorType());
         assertEquals(UNKNOWN_POSITION, product.getVanePosition());
         assertNull(product.getFunctionalParameters());
@@ -462,12 +460,12 @@ public class TestNotificationsAndDatabase {
 
         // initialise the product to be commanded
         VeluxProduct product = new VeluxProduct(new VeluxProductName("who cares"),
-                new ProductBridgeIndex(PRODUCT_INDEX_SOMFY), 0, 0, 0, null);
+                new ProductBridgeIndex(PRODUCT_INDEX_A), 0, 0, 0, null);
         product.setActuatorType(ACTUATOR_TYPE_SOMFY);
         product.setCurrentPosition(targetMainPosition);
         product.setVanePosition(targetVanePosition);
 
-        // create the run product command, and initialize it from the test product's state values
+        // create the run product command, and initialise it from the test product's state values
         SCrunProductCommand bcp = new SCrunProductCommand();
         bcp.setNodeIdAndParameters(product.getBridgeProductIndex().toInt(), product.getCurrentPosition(),
                 product.getFunctionalParameters());
@@ -486,5 +484,276 @@ public class TestNotificationsAndDatabase {
             }
         }
         assertTrue(identical);
+
+        // check the resulting updater product state is 'executing' with the new values
+        product = bcp.getProduct();
+        product.setActuatorType(ACTUATOR_TYPE_SOMFY);
+        assertEquals(ActuatorState.EXECUTING, product.getActuatorState());
+        assertEquals(targetMainPosition, product.getCurrentPosition());
+        assertEquals(targetMainPosition, product.getTarget());
+        assertEquals(targetVanePosition, product.getVanePosition());
+        assertEquals(targetMainPosition, product.getDisplayPosition());
+        assertEquals(targetVanePosition, product.getVaneDisplayPosition());
+    }
+
+    /**
+     * Test the actuator state.
+     */
+    @Test
+    @Order(13)
+    public void testActuatorState() {
+        VeluxProduct product = new VeluxProduct(new VeluxProductName("who cares"),
+                new ProductBridgeIndex(PRODUCT_INDEX_A), 0, 0, 0, null);
+        int[] inputStates = { 0, 1, 2, 3, 4, 5, 0x2c, 0x2d, 0xff, 0x80 };
+        ActuatorState[] expected = { ActuatorState.NON_EXECUTING, ActuatorState.ERROR, ActuatorState.NOT_USED,
+                ActuatorState.WAITING_FOR_POWER, ActuatorState.EXECUTING, ActuatorState.DONE, ActuatorState.EXECUTING,
+                ActuatorState.DONE, ActuatorState.UNKNOWN, ActuatorState.MANUAL };
+        for (int i = 0; i < inputStates.length; i++) {
+            product.setState(inputStates[i]);
+            assertEquals(expected[i], product.getActuatorState());
+        }
+    }
+
+    /**
+     * Test actuator positions and display positions.
+     */
+    @Test
+    @Order(14)
+    public void testActuatorPositions() {
+        VeluxProduct product = new VeluxProduct(new VeluxProductName("who cares"),
+                new ProductBridgeIndex(PRODUCT_INDEX_A), 0, 0, 0, null);
+
+        product.setCurrentPosition(MAIN_POSITION_A);
+        product.setTarget(TARGET_POSITION);
+        product.setActuatorType(ACTUATOR_TYPE_SOMFY);
+        product.setVanePosition(VANE_POSITION_A);
+
+        // state uninitialised
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(MAIN_POSITION_A, product.getDisplayPosition());
+        assertEquals(TARGET_POSITION, product.getTarget());
+        assertEquals(VANE_POSITION_A, product.getVaneDisplayPosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
+
+        // state = done
+        product.setState(ActuatorState.DONE.value);
+        assertEquals(MAIN_POSITION_A, product.getDisplayPosition());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(TARGET_POSITION, product.getTarget());
+        assertEquals(VANE_POSITION_A, product.getVaneDisplayPosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
+
+        // state = not used
+        product.setState(ActuatorState.NOT_USED.value);
+        assertEquals(MAIN_POSITION_A, product.getDisplayPosition());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(TARGET_POSITION, product.getTarget());
+        assertEquals(VANE_POSITION_A, product.getVaneDisplayPosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
+
+        // state = executing
+        product.setState(ActuatorState.EXECUTING.value);
+        assertEquals(TARGET_POSITION, product.getDisplayPosition());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(TARGET_POSITION, product.getTarget());
+        assertEquals(VANE_POSITION_A, product.getVaneDisplayPosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
+
+        // state = manual + excuting
+        product.setState(ActuatorState.MANUAL.value + ActuatorState.EXECUTING.value);
+        assertEquals(UNKNOWN_POSITION, product.getDisplayPosition());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(TARGET_POSITION, product.getTarget());
+        assertEquals(UNKNOWN_POSITION, product.getVaneDisplayPosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
+
+        // state = error
+        product.setState(ActuatorState.ERROR.value);
+        assertEquals(UNKNOWN_POSITION, product.getDisplayPosition());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(TARGET_POSITION, product.getTarget());
+        assertEquals(UNKNOWN_POSITION, product.getVaneDisplayPosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
+    }
+
+    /**
+     * Test the SCgetHouseStatus command by checking for the correct parsing of a 'GW_NODE_STATE_POSITION_CHANGED_NTF'
+     * notification packet. Note: this packet is from a Velux roller shutter with main and vane position.
+     */
+    @Test
+    @Order(15)
+    public void testSCgetHouseStatusOnVelux() {
+        // initialise the test parameters
+        final String packet = "00 2D C8 00 B8 00 F7 FF F7 FF 00 00 F7 FF 00 00 4A E5 00 00";
+        final short command = VeluxKLFAPI.Command.GW_NODE_STATE_POSITION_CHANGED_NTF.getShort();
+
+        // initialise the BCP
+        SCgetHouseStatus bcp = new SCgetHouseStatus();
+
+        // set the packet response
+        bcp.setResponse(command, toByteArray(packet), false);
+
+        // check BCP status
+        assertTrue(bcp.isCommunicationSuccessful());
+        assertTrue(bcp.isCommunicationFinished());
+
+        // initialise the product
+        VeluxProduct product = bcp.getProduct();
+
+        // change actuator type
+        assertEquals(ACTUATOR_TYPE_UNDEF, product.getActuatorType());
+        product.setActuatorType(ACTUATOR_TYPE_SOMFY);
+
+        // check negative assertions
+        assertNotEquals(VANE_POSITION_A, product.getVanePosition());
+
+        // test updating the existing product in the database
+        VeluxExistingProducts existingProducts = getExistingProducts();
+
+        // process this as a receive only command for a Velux product => update IS applied
+        existingProducts.resetDirtyFlag();
+        assertTrue(existingProducts.update(Command.GW_OPENHAB_RECEIVEONLY, product));
+        assertTrue(existingProducts.isDirty());
+
+        // process this as an information request command for a Velux product => update IS applied
+        existingProducts.resetDirtyFlag();
+        product.setCurrentPosition(MAIN_POSITION_B);
+        assertTrue(existingProducts.update(Command.GW_GET_NODE_INFORMATION_REQ, product));
+        assertTrue(existingProducts.isDirty());
+    }
+
+    /**
+     * Test updating logic with various states applied.
+     */
+    @Test
+    @Order(16)
+    public void testUpdatingLogic() {
+        VeluxExistingProducts existingProducts = getExistingProducts();
+        ProductBridgeIndex index = new ProductBridgeIndex(PRODUCT_INDEX_A);
+        VeluxProduct product = existingProducts.get(index).clone();
+
+        assertEquals(ActuatorState.DONE, product.getActuatorState());
+
+        // state = done
+        assertEquals(MAIN_POSITION_A, product.getDisplayPosition());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(TARGET_POSITION, product.getTarget());
+        assertEquals(VANE_POSITION_A, product.getVaneDisplayPosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
+
+        // state = not used
+        product.setState(ActuatorState.NOT_USED.value);
+        product.setCurrentPosition(MAIN_POSITION_A - 1);
+        product.setTarget(TARGET_POSITION - 1);
+        product.setVanePosition(VANE_POSITION_A - 1);
+        existingProducts.update(Command.GW_GET_NODE_INFORMATION_REQ, product);
+        product = existingProducts.get(index).clone();
+        assertEquals(MAIN_POSITION_A, product.getDisplayPosition());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(TARGET_POSITION, product.getTarget());
+        assertEquals(VANE_POSITION_A, product.getVaneDisplayPosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
+
+        // state = manual + excuting
+        product.setState(ActuatorState.MANUAL.value + ActuatorState.EXECUTING.value);
+        product.setCurrentPosition(MAIN_POSITION_A - 1);
+        product.setTarget(TARGET_POSITION - 1);
+        product.setVanePosition(VANE_POSITION_A - 1);
+        existingProducts.update(Command.GW_GET_NODE_INFORMATION_REQ, product);
+        product = existingProducts.get(index).clone();
+        assertEquals(UNKNOWN_POSITION, product.getDisplayPosition());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(TARGET_POSITION, product.getTarget());
+        assertEquals(UNKNOWN_POSITION, product.getVaneDisplayPosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
+
+        // state = error
+        product.setState(ActuatorState.ERROR.value);
+        product.setCurrentPosition(MAIN_POSITION_A - 1);
+        product.setTarget(TARGET_POSITION - 1);
+        product.setVanePosition(VANE_POSITION_A - 1);
+        existingProducts.update(Command.GW_GET_NODE_INFORMATION_REQ, product);
+        product = existingProducts.get(index).clone();
+        assertEquals(UNKNOWN_POSITION, product.getDisplayPosition());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(TARGET_POSITION, product.getTarget());
+        assertEquals(UNKNOWN_POSITION, product.getVaneDisplayPosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
+
+        // state = executing
+        product.setState(ActuatorState.EXECUTING.value);
+        product.setCurrentPosition(MAIN_POSITION_A - 1);
+        product.setTarget(TARGET_POSITION - 1);
+        product.setVanePosition(VANE_POSITION_A - 1);
+        existingProducts.update(Command.GW_GET_NODE_INFORMATION_REQ, product);
+        product = existingProducts.get(index).clone();
+        assertNotEquals(TARGET_POSITION, product.getDisplayPosition());
+        assertNotEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertNotEquals(TARGET_POSITION, product.getTarget());
+        assertNotEquals(VANE_POSITION_A, product.getVaneDisplayPosition());
+        assertNotEquals(VANE_POSITION_A, product.getVanePosition());
+
+        // state = done
+        product.setState(ActuatorState.EXECUTING.value);
+        product.setCurrentPosition(MAIN_POSITION_A);
+        product.setTarget(TARGET_POSITION);
+        product.setVanePosition(VANE_POSITION_A);
+        existingProducts.update(Command.GW_GET_NODE_INFORMATION_REQ, product);
+        product = existingProducts.get(index).clone();
+        assertEquals(TARGET_POSITION, product.getDisplayPosition());
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(TARGET_POSITION, product.getTarget());
+        assertEquals(VANE_POSITION_A, product.getVaneDisplayPosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
+    }
+
+    /**
+     * Test updating the existing product in the database with special exceptions.
+     */
+    @Test
+    @Order(17)
+    public void testSpecialExceptions() {
+        VeluxExistingProducts existingProducts = getExistingProducts();
+        VeluxProduct product = existingProducts.get(new ProductBridgeIndex(PRODUCT_INDEX_A)).clone();
+
+        // process this as a receive only command for a Somfy product => update IS applied
+        existingProducts.resetDirtyFlag();
+        product.setState(ActuatorState.DONE.value);
+        product.setCurrentPosition(MAIN_POSITION_B);
+        assertTrue(existingProducts.update(Command.GW_OPENHAB_RECEIVEONLY, product));
+        assertTrue(existingProducts.isDirty());
+
+        // process this as an information request command for a Somfy product => update IS applied
+        existingProducts.resetDirtyFlag();
+        product.setState(ActuatorState.EXECUTING.value);
+        assertTrue(existingProducts.update(Command.GW_GET_NODE_INFORMATION_REQ, product));
+        assertTrue(existingProducts.isDirty());
+
+        // process this as a receive only command for a Somfy product with bad data => update NOT applied
+        existingProducts.resetDirtyFlag();
+        product.setCurrentPosition(UNKNOWN_POSITION);
+        product.setTarget(UNKNOWN_POSITION);
+        assertTrue(existingProducts.update(Command.GW_OPENHAB_RECEIVEONLY, product));
+        assertFalse(existingProducts.isDirty());
+    }
+
+    /**
+     * Test VeluxProductPosition
+     */
+    @Test
+    @Order(18)
+    public void testVeluxProductPosition() {
+        // valid
+        assertTrue(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_MIN).isValid());
+        assertTrue(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_MAX).isValid());
+        assertTrue(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_MAX - 1).isValid());
+        assertTrue(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_MIN + 1).isValid());
+        // not valid
+        assertFalse(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_MIN - 1).isValid());
+        assertFalse(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_MAX + 1).isValid());
+        assertFalse(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_IGNORE).isValid());
+        assertFalse(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_DEFAULT).isValid());
+        assertFalse(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_STOP).isValid());
+        assertFalse(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_UNKNOWN).isValid());
     }
 }
