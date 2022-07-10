@@ -19,6 +19,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.bridge.slip.SCgetHouseStatus;
 import org.openhab.binding.velux.internal.bridge.slip.SCgetProduct;
 import org.openhab.binding.velux.internal.bridge.slip.SCgetProductStatus;
@@ -755,5 +756,51 @@ public class TestNotificationsAndDatabase {
         assertFalse(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_DEFAULT).isValid());
         assertFalse(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_STOP).isValid());
         assertFalse(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_UNKNOWN).isValid());
+    }
+
+    /**
+     * Test SCrunProductResult results
+     */
+    @Test
+    @Order(19)
+    public void testSCrunProductResults() {
+        SCrunProductCommand bcp = new SCrunProductCommand();
+
+        // create a dummy product to get some functional parameters from
+        VeluxProduct product = new VeluxProduct(new VeluxProductName("who cares"),
+                new ProductBridgeIndex(PRODUCT_INDEX_A), 0, 0, 0, null);
+        product.setActuatorType(ACTUATOR_TYPE_SOMFY);
+        product.setVanePosition(VANE_POSITION_A);
+        final FunctionalParameters functionalParameters = product.getFunctionalParameters();
+
+        boolean ok;
+
+        // test setting both main and vane position
+        ok = bcp.setNodeIdAndParameters(PRODUCT_INDEX_A, MAIN_POSITION_A, functionalParameters);
+        assertTrue(ok);
+        product = bcp.getProduct();
+        product.setActuatorType(ACTUATOR_TYPE_SOMFY);
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
+
+        // test setting vane position only
+        ok = bcp.setNodeIdAndParameters(PRODUCT_INDEX_A, IGNORE_POSITION, functionalParameters);
+        assertTrue(ok);
+        product = bcp.getProduct();
+        product.setActuatorType(ACTUATOR_TYPE_SOMFY);
+        assertEquals(IGNORE_POSITION, product.getCurrentPosition());
+        assertEquals(VANE_POSITION_A, product.getVanePosition());
+
+        // test setting main position only
+        ok = bcp.setNodeIdAndParameters(PRODUCT_INDEX_A, MAIN_POSITION_A, null);
+        assertTrue(ok);
+        product = bcp.getProduct();
+        product.setActuatorType(ACTUATOR_TYPE_SOMFY);
+        assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
+        assertEquals(UNKNOWN_POSITION, product.getVanePosition());
+
+        // test setting neither
+        ok = bcp.setNodeIdAndParameters(PRODUCT_INDEX_A, IGNORE_POSITION, null);
+        assertFalse(ok);
     }
 }
