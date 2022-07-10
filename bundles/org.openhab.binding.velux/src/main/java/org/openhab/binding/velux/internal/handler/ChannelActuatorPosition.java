@@ -253,7 +253,10 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                     if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
                         LOGGER.trace("handleCommand(): actuator position will be updated via polling.");
                     }
-                    thisBridgeHandler.existingProducts().update(bcp.getRequestingCommand(), bcp.getProduct());
+                    if (mainPosition.isValid() && thisBridgeHandler.existingProducts()
+                            .update(bcp.getRequestingCommand(), bcp.getProduct())) {
+                        LOGGER.trace("handleCommand(): actuator position immediate update requested.");
+                    }
                 }
             } else {
                 LOGGER.info("handleCommand(): ignoring command '{}' for channel id '{}'.", command, channelId);
