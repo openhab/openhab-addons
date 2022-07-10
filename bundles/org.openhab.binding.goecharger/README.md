@@ -44,6 +44,7 @@ Currently available channels are
 | sessionChargeEnergyLimit | Number:Energy            | Wallbox stops charging after defined value, disable with 0    | 1 (r/w), 2 (r/w)  |
 | sessionChargedEnergy     | Number:Energy            | Amount of energy that has been charged in this session        | 1 (r), 2 (r)      |
 | totalChargedEnergy       | Number:Energy            | Amount of energy that has been charged since installation     | 1 (r), 2 (r)      |
+| transaction              | Number                   | 0 if no card, otherwise card ID                               | 2 (r/w)           |
 | allowCharging            | Switch                   | If `ON` charging is allowed                                   | 1 (r/w), 2 (r)    |
 | cableCurrent             | Number:ElectricCurrent   | Specifies the max current that can be charged with that cable | 1 (r), 2 (r)      |
 | temperature              | Number:Temperature       | Temperature of the curciuit board of the Go-eCharger          | 1 (r), 2 (r)      |
