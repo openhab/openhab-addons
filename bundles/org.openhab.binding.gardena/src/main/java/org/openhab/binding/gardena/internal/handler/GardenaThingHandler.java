@@ -27,6 +27,7 @@ import org.openhab.binding.gardena.internal.GardenaSmartEventListener;
 import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundException;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.dto.Device;
+import org.openhab.binding.gardena.internal.model.dto.api.CommonService;
 import org.openhab.binding.gardena.internal.model.dto.api.DataItem;
 import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommand;
 import org.openhab.binding.gardena.internal.model.dto.command.MowerCommand;
@@ -284,7 +285,9 @@ public class GardenaThingHandler extends BaseThingHandler {
         ThingStatus newStatus = ThingStatus.ONLINE;
         ThingStatusDetail newDetail = ThingStatusDetail.NONE;
 
-        if (!CONNECTION_STATUS_ONLINE.equals(device.common.attributes.rfLinkState.value)) {
+        CommonService commonServiceAttributes = device.common.attributes;
+        if (commonServiceAttributes == null
+                || !CONNECTION_STATUS_ONLINE.equals(commonServiceAttributes.rfLinkState.value)) {
             newStatus = ThingStatus.OFFLINE;
             newDetail = ThingStatusDetail.COMMUNICATION_ERROR;
         }

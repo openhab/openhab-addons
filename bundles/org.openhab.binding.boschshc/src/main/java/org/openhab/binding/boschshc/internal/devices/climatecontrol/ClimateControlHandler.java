@@ -18,7 +18,7 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCDeviceHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.RoomClimateControlService;
 import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.dto.RoomClimateControlServiceState;
@@ -36,7 +36,7 @@ import org.openhab.core.types.Command;
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
-public final class ClimateControlHandler extends BoschSHCHandler {
+public final class ClimateControlHandler extends BoschSHCDeviceHandler {
 
     private RoomClimateControlService roomClimateControlService;
 

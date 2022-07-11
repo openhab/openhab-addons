@@ -33,6 +33,10 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.framework.Bundle;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 
 /**
  * Unit tests for {@link AutomationChannelBuilder}.
@@ -54,6 +58,8 @@ public class AutomationChannelBuilderTest {
 
     @BeforeEach
     private void setUp() {
+        final Logger logger = (Logger) LoggerFactory.getLogger(AutomationChannelBuilder.class);
+        logger.setLevel(Level.OFF);
         builder = AutomationChannelBuilder.create(translationProvider, CHANNEL_GROUP_UID);
 
         Scene scene = new Scene();

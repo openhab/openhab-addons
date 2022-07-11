@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -60,7 +61,8 @@ public class ErrorResponseTest {
         Thing thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(new ThingUID("testbinding", "test"));
         MyBMWCommandOptionProvider cop = mock(MyBMWCommandOptionProvider.class);
-        cch = new VehicleHandler(thing, cop, type);
+        LocationProvider locationProvider = mock(LocationProvider.class);
+        cch = new VehicleHandler(thing, cop, locationProvider, type);
         tc = mock(ThingHandlerCallback.class);
         cch.setCallback(tc);
         channelCaptor = ArgumentCaptor.forClass(ChannelUID.class);

@@ -69,9 +69,12 @@ public class ElroConnectsDeviceMotionSensor extends ElroConnectsDevice {
         }
 
         ElroDeviceStatus elroStatus = getStatus();
+        int signalStrength = 0;
         int batteryLevel = 0;
         String deviceStatus = this.deviceStatus;
         if (deviceStatus.length() >= 6) {
+            signalStrength = Integer.parseInt(deviceStatus.substring(0, 2), 16);
+            signalStrength = (signalStrength > 4) ? 4 : ((signalStrength < 0) ? 0 : signalStrength);
             batteryLevel = Integer.parseInt(deviceStatus.substring(2, 4), 16);
         } else {
             elroStatus = ElroDeviceStatus.FAULT;
@@ -81,20 +84,24 @@ public class ElroConnectsDeviceMotionSensor extends ElroConnectsDevice {
         switch (elroStatus) {
             case UNDEF:
                 handler.updateState(MOTION, UnDefType.UNDEF);
+                handler.updateState(SIGNAL_STRENGTH, UnDefType.UNDEF);
                 handler.updateState(BATTERY_LEVEL, UnDefType.UNDEF);
                 handler.updateState(LOW_BATTERY, UnDefType.UNDEF);
-                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Device " + deviceId + " is not syncing with K1 hub");
+                String msg = String.format("@text/offline.device-not-syncing [ \"%d\" ]", deviceId);
+                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 break;
             case FAULT:
                 handler.updateState(MOTION, UnDefType.UNDEF);
+                handler.updateState(SIGNAL_STRENGTH, UnDefType.UNDEF);
                 handler.updateState(BATTERY_LEVEL, UnDefType.UNDEF);
                 handler.updateState(LOW_BATTERY, UnDefType.UNDEF);
-                handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Device " + deviceId + " has a fault");
+                msg = String.format("@text/offline.device-fault [ \"%d\" ]", deviceId);
+                handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, msg);
                 break;
             default:
                 handler.updateState(MOTION,
                         ElroDeviceStatus.TRIGGERED.equals(elroStatus) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateState(SIGNAL_STRENGTH, new DecimalType(signalStrength));
                 handler.updateState(BATTERY_LEVEL, new DecimalType(batteryLevel));
                 handler.updateState(LOW_BATTERY, (batteryLevel < 15) ? OnOffType.ON : OnOffType.OFF);
                 handler.updateStatus(ThingStatus.ONLINE);

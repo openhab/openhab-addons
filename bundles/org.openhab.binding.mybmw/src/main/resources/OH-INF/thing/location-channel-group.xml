@@ -10,6 +10,7 @@
 			<channel id="gps" typeId="gps-channel"/>
 			<channel id="heading" typeId="heading-channel"/>
 			<channel id="address" typeId="address-channel"/>
+			<channel id="home-distance" typeId="home-distance-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

@@ -25,4 +25,5 @@ public class ElroConnectsBridgeConfiguration {
     public String connectorId = "";
     public String ipAddress = "";
     public int refreshInterval = 60;
+    public boolean legacyFirmware = false;
 }

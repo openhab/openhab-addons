@@ -539,8 +539,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     @Override
     public void setThingOffline(ThingStatusDetail detail, String messageKey) {
         if (!isThingOffline()) {
-            logger.debug("{}: Thing goes OFFLINE: {}", thingName, messages.get(messageKey));
-            updateStatus(ThingStatus.OFFLINE, detail, "@text/" + messageKey);
+            updateStatus(ThingStatus.OFFLINE, detail, messages.get(messageKey));
             watchdog = 0;
             channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
         }
@@ -893,7 +892,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             // If the device is password protected the API doesn't provide settings to the device settings
             logger.warn("{}: {}", thingName, messages.get("init.protected"));
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-access-denied");
-            changeThingType(THING_TYPE_SHELLYPROTECTED_STR, "");
             return true;
         }
         return false;

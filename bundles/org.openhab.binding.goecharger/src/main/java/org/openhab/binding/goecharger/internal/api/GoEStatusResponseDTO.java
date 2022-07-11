@@ -45,4 +45,7 @@ public class GoEStatusResponseDTO extends GoEStatusResponseBaseDTO {
 
     @SerializedName("amx")
     public Integer maxCurrentTemporary;
+
+    @SerializedName("nrg")
+    public Integer[] energy;
 }

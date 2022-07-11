@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tado.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants.FanLevel;
 import org.openhab.binding.tado.internal.TadoBindingConstants.FanSpeed;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HorizontalSwing;
@@ -25,6 +27,7 @@ import org.openhab.binding.tado.internal.api.model.AcFanSpeed;
 import org.openhab.binding.tado.internal.api.model.AcMode;
 import org.openhab.binding.tado.internal.api.model.AcModeCapabilities;
 import org.openhab.binding.tado.internal.api.model.AirConditioningCapabilities;
+import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.internal.api.model.ManualTerminationCondition;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationCondition;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationConditionTemplate;
@@ -39,9 +42,11 @@ import org.openhab.binding.tado.internal.api.model.TimerTerminationConditionTemp
  *
  * @author Dennis Frommknecht - Initial contribution
  */
+@NonNullByDefault
 public class TadoApiTypeUtils {
+
     public static OverlayTerminationCondition getTerminationCondition(OverlayTerminationConditionType type,
-            Integer timerDurationInSeconds) {
+            int timerDurationInSeconds) {
         switch (type) {
             case TIMER:
                 return timerTermination(timerDurationInSeconds);
@@ -50,26 +55,38 @@ public class TadoApiTypeUtils {
             case TADO_MODE:
                 return tadoModeTermination();
             default:
-                return null;
+                throw new IllegalArgumentException("Unexpected OverlayTerminationConditionType " + type);
         }
     }
 
     public static OverlayTerminationCondition cleanTerminationCondition(
             OverlayTerminationCondition terminationCondition) {
-        Integer timerDuration = terminationCondition.getType() == OverlayTerminationConditionType.TIMER
-                ? ((TimerTerminationCondition) terminationCondition).getRemainingTimeInSeconds()
-                : null;
+        OverlayTerminationConditionType conditionType = terminationCondition.getType();
 
-        return getTerminationCondition(terminationCondition.getType(), timerDuration);
+        int timerDuration = 0;
+        if (conditionType == OverlayTerminationConditionType.TIMER) {
+            Integer duration = ((TimerTerminationCondition) terminationCondition).getRemainingTimeInSeconds();
+            if (duration != null) {
+                timerDuration = duration.intValue();
+            }
+        }
+
+        return getTerminationCondition(conditionType, timerDuration);
     }
 
     public static OverlayTerminationCondition terminationConditionTemplateToTerminationCondition(
             OverlayTerminationConditionTemplate template) {
-        Integer timerDuration = template.getType() == OverlayTerminationConditionType.TIMER
-                ? ((TimerTerminationConditionTemplate) template).getDurationInSeconds()
-                : null;
+        OverlayTerminationConditionType conditionType = template.getType();
 
-        return getTerminationCondition(template.getType(), timerDuration);
+        int timerDuration = 0;
+        if (conditionType == OverlayTerminationConditionType.TIMER) {
+            Integer duration = ((TimerTerminationConditionTemplate) template).getDurationInSeconds();
+            if (duration != null) {
+                timerDuration = duration.intValue();
+            }
+        }
+
+        return getTerminationCondition(conditionType, timerDuration);
     }
 
     public static TimerTerminationCondition timerTermination(int durationInSeconds) {
@@ -103,18 +120,10 @@ public class TadoApiTypeUtils {
     }
 
     public static Float getTemperatureInUnit(TemperatureObject temperature, TemperatureUnit temperatureUnit) {
-        if (temperature == null) {
-            return null;
-        }
-
         return temperatureUnit == TemperatureUnit.FAHRENHEIT ? temperature.getFahrenheit() : temperature.getCelsius();
     }
 
     public static AcMode getAcMode(HvacMode mode) {
-        if (mode == null) {
-            return null;
-        }
-
         switch (mode) {
             case HEAT:
                 return AcMode.HEAT;
@@ -127,15 +136,11 @@ public class TadoApiTypeUtils {
             case AUTO:
                 return AcMode.AUTO;
             default:
-                return null;
+                throw new IllegalArgumentException("Unexpected AcMode " + mode);
         }
     }
 
     public static AcFanSpeed getAcFanSpeed(FanSpeed fanSpeed) {
-        if (fanSpeed == null) {
-            return null;
-        }
-
         switch (fanSpeed) {
             case AUTO:
                 return AcFanSpeed.AUTO;
@@ -145,16 +150,12 @@ public class TadoApiTypeUtils {
                 return AcFanSpeed.MIDDLE;
             case LOW:
                 return AcFanSpeed.LOW;
+            default:
+                throw new IllegalArgumentException("Unexpected AcFanSpeed " + fanSpeed);
         }
-
-        return null;
     }
 
     public static ACFanLevel getFanLevel(FanLevel fanLevel) {
-        if (fanLevel == null) {
-            return null;
-        }
-
         switch (fanLevel) {
             case AUTO:
                 return ACFanLevel.AUTO;
@@ -170,16 +171,12 @@ public class TadoApiTypeUtils {
                 return ACFanLevel.LEVEL5;
             case SILENT:
                 return ACFanLevel.SILENT;
+            default:
+                throw new IllegalArgumentException("Unexpected FanLevel " + fanLevel);
         }
-
-        return null;
     }
 
     public static ACHorizontalSwing getHorizontalSwing(HorizontalSwing horizontalSwing) {
-        if (horizontalSwing == null) {
-            return null;
-        }
-
         switch (horizontalSwing) {
             case LEFT:
                 return ACHorizontalSwing.LEFT;
@@ -197,16 +194,12 @@ public class TadoApiTypeUtils {
                 return ACHorizontalSwing.OFF;
             case AUTO:
                 return ACHorizontalSwing.AUTO;
+            default:
+                throw new IllegalArgumentException("Unexpected HorizontalSwing " + horizontalSwing);
         }
-
-        return null;
     }
 
     public static ACVerticalSwing getVerticalSwing(VerticalSwing verticalSwing) {
-        if (verticalSwing == null) {
-            return null;
-        }
-
         switch (verticalSwing) {
             case AUTO:
                 return ACVerticalSwing.AUTO;
@@ -224,34 +217,34 @@ public class TadoApiTypeUtils {
                 return ACVerticalSwing.ON;
             case OFF:
                 return ACVerticalSwing.OFF;
+            default:
+                throw new IllegalArgumentException("Unexpected VerticalSwing " + verticalSwing);
         }
-
-        return null;
     }
 
-    public static AcModeCapabilities getModeCapabilities(AirConditioningCapabilities capabilities, AcMode mode) {
-        AcModeCapabilities modeCapabilities = null;
+    public static AcModeCapabilities getModeCapabilities(AcMode acMode,
+            @Nullable GenericZoneCapabilities capabilities) {
+        AirConditioningCapabilities acCapabilities;
 
-        if (mode != null) {
-            switch (mode) {
-                case COOL:
-                    modeCapabilities = capabilities.getCOOL();
-                    break;
-                case HEAT:
-                    modeCapabilities = capabilities.getHEAT();
-                    break;
-                case DRY:
-                    modeCapabilities = capabilities.getDRY();
-                    break;
-                case AUTO:
-                    modeCapabilities = capabilities.getAUTO();
-                    break;
-                case FAN:
-                    modeCapabilities = capabilities.getFAN();
-                    break;
-            }
+        if (capabilities instanceof AirConditioningCapabilities) {
+            acCapabilities = (AirConditioningCapabilities) capabilities;
+        } else {
+            acCapabilities = new AirConditioningCapabilities();
         }
 
-        return modeCapabilities != null ? modeCapabilities : new AcModeCapabilities();
+        switch (acMode) {
+            case COOL:
+                return acCapabilities.getCOOL();
+            case HEAT:
+                return acCapabilities.getHEAT();
+            case DRY:
+                return acCapabilities.getDRY();
+            case AUTO:
+                return acCapabilities.getAUTO();
+            case FAN:
+                return acCapabilities.getFAN();
+            default:
+                throw new IllegalArgumentException("Unexpected AcMode " + acMode);
+        }
     }
 }

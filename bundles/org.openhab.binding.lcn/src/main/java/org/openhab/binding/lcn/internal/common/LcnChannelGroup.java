@@ -24,11 +24,14 @@ import org.openhab.binding.lcn.internal.subhandler.LcnModuleHostCommandSubHandle
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleKeyLockTableSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleLedSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleLogicSubHandler;
+import org.openhab.binding.lcn.internal.subhandler.LcnModuleOperatingHoursCounterSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleOutputSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleRelaySubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleRollershutterOutputSubHandler;
-import org.openhab.binding.lcn.internal.subhandler.LcnModuleRollershutterRelaySubHandler;
+import org.openhab.binding.lcn.internal.subhandler.LcnModuleRollershutterRelayPositionSubHandler;
+import org.openhab.binding.lcn.internal.subhandler.LcnModuleRollershutterRelaySlatAngleSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleRvarLockSubHandler;
+import org.openhab.binding.lcn.internal.subhandler.LcnModuleRvarModeSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleRvarSetpointSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleS0CounterSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleThresholdSubHandler;
@@ -44,12 +47,14 @@ public enum LcnChannelGroup {
     OUTPUT(4, LcnModuleOutputSubHandler::new),
     ROLLERSHUTTEROUTPUT(1, LcnModuleRollershutterOutputSubHandler::new),
     RELAY(8, LcnModuleRelaySubHandler::new),
-    ROLLERSHUTTERRELAY(4, LcnModuleRollershutterRelaySubHandler::new),
+    ROLLERSHUTTERRELAY(4, LcnModuleRollershutterRelayPositionSubHandler::new),
+    ROLLERSHUTTERRELAYSLAT(4, LcnModuleRollershutterRelaySlatAngleSubHandler::new),
     LED(12, LcnModuleLedSubHandler::new),
     LOGIC(4, LcnModuleLogicSubHandler::new),
     BINARYSENSOR(8, LcnModuleBinarySensorSubHandler::new),
     VARIABLE(12, LcnModuleVariableSubHandler::new),
     RVARSETPOINT(2, LcnModuleRvarSetpointSubHandler::new),
+    RVARMODE(2, LcnModuleRvarModeSubHandler::new),
     RVARLOCK(2, LcnModuleRvarLockSubHandler::new),
     THRESHOLDREGISTER1(5, LcnModuleThresholdSubHandler::new),
     THRESHOLDREGISTER2(4, LcnModuleThresholdSubHandler::new),
@@ -61,6 +66,7 @@ public enum LcnChannelGroup {
     KEYLOCKTABLEC(8, LcnModuleKeyLockTableSubHandler::new),
     KEYLOCKTABLED(8, LcnModuleKeyLockTableSubHandler::new),
     CODE(0, LcnModuleCodeSubHandler::new),
+    OPERATINGHOURS(0, LcnModuleOperatingHoursCounterSubHandler::new),
     HOSTCOMMAND(0, LcnModuleHostCommandSubHandler::new);
 
     private int count;

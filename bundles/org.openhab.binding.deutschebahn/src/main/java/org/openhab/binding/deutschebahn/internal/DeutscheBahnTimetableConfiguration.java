@@ -32,9 +32,14 @@ import org.openhab.binding.deutschebahn.internal.filter.TimetableStopPredicate;
 public class DeutscheBahnTimetableConfiguration {
 
     /**
-     * Access-Token.
+     * Client-ID for DB-API Application
      */
-    public String accessToken = "";
+    public String clientId = "";
+
+    /**
+     * Client-Secret for DB-API Application
+     */
+    public String clientSecret = "";
 
     /**
      * evaNo of the station to be queried.

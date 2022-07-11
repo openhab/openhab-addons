@@ -18,6 +18,6 @@ package org.openhab.binding.mybmw.internal.dto.properties;
  * @author Bernd Weymann - Initial contribution
  */
 public class Coordinates {
-    public double latitude;// ": 50.556049,
-    public double longitude;// ": 8.495669
+    public double latitude;
+    public double longitude;
 }

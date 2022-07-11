@@ -1,0 +1,22 @@
+{
+	"id": "638e82cd-774c-4f34-be10-2eec41d1c0a6",
+	"type": "SENSOR",
+	"relationships": {
+		"device": {
+			"data": {
+				"id": "638e82cd-774c-4f34-be10-2eec41d1c0a6",
+				"type": "DEVICE"
+			}
+		}
+	},
+	"attributes": {
+		"soilHumidity": {
+			"value": 55,
+			"timestamp": "2022-06-19T09:30:55.546+00:00"
+		},
+		"soilTemperature": {
+			"value": 18,
+			"timestamp": "2022-06-19T09:30:55.747+00:00"
+		}
+	}
+}

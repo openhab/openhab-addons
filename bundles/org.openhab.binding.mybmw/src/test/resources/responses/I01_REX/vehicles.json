@@ -173,8 +173,8 @@
 			],
 			"vehicleLocation": {
 				"coordinates": {
-					"latitude": 1.2345,
-					"longitude": 6.789
+					"latitude": 54.321,
+					"longitude": 9.876
 				},
 				"address": {
 					"formatted": "anonymous"

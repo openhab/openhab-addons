@@ -28,36 +28,33 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 
 /**
- * Base class of a service of a Bosch Smart Home device. The services of the
- * devices and their official APIs can be found here:
- * https://apidocs.bosch-smarthome.com/local/
+ * Abstract implementation of a service that supports reading and writing its state using the same JSON message and the
+ * same endpoint.
+ * <p>
+ * The endpoints of this service have the following URL structure:
+ * 
+ * <pre>
+ * https://{IP}:8444/smarthome/devices/{deviceId}/services/{serviceName}/state
+ * </pre>
+ * 
+ * The HTTP client of the bridge will use <code>GET</code> requests to retrieve the state and <code>PUT</code> requests
+ * to set the state.
+ * <p>
+ * The services of the devices and their official APIs can be found
+ * <a href="https://apidocs.bosch-smarthome.com/local/">here</a>.
  * 
  * @author Christian Oeing - Initial contribution
+ * @author David Pace - Service abstraction
  */
 @NonNullByDefault
-public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
+public abstract class BoschSHCService<TState extends BoschSHCServiceState> extends AbstractBoschSHCService {
 
     protected final Logger logger = LoggerFactory.getLogger(BoschSHCService.class);
-
-    /**
-     * Unique service name
-     */
-    private final String serviceName;
 
     /**
      * Class of service state
      */
     private final Class<TState> stateClass;
-
-    /**
-     * Bridge to use for communication from/to the device
-     */
-    private @Nullable BridgeHandler bridgeHandler;
-
-    /**
-     * Id of device the service belongs to
-     */
-    private @Nullable String deviceId;
 
     /**
      * Function to call after receiving state updates from the device
@@ -72,7 +69,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      *            from/to the device.
      */
     protected BoschSHCService(String serviceName, Class<TState> stateClass) {
-        this.serviceName = serviceName;
+        super(serviceName);
         this.stateClass = stateClass;
     }
 
@@ -86,18 +83,8 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      */
     public void initialize(BridgeHandler bridgeHandler, String deviceId,
             @Nullable Consumer<TState> stateUpdateListener) {
-        this.bridgeHandler = bridgeHandler;
-        this.deviceId = deviceId;
+        super.initialize(bridgeHandler, deviceId);
         this.stateUpdateListener = stateUpdateListener;
-    }
-
-    /**
-     * Returns the unique name of this service.
-     * 
-     * @return Unique name of the service.
-     */
-    public String getServiceName() {
-        return this.serviceName;
     }
 
     /**
@@ -136,15 +123,15 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      */
     public @Nullable TState getState()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        String deviceId = this.deviceId;
+        String deviceId = getDeviceId();
         if (deviceId == null) {
             return null;
         }
-        BridgeHandler bridgeHandler = this.bridgeHandler;
+        BridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
             return null;
         }
-        return bridgeHandler.getState(deviceId, this.serviceName, this.stateClass);
+        return bridgeHandler.getState(deviceId, getServiceName(), getStateClass());
     }
 
     /**
@@ -156,15 +143,15 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      * @throws TimeoutException
      */
     public void setState(TState state) throws InterruptedException, TimeoutException, ExecutionException {
-        String deviceId = this.deviceId;
+        String deviceId = getDeviceId();
         if (deviceId == null) {
             return;
         }
-        BridgeHandler bridgeHandler = this.bridgeHandler;
+        BridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
             return;
         }
-        bridgeHandler.putState(deviceId, this.serviceName, state);
+        bridgeHandler.putState(deviceId, getServiceName(), state);
     }
 
     /**

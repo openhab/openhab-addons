@@ -103,28 +103,37 @@ public class HomekitOHItemProxy {
         // if hue or saturation present, send an HSBType state update. no filter applied for HUE & Saturation
         if ((hue != null) || (saturation != null)) {
             if (item instanceof ColorItem) {
-                // logic for ColorItem = combine hue, saturation and brightness update to one command
-                final HSBType currentState = item.getState() instanceof UnDefType ? HSBType.BLACK
-                        : (HSBType) item.getState();
-                ((ColorItem) item).send(new HSBType(hue != null ? hue : currentState.getHue(),
-                        saturation != null ? saturation : currentState.getSaturation(),
-                        brightness != null ? brightness : currentState.getBrightness()));
-                logger.trace("send HSB command for item {} with following values hue={} saturation={} brightness={}",
-                        item, hue, saturation, brightness);
+                sendHSBCommand((ColorItem) item, hue, saturation, brightness);
             }
         } else if ((brightness != null) && (item instanceof DimmerItem)) {
             // sends brightness:
-            // - DIMMER_MODE_NONE
+            // - DIMMER_MODE_NORMAL
             // - DIMMER_MODE_FILTER_ON
             // - other modes (DIMMER_MODE_FILTER_BRIGHTNESS_100 or DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100) and
             // <100%.
             if ((dimmerMode == DIMMER_MODE_NORMAL) || (dimmerMode == DIMMER_MODE_FILTER_ON)
                     || (brightness.intValue() < 100) || (currentOnState == OnOffType.ON)) {
                 logger.trace("send Brightness command for item {} with value {}", item, brightness);
-                ((DimmerItem) item).send(brightness);
+                if (item instanceof ColorItem) {
+                    sendHSBCommand((ColorItem) item, hue, saturation, brightness);
+                } else {
+                    ((DimmerItem) item).send(brightness);
+                }
             }
         }
         commandCache.clear();
+    }
+
+    private void sendHSBCommand(ColorItem item, @Nullable DecimalType hue, @Nullable PercentType saturation,
+            @Nullable PercentType brightness) {
+        final HSBType currentState = item.getState() instanceof UnDefType ? HSBType.BLACK : (HSBType) item.getState();
+        // logic for ColorItem = combine hue, saturation and brightness update to one command
+        final DecimalType targetHue = hue != null ? hue : currentState.getHue();
+        final PercentType targetSaturation = saturation != null ? saturation : currentState.getSaturation();
+        final PercentType targetBrightness = brightness != null ? brightness : currentState.getBrightness();
+        item.send(new HSBType(targetHue, targetSaturation, targetBrightness));
+        logger.trace("send HSB command for item {} with following values hue={} saturation={} brightness={}", item,
+                targetHue, targetSaturation, targetBrightness);
     }
 
     public synchronized void sendCommandProxy(HomekitCommandType commandType, State state) {

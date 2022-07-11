@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="livisismarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="GenerationMeter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Generation Meter</label>
+		<description>The Generation Meter from the LIVISI PowerControlSolar product, that measures the generated energy.</description>
+
+		<channels>
+			<channel id="powerGenerationWatt" typeId="powerGenerationWatt"/>
+			<channel id="totalEnergyGeneration" typeId="totalEnergyGeneration"/>
+			<channel id="energyGenerationDayKwh" typeId="energyGenerationDayKwh"/>
+			<channel id="energyGenerationDayEuro" typeId="energyGenerationDayEuro"/>
+			<channel id="energyGenerationMonthKwh" typeId="energyGenerationMonthKwh"/>
+			<channel id="energyGenerationMonthEuro" typeId="energyGenerationMonthEuro"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:livisismarthome:config"/>
+	</thing-type>
+</thing:thing-descriptions>

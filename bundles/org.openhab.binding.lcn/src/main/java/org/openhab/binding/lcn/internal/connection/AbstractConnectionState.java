@@ -80,7 +80,7 @@ public abstract class AbstractConnectionState extends AbstractState<ConnectionSt
      */
     protected void parseLcnBusDiconnectMessage(String pck) {
         if (pck.equals(LcnDefs.LCNCONNSTATE_DISCONNECTED)) {
-            connection.getCallback().onOffline("LCN bus not connected to LCN-PCHK/PKE");
+            connection.getCallback().onOffline("LCN-PCHK/VISU not connected to LCN data wire");
             nextState(ConnectionStateWaitForLcnBusConnectedAfterDisconnected::new);
         }
     }

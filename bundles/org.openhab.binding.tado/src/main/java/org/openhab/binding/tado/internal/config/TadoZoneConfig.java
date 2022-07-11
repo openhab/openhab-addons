@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.tado.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Holder-object for zone configuration
  *
  * @author Dennis Frommknecht - Initial contribution
  */
+@NonNullByDefault
 public class TadoZoneConfig {
     public long id;
     public int refreshInterval;
