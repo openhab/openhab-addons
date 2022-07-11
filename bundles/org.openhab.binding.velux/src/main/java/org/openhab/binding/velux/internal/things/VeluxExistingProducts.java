@@ -149,19 +149,24 @@ public class VeluxExistingProducts {
                 && !VeluxProductPosition.isValid(newProduct.getCurrentPosition())
                 && !VeluxProductPosition.isValid(newProduct.getTarget());
 
+        boolean dirty = false;
+
         // always update the actuator state
         int oldState = thisProduct.getState();
         int newState = newProduct.getState();
         if (thisProduct.setState(newState)) {
-            dirty = !ActuatorState.equals(oldState, newState);
+            dirty |= !ActuatorState.equals(oldState, newState);
         }
 
         // only update the actuator position values if permitted
         if (ACCEPTED_STATES.contains(ActuatorState.of(newState)) && !exceptionallyIgnorePositionValues) {
-            dirty |= thisProduct.setCurrentPosition(newProduct.getCurrentPosition());
-            int newTarget = newProduct.getTarget();
-            if (VeluxProductPosition.VPP_VELUX_IGNORE != newTarget) {
-                dirty |= thisProduct.setTarget(newTarget);
+            int newValue = newProduct.getCurrentPosition();
+            if (VeluxProductPosition.isValid(newValue) || (VeluxProductPosition.VPP_VELUX_UNKNOWN == newValue)) {
+                dirty |= thisProduct.setCurrentPosition(newValue);
+            }
+            newValue = newProduct.getTarget();
+            if (VeluxProductPosition.isValid(newValue) || (VeluxProductPosition.VPP_VELUX_UNKNOWN == newValue)) {
+                dirty |= thisProduct.setTarget(newValue);
             }
             if (thisProduct.supportsVanePosition()) {
                 FunctionalParameters newFunctionalParameters = newProduct.getFunctionalParameters();
@@ -173,6 +178,7 @@ public class VeluxExistingProducts {
 
         // update modified product database
         if (dirty) {
+            this.dirty = true;
             String uniqueIndex = thisProduct.getProductUniqueIndex();
             logger.trace("update(): updating by UniqueIndex {}.", uniqueIndex);
             existingProductsByUniqueIndex.replace(uniqueIndex, thisProduct);

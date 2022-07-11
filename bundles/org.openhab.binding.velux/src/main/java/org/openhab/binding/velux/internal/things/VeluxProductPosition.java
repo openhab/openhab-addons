@@ -164,8 +164,9 @@ public class VeluxProductPosition {
 
     // Helper methods
 
-    public int getAsRelativePosition(boolean positive) {
+    public VeluxProductPosition getAsRelativePosition(boolean positive) {
         int offset = position.intValue() * VPP_VELUX_RELATIVE_RANGE / (VPP_OPENHAB_MAX - VPP_OPENHAB_MIN);
-        return positive ? VPP_VELUX_RELATIVE_ORIGIN + offset : VPP_VELUX_RELATIVE_ORIGIN - offset;
+        return positive ? new VeluxProductPosition(VPP_VELUX_RELATIVE_ORIGIN + offset)
+                : new VeluxProductPosition(VPP_VELUX_RELATIVE_ORIGIN - offset);
     }
 }

@@ -42,7 +42,7 @@ public class VeluxBridgeRunProductCommand {
     private final @Nullable SCrunProductCommand bcp;
 
     private int nodeID;
-    private int mainPosition;
+    private @Nullable VeluxProductPosition mainParameter;
     private @Nullable FunctionalParameters functionalParameters;
 
     /**
@@ -66,14 +66,13 @@ public class VeluxBridgeRunProductCommand {
      * Set the command parameters.
      *
      * @param nodeID the actuator node to be commanded.
-     * @param mainPosition the new main position.
+     * @param mainParameter the new main position parameter.
      * @param functionalParameters the new functional parameters.
      */
-    public void setParameters(int nodeID, VeluxProductPosition mainPosition,
+    public void setParameters(int nodeID, @Nullable VeluxProductPosition mainParameter,
             @Nullable FunctionalParameters functionalParameters) {
         this.nodeID = nodeID;
-        this.mainPosition = mainPosition.isValid() ? mainPosition.getPositionAsVeluxType()
-                : VeluxProductPosition.VPP_VELUX_IGNORE;
+        this.mainParameter = mainParameter;
         this.functionalParameters = functionalParameters;
     }
 
@@ -83,10 +82,10 @@ public class VeluxBridgeRunProductCommand {
      * @return true if the command was sent.
      */
     public boolean sendCommand() {
-        logger.debug("sendCommand() called, nodeID:{}, mainPosition:{}, functionalParameters:{}", nodeID, mainPosition,
+        logger.debug("sendCommand() called, nodeID:{}, mainPosition:{}, functionalParameters:{}", nodeID, mainParameter,
                 functionalParameters);
         SCrunProductCommand bcp = this.bcp;
-        boolean success = (bcp != null) && bcp.setNodeIdAndParameters(nodeID, mainPosition, functionalParameters)
+        boolean success = (bcp != null) && bcp.setNodeIdAndParameters(nodeID, mainParameter, functionalParameters)
                 && bridge.bridgeCommunicate(bcp) && bcp.isCommunicationSuccessful();
         logger.debug("sendCommand() finished {}.", (success ? "successfully" : "with failure"));
         return success;

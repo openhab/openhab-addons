@@ -232,7 +232,8 @@ public class VeluxProduct {
     }
 
     /**
-     * Constructor for a 'skeleton' product. Such products are used as data transfer objects to carry the limited sub
+     * Constructor for a 'notification' product. Such products are used as data transfer objects to carry the limited
+     * sub
      * set of data fields which are returned by 'GW_STATUS_REQUEST_NTF' or 'GW_NODE_STATE_POSITION_CHANGED_NTF'
      * notifications, and to transfer those respective field values to another product that had already been created via
      * a 'GW_GET_NODE_INFORMATION_NTF' notification, with all the other fields already filled.
@@ -248,7 +249,7 @@ public class VeluxProduct {
             int currentPosition, int target, @Nullable FunctionalParameters functionalParameters) {
         if (logger.isTraceEnabled()) {
             logger.trace(
-                    "VeluxProduct(name:{}, index:{}, state:{}, currentPosition:{}, target:{}, functionalParameters:{}) (skeleton) created.",
+                    "VeluxProduct(name:{}, index:{}, state:{}, currentPosition:{}, target:{}, functionalParameters:{}) (notification) created.",
                     notificationCommandName, productBridgeIndex, state, currentPosition, target, functionalParameters);
         }
         this.v2 = true;
@@ -499,7 +500,7 @@ public class VeluxProduct {
                 return VeluxProductPosition.VPP_VELUX_UNKNOWN;
             default:
         }
-        return currentPosition;
+        return VeluxProductPosition.isValid(currentPosition) ? currentPosition : VeluxProductPosition.VPP_VELUX_UNKNOWN;
     }
 
     /**

@@ -131,6 +131,7 @@ public class SCgetHouseStatus extends GetHouseStatus
                 // this BCP returns wrong functional parameters on some (e.g. Somfy) devices so return null instead
                 ntfFunctionalParameters = null;
 
+                // create notification product with the returned values
                 product = new VeluxProduct(new VeluxProductName(responseCmd.name()), new ProductBridgeIndex(ntfNodeID),
                         ntfState, ntfCurrentPosition, ntfTarget, ntfFunctionalParameters);
 

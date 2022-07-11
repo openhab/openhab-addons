@@ -336,18 +336,25 @@ public class SCrunProductCommand extends RunProductCommand implements SlipBridge
      */
 
     @Override
-    public boolean setNodeIdAndParameters(int nodeId, int mainParameter,
+    public boolean setNodeIdAndParameters(int nodeId, @Nullable VeluxProductPosition mainParameter,
             @Nullable FunctionalParameters functionalParameters) {
         logger.debug("setNodeIdAndParameters({}) called.", nodeId);
 
-        if ((mainParameter != VeluxProductPosition.VPP_VELUX_IGNORE) || (functionalParameters != null)) {
+        if ((mainParameter != null) || (functionalParameters != null)) {
             reqIndexArray01 = nodeId;
-            reqMainParameter = mainParameter;
+
+            reqMainParameter = (mainParameter == null) ? VeluxProductPosition.VPP_VELUX_STOP
+                    : mainParameter.getPositionAsVeluxType();
+
+            int ntfMainParameter = VeluxProductPosition.isValid(reqMainParameter) ? reqMainParameter
+                    : VeluxProductPosition.VPP_VELUX_IGNORE;
+
             reqFunctionalParameters = functionalParameters;
 
-            // create skeleton product that clones the new command positions
+            // create notification product that clones the new command positions
             product = new VeluxProduct(new VeluxProductName(COMMAND.name()), new ProductBridgeIndex(reqIndexArray01),
-                    ActuatorState.EXECUTING.value, reqMainParameter, reqMainParameter, reqFunctionalParameters);
+                    ActuatorState.EXECUTING.value, ntfMainParameter, VeluxProductPosition.VPP_VELUX_IGNORE,
+                    reqFunctionalParameters);
 
             return true;
         }

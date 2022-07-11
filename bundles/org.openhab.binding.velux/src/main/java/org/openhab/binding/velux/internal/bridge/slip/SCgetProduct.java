@@ -225,6 +225,7 @@ public class SCgetProduct extends GetProduct implements SlipBridgeCommunicationP
                 // this BCP returns wrong functional parameters on some (e.g. Somfy) devices so return null instead
                 ntfFunctionalParameters = null;
 
+                // create notification product with the returned values
                 product = new VeluxProduct(new VeluxProductName(ntfName), VeluxProductType.get(ntfNodeTypeSubType),
                         ActuatorType.get(ntfNodeTypeSubType), new ProductBridgeIndex(ntfNodeID), ntfOrder, ntfPlacement,
                         ntfVelocity, ntfNodeVariation, ntfPowerMode, ntfSerialNumberString, ntfState,

@@ -221,7 +221,7 @@ public class TestNotificationsAndDatabase {
         // check positive assertions
         assertEquals(STATE_DONE, product.getState());
         assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
-        assertEquals(MAIN_POSITION_A, product.getTarget());
+        assertEquals(IGNORE_POSITION, product.getTarget());
         assertEquals(PRODUCT_INDEX_A, product.getBridgeProductIndex().toInt());
         assertEquals(ACTUATOR_TYPE_SOMFY, product.getActuatorType());
         assertEquals(VANE_POSITION_A, product.getVanePosition());
@@ -451,12 +451,12 @@ public class TestNotificationsAndDatabase {
      */
     @Test
     @Order(12)
-    public void testSCrunProduct() {
-        final String expectedString = "02 1C 08 05 00 20 00 D2 00 00 00 00 00 A0 00 00 00 00 00 00 00 00 00 00 00"
+    public void testSCrunProductA() {
+        final String expectedString = "02 1C 08 05 00 20 00 90 00 00 00 00 00 A0 00 00 00 00 00 00 00 00 00 00 00"
                 + " 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
                 + " 00 00 00 00 00 00 00 00 00";
         final byte[] expectedPacket = toByteArray(expectedString);
-        final int targetMainPosition = 0xD200;
+        final int targetMainPosition = 0x9000;
         final int targetVanePosition = 0xA000;
 
         // initialise the product to be commanded
@@ -468,8 +468,8 @@ public class TestNotificationsAndDatabase {
 
         // create the run product command, and initialise it from the test product's state values
         SCrunProductCommand bcp = new SCrunProductCommand();
-        bcp.setNodeIdAndParameters(product.getBridgeProductIndex().toInt(), product.getCurrentPosition(),
-                product.getFunctionalParameters());
+        bcp.setNodeIdAndParameters(product.getBridgeProductIndex().toInt(),
+                new VeluxProductPosition(product.getCurrentPosition()), product.getFunctionalParameters());
 
         // get the resulting data packet
         byte[] actualPacket = bcp.getRequestDataAsArrayOfBytes();
@@ -491,17 +491,44 @@ public class TestNotificationsAndDatabase {
         product.setActuatorType(ACTUATOR_TYPE_SOMFY);
         assertEquals(ActuatorState.EXECUTING, product.getActuatorState());
         assertEquals(targetMainPosition, product.getCurrentPosition());
-        assertEquals(targetMainPosition, product.getTarget());
-        assertEquals(targetVanePosition, product.getVanePosition());
+        assertEquals(IGNORE_POSITION, product.getTarget());
         assertEquals(targetMainPosition, product.getDisplayPosition());
+        assertEquals(targetVanePosition, product.getVanePosition());
         assertEquals(targetVanePosition, product.getVaneDisplayPosition());
+    }
+
+    /**
+     * Test the SCrunProduct command by creating a packet with some bad values, and checking the product is as expected.
+     */
+    @Test
+    @Order(12)
+    public void testSCrunProductB() {
+        SCrunProductCommand bcp = new SCrunProductCommand();
+
+        final int errorMainPosition = 0xffff;
+        VeluxProduct product = new VeluxProduct(new VeluxProductName("who cares"),
+                new ProductBridgeIndex(PRODUCT_INDEX_A), 0, 0, 0, null);
+        product.setActuatorType(ACTUATOR_TYPE_SOMFY);
+        product.setCurrentPosition(errorMainPosition);
+
+        bcp.setNodeIdAndParameters(product.getBridgeProductIndex().toInt(),
+                new VeluxProductPosition(product.getCurrentPosition()), product.getFunctionalParameters());
+        product = bcp.getProduct();
+        product.setActuatorType(ACTUATOR_TYPE_SOMFY);
+
+        assertEquals(ActuatorState.EXECUTING, product.getActuatorState());
+        assertEquals(IGNORE_POSITION, product.getCurrentPosition());
+        assertEquals(IGNORE_POSITION, product.getTarget());
+        assertEquals(UNKNOWN_POSITION, product.getDisplayPosition());
+        assertEquals(UNKNOWN_POSITION, product.getVanePosition());
+        assertEquals(UNKNOWN_POSITION, product.getVaneDisplayPosition());
     }
 
     /**
      * Test the actuator state.
      */
     @Test
-    @Order(13)
+    @Order(14)
     public void testActuatorState() {
         VeluxProduct product = new VeluxProduct(new VeluxProductName("who cares"),
                 new ProductBridgeIndex(PRODUCT_INDEX_A), 0, 0, 0, null);
@@ -519,7 +546,7 @@ public class TestNotificationsAndDatabase {
      * Test actuator positions and display positions.
      */
     @Test
-    @Order(14)
+    @Order(15)
     public void testActuatorPositions() {
         VeluxProduct product = new VeluxProduct(new VeluxProductName("who cares"),
                 new ProductBridgeIndex(PRODUCT_INDEX_A), 0, 0, 0, null);
@@ -582,7 +609,7 @@ public class TestNotificationsAndDatabase {
      * notification packet. Note: this packet is from a Velux roller shutter with main and vane position.
      */
     @Test
-    @Order(15)
+    @Order(16)
     public void testSCgetHouseStatusOnVelux() {
         // initialise the test parameters
         final String packet = "00 2D C8 00 B8 00 F7 FF F7 FF 00 00 F7 FF 00 00 4A E5 00 00";
@@ -627,7 +654,7 @@ public class TestNotificationsAndDatabase {
      * Test updating logic with various states applied.
      */
     @Test
-    @Order(16)
+    @Order(17)
     public void testUpdatingLogic() {
         VeluxExistingProducts existingProducts = getExistingProducts();
         ProductBridgeIndex index = new ProductBridgeIndex(PRODUCT_INDEX_A);
@@ -712,7 +739,7 @@ public class TestNotificationsAndDatabase {
      * Test updating the existing product in the database with special exceptions.
      */
     @Test
-    @Order(17)
+    @Order(18)
     public void testSpecialExceptions() {
         VeluxExistingProducts existingProducts = getExistingProducts();
         VeluxProduct product = existingProducts.get(new ProductBridgeIndex(PRODUCT_INDEX_A)).clone();
@@ -742,7 +769,7 @@ public class TestNotificationsAndDatabase {
      * Test VeluxProductPosition
      */
     @Test
-    @Order(18)
+    @Order(19)
     public void testVeluxProductPosition() {
         // valid
         assertTrue(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_MIN).isValid());
@@ -762,7 +789,7 @@ public class TestNotificationsAndDatabase {
      * Test SCrunProductResult results
      */
     @Test
-    @Order(19)
+    @Order(20)
     public void testSCrunProductResults() {
         SCrunProductCommand bcp = new SCrunProductCommand();
 
@@ -776,7 +803,8 @@ public class TestNotificationsAndDatabase {
         boolean ok;
 
         // test setting both main and vane position
-        ok = bcp.setNodeIdAndParameters(PRODUCT_INDEX_A, MAIN_POSITION_A, functionalParameters);
+        ok = bcp.setNodeIdAndParameters(PRODUCT_INDEX_A, new VeluxProductPosition(MAIN_POSITION_A),
+                functionalParameters);
         assertTrue(ok);
         product = bcp.getProduct();
         product.setActuatorType(ACTUATOR_TYPE_SOMFY);
@@ -784,7 +812,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(VANE_POSITION_A, product.getVanePosition());
 
         // test setting vane position only
-        ok = bcp.setNodeIdAndParameters(PRODUCT_INDEX_A, IGNORE_POSITION, functionalParameters);
+        ok = bcp.setNodeIdAndParameters(PRODUCT_INDEX_A, null, functionalParameters);
         assertTrue(ok);
         product = bcp.getProduct();
         product.setActuatorType(ACTUATOR_TYPE_SOMFY);
@@ -792,7 +820,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(VANE_POSITION_A, product.getVanePosition());
 
         // test setting main position only
-        ok = bcp.setNodeIdAndParameters(PRODUCT_INDEX_A, MAIN_POSITION_A, null);
+        ok = bcp.setNodeIdAndParameters(PRODUCT_INDEX_A, new VeluxProductPosition(MAIN_POSITION_A), null);
         assertTrue(ok);
         product = bcp.getProduct();
         product.setActuatorType(ACTUATOR_TYPE_SOMFY);
@@ -800,7 +828,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(UNKNOWN_POSITION, product.getVanePosition());
 
         // test setting neither
-        ok = bcp.setNodeIdAndParameters(PRODUCT_INDEX_A, IGNORE_POSITION, null);
+        ok = bcp.setNodeIdAndParameters(PRODUCT_INDEX_A, null, null);
         assertFalse(ok);
     }
 }

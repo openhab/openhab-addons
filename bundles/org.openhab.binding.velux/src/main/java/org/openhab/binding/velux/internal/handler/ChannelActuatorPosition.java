@@ -200,7 +200,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 break;
             }
 
-            VeluxProductPosition mainPosition = VeluxProductPosition.UNKNOWN;
+            VeluxProductPosition mainParameter = null;
             FunctionalParameters functionalParameters = null;
             VeluxExistingProducts existingProducts = thisBridgeHandler.existingProducts();
             ProductBridgeIndex productBridgeIndex = veluxActuator.getProductBridgeIndex();
@@ -212,29 +212,28 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                         existingProductClone.setVanePosition(
                                 new VeluxProductPosition((PercentType) command).getPositionAsVeluxType());
                         functionalParameters = existingProductClone.getFunctionalParameters();
-                        mainPosition = new VeluxProductPosition();
                     }
                     break;
 
                 case CHANNEL_ACTUATOR_POSITION:
                     if (command instanceof UpDownType) {
-                        mainPosition = UpDownType.UP.equals(command) ^ veluxActuator.isInverted()
+                        mainParameter = UpDownType.UP.equals(command) ^ veluxActuator.isInverted()
                                 ? new VeluxProductPosition(PercentType.ZERO)
                                 : new VeluxProductPosition(PercentType.HUNDRED);
                     } else if (command instanceof StopMoveType) {
-                        mainPosition = StopMoveType.STOP.equals(command) ? new VeluxProductPosition() : mainPosition;
+                        mainParameter = StopMoveType.STOP.equals(command) ? new VeluxProductPosition() : mainParameter;
                     } else if (command instanceof PercentType) {
                         PercentType ptCommand = (PercentType) command;
                         if (veluxActuator.isInverted()) {
                             ptCommand = new PercentType(PercentType.HUNDRED.intValue() - ptCommand.intValue());
                         }
-                        mainPosition = new VeluxProductPosition(ptCommand);
+                        mainParameter = new VeluxProductPosition(ptCommand);
                     }
                     break;
 
                 case CHANNEL_ACTUATOR_STATE:
                     if (command instanceof OnOffType) {
-                        mainPosition = OnOffType.OFF.equals(command) ^ veluxActuator.isInverted()
+                        mainParameter = OnOffType.OFF.equals(command) ^ veluxActuator.isInverted()
                                 ? new VeluxProductPosition(PercentType.ZERO)
                                 : new VeluxProductPosition(PercentType.HUNDRED);
                     }
@@ -244,16 +243,15 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                     // unknown channel => do nothing..
             }
 
-            if (!mainPosition.equals(VeluxProductPosition.UNKNOWN)) {
+            if ((mainParameter != null) || (functionalParameters != null)) {
                 LOGGER.debug("handleCommand(): sending command '{}' for channel id '{}'.", command, channelId);
                 VeluxBridgeRunProductCommand bcp = new VeluxBridgeRunProductCommand(thisBridgeHandler.thisBridge);
-                bcp.setParameters(productBridgeIndex.toInt(), mainPosition, functionalParameters);
+                bcp.setParameters(productBridgeIndex.toInt(), mainParameter, functionalParameters);
                 if (bcp.sendCommand()) {
                     if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
                         LOGGER.trace("handleCommand(): actuator position will be updated via polling.");
                     }
-                    if (mainPosition.isValid()
-                            && existingProducts.update(bcp.getRequestingCommand(), bcp.getProduct())) {
+                    if (existingProducts.update(bcp.getRequestingCommand(), bcp.getProduct())) {
                         LOGGER.trace("handleCommand(): actuator position immediate update requested.");
                     }
                 }
