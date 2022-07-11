@@ -6,7 +6,7 @@ Its neural network is built upon some very good and some not-so-good models, so 
 
 Mimic3 doesn't need Mycroft, and it can be run as a simple command line utility, or as a web server with an API.
 
-This TTS bundle make use of this last feature, so please take note : this openHAB TTS bundle is NOT a standalone, and it requires the Mimic web server to run somewhere (on your openHAB computer, or your network).
+This TTS bundle makes use of this last feature, so please take note : this openHAB TTS bundle is NOT a standalone, and it requires the Mimic web server to run somewhere (on your openHAB computer, or your network).
 
 You can find more information about the Mimic web server, and how to install it, on the [official documentation](https://mycroft-ai.gitbook.io/docs/mycroft-technologies/mimic-tts/mimic-3#installation).
 
@@ -45,5 +45,5 @@ In case you would like to setup these settings via a text file, you can edit the
 
 ```
 org.openhab.voice:defaultTTS=mimictts
-org.openhab.voice:defaultVoice=mimictts:XXX
+org.openhab.voice:defaultVoice=mimictts:fr_FR_siwis_low
 ```
