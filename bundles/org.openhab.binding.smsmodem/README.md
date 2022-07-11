@@ -2,7 +2,11 @@
 
 This binding connects to a USB serial GSM modem (or a network exposed one, see ser2net) and allows openHAB to send and receive SMS through it.
 
-Serial modem should all use the same communication protocol (AT message) and therefore this binding _should_ be compatible with every dongle. However, there is a gap between theory and reality and success may vary. The protocol stack is based on the no longer supported smslib project (more precisely a v4 fork), and all modems supported by this library should be OK. The following devices have been reported functional :
+Serial modem should all use the same communication protocol (AT message) and therefore this binding _should_ be compatible with every dongle.
+However, there is a gap between theory and reality and success may vary.
+The protocol stack is based on the no longer supported smslib project (more precisely a v4 fork), and all modems supported by this library should be OK. 
+
+The following devices have been reported functional :
 
 -  Huawei E180
 
@@ -23,35 +27,28 @@ A *smsconversation* thing will be discovered and added to the inbox everytime th
 The *smsmodembridge* thing requires at least two parameters to work properly (serialPortOrIP, baudOrNetworkPort).
 Depending on the nature of the connection (direct serial modem, or serial over network), this two fields will be used differently :
 
-| field | direct serial modem   | serial over network                  |
-|-------|--------------------------|-----------------------------------|
-|serialPortOrIP| The serial port to access (eg. /dev/tty/USBx) | IP address of the computer hosting the ser2net service|
-|baudOrNetworkPort| Baud rate                                 | The network port of the ser2net service |
+| Parameter Name | type | direct serial modem   | serial over network                  |
+|----------------|-------|----------------------|----------------------|
+|serialPortOrIP| text | The serial port to access (eg. /dev/tty/USBx) | IP address of the computer hosting the ser2net service|
+|baudOrNetworkPort| integer | Baud rate        | The network port of the ser2net service |
 
 The other parameters are optional :
 
-| field | description     |
-|-------|--------------------------------------|
-|simPin          |If your sim card is protected, fill this field with the PIN code|
-|pollingInterval| Delay between two checks for new message|
-|delayBetweenSend|Delay to wait between two messages post (could be necessary for slow modem)|
-
-```
-Bridge smsmodem:smsmodembridge:adonglename [ serialPortOrIP="/dev/ttyUSB0", baudOrNetworkPort="19200", enableAutoDiscovery="true" ]
-```
+| Parameter Name | type | description     |
+|-----------------|------|---------------------|
+|simPin          | text | If your sim card is protected, fill this field with the PIN code|
+|pollingInterval| integer | Delay between two checks for new message (in seconds)|
+|delayBetweenSend| integer | Delay to wait between two messages post (in milliseconds, could be necessary for slow modem)|
 
 The *smsconversation* thing is just a shortcut to address/receive messages with a specific msisdn. It is not mandatory to use the binding, as you can use action and trigger channel to send/receive a message once the smsmodem bridge is configured.
 
-| field | description               |
-|-------|--------------------------|
-| recipient | The msisdn of the phone you want to discuss with.|
-| deliveryReport | If enabled, ask the network for a delivery report (default false)|
-| encoding | The encoding to use when sending the message (either Enc7, Enc8, EncUcs2, EncCustom, default is Enc7). EncUcs2 is good for non latin character, but SMS character size limit is then reduced|
+| Parameter Name | type | description               |
+|------------|----------|----------|
+| recipient | text | The msisdn of the phone you want to discuss with.|
+| deliveryReport | boolean | If enabled, ask the network for a delivery report (default false)|
+| encoding | text | The encoding to use when sending the message (either Enc7, Enc8, EncUcs2, EncCustom, default is Enc7). EncUcs2 is good for non latin character, but SMS character size limit is then reduced|
 
 
-```
-Thing smsmodem:smsconversation:aconversationname [ recipient="XXXXXXXXXXX", deliveryReport="true" ]
-```
 
 ## Channels
 
@@ -100,9 +97,19 @@ smsAction.sendSMS("1234567890", "Hello world!", "EncUcs2")
 
 ## Full Example
 
+### Thing configuration
+
+things/smsmodem.things:
+
+```
+Bridge smsmodem:smsmodembridge:adonglename "USB 3G Dongle " [ serialPortOrIP="/dev/ttyUSB0", baudOrNetworkPort="19200", enableAutoDiscovery="true" ] {
+    Thing smsconversation aconversationname [ recipient="XXXXXXXXXXX", deliveryReport="true" ]
+}
+```
+
 ### Send SMS
 
-`sms.rules` for DSL :
+`sms.rules` for DSL:
 
 ```java
 rule "Alarm by SMS"
