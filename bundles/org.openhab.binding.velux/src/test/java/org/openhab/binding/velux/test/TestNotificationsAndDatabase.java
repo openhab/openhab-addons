@@ -221,7 +221,7 @@ public class TestNotificationsAndDatabase {
         // check positive assertions
         assertEquals(STATE_DONE, product.getState());
         assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
-        assertEquals(IGNORE_POSITION, product.getTarget());
+        assertEquals(MAIN_POSITION_A, product.getTarget());
         assertEquals(PRODUCT_INDEX_A, product.getBridgeProductIndex().toInt());
         assertEquals(ACTUATOR_TYPE_SOMFY, product.getActuatorType());
         assertEquals(VANE_POSITION_A, product.getVanePosition());
