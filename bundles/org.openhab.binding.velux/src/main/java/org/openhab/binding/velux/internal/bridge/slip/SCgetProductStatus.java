@@ -203,8 +203,8 @@ public class SCgetProductStatus extends GetProduct implements SlipBridgeCommunic
                 }
 
                 // create notification product with the returned values
-                product = new VeluxProduct(new VeluxProductName(responseCmd.name()), new ProductBridgeIndex(ntfNodeID),
-                        ntfState, ntfCurrentPosition, VeluxProductPosition.VPP_VELUX_IGNORE, ntfFunctionalParameters);
+                product = new VeluxProduct(VeluxProductName.UNKNOWN, new ProductBridgeIndex(ntfNodeID), ntfState,
+                        ntfCurrentPosition, VeluxProductPosition.VPP_VELUX_IGNORE, ntfFunctionalParameters, COMMAND);
 
                 success = true;
                 if (!isSequentialEnforced) {
@@ -260,10 +260,5 @@ public class SCgetProductStatus extends GetProduct implements SlipBridgeCommunic
     public VeluxProduct getProduct() {
         logger.trace("getProduct(): returning {}.", product);
         return product;
-    }
-
-    @Override
-    public Command getRequestingCommand() {
-        return COMMAND;
     }
 }

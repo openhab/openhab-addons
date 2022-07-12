@@ -17,7 +17,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.bridge.slip.SCrunProductCommand;
-import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.slf4j.Logger;
@@ -89,11 +88,6 @@ public class VeluxBridgeRunProductCommand {
                 && bridge.bridgeCommunicate(bcp) && bcp.isCommunicationSuccessful();
         logger.debug("sendCommand() finished {}.", (success ? "successfully" : "with failure"));
         return success;
-    }
-
-    public Command getRequestingCommand() {
-        SCrunProductCommand bcp = this.bcp;
-        return bcp != null ? bcp.getRequestingCommand() : Command.UNDEFTYPE;
     }
 
     public VeluxProduct getProduct() {

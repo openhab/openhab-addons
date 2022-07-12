@@ -229,7 +229,8 @@ public class SCgetProduct extends GetProduct implements SlipBridgeCommunicationP
                 product = new VeluxProduct(new VeluxProductName(ntfName), VeluxProductType.get(ntfNodeTypeSubType),
                         ActuatorType.get(ntfNodeTypeSubType), new ProductBridgeIndex(ntfNodeID), ntfOrder, ntfPlacement,
                         ntfVelocity, ntfNodeVariation, ntfPowerMode, ntfSerialNumberString, ntfState,
-                        ntfCurrentPosition, ntfTarget, ntfFunctionalParameters, ntfRemainingTime, ntfTimeStamp);
+                        ntfCurrentPosition, ntfTarget, ntfFunctionalParameters, ntfRemainingTime, ntfTimeStamp,
+                        COMMAND);
 
                 success = true;
                 break;
@@ -266,10 +267,5 @@ public class SCgetProduct extends GetProduct implements SlipBridgeCommunicationP
     public VeluxProduct getProduct() {
         logger.trace("getProduct(): returning {}.", product);
         return product;
-    }
-
-    @Override
-    public Command getRequestingCommand() {
-        return COMMAND;
     }
 }

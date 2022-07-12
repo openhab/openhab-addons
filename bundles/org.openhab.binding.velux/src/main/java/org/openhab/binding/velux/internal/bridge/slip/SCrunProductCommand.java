@@ -352,9 +352,9 @@ public class SCrunProductCommand extends RunProductCommand implements SlipBridge
             reqFunctionalParameters = functionalParameters;
 
             // create notification product that clones the new command positions
-            product = new VeluxProduct(new VeluxProductName(COMMAND.name()), new ProductBridgeIndex(reqIndexArray01),
-                    ActuatorState.EXECUTING.value, ntfMainParameter, VeluxProductPosition.VPP_VELUX_IGNORE,
-                    reqFunctionalParameters);
+            product = new VeluxProduct(VeluxProductName.UNKNOWN, new ProductBridgeIndex(reqIndexArray01),
+                    ActuatorState.EXECUTING.value, ntfMainParameter, ntfMainParameter, reqFunctionalParameters,
+                    COMMAND);
 
             return true;
         }
@@ -365,9 +365,5 @@ public class SCrunProductCommand extends RunProductCommand implements SlipBridge
     public VeluxProduct getProduct() {
         logger.trace("getProduct(): returning {}.", product);
         return product;
-    }
-
-    public Command getRequestingCommand() {
-        return COMMAND;
     }
 }

@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
+import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxProductType.ActuatorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,14 +112,13 @@ public class VeluxProduct {
         }
 
         /**
-         * Check if the masked values of the two input arguments are the same.
+         * Check if the masked values of this and other are not equivalent.
          *
-         * @param value1 first value to check.
-         * @param value2 second value to check.
-         * @return true if the masked values of value1 and value2 are the same.
+         * @param other second value to check.
+         * @return true if the masked values are not equivalent.
          */
-        public static boolean equals(int value1, int value2) {
-            return (value1 & EQUALS_MASK) == (value2 & EQUALS_MASK);
+        public boolean notEquivalentTo(ActuatorState other) {
+            return (this.value & EQUALS_MASK) != (other.value & EQUALS_MASK);
         }
     }
 
@@ -146,6 +146,7 @@ public class VeluxProduct {
     private @Nullable FunctionalParameters functionalParameters = null;
     private int remainingTime = 0;
     private int timeStamp = 0;
+    private Command creator = Command.UNDEFTYPE;
 
     private final boolean isSomfyProduct;
 
@@ -208,8 +209,8 @@ public class VeluxProduct {
     public VeluxProduct(VeluxProductName name, VeluxProductType typeId, ActuatorType actuatorType,
             ProductBridgeIndex bridgeProductIndex, int order, int placement, int velocity, int variation, int powerMode,
             String serialNumber, int state, int currentPosition, int target,
-            @Nullable FunctionalParameters functionalParameters, int remainingTime, int timeStamp) {
-        logger.trace("VeluxProduct(v2,name={}) created.", name);
+            @Nullable FunctionalParameters functionalParameters, int remainingTime, int timeStamp, Command creator) {
+        logger.trace("VeluxProduct(v2, name={}) created.", name);
         this.name = name;
         this.typeId = typeId;
         this.actuatorType = actuatorType;
@@ -229,6 +230,7 @@ public class VeluxProduct {
         this.timeStamp = timeStamp;
         // isSomfyProduct is true if serial number not matching the '00:00:00:00:00:00:00:00' pattern
         this.isSomfyProduct = !VELUX_SERIAL_NUMBER.matcher(serialNumber).find();
+        this.creator = creator;
     }
 
     /**
@@ -238,30 +240,27 @@ public class VeluxProduct {
      * notifications, and to transfer those respective field values to another product that had already been created via
      * a 'GW_GET_NODE_INFORMATION_NTF' notification, with all the other fields already filled.
      *
-     * @param notificationCommandName the name of the notification command that created the product.
-     * @param productBridgeIndex the product bridge index from the notification.
+     * @param name the name of the notification command that created the product.
+     * @param bridgeProductIndex the product bridge index from the notification.
      * @param state the actuator state from the notification.
      * @param currentPosition the current actuator position from the notification.
      * @param target the target position from the notification (may be VeluxProductPosition.VPP_VELUX_IGNORE).
      * @param functionalParameters the actuator functional parameters (may be null).
      */
-    public VeluxProduct(VeluxProductName notificationCommandName, ProductBridgeIndex productBridgeIndex, int state,
-            int currentPosition, int target, @Nullable FunctionalParameters functionalParameters) {
-        if (logger.isTraceEnabled()) {
-            logger.trace(
-                    "VeluxProduct(name:{}, index:{}, state:{}, currentPosition:{}, target:{}, functionalParameters:{}) (notification) created.",
-                    notificationCommandName, productBridgeIndex, state, currentPosition, target, functionalParameters);
-        }
+    public VeluxProduct(VeluxProductName name, ProductBridgeIndex bridgeProductIndex, int state, int currentPosition,
+            int target, @Nullable FunctionalParameters functionalParameters, Command creator) {
+        logger.trace("VeluxProduct(v2, name={}) [notification product] created.", name);
         this.v2 = true;
         this.typeId = VeluxProductType.UNDEFTYPE;
         this.actuatorType = ActuatorType.UNDEFTYPE;
-        this.name = notificationCommandName;
-        this.bridgeProductIndex = productBridgeIndex;
+        this.name = name;
+        this.bridgeProductIndex = bridgeProductIndex;
         this.state = state;
         this.currentPosition = currentPosition;
         this.targetPosition = target;
         this.functionalParameters = functionalParameters;
         this.isSomfyProduct = false;
+        this.creator = creator;
     }
 
     // Utility methods
@@ -272,7 +271,8 @@ public class VeluxProduct {
             FunctionalParameters functionalParameters = this.functionalParameters;
             return new VeluxProduct(name, typeId, actuatorType, bridgeProductIndex, order, placement, velocity,
                     variation, powerMode, serialNumber, state, currentPosition, targetPosition,
-                    functionalParameters == null ? null : functionalParameters.clone(), remainingTime, timeStamp);
+                    functionalParameters == null ? null : functionalParameters.clone(), remainingTime, timeStamp,
+                    creator);
         } else {
             return new VeluxProduct(name, typeId, bridgeProductIndex);
         }
@@ -306,11 +306,10 @@ public class VeluxProduct {
     public String toString() {
         if (this.v2) {
             FunctionalParameters functionalParameters = this.functionalParameters;
-            String functionalParametersString = functionalParameters == null ? "null" : functionalParameters.toString();
             return String.format(
-                    "VeluxProduct(v2, name:%s, typeId:%s, bridgeIndex:%d, state:%d, serial:%s, position:%04X, functionalParameters:%s)",
-                    name, typeId, bridgeProductIndex.toInt(), state, serialNumber, currentPosition,
-                    functionalParametersString);
+                    "VeluxProduct(v2, creator:%s, name:%s, typeId:%s, bridgeIndex:%d, state:%d, serial:%s, position:%04X, target:%04X, functionalParameters:%s)",
+                    creator.name(), name, typeId, bridgeProductIndex.toInt(), state, serialNumber, currentPosition,
+                    targetPosition, functionalParameters == null ? "null" : functionalParameters.toString());
         } else {
             return String.format("VeluxProduct(v1, name:%s, typeId:%s, bridgeIndex:%d)", name, typeId,
                     bridgeProductIndex.toInt());
@@ -635,5 +634,9 @@ public class VeluxProduct {
      */
     public boolean isSomfyProduct() {
         return isSomfyProduct;
+    }
+
+    public Command getCreator() {
+        return creator;
     }
 }

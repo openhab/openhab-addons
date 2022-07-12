@@ -75,6 +75,7 @@ public class SCgetHouseStatus extends GetHouseStatus
     private boolean success = false;
     private boolean finished = false;
 
+    private Command creator = Command.UNDEFTYPE;
     private VeluxProduct product = VeluxProduct.UNKNOWN;
 
     /*
@@ -132,8 +133,8 @@ public class SCgetHouseStatus extends GetHouseStatus
                 ntfFunctionalParameters = null;
 
                 // create notification product with the returned values
-                product = new VeluxProduct(new VeluxProductName(responseCmd.name()), new ProductBridgeIndex(ntfNodeID),
-                        ntfState, ntfCurrentPosition, ntfTarget, ntfFunctionalParameters);
+                product = new VeluxProduct(VeluxProductName.UNKNOWN, new ProductBridgeIndex(ntfNodeID), ntfState,
+                        ntfCurrentPosition, ntfTarget, ntfFunctionalParameters, creator);
 
                 success = true;
                 break;
@@ -162,5 +163,10 @@ public class SCgetHouseStatus extends GetHouseStatus
     public VeluxProduct getProduct() {
         logger.trace("getProduct(): returning {}.", product);
         return product;
+    }
+
+    public SCgetHouseStatus setCreator(Command creator) {
+        this.creator = creator;
+        return this;
     }
 }

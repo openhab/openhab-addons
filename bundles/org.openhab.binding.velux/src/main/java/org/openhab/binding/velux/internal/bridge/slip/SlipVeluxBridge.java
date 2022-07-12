@@ -354,10 +354,10 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
 
                 case GW_NODE_STATE_POSITION_CHANGED_NTF:
                     logger.trace(logMsg, ipAddr, txName, rxName, "=> special command", "=> starting");
-                    SCgetHouseStatus receiver = new SCgetHouseStatus();
+                    SCgetHouseStatus receiver = new SCgetHouseStatus().setCreator(txEnum);
                     receiver.setResponse(rxCmd, rxData, isSequentialEnforced);
                     if (receiver.isCommunicationSuccessful()) {
-                        bridgeInstance.existingProducts().update(txEnum, receiver.getProduct());
+                        bridgeInstance.existingProducts().update(receiver.getProduct());
                         logger.trace(logMsg, ipAddr, txName, rxName, "=> special command", "=> update submitted");
                         if (rcvonly) {
                             // receive-only: return success to confirm that product(s) were updated

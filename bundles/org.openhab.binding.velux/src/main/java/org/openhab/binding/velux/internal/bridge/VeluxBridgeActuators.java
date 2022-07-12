@@ -136,7 +136,7 @@ public class VeluxBridgeActuators {
                         channel.existingProducts.register(product);
                     } else {
                         logger.debug("getProducts() storing updates for product {}.", product);
-                        channel.existingProducts.update(bcp.getRequestingCommand(), product);
+                        channel.existingProducts.update(product);
                     }
                 }
             } else {

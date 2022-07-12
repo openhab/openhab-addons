@@ -221,7 +221,7 @@ class SCgetProducts extends GetProducts implements SlipBridgeCommunicationProtoc
                         VeluxProductType.get(ntfNodeTypeSubType), ActuatorType.get(ntfNodeTypeSubType),
                         new ProductBridgeIndex(ntfNodeID), ntfOrder, ntfPlacement, ntfVelocity, ntfNodeVariation,
                         ntfPowerMode, commonSerialNumber, ntfState, ntfCurrentPosition, ntfTarget,
-                        ntfFunctionalParameters, ntfRemainingTime, ntfTimeStamp);
+                        ntfFunctionalParameters, ntfRemainingTime, ntfTimeStamp, COMMAND);
                 if (nextProductArrayItem < totalNumberOfProducts) {
                     productArray[nextProductArrayItem++] = product;
                 } else {
