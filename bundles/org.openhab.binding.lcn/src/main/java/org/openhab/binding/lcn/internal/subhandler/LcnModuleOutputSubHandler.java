@@ -29,6 +29,7 @@ import org.openhab.binding.lcn.internal.connection.ModInfo;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +54,8 @@ public class LcnModuleOutputSubHandler extends AbstractLcnModuleSubHandler {
     }
 
     static {
-        PERCENT_PATTERN = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX + "A(?<outputId>\\d)(?<percent>\\d+)");
-        NATIVE_PATTERN = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX + "O(?<outputId>\\d)(?<value>\\d+)");
+        PERCENT_PATTERN = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX + "A(?<outputId>\\d)(?<percent>\\d{3})");
+        NATIVE_PATTERN = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX + "O(?<outputId>\\d)(?<value>\\d{3})");
     }
 
     @Override
@@ -140,6 +141,25 @@ public class LcnModuleOutputSubHandler extends AbstractLcnModuleSubHandler {
         } else {
             handler.sendPck(PckGenerator.dimOutput(number, command.doubleValue(), rampMs));
         }
+    }
+
+    @Override
+    public void handleCommandString(StringType command, int number) throws LcnException {
+        int mode = 0;
+
+        switch (command.toString()) {
+            case "DISABLE":
+                mode = 0;
+                break;
+            case "OUTPUT1":
+                mode = 1;
+                break;
+            case "BOTH":
+                mode = 2;
+                break;
+        }
+
+        handler.sendPck(PckGenerator.setTunableWhiteMode(mode));
     }
 
     @Override
