@@ -13,7 +13,6 @@
 package org.openhab.binding.velux.internal.bridge.common;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 
 /**
@@ -41,11 +40,4 @@ public abstract class GetProducts implements BridgeCommunicationProtocol {
      * @return <b>arrayOfVeluxProducts</b> as Array of VeluxProduct.
      */
     public abstract VeluxProduct[] getProducts();
-
-    /**
-     * Return the requesting command.
-     */
-    public Command getRequestingCommand() {
-        return Command.UNDEFTYPE;
-    }
 }
