@@ -39,9 +39,11 @@ public class FritzAhaSetColorTemperatureCallback extends FritzAhaReauthCallback 
      * @param temperature Color Temperature in Kelvin (typ.: 2700 to 6500)
      * @param duration Duration of the change in 100ms. 0 immediately.
      */
-    public FritzAhaSetColorTemperatureCallback(FritzAhaWebInterface webIface, String ain, int temperature, int duration) {
-        super(WEBSERVICE_PATH, "switchcmd=setcolortemperature&temperature=" + temperature + "&duration=" + duration + "&ain=" + ain, webIface, GET,
-                1);
+    public FritzAhaSetColorTemperatureCallback(FritzAhaWebInterface webIface, String ain, int temperature,
+            int duration) {
+        super(WEBSERVICE_PATH,
+                "switchcmd=setcolortemperature&temperature=" + temperature + "&duration=" + duration + "&ain=" + ain,
+                webIface, GET, 1);
         this.ain = ain;
     }
 

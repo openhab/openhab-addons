@@ -337,7 +337,8 @@ public class FritzAhaWebInterface {
     }
 
     public FritzAhaContentExchange setColorTemperature(String ain, int temperature, int duration) {
-        FritzAhaSetColorTemperatureCallback callback = new FritzAhaSetColorTemperatureCallback(this, ain, temperature, duration);
+        FritzAhaSetColorTemperatureCallback callback = new FritzAhaSetColorTemperatureCallback(this, ain, temperature,
+                duration);
         return asyncGet(callback);
     }
 
