@@ -62,7 +62,7 @@ public class VehicleStatusTest {
         assertEquals("BMW", v.brand, "Car brand");
         assertEquals(true, v.properties.areDoorsClosed, "Doors Closed");
         assertEquals(76, v.properties.electricRange.distance.value, "Electric Range");
-        assertEquals(6.789, v.properties.vehicleLocation.coordinates.longitude, 0.1, "Location lon");
+        assertEquals(9.876, v.properties.vehicleLocation.coordinates.longitude, 0.1, "Location lon");
         assertEquals("immediateCharging", v.status.chargingProfile.chargingMode, "Charging Mode");
         assertEquals(2, v.status.chargingProfile.getTimerId(2).id, "Timer ID");
         assertEquals("[sunday]", v.status.chargingProfile.getTimerId(2).timerWeekDays.toString(), "Timer Weekdays");

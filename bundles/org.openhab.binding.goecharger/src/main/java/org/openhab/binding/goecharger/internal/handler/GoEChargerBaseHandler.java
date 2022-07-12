@@ -87,21 +87,6 @@ public abstract class GoEChargerBaseHandler extends BaseThingHandler {
                     return UnDefType.UNDEF;
                 }
                 return new StringType(goeResponseBase.firmware);
-            case VOLTAGE_L1:
-                if (goeResponseBase.energy == null) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponseBase.energy[0], Units.VOLT);
-            case VOLTAGE_L2:
-                if (goeResponseBase.energy == null) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponseBase.energy[1], Units.VOLT);
-            case VOLTAGE_L3:
-                if (goeResponseBase.energy == null) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponseBase.energy[2], Units.VOLT);
         }
         return UnDefType.UNDEF;
     }

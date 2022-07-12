@@ -211,6 +211,7 @@
     <module>org.openhab.binding.magentatv</module>
     <module>org.openhab.binding.mail</module>
     <module>org.openhab.binding.max</module>
+    <module>org.openhab.binding.mcd</module>
     <module>org.openhab.binding.mcp23017</module>
     <module>org.openhab.binding.mecmeter</module>
     <module>org.openhab.binding.melcloud</module>

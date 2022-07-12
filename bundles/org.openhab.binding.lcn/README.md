@@ -1,19 +1,21 @@
 # LCN Binding
 
-[Local Control Network (LCN)](https://www.lcn.eu) is a building automation system for small and very large installations.
+[Local Control Network (LCN)](https://www.lcn.eu) is a building automation system.
 It is capable of controlling lights, shutters, access control etc. and can process data from several sensor types.
-It has been introduced in 1992.
+It was introduced in 1992.
 
 A broad range of glass key panels, displays, remote controls, sensors and in- and outputs exist.
 The system can handle up to 30,000 bus members, called modules.
-LCN modules are available for DIN rail and in-wall mounting and feature versatile interfaces. The bus modules and most of the accessories are developed, manufactured and assembled in Germany.
+LCN modules are available for DIN rail and in-wall mounting and feature versatile interfaces.
+The bus modules and most of the accessories are developed, manufactured and assembled in Germany.
 
-Bus members are inter-connected via a free wire in the standard NYM cable. Wireless components are available, though.
+Bus members are inter-connected via a free wire in the standard NYM cable.
+Wireless components are available, though.
 
 ![Illustration of the LCN product family](doc/overview.jpg)
 
-This binding uses TCP/IP to access the LCN bus via the software LCN-PCHK (Windows/Linux) or the DIN rail device LCN-PKE.
-**This means 1 unused LCN-PCHK license or a LCN-PKE is required**
+This binding uses TCP/IP to access the LCN bus via the software LCN-PCHK (Windows/Linux) or the DIN rail device LCN-VISU.
+**This means 1 unused LCN-PCHK license or a LCN-VISU is required**
 
 ## Supported Things
 
@@ -21,8 +23,7 @@ This binding uses TCP/IP to access the LCN bus via the software LCN-PCHK (Window
 
 Any LCN module that should be controlled or visualized, need to be added to openHAB as a *Thing*.
 
-LCN modules with firmware versions 120612 (2008) and 170602 (2013) were tested with this binding.
-No known features/changes that need special handling were added until now (2020).
+LCN modules with firmware versions 120612 (2008), 170602 (2013) and 1F080A (2021) were tested with this binding.
 Modules with older and newer firmware should work, too.
 The module hardware types (e.g. LCN-SH, LCN-HU, LCN-UPP, ...) are compatible to each other and can therefore be handled all in the same way.
 
@@ -39,13 +40,13 @@ See [Discover LCN Modules](#discover-lcn-modules).
 ### Bridge: LCN PCK Gateway
 
 PCK is the protocol spoken over TCP/IP with a PCK gateway to communicate with the LCN bus.
-Examples for PCK gateways are the *LCN-PCHK* software running on Windows or Linux and the DIN rail mounting device *LCN-PKE*.
+Examples for PCK gateways are the *LCN-PCHK* software running on Windows or Linux and the DIN rail mounting device *LCN-VISU*.
 
 For each LCN bus, interfaced to openHAB, a PCK gateway needs to be added to openHAB as a *Thing*.
 
 Several PCK gateways can be added to openHAB to control multiple LCN busses in distinct locations.
 
-The minimum recommended version is LCN-PCHK 2.8 (older versions will also work, but lack some functionality).
+The minimum recommended version is LCN-PCHK 3.3 (older versions will also work, but lack some functionality).
 Visit [https://www.lcn.eu](https://www.lcn.eu) for updates.
 
 Thing Type ID: `pckGateway`
@@ -130,14 +131,18 @@ If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende T
 | LCN Feature (English)           | LCN Feature (German)             | Channel                | IDs  | Type                           | Description                                                                                                                   |
 |---------------------------------|----------------------------------|------------------------|------|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
 | Dimmer Output Control Single    | Ausgang                          | output                 | 1-4  | Dimmer, Switch                 | Sets the dimming value of an output with a given ramp.                                                                        |
+| Dimmer Output Control Color     | Ausgang Farbe                    | output                 | color | Color, Switch                 | Sets the outputs 1-4 to control an RGBW lamp.                                                                                 |
+| Tunable White Mode              | Tunable White Modus              | output                 | tunablewhite  | String                | Sets the module's tunable white mode: `DISABLE`: Tunable white disabled. `OUTPUT1`: Output 1 is used for controlling. Output 2 is adjusted automatically. `BOTH`: Output 1 is used to control the brightness. Output 2 controls the temperature. |
 | Relay                           | Relais                           | relay                  | 1-8  | Switch                         | Controls a relay and visualizes its state.                                                                                    |
-| Visualize Binary Sensor         | Binärsensor anzeigen             | binarysensor           | 1-8  | Contact                        | Visualizes the state of a binary sensor (special channel mapping for some devices).                                                                                      |
-| LED Control                     | LED-Steuerung                    | led                    | 1-12 | Text (ON, OFF, BLINK, FLICKER) | Controls an LED and visualizes its current state.                                                                             |
-| Visualize Logic Operations      | Logik Funktion anzeigen          | logic                  | 1-4  | Text (NOT, OR, AND)            | Visualizes the result of the logic operation.                                                                                 |
+| Visualize Binary Sensor         | Binärsensor anzeigen             | binarysensor           | 1-8  | Contact                        | Visualizes the state of a binary sensor (special channel mapping for some devices).                                           |
+| LED Control                     | LED-Steuerung                    | led                    | 1-12 | String                         | Controls an LED and visualizes its current state:  `ON`, `OFF`, `BLINK`, `FLICKER`                                            |
+| Visualize Logic Operations      | Logik Funktion anzeigen          | logic                  | 1-4  | String                         | Visualizes the result of the logic operation: `NOT`, `OR`, `AND`                                                              |
 | Motor/Shutter on Dimmer Outputs | Motor/Rollladen an Ausgängen     | rollershutteroutput    | 1-4  | Rollershutter                  | Control roller shutters on dimmer outputs                                                                                     |
-| Motor/Shutter on Relays         | Motor/Rollladen an Relais        | rollershutterrelay     | 1-4  | Rollershutter                  | Control roller shutters on relays                                                                                             |
+| Motor/Shutter on Relays         | Motor/Rollladen an Relais        | rollershutterrelay     | 1-4  | Rollershutter, Dimmer          | Control position of roller shutters on relays (Supports UpDown, StopMove, Percent)                                            |
+| Shutter Slat Angle on Relays    | Rollladenlamellen an Relais      | rollershutterrelayslat | 1-4  | Rollershutter, Dimmer          | Control slat angle of roller shutters on relays (Supports UpDown, StopMove, Percent)                                          |
 | Variables                       | Variable anzeigen                | variable               | 1-12 | Number                         | Sets and visualizes the value of a variable.                                                                                  |
 | Regulator Set Setpoint          | Regler Sollwert ändern           | rvarsetpoint           | 1-2  | Number                         | Sets and visualizes the setpoint of a regulator.                                                                              |
+| Regulator Set Mode              | Reglerverhalten ändern           | rvarmode               | 1-2  | String                         | Sets the mode of the regulator: `HEATING` or `COOLING`                                                                        |
 | Regulator Lock                  | Regler sperren                   | rvarlock               | 1-2  | Switch                         | Locks a regulator and visualizes its locking state.                                                                           |
 | Set Thresholds in Register 1    | Schwellwert in Register 1 ändern | thresholdregister1     | 1-4  | Number                         | Sets and visualizes a threshold in the given threshold register.                                                              |
 | Set Thresholds in Register 2    | Schwellwert in Register 2 ändern | thresholdregister2     | 1-4  | Number                         | Sets and visualizes a threshold in the given threshold register.                                                              |
@@ -158,8 +163,12 @@ If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende T
 | Access Control                  | Zutrittskontrolle                | code#remotecontrolcode |      | Trigger                        | Receive serial numbers from remote control                                                                                    |
 | Remote Control Battery Low      | Fernbedienung Batterie schwach   | code#remotecontrolbatterylow | | Trigger                       | Triggered when the sending remote control has a low battery                                                                   |
 | Host Command (Send Keys)        | Kommando an Host (Sende Tasten)  | hostcommand#sendKeys   | -    | Trigger                        | Receive *send keys* command from LCN module                                                                                   |
+| Operating Hours Counter Outputs             | Betriebsstundenzähler Ausgänge                | operatinghourscounter | output[1-4]             | Number:Time | Visualize Operating Hours Counter for outputs                                                         |
+| Operating Hours Counter Outputs (rel. Work) | Betriebsstundenzähler Ausgänge (rel. Arbeit)  | operatinghourscounter | outputrelativework[1-4] | Number:Time | Visualize Operating Hours Counter for outputs (relative work)                                         |
+| Operating Hours Counter Relays              | Betriebsstundenzähler Relais                  | operatinghourscounter | relay[1-8]              | Number:Time | Visualize Operating Hours Counter for relays                                                          |
+| Operating Hours Counter Binary Sensor       | Betriebsstundenzähler Binärsensoren           | operatinghourscounter | binarysensor[1-8]       | Number:Time | Visualize Operating Hours Counter for binary sensors                                                  |
 | Status Message                  | Statusmeldungen                  | -                      | -    | -                              | Automatically done by openHAB Binding                                                                                         |
-| Audio Beep                      | Audio Piepen                     | -                      | -    | -                              | Not implemented                                                                                                               |
+| Audio Beep                      | Audio Piepen                     | N/A                    | N/A  | N/A                            | Action: "beep" (see below)                                                                                                    |
 | Audio LCN-MRS                   | Audio LCN-MRS                    | -                      | -    | -                              | Not implemented                                                                                                               |
 | Count/Compute                   | Zählen/Rechnen                   | -                      | -    | -                              | Not implemented                                                                                                               |
 | DALI                            | DALI                             | -                      | -    | -                              | Not implemented                                                                                                               |
@@ -180,7 +189,7 @@ If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende T
 | Lock Relays                     | Sperre Relais                    | -                      | -    | -                              | Not implemented                                                                                                               |
 | Lock Thresholds                 | Sperre Schwellwerte              | -                      | -    | -                              | Not implemented                                                                                                               |
 | Motor Position                  | Motor Position                   | -                      | -    | -                              | Not implemented                                                                                                               |
-| Relay Timer                     | Relais-Timer                     | N/A                    | N/A  | N/A                            | Action: "startRelayTimer": Starts a relay timer for the given relay number with the given duration in milliseconds.                                                                                           |
+| Relay Timer                     | Relais-Timer                     | N/A                    | N/A  | N/A                            | Action: "startRelayTimer" (see below)                                                                                         |
 | Send Keys Delayed               | Sende Tasten verzögert           | -                      | -    | -                              | Not implemented                                                                                                               |
 | Set S0 Counters                 | S0-Zähler setzen                 | -                      | -    | -                              | Not implemented                                                                                                               |
 | Status Command                  | Statuskommandos                  | -                      | -    | -                              | Not implemented                                                                                                               |
@@ -415,10 +424,43 @@ when
 then
     val actions = getActions("lcn","lcn:module:b827ebfea4bb:17B4196847")
     // relayNumber=3, duration=90
-    actions.startRelayTimer(3,90)
+    actions.startRelayTimer(3, 90)
 end
 ```
 
+### Beep
+
+This *Action* realizes the LCN commmand "audio" (German: "Piepen").
+It lets the beeper connected to the LCN module beep.
+
+When programming an "audio" *Action*, the following parameters can be set:
+
+*volume* - Sound volume in percent (if null, the previous volume will be used)<br />
+*tonality* - The tonality as a String. You need to use quotes. See below.<br />
+*count* - Number of beeps (max. 50)
+
+Tonalities:
+
+- "N"=push button hit (normal)
+- "S"=special
+- "1"=push button make
+- "2"=push button break
+- "3"=standard
+- "4"=special
+- "5"=special short
+- "6"=error
+- "7"=long
+
+```
+rule "Beep when dummy switch changed"
+when
+    Item Dummy_Switch changed
+then
+    val actions = getActions("lcn","lcn:module:b827ebfea4bb:b0b029b920")
+    // volume=100, tonality="6", count=2
+    actions.beep(100, "6", 2)
+end
+```
 
 ## Caveat and Limitations
 
@@ -469,6 +511,7 @@ Switch M10_Relay1 {channel="lcn:module:b827ebfea4bb:S000M010:relay#1"}
 
 // Roller Shutter on Relays 1+2
 Rollershutter M10_RollershutterRelay1 {channel="lcn:module:b827ebfea4bb:S000M010:rollershutterrelay#1"}
+Dimmer M10_RollershutterRelay1Slats {channel="lcn:module:68b8462b:S000M012:rollershutterrelayslat#1"}
 
 // LEDs
 String M10_LED1 {channel="lcn:module:b827ebfea4bb:S000M010:led#1"}
@@ -545,6 +588,8 @@ sitemap lcn label="My home automation" {
 
         // Roller Shutter on Relays
         Default item=M10_RollershutterRelay1 label="Roller Shutter on Relay 1-2"
+        Dimmer item=M10_RollershutterRelay1 label="Roller Shutter Position on Relay 1-2"
+        Default item=M10_RollershutterRelay1Slats label="Roller Shutter Slat Angle on Relay 1-2"
 
         // LEDs
         Switch item=M10_LED1 label="LED 1" mappings=[ON=ON, OFF=OFF] // Don't display "Blink" or "Flicker"

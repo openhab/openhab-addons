@@ -12,11 +12,16 @@
  */
 package org.openhab.binding.mail.internal;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.activation.PatchedMailcapCommandMap;
 import javax.mail.MessagingException;
+import javax.mail.Part;
+import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
@@ -39,6 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  * @author Hans-Jörg Merk - Fixed UnsupportedDataTypeException - Originally by Jan N. Klug
+ *         - Fix sending HTML/Multipart mail - Originally by Jan N. Klug
  */
 @NonNullByDefault
 public class SMTPHandler extends BaseThingHandler {
@@ -100,7 +106,25 @@ public class SMTPHandler extends BaseThingHandler {
             }
 
             mail.buildMimeMessage();
-            mail.getMimeMessage().getDataHandler().setCommandMap(commandMap);
+
+            // fix command map not available
+            DataHandler dataHandler = mail.getMimeMessage().getDataHandler();
+            dataHandler.setCommandMap(commandMap);
+            try {
+                DataSource dataSource = dataHandler.getDataSource();
+                Field dataField = dataSource.getClass().getDeclaredField("data");
+                dataField.setAccessible(true);
+                Object data = dataField.get(dataSource);
+                if (data instanceof MimeMultipart) {
+                    MimeMultipart mimeMultipart = (MimeMultipart) data;
+                    for (int i = 0; i < mimeMultipart.getCount(); i++) {
+                        Part mimePart = mimeMultipart.getBodyPart(i);
+                        mimePart.getDataHandler().setCommandMap(commandMap);
+                    }
+                }
+            } catch (NoSuchFieldException | IllegalAccessException ignored) {
+            }
+
             mail.sendMimeMessage();
         } catch (MessagingException | EmailException e) {
             Throwable cause = e.getCause();

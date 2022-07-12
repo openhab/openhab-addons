@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.lcn.internal.subhandler;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,19 +35,16 @@ public class LcnModuleLogicSubHandlerTest extends AbstractTestLcnModuleSubHandle
     private static final StringType NOT = new StringType("NOT");
     private static final StringType OR = new StringType("OR");
     private static final StringType AND = new StringType("AND");
-    private @NonNullByDefault({}) LcnModuleLogicSubHandler l;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
-
-        l = new LcnModuleLogicSubHandler(handler, info);
     }
 
     @Test
     public void testStatusLedOffLogicNot() {
-        l.tryParse("=M000005.TLAAAAAAAAAAAANNNN");
+        tryParseAllHandlers("=M000005.TLAAAAAAAAAAAANNNN");
         verify(handler).updateChannel(LcnChannelGroup.LED, "1", OFF);
         verify(handler).updateChannel(LcnChannelGroup.LED, "2", OFF);
         verify(handler).updateChannel(LcnChannelGroup.LED, "3", OFF);
@@ -63,11 +61,12 @@ public class LcnModuleLogicSubHandlerTest extends AbstractTestLcnModuleSubHandle
         verify(handler).updateChannel(LcnChannelGroup.LOGIC, "2", NOT);
         verify(handler).updateChannel(LcnChannelGroup.LOGIC, "3", NOT);
         verify(handler).updateChannel(LcnChannelGroup.LOGIC, "4", NOT);
+        verify(handler, times(16)).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusMixed() {
-        l.tryParse("=M000005.TLAEBFAAAAAAAFNVNT");
+        tryParseAllHandlers("=M000005.TLAEBFAAAAAAAFNVNT");
         verify(handler).updateChannel(LcnChannelGroup.LED, "1", OFF);
         verify(handler).updateChannel(LcnChannelGroup.LED, "2", ON);
         verify(handler).updateChannel(LcnChannelGroup.LED, "3", BLINK);
@@ -84,23 +83,27 @@ public class LcnModuleLogicSubHandlerTest extends AbstractTestLcnModuleSubHandle
         verify(handler).updateChannel(LcnChannelGroup.LOGIC, "2", AND);
         verify(handler).updateChannel(LcnChannelGroup.LOGIC, "3", NOT);
         verify(handler).updateChannel(LcnChannelGroup.LOGIC, "4", OR);
+        verify(handler, times(16)).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusSingleLogic1Not() {
-        l.tryParse("=M000005S1000");
+        tryParseAllHandlers("=M000005S1000");
         verify(handler).updateChannel(LcnChannelGroup.LOGIC, "1", NOT);
+        verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusSingleLogic4Or() {
-        l.tryParse("=M000005S4025");
+        tryParseAllHandlers("=M000005S4025");
         verify(handler).updateChannel(LcnChannelGroup.LOGIC, "4", OR);
+        verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusSingleLogic3And() {
-        l.tryParse("=M000005S3050");
+        tryParseAllHandlers("=M000005S3050");
         verify(handler).updateChannel(LcnChannelGroup.LOGIC, "3", AND);
+        verify(handler).updateChannel(any(), any(), any());
     }
 }

@@ -30,6 +30,7 @@ import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.ImageProperties;
 import org.openhab.binding.mybmw.internal.utils.RemoteServiceUtils;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
@@ -64,8 +65,8 @@ public class VehicleHandler extends VehicleChannelHandler {
     ChargeSessionsCallback chargeSessionCallback = new ChargeSessionsCallback();
     ByteResponseCallback imageCallback = new ImageCallback();
 
-    public VehicleHandler(Thing thing, MyBMWCommandOptionProvider cop, String driveTrain) {
-        super(thing, cop, driveTrain);
+    public VehicleHandler(Thing thing, MyBMWCommandOptionProvider cop, LocationProvider lp, String driveTrain) {
+        super(thing, cop, lp, driveTrain);
     }
 
     @Override

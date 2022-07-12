@@ -13,7 +13,6 @@
 package org.openhab.binding.lcn.internal.subhandler;
 
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.regex.Matcher;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -121,17 +120,17 @@ public abstract class AbstractLcnModuleSubHandler implements ILcnModuleSubHandle
      * @return true, if the message could be processed successfully
      */
     public void tryParse(String pck) {
-        Optional<Matcher> firstSuccessfulMatcher = getPckStatusMessagePatterns().stream().map(p -> p.matcher(pck))
-                .filter(Matcher::matches).filter(m -> handler.isMyAddress(m.group("segId"), m.group("modId")))
-                .findAny();
-
-        firstSuccessfulMatcher.ifPresent(matcher -> {
-            try {
-                handleStatusMessage(matcher);
-            } catch (LcnException e) {
-                logger.warn("Parse error: {}", e.getMessage());
-            }
-        });
+        getPckStatusMessagePatterns().stream() //
+                .map(p -> p.matcher(pck)) //
+                .filter(Matcher::matches) //
+                .filter(m -> handler.isMyAddress(m.group("segId"), m.group("modId"))) //
+                .forEach(matcher -> {
+                    try {
+                        handleStatusMessage(matcher);
+                    } catch (LcnException e) {
+                        logger.warn("Parse error: {}", e.getMessage());
+                    }
+                });
     }
 
     /**
