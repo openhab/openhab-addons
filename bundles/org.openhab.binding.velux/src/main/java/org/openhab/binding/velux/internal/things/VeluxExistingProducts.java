@@ -145,7 +145,7 @@ public class VeluxExistingProducts {
 
         // specially ignore commands from buggy devices (e.g. Somfy) which have bad data
         boolean ignoreSpecial = thisProduct.isSomfyProduct()
-                && (Command.GW_OPENHAB_RECEIVEONLY == newProduct.getCreator())
+                && (Command.GW_OPENHAB_RECEIVEONLY == newProduct.getCreatorCommand())
                 && !VeluxProductPosition.isValid(newProduct.getCurrentPosition())
                 && !VeluxProductPosition.isValid(newProduct.getTarget());
 

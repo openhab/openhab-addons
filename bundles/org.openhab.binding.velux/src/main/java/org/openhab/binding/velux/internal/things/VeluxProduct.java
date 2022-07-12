@@ -146,7 +146,7 @@ public class VeluxProduct {
     private @Nullable FunctionalParameters functionalParameters = null;
     private int remainingTime = 0;
     private int timeStamp = 0;
-    private Command creator = Command.UNDEFTYPE;
+    private Command creatorCommand = Command.UNDEFTYPE;
 
     private final boolean isSomfyProduct;
 
@@ -205,11 +205,13 @@ public class VeluxProduct {
      * @param functionalParameters the target Functional Parameters (may be null).
      * @param remainingTime This field indicates the remaining time for a node activation in seconds.
      * @param timeStamp UTC time stamp for last known position.
+     * @param creatorCommand the API command that caused this instance to be created.
      */
     public VeluxProduct(VeluxProductName name, VeluxProductType typeId, ActuatorType actuatorType,
             ProductBridgeIndex bridgeProductIndex, int order, int placement, int velocity, int variation, int powerMode,
             String serialNumber, int state, int currentPosition, int target,
-            @Nullable FunctionalParameters functionalParameters, int remainingTime, int timeStamp, Command creator) {
+            @Nullable FunctionalParameters functionalParameters, int remainingTime, int timeStamp,
+            Command creatorCommand) {
         logger.trace("VeluxProduct(v2, name={}) created.", name);
         this.name = name;
         this.typeId = typeId;
@@ -228,9 +230,10 @@ public class VeluxProduct {
         this.functionalParameters = functionalParameters;
         this.remainingTime = remainingTime;
         this.timeStamp = timeStamp;
+        this.creatorCommand = creatorCommand;
+
         // isSomfyProduct is true if serial number not matching the '00:00:00:00:00:00:00:00' pattern
         this.isSomfyProduct = !VELUX_SERIAL_NUMBER.matcher(serialNumber).find();
-        this.creator = creator;
     }
 
     /**
@@ -246,9 +249,10 @@ public class VeluxProduct {
      * @param currentPosition the current actuator position from the notification.
      * @param target the target position from the notification (may be VeluxProductPosition.VPP_VELUX_IGNORE).
      * @param functionalParameters the actuator functional parameters (may be null).
+     * @param creatorCommand the API command that caused this instance to be created.
      */
     public VeluxProduct(VeluxProductName name, ProductBridgeIndex bridgeProductIndex, int state, int currentPosition,
-            int target, @Nullable FunctionalParameters functionalParameters, Command creator) {
+            int target, @Nullable FunctionalParameters functionalParameters, Command creatorCommand) {
         logger.trace("VeluxProduct(v2, name={}) [notification product] created.", name);
         this.v2 = true;
         this.typeId = VeluxProductType.UNDEFTYPE;
@@ -260,7 +264,7 @@ public class VeluxProduct {
         this.targetPosition = target;
         this.functionalParameters = functionalParameters;
         this.isSomfyProduct = false;
-        this.creator = creator;
+        this.creatorCommand = creatorCommand;
     }
 
     // Utility methods
@@ -272,7 +276,7 @@ public class VeluxProduct {
             return new VeluxProduct(name, typeId, actuatorType, bridgeProductIndex, order, placement, velocity,
                     variation, powerMode, serialNumber, state, currentPosition, targetPosition,
                     functionalParameters == null ? null : functionalParameters.clone(), remainingTime, timeStamp,
-                    creator);
+                    creatorCommand);
         } else {
             return new VeluxProduct(name, typeId, bridgeProductIndex);
         }
@@ -308,8 +312,9 @@ public class VeluxProduct {
             FunctionalParameters functionalParameters = this.functionalParameters;
             return String.format(
                     "VeluxProduct(v2, creator:%s, name:%s, typeId:%s, bridgeIndex:%d, state:%d, serial:%s, position:%04X, target:%04X, functionalParameters:%s)",
-                    creator.name(), name, typeId, bridgeProductIndex.toInt(), state, serialNumber, currentPosition,
-                    targetPosition, functionalParameters == null ? "null" : functionalParameters.toString());
+                    creatorCommand.name(), name, typeId, bridgeProductIndex.toInt(), state, serialNumber,
+                    currentPosition, targetPosition,
+                    functionalParameters == null ? "null" : functionalParameters.toString());
         } else {
             return String.format("VeluxProduct(v1, name:%s, typeId:%s, bridgeIndex:%d)", name, typeId,
                     bridgeProductIndex.toInt());
@@ -636,7 +641,12 @@ public class VeluxProduct {
         return isSomfyProduct;
     }
 
-    public Command getCreator() {
-        return creator;
+    /**
+     * Return the API command that caused this instance to be created.
+     *
+     * @return the API command.
+     */
+    public Command getCreatorCommand() {
+        return creatorCommand;
     }
 }
