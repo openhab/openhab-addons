@@ -62,12 +62,9 @@ public class VeluxExistingProducts {
     private boolean dirty;
 
     /*
-     * Lists of conditions for filtering when the existing products database shall be updated.
-     * - list of requesting commands whose results shall be rejected.
-     * - list of product states whose positions shall be accepted.
+     * Permitted list of product states whose position values shall be accepted.
      */
-    private static final List<Command> REJECTED_COMMANDS = Arrays.asList(Command.GW_OPENHAB_RECEIVEONLY);
-    private static final List<ActuatorState> ACCEPTED_STATES = Arrays.asList(ActuatorState.EXECUTING,
+    private static final List<ActuatorState> PERMITTED_VALUE_STATES = Arrays.asList(ActuatorState.EXECUTING,
             ActuatorState.DONE);
 
     // Constructor methods
@@ -134,44 +131,49 @@ public class VeluxExistingProducts {
      *
      * @return true if the product exists in the database.
      */
-    public boolean update(Command requestingCommand, VeluxProduct newProduct) {
-        logger.debug("update(newProduct:{}", newProduct);
+    public boolean update(VeluxProduct newProduct) {
         ProductBridgeIndex productBridgeIndex = newProduct.getBridgeProductIndex();
         if (!isRegistered(productBridgeIndex)) {
             logger.warn("update() failed as actuator (with index {}) is not registered.", productBridgeIndex.toInt());
             return false;
         }
         VeluxProduct thisProduct = this.get(productBridgeIndex);
+        boolean dirty = false;
 
-        // exceptionally ignore rejected commands, with bad data data from buggy (e.g. Somfy) device messages
-        boolean exceptionallyIgnorePositionValues = thisProduct.isSomfyProduct()
-                && REJECTED_COMMANDS.contains(requestingCommand)
+        // ignore commands with state 'not used'
+        boolean ignoreNotUsed = (ActuatorState.NOT_USED == ActuatorState.of(newProduct.getState()));
+
+        // specially ignore commands from buggy devices (e.g. Somfy) which have bad data
+        boolean ignoreSpecial = thisProduct.isSomfyProduct()
+                && (Command.GW_OPENHAB_RECEIVEONLY == newProduct.getCreator())
                 && !VeluxProductPosition.isValid(newProduct.getCurrentPosition())
                 && !VeluxProductPosition.isValid(newProduct.getTarget());
 
-        boolean dirty = false;
+        if ((!ignoreNotUsed) && (!ignoreSpecial)) {
+            int newStateValue = newProduct.getState();
+            ActuatorState newState = ActuatorState.of(newStateValue);
 
-        // always update the actuator state
-        int oldState = thisProduct.getState();
-        int newState = newProduct.getState();
-        if (thisProduct.setState(newState)) {
-            dirty |= !ActuatorState.equals(oldState, newState);
-        }
+            // always update the actuator state
+            if (thisProduct.setState(newStateValue)) {
+                // but only set dirty flag if states are not equivalent
+                dirty |= newState.notEquivalentTo(ActuatorState.of(thisProduct.getState()));
+            }
 
-        // only update the actuator position values if permitted
-        if (ACCEPTED_STATES.contains(ActuatorState.of(newState)) && !exceptionallyIgnorePositionValues) {
-            int newValue = newProduct.getCurrentPosition();
-            if (VeluxProductPosition.isValid(newValue) || (VeluxProductPosition.VPP_VELUX_UNKNOWN == newValue)) {
-                dirty |= thisProduct.setCurrentPosition(newValue);
-            }
-            newValue = newProduct.getTarget();
-            if (VeluxProductPosition.isValid(newValue) || (VeluxProductPosition.VPP_VELUX_UNKNOWN == newValue)) {
-                dirty |= thisProduct.setTarget(newValue);
-            }
-            if (thisProduct.supportsVanePosition()) {
-                FunctionalParameters newFunctionalParameters = newProduct.getFunctionalParameters();
-                if (newFunctionalParameters != null) {
-                    dirty |= thisProduct.setFunctionalParameters(newFunctionalParameters);
+            // only update the actuator position values if permitted
+            if (PERMITTED_VALUE_STATES.contains(newState)) {
+                int newValue = newProduct.getCurrentPosition();
+                if (VeluxProductPosition.isUnknownOrValid(newValue)) {
+                    dirty |= thisProduct.setCurrentPosition(newValue);
+                }
+                newValue = newProduct.getTarget();
+                if (VeluxProductPosition.isUnknownOrValid(newValue)) {
+                    dirty |= thisProduct.setTarget(newValue);
+                }
+                if (thisProduct.supportsVanePosition()) {
+                    FunctionalParameters newFunctionalParameters = newProduct.getFunctionalParameters();
+                    if (newFunctionalParameters != null) {
+                        dirty |= thisProduct.setFunctionalParameters(newFunctionalParameters);
+                    }
                 }
             }
         }
@@ -185,7 +187,7 @@ public class VeluxExistingProducts {
             modifiedProductsByUniqueIndex.put(uniqueIndex, thisProduct);
         }
 
-        logger.trace("update() successfully finished (dirty={}).", dirty);
+        logger.debug("update(newProduct:{}) => dirty:{}", newProduct, dirty);
         return true;
     }
 

@@ -120,6 +120,10 @@ public class VeluxProductPosition {
         return (position <= VeluxProductPosition.VPP_VELUX_MAX) && (position >= VeluxProductPosition.VPP_VELUX_MIN);
     }
 
+    public static boolean isUnknownOrValid(int position) {
+        return (position == VeluxProductPosition.VPP_UNKNOWN) || isValid(position);
+    }
+
     /**
      * Creation of a Position object to specify a STOP.
      */
