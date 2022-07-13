@@ -143,7 +143,7 @@ public class HomekitAccessoryFactory {
 
     private static List<HomekitCharacteristicType> getRequiredCharacteristics(HomekitTaggedItem taggedItem) {
         final List<HomekitCharacteristicType> characteristics = new ArrayList<>();
-        if (MANDATORY_CHARACTERISTICS.get(taggedItem.getAccessoryType()) != null) {
+        if (MANDATORY_CHARACTERISTICS.containsKey(taggedItem.getAccessoryType())) {
             characteristics.addAll(Arrays.asList(MANDATORY_CHARACTERISTICS.get(taggedItem.getAccessoryType())));
         }
         if (taggedItem.getAccessoryType() == BATTERY) {
