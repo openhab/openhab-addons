@@ -142,16 +142,17 @@ public class HomekitAccessoryFactory {
     };
 
     private static List<HomekitCharacteristicType> getRequiredCharacteristics(HomekitTaggedItem taggedItem) {
+        final List<HomekitCharacteristicType> characteristics = new ArrayList<>();
+        if (MANDATORY_CHARACTERISTICS.containsKey(taggedItem.getAccessoryType())) {
+            characteristics.addAll(Arrays.asList(MANDATORY_CHARACTERISTICS.get(taggedItem.getAccessoryType())));
+        }
         if (taggedItem.getAccessoryType() == BATTERY) {
             final String isChargeable = taggedItem.getConfiguration(HomekitBatteryImpl.BATTERY_TYPE, "false");
             if ("true".equalsIgnoreCase(isChargeable) || "yes".equalsIgnoreCase(isChargeable)) {
-                final List<HomekitCharacteristicType> characteristics = new ArrayList<>();
-                characteristics.addAll(Arrays.asList(MANDATORY_CHARACTERISTICS.get(taggedItem.getAccessoryType())));
                 characteristics.add(BATTERY_CHARGING_STATE);
-                return characteristics;
             }
         }
-        return Arrays.asList(MANDATORY_CHARACTERISTICS.get(taggedItem.getAccessoryType()));
+        return characteristics;
     }
 
     /**
