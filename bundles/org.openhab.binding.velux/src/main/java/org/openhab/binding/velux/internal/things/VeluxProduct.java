@@ -126,6 +126,11 @@ public class VeluxProduct {
     private static final Pattern VELUX_SERIAL_NUMBER = Pattern.compile(
             "^[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}$");
 
+    public static enum DataSource {
+        HUB,
+        BINDING;
+    }
+
     // Class internal
 
     private VeluxProductName name;
@@ -147,8 +152,8 @@ public class VeluxProduct {
     private int remainingTime = 0;
     private int timeStamp = 0;
     private Command creatorCommand = Command.UNDEFTYPE;
-
-    private final boolean isSomfyProduct;
+    private DataSource dataSource = DataSource.HUB;
+    private boolean isSomfyProduct;
 
     // Constructor
 
@@ -311,9 +316,9 @@ public class VeluxProduct {
         if (this.v2) {
             FunctionalParameters functionalParameters = this.functionalParameters;
             return String.format(
-                    "VeluxProduct(v2, creator:%s, name:%s, typeId:%s, bridgeIndex:%d, state:%d, serial:%s, position:%04X, target:%04X, functionalParameters:%s)",
-                    creatorCommand.name(), name, typeId, bridgeProductIndex.toInt(), state, serialNumber,
-                    currentPosition, targetPosition,
+                    "VeluxProduct(v2, creator:%s, dataSource:%s, name:%s, typeId:%s, bridgeIndex:%d, state:%d, serial:%s, position:%04X, target:%04X, functionalParameters:%s)",
+                    creatorCommand.name(), dataSource.name(), name, typeId, bridgeProductIndex.toInt(), state,
+                    serialNumber, currentPosition, targetPosition,
                     functionalParameters == null ? "null" : functionalParameters.toString());
         } else {
             return String.format("VeluxProduct(v1, name:%s, typeId:%s, bridgeIndex:%d)", name, typeId,
@@ -648,5 +653,15 @@ public class VeluxProduct {
      */
     public Command getCreatorCommand() {
         return creatorCommand;
+    }
+
+    /**
+     * Override the indicator of the source of the data for this product.
+     *
+     * @return the data source.
+     */
+    public VeluxProduct overrideDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+        return this;
     }
 }

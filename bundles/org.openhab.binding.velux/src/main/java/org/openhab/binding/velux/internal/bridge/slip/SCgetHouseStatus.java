@@ -166,9 +166,9 @@ public class SCgetHouseStatus extends GetHouseStatus
     }
 
     /**
-     * Initialise the creator command identifying the API that will be used to create the product instance.
+     * Change the command id that identifies the API on which 'product' will be created.
      *
-     * @param creatorCommand the API that will be used to create the product instance
+     * @param creatorCommand the API that will be used to create the product instance.
      * @return this
      */
     public SCgetHouseStatus setCreatorCommand(Command creatorCommand) {

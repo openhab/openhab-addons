@@ -23,6 +23,7 @@ import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ActuatorState;
+import org.openhab.binding.velux.internal.things.VeluxProduct.DataSource;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.openhab.binding.velux.internal.things.VeluxProductName;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
@@ -346,15 +347,15 @@ public class SCrunProductCommand extends RunProductCommand implements SlipBridge
             reqMainParameter = (mainParameter == null) ? VeluxProductPosition.VPP_VELUX_STOP
                     : mainParameter.getPositionAsVeluxType();
 
-            int ntfMainParameter = VeluxProductPosition.isValid(reqMainParameter) ? reqMainParameter
+            int setMainParameter = VeluxProductPosition.isValid(reqMainParameter) ? reqMainParameter
                     : VeluxProductPosition.VPP_VELUX_IGNORE;
 
             reqFunctionalParameters = functionalParameters;
 
             // create notification product that clones the new command positions
             product = new VeluxProduct(VeluxProductName.UNKNOWN, new ProductBridgeIndex(reqIndexArray01),
-                    ActuatorState.EXECUTING.value, ntfMainParameter, ntfMainParameter, reqFunctionalParameters,
-                    COMMAND);
+                    ActuatorState.EXECUTING.value, setMainParameter, setMainParameter, reqFunctionalParameters, COMMAND)
+                            .overrideDataSource(DataSource.BINDING);
 
             return true;
         }
