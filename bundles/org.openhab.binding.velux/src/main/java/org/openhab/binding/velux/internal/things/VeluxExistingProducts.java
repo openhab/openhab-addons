@@ -197,7 +197,7 @@ public class VeluxExistingProducts {
             if (dirty) {
                 logger.debug("update() theProduct:{} (previous)", oldProduct);
             }
-            logger.debug("update() newProduct:{} ({})", newProduct, dirty ? "different" : "same");
+            logger.debug("update() newProduct:{} ({})", newProduct, dirty ? "modifier" : "identical");
             logger.debug("update() theProduct:{} ({})", theProduct, dirty ? "modified" : "unchanged");
         }
 
