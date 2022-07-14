@@ -32,7 +32,9 @@ import org.openhab.binding.velux.internal.things.VeluxProduct.ActuatorState;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.openhab.binding.velux.internal.things.VeluxProductName;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
+import org.openhab.binding.velux.internal.things.VeluxProductPosition.PositionType;
 import org.openhab.binding.velux.internal.things.VeluxProductType.ActuatorType;
+import org.openhab.core.library.types.PercentType;
 
 /**
  * JUnit test suite to check the proper parsing of actuator notification packets, and to confirm that the existing
@@ -782,18 +784,51 @@ public class TestNotificationsAndDatabase {
     @Test
     @Order(19)
     public void testVeluxProductPosition() {
-        // valid
+        VeluxProductPosition position;
+        int target;
+
+        // on and inside range limits
         assertTrue(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_MIN).isValid());
         assertTrue(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_MAX).isValid());
         assertTrue(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_MAX - 1).isValid());
         assertTrue(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_MIN + 1).isValid());
-        // not valid
+
+        // outside range limits
         assertFalse(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_MIN - 1).isValid());
         assertFalse(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_MAX + 1).isValid());
         assertFalse(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_IGNORE).isValid());
         assertFalse(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_DEFAULT).isValid());
         assertFalse(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_STOP).isValid());
         assertFalse(new VeluxProductPosition(VeluxProductPosition.VPP_VELUX_UNKNOWN).isValid());
+
+        // 80% absolute position
+        position = new VeluxProductPosition(new PercentType(80));
+        assertEquals(0xA000, position.getPositionAsVeluxType());
+        assertTrue(position.isValid());
+
+        // 80% absolute position
+        position = new VeluxProductPosition(new PercentType(80), false);
+        assertEquals(0xA000, position.getPositionAsVeluxType());
+        assertTrue(position.isValid());
+
+        // 80% inverted absolute position (i.e. 20%)
+        position = new VeluxProductPosition(new PercentType(80), true);
+        assertEquals(0x2800, position.getPositionAsVeluxType());
+        assertTrue(position.isValid());
+
+        // 80% positive relative position
+        target = VeluxProductPosition.VPP_VELUX_RELATIVE_ORIGIN
+                + (VeluxProductPosition.VPP_VELUX_RELATIVE_RANGE * 8 / 10);
+        position = new VeluxProductPosition(new PercentType(80)).overridePositionType(PositionType.RELATIVE_POSITIVE);
+        assertTrue(position.isValid());
+        assertEquals(target, position.getPositionAsVeluxType());
+
+        // 80% negative relative position
+        target = VeluxProductPosition.VPP_VELUX_RELATIVE_ORIGIN
+                - (VeluxProductPosition.VPP_VELUX_RELATIVE_RANGE * 8 / 10);
+        position = new VeluxProductPosition(new PercentType(80)).overridePositionType(PositionType.RELATIVE_NEGATIVE);
+        assertTrue(position.isValid());
+        assertEquals(target, position.getPositionAsVeluxType());
     }
 
     /**
