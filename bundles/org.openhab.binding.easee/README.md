@@ -73,7 +73,7 @@ The setting that start with "dynamic" can be changed frequently, the other are w
 | state#cableLocked                           | Switch                   | no       |                                                      |                                                                                                                                                              |
 | state#chargerOpMode                         | Number                   | no       |                                                      |                                                                                                                                                              |
 | state#totalPower                            | Number:Power             | no       |                                                      |                                                                                                                                                              |
-| state#sessionEnergy                         | Number:Energy            | no       |                                                      |                                                                                                                                                              |
+| state#sessionEnergy                         | Number:Energy            | no       | current session                                      |                                                                                                                                                              |
 | state#dynamicCircuitCurrentP1               | Number:ElectricCurrent   | no       |                                                      |                                                                                                                                                              |
 | state#dynamicCircuitCurrentP2               | Number:ElectricCurrent   | no       |                                                      |                                                                                                                                                              |
 | state#dynamicCircuitCurrentP3               | Number:ElectricCurrent   | no       |                                                      |                                                                                                                                                              |
@@ -94,6 +94,9 @@ The setting that start with "dynamic" can be changed frequently, the other are w
 | config#phaseMode                            | Number                   | yes      | 1=1phase, 2=auto, 3=3phase                           | 1-3                                                                                                                                                          |
 | config#maxChargerCurrent                    | Number:ElectricCurrent   | no       | write access not yet implemented                     |                                                                                                                                                              |
 | commands#genericCommand                     | String                   | yes      | Generic Endpoint to send commands                    | reboot, update_firmware, poll_all, smart_charging, start_charging, stop_charging, pause_charging, resume_charging, toggle_charging, override_schedule        |
+| latest_session#sessionEnergy                | Number:Energy            | no       | latest (already ended) session                       |                                                                                                                                                              |
+| latest_session#sessionStart                 | DateTime                 | no       |                                                      |                                                                                                                                                              |
+| latest_session#sessionEnd                   | DateTime                 | no       |                                                      |                                                                                                                                                              |
 
 ### Master Charger Channels
 
@@ -135,3 +138,38 @@ Bridge easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="4
         Thing charger myCharger2 [ id="EHXXXXX2" ]
 }
 ```
+
+
+### Items
+```
+Number                  Easee_Charger_Power                   "Wallbox Power [%d]"
+Number:ElectricCurrent  Easee_Circuit_Phase1                  "Phase 1"                               { channel="easee:mastercharger:mysite1:charger:dynamic_current#phase1" }
+Number:ElectricCurrent  Easee_Circuit_Phase2                  "Phase 2"                               { channel="easee:mastercharger:mysite1:charger:dynamic_current#phase2" }
+Number:ElectricCurrent  Easee_Circuit_Phase3                  "Phase 3"                               { channel="easee:mastercharger:mysite1:charger:dynamic_current#phase3" }
+String                  Easee_Circuit_Dynamic_Phase_Command   "Dynamic Phase Command"                 { channel="easee:mastercharger:mysite1:charger:dynamic_current#setDynamicCurrents" }
+```
+
+### Rules
+```
+rule "Easee Power Control"
+when
+    Item Easee_Charger_Power changed
+then
+    logDebug("easee.trigger", "[TRIGGER] Easee Power Control")
+    if (Easee_Charger_Status.state == 3) {
+        if (Easee_Charger_Power.state == 48) {
+            Easee_Circuit_Dynamic_Phase_Command.sendCommand("16;16;16")
+        } else {
+            Easee_Circuit_Dynamic_Phase_Command.sendCommand(Easee_Charger_Power.state + ";0;0")
+        }
+    } else {
+        logInfo("easee.script", "No active charging process")
+    }
+end
+```
+
+### Sitemap
+```
+Switch item=Easee_Charger_Power mappings=[6="1400", 7="1600", 8="1800", 9="2100", 10="2300", 16="3700", 48="11000"] icon="energy"
+```
+

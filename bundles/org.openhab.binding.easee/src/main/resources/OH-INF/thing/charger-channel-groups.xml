@@ -129,6 +129,23 @@
 			</channel>
 		</channels>
 	</channel-group-type>
+	<channel-group-type id="charger-latest_session">
+		<label>Last Charging Session</label>
+		<channels>
+			<channel id="sessionEnergy" typeId="type-energy">
+				<label>Total Session Energy</label>
+				<description>Total Energy for last session..</description>
+			</channel>
+			<channel id="sessionStart" typeId="type-date">
+				<label>Session Start</label>
+				<description>Date/Time when session started.</description>
+			</channel>
+			<channel id="sessionEnd" typeId="type-date">
+				<label>Session End</label>
+				<description>Date/Time when session ended.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
 	<channel-group-type id="charger-commands">
 		<label>Charger Commands</label>
 		<channels>
