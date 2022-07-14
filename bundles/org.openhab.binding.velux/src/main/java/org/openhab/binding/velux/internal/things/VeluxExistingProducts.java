@@ -21,8 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
-import org.openhab.binding.velux.internal.things.VeluxProduct.ActuatorState;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ProductState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,8 +64,8 @@ public class VeluxExistingProducts {
     /*
      * Permitted list of product states whose position values shall be accepted.
      */
-    private static final List<ActuatorState> PERMITTED_VALUE_STATES = Arrays.asList(ActuatorState.EXECUTING,
-            ActuatorState.DONE);
+    private static final List<ProductState> PERMITTED_VALUE_STATES = Arrays.asList(ProductState.EXECUTING,
+            ProductState.DONE);
 
     // Constructor methods
 
@@ -146,7 +146,7 @@ public class VeluxExistingProducts {
         boolean dirty = false;
 
         // ignore commands with state 'not used'
-        boolean ignoreNotUsed = (ActuatorState.NOT_USED == ActuatorState.of(newProduct.getState()));
+        boolean ignoreNotUsed = (ProductState.NOT_USED == ProductState.of(newProduct.getState()));
 
         // specially ignore commands from buggy devices (e.g. Somfy) which have bad data
         boolean ignoreSpecial = theProduct.isSomfyProduct()
@@ -155,17 +155,16 @@ public class VeluxExistingProducts {
                 && !VeluxProductPosition.isValid(newProduct.getTarget());
 
         if ((!ignoreNotUsed) && (!ignoreSpecial)) {
-            int newStateValue = newProduct.getState();
-            ActuatorState newState = ActuatorState.of(newStateValue);
+            int newState = newProduct.getState();
+            int theState = theProduct.getState();
 
-            // always update the actuator state
-            if (theProduct.setState(newStateValue)) {
-                // but only set dirty flag if states are not equivalent
-                dirty |= newState.notEquivalentTo(ActuatorState.of(theProduct.getState()));
+            // always update the actuator state, but only set dirty flag if they are not operationally equivalent
+            if (theProduct.setState(newState)) {
+                dirty |= !ProductState.equivalent(theState, newState);
             }
 
-            // only update the actuator position values if permitted
-            if (PERMITTED_VALUE_STATES.contains(newState)) {
+            // only update the actual position values if the state is permitted
+            if (PERMITTED_VALUE_STATES.contains(ProductState.of(newState))) {
                 int newValue = newProduct.getCurrentPosition();
                 if (VeluxProductPosition.isUnknownOrValid(newValue)) {
                     dirty |= theProduct.setCurrentPosition(newValue);

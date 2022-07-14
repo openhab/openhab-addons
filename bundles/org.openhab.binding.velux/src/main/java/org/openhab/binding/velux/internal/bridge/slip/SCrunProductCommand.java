@@ -22,9 +22,9 @@ import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
-import org.openhab.binding.velux.internal.things.VeluxProduct.ActuatorState;
 import org.openhab.binding.velux.internal.things.VeluxProduct.DataSource;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ProductState;
 import org.openhab.binding.velux.internal.things.VeluxProductName;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.slf4j.Logger;
@@ -354,7 +354,7 @@ public class SCrunProductCommand extends RunProductCommand implements SlipBridge
 
             // create notification product that clones the new command positions
             product = new VeluxProduct(VeluxProductName.UNKNOWN, new ProductBridgeIndex(reqIndexArray01),
-                    ActuatorState.EXECUTING.value, setMainParameter, setMainParameter, reqFunctionalParameters, COMMAND)
+                    ProductState.EXECUTING.value, setMainParameter, setMainParameter, reqFunctionalParameters, COMMAND)
                             .overrideDataSource(DataSource.BINDING);
 
             return true;

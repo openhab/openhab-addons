@@ -193,13 +193,13 @@ public class SCgetProductStatus extends GetProduct implements SlipBridgeCommunic
                 int ntfState;
                 switch (ntfRunStatus) {
                     case 1:
-                        ntfState = VeluxProduct.ActuatorState.ERROR.value;
+                        ntfState = VeluxProduct.ProductState.ERROR.value;
                         break;
                     case 2:
-                        ntfState = VeluxProduct.ActuatorState.EXECUTING.value;
+                        ntfState = VeluxProduct.ProductState.EXECUTING.value;
                         break;
                     default:
-                        ntfState = VeluxProduct.ActuatorState.DONE.value;
+                        ntfState = VeluxProduct.ProductState.DONE.value;
                 }
 
                 // create notification product with the returned values

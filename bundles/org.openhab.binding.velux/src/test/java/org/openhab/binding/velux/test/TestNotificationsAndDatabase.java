@@ -28,8 +28,8 @@ import org.openhab.binding.velux.internal.things.VeluxExistingProducts;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
-import org.openhab.binding.velux.internal.things.VeluxProduct.ActuatorState;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ProductState;
 import org.openhab.binding.velux.internal.things.VeluxProductName;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition.PositionType;
@@ -56,7 +56,7 @@ public class TestNotificationsAndDatabase {
 
     private static final int UNKNOWN_POSITION = VeluxProductPosition.VPP_VELUX_UNKNOWN;
     private static final int IGNORE_POSITION = VeluxProductPosition.VPP_VELUX_IGNORE;
-    private static final int STATE_DONE = VeluxProduct.ActuatorState.DONE.value;
+    private static final int STATE_DONE = VeluxProduct.ProductState.DONE.value;
 
     private static final ActuatorType ACTUATOR_TYPE_SOMFY = ActuatorType.BLIND_17;
     private static final ActuatorType ACTUATOR_TYPE_VELUX = ActuatorType.WINDOW_4_1;
@@ -137,7 +137,7 @@ public class TestNotificationsAndDatabase {
         assertNull(product.getFunctionalParameters());
         assertTrue(product.supportsVanePosition());
         assertTrue(product.isSomfyProduct());
-        assertEquals(ActuatorState.DONE, product.getActuatorState());
+        assertEquals(ProductState.DONE, product.getActuatorState());
 
         // check negative assertions
         assertNotEquals(VANE_POSITION_A, product.getVanePosition());
@@ -228,7 +228,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(ACTUATOR_TYPE_SOMFY, product.getActuatorType());
         assertEquals(VANE_POSITION_A, product.getVanePosition());
         assertNotNull(product.getFunctionalParameters());
-        assertEquals(ActuatorState.DONE, product.getActuatorState());
+        assertEquals(ProductState.DONE, product.getActuatorState());
 
         // test updating the existing product in the database
         VeluxExistingProducts existingProducts = getExistingProducts();
@@ -259,7 +259,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(ACTUATOR_TYPE_SOMFY, product.getActuatorType());
         assertEquals(VANE_POSITION_A, product.getVanePosition());
         assertNotNull(product.getFunctionalParameters());
-        assertEquals(ActuatorState.DONE, product.getActuatorState());
+        assertEquals(ProductState.DONE, product.getActuatorState());
     }
 
     /**
@@ -491,7 +491,7 @@ public class TestNotificationsAndDatabase {
         // check the resulting updater product state is 'executing' with the new values
         product = bcp.getProduct();
         product.setActuatorType(ACTUATOR_TYPE_SOMFY);
-        assertEquals(ActuatorState.EXECUTING, product.getActuatorState());
+        assertEquals(ProductState.EXECUTING, product.getActuatorState());
         assertEquals(targetMainPosition, product.getCurrentPosition());
         assertEquals(targetMainPosition, product.getTarget());
         assertEquals(targetMainPosition, product.getDisplayPosition());
@@ -518,7 +518,7 @@ public class TestNotificationsAndDatabase {
         product = bcp.getProduct();
         product.setActuatorType(ACTUATOR_TYPE_SOMFY);
 
-        assertEquals(ActuatorState.EXECUTING, product.getActuatorState());
+        assertEquals(ProductState.EXECUTING, product.getActuatorState());
         assertEquals(IGNORE_POSITION, product.getCurrentPosition());
         assertEquals(IGNORE_POSITION, product.getTarget());
         assertEquals(UNKNOWN_POSITION, product.getDisplayPosition());
@@ -535,9 +535,9 @@ public class TestNotificationsAndDatabase {
         VeluxProduct product = new VeluxProduct(VeluxProductName.UNKNOWN, new ProductBridgeIndex(PRODUCT_INDEX_A), 0, 0,
                 0, null, Command.UNDEFTYPE);
         int[] inputStates = { 0, 1, 2, 3, 4, 5, 0x2c, 0x2d, 0xff, 0x80 };
-        ActuatorState[] expected = { ActuatorState.NON_EXECUTING, ActuatorState.ERROR, ActuatorState.NOT_USED,
-                ActuatorState.WAITING_FOR_POWER, ActuatorState.EXECUTING, ActuatorState.DONE, ActuatorState.EXECUTING,
-                ActuatorState.DONE, ActuatorState.UNKNOWN, ActuatorState.MANUAL };
+        ProductState[] expected = { ProductState.NON_EXECUTING, ProductState.ERROR, ProductState.NOT_USED,
+                ProductState.WAITING_FOR_POWER, ProductState.EXECUTING, ProductState.DONE, ProductState.EXECUTING,
+                ProductState.DONE, ProductState.UNKNOWN, ProductState.MANUAL };
         for (int i = 0; i < inputStates.length; i++) {
             product.setState(inputStates[i]);
             assertEquals(expected[i], product.getActuatorState());
@@ -566,7 +566,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(VANE_POSITION_A, product.getVanePosition());
 
         // state = done
-        product.setState(ActuatorState.DONE.value);
+        product.setState(ProductState.DONE.value);
         assertEquals(MAIN_POSITION_A, product.getDisplayPosition());
         assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
         assertEquals(TARGET_POSITION, product.getTarget());
@@ -574,7 +574,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(VANE_POSITION_A, product.getVanePosition());
 
         // state = not used
-        product.setState(ActuatorState.NOT_USED.value);
+        product.setState(ProductState.NOT_USED.value);
         assertEquals(MAIN_POSITION_A, product.getDisplayPosition());
         assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
         assertEquals(TARGET_POSITION, product.getTarget());
@@ -582,7 +582,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(VANE_POSITION_A, product.getVanePosition());
 
         // state = executing
-        product.setState(ActuatorState.EXECUTING.value);
+        product.setState(ProductState.EXECUTING.value);
         assertEquals(TARGET_POSITION, product.getDisplayPosition());
         assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
         assertEquals(TARGET_POSITION, product.getTarget());
@@ -590,7 +590,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(VANE_POSITION_A, product.getVanePosition());
 
         // state = manual + excuting
-        product.setState(ActuatorState.MANUAL.value + ActuatorState.EXECUTING.value);
+        product.setState(ProductState.MANUAL.value + ProductState.EXECUTING.value);
         assertEquals(UNKNOWN_POSITION, product.getDisplayPosition());
         assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
         assertEquals(TARGET_POSITION, product.getTarget());
@@ -598,7 +598,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(VANE_POSITION_A, product.getVanePosition());
 
         // state = error
-        product.setState(ActuatorState.ERROR.value);
+        product.setState(ProductState.ERROR.value);
         assertEquals(UNKNOWN_POSITION, product.getDisplayPosition());
         assertEquals(MAIN_POSITION_A, product.getCurrentPosition());
         assertEquals(TARGET_POSITION, product.getTarget());
@@ -662,7 +662,7 @@ public class TestNotificationsAndDatabase {
         ProductBridgeIndex index = new ProductBridgeIndex(PRODUCT_INDEX_A);
         VeluxProduct product = existingProducts.get(index).clone();
 
-        assertEquals(ActuatorState.DONE, product.getActuatorState());
+        assertEquals(ProductState.DONE, product.getActuatorState());
 
         // state = done
         assertEquals(MAIN_POSITION_A, product.getDisplayPosition());
@@ -672,7 +672,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(VANE_POSITION_A, product.getVanePosition());
 
         // state = not used
-        product.setState(ActuatorState.NOT_USED.value);
+        product.setState(ProductState.NOT_USED.value);
         product.setCurrentPosition(MAIN_POSITION_A - 1);
         product.setTarget(TARGET_POSITION - 1);
         product.setVanePosition(VANE_POSITION_A - 1);
@@ -685,7 +685,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(VANE_POSITION_A, product.getVanePosition());
 
         // state = manual + excuting
-        product.setState(ActuatorState.MANUAL.value + ActuatorState.EXECUTING.value);
+        product.setState(ProductState.MANUAL.value + ProductState.EXECUTING.value);
         product.setCurrentPosition(MAIN_POSITION_A - 1);
         product.setTarget(TARGET_POSITION - 1);
         product.setVanePosition(VANE_POSITION_A - 1);
@@ -698,7 +698,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(VANE_POSITION_A, product.getVanePosition());
 
         // state = error
-        product.setState(ActuatorState.ERROR.value);
+        product.setState(ProductState.ERROR.value);
         product.setCurrentPosition(MAIN_POSITION_A - 1);
         product.setTarget(TARGET_POSITION - 1);
         product.setVanePosition(VANE_POSITION_A - 1);
@@ -711,7 +711,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(VANE_POSITION_A, product.getVanePosition());
 
         // state = executing
-        product.setState(ActuatorState.EXECUTING.value);
+        product.setState(ProductState.EXECUTING.value);
         product.setCurrentPosition(MAIN_POSITION_A - 1);
         product.setTarget(TARGET_POSITION - 1);
         product.setVanePosition(VANE_POSITION_A - 1);
@@ -724,7 +724,7 @@ public class TestNotificationsAndDatabase {
         assertNotEquals(VANE_POSITION_A, product.getVanePosition());
 
         // state = done
-        product.setState(ActuatorState.EXECUTING.value);
+        product.setState(ProductState.EXECUTING.value);
         product.setCurrentPosition(MAIN_POSITION_A);
         product.setTarget(TARGET_POSITION);
         product.setVanePosition(VANE_POSITION_A);
@@ -753,7 +753,7 @@ public class TestNotificationsAndDatabase {
                 existing.getCurrentPosition(), existing.getTarget(), existing.getFunctionalParameters(),
                 Command.GW_OPENHAB_RECEIVEONLY);
         existingProducts.resetDirtyFlag();
-        product.setState(ActuatorState.DONE.value);
+        product.setState(ProductState.DONE.value);
         product.setCurrentPosition(MAIN_POSITION_B);
         assertTrue(existingProducts.update(product));
         assertTrue(existingProducts.isDirty());

@@ -26,8 +26,8 @@ import org.openhab.binding.velux.internal.bridge.slip.SCrunProductCommand;
 import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
 import org.openhab.binding.velux.internal.things.VeluxExistingProducts;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
-import org.openhab.binding.velux.internal.things.VeluxProduct.ActuatorState;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ProductState;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -74,8 +74,8 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
     /*
      * List of product states that shall be processed
      */
-    private static final List<ActuatorState> STATES_TO_PROCESS = Arrays.asList(ActuatorState.DONE,
-            ActuatorState.EXECUTING, ActuatorState.MANUAL, ActuatorState.UNKNOWN);
+    private static final List<ProductState> STATES_TO_PROCESS = Arrays.asList(ProductState.DONE, ProductState.EXECUTING,
+            ProductState.MANUAL, ProductState.UNKNOWN);
 
     // Public methods
 

@@ -64,11 +64,11 @@ public class VeluxProduct {
     }
 
     /**
-     * State (of movement) of an actuator.
+     * State (of movement) of an actuator product.
      *
      * @author AndrewFG - Initial contribution.
      */
-    public static enum ActuatorState {
+    public static enum ProductState {
         NON_EXECUTING(0),
         ERROR(1),
         NOT_USED(2),
@@ -79,21 +79,21 @@ public class VeluxProduct {
         MANUAL(0b10000000);
 
         private static final int ACTION_MASK = 0b111;
-        private static final int EQUALS_MASK = ACTION_MASK | MANUAL.value;
+        private static final int EQUIVALENT_MASK = ACTION_MASK | MANUAL.value;
 
         public final int value;
 
-        private ActuatorState(int value) {
+        private ProductState(int value) {
             this.value = value;
         }
 
         /**
-         * Create an ActuatorState from an integer seed value.
+         * Create an ProductState from an integer seed value.
          *
          * @param value the seed value.
-         * @return the ActuatorState.
+         * @return the ProductState.
          */
-        public static ActuatorState of(int value) {
+        public static ProductState of(int value) {
             if ((value < NON_EXECUTING.value) || (value > UNKNOWN.value)) {
                 return ERROR;
             }
@@ -104,7 +104,7 @@ public class VeluxProduct {
                 return MANUAL;
             }
             int masked = value & ACTION_MASK;
-            for (ActuatorState state : values()) {
+            for (ProductState state : values()) {
                 if (state.value > DONE.value) {
                     break;
                 }
@@ -116,14 +116,15 @@ public class VeluxProduct {
         }
 
         /**
-         * Check if the masked values of this and other are not equivalent.
+         * Test if the masked values of two state values are operationally equivalent, including if both values are
+         * 'unknown' (0xFF).
          *
-         * @param other second value to check.
-         * @return true if the masked values are not equivalent.
+         * @param a first value to compare
+         * @param b second value to compare
+         * @return true if the masked values are equivalent.
          */
-        public boolean notEquivalentTo(ActuatorState other) {
-            return (this.value == UNKNOWN.value) ? (other.value != UNKNOWN.value)
-                    : (this.value & EQUALS_MASK) != (other.value & EQUALS_MASK);
+        public static boolean equivalent(int a, int b) {
+            return (a & EQUIVALENT_MASK) == (b & EQUIVALENT_MASK);
         }
     }
 
@@ -155,7 +156,7 @@ public class VeluxProduct {
     private int variation = 0;
     private int powerMode = 0;
     private String serialNumber = VeluxProductSerialNo.UNKNOWN;
-    private int state = ActuatorState.UNKNOWN.value;
+    private int state = ProductState.UNKNOWN.value;
     private int currentPosition = 0;
     private int targetPosition = 0;
     private @Nullable FunctionalParameters functionalParameters = null;
@@ -415,8 +416,8 @@ public class VeluxProduct {
      *
      * @return state cast to an ActuatorState enum.
      */
-    public ActuatorState getActuatorState() {
-        return ActuatorState.of(state);
+    public ProductState getActuatorState() {
+        return ProductState.of(state);
     }
 
     /**
