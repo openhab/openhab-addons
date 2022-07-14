@@ -137,14 +137,19 @@ public class VeluxExistingProducts {
             logger.warn("update() failed as actuator (with index {}) is not registered.", productBridgeIndex.toInt());
             return false;
         }
-        VeluxProduct thisProduct = this.get(productBridgeIndex);
+
+        VeluxProduct theProduct = this.get(productBridgeIndex);
+        if (logger.isDebugEnabled()) {
+            logger.debug("update() theProduct:{}", theProduct);
+            logger.debug("update() newProduct:{}", newProduct);
+        }
         boolean dirty = false;
 
         // ignore commands with state 'not used'
         boolean ignoreNotUsed = (ActuatorState.NOT_USED == ActuatorState.of(newProduct.getState()));
 
         // specially ignore commands from buggy devices (e.g. Somfy) which have bad data
-        boolean ignoreSpecial = thisProduct.isSomfyProduct()
+        boolean ignoreSpecial = theProduct.isSomfyProduct()
                 && (Command.GW_OPENHAB_RECEIVEONLY == newProduct.getCreatorCommand())
                 && !VeluxProductPosition.isValid(newProduct.getCurrentPosition())
                 && !VeluxProductPosition.isValid(newProduct.getTarget());
@@ -154,25 +159,25 @@ public class VeluxExistingProducts {
             ActuatorState newState = ActuatorState.of(newStateValue);
 
             // always update the actuator state
-            if (thisProduct.setState(newStateValue)) {
+            if (theProduct.setState(newStateValue)) {
                 // but only set dirty flag if states are not equivalent
-                dirty |= newState.notEquivalentTo(ActuatorState.of(thisProduct.getState()));
+                dirty |= newState.notEquivalentTo(ActuatorState.of(theProduct.getState()));
             }
 
             // only update the actuator position values if permitted
             if (PERMITTED_VALUE_STATES.contains(newState)) {
                 int newValue = newProduct.getCurrentPosition();
                 if (VeluxProductPosition.isUnknownOrValid(newValue)) {
-                    dirty |= thisProduct.setCurrentPosition(newValue);
+                    dirty |= theProduct.setCurrentPosition(newValue);
                 }
                 newValue = newProduct.getTarget();
                 if (VeluxProductPosition.isUnknownOrValid(newValue)) {
-                    dirty |= thisProduct.setTarget(newValue);
+                    dirty |= theProduct.setTarget(newValue);
                 }
-                if (thisProduct.supportsVanePosition()) {
+                if (theProduct.supportsVanePosition()) {
                     FunctionalParameters newFunctionalParameters = newProduct.getFunctionalParameters();
                     if (newFunctionalParameters != null) {
-                        dirty |= thisProduct.setFunctionalParameters(newFunctionalParameters);
+                        dirty |= theProduct.setFunctionalParameters(newFunctionalParameters);
                     }
                 }
             }
@@ -181,13 +186,12 @@ public class VeluxExistingProducts {
         // update modified product database
         if (dirty) {
             this.dirty = true;
-            String uniqueIndex = thisProduct.getProductUniqueIndex();
+            String uniqueIndex = theProduct.getProductUniqueIndex();
             logger.trace("update(): updating by UniqueIndex {}.", uniqueIndex);
-            existingProductsByUniqueIndex.replace(uniqueIndex, thisProduct);
-            modifiedProductsByUniqueIndex.put(uniqueIndex, thisProduct);
+            existingProductsByUniqueIndex.replace(uniqueIndex, theProduct);
+            modifiedProductsByUniqueIndex.put(uniqueIndex, theProduct);
+            logger.debug("update() theProduct:{} (modified)", theProduct);
         }
-
-        logger.debug("update(newProduct:{}) => dirty:{}", newProduct, dirty);
         return true;
     }
 
