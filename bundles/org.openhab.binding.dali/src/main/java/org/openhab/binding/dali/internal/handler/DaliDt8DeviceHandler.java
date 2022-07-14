@@ -86,8 +86,8 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                 if (readDeviceTargetId != null) {
                     readAddress = DaliAddress.createShortAddress(readDeviceTargetId);
                 }
-                // Write argument 0x02 (query color temperature) to DTR0 and set DT8
-                daliHandler.sendCommand(DaliStandardCommand.createSetDTR0Command(2));
+                // Write argument 0xc2 (query temporary color temperature) to DTR0 and set DT8
+                daliHandler.sendCommand(DaliStandardCommand.createSetDTR0Command(0xc2));
                 daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
                 // Mirek MSB is returned as result
                 CompletableFuture<@Nullable NumericMask> responseMsb = daliHandler.sendCommandWithResponse(
