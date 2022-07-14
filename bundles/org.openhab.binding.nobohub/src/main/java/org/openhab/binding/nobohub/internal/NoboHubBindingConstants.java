@@ -38,22 +38,36 @@ public class NoboHubBindingConstants {
     private static final String BINDING_ID = "nobohub";
 
     public static final String API_VERSION = "1.1";
-    public static final String VENDOR = "Glen Dimplex Nobø";
+
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_MODEL = "model";
+    public static final String PROPERTY_HOSTNAME = "hostName";
+
+    public static final String PROPERTY_VENDOR_NAME = "Glen Dimplex Nobø";
+    public static final String PROPERTY_PRODUCTION_DATE = "productionDate";
+
+    public static final String PROPERTY_SOFTWARE_VERSION = "softwareVersion";
+
+    public static final String PROPERTY_ZONE = "zone";
+    public static final String PROPERTY_ZONE_ID = "id";
+    public static final String PROPERTY_TEMPERATURE_SENSOR_FOR_ZONE = "temperatureSensorForZone";
 
     public static final int NOBO_HUB_TCP_PORT = 27779;
 
     public static final Duration TIME_BETWEEN_FULL_SCANS = Duration.ofMinutes(10);
     public static final Duration TIME_BETWEEN_RETRIES_ON_ERROR = Duration.ofSeconds(10);
 
+    public static final Duration RECOMMENDED_KEEPALIVE_INTERVAL = Duration.ofSeconds(14);
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_HUB = new ThingTypeUID(BINDING_ID, "nobohub");
     public static final ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(BINDING_ID, "zone");
     public static final ThingTypeUID THING_TYPE_COMPONENT = new ThingTypeUID(BINDING_ID, "component");
 
-    public static final Set<ThingTypeUID> AUTODISCOVERED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    public static final Set<ThingTypeUID> AUTODISCOVERED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_ZONE, THING_TYPE_COMPONENT));
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_HUB, THING_TYPE_ZONE, THING_TYPE_COMPONENT));
 
     // List of all Channel ids

@@ -35,6 +35,7 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -56,6 +57,16 @@ public class NoboHubHandlerFactory extends BaseThingHandlerFactory {
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = new HashSet<>(List.of(THING_TYPE_HUB));
     private @NonNullByDefault({}) WeekProfileStateDescriptionOptionsProvider stateDescriptionOptionsProvider;
 
+    private final NoboHubTranslationProvider i18nProvider;
+
+    @Activate
+    public NoboHubHandlerFactory(
+            final @Reference WeekProfileStateDescriptionOptionsProvider stateDescriptionOptionsProvider,
+            final @Reference NoboHubTranslationProvider i18nProvider) {
+        this.stateDescriptionOptionsProvider = stateDescriptionOptionsProvider;
+        this.i18nProvider = i18nProvider;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -66,14 +77,14 @@ public class NoboHubHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_HUB.equals(thingTypeUID)) {
-            NoboHubBridgeHandler handler = new NoboHubBridgeHandler((Bridge) thing);
+            NoboHubBridgeHandler handler = new NoboHubBridgeHandler((Bridge) thing, i18nProvider);
             registerDiscoveryService(handler);
             return handler;
         } else if (THING_TYPE_ZONE.equals(thingTypeUID)) {
             logger.debug("Setting WeekProfileStateDescriptionOptionsProvider for: {}", thing.getLabel());
             return new ZoneHandler(thing, stateDescriptionOptionsProvider);
         } else if (THING_TYPE_COMPONENT.equals(thingTypeUID)) {
-            return new ComponentHandler(thing);
+            return new ComponentHandler(thing, i18nProvider);
         }
 
         return null;
@@ -90,7 +101,7 @@ public class NoboHubHandlerFactory extends BaseThingHandlerFactory {
         NoboThingDiscoveryService discoveryService = new NoboThingDiscoveryService(bridgeHandler);
         bridgeHandler.setDicsoveryService(discoveryService);
         this.discoveryServiceRegs.put(bridgeHandler.getThing().getThingTypeUID(), getBundleContext()
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     private synchronized void unregisterDiscoveryService(NoboHubBridgeHandler bridgeHandler) {
@@ -110,7 +121,7 @@ public class NoboHubHandlerFactory extends BaseThingHandlerFactory {
                 }
             }
         } catch (IllegalArgumentException iae) {
-            logger.error("Failed to unregister service", iae);
+            logger.debug("Failed to unregister service", iae);
         }
     }
 

@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class NoboDataException extends Exception {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -620277949858983367L;
 
     public NoboDataException(String message) {
         super(message);

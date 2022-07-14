@@ -40,7 +40,7 @@ public final class SerialNumber {
             return false;
         }
 
-        List<String> parts = new ArrayList<String>(4);
+        List<String> parts = new ArrayList<>(4);
         for (int i = 0; i < 4; i++) {
             parts.add(serialNumber.substring((i * 3), (i * 3) + 3));
         }
@@ -91,12 +91,12 @@ public final class SerialNumber {
         return NoboHubBindingConstants.SERIALNUMBERS_FOR_TYPES.get(id);
     }
 
-    @java.lang.Override
+    @Override
     public String toString() {
         return serialNumber;
     }
 
-    @java.lang.Override
+    @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
@@ -110,7 +110,7 @@ public final class SerialNumber {
         return this.serialNumber.equals(other.serialNumber);
     }
 
-    @java.lang.Override
+    @Override
     public int hashCode() {
         return this.serialNumber.hashCode();
     }

@@ -24,11 +24,11 @@ import org.junit.jupiter.api.Test;
  * @author Jørgen Austvik - Initial contribution
  */
 @NonNullByDefault
-public class OverrideRegisterTest {
+public class OverridePlanRegisterTest {
 
     @Test
     public void testPutGet() throws NoboDataException {
-        Override o = Override.fromH04("H04 4 0 0 -1 -1 0 -1");
+        OverridePlan o = OverridePlan.fromH04("H04 4 0 0 -1 -1 0 -1");
         OverrideRegister sut = new OverrideRegister();
         sut.put(o);
         assertEquals(o, sut.get(o.getId()));
@@ -36,8 +36,8 @@ public class OverrideRegisterTest {
 
     @Test
     public void testPutOverwrite() throws NoboDataException {
-        Override o1 = Override.fromH04("H04 4 0 0 -1 -1 0 -1");
-        Override o2 = Override.fromH04("H04 4 3 0 -1 -1 0 -1");
+        OverridePlan o1 = OverridePlan.fromH04("H04 4 0 0 -1 -1 0 -1");
+        OverridePlan o2 = OverridePlan.fromH04("H04 4 3 0 -1 -1 0 -1");
         OverrideRegister sut = new OverrideRegister();
         sut.put(o1);
         sut.put(o2);
@@ -46,24 +46,24 @@ public class OverrideRegisterTest {
 
     @Test
     public void testRemove() throws NoboDataException {
-        Override o = Override.fromH04("H04 4 0 0 -1 -1 0 -1");
+        OverridePlan o = OverridePlan.fromH04("H04 4 0 0 -1 -1 0 -1");
         OverrideRegister sut = new OverrideRegister();
         sut.put(o);
-        Override res = sut.remove(o.getId());
+        OverridePlan res = sut.remove(o.getId());
         assertEquals(o, res);
     }
 
     @Test
     public void testRemoveUnknown() {
         OverrideRegister sut = new OverrideRegister();
-        Override res = sut.remove(666);
+        OverridePlan res = sut.remove(666);
         assertNull(res);
     }
 
     @Test
     public void testGetUnknown() {
         OverrideRegister sut = new OverrideRegister();
-        Override o = sut.get(666);
+        OverridePlan o = sut.get(666);
         assertNull(o);
     }
 }

@@ -13,6 +13,10 @@
 package org.openhab.binding.nobohub.internal;
 
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.CHANNEL_HUB_ACTIVE_OVERRIDE_NAME;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_HOSTNAME;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_PRODUCTION_DATE;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_SOFTWARE_VERSION;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.RECOMMENDED_KEEPALIVE_INTERVAL;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -29,8 +33,8 @@ import org.openhab.binding.nobohub.internal.model.ComponentRegister;
 import org.openhab.binding.nobohub.internal.model.Hub;
 import org.openhab.binding.nobohub.internal.model.NoboCommunicationException;
 import org.openhab.binding.nobohub.internal.model.NoboDataException;
-import org.openhab.binding.nobohub.internal.model.Override;
 import org.openhab.binding.nobohub.internal.model.OverrideMode;
+import org.openhab.binding.nobohub.internal.model.OverridePlan;
 import org.openhab.binding.nobohub.internal.model.OverrideRegister;
 import org.openhab.binding.nobohub.internal.model.SerialNumber;
 import org.openhab.binding.nobohub.internal.model.Temperature;
@@ -72,12 +76,14 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
     private final @NotNull WeekProfileRegister weekProfileRegister = new WeekProfileRegister();
     private final @NotNull ZoneRegister zoneRegister = new ZoneRegister();
     private final @NotNull ComponentRegister componentRegister = new ComponentRegister();
+    private final NoboHubTranslationProvider messages;
 
-    public NoboHubBridgeHandler(Bridge bridge) {
+    public NoboHubBridgeHandler(Bridge bridge, NoboHubTranslationProvider messages) {
         super(bridge);
+        this.messages = messages;
     }
 
-    @java.lang.Override
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.info("Handle command {} for channel {}!", command.toFullString(), channelUID);
 
@@ -89,7 +95,7 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
                 }
             } catch (NoboCommunicationException noboEx) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Failed to get status: " + noboEx.getMessage());
+                        "@text/message.bridge.status.failed [\\" + noboEx.getMessage() + "\"]");
             }
 
             return;
@@ -101,57 +107,50 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
                 Hub h = Helpers.castToNonNull(hub, "hub");
                 if (command instanceof StringType) {
                     StringType strCommand = (StringType) command;
-                    logger.debug("Changing override for hub {} to {}", channelUID, strCommand.toString());
+                    logger.debug("Changing override for hub {} to {}", channelUID, strCommand);
                     try {
                         OverrideMode mode = OverrideMode.getByName(strCommand.toFullString());
                         ht.getConnection().setOverride(h, mode);
                     } catch (NoboCommunicationException nce) {
-                        logger.error("Failed setting override mode", nce);
+                        logger.debug("Failed setting override mode", nce);
                     } catch (NoboDataException nde) {
-                        logger.error("Date format error setting override mode", nde);
+                        logger.debug("Date format error setting override mode", nde);
                     }
                 } else {
-                    logger.error("Command of wrong type: {} ({})", command, command.getClass().getName());
+                    logger.debug("Command of wrong type: {} ({})", command, command.getClass().getName());
                 }
             } else {
                 if (null == hub) {
-                    logger.error("Could not set override, hub not detected yet");
+                    logger.debug("Could not set override, hub not detected yet");
                 }
 
                 if (null == hubThread) {
-                    logger.error("Could not set override, hub connection thread not set up yet");
+                    logger.debug("Could not set override, hub connection thread not set up yet");
                 }
             }
         }
     }
 
-    @java.lang.Override
+    @Override
     public void initialize() {
         config = getConfigAs(NoboHubBridgeConfiguration.class);
-
-        if (null == config) {
-            logger.error("Missing Configuration");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No configuration set");
-            return;
-        }
 
         NoboHubBridgeConfiguration c = Helpers.castToNonNull(config, "config");
 
         String serialNumber = c.serialNumber;
         if (null == serialNumber) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing serial number in configuration");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/message.missing.serial");
             return;
         }
 
         String hostName = c.hostName;
-        if (null == hostName) {
+        if (null == hostName || hostName.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing host name in configuration");
+                    "@text/message.bridge.missing.hostname");
             return;
         }
 
-        logger.info("Looking for Hub {} at {}", c.serialNumber, c.hostName);
+        logger.debug("Looking for Hub {} at {}", c.serialNumber, c.hostName);
 
         // Set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         updateStatus(ThingStatus.UNKNOWN);
@@ -164,7 +163,7 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
 
                 logger.debug("Done connecting to {} ({})", hostName, serialNumber);
 
-                Duration timeout = Duration.ofSeconds(14);
+                Duration timeout = RECOMMENDED_KEEPALIVE_INTERVAL;
                 if (c.pollingInterval > 0) {
                     timeout = Duration.ofSeconds(c.pollingInterval);
                 }
@@ -177,24 +176,18 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
 
                 if (ht.getConnection().isConnected()) {
                     logger.debug("Communication thread to {} is up and running, we are online", hostName);
-                    updateProperty("serialNumber", serialNumber);
+                    updateProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             } catch (NoboCommunicationException commEx) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, commEx.getMessage());
             }
         });
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 
-    @java.lang.Override
+    @Override
     public void dispose() {
         logger.debug("Disposing NoboHub '{}'", getThing().getUID().getId());
 
@@ -204,18 +197,18 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
         }
 
         if (hubThread != null) {
-            logger.info("Stopping communication thread");
+            logger.debug("Stopping communication thread");
             HubCommunicationThread ht = Helpers.castToNonNull(hubThread, "hubThread");
             ht.stopNow();
         }
     }
 
-    @java.lang.Override
+    @Override
     public void childHandlerInitialized(ThingHandler handler, Thing thing) {
         logger.info("Adding thing: {}", thing.getLabel());
     }
 
-    @java.lang.Override
+    @Override
     public void childHandlerDisposed(ThingHandler handler, Thing thing) {
         logger.info("Disposing thing: {}", thing.getLabel());
     }
@@ -223,15 +216,15 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
     private void onUpdate(Hub hub) {
         logger.debug("Updating Hub: {}", hub.getName());
         this.hub = hub;
-        Override activeOverride = getOverride(hub.getActiveOverrideId());
+        OverridePlan activeOverridePlan = getOverride(hub.getActiveOverrideId());
 
-        if (null != activeOverride) {
-            Override override = Helpers.castToNonNull(activeOverride, "activeOverride");
-            logger.debug("Updating Hub with ActiveOverrideId {} with Name {}", override.getId(),
-                    override.getMode().name());
+        if (null != activeOverridePlan) {
+            OverridePlan overridePlan = Helpers.castToNonNull(activeOverridePlan, "activeOverride");
+            logger.debug("Updating Hub with ActiveOverrideId {} with Name {}", overridePlan.getId(),
+                    overridePlan.getMode().name());
 
             updateState(NoboHubBindingConstants.CHANNEL_HUB_ACTIVE_OVERRIDE_NAME,
-                    StringType.valueOf(override.getMode().name()));
+                    StringType.valueOf(overridePlan.getMode().name()));
         }
 
         // Update all zones to set online status and update profile name from weekProfileRegister
@@ -239,18 +232,18 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
             refreshZone(zone);
         }
 
-        updateProperty("name", hub.getName());
-        updateProperty("serialNumber", hub.getSerialNumber().toString());
-        updateProperty("softwareVersion", hub.getSoftwareVersion());
-        updateProperty("hardwareVersion", hub.getHardwareVersion());
-        updateProperty("productionDate", hub.getProductionDate());
+        updateProperty(PROPERTY_HOSTNAME, hub.getName());
+        updateProperty(Thing.PROPERTY_SERIAL_NUMBER, hub.getSerialNumber().toString());
+        updateProperty(PROPERTY_SOFTWARE_VERSION, hub.getSoftwareVersion());
+        updateProperty(Thing.PROPERTY_HARDWARE_VERSION, hub.getHardwareVersion());
+        updateProperty(PROPERTY_PRODUCTION_DATE, hub.getProductionDate());
     }
 
     public void receivedData(@Nullable String line) {
         try {
             parseLine(line);
         } catch (NoboDataException nde) {
-            logger.error("Failed parsing line '{}': {}", line, nde.getMessage());
+            logger.debug("Failed parsing line '{}': {}", line, nde.getMessage());
         }
     }
 
@@ -277,8 +270,8 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
             WeekProfile weekProfile = WeekProfile.fromH03(line);
             weekProfileRegister.put(weekProfile);
         } else if (line.startsWith("H04")) {
-            Override override = Override.fromH04(line);
-            overrideRegister.put(override);
+            OverridePlan overridePlan = OverridePlan.fromH04(line);
+            overrideRegister.put(overridePlan);
         } else if (line.startsWith("H05")) {
             Hub hub = Hub.fromH05(line);
             onUpdate(hub);
@@ -292,8 +285,8 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
             WeekProfile weekProfile = WeekProfile.fromH03(line);
             weekProfileRegister.remove(weekProfile.getId());
         } else if (line.startsWith("S03")) {
-            Override override = Override.fromH04(line);
-            overrideRegister.remove(override.getId());
+            OverridePlan overridePlan = OverridePlan.fromH04(line);
+            overrideRegister.remove(overridePlan.getId());
         } else if (line.startsWith("B00")) {
             Zone zone = Zone.fromH01(line);
             zoneRegister.put(zone);
@@ -312,8 +305,8 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
             WeekProfile weekProfile = WeekProfile.fromH03(line);
             weekProfileRegister.put(weekProfile);
         } else if (line.startsWith("B03")) {
-            Override override = Override.fromH04(line);
-            overrideRegister.put(override);
+            OverridePlan overridePlan = OverridePlan.fromH04(line);
+            overrideRegister.put(overridePlan);
         } else if (line.startsWith("V00")) {
             Zone zone = Zone.fromH01(line);
             zoneRegister.put(zone);
@@ -346,7 +339,7 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
                 }
             }
         } else if (line.startsWith("E00")) {
-            logger.error("Error from Hub: {}", line);
+            logger.debug("Error from Hub: {}", line);
         } else {
             // HANDSHAKE: Basic part of keepalive
             // V06: Encryption key
@@ -369,7 +362,7 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
         return componentRegister.get(serialNumber);
     }
 
-    public @Nullable Override getOverride(Integer id) {
+    public @Nullable OverridePlan getOverride(Integer id) {
         return overrideRegister.get(id);
     }
 
@@ -414,7 +407,7 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
             }
         } catch (NoboCommunicationException noboEx) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Failed to get status: " + noboEx.getMessage());
+                    "@text/message.bridge.status.failed [\\" + noboEx.getMessage() + "\"]");
         }
     }
 

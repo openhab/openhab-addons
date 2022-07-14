@@ -13,13 +13,20 @@
 package org.openhab.binding.nobohub.internal;
 
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.CHANNEL_COMPONENT_CURRENT_TEMPERATURE;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_MODEL;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_NAME;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_TEMPERATURE_SENSOR_FOR_ZONE;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_ZONE;
+
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nobohub.internal.model.Component;
 import org.openhab.binding.nobohub.internal.model.SerialNumber;
 import org.openhab.binding.nobohub.internal.model.Zone;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -41,10 +48,13 @@ public class ComponentHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ComponentHandler.class);
 
+    private final NoboHubTranslationProvider messages;
+
     protected @Nullable SerialNumber serialNumber;
 
-    public ComponentHandler(Thing thing) {
+    public ComponentHandler(Thing thing, NoboHubTranslationProvider messages) {
         super(thing);
+        this.messages = messages;
     }
 
     public void onUpdate(Component component) {
@@ -53,25 +63,25 @@ public class ComponentHandler extends BaseThingHandler {
         double temp = component.getTemperature();
         if (!Double.isNaN(temp)) {
             try {
-                DecimalType currentTemperature = new DecimalType(temp);
+                QuantityType<Temperature> currentTemperature = new QuantityType<>(temp, SIUnits.CELSIUS);
                 updateState(CHANNEL_COMPONENT_CURRENT_TEMPERATURE, currentTemperature);
             } catch (NumberFormatException nfe) {
-                logger.debug("Couldnt set decimal value to temperature: {}", temp);
+                logger.debug("Couldn't set decimal value to temperature: {}", temp);
             }
         }
 
-        updateProperty("serialNumber", component.getSerialNumber().toString());
-        updateProperty("name", component.getName());
-        updateProperty("model", component.getSerialNumber().getComponentType());
+        updateProperty(Thing.PROPERTY_SERIAL_NUMBER, component.getSerialNumber().toString());
+        updateProperty(PROPERTY_NAME, component.getName());
+        updateProperty(PROPERTY_MODEL, component.getSerialNumber().getComponentType());
 
         String zoneName = getZoneName(component.getZoneId());
         if (zoneName != null) {
-            updateProperty("zone", zoneName);
+            updateProperty(PROPERTY_ZONE, zoneName);
         }
 
         String tempForZoneName = getZoneName(component.getTemperatureSensorForZoneId());
         if (tempForZoneName != null) {
-            updateProperty("temperatureSensorForZone", tempForZoneName);
+            updateProperty(PROPERTY_TEMPERATURE_SENSOR_FOR_ZONE, tempForZoneName);
         }
     }
 
@@ -93,17 +103,17 @@ public class ComponentHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         String serialNumberString = getConfigAs(ComponentConfiguration.class).serialNumber;
-        if (serialNumberString != null) {
+        if (serialNumberString != null && !serialNumberString.isEmpty()) {
             SerialNumber sn = new SerialNumber(serialNumberString);
             if (!sn.isWellFormed()) {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Illegal serial number: " + serialNumber);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/message.component.illegal.serial [\"" + serialNumber + "\"]");
             } else {
                 this.serialNumber = sn;
                 updateStatus(ThingStatus.ONLINE);
             }
         } else {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, "Missing serial number");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/message.missing.serial");
         }
     }
 
@@ -114,15 +124,14 @@ public class ComponentHandler extends BaseThingHandler {
             if (null != serialNumber) {
                 Component component = getComponent();
                 if (null == component) {
-                    logger.error("Could not find Component with serial number {} for channel {}", serialNumber,
-                            channelUID);
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.GONE);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                            messages.getText("message.component.notfound", serialNumber, channelUID));
                 } else {
                     onUpdate(component);
                 }
             } else {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.GONE);
-                logger.error("id not set for channel {}", channelUID);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                        "@text/message.component.missing.id [\"" + channelUID + "\"]");
             }
 
             return;
@@ -140,7 +149,7 @@ public class ComponentHandler extends BaseThingHandler {
         if (null != noboHub) {
             NoboHubBridgeHandler hubHandler = (NoboHubBridgeHandler) noboHub.getHandler();
             if (null != serialNumber && null != hubHandler) {
-                SerialNumber sn = Helpers.castToNonNull(serialNumber, "serialNumber");
+                SerialNumber sn = Helpers.castToNonNull(serialNumber, Thing.PROPERTY_SERIAL_NUMBER);
                 NoboHubBridgeHandler hh = Helpers.castToNonNull(hubHandler, "hubHandler");
                 return hh.getComponent(sn);
             }

@@ -13,7 +13,7 @@
 package org.openhab.binding.nobohub.internal.connection;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nobohub.internal.NoboHubBindingConstants;
@@ -33,16 +33,16 @@ public class HubCommunicationThread extends Thread {
 
     private final HubConnection hubConnection;
     private final Duration timeout;
-    private LocalDateTime lastTimeFullScan;
-    private LocalDateTime lastTimeReadStart;
+    private Instant lastTimeFullScan;
+    private Instant lastTimeReadStart;
 
     private volatile boolean stopped = false;
 
     public HubCommunicationThread(HubConnection hubConnection, Duration timeout) {
         this.hubConnection = hubConnection;
         this.timeout = timeout;
-        this.lastTimeFullScan = LocalDateTime.now();
-        this.lastTimeReadStart = LocalDateTime.now();
+        this.lastTimeFullScan = Instant.now();
+        this.lastTimeReadStart = Instant.now();
     }
 
     public void stopNow() {
@@ -57,29 +57,29 @@ public class HubCommunicationThread extends Thread {
                     hubConnection.processReads(timeout);
                 }
 
-                if (LocalDateTime.now()
-                        .isAfter(lastTimeFullScan.plus(NoboHubBindingConstants.TIME_BETWEEN_FULL_SCANS))) {
+                if (Instant.now().isAfter(lastTimeFullScan.plus(NoboHubBindingConstants.TIME_BETWEEN_FULL_SCANS))) {
                     hubConnection.refreshAll();
-                    lastTimeFullScan = LocalDateTime.now();
+                    lastTimeFullScan = Instant.now();
                 } else {
                     hubConnection.handshake();
                 }
 
-                lastTimeReadStart = LocalDateTime.now();
+                lastTimeReadStart = Instant.now();
                 hubConnection.processReads(timeout);
             } catch (NoboCommunicationException nce) {
                 logger.error("Communication error with Hub", nce);
                 try {
-                    Duration readTime = Duration.between(LocalDateTime.now(), lastTimeReadStart);
+                    Duration readTime = Duration.between(Instant.now(), lastTimeReadStart);
                     Thread.sleep(NoboHubBindingConstants.TIME_BETWEEN_RETRIES_ON_ERROR.minus(readTime).toMillis());
                     try {
                         logger.debug("Trying to do a hard reconnect");
                         hubConnection.hardReconnect();
                     } catch (NoboCommunicationException nce2) {
-                        logger.error("Failed to reconnect connection", nce2);
+                        logger.debug("Failed to reconnect connection", nce2);
                     }
                 } catch (InterruptedException ie) {
                     logger.debug("Interrupted from sleep after error");
+                    Thread.currentThread().interrupt();
                 }
             }
         }

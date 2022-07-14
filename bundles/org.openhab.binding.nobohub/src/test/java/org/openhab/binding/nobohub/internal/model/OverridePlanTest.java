@@ -28,11 +28,11 @@ import org.junit.jupiter.api.Test;
  * @author Jørgen Austvik - Initial contribution
  */
 @NonNullByDefault
-public class OverrideTest {
+public class OverridePlanTest {
 
     @Test
     public void testParseH04DefaultOverride() throws NoboDataException {
-        Override parsed = Override.fromH04("H04 4 0 0 -1 -1 0 -1");
+        OverridePlan parsed = OverridePlan.fromH04("H04 4 0 0 -1 -1 0 -1");
         assertEquals(4, parsed.getId());
         assertEquals(OverrideMode.NORMAL, parsed.getMode());
         assertEquals(OverrideType.NOW, parsed.getType());
@@ -44,7 +44,7 @@ public class OverrideTest {
 
     @Test
     public void testParseB03WithStartDate() throws NoboDataException {
-        Override parsed = Override.fromH04("B03 9 3 1 202001221930 -1 0 -1");
+        OverridePlan parsed = OverridePlan.fromH04("B03 9 3 1 202001221930 -1 0 -1");
         assertEquals(9, parsed.getId());
         assertEquals(OverrideMode.AWAY, parsed.getMode());
         assertEquals(OverrideType.TIMER, parsed.getType());
@@ -57,7 +57,7 @@ public class OverrideTest {
 
     @Test
     public void testParseS03NoDate() throws NoboDataException {
-        Override parsed = Override.fromH04("S03 13 0 0 -1 -1 0 -1");
+        OverridePlan parsed = OverridePlan.fromH04("S03 13 0 0 -1 -1 0 -1");
         assertEquals(13, parsed.getId());
         assertEquals(OverrideMode.NORMAL, parsed.getMode());
         assertEquals(OverrideType.NOW, parsed.getType());
@@ -69,15 +69,15 @@ public class OverrideTest {
 
     @Test
     public void testAddA03WithStartDate() throws NoboDataException {
-        Override parsed = Override.fromH04("B03 9 3 1 202001221930 -1 0 -1");
+        OverridePlan parsed = OverridePlan.fromH04("B03 9 3 1 202001221930 -1 0 -1");
         assertEquals("A03 9 3 1 202001221930 -1 0 -1", parsed.generateCommandString("A03"));
     }
 
     @Test
     public void testFromMode() {
         LocalDateTime date = LocalDateTime.of(2020, Month.FEBRUARY, 21, 21, 42);
-        Override override = Override.fromMode(OverrideMode.AWAY, date);
-        assertEquals("A03 1 3 0 -1 -1 0 -1", override.generateCommandString("A03"));
+        OverridePlan overridePlan = OverridePlan.fromMode(OverrideMode.AWAY, date);
+        assertEquals("A03 1 3 0 -1 -1 0 -1", overridePlan.generateCommandString("A03"));
     }
 
     @Test

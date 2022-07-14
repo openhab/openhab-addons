@@ -29,15 +29,15 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public final class OverrideRegister {
 
-    private final @NotNull Map<Integer, Override> register = new HashMap<Integer, Override>();
+    private final @NotNull Map<Integer, OverridePlan> register = new HashMap<>();
 
     /**
      * Stores a new Override in the register. If an override exists with the same id, that value is overwritten.
      *
-     * @param override The Override to store.
+     * @param overridePlan The Override to store.
      */
-    public void put(Override override) {
-        register.put(override.getId(), override);
+    public void put(OverridePlan overridePlan) {
+        register.put(overridePlan.getId(), overridePlan);
     }
 
     /**
@@ -46,7 +46,7 @@ public final class OverrideRegister {
      * @param overrideId The override to remove
      * @return The override that is removed. Null if the override is not found.
      */
-    public @Nullable Override remove(int overrideId) {
+    public @Nullable OverridePlan remove(int overrideId) {
         return register.remove(overrideId);
     }
 
@@ -56,7 +56,7 @@ public final class OverrideRegister {
      * @param overrideId The id of the override to return.
      * @return Returns the override, or null if it doesnt exist in the regestry.
      */
-    public @Nullable Override get(int overrideId) {
+    public @Nullable OverridePlan get(int overrideId) {
         return register.get(overrideId);
     }
 }

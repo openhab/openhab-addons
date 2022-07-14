@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nobohub.internal.NoboHubBindingConstants;
 
 /**
- * The normal week profile (used when no {@link Override}s exist).
+ * The normal week profile (used when no {@link OverridePlan}s exist).
  *
  * @author Jørgen Austvik - Initial contribution
  */

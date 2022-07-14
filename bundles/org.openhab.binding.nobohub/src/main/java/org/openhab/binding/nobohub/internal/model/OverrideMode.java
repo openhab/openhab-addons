@@ -15,7 +15,7 @@ package org.openhab.binding.nobohub.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The mode of the {@link Override}. What the value is overridden to.
+ * The mode of the {@link OverridePlan}. What the value is overridden to.
  *
  * @author Jørgen Austvik - Initial contribution
  * @author Espen Fossen - Initial contribution

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="gardena"
+<thing:thing-descriptions bindingId="nobohub"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
@@ -21,11 +21,11 @@
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
-				<description>Serial Number of the nobø hub (12 numbers, no spaces)</description>
+				<description>Serial number of the Nobo hub (12 numbers, no spaces)</description>
 			</parameter>
 			<parameter name="hostName" type="text" required="true">
 				<label>Host Name</label>
-				<description>Host Name/IP address of the Nobø Hub</description>
+				<description>Host Name/IP address of the Nobo Hub</description>
 			</parameter>
 			<parameter name="keepaliveInterval" type="integer" required="false" min="5">
 				<label>Polling interval</label>

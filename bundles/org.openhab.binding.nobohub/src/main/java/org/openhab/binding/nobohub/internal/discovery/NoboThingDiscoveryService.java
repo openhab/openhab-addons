@@ -13,9 +13,13 @@
 package org.openhab.binding.nobohub.internal.discovery;
 
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.AUTODISCOVERED_THING_TYPES_UIDS;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_MODEL;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_NAME;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_VENDOR_NAME;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_ZONE;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_ZONE_ID;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.THING_TYPE_COMPONENT;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.THING_TYPE_ZONE;
-import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.VENDOR;
 
 import java.util.Collection;
 import java.util.Date;
@@ -88,9 +92,9 @@ public class NoboThingDiscoveryService extends AbstractDiscoveryService {
                     String label = zone.getName();
 
                     Map<String, Object> properties = new HashMap<>(1);
-                    properties.put("id", Integer.toString(zone.getId()));
-                    properties.put("name", zone.getName());
-                    properties.put("vendor", VENDOR);
+                    properties.put(PROPERTY_ZONE_ID, Integer.toString(zone.getId()));
+                    properties.put(PROPERTY_NAME, zone.getName());
+                    properties.put(Thing.PROPERTY_VENDOR, PROPERTY_VENDOR_NAME);
 
                     logger.debug("Adding device {} to inbox", discoveredThingId);
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(discoveredThingId)
@@ -122,14 +126,14 @@ public class NoboThingDiscoveryService extends AbstractDiscoveryService {
                     String label = component.getName();
 
                     Map<String, Object> properties = new HashMap<>(1);
-                    properties.put("serialNumber", component.getSerialNumber().toString());
-                    properties.put("name", component.getName());
-                    properties.put("vendor", VENDOR);
-                    properties.put("model", component.getSerialNumber().getComponentType());
+                    properties.put(Thing.PROPERTY_SERIAL_NUMBER, component.getSerialNumber().toString());
+                    properties.put(PROPERTY_NAME, component.getName());
+                    properties.put(Thing.PROPERTY_VENDOR, PROPERTY_VENDOR_NAME);
+                    properties.put(PROPERTY_MODEL, component.getSerialNumber().getComponentType());
 
                     String zoneName = getZoneName(component.getZoneId());
                     if (zoneName != null) {
-                        properties.put("zone", zoneName);
+                        properties.put(PROPERTY_ZONE, zoneName);
                     }
 
                     int zoneId = component.getTemperatureSensorForZoneId();
@@ -143,7 +147,7 @@ public class NoboThingDiscoveryService extends AbstractDiscoveryService {
                     logger.debug("Adding device {} to inbox", discoveredThingId);
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(discoveredThingId)
                             .withBridge(bridge).withLabel(label).withProperties(properties)
-                            .withRepresentationProperty("serialNumber").build();
+                            .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
                     thingDiscovered(discoveryResult);
                 }
             }

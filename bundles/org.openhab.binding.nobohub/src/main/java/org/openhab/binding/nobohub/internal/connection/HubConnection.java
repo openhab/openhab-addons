@@ -31,8 +31,8 @@ import org.openhab.binding.nobohub.internal.NoboHubBridgeHandler;
 import org.openhab.binding.nobohub.internal.model.Hub;
 import org.openhab.binding.nobohub.internal.model.NoboCommunicationException;
 import org.openhab.binding.nobohub.internal.model.NoboDataException;
-import org.openhab.binding.nobohub.internal.model.Override;
 import org.openhab.binding.nobohub.internal.model.OverrideMode;
+import org.openhab.binding.nobohub.internal.model.OverridePlan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,8 +108,8 @@ public class HubConnection {
             connect();
         }
 
-        Override override = Override.fromMode(nextMode, LocalDateTime.now());
-        sendCommand(override.generateCommandString("A03"));
+        OverridePlan overridePlan = OverridePlan.fromMode(nextMode, LocalDateTime.now());
+        sendCommand(overridePlan.generateCommandString("A03"));
         @Nullable
         String line = "";
         while (line != null && !line.startsWith("B03")) {
@@ -119,8 +119,8 @@ public class HubConnection {
 
         if (null != line) {
             String l = Helpers.castToNonNull(line, "line");
-            Override newOverride = Override.fromH04(l);
-            hub.setActiveOverrideId(newOverride.getId());
+            OverridePlan newOverridePlan = OverridePlan.fromH04(l);
+            hub.setActiveOverrideId(newOverridePlan.getId());
             sendCommand(hub.generateCommandString("U03"));
         }
     }
@@ -174,7 +174,7 @@ public class HubConnection {
 
             Socket conn = Helpers.castToNonNull(hubConnection, "hubConnection");
 
-            logger.debug("Reading from Hub, waiting maximum {}", Helpers.formatDuration(timeout));
+            logger.trace("Reading from Hub, waiting maximum {}", Helpers.formatDuration(timeout));
             conn.setSoTimeout((int) timeout.toMillis());
 
             try {
@@ -201,7 +201,7 @@ public class HubConnection {
                 BufferedReader reader = Helpers.castToNonNull(in, "in");
                 String line = reader.readLine();
                 if (line != null) {
-                    logger.debug("Reading raw data string from Nobø Hub: {}", line);
+                    logger.trace("Reading raw data string from Nobø Hub: {}", line);
                 }
                 return line;
             }
@@ -218,7 +218,7 @@ public class HubConnection {
 
     private void write(String s) {
         if (null != out) {
-            logger.debug("Sending '{}'", s);
+            logger.trace("Sending '{}'", s);
             PrintWriter o = Helpers.castToNonNull(out, "out");
             o.write(s);
             o.flush();

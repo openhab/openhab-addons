@@ -15,7 +15,7 @@ package org.openhab.binding.nobohub.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The type of the {@link Override}. How long does it last.
+ * The type of the {@link OverridePlan}. How long does it last.
  *
  * @author Jørgen Austvik - Initial contribution
  * @author Espen Fossen - Initial contribution
@@ -30,7 +30,7 @@ public enum OverrideType {
 
     private final int numValue;
 
-    private OverrideType(int numValue) {
+    OverrideType(int numValue) {
         this.numValue = numValue;
     }
 

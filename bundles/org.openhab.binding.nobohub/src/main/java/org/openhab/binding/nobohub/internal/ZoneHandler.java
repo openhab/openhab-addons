@@ -18,10 +18,14 @@ import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.CHANN
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.CHANNEL_ZONE_COMFORT_TEMPERATURE;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.CHANNEL_ZONE_CURRENT_TEMPERATURE;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.CHANNEL_ZONE_ECO_TEMPERATURE;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_HOSTNAME;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_ZONE_ID;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,7 +34,9 @@ import org.openhab.binding.nobohub.internal.model.WeekProfile;
 import org.openhab.binding.nobohub.internal.model.WeekProfileStatus;
 import org.openhab.binding.nobohub.internal.model.Zone;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -55,7 +61,7 @@ public class ZoneHandler extends BaseThingHandler {
 
     private final WeekProfileStateDescriptionOptionsProvider weekProfileStateDescriptionOptionsProvider;
 
-    protected @Nullable Integer id;
+    protected int id;
 
     public ZoneHandler(Thing thing,
             WeekProfileStateDescriptionOptionsProvider weekProfileStateDescriptionOptionsProvider) {
@@ -67,15 +73,16 @@ public class ZoneHandler extends BaseThingHandler {
         logger.debug("Updating zone: {}", zone.getName());
         updateStatus(ThingStatus.ONLINE);
 
-        DecimalType comfortTemperature = new DecimalType(zone.getComfortTemperature());
+        QuantityType<Temperature> comfortTemperature = new QuantityType<>(zone.getComfortTemperature(),
+                SIUnits.CELSIUS);
         updateState(CHANNEL_ZONE_COMFORT_TEMPERATURE, comfortTemperature);
-        DecimalType ecoTemperature = new DecimalType(zone.getEcoTemperature());
+        QuantityType<Temperature> ecoTemperature = new QuantityType<>(zone.getEcoTemperature(), SIUnits.CELSIUS);
         updateState(CHANNEL_ZONE_ECO_TEMPERATURE, ecoTemperature);
 
         Double temp = zone.getTemperature();
         if (temp != null && temp != Double.NaN) {
             try {
-                DecimalType currentTemperature = new DecimalType(temp);
+                QuantityType<Temperature> currentTemperature = new QuantityType<>(temp, SIUnits.CELSIUS);
                 updateState(CHANNEL_ZONE_CURRENT_TEMPERATURE, currentTemperature);
             } catch (NumberFormatException nfe) {
                 logger.debug("Could not set decimal value to temperature: {}", temp);
@@ -99,7 +106,7 @@ public class ZoneHandler extends BaseThingHandler {
                         updateState(CHANNEL_ZONE_CALCULATED_WEEK_PROFILE_STATUS,
                                 StringType.valueOf(weekProfileStatus.name()));
                     } catch (NoboDataException nde) {
-                        logger.error("Failed getting current week profile status", nde);
+                        logger.debug("Failed getting current week profile status", nde);
                     }
                 }
 
@@ -114,8 +121,8 @@ public class ZoneHandler extends BaseThingHandler {
             }
         }
 
-        updateProperty("name", zone.getName());
-        updateProperty("id", Integer.toString(zone.getId()));
+        updateProperty(PROPERTY_HOSTNAME, zone.getName());
+        updateProperty(PROPERTY_ZONE_ID, Integer.toString(zone.getId()));
     }
 
     @Override
@@ -129,29 +136,24 @@ public class ZoneHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             logger.debug("Refreshing channel {}", channelUID);
 
-            if (null != id) {
-                Zone zone = getZone();
-                if (null == zone) {
-                    logger.error("Could not find Zone with id {} for channel {}", id, channelUID);
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.GONE);
-                } else {
-                    onUpdate(zone);
-                    Bridge noboHub = getBridge();
-                    if (null != noboHub) {
-                        NoboHubBridgeHandler hubHandler = (NoboHubBridgeHandler) noboHub.getHandler();
-                        if (null != hubHandler) {
-                            WeekProfile weekProfile = hubHandler.getWeekProfile(zone.getActiveWeekProfileId());
-                            if (null != weekProfile) {
-                                String weekProfileName = weekProfile.getName();
-                                StringType weekProfileValue = StringType.valueOf(weekProfileName);
-                                updateState(CHANNEL_ZONE_ACTIVE_WEEK_PROFILE_NAME, weekProfileValue);
-                            }
+            Zone zone = getZone();
+            if (null == zone) {
+                logger.debug("Could not find Zone with id {} for channel {}", id, channelUID);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+            } else {
+                onUpdate(zone);
+                Bridge noboHub = getBridge();
+                if (null != noboHub) {
+                    NoboHubBridgeHandler hubHandler = (NoboHubBridgeHandler) noboHub.getHandler();
+                    if (null != hubHandler) {
+                        WeekProfile weekProfile = hubHandler.getWeekProfile(zone.getActiveWeekProfileId());
+                        if (null != weekProfile) {
+                            String weekProfileName = weekProfile.getName();
+                            StringType weekProfileValue = StringType.valueOf(weekProfileName);
+                            updateState(CHANNEL_ZONE_ACTIVE_WEEK_PROFILE_NAME, weekProfileValue);
                         }
                     }
                 }
-            } else {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.GONE);
-                logger.error("id not set for channel {}", channelUID);
             }
 
             return;
@@ -219,9 +221,8 @@ public class ZoneHandler extends BaseThingHandler {
         Bridge noboHub = getBridge();
         if (null != noboHub) {
             NoboHubBridgeHandler hubHandler = (NoboHubBridgeHandler) noboHub.getHandler();
-            if (null != hubHandler && null != id) {
-                Integer zid = Helpers.castToNonNull(id, "id");
-                return hubHandler.getZone(zid);
+            if (null != hubHandler) {
+                return hubHandler.getZone(id);
             }
         }
 

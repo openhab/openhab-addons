@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class NoboHubBridgeConfiguration {
 
     /**
-     * Serial Number of Nobø Hub.
+     * Serial number of Nobø Hub.
      */
     @Nullable
     public String serialNumber;

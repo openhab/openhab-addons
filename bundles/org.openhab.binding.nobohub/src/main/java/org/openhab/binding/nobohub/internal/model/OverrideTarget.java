@@ -15,7 +15,7 @@ package org.openhab.binding.nobohub.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The target of the {@link Override}. What it applies to.
+ * The target of the {@link OverridePlan}. What it applies to.
  *
  * @author Jørgen Austvik - Initial contribution
  * @author Espen Fossen - Initial contribution

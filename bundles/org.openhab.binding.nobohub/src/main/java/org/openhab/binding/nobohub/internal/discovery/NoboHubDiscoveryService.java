@@ -16,8 +16,10 @@ package org.openhab.binding.nobohub.internal.discovery;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.NOBO_HUB_BROADCAST_ADDRESS;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.NOBO_HUB_BROADCAST_PORT;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.NOBO_HUB_MULTICAST_PORT;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_HOSTNAME;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_NAME;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_VENDOR_NAME;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.THING_TYPE_HUB;
-import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.VENDOR;
 import static org.openhab.binding.nobohub.internal.NoboHubHandlerFactory.DISCOVERABLE_DEVICE_TYPES_UIDS;
 
 import java.io.IOException;
@@ -37,6 +39,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -102,7 +105,7 @@ public class NoboHubDiscoveryService extends AbstractDiscoveryService implements
             }
 
             if (!found) {
-                logger.info("Detecting Glen Dimplex Nobø Hubs, trying Broadcast");
+                logger.debug("Detecting Glen Dimplex Nobø Hubs, trying Broadcast");
 
                 try {
                     DatagramSocket socket = new DatagramSocket(NOBO_HUB_BROADCAST_PORT,
@@ -115,7 +118,7 @@ public class NoboHubDiscoveryService extends AbstractDiscoveryService implements
         }
 
         private boolean waitOnSocket(DatagramSocket socket, String type) throws IOException {
-            try {
+            try (socket) {
                 socket.setBroadcast(true);
 
                 byte[] buffer = new byte[1024];
@@ -129,7 +132,7 @@ public class NoboHubDiscoveryService extends AbstractDiscoveryService implements
 
                 logger.debug("Hub detection {}}: Received: {} from {}", type, received, data.getAddress());
 
-                String parts[] = received.split("__", 3);
+                String[] parts = received.split("__", 3);
                 if (3 != parts.length) {
                     logger.debug("Data error, didn't contain three parts: '{}''", String.join("','", parts));
                     return false;
@@ -138,8 +141,6 @@ public class NoboHubDiscoveryService extends AbstractDiscoveryService implements
                 String serialNumberStart = parts[parts.length - 1];
                 addDevice(serialNumberStart, data.getAddress().getHostName());
                 return true;
-            } finally {
-                socket.close();
             }
         }
 
@@ -148,14 +149,14 @@ public class NoboHubDiscoveryService extends AbstractDiscoveryService implements
             String label = "Nobø Hub " + serialNumberStart;
 
             Map<String, Object> properties = new HashMap<>(1);
-            properties.put("serialNumber", serialNumberStart);
-            properties.put("name", label);
-            properties.put("vendor", VENDOR);
-            properties.put("hostName", hostName);
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumberStart);
+            properties.put(PROPERTY_NAME, label);
+            properties.put(Thing.PROPERTY_VENDOR, PROPERTY_VENDOR_NAME);
+            properties.put(PROPERTY_HOSTNAME, hostName);
 
             logger.debug("Adding device {} to inbox: {} {} at {}", bridge, label, serialNumberStart, hostName);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(bridge).withLabel(label)
-                    .withProperties(properties).withRepresentationProperty("serialNumber").build();
+                    .withProperties(properties).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
             thingDiscovered(discoveryResult);
         }
     };

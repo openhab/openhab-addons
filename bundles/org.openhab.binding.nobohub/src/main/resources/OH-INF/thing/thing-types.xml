@@ -40,7 +40,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Component</label>
-		<description>A component is an oven, a switch or a floor termostat</description>
+		<description>A component is an oven, a switch or a floor thermostat</description>
 
 		<channels>
 			<channel id="currentTemperature" typeId="temperature-channel-type"/>
@@ -54,7 +54,7 @@
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
-				<description>Serial Number of the component (12 digits)</description>
+				<description>Serial number of the component (12 digits)</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -62,7 +62,8 @@
 	<channel-type id="activeOverrideName-channel-type">
 		<item-type>String</item-type>
 		<label>Active Override</label>
-		<category>Override</category>
+		<description>Name of active override, using one of the predefined states supported</description>
+		<category>Heating</category>
 		<state readOnly="false">
 			<options>
 				<option value="NORMAL">Normal</option>
@@ -74,31 +75,37 @@
 	</channel-type>
 
 	<channel-type id="eco-temperature-channel-type">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Eco Temperature</label>
-		<category>Eco Temperature</category>
+		<description>The preferred Eco temperature level set on the heater or in the binding</description>
+		<category>Temperature</category>
 		<tags>
-			<tag>TargetTemperature</tag>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state min="7" max="30" step="1" pattern="%d °C" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="comfort-temperature-channel-type">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Comfort Temperature</label>
-		<category>Comfort Temperature</category>
+		<description>The preferred Comfort temperature level set on the heater or in the binding</description>
+		<category>Temperature</category>
 		<tags>
-			<tag>TargetTemperature</tag>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state min="7" max="30" step="1" pattern="%d °C" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="temperature-channel-type">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Current Temperature</label>
+		<description>The current temperature from a device that supports reporting temperatures</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>CurrentTemperature</tag>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.3f °C" readOnly="true"/>
 	</channel-type>
@@ -106,21 +113,24 @@
 	<channel-type id="activeWeekProfileName-channel-type">
 		<item-type>String</item-type>
 		<label>Active Week Profile Name</label>
-		<category>Week Profile</category>
+		<description>Name of the active week profile, set via the Nobo app</description>
+		<category>Heating</category>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="activeWeekProfile-channel-type">
 		<item-type>Number</item-type>
 		<label>Active Week Profile Id</label>
-		<category>Week Profile</category>
+		<description>Id of the active week profile, set via the Nobo app</description>
+		<category>Heating</category>
 		<state min="0" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="weekProfiles-channel-type">
 		<item-type>String</item-type>
 		<label>Week Profiles</label>
-		<category>Week Profile</category>
+		<description>List of active week profiles, set via the Nobo app</description>
+		<category>Heating</category>
 		<state readOnly="true"/>
 	</channel-type>
 
