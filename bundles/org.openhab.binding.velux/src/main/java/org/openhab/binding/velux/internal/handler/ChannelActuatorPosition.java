@@ -19,9 +19,10 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.velux.internal.bridge.VeluxBridgeRunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.GetProduct;
+import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
+import org.openhab.binding.velux.internal.bridge.slip.SCrunProductCommand;
 import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
 import org.openhab.binding.velux.internal.things.VeluxExistingProducts;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
@@ -245,16 +246,26 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
 
             if ((mainParameter != null) || (functionalParameters != null)) {
                 LOGGER.debug("handleCommand(): sending command '{}' for channel id '{}'.", command, channelId);
-                VeluxBridgeRunProductCommand bcp = new VeluxBridgeRunProductCommand(thisBridgeHandler.thisBridge);
-                bcp.setParameters(productBridgeIndex.toInt(), mainParameter, functionalParameters);
-                if (bcp.sendCommand()) {
-                    if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
-                        LOGGER.trace("handleCommand(): actuator position will be updated via polling.");
-                    }
-                    if (existingProducts.update(bcp.getProduct())) {
-                        LOGGER.trace("handleCommand(): actuator position immediate update requested.");
+                RunProductCommand bcp = thisBridgeHandler.thisBridge.bridgeAPI().runProductCommand();
+                boolean success = false;
+                if (bcp instanceof SCrunProductCommand) {
+                    synchronized (bcp) {
+                        if (bcp.setNodeIdAndParameters(productBridgeIndex.toInt(), mainParameter, functionalParameters)
+                                && thisBridgeHandler.thisBridge.bridgeCommunicate(bcp)
+                                && bcp.isCommunicationSuccessful()) {
+                            success = true;
+                            if (thisBridgeHandler.bridgeParameters.actuators
+                                    .autoRefresh(thisBridgeHandler.thisBridge)) {
+                                LOGGER.trace("handleCommand(): actuator position will be updated via polling.");
+                            }
+                            if (existingProducts.update(((SCrunProductCommand) bcp).getProduct())) {
+                                LOGGER.trace("handleCommand(): actuator position immediate update requested.");
+                            }
+                        }
                     }
                 }
+                LOGGER.debug("handleCommand(): sendCommand() finished {}.",
+                        (success ? "successfully" : "with failure"));
             } else {
                 LOGGER.info("handleCommand(): ignoring command '{}' for channel id '{}'.", command, channelId);
             }
