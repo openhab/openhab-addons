@@ -67,10 +67,16 @@ public class VeluxProductPosition {
     public static final int VPP_VELUX_RELATIVE_ORIGIN = 0xCCE8;
     public static final int VPP_VELUX_RELATIVE_RANGE = 1000; // same for positive and negative offsets
 
+    /**
+     * Enum that determines whether the position is an absolute value, or a positive / negative offset relative to the
+     * current position.
+     *
+     * @author AndrewFG - Initial contribution.
+     */
     public static enum PositionType {
-        ABSOLUTE_POSITION(0f),
-        RELATIVE_POSITIVE(1f),
-        RELATIVE_NEGATIVE(-1f);
+        ABSOLUTE_VALUE(0f),
+        OFFSET_POSITIVE(1f),
+        OFFSET_NEGATIVE(-1f);
 
         private float value;
 
@@ -83,7 +89,7 @@ public class VeluxProductPosition {
 
     private PercentType position;
     private boolean isValid = false;
-    private PositionType positionType = PositionType.ABSOLUTE_POSITION;
+    private PositionType positionType = PositionType.ABSOLUTE_VALUE;
 
     // Constructor
 
@@ -163,7 +169,7 @@ public class VeluxProductPosition {
     public int getPositionAsVeluxType() {
         if (this.isValid) {
             float result;
-            if (positionType == PositionType.ABSOLUTE_POSITION) {
+            if (positionType == PositionType.ABSOLUTE_VALUE) {
                 result = (ONE * position.intValue() - VPP_OPENHAB_MIN) / (VPP_OPENHAB_MAX - VPP_OPENHAB_MIN);
                 result = VPP_VELUX_MIN + result * (VPP_VELUX_MAX - VPP_VELUX_MIN);
             } else {

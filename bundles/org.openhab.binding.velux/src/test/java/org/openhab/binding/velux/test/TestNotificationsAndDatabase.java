@@ -819,14 +819,14 @@ public class TestNotificationsAndDatabase {
         // 80% positive relative position
         target = VeluxProductPosition.VPP_VELUX_RELATIVE_ORIGIN
                 + (VeluxProductPosition.VPP_VELUX_RELATIVE_RANGE * 8 / 10);
-        position = new VeluxProductPosition(new PercentType(80)).overridePositionType(PositionType.RELATIVE_POSITIVE);
+        position = new VeluxProductPosition(new PercentType(80)).overridePositionType(PositionType.OFFSET_POSITIVE);
         assertTrue(position.isValid());
         assertEquals(target, position.getPositionAsVeluxType());
 
         // 80% negative relative position
         target = VeluxProductPosition.VPP_VELUX_RELATIVE_ORIGIN
                 - (VeluxProductPosition.VPP_VELUX_RELATIVE_RANGE * 8 / 10);
-        position = new VeluxProductPosition(new PercentType(80)).overridePositionType(PositionType.RELATIVE_NEGATIVE);
+        position = new VeluxProductPosition(new PercentType(80)).overridePositionType(PositionType.OFFSET_NEGATIVE);
         assertTrue(position.isValid());
         assertEquals(target, position.getPositionAsVeluxType());
     }

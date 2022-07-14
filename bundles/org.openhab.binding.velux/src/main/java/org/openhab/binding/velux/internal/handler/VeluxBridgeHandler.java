@@ -859,8 +859,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 synchronized (bcp) {
                     bcp.setNodeIdAndParameters(nodeId,
                             new VeluxProductPosition(new PercentType(Math.abs(relativePercent)))
-                                    .overridePositionType(relativePercent > 0 ? PositionType.RELATIVE_POSITIVE
-                                            : PositionType.RELATIVE_NEGATIVE),
+                                    .overridePositionType(relativePercent > 0 ? PositionType.OFFSET_POSITIVE
+                                            : PositionType.OFFSET_NEGATIVE),
                             null);
                     if (thisBridge.bridgeCommunicate(bcp)) {
                         logger.trace("moveRelative() command {}sucessfully sent to {}",
