@@ -51,9 +51,7 @@ public class FunctionalParameters {
     @Override
     public FunctionalParameters clone() {
         FunctionalParameters result = new FunctionalParameters();
-        for (int i = 0; i < FUNCTIONAL_PARAMETER_COUNT; i++) {
-            result.values[i] = values[i];
-        }
+        System.arraycopy(values, 0, result.values, 0, FUNCTIONAL_PARAMETER_COUNT);
         return result;
     }
 
