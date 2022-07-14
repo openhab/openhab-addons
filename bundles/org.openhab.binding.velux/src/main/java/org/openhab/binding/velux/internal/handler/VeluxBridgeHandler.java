@@ -55,6 +55,7 @@ import org.openhab.binding.velux.internal.things.VeluxExistingScenes;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
+import org.openhab.binding.velux.internal.things.VeluxProductPosition.PositionType;
 import org.openhab.binding.velux.internal.utils.Localization;
 import org.openhab.core.common.AbstractUID;
 import org.openhab.core.common.NamedThreadFactory;
@@ -853,13 +854,18 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.trace("moveRelative() called on {}", getThing().getUID());
         RunProductCommand bcp = thisBridge.bridgeAPI().runProductCommand();
         if (bcp != null) {
-            bcp.setNodeIdAndParameters(nodeId, new VeluxProductPosition(new PercentType(Math.abs(relativePercent)))
-                    .getAsRelativePosition((relativePercent >= 0)), null);
             // background execution of moveRelative
             submitCommunicationsJob(() -> {
-                if (thisBridge.bridgeCommunicate(bcp)) {
-                    logger.trace("moveRelative() command {}sucessfully sent to {}",
-                            bcp.isCommunicationSuccessful() ? "" : "un", getThing().getUID());
+                synchronized (bcp) {
+                    bcp.setNodeIdAndParameters(nodeId,
+                            new VeluxProductPosition(new PercentType(Math.abs(relativePercent)))
+                                    .overridePositionType(relativePercent > 0 ? PositionType.RELATIVE_POSITIVE
+                                            : PositionType.RELATIVE_NEGATIVE),
+                            null);
+                    if (thisBridge.bridgeCommunicate(bcp)) {
+                        logger.trace("moveRelative() command {}sucessfully sent to {}",
+                                bcp.isCommunicationSuccessful() ? "" : "un", getThing().getUID());
+                    }
                 }
             });
             return true;
