@@ -62,7 +62,7 @@ public class ScaleTransformServiceTest {
             try {
                 String content = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
                 String uid = Path.of(SRC_FOLDER).relativize(file).toString();
-                Transformation transformationConfiguration = new Transformation(uid, uid, "scale", null,
+                Transformation transformationConfiguration = new Transformation(uid, uid, "scale",
                         Map.of(Transformation.FUNCTION, content));
                 configurationMap.put(uid, transformationConfiguration);
             } catch (IOException ignored) {

@@ -70,7 +70,7 @@ public class MapTransformationServiceTest extends JavaTest {
             try {
                 String content = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
                 String uid = Path.of(SRC_FOLDER).relativize(file).toString();
-                Transformation transformation = new Transformation(uid, uid, "map", null,
+                Transformation transformation = new Transformation(uid, uid, "map",
                         Map.of(Transformation.FUNCTION, content));
                 configurationMap.put(uid, transformation);
             } catch (IOException ignored) {
@@ -125,8 +125,7 @@ public class MapTransformationServiceTest extends JavaTest {
         Transformation transformationDE = Objects.requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_DE));
         Transformation transformationFR = Objects.requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_FR));
         Transformation transformationModified = new Transformation(transformationDE.getUID(),
-                transformationDE.getLabel(), transformationDE.getType(), transformationDE.getLanguage(),
-                transformationDE.getConfiguration());
+                transformationDE.getLabel(), transformationDE.getType(), transformationDE.getConfiguration());
         processor.updated(transformationDE, transformationModified);
 
         // assert there is no modified cached version
@@ -142,8 +141,7 @@ public class MapTransformationServiceTest extends JavaTest {
         Transformation transformationDE = Objects.requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_DE));
         Transformation transformationFR = Objects.requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_FR));
         Transformation transformationModified = new Transformation(transformationDE.getUID(),
-                transformationDE.getLabel(), transformationDE.getType(), transformationDE.getLanguage(),
-                transformationFR.getConfiguration());
+                transformationDE.getLabel(), transformationDE.getType(), transformationFR.getConfiguration());
         processor.updated(transformationDE, transformationModified);
 
         // ensure modified configuration is applied
