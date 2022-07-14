@@ -139,10 +139,12 @@ public class VeluxExistingProducts {
         }
 
         VeluxProduct theProduct = this.get(productBridgeIndex);
+
+        String oldProduct = "";
         if (logger.isDebugEnabled()) {
-            logger.debug("update() theProduct:{}", theProduct);
-            logger.debug("update() newProduct:{}", newProduct);
+            oldProduct = theProduct.toString();
         }
+
         boolean dirty = false;
 
         // ignore commands with state 'not used'
@@ -189,8 +191,16 @@ public class VeluxExistingProducts {
             logger.trace("update(): updating by UniqueIndex {}.", uniqueIndex);
             existingProductsByUniqueIndex.replace(uniqueIndex, theProduct);
             modifiedProductsByUniqueIndex.put(uniqueIndex, theProduct);
-            logger.debug("update() theProduct:{} (modified)", theProduct);
         }
+
+        if (logger.isDebugEnabled()) {
+            if (dirty) {
+                logger.debug("update() theProduct:{} (previous)", oldProduct);
+            }
+            logger.debug("update() newProduct:{} ({})", newProduct, dirty ? "different" : "same");
+            logger.debug("update() theProduct:{} ({})", theProduct, dirty ? "modified" : "unchanged");
+        }
+
         return true;
     }
 
