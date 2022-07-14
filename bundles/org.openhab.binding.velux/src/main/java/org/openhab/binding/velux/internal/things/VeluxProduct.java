@@ -63,7 +63,11 @@ public class VeluxProduct {
         }
     }
 
-    // State (of movement) of an actuator
+    /**
+     * State (of movement) of an actuator.
+     *
+     * @author AndrewFG - Initial contribution.
+     */
     public static enum ActuatorState {
         NON_EXECUTING(0),
         ERROR(1),
@@ -118,7 +122,8 @@ public class VeluxProduct {
          * @return true if the masked values are not equivalent.
          */
         public boolean notEquivalentTo(ActuatorState other) {
-            return (this.value & EQUALS_MASK) != (other.value & EQUALS_MASK);
+            return (this.value == UNKNOWN.value) ? (other.value != UNKNOWN.value)
+                    : (this.value & EQUALS_MASK) != (other.value & EQUALS_MASK);
         }
     }
 
@@ -126,8 +131,13 @@ public class VeluxProduct {
     private static final Pattern VELUX_SERIAL_NUMBER = Pattern.compile(
             "^[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}$");
 
+    /**
+     * Indicates the data source where the product's contents came from.
+     *
+     * @author AndrewFG - Initial contribution.
+     */
     public static enum DataSource {
-        HUB,
+        GATEWAY,
         BINDING;
     }
 
@@ -152,7 +162,7 @@ public class VeluxProduct {
     private int remainingTime = 0;
     private int timeStamp = 0;
     private Command creatorCommand = Command.UNDEFTYPE;
-    private DataSource dataSource = DataSource.HUB;
+    private DataSource dataSource = DataSource.GATEWAY;
     private boolean isSomfyProduct;
 
     // Constructor
