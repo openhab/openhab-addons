@@ -37,8 +37,7 @@ The value for Home Air Conditioners is '48' (0x30).
 * __instance__: Instance identifier if multiple instances are running on the same IP address.
 Typically, this value will be '1'.
 * __pollIntervalMs__: Interval between polls of the device for its current status.
-If multicast is not working this will determine the latency at which changes made directly on the device will be propagated back to openhab.
-The default is 30 000ms.
+If multicast is not working this will determine the latency at which changes made directly on the device will be propagated back to openhab.  The default is 30 000ms.
 * __retryTimeoutMs__: Length of time the bridge will wait before resubmitting a request.
 Because the binding uses UDP, packets can be lost on the network, so retries are necessary.
 Testing has shown that 2000ms is a reasonable default that allows for timely retries without rejecting slow, but legitimate responses.
@@ -75,7 +74,9 @@ The channels currently implemented are:
 
 ## Full Example
 
+
 ### Things
+
 ```
 Bridge echonetlite:bridge:1 [port="3610", multicastAddress="224.0.23.0"] {
     Thing device HeatPump_Bedroom1 "HeatPump Bedroom 1" @ "Bedroom 1" [hostname="192.168.0.55", port="3610", groupCode="1", classCode="48", instance="1", pollIntervalMs="30000", retryTimeoutMs="2000"]
@@ -83,6 +84,7 @@ Bridge echonetlite:bridge:1 [port="3610", multicastAddress="224.0.23.0"] {
 ```
 
 ### Items
+
 ```
 Switch HeatPumpBedroom1_OperationStatus "HeatPump Bedroom1 Operation Status" {channel="echonetlite:device:1:HeatPump_Bedroom1:operationStatus"}
 ```
