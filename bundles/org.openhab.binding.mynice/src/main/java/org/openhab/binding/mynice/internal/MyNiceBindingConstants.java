@@ -33,6 +33,7 @@ public class MyNiceBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_TYPE_IT4WIFI = new ThingTypeUID(BINDING_ID, "it4wifi");
     public static final ThingTypeUID THING_TYPE_SWING = new ThingTypeUID(BINDING_ID, "swing");
+    public static final ThingTypeUID THING_TYPE_SLIDING = new ThingTypeUID(BINDING_ID, "sliding");
 
     // Configuration element of a portal
     public static final String DEVICE_ID = "id";

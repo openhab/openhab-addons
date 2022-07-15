@@ -38,11 +38,11 @@ import org.openhab.core.types.RefreshType;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class SwingPortalHandler extends BaseThingHandler implements MyNiceDataListener {
+public class GateHandler extends BaseThingHandler implements MyNiceDataListener {
 
     private String id = "";
 
-    public SwingPortalHandler(Thing thing) {
+    public GateHandler(Thing thing) {
         super(thing);
     }
 

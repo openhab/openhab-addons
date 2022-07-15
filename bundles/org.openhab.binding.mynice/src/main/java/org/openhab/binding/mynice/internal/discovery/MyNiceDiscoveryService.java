@@ -95,6 +95,9 @@ public class MyNiceDiscoveryService extends AbstractDiscoveryService
                     case SWING:
                         thingUID = new ThingUID(THING_TYPE_SWING, bridgeUID, device.id);
                         break;
+                    case SLIDING:
+                        thingUID = new ThingUID(THING_TYPE_SLIDING, bridgeUID, device.id);
+                        break;
                     default:
                         logger.info("`{}` type of device is not yet supported", device.type);
                         break;
