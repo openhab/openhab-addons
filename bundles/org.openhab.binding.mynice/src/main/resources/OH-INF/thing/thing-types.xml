@@ -57,31 +57,31 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
-    <thing-type id="sliding">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="it4wifi"/>
-        </supported-bridge-type-refs>
 
-        <label>Sliding Gate</label>
-        <description>A sliding gate</description>
+	<thing-type id="sliding">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="it4wifi"/>
+		</supported-bridge-type-refs>
 
-        <channels>
-            <channel id="status" typeId="doorstatus"/>
-            <channel id="obstruct" typeId="obstruct"/>
-            <channel id="moving" typeId="moving"/>
-            <channel id="command" typeId="command"/>
-        </channels>
+		<label>Sliding Gate</label>
+		<description>A sliding gate</description>
 
-        <representation-property>id</representation-property>
+		<channels>
+			<channel id="status" typeId="doorstatus"/>
+			<channel id="obstruct" typeId="obstruct"/>
+			<channel id="moving" typeId="moving"/>
+			<channel id="command" typeId="command"/>
+		</channels>
 
-        <config-description>
-            <parameter name="id" type="text" required="true">
-                <label>ID</label>
-                <description>ID of the gate on the TP4 bus connected to the bridge.</description>
-            </parameter>
-        </config-description>
-    </thing-type>
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>ID</label>
+				<description>ID of the gate on the TP4 bus connected to the bridge.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 
 	<channel-type id="doorstatus">
