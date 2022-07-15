@@ -105,6 +105,7 @@ public class GenericResponseTransformer {
                             default:
                                 logger.warn("no mapping implemented for channel type '{}'", channelType);
                         }
+                        handleAdditionalMappings(result, channel, value);
                     } catch (Exception ex) {
                         logger.warn("caught exception while trying to update channel {} with value '{}'. Exception: {}",
                                 channel.getUID().getId(), value, ex.getMessage());
@@ -114,5 +115,27 @@ public class GenericResponseTransformer {
         }
 
         return result;
+    }
+
+    /**
+     * allows additional updates of related (virtual) channels.
+     *
+     * @param result map which will contain all updates.
+     * @param triggerChannel the channel which triggers the additional update
+     * @param value updated value of the triggering channel
+     */
+    private void handleAdditionalMappings(Map<Channel, State> result, Channel triggerChannel, String value) {
+        switch (triggerChannel.getUID().getId()) {
+            case CHANNEL_GROUP_CHARGER_STATE + "#" + CHANNEL_CHARGER_OP_MODE:
+                updateChargerStartStop(result, value);
+                break;
+        }
+    }
+
+    private void updateChargerStartStop(Map<Channel, State> result, String value) {
+        Channel channel = channelProvider.getChannel(CHANNEL_GROUP_CHARGER_COMMANDS, CHANNEL_CHARGER_START_STOP);
+        if (channel != null) {
+            result.put(channel, OnOffType.from(value.equals("3")));
+        }
     }
 }

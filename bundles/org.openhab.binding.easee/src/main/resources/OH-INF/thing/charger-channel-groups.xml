@@ -157,6 +157,14 @@
 					<property name="validationExpression">(reboot|update_firmware|poll_all|smart_charging|start_charging|stop_charging|pause_charging|resume_charging|toggle_charging|override_schedule)</property>
 				</properties>
 			</channel>
+			<channel id="startStop" typeId="rwtype-switch">
+				<label>Start/Stop Charging</label>
+				<description>Starts/Stops charging. Only relevant if authorization is required.</description>
+				<properties>
+					<property name="writeCommand">SendCommandStartStop</property>
+					<property name="validationExpression">.*</property>
+				</properties>
+			</channel>
 		</channels>
 
 	</channel-group-type>

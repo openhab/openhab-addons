@@ -29,7 +29,7 @@ public class EaseeConfiguration {
 
     private Integer asyncTimeout = 120;
     private Integer syncTimeout = 120;
-    private Integer dataPollingInterval = 5;
+    private Integer dataPollingInterval = 120;
 
     public String getUsername() {
         return username;

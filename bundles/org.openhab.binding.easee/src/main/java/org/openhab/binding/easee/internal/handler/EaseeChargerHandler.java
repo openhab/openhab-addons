@@ -31,6 +31,7 @@ import org.openhab.binding.easee.internal.command.charger.ChargerState;
 import org.openhab.binding.easee.internal.command.charger.GetConfiguration;
 import org.openhab.binding.easee.internal.command.charger.LatestChargingSession;
 import org.openhab.binding.easee.internal.command.charger.SendCommand;
+import org.openhab.binding.easee.internal.command.charger.SendCommandStartStop;
 import org.openhab.binding.easee.internal.config.EaseeConfiguration;
 import org.openhab.binding.easee.internal.connector.CommunicationStatus;
 import org.openhab.core.thing.Bridge;
@@ -111,7 +112,7 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
      */
     private void startPolling() {
         updateJobReference(dataPollingJobReference, scheduler.scheduleWithFixedDelay(this::pollingRun,
-                POLLING_INITIAL_DELAY, getBridgeConfiguration().getDataPollingInterval(), TimeUnit.MINUTES));
+                POLLING_INITIAL_DELAY, getBridgeConfiguration().getDataPollingInterval(), TimeUnit.SECONDS));
     }
 
     /**
@@ -217,6 +218,8 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
                 return new ChangeConfiguration(this, chargerId, channel, command);
             case COMMAND_SEND_COMMAND:
                 return new SendCommand(this, chargerId, channel, command);
+            case COMMAND_SEND_COMMAND_START_STOP:
+                return new SendCommandStartStop(this, chargerId, channel, command);
             default:
                 // this should not happen
                 logger.warn("write command '{}' not found for channel '{}'", command.toString(),

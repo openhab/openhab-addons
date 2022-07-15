@@ -94,6 +94,7 @@ The setting that start with "dynamic" can be changed frequently, the other are w
 | config#phaseMode                            | Number                   | yes      | 1=1phase, 2=auto, 3=3phase                           | 1-3                                                                                                                                                          |
 | config#maxChargerCurrent                    | Number:ElectricCurrent   | no       | write access not yet implemented                     |                                                                                                                                                              |
 | commands#genericCommand                     | String                   | yes      | Generic Endpoint to send commands                    | reboot, update_firmware, poll_all, smart_charging, start_charging, stop_charging, pause_charging, resume_charging, toggle_charging, override_schedule        |
+| commands#startStop                          | Switch                   | yes      | Start/Stop Charing, only works with authorization    |                                                                                                                                                              |
 | latest_session#sessionEnergy                | Number:Energy            | no       | latest (already ended) session                       |                                                                                                                                                              |
 | latest_session#sessionStart                 | DateTime                 | no       |                                                      |                                                                                                                                                              |
 | latest_session#sessionEnd                   | DateTime                 | no       |                                                      |                                                                                                                                                              |
@@ -151,25 +152,22 @@ String                  Easee_Circuit_Dynamic_Phase_Command   "Dynamic Phase Com
 
 ### Rules
 ```
-rule "Easee Power Control"
-when
-    Item Easee_Charger_Power changed
-then
     logDebug("easee.trigger", "[TRIGGER] Easee Power Control")
-    if (Easee_Charger_Status.state == 3) {
-        if (Easee_Charger_Power.state == 48) {
-            Easee_Circuit_Dynamic_Phase_Command.sendCommand("16;16;16")
+    if (Easee_Charger_Status.state == 2 || Easee_Charger_Status.state == 3) {
+        if (Easee_Charger_Power.state > 16) {
+            var int totalCurrent =  (Easee_Charger_Power.state as Number).intValue
+            var int singlePhaseCurrent = totalCurrent/3
+            Easee_Circuit_Dynamic_Phase_Command.sendCommand(singlePhaseCurrent + ";" + singlePhaseCurrent + ";" + singlePhaseCurrent)
         } else {
             Easee_Circuit_Dynamic_Phase_Command.sendCommand(Easee_Charger_Power.state + ";0;0")
         }
     } else {
         logInfo("easee.script", "No active charging process")
     }
-end
 ```
 
 ### Sitemap
 ```
-Switch item=Easee_Charger_Power mappings=[6="1400", 7="1600", 8="1800", 9="2100", 10="2300", 16="3700", 48="11000"] icon="energy"
+    Switch item=Easee_Charger_Power mappings=[0="Pause", 6="1400", 7="1600", 8="1800", 9="2100", 10="2300", 16="3700", 48="11000"] icon="energy"
 ```
 

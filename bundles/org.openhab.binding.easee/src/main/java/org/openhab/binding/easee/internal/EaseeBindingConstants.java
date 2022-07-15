@@ -15,7 +15,6 @@ package org.openhab.binding.easee.internal;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -47,6 +46,7 @@ public class EaseeBindingConstants {
     public static final String CHANNEL_GROUP_CHARGER = "charger";
     public static final String CHANNEL_GROUP_CHARGER_STATE = "state";
     public static final String CHANNEL_GROUP_CHARGER_CONFIG = "config";
+    public static final String CHANNEL_GROUP_CHARGER_COMMANDS = "commands";
     public static final String CHANNEL_GROUP_CHARGER_LATEST_SESSION = "latest_session";
     public static final String CHANNEL_GROUP_CIRCUIT_DYNAMIC_CURRENT = "dynamic_current";
     public static final String CHANNEL_GROUP_CIRCUIT_SETTINGS = "settings";
@@ -64,6 +64,10 @@ public class EaseeBindingConstants {
     public static final String CHANNEL_TYPEPREFIX_RW = "rw";
 
     public static final String CHANNEL_TYPENAME_INTEGER = "type-integer";
+
+    // Channels with specific handling
+    public static final String CHANNEL_CHARGER_OP_MODE = "chargerOpMode";
+    public static final String CHANNEL_CHARGER_START_STOP = "startStop";
 
     // JSON Keys
     public static final String JSON_KEY_GENERIC_ID = "id";
@@ -85,14 +89,19 @@ public class EaseeBindingConstants {
     // Write Commands
     public static final String COMMAND_CHANGE_CONFIGURATION = "ChangeConfiguration";
     public static final String COMMAND_SEND_COMMAND = "SendCommand";
+    public static final String COMMAND_SEND_COMMAND_START_STOP = "SendCommandStartStop";
     public static final String COMMAND_SET_CIRCUIT_SETTINGS = "SetCircuitSettings";
     public static final String COMMAND_SET_DYNAMIC_CIRCUIT_CURRENTS = "SetDynamicCircuitCurrents";
     public static final String COMMAND_SET_MAX_CIRCUIT_CURRENTS = "SetMaxCircuitCurrents";
     public static final String COMMAND_SET_OFFLINE_MAX_CIRCUIT_CURRENTS = "SetOfflineMaxCircuitCurrents";
 
+    // Command Values
+    public static final String CMD_VAL_START_CHARGING = "start_charging";
+    public static final String CMD_VAL_STOP_CHARGING = "stop_charging";
+
     // web request constants
-    public static final long WEB_REQUEST_INITIAL_DELAY = TimeUnit.SECONDS.toMillis(30);
-    public static final long WEB_REQUEST_INTERVAL = TimeUnit.SECONDS.toMillis(5);
+    public static final long WEB_REQUEST_INITIAL_DELAY = 30;
+    public static final long WEB_REQUEST_INTERVAL = 5;
     public static final int WEB_REQUEST_QUEUE_MAX_SIZE = 20;
     public static final int WEB_REQUEST_TOKEN_EXPIRY_BUFFER_MINUTES = 5;
     public static final int WEB_REQUEST_TOKEN_MAX_AGE_MINUTES = 60;

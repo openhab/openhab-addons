@@ -30,7 +30,7 @@
 			<label>Site ID</label>
 			<description>The ID of the site containing the charger(s) and circuit(s) that should be integrated into Openhab.</description>
 		</parameter>
-		<parameter name="dataPollingInterval" type="integer" required="false" min="1" max="60" unit="m"
+		<parameter name="dataPollingInterval" type="integer" required="false" min="20" max="600" unit="s"
 			groupName="connection">
 			<label>Polling Interval</label>
 			<description>Interval in which data is polled from EaseeCloud (in minutes).</description>
