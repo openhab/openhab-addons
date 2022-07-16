@@ -68,6 +68,7 @@ public class RotelBindingConstants {
     public static final String THING_TYPE_ID_RT1570 = "rt1570";
     public static final String THING_TYPE_ID_T11 = "t11";
     public static final String THING_TYPE_ID_T14 = "t14";
+    public static final String THING_TYPE_ID_C8 = "c8";
     public static final String THING_TYPE_ID_M8 = "m8";
     public static final String THING_TYPE_ID_P5 = "p5";
     public static final String THING_TYPE_ID_S5 = "s5";
@@ -116,6 +117,7 @@ public class RotelBindingConstants {
     public static final ThingTypeUID THING_TYPE_RT1570 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_RT1570);
     public static final ThingTypeUID THING_TYPE_T11 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_T11);
     public static final ThingTypeUID THING_TYPE_T14 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_T14);
+    public static final ThingTypeUID THING_TYPE_C8 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_C8);
     public static final ThingTypeUID THING_TYPE_M8 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_M8);
     public static final ThingTypeUID THING_TYPE_P5 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_P5);
     public static final ThingTypeUID THING_TYPE_S5 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_S5);
@@ -125,6 +127,7 @@ public class RotelBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_MAIN_POWER = "mainZone#power";
+    public static final String CHANNEL_ALL_POWER = "allZones#power";
     public static final String CHANNEL_SOURCE = "source";
     public static final String CHANNEL_MAIN_SOURCE = "mainZone#source";
     public static final String CHANNEL_MAIN_RECORD_SOURCE = "mainZone#recordSource";
@@ -145,19 +148,39 @@ public class RotelBindingConstants {
     public static final String CHANNEL_LINE1 = "mainZone#line1";
     public static final String CHANNEL_LINE2 = "mainZone#line2";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
+    public static final String CHANNEL_ALL_BRIGHTNESS = "allZones#brightness";
+    public static final String CHANNEL_ZONE1_SOURCE = "zone1#source";
+    public static final String CHANNEL_ZONE1_VOLUME = "zone1#volume";
+    public static final String CHANNEL_ZONE1_MUTE = "zone1#mute";
+    public static final String CHANNEL_ZONE1_BASS = "zone1#bass";
+    public static final String CHANNEL_ZONE1_TREBLE = "zone1#treble";
+    public static final String CHANNEL_ZONE1_BALANCE = "zone1#balance";
+    public static final String CHANNEL_ZONE1_FREQUENCY = "zone1#frequency";
     public static final String CHANNEL_ZONE2_POWER = "zone2#power";
     public static final String CHANNEL_ZONE2_SOURCE = "zone2#source";
     public static final String CHANNEL_ZONE2_VOLUME = "zone2#volume";
     public static final String CHANNEL_ZONE2_VOLUME_UP_DOWN = "zone2#volumeUpDown";
     public static final String CHANNEL_ZONE2_MUTE = "zone2#mute";
+    public static final String CHANNEL_ZONE2_BASS = "zone2#bass";
+    public static final String CHANNEL_ZONE2_TREBLE = "zone2#treble";
+    public static final String CHANNEL_ZONE2_BALANCE = "zone2#balance";
+    public static final String CHANNEL_ZONE2_FREQUENCY = "zone2#frequency";
     public static final String CHANNEL_ZONE3_POWER = "zone3#power";
     public static final String CHANNEL_ZONE3_SOURCE = "zone3#source";
     public static final String CHANNEL_ZONE3_VOLUME = "zone3#volume";
     public static final String CHANNEL_ZONE3_MUTE = "zone3#mute";
+    public static final String CHANNEL_ZONE3_BASS = "zone3#bass";
+    public static final String CHANNEL_ZONE3_TREBLE = "zone3#treble";
+    public static final String CHANNEL_ZONE3_BALANCE = "zone3#balance";
+    public static final String CHANNEL_ZONE3_FREQUENCY = "zone3#frequency";
     public static final String CHANNEL_ZONE4_POWER = "zone4#power";
     public static final String CHANNEL_ZONE4_SOURCE = "zone4#source";
     public static final String CHANNEL_ZONE4_VOLUME = "zone4#volume";
     public static final String CHANNEL_ZONE4_MUTE = "zone4#mute";
+    public static final String CHANNEL_ZONE4_BASS = "zone4#bass";
+    public static final String CHANNEL_ZONE4_TREBLE = "zone4#treble";
+    public static final String CHANNEL_ZONE4_BALANCE = "zone4#balance";
+    public static final String CHANNEL_ZONE4_FREQUENCY = "zone4#frequency";
     public static final String CHANNEL_TCBYPASS = "tcbypass";
     public static final String CHANNEL_BALANCE = "balance";
     public static final String CHANNEL_SPEAKER_A = "speakera";
@@ -186,13 +209,34 @@ public class RotelBindingConstants {
     // Common (output) keys used by the HEX and ASCII protocols
     public static final String KEY_POWER = "power";
     public static final String KEY_VOLUME = "volume";
+    public static final String KEY_VOLUME_ZONE2 = "volume_zone2";
+    public static final String KEY_VOLUME_ZONE3 = "volume_zone3";
+    public static final String KEY_VOLUME_ZONE4 = "volume_zone4";
     public static final String KEY_MUTE = "mute";
+    public static final String KEY_MUTE_ZONE2 = "mute_zone2";
+    public static final String KEY_MUTE_ZONE3 = "mute_zone3";
+    public static final String KEY_MUTE_ZONE4 = "mute_zone4";
     public static final String KEY_BASS = "bass";
     public static final String KEY_TREBLE = "treble";
     public static final String KEY_SOURCE = "source";
     public static final String KEY_DSP_MODE = "dsp_mode";
     public static final String KEY_ERROR = "error";
     // Keys only used by the ASCII protocol
+    public static final String KEY_INPUT = "input";
+    public static final String KEY_INPUT_ZONE1 = "input_zone1";
+    public static final String KEY_INPUT_ZONE2 = "input_zone2";
+    public static final String KEY_INPUT_ZONE3 = "input_zone3";
+    public static final String KEY_INPUT_ZONE4 = "input_zone4";
+    public static final String KEY_VOLUME_ZONE1 = "volume_zone1";
+    public static final String KEY_MUTE_ZONE1 = "mute_zone1";
+    public static final String KEY_BASS_ZONE1 = "bass_zone1";
+    public static final String KEY_BASS_ZONE2 = "bass_zone2";
+    public static final String KEY_BASS_ZONE3 = "bass_zone3";
+    public static final String KEY_BASS_ZONE4 = "bass_zone4";
+    public static final String KEY_TREBLE_ZONE1 = "treble_zone1";
+    public static final String KEY_TREBLE_ZONE2 = "treble_zone2";
+    public static final String KEY_TREBLE_ZONE3 = "treble_zone3";
+    public static final String KEY_TREBLE_ZONE4 = "treble_zone4";
     public static final String KEY_UPDATE_MODE = "update_mode";
     public static final String KEY_DISPLAY_UPDATE = "display_update";
     public static final String KEY_VOLUME_MIN = "volume_min";
@@ -203,9 +247,17 @@ public class RotelBindingConstants {
     public static final String KEY_TRACK = "track";
     public static final String KEY_DIMMER = "dimmer";
     public static final String KEY_FREQ = "freq";
+    public static final String KEY_FREQ_ZONE1 = "freq_zone1";
+    public static final String KEY_FREQ_ZONE2 = "freq_zone2";
+    public static final String KEY_FREQ_ZONE3 = "freq_zone3";
+    public static final String KEY_FREQ_ZONE4 = "freq_zone4";
     public static final String KEY_TONE = "tone";
     public static final String KEY_TCBYPASS = "bypass";
     public static final String KEY_BALANCE = "balance";
+    public static final String KEY_BALANCE_ZONE1 = "balance_zone1";
+    public static final String KEY_BALANCE_ZONE2 = "balance_zone2";
+    public static final String KEY_BALANCE_ZONE3 = "balance_zone3";
+    public static final String KEY_BALANCE_ZONE4 = "balance_zone4";
     public static final String KEY_SPEAKER = "speaker";
     // Output keys only used by the HEX protocol
     public static final String KEY_LINE1 = "line1";
@@ -219,16 +271,11 @@ public class RotelBindingConstants {
     public static final String KEY_SOURCE_ZONE2 = "source_zone2";
     public static final String KEY_SOURCE_ZONE3 = "source_zone3";
     public static final String KEY_SOURCE_ZONE4 = "source_zone4";
-    public static final String KEY_VOLUME_ZONE2 = "volume_zone2";
-    public static final String KEY_VOLUME_ZONE3 = "volume_zone3";
-    public static final String KEY_VOLUME_ZONE4 = "volume_zone4";
-    public static final String KEY_MUTE_ZONE2 = "mute_zone2";
-    public static final String KEY_MUTE_ZONE3 = "mute_zone3";
-    public static final String KEY_MUTE_ZONE4 = "mute_zone4";
 
     // Specific values for keys
     public static final String MSG_VALUE_OFF = "off";
     public static final String MSG_VALUE_ON = "on";
+    public static final String MSG_VALUE_NONE = "none";
     public static final String POWER_ON = "on";
     public static final String STANDBY = "standby";
     public static final String POWER_OFF_DELAYED = "off_delayed";
@@ -243,4 +290,6 @@ public class RotelBindingConstants {
     public static final String PLAY = "play";
     public static final String PAUSE = "pause";
     public static final String STOP = "stop";
+
+    public static final int MAX_NB_ZONES = 4;
 }
