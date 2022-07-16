@@ -842,9 +842,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
                         } else if (tcbypass) {
+                            success = false;
                             logger.debug("Command {} from channel {} ignored: tone control bypass is ON", command,
                                     channel);
-                            updateChannelState(CHANNEL_BASS);
                         } else {
                             handleToneCmd(bass, channel, command, 2, RotelCommand.BASS_UP, RotelCommand.BASS_DOWN,
                                     RotelCommand.BASS_SET);
@@ -856,9 +856,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
                         } else if (tcbypass) {
+                            success = false;
                             logger.debug("Command {} from channel {} ignored: tone control bypass is ON", command,
                                     channel);
-                            updateChannelState(CHANNEL_TREBLE);
                         } else {
                             handleToneCmd(treble, channel, command, 1, RotelCommand.TREBLE_UP, RotelCommand.TREBLE_DOWN,
                                     RotelCommand.TREBLE_SET);
