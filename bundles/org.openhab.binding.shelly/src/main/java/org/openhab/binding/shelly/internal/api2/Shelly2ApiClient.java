@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
@@ -69,6 +70,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 public class Shelly2ApiClient extends ShellyHttpClient {
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiClient.class);
     protected final Random random = new Random();
@@ -203,10 +205,10 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         ShellyShortStatusRelay sr = relayStatus.relays.get(rs.id);
         String group = profile.getControlGroup(rs.id);
 
-        sr.isValid = true;
-        sr.name = status.name;
+        sr.isValid = rstatus.isValid = true;
+        sr.name = rstatus.name = status.name;
         if (rs.output != null) {
-            rstatus.ison = sr.ison = getBool(rs.output);
+            sr.ison = rstatus.ison = getBool(rs.output);
         }
         if (getDouble(rs.timerStartetAt) > 0) {
             logger.debug("{}: Update hasTimer", thingName);
@@ -235,11 +237,10 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (rs.errors != null) {
             logger.debug("{}: Update errors", thingName);
             for (String error : rs.errors) {
-                rstatus.overpower = SHELLY2_ERROR_OVERPOWER.equals(error);
+                sr.overpower = rstatus.overpower = SHELLY2_ERROR_OVERPOWER.equals(error);
                 status.overload = SHELLY2_ERROR_OVERVOLTAGE.equals(error);
                 status.overtemperature = SHELLY2_ERROR_OVERTEMP.equals(error);
             }
-            sr.overpower = rstatus.overpower;
             sr.overtemperature = status.overtemperature;
         }
 
@@ -484,9 +485,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         return updated;
     }
 
-    protected Shelly2RpcBaseMessage buildRequest(String method, Object params) {
+    protected Shelly2RpcBaseMessage buildRequest(String method, @Nullable Object params) throws ShellyApiException {
         Shelly2RpcBaseMessage request = new Shelly2RpcBaseMessage();
-        request.id = random.nextInt();
+        request.id = Math.abs(random.nextInt());
         request.src = thingName;
         request.method = !method.contains(".") ? SHELLYRPC_METHOD_CLASS_SHELLY + "." + method : method;
         request.params = params;
@@ -497,16 +498,17 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     protected Shelly2AuthRequest buildAuthRequest(Shelly2AuthResponse authParm, String user, String realm,
             String password) throws ShellyApiException {
         Shelly2AuthRequest authReq = new Shelly2AuthRequest();
-        authParm.nc = authParm.nc == null ? 1 : authParm.nc;
         authReq.username = "admin";
         authReq.realm = realm;
         authReq.nonce = authParm.nonce;
         authReq.cnonce = (long) Math.floor(Math.random() * 10e8);
-        authReq.algorithm = "SHA-256";
+        authReq.nc = authParm.nc != null ? authParm.nc : 1;
+        authReq.authType = SHELLY2_AUTHTTYPE_DIGEST;
+        authReq.algorithm = SHELLY2_AUTHALG_SHA256;
         String ha1 = sha256(authReq.username + ":" + authReq.realm + ":" + password);
-        String ha2 = sha256("dummy_method:dummy_uri");
+        String ha2 = SHELLY2_AUTH_NOISE;
         authReq.response = sha256(
-                ha1 + ":" + authReq.nonce + ":" + authParm.nc + ":" + authReq.cnonce + ":" + "auth" + ":" + ha2);
+                ha1 + ":" + authReq.nonce + ":" + authReq.nc + ":" + authReq.cnonce + ":" + "auth" + ":" + ha2);
         return authReq;
     }
 
