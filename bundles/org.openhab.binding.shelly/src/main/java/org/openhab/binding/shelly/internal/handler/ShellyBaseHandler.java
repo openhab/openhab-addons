@@ -853,7 +853,7 @@ public class ShellyBaseHandler extends BaseThingHandler
 
         config = getConfigAs(ShellyThingConfiguration.class);
         if (config.deviceIp.isEmpty()) {
-            logger.info("{}: IP address for the device must not be empty", thingName); // may not set in .things file
+            logger.debug("{}: IP address for the device must not be empty", thingName); // may not set in .things file
             return;
         }
         try {
@@ -936,7 +936,6 @@ public class ShellyBaseHandler extends BaseThingHandler
     protected boolean isAuthorizationFailed(ShellyApiResult result) {
         if (result.isHttpAccessUnauthorized()) {
             // If the device is password protected the API doesn't provide settings to the device settings
-            logger.info("{}: {}", thingName, messages.get("init.protected"));
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-access-denied");
             return true;
         }
@@ -1018,6 +1017,7 @@ public class ShellyBaseHandler extends BaseThingHandler
      * @param status Shelly device status
      * @return true: one or more inputs were updated
      */
+    @Override
     public boolean updateInputs(ShellySettingsStatus status) {
         boolean updated = false;
 
