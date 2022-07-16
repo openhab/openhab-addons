@@ -1147,7 +1147,6 @@ public class ShellyBaseHandler extends BaseThingHandler
             for (ShellyInputState input : status.inputs) {
                 String group = profile.getInputGroup(idx);
                 String suffix = multiInput ? profile.getInputSuffix(idx) : "";
-
                 if (!areChannelsCreated()) {
                     updateChannelDefinitions(
                             ShellyChannelDefinitions.createInputChannels(thing, profile, status, group));
