@@ -9,14 +9,14 @@
 		<description>@text/thing-type.shelly.shellybulb.description</description>
 		<category>Lightbulb</category>
 		<channel-groups>
-			<channel-group id="control" typeId="bulbControl"/>
-			<channel-group id="color" typeId="colorSettingsBulb"/>
-			<channel-group id="white" typeId="whiteSettings"/>
-			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="control" typeId="bulbControl" />
+			<channel-group id="color" typeId="colorSettingsBulb" />
+			<channel-group id="white" typeId="whiteSettings" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:light"/>
+		<config-description-ref uri="thing-type:shelly:light" />
 	</thing-type>
 
 	<thing-type id="shellybulbduo">
@@ -24,14 +24,14 @@
 		<description>@text/thing-type.shelly.shellybulbduo.description</description>
 		<category>Lightbulb</category>
 		<channel-groups>
-			<channel-group id="control" typeId="duoControl"/>
-			<channel-group id="white" typeId="whiteSettings"/>
-			<channel-group id="meter" typeId="meter"/>
-			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="control" typeId="duoControl" />
+			<channel-group id="white" typeId="whiteSettings" />
+			<channel-group id="meter" typeId="meter" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:light"/>
+		<config-description-ref uri="thing-type:shelly:light" />
 	</thing-type>
 
 	<thing-type id="shellycolorbulb">
@@ -39,15 +39,15 @@
 		<description>@text/thing-type.shelly.shellycolorbulb.description</description>
 		<category>ColorLight</category>
 		<channel-groups>
-			<channel-group id="control" typeId="duoControl"/>
-			<channel-group id="color" typeId="colorSettingsBulb"/>
-			<channel-group id="white" typeId="whiteSettings"/>
-			<channel-group id="meter" typeId="meter"/>
-			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="control" typeId="duoControl" />
+			<channel-group id="color" typeId="colorSettingsBulb" />
+			<channel-group id="white" typeId="whiteSettings" />
+			<channel-group id="meter" typeId="meter" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:light"/>
+		<config-description-ref uri="thing-type:shelly:light" />
 	</thing-type>
 
 	<thing-type id="shellyvintage">
@@ -55,14 +55,14 @@
 		<description>@text/thing-type.shelly.shellyvintage.description</description>
 		<category>Lightbulb</category>
 		<channel-groups>
-			<channel-group id="control" typeId="duoControl"/>
-			<channel-group id="white" typeId="whiteSettings"/>
-			<channel-group id="meter" typeId="meter"/>
-			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="control" typeId="duoControl" />
+			<channel-group id="white" typeId="whiteSettings" />
+			<channel-group id="meter" typeId="meter" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:light"/>
+		<config-description-ref uri="thing-type:shelly:light" />
 	</thing-type>
 
 	<thing-type id="shellyrgbw2-color">
@@ -70,14 +70,14 @@
 		<description>@text/thing-type.shelly.shellyrgbw2-color.description</description>
 		<category>ColorLight</category>
 		<channel-groups>
-			<channel-group id="control" typeId="rgbw2ColorControl"/>
-			<channel-group id="color" typeId="colorSettingsRGBW2"/>
-			<channel-group id="meter" typeId="meter"/>
-			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="control" typeId="rgbw2ColorControl" />
+			<channel-group id="color" typeId="colorSettingsRGBW2" />
+			<channel-group id="meter" typeId="meter" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:rgbw2"/>
+		<config-description-ref uri="thing-type:shelly:rgbw2" />
 	</thing-type>
 
 	<thing-type id="shellyrgbw2-white">
@@ -85,7 +85,7 @@
 		<description>@text/thing-type.shelly.shellyrgbw2-white.description</description>
 		<category>Lightbulb</category>
 		<channel-groups>
-			<channel-group id="control" typeId="rgbw2WhiteControl"/>
+			<channel-group id="control" typeId="rgbw2WhiteControl" />
 			<channel-group id="channel1" typeId="rgbw2Channel">
 				<label>@text/channel-group-type.shelly.rgbw2Channel1.label</label>
 			</channel-group>
@@ -98,20 +98,20 @@
 			<channel-group id="channel4" typeId="rgbw2Channel">
 				<label>@text/channel-group-type.shelly.rgbw2Channel4.label</label>
 			</channel-group>
-			<channel-group id="meter" typeId="meter"/>
-			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="meter" typeId="meter" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:rgbw2"/>
+		<config-description-ref uri="thing-type:shelly:rgbw2" />
 	</thing-type>
 
 	<channel-group-type id="bulbControl">
 		<label>@text/channel-group-type.shelly.bulbControl.label</label>
 		<description>@text/channel-group-type.shelly.bulbControl.description</description>
 		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="mode" typeId="colorMode"/>
+			<channel id="power" typeId="system.power" />
+			<channel id="mode" typeId="colorMode" />
 		</channels>
 	</channel-group-type>
 
@@ -134,14 +134,14 @@
 		<label>@text/channel-group-type.shelly.colorSettingsBulb.label</label>
 		<description>@text/channel-group-type.shelly.colorSettingsBulb.description</description>
 		<channels>
-			<channel id="hsb" typeId="system.color"/>
-			<channel id="full" typeId="colorFull"/>
-			<channel id="red" typeId="colorRed"/>
-			<channel id="green" typeId="colorGreen"/>
-			<channel id="blue" typeId="colorBlue"/>
-			<channel id="white" typeId="colorWhite"/>
-			<channel id="gain" typeId="colorGain"/>
-			<channel id="effect" typeId="colorEffectBulb"/>
+			<channel id="hsb" typeId="system.color" />
+			<channel id="full" typeId="colorFull" />
+			<channel id="red" typeId="colorRed" />
+			<channel id="green" typeId="colorGreen" />
+			<channel id="blue" typeId="colorBlue" />
+			<channel id="white" typeId="colorWhite" />
+			<channel id="gain" typeId="colorGain" />
+			<channel id="effect" typeId="colorEffectBulb" />
 		</channels>
 	</channel-group-type>
 
@@ -149,14 +149,14 @@
 		<label>@text/channel-group-type.shelly.colorSettingsRGBW2.label</label>
 		<description>@text/channel-group-type.shelly.colorSettingsRGBW2.description</description>
 		<channels>
-			<channel id="hsb" typeId="system.color"/>
-			<channel id="full" typeId="colorFull"/>
-			<channel id="red" typeId="colorRed"/>
-			<channel id="green" typeId="colorGreen"/>
-			<channel id="blue" typeId="colorBlue"/>
-			<channel id="white" typeId="colorWhite"/>
-			<channel id="gain" typeId="colorGain"/>
-			<channel id="effect" typeId="colorEffectRGBW2"/>
+			<channel id="hsb" typeId="system.color" />
+			<channel id="full" typeId="colorFull" />
+			<channel id="red" typeId="colorRed" />
+			<channel id="green" typeId="colorGreen" />
+			<channel id="blue" typeId="colorBlue" />
+			<channel id="white" typeId="colorWhite" />
+			<channel id="gain" typeId="colorGain" />
+			<channel id="effect" typeId="colorEffectRGBW2" />
 		</channels>
 	</channel-group-type>
 
@@ -168,6 +168,14 @@
 	<channel-group-type id="rgbw2Channel">
 		<label>@text/channel-group-type.shelly.rgbw2Channel.label</label>
 		<description>@text/channel-group-type.shelly.rgbw2Channel.description</description>
+		<<<<<<< HEAD
+		=======
+		<channels>
+			<!--<channel id="autoOn" typeId="timerAutoOn"/> <channel id="autoOff" typeId="timerAutoOff"/> <channel id="timerActive" 
+				typeId="timerActive"/ -->
+			<channel id="brightness" typeId="whiteBrightness" />
+		</channels>
+		>>>>>>> a8136db132 (make autoOn/autoOff and timerActive channels dynamic)
 	</channel-group-type>
 
 	<channel-type id="colorMode">
@@ -271,4 +279,8 @@
 			</options>
 		</state>
 	</channel-type>
+	<<<<<<< HEAD
 </thing:thing-descriptions>
+=======
+</thing:thing-descriptions>
+>>>>>>> a8136db132 (make autoOn/autoOff and timerActive channels dynamic)

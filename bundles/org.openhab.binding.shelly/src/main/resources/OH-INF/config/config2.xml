@@ -10,10 +10,6 @@
 			<description>@text/thing-type.config.shelly.deviceIp.description</description>
 			<context>network-address</context>
 		</parameter>
-		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.shelly.userId.label</label>
-			<description>@text/thing-type.config.shelly.userId.description</description>
-		</parameter>
 		<parameter name="password" type="text" required="false">
 			<label>@text/thing-type.config.shelly.password.label</label>
 			<description>@text/thing-type.config.shelly.password.description</description>
@@ -33,10 +29,6 @@
 			<label>@text/thing-type.config.shelly.deviceIp.label</label>
 			<description>@text/thing-type.config.shelly.deviceIp.description</description>
 			<context>network-address</context>
-		</parameter>
-		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.shelly.userId.label</label>
-			<description>@text/thing-type.config.shelly.userId.description</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
 			<label>@text/thing-type.config.shelly.password.label</label>
@@ -67,10 +59,6 @@
 			<label>@text/thing-type.config.shelly.deviceIp.label</label>
 			<description>@text/thing-type.config.shelly.deviceIp.description</description>
 			<context>network-address</context>
-		</parameter>
-		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.shelly.userId.label</label>
-			<description>@text/thing-type.config.shelly.userId.description</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
 			<label>@text/thing-type.config.shelly.password.label</label>
