@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.easee.internal.model;
 
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
@@ -66,7 +78,8 @@ class CustomResponseTransformer {
     private void updateChargerStartStop(Map<Channel, State> result, String value) {
         Channel channel = channelProvider.getChannel(CHANNEL_GROUP_CHARGER_COMMANDS, CHANNEL_CHARGER_START_STOP);
         if (channel != null) {
-            result.put(channel, OnOffType.from(CHARGER_OP_STATE_CHARGING.equals(value)));
+            int val = Integer.valueOf(value);
+            result.put(channel, OnOffType.from(val >= CHARGER_OP_STATE_CHARGING));
         }
     }
 
@@ -84,5 +97,4 @@ class CustomResponseTransformer {
             result.put(channel, new StringType(phase1 + ";" + phase2 + ";" + phase3));
         }
     }
-
 }

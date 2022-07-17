@@ -123,5 +123,4 @@ public class GenericResponseTransformer {
 
         return result;
     }
-
 }
