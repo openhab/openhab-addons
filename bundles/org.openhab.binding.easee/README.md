@@ -142,6 +142,7 @@ Bridge easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="4
 
 
 ### Items
+
 ```
 Number                  Easee_Charger_Power                   "Wallbox Power [%d]"
 Number:ElectricCurrent  Easee_Circuit_Phase1                  "Phase 1"                               { channel="easee:mastercharger:mysite1:charger:dynamic_current#phase1" }
@@ -151,6 +152,7 @@ String                  Easee_Circuit_Dynamic_Phase_Command   "Dynamic Phase Com
 ```
 
 ### Rules
+
 ```
     logDebug("easee.trigger", "[TRIGGER] Easee Power Control")
     if (Easee_Charger_Status.state == 2 || Easee_Charger_Status.state == 3) {
@@ -167,6 +169,7 @@ String                  Easee_Circuit_Dynamic_Phase_Command   "Dynamic Phase Com
 ```
 
 ### Sitemap
+
 ```
     Switch item=Easee_Charger_Power mappings=[0="Pause", 6="1400", 7="1600", 8="1800", 9="2100", 10="2300", 16="3700", 48="11000"] icon="energy"
 ```

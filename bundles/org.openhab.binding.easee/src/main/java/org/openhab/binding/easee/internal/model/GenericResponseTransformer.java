@@ -135,7 +135,7 @@ public class GenericResponseTransformer {
     private void updateChargerStartStop(Map<Channel, State> result, String value) {
         Channel channel = channelProvider.getChannel(CHANNEL_GROUP_CHARGER_COMMANDS, CHANNEL_CHARGER_START_STOP);
         if (channel != null) {
-            result.put(channel, OnOffType.from(value.equals("3")));
+            result.put(channel, OnOffType.from(CHARGER_OP_STATE_CHARGING.equals(value)));
         }
     }
 }

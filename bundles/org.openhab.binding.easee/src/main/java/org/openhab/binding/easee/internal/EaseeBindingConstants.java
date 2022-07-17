@@ -125,6 +125,7 @@ public class EaseeBindingConstants {
 
     public static final String GENERIC_YES = "Yes";
     public static final String GENERIC_NO = "No";
+    public static final String CHARGER_OP_STATE_CHARGING = "3";
 
     public static final String THING_CONFIG_ID = "id";
     public static final String THING_CONFIG_SITE_ID = "siteId";
