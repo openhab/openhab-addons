@@ -735,7 +735,7 @@ public class Shelly1ApiJsonDTO {
 
         // Internal device temp
         public ShellySensorTmp tmp = new ShellySensorTmp(); // Shelly 1PM
-        public Double temperature; // Shelly 2.5
+        public Double temperature = SHELLY_API_INVTEMP; // Shelly 2.5
         public Boolean overtemperature;
 
         // Shelly Dimmer only

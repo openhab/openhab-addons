@@ -229,7 +229,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             status.tmp.isValid = false;
         }
         if (rs.voltage != null) {
-            logger.debug("{}: Update voltage", thingName);
             if (status.voltage == null || rs.voltage > status.voltage) {
                 status.voltage = rs.voltage;
             }
@@ -244,6 +243,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             sr.overtemperature = status.overtemperature;
         }
 
+        logger.debug("{}: Update meter{}", thingName, rs.id + 1);
         ShellySettingsMeter sm = new ShellySettingsMeter();
         ShellySettingsEMeter emeter = status.emeters.get(rs.id);
         sm.isValid = emeter.isValid = true;
@@ -516,7 +516,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         String value;
         boolean known = key != null && !key.isEmpty() && map.containsKey(key);
         value = known ? getString(map.get(key)) : "";
-        logger.debug("{}: API value {} was mapped to {}", thingName, key, known ? value : "UNKNOWN");
+        logger.trace("{}: API value {} was mapped to {}", thingName, key, known ? value : "UNKNOWN");
         return value;
     }
 
